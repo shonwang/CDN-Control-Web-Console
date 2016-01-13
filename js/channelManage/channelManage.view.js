@@ -255,7 +255,10 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
             ],
             rootNode = this.$el.find(".dropdown-status");
             Utility.initDropMenu(rootNode, statusArray, function(value){
-
+                if (value == "All")
+                    this.queryArgs.status = null;
+                else
+                    this.queryArgs.status = parseInt(value)
             }.bind(this));
 
             var pageNum = [

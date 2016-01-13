@@ -118,6 +118,8 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
             }.bind(this));
             this.collection.on("add.dispGroup.channel.error", $.proxy(this.onGetError, this));
 
+            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+
             this.queryArgs = {
                 "domain"           : null,
                 "accelerateDomain" : null,

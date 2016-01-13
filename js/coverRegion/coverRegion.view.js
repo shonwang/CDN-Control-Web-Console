@@ -101,7 +101,8 @@ define("coverRegion.view", ['require','exports', 'template', 'modal.view', 'util
             ],
             rootNode = this.$el.find(".dropdown-region");
             Utility.initDropMenu(rootNode, statusArray, function(value){
-
+                this.queryArgs.region_name = value;
+                if (value == "All") delete this.queryArgs.region_name
             }.bind(this));
 
             var pageNum = [

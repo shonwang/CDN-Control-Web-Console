@@ -41,6 +41,10 @@ td a{
     margin-right: 10px;
 }
 
+.navbar {
+    margin-bottom: 0px;
+}
+
 .table>tbody>tr>td, 
 .table>tbody>tr>th, 
 .table>tfoot>tr>td, 

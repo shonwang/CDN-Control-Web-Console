@@ -1,0 +1,4 @@
+dest/*
+temp/*
+node_modules/*
+js/data/*

@@ -1,0 +1,57 @@
+<div>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label for="input-name" class="col-sm-2 control-label">名称</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="input-name">
+            </div>
+        </div>
+        <div class="form-group dropdown-node">
+            <label for="dropdown-node" class="col-sm-2 control-label">节点</label>
+            <div class="dropdown col-sm-8">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-node" data-toggle="dropdown">
+                    <span class="cur-value">加载中...</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu long-dropdown-menu"></ul>
+            </div>
+        </div>
+        <div class="form-group dropdown-type">
+            <label for="dropdown-type" class="col-sm-2 control-label">类型</label>
+            <div class="dropdown col-sm-8">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-type" data-toggle="dropdown">
+                    <span class="cur-value">lvs</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu"></ul>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="textarea-comment" class="col-sm-2 control-label">备注</label>
+            <div class="col-sm-8">
+                <textarea class="form-control" rows="3" id="textarea-comment"></textarea>
+            </div>
+        </div>
+    </form>
+    <div class="ip-table-ctn table-responsive"></div>
+    <hr>
+    <form class="form-inline ip-ctn">
+        <div class="form-group">
+            <label for="input-ip">IP</label>
+            <input type="text" class="form-control" id="input-ip">
+        </div>
+        <div class="form-group">
+            <label for="dropdown-ip-type">类型</label>
+        </div>
+        <div class="form-group ip-type">
+            <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-ip-type" data-toggle="dropdown">
+                    <span class="cur-value">内网IP</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu"></ul>
+            </div>
+        </div>
+        <a href="javascript:void(0)" class="btn btn-success create"><span class="glyphicon glyphicon-plus"></span>添加IP</a>
+    </form>
+</div>

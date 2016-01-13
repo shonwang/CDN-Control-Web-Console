@@ -1,0 +1,130 @@
+body{
+    font-family: Arial "Microsoft Yahei";
+    background-color: #eee;
+}
+
+.total-items{
+    text-align: center;
+/*    margin: 26px 0;*/
+}
+
+.btn .caret {
+    margin-left: 10px;
+}
+
+.opt-ctn a {
+    margin-right: 10px;
+}
+
+.glyphicon {
+    margin-right: 5px;
+}
+
+.echart{
+    height: 400px;
+}
+
+body .well, .container .well, .container-fluid .well, body .jumbotron, .container .jumbotron, .container-fluid .jumbotron, body .well-default, .container .well-default, .container-fluid .well-default, body .jumbotron-default, .container .jumbotron-default, .container-fluid .jumbotron-default {
+    background-color: #fff;
+}
+
+body .well, .container .well, .container-fluid .well, body .jumbotron, .container .jumbotron, .container-fluid .jumbotron {
+    background-color: #fff;
+    padding: 19px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 17px 0 rgba(0,0,0,.2),0 6px 20px 0 rgba(0,0,0,.19);
+    border-radius: 4px;
+    border: 0;
+}
+
+td a{
+    margin-right: 10px;
+}
+
+.table>tbody>tr>td, 
+.table>tbody>tr>th, 
+.table>tfoot>tr>td, 
+.table>tfoot>tr>th, 
+.table>thead>tr>td, 
+.table>thead>tr>th {
+    vertical-align: middle;
+}
+
+.form-group label,
+.form-group input,
+.form-group .dropdown,
+.form-group .dropup{
+    margin-right: 10px;
+}
+
+.long-dropdown-menu {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.pagination{
+    margin: 0
+}
+
+.map-ctn {
+    min-height: 600px;
+    position: relative;
+}
+
+.map-ctn .spinner{
+    margin: 0px auto;
+    top: 200px;
+}
+
+.spinner {
+  margin: 100px auto;
+  width: 32px;
+  height: 32px;
+  position: relative;
+}
+ 
+.cube1, .cube2 {
+  color: #fff;
+  text-align: center;
+  padding: 5px;
+  background-color: #337ab7;
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  top: 0;
+  left: 0;
+   
+  -webkit-animation: cubemove 1.8s infinite ease-in-out;
+  animation: cubemove 1.8s infinite ease-in-out;
+}
+ 
+.cube2 {
+  -webkit-animation-delay: -0.9s;
+  animation-delay: -0.9s;
+}
+ 
+@-webkit-keyframes cubemove {
+  25% { -webkit-transform: translateX(42px) rotate(-90deg) scale(0.5) }
+  50% { -webkit-transform: translateX(42px) translateY(42px) rotate(-180deg) }
+  75% { -webkit-transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5) }
+  100% { -webkit-transform: rotate(-360deg) }
+}
+ 
+@keyframes cubemove {
+  25% {
+    transform: translateX(42px) rotate(-90deg) scale(0.5);
+    -webkit-transform: translateX(42px) rotate(-90deg) scale(0.5);
+  } 50% {
+    transform: translateX(42px) translateY(42px) rotate(-179deg);
+    -webkit-transform: translateX(42px) translateY(42px) rotate(-179deg);
+  } 50.1% {
+    transform: translateX(42px) translateY(42px) rotate(-180deg);
+    -webkit-transform: translateX(42px) translateY(42px) rotate(-180deg);
+  } 75% {
+    transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5);
+    -webkit-transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5);
+  } 100% {
+    transform: rotate(-360deg);
+    -webkit-transform: rotate(-360deg);
+  }
+}

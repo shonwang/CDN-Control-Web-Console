@@ -76,7 +76,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             }
             var result = confirm("你确定要删除绑定的IP吗？");
             if (!result) return
-            this.collection.deleteDeviceIp({deviceIpId:id})
+            this.collection.deleteDeviceIp({device_id:this.model.get("id"), ip_id: id})
         },
 
         initIpTypeDropmenu: function(){

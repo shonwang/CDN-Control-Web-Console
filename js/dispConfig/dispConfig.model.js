@@ -198,16 +198,16 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
         },
 
         dispDns: function(args){
-            var url = BASE_URL + "/rs/dispConf/dispDns"
+            var url = BASE_URL + "/rs/dispConf/dispDns?groupId=" + args.groupId
             var defaultParas = {
                 type: "POST",
                 url: url,
                 async: true,
-                timeout: 30000,
+                timeout: 60000,
                 contentType: "application/json",
                 processData: false
             };
-            defaultParas.data = JSON.stringify(args);
+            defaultParas.data = JSON.stringify(args.list);
             defaultParas.beforeSend = function(xhr){
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
             }

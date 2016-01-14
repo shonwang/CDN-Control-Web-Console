@@ -112,8 +112,16 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.on("init.dispConfig.success", $.proxy(this.onDispConfigListSuccess, this));
             this.collection.on("init.dispConfig.error", $.proxy(this.onGetError, this));
 
-            this.collection.on("dispDns.success.success", function(){}.bind(this));
-            this.collection.on("dispDns.success.error", $.proxy(this.onGetError, this));
+            this.collection.on("dispDns.success", function(){
+                this.$el.find(".opt-ctn .sending").html('<span class="glyphicon glyphicon-send"></span>下发DNSpod');
+                this.$el.find(".opt-ctn .sending").removeAttr("disabled", "disabled");
+                alert("下发成功！")
+            }.bind(this));
+            this.collection.on("dispDns.error", function(res){
+                this.$el.find(".opt-ctn .sending").html('<span class="glyphicon glyphicon-send"></span>下发DNSpod');
+                this.$el.find(".opt-ctn .sending").removeAttr("disabled", "disabled");
+                this.onGetError(res)
+            }.bind(this));
 
             this.initDispConfigDropMenu();
 
@@ -168,7 +176,13 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 };
                 tempArray.push(tempObj)
             }.bind(this))
-            this.collection.dispDns(tempArray)
+            var args = {
+                groupId : this.queryArgs.groupId,
+                list    : tempArray
+            }
+            this.collection.dispDns(args)
+            this.$el.find(".opt-ctn .sending").attr("disabled", "disabled");
+            this.$el.find(".opt-ctn .sending").html('<span class="glyphicon glyphicon-send"></span>下发中...');
         },
 
         initTable: function(){

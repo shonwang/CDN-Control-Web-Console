@@ -45,6 +45,10 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         onGetNodeListSuccess: function(res){
+            if (res.rows.length === 0){
+                this.$el.find(".node-list").html(_.template(template['tpl/empty.html'])());
+                return;
+            }
             this.nodeList = [];
             _.each(res.rows, function(element, index, list){
                 var temp = {};
@@ -57,15 +61,13 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             }.bind(this))
 
             this.nodeList[this.nodeList.length - 1].line = true
+                
             this.initList();
         },
 
         initList: function(){
             this.list = $(_.template(template['tpl/dispConfig/dispConfig.selectNode.list.html'])({data: this.nodeList, nodeId: this.model.get("node.id")}));
-            if (this.nodeList.length !== 0)
-                this.$el.find(".node-list").html(this.list[0]);
-            else
-                this.$el.find(".node-list").html(_.template(template['tpl/empty.html'])());
+            this.$el.find(".node-list").html(this.list[0]);
         },
 
         getArgs: function(){

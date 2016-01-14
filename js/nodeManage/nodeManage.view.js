@@ -241,7 +241,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     var options = editNodeView.getArgs();
                     if (!options) return;
                     var args = _.extend(model.attributes, options)
-                    this.collection.updateDevice(args)
+                    this.collection.updateNode(args)
                     this.editNodePopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){}

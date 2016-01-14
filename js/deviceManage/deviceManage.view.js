@@ -134,6 +134,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             if (this.isEdit){
                 this.$el.find("#input-name").val(this.model.attributes.name);
                 this.deviceType = this.model.attributes.type;
+                this.$el.find("#textarea-comment").val(this.model.attributes.remark);
                 this.$el.find(".ip-ctn").hide();
             } else {
                 this.ipList = [];

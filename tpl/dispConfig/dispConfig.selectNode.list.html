@@ -3,7 +3,7 @@
     <div class="radio">
         <label>
             <input type="radio" name="optionsRadios" id='<%=data[i]["node.id"]%>' value="<%=data[i]["node.id"]%>" <% if(data[i]["node.id"] == nodeId) { %> checked="true" <% } %>>
-            <%=data[i]["node.chName"] + "(" + data[i]["node.minBandwidth"] + "/" + data[i]["node.maxBandwidth"] + ")L" + (data[i]["cover.crossLevel"] || 0)%>
+            <%=data[i]["node.chName"] + "(" + data[i]["node.minBandwidth"] + "/" + data[i]["node.maxBandwidth"] + ")L" + (data[i]["cover.crossLevel"] || 9)%>
         </label>
     </div>
     <% if(data[i]["line"]) { %> <hr> <% } %>

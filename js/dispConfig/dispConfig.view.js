@@ -20,7 +20,8 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".more").on("click", $.proxy(this.onClickMoreButton, this));
 
             this.args = {
-                regionId: this.model.get("region.id")
+                regionId: this.model.get("region.id"),
+                groupId : this.model.get("dispGroup.id")
             }
 
             this.collection.getRegionNodeList(this.args);
@@ -41,6 +42,11 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 }.bind(this))
                 this.nodeList.push(temp);
             }.bind(this))
+
+            if (this.nodeList.length === 0){
+                this.$el.find(".node-list").html(_.template(template['tpl/empty.html'])());
+                return;
+            }
 
             this.initList();
         },
@@ -80,7 +86,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 nodeMaxBandwidth = selectedNode[0]["node.maxBandwidth"],
                 crossLevel       = selectedNode[0]["cover.crossLevel"];
 
-            var nodeString = nodeChName + "(" + nodeMinBandwidth + "/" + nodeMaxBandwidth + ")L" + crossLevel;
+            var nodeString = nodeChName + "(" + nodeMinBandwidth + "/" + nodeMaxBandwidth + ")L" + (crossLevel || 9);
             selectedNode[0].nodeString = nodeString;
             return selectedNode[0]
         },

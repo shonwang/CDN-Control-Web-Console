@@ -16,15 +16,18 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     "name"               : this.model.get("name"),
                     "chName"             : this.model.get("chName"),
                     "operator"           : this.model.get("operator"),
+                    "chargingType"       : this.model.get("chargingType"),
                     "minBandwidth"       : this.model.get("minBandwidth"),
                     "maxBandwidth"       : this.model.get("maxBandwidth"),
                     "maxBandwidthThreshold" : this.model.get("maxBandwidthThreshold"),
+                    "minBandwidthThreshold" : this.model.get("minBandwidthThreshold"),
                     "unitPrice"          : this.model.get("unitPrice"),
                     "inZabName"          : this.model.get("inZabName"),
                     "outZabName"         : this.model.get("outZabName"),
                     "remark"             : this.model.get("remark"),
                     "operatorId"         : this.model.get("operatorId"),
-                    "operatorName"       : this.model.get("operatorName")
+                    "operatorName"       : this.model.get("operatorName"),
+                    "startChargingTime"  : this.model.get("startChargingTime")
                 }
             } else {
                 this.args = {
@@ -32,15 +35,18 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     "name"               : "",
                     "chName"             : "",
                     "operator"           : "",
+                    "chargingType"       : 1 ,
                     "minBandwidth"       : "",
                     "maxBandwidth"       : "",
                     "maxBandwidthThreshold" : "",
+                    "minBandwidthThreshold" : "",
                     "unitPrice"          : "",
                     "inZabName"          : "",
                     "outZabName"         : "",
                     "remark"             : "",
                     "operatorId"         : "",
-                    "operatorName"       : ""
+                    "operatorName"       : "",
+                    "startChargingTime"  : new Date().valueOf()
                 }
             }
 
@@ -52,10 +58,12 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
 
             this.collection.getOperatorList();
+            this.initDropList();
+            this.initChargeDatePicker();
         },
 
         getArgs: function(){
-            this.args = {
+            var args = {
                 "id"                 : this.model ? this.model.get("id") : 0,
                 "name"               : this.$el.find("#input-name").val(),
                 "chName"             : this.$el.find("#input-english").val(),
@@ -64,12 +72,15 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 "minBandwidth"       : this.$el.find("#input-minbandwidth").val(),
                 "maxBandwidth"       : this.$el.find("#input-maxbandwidth").val(),
                 "maxBandwidthThreshold" : this.$el.find("#input-threshold").val(),
+                "minBandwidthThreshold" : this.$el.find("#input-minthreshold").val(),
                 "unitPrice"          : this.$el.find("#input-unitprice").val(),
                 "inZabName"          : this.$el.find("#input-inzabname").val(),
                 "outZabName"         : this.$el.find("#input-outzabname").val(),
-                "remark"             : this.$el.find("#textarea-comment").val()
+                "remark"             : this.$el.find("#textarea-comment").val(),
+                "startChargingTime"  : this.args.startChargingTime,
+                "chargingType"       : this.args.chargingType
             }
-            return this.args;
+            return args;
         },
 
         onGetOperatorSuccess: function(res){
@@ -93,6 +104,40 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.operatorId = nameList[0].value;
                 this.operatorName = nameList[0].name;
             }
+        },
+
+        initDropList: function(){
+            var nameList = [
+                {name: "95峰值", value: 1},
+                {name: "免费", value: 0}
+            ];
+            Utility.initDropMenu(this.$el.find(".dropdown-charging"), nameList, function(value){
+                this.args.chargingType = parseInt(value);
+            }.bind(this));
+
+            if (this.isEdit){
+                var defaultValue = _.find(nameList, function(object){
+                    return object.value === this.model.attributes.chargingType
+                }.bind(this));
+                this.$el.find(".dropdown-charging .cur-value").html(defaultValue.name)
+            }
+        },
+
+        initChargeDatePicker: function(){
+            var startVal = null, endVal = null;
+            if (this.args.startChargingTime)
+                startVal = new Date(this.args.startChargingTime).format("yyyy/MM/dd");
+            var startOption = {
+                lang:'ch',
+                timepicker: false,
+                scrollInput: false,
+                format:'Y/m/d', 
+                value: startVal, 
+                onChangeDateTime: function(){
+                    this.args.startChargingTime = new Date(arguments[0]).valueOf();
+                }.bind(this)
+            };
+            this.$el.find("#input-start").datetimepicker(startOption);
         },
 
         onGetError: function(error){

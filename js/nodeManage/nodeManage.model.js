@@ -2,12 +2,18 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
     var Model = Backbone.Model.extend({
         initialize: function(){
             var status     = this.get("status"),
-                createTime = this.get("createTime");
+                createTime = this.get("createTime"),
+                chargingType = this.get("chargingType"),
+                startChargingTime = this.get("startChargingTime");
             if (status === 3) this.set("statusName", '<span class="text-danger">已关闭</span>');
             if (status === 2) this.set("statusName",'<span class="text-warning">挂起</span>');
             if (status === 1) this.set("statusName", '<span class="text-success">运行中</span>');
 
+            if (chargingType === 1) this.set("chargingTypeName", '95峰值');
+            if (chargingType === 0) this.set("chargingTypeName", '免费');
+
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
+            if (startChargingTime) this.set("startChargingTimeFormated", new Date(startChargingTime).format("yyyy/MM/dd hh:mm"));
         }
     });
 

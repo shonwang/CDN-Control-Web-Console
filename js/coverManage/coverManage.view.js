@@ -75,7 +75,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                     {
                         name: '全国',
                         type: 'map',
-                        roam: false,
+                        roam: true,
                         hoverable: true,
                         mapType: 'china',
                         itemStyle:{

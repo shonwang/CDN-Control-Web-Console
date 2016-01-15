@@ -7,11 +7,14 @@
         <th>上联带宽</th>
         <th>保底带宽</th>
         <th>成本权值</th>
-        <th>带宽阈值</th> 
+        <th>上联带宽阈值</th>
+        <th>保底带宽阈值</th>  
         <th>入口带宽zabbix名称</th> 
         <th>出口带宽zabbix名称</th> 
         <th>状态</th>
-        <th>创建时间</th> 
+        <th>计费类型</th>
+        <th>开始计费时间</th> 
+        <th>创建时间</th>
         <th>操作</th>   
       </tr>
     </thead>
@@ -29,9 +32,12 @@
               <td><%=data[i].attributes["minBandwidth"]%></td>
               <td><%=data[i].attributes["unitPrice"]%></td>
               <td><%=data[i].attributes["maxBandwidthThreshold"]%></td>
+              <td><%=data[i].attributes["minBandwidthThreshold"]%></td>
               <td><%=data[i].attributes["inZabName"]%></td>
               <td><%=data[i].attributes["outZabName"]%></td>
               <td><%=data[i].attributes["statusName"]%></td>
+              <td><%=data[i].attributes["chargingTypeName"]%></td>
+              <td><%=data[i].attributes["startChargingTimeFormated"]%></td>
               <td><%=data[i].attributes["createTimeFormated"]%></td>
               <td>
                   <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="edit" title="编辑">

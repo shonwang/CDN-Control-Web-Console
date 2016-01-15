@@ -10,7 +10,7 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
 
             if (configTypeName === 2) this.set("config.typeName",'CName');
             if (configTypeName === 1) this.set("config.typeName", 'A记录');
-            var nodeString = nodeChName + "(" + nodeMinBandwidth + "/" + nodeMaxBandwidth + ")L" + crossLevel
+            var nodeString = nodeChName + "(" + nodeMinBandwidth + "/" + nodeMaxBandwidth + ")L" + (crossLevel || 0)
             this.set("nodeString", nodeString);
             this.set("isChecked", false);
         }

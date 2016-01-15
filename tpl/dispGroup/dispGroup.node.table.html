@@ -2,7 +2,7 @@
     <caption>节点列表</caption>  
     <thead> 
       <tr>
-        <th><input type="checkbox" id="inlineCheckbox5"></th>
+        <th><input type="checkbox" id="inlineCheckbox5" <% if (isCheckedAll) { %> checked="true" <% } %>></th>
         <th>名称</th>
         <th>英文缩写</th>   
       </tr>
@@ -10,7 +10,7 @@
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].id%>">
-              <td><input type="checkbox" id="<%=data[i].id%>"></td>
+              <td><input type="checkbox" id="<%=data[i].id%>" <% if (data[i].isChecked) { %> checked="true" <% } %>></td>
               <td><%=data[i]["chName"]%></td>
               <td><%=data[i]["name"]%></td>
             </tr>

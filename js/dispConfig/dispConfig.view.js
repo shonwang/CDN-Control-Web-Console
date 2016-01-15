@@ -10,6 +10,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.model = options.model;
             this.$el = $(_.template(template['tpl/dispConfig/dispConfig.selectNode.html'])({}));
             this.$el.find(".node-list").html(_.template(template['tpl/loading.html'])({}));
+            this.nodeList = [];
 
             this.collection.on("get.regionNode.success", $.proxy(this.onGetNodeListSuccess, this));
             this.collection.on("get.regionNode.error", $.proxy(this.onGetError, this));
@@ -49,7 +50,6 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.$el.find(".node-list").html(_.template(template['tpl/empty.html'])());
                 return;
             }
-            this.nodeList = [];
             _.each(res.rows, function(element, index, list){
                 var temp = {};
                 _.each(element, function(el, key, ls){

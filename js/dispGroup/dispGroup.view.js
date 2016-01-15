@@ -16,7 +16,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.collection.off("get.dispGroup.node.error");
             this.collection.on("get.dispGroup.node.success", $.proxy(this.onGetNodeSuccess, this));
             this.collection.on("get.dispGroup.node.error", $.proxy(this.onGetError, this));
-            this.collection.getNodeByGroup({groupId: this.model.get("id")})
+            this.collection.getNodeByGroup({groupId: this.model.get("id"), associated: 1})
         },
 
         onGetError: function(error){
@@ -275,12 +275,11 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.$el = $(_.template(template['tpl/dispGroup/dispGroup.add&edit.html'])({}));
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
-            this.collection.off("get.node.success");
-            this.collection.off("get.node.error");
-            this.collection.on("get.node.success", $.proxy(this.onGetNodeSuccess, this));
-            this.collection.on("get.node.error", $.proxy(this.onGetError, this));
-
             if (this.isEdit){
+                this.collection.off("get.dispGroup.node.success");
+                this.collection.off("get.dispGroup.node.error");
+                this.collection.on("get.dispGroup.node.success", $.proxy(this.onGetNodeSuccess, this));
+                this.collection.on("get.dispGroup.node.error", $.proxy(this.onGetError, this));
                 this.$el.find("#input-name").val(this.model.attributes.dispDomain);
                 this.$el.find("#input-ttl").val(this.model.attributes.ttl);
                 this.$el.find("#textarea-comment").val(this.model.attributes.remark);
@@ -310,6 +309,10 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.$el.find(".ip-type #inlineCheckbox4").get(0).checked = true;
                 }
             } else {
+                this.collection.off("get.node.success");
+                this.collection.off("get.node.error");
+                this.collection.on("get.node.success", $.proxy(this.onGetNodeSuccess, this));
+                this.collection.on("get.node.error", $.proxy(this.onGetError, this));
                 this.crossLevel = 0;
             }
             this.initDropmenu();
@@ -333,25 +336,37 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             Utility.initDropMenu(this.$el.find(".dropdown-level"), typeArray, function(value){
                 this.crossLevel = parseInt(value);
             }.bind(this));
-
-            this.collection.getNodeList();
+            
 
             if (this.isEdit){ 
                 var defaultValue = _.find(typeArray, function(object){
                     return object.value === this.model.attributes.crossLevel
                 }.bind(this));
 
-                this.$el.find(".dropdown-level .cur-value").html(defaultValue.name)
+                this.$el.find(".dropdown-level .cur-value").html(defaultValue.name);
+
+                this.collection.getNodeByGroup({groupId: this.model.get("id")})
+            } else {
+                this.collection.getNodeList();
             }
         },
 
         onGetNodeSuccess: function(res){
-            this.nodeList = res.rows;
+            if (!this.isEdit)
+                this.nodeList = res.rows;
+            else
+                this.nodeList = res;
+            var count = 0, isCheckedAll = false;
             _.each(this.nodeList, function(el, index, list){
-                el.isChecked = false;
+                if (el.associated === 0) el.isChecked = false;
+                if (el.associated === 1) {
+                    el.isChecked = true;
+                    count = count + 1
+                }
             }.bind(this))
-            this.table = $(_.template(template['tpl/dispGroup/dispGroup.node.table.html'])({data: this.nodeList}));
-            if (res.rows.length !== 0)
+            if (count === this.nodeList.length) isCheckedAll = true
+            this.table = $(_.template(template['tpl/dispGroup/dispGroup.node.table.html'])({data: this.nodeList, isCheckedAll: isCheckedAll}));
+            if (this.nodeList.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());

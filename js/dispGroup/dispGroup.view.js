@@ -27,7 +27,6 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         onGetNodeSuccess: function(res){
-            console.log(res)
             this.nodeList = res;
             _.each(this.nodeList, function(el, index, list){
                 if (el.status === 3) el.statusName =  '<span class="text-danger">已关闭</span>'

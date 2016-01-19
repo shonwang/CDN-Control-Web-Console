@@ -346,6 +346,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
         update: function(){
             this.$el.show();
+            this.collection.getDispGroupList();
         },
 
         render: function(target) {

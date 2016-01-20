@@ -74,4 +74,5 @@ module.exports = function(grunt) {
 
     grunt.registerTask('temp',['underscore:compile']);
     grunt.registerTask('set',["clean", 'underscore:compile', "copy", "seturl"]);
+    grunt.registerTask('debug',["clean", 'underscore:compile', "copy"]);
 };

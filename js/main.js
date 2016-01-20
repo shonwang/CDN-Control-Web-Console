@@ -4,7 +4,7 @@ window.DEBUG = true;
 if (window.DEBUG)
     window.BASE_URL = "http://120.92.232.203:9098";
 else
-    window.BASE_URL = "http://120.92.232.203:9098";
+    window.BASE_URL = "http://120.92.232.203:9088";
 
 requirejs.config({
     paths: {

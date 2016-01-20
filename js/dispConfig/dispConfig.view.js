@@ -86,7 +86,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 nodeMaxBandwidth = selectedNode[0]["node.maxBandwidth"],
                 crossLevel       = selectedNode[0]["cover.crossLevel"];
 
-            var nodeString = nodeChName + "(" + nodeMinBandwidth + "/" + nodeMaxBandwidth + ")L" + (crossLevel || 9);
+            var nodeString = nodeChName + "(" + nodeMinBandwidth + "/" + nodeMaxBandwidth + ")L" + crossLevel;
             selectedNode[0].nodeString = nodeString;
             return selectedNode[0]
         },

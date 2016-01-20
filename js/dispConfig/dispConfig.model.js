@@ -107,13 +107,21 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
         getDispGroupList: function(args){
             var url = BASE_URL + "/rs/dispGroup/pageList";
             var defaultParas = {
-                type: "GET",
+                type: "POST",
                 url: url,
                 async: true,
                 timeout: 30000,
+                contentType: "application/json",
+                processData: false
             };
-            defaultParas.data = {page:1, count:9999};
-            defaultParas.data.t = new Date().valueOf();
+            defaultParas.data = {
+                "name"  : null,//调度组名称
+                "status": null,//调度组状态
+                "level" : null,//覆盖级别
+                "page"  : 1,
+                "count" : 99999
+            };
+            defaultParas.data = JSON.stringify(defaultParas.data);
 
             defaultParas.beforeSend = function(xhr){
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");

@@ -329,15 +329,20 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.query = JSON.parse(this.query);
                 this.nodeId = this.query.nodeId;
                 this.$el.find("#input-node").val(this.query.chName);
+                this.nodesName = this.query.chName;
             } else {
                 this.nodeId = -1;
+                this.nodesName = null;
                 this.$el.find("#input-node").val("");
             }
 
             this.queryArgs = {
-                page : 1,
-                count: 10,
-                nodeId: this.nodeId
+                "devicename": null,//设备名称
+                "nodename"  : this.nodesName,//节点名称
+                "status"    : null,//设备状态
+                "type"      : null,//设备类型
+                "page"      : 1,
+                "count"     : 10
             }
             this.onClickQueryButton();
         },
@@ -359,6 +364,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.queryArgs.page = 1;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
+            this.queryArgs.devicename = this.$el.find("#input-domain").val() || null;
+            this.queryArgs.nodename = this.$el.find("#input-node").val() || null;
             this.collection.getDeviceList(this.queryArgs);
         },
 
@@ -540,7 +547,10 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             ],
             rootNode = this.$el.find(".dropdown-type");
             Utility.initDropMenu(rootNode, typeArray, function(value){
-
+                if (value !== "All")
+                    this.queryArgs.type = parseInt(value)
+                else
+                    this.queryArgs.type = null
             }.bind(this));
 
             var statusArray = [
@@ -551,7 +561,10 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             ],
             rootNode = this.$el.find(".dropdown-status");
             Utility.initDropMenu(rootNode, statusArray, function(value){
-
+                if (value !== "All")
+                    this.queryArgs.status = parseInt(value)
+                else
+                    this.queryArgs.status = null
             }.bind(this));
 
             var pageNum = [
@@ -577,11 +590,15 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             if (this.query !== "none"){
                 this.query = JSON.parse(this.query);
                 this.nodeId = this.query.nodeId;
-                this.queryArgs.nodeId = this.nodeId;
+                //this.queryArgs.nodeId = this.nodeId;
+                this.nodesName = this.query.chName;
+                this.queryArgs.nodename = this.nodesName;
                 this.$el.find("#input-node").val(this.query.chName);
             } else {
                 this.nodeId = -1;
-                this.queryArgs.nodeId = this.nodeId;
+                //this.queryArgs.nodeId = this.nodeId;
+                this.nodesName = null;
+                this.queryArgs.nodename = this.nodesName;
                 this.$el.find("#input-node").val("");
             }
             this.onClickQueryButton();

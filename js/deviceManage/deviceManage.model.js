@@ -25,13 +25,14 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
         getDeviceList: function(args){
             var url = BASE_URL + "/rs/device/pagelist";
             var defaultParas = {
-                type: "GET",
+                type: "POST",
                 url: url,
                 async: true,
                 timeout: 30000,
+                contentType: "application/json",
+                processData: false
             };
-            defaultParas.data = args;
-            defaultParas.data.t = new Date().valueOf();
+            defaultParas.data = JSON.stringify(args);
 
             defaultParas.beforeSend = function(xhr){
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
@@ -196,12 +197,22 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
         getNodeList: function(args){
             var url = BASE_URL + "/rs/node/list";
             var defaultParas = {
-                type: "GET",
+                type: "POST",
                 url: url,
                 async: true,
                 timeout: 30000,
+                contentType: "application/json",
+                processData: false
             };
-            defaultParas.data = args || {page: 1, count:99999,t: new Date().valueOf()};
+            
+            defaultParas.data = args || {
+                "page"    : 1,
+                "count"   : 99999,
+                "chname"  : null,//节点名称
+                "operator": null,//运营商id
+                "status"  : null//节点状态
+            };
+            defaultParas.data = JSON.stringify(defaultParas.data);
 
             defaultParas.beforeSend = function(xhr){
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");

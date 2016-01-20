@@ -52,13 +52,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
 
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.add&edit.html'])({data: this.args}));
 
-            this.collection.off("get.operator.success");
-            this.collection.off("get.operator.error");
-            this.collection.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
-            this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
-
-            this.collection.getOperatorList();
-            this.initDropList();
+            this.initDropList(options.list);
             this.initChargeDatePicker();
         },
 
@@ -106,7 +100,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             }
         },
 
-        initDropList: function(){
+        initDropList: function(list){
             var nameList = [
                 {name: "95峰值", value: 1},
                 {name: "免费", value: 0}
@@ -121,6 +115,8 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 }.bind(this));
                 this.$el.find(".dropdown-charging .cur-value").html(defaultValue.name)
             }
+
+            this.onGetOperatorSuccess(list)
         },
 
         initChargeDatePicker: function(){
@@ -184,12 +180,18 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("update.node.status.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
+            this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+
             this.queryArgs = {
-                page : 1,
-                count: 10
+                "page"    : 1,
+                "count"   : 10,
+                "chname"  : null,//节点名称
+                "operator": null,//运营商id
+                "status"  : null//节点状态
             }
             this.onClickQueryButton();
         },
@@ -211,13 +213,17 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.queryArgs.page = 1;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
+            this.queryArgs.chname = this.$el.find("#input-name").val() || null;
             this.collection.getNodeList(this.queryArgs);
         },
 
         onClickCreate: function(){
             if (this.addNodePopup) $("#" + this.addNodePopup.modalId).remove();
 
-            var addNodeView = new AddOrEditNodeView({collection: this.collection});
+            var addNodeView = new AddOrEditNodeView({
+                collection: this.collection,
+                list      : this.operatorList
+            });
             var options = {
                 title:"添加节点",
                 body : addNodeView,
@@ -275,7 +281,8 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             var editNodeView = new AddOrEditNodeView({
                 collection: this.collection, 
                 model     : model,
-                isEdit    : true
+                isEdit    : true,
+                list      : this.operatorList
             });
             var options = {
                 title:"编辑设备",
@@ -376,7 +383,10 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             ],
             rootNode = this.$el.find(".dropdown-status");
             Utility.initDropMenu(rootNode, statusArray, function(value){
-
+                if (value !== "All")
+                    this.queryArgs.status = parseInt(value);
+                else
+                    this.queryArgs.status = null;
             }.bind(this));
 
             var pageNum = [
@@ -389,6 +399,22 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.queryArgs.count = value;
                 this.queryArgs.page = 1;
                 this.onClickQueryButton();
+            }.bind(this));
+
+            this.collection.getOperatorList();
+        },
+
+        onGetOperatorSuccess: function(res){
+            this.operatorList = res
+            var nameList = [{name: "全部", value: "All"}];
+            _.each(res.rows, function(el, index, list){
+                nameList.push({name: el.name, value:el.id})
+            });
+            Utility.initDropMenu(this.$el.find(".dropdown-operator"), nameList, function(value){
+                if (value !== "All")
+                    this.queryArgs.operator = parseInt(value)
+                else
+                    this.queryArgs.operator = null;
             }.bind(this));
         },
 

@@ -507,8 +507,11 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.queryArgs = {
-                page : 1,
-                count: 10
+                "name"  : null,//调度组名称
+                "status": null,//调度组状态
+                "level" : null,//覆盖级别
+                "page"  :1,
+                "count" :10
             }
             this.onClickQueryButton();
         },
@@ -530,6 +533,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.queryArgs.page = 1;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
+            this.queryArgs.name = this.$el.find("#input-domain").val() || null
             this.collection.getDispGroupList(this.queryArgs);
         },
 
@@ -792,7 +796,10 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             ],
             rootNode = this.$el.find(".dropdown-type");
             Utility.initDropMenu(rootNode, typeArray, function(value){
-
+                if (value !== "All")
+                    this.queryArgs.level = parseInt(value);
+                else
+                    this.queryArgs.level = null;
             }.bind(this));
 
             var statusArray = [
@@ -802,7 +809,10 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             ],
             rootNode = this.$el.find(".dropdown-status");
             Utility.initDropMenu(rootNode, statusArray, function(value){
-
+                if (value !== "All")
+                    this.queryArgs.status = parseInt(value);
+                else
+                    this.queryArgs.status = null;
             }.bind(this));
 
             var pageNum = [

@@ -59,8 +59,8 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         getArgs: function(){
             var args = {
                 "id"                 : this.model ? this.model.get("id") : 0,
-                "name"               : this.$el.find("#input-name").val(),
-                "chName"             : this.$el.find("#input-english").val(),
+                "name"               : this.$el.find("#input-english").val(),
+                "chName"             : this.$el.find("#input-name").val(),
                 "operatorId"         : this.operatorId,
                 "operatorName"       : this.operatorName,
                 "minBandwidth"       : this.$el.find("#input-minbandwidth").val(),

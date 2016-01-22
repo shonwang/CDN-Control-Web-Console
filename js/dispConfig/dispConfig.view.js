@@ -92,6 +92,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
             var nodeString = nodeChName + "(" + nodeMinBandwidth + "/" + nodeMaxBandwidth + ")L" + crossLevel;
             selectedNode[0].nodeString = nodeString;
+            selectedNode[0].id = selectedNode[0]["node.id"];
             return selectedNode[0]
         },
 

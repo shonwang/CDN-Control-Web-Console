@@ -206,7 +206,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             var options = {
                 title    : "警告",
                 body     : '<div class="alert alert-warning"><strong>下发中，大神们别乱点啊...</strong></div>',
-                backdrop : true,
+                backdrop : 'static',
                 type     : 0,
             }
             this.disablePopup = new Modal(options);

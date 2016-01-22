@@ -90,7 +90,7 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
                 type: "GET",
                 url: url,
                 async: true,
-                timeout: 30000,
+                timeout: 120000,
             };
             defaultParas.data = args;
 

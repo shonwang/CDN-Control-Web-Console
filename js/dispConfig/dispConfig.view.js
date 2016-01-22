@@ -8,6 +8,9 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         initialize: function(options) {
             this.collection = options.collection;
             this.model = options.model;
+            this.regionId = options.regionId;
+            this.groupId  = options.groupId;
+            this.isEdit   = options.isEdit
             this.$el = $(_.template(template['tpl/dispConfig/dispConfig.selectNode.html'])({}));
             this.$el.find(".node-list").html(_.template(template['tpl/loading.html'])({}));
             this.nodeList = [];
@@ -20,8 +23,8 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".more").on("click", $.proxy(this.onClickMoreButton, this));
 
             this.args = {
-                regionId: this.model.get("region.id"),
-                groupId : this.model.get("dispGroup.id")
+                regionId: this.regionId,
+                groupId : this.isEdit ? this.model.get("dispGroup.id") : this.groupId
             }
 
             this.collection.getRegionNodeList(this.args);
@@ -78,6 +81,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
         getArgs: function(){
             var nodeId = this.$el.find(".node-list input:checked").attr("id");
+            if (!nodeId) return false
             var selectedNode = _.filter(this.nodeList ,function(obj) {
                 return obj["node.id"] === parseInt(nodeId);
             })
@@ -116,16 +120,21 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.on("get.dispConfig.success", $.proxy(this.onDispConfigListSuccess, this));
             this.collection.on("get.dispConfig.error", $.proxy(this.onGetError, this));
             this.collection.on("init.dispConfig.success", $.proxy(this.onDispConfigListSuccess, this));
-            this.collection.on("init.dispConfig.error", $.proxy(this.onGetError, this));
+            this.collection.on("init.dispConfig.error", function(error){
+                this.onGetError(error)
+                this.$el.find(".opt-ctn .init").show();
+            }.bind(this));
 
             this.collection.on("dispDns.success", function(){
-                this.$el.find(".opt-ctn .sending").html('<span class="glyphicon glyphicon-send"></span>下发DNSpod');
-                this.$el.find(".opt-ctn .sending").removeAttr("disabled", "disabled");
+                // this.$el.find(".opt-ctn .sending").html('<span class="glyphicon glyphicon-send"></span>下发DNSpod');
+                // this.$el.find(".opt-ctn .sending").removeAttr("disabled", "disabled");
+                this.disablePopup.$el.modal('hide');
                 alert("下发成功！")
             }.bind(this));
             this.collection.on("dispDns.error", function(res){
-                this.$el.find(".opt-ctn .sending").html('<span class="glyphicon glyphicon-send"></span>下发DNSpod');
-                this.$el.find(".opt-ctn .sending").removeAttr("disabled", "disabled");
+                // this.$el.find(".opt-ctn .sending").html('<span class="glyphicon glyphicon-send"></span>下发DNSpod');
+                // this.$el.find(".opt-ctn .sending").removeAttr("disabled", "disabled");
+                this.disablePopup.$el.modal('hide');
                 this.onGetError(res)
             }.bind(this));
 
@@ -151,6 +160,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         onClickInitButton: function(){
+            this.$el.find(".opt-ctn .init").hide();
             this.isInitPaginator = true;
             var args = _.extend({}, this.queryArgs);
             delete args.page;
@@ -174,39 +184,53 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             var tempArray = [];
 
             _.each(this.collection.models, function(el, index, list){
-                var tempObj =  {
-                  "dgroupId" : el.get("dispGroup.id"),
-                  "nodeId"   : el.get("node.id"),
-                  "regionId" : el.get("region.id"),
-                  "ttl"      : el.get("dispGroup.ttl")
-                };
-                tempArray.push(tempObj)
+                _.each(el.get("listFormated"), function(el1, index1, list1){
+                    var tempObj =  {
+                      "dgroupId" : el1.get("dispGroup.id"),
+                      "nodeId"   : el1.get("node.id"),
+                      "regionId" : el.get("region.id"),
+                      "ttl"      : el1.get("dispGroup.ttl")
+                    };
+                    tempArray.push(tempObj)
+                }.bind(this))
             }.bind(this))
             var args = {
                 groupId : this.queryArgs.groupId,
                 list    : tempArray
             }
             this.collection.dispDns(args)
-            this.$el.find(".opt-ctn .sending").attr("disabled", "disabled");
-            this.$el.find(".opt-ctn .sending").html('<span class="glyphicon glyphicon-send"></span>下发中...');
+            // this.$el.find(".opt-ctn .sending").attr("disabled", "disabled");
+            // this.$el.find(".opt-ctn .sending").html('<span class="glyphicon glyphicon-send"></span>下发中...');
+            if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
+            var options = {
+                title    : "警告",
+                body     : '<div class="alert alert-warning"><strong>下发中，大神们别乱点啊...</strong></div>',
+                backdrop : true,
+                type     : 0,
+            }
+            this.disablePopup = new Modal(options);
+            this.disablePopup.$el.find(".close").remove();
         },
 
         initTable: function(){
             this.table = $(_.template(template['tpl/dispConfig/dispConfig.table.html'])({data: this.collection.models}));
-            if (this.collection.models.length !== 0)
+            if (this.collection.models.length !== 0){
                 this.$el.find(".table-ctn").html(this.table[0]);
-            else
+                this.$el.find(".opt-ctn .init").hide();
+            } else {
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+                this.$el.find(".opt-ctn .init").show();
+            }
 
-            this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-            // this.table.find("tbody .node-name").on("click", $.proxy(this.onClickItemNodeName, this));
-            // this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
-            // this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
-            this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
-            this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+            this.nodesEl = this.table.find("tbody .nodes .edit")
+            this.nodesEl.on("click", $.proxy(this.onClickItemEdit, this));
+            this.table.find("tbody .nodes .delete").on("click", $.proxy(this.onClickItemDelete, this));
+            this.table.find("tbody .add").on("click", $.proxy(this.onClickItemAdd, this));
+            // this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
+            // this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
         },
 
-        onClickItemEdit: function(event){
+        onClickItemAdd: function(event){
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();
@@ -214,14 +238,68 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             } else {
                 id = $(eventTarget).attr("id");
             }
-            var model = this.collection.get(id);
+            var model = this.collection.get(id), list = model.get("listFormated");
 
             if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
 
             var selectNodeView = new SelectNodeView({
                 collection: this.collection, 
-                model     : model
+                model     : model,
+                groupId   : this.queryArgs.groupId,
+                regionId  : id,
+                isEdit    : false
             });
+
+            var options = {
+                title:"选择节点",
+                body : selectNodeView,
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback:  function(){
+                    var options = selectNodeView.getArgs();
+                    if (!options) return;
+                    options['dispGroup.id'] = this.queryArgs.groupId;
+                    for (var i = 0; i < list.length; i++){
+                        if (list[i]["id"] === parseInt(options["node.id"])){
+                            this.selectNodePopup.$el.modal("hide");
+                            return;
+                        }
+                    }
+                    model.get("listFormated").push(new this.collection.model(options))
+                    this.collection.trigger("get.dispConfig.success")
+                    this.selectNodePopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){}
+            }
+            this.selectNodePopup = new Modal(options);
+
+        },
+
+        onClickItemEdit: function(event){
+            var eventTarget = event.srcElement || event.target, id, regionId;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id       = eventTarget.attr("id");
+                regionId = eventTarget.attr("region-id");
+            } else {
+                id       = $(eventTarget).attr("id");
+                regionId = $(eventTarget).attr("region-id");
+            }
+            var model = this.collection.get(regionId),
+                list = model.get("listFormated");
+            var selectedNode = _.filter(list ,function(obj) {
+                return obj["id"] === parseInt(id);
+            })
+
+            if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
+
+            var selectNodeView = new SelectNodeView({
+                collection: this.collection, 
+                model     : selectedNode[0],
+                regionId  : regionId,
+                isEdit    : true
+            });
+
             var options = {
                 title:"选择节点",
                 body : selectNodeView,
@@ -232,14 +310,55 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                     if (!options) return;
                     var result = confirm("你确定要修改节点吗？")
                     if (!result) return;
-                    this.collection.get(id).attributes = _.extend(model.attributes, options);
-                    this.collection.get(id).set("isUpdated", true);
+                    for (var i = 0; i < list.length; i++){
+                        if (list[i]["id"] === parseInt(options["node.id"])){
+                            this.selectNodePopup.$el.modal("hide");
+                            return;
+                        }
+                        if (list[i]["id"] === parseInt(id)){
+                            list[i].attributes =  _.extend(selectedNode[0].attributes, options);
+                            list[i].set("isUpdated", true);
+                            break;
+                        }
+                    }
+                    model.set("listFormated", list);
                     this.collection.trigger("get.dispConfig.success")
                     this.selectNodePopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){}
             }
             this.selectNodePopup = new Modal(options);
+        },
+
+        onClickItemDelete: function(event){
+            var eventTarget = event.srcElement || event.target, id, regionId;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id       = eventTarget.attr("id");
+                regionId = eventTarget.attr("region-id");
+            } else {
+                id       = $(eventTarget).attr("id");
+                regionId = $(eventTarget).attr("region-id");
+            }
+            var model = this.collection.get(regionId),
+                list = model.get("listFormated");
+            var selectedNode = _.filter(list ,function(obj) {
+                return obj["id"] === parseInt(id);
+            })
+
+            var result = confirm("你确定要删除节点 " + selectedNode[0].get("node.chName") + " 吗？")
+            if (!result) return;
+            _.filter(list ,function(obj) {
+                return obj["id"] === parseInt(id);
+            })
+            for (var i = 0; i < list.length; i++){
+                if (list[i]["id"] === parseInt(id)){
+                    list.splice(i, 1);
+                    break;
+                }
+            }
+            model.set("listFormated", list);
+            this.collection.trigger("get.dispConfig.success")
         },
 
         onItemCheckedUpdated: function(event){

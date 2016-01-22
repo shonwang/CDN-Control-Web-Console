@@ -9,7 +9,7 @@
         <th>客户名称</th>
         <th>状态</th>   
         <th>开始服务时间</th>  
-        <th>操作</th>    
+        <th>关联调度组</th>    
       </tr>
     </thead>
     <tbody>
@@ -28,7 +28,7 @@
               <td><%=data[i].attributes["statusName"]%></td>
               <td><%=data[i].attributes["startTimeFormated"]%></td>
               <td>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="edit" title="编辑">
+                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="edit" title="关联调度组">
                       <span class="glyphicon glyphicon-edit"></span>
                   </a>
               </td>

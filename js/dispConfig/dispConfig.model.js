@@ -1,7 +1,10 @@
 define("dispConfig.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-            this.set("id", this.get("config.id"));
+            if(this.get("region.id"))
+                this.set("id", this.get("region.id"));
+            else
+                this.set("id", this.get("node.id"));
             var configTypeName   = this.get("config.type"),
                 nodeChName       = this.get("node.chName"),
                 nodeMinBandwidth = this.get("node.minBandwidth"),
@@ -10,8 +13,11 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
 
             if (configTypeName === 2) this.set("config.typeName",'CName');
             if (configTypeName === 1) this.set("config.typeName", 'A记录');
-            var nodeString = nodeChName + "(" + nodeMinBandwidth + "/" + nodeMaxBandwidth + ")L" + crossLevel
-            this.set("nodeString", nodeString);
+            if (configTypeName === 0) this.set("config.typeName", '0');
+            if (nodeChName){
+                var nodeString = nodeChName + "(" + nodeMinBandwidth + "/" + nodeMaxBandwidth + ")L" + crossLevel
+                this.set("nodeString", nodeString);
+            }
             this.set("isChecked", false);
         }
     });
@@ -39,14 +45,30 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
                 this.reset();
                 if (res){
                     _.each(res.rows, function(element, index, list){
-                        var temp = {};
+                        var temp = {}, tempList = [];
                         _.each(element, function(el, key, ls){
-                            _.each(el, function(el1, key1, ls1){
-                                temp[key + "." + key1] = el1
-                            }.bind(this))
+                            if (key === "region"){
+                                _.each(el, function(el1, key1, ls1){
+                                    temp[key + "." + key1] = el1
+                                }.bind(this))
+                            }
+                            if (key === "list"){
+                                var tempObj = {}
+                                _.each(el, function(el2, key2, ls2){
+                                    _.each(el2, function(el3, key3, ls3){
+                                        _.each(el3, function(el4, key4, ls4){
+                                            tempObj[key3 + "." + key4] = el4
+                                        }.bind(this))
+                                    }.bind(this))
+                                    tempList.push(new Model(tempObj))
+                                }.bind(this))
+                                temp.listFormated = tempList;
+                            }
                         }.bind(this))
+
                         this.push(new Model(temp));
                     }.bind(this))
+                    console.log(this.models)
                     this.total = res.total;
                     this.trigger("get.dispConfig.success");
                 } else {

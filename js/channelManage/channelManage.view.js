@@ -48,8 +48,8 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
-            this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+            // this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
+            // this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
         },
 
         onItemCheckedUpdated: function(event){
@@ -82,18 +82,20 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         getArgs: function(){
-            var checkedList = this.channelList.filter(function(object) {
-                return object.isChecked === true;
-            })
-            var channelIds = [];
-            _.each(checkedList, function(el, index, list){
-                channelIds.push(el.id)
-            }.bind(this))
+            // var checkedList = this.channelList.filter(function(object) {
+            //     return object.isChecked === true;
+            // })
+            // var channelIds = [];
+            // _.each(checkedList, function(el, index, list){
+            //     channelIds.push(el.id)
+            // }.bind(this))
+            var nodeId = this.$el.find("tbody input:checked").attr("id");
             var options =  {
-                "dispGroupIds": channelIds,
+                "dispGroupIds": parseInt(nodeId),//channelIds,
                 "channelId"   : this.model.get("id")
             }
-            return options
+            console.log(options)
+            //return options
         },
 
         render: function(target) {

@@ -239,7 +239,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
         onGetNodeSuccess: function(res){
             var nameList = [];
             _.each(res.rows, function(el, index, list){
-                nameList.push({name: el.name, value:el.id})
+                nameList.push({name: el.chName, value:el.id})
             });
             Utility.initDropMenu(this.$el.find(".dropdown-node"), nameList, function(value){
                 this.nodeId = value;

@@ -80,6 +80,14 @@ td a{
     top: 200px;
 }
 
+td .radio{
+    margin: 0;
+}
+
+td .table{
+    margin-bottom: 0;
+}
+
 .spinner {
   margin: 100px auto;
   width: 32px;

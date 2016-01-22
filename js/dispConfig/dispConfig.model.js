@@ -247,7 +247,7 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
                 type: "POST",
                 url: url,
                 async: true,
-                timeout: 60000,
+                timeout: 6000000,
                 contentType: "application/json",
                 processData: false
             };

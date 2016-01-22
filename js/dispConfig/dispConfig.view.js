@@ -156,6 +156,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         onDispConfigListSuccess: function(){
+            this.$el.find(".opt-ctn .sending").show();
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
         },
@@ -218,9 +219,11 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             if (this.collection.models.length !== 0){
                 this.$el.find(".table-ctn").html(this.table[0]);
                 this.$el.find(".opt-ctn .init").hide();
+                this.$el.find(".opt-ctn .sending").show();
             } else {
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
                 this.$el.find(".opt-ctn .init").show();
+                this.$el.find(".opt-ctn .sending").hide();
             }
 
             this.nodesEl = this.table.find("tbody .nodes .edit")

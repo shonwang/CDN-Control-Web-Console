@@ -194,7 +194,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 id = $(eventTarget).attr("id");
             }
             this.currentDeleteId = id;
-            this.collection.deleteIp({id:id})
+            //this.collection.deleteIp({id:id})
+            this.onDeleteIpSuccess();
         },
 
         onClickAddIP: function(){

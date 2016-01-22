@@ -253,7 +253,7 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
             var statusArray = [
                 {name: "全部", value: "All"},
                 {name: "服务中", value: 1},
-                {name: "已停止", value: 2}
+                {name: "已停止", value: 0}
             ],
             rootNode = this.$el.find(".dropdown-status");
             Utility.initDropMenu(rootNode, statusArray, function(value){

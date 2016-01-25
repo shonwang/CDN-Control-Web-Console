@@ -13,7 +13,7 @@
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].attributes.id%>">
               <!-- <td><input type="checkbox" id="<%=data[i].id%>"></td> -->
-              <td><%=data[i].attributes["listFormated"][0].attributes["dispGroup.dispDomain"]%></td>
+              <td><%=data[i].attributes["listFormated"][0]&&data[i].attributes["listFormated"][0].attributes["dispGroup.dispDomain"]%></td>
               <td><%=data[i].attributes["region.name"]%></td>
               <td class="nodes">
                   <table class="table table-condensed table-striped">
@@ -35,7 +35,7 @@
                       </tbody>
                   </table>
               </td>
-              <td><%=data[i].attributes["listFormated"][0].attributes["dispGroup.ttl"]%></td>
+              <td><%=data[i].attributes["listFormated"][0]&&data[i].attributes["listFormated"][0].attributes["dispGroup.ttl"]%></td>
               <td>
                   <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="adjust" title="调整" style="display:none">
                       <span class="glyphicon glyphicon-cog"></span>

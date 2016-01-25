@@ -361,7 +361,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                     break;
                 }
             }
-            model.set("listFormated", list);
+            this.collection.get(regionId).set("listFormated", list);
             this.collection.trigger("get.dispConfig.success")
         },
 

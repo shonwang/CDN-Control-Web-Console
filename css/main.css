@@ -54,6 +54,10 @@ td a{
     vertical-align: middle;
 }
 
+.disp-table>tbody>tr>td{
+  padding: 0 8px; 
+}
+
 .form-group label,
 .form-group input,
 .form-group .dropdown,

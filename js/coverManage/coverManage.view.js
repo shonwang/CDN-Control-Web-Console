@@ -148,10 +148,10 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                     {
                         name: '上海',
                         data : [
-                            [{name:'上海'},{name:'北京',value:0}],
+                            [{name:'上海'},{name:'乌鲁木齐',value:0}],
                             [{name:'上海'},{name:'昆明',value:1}],
                             [{name:'上海'},{name:'广州',value:2}],
-                            [{name:'上海'},{name:'郑州',value:3}],
+                            [{name:'上海'},{name:'拉萨',value:3}],
                             [{name:'上海'},{name:'长春',value:4}]
                         ],
                         info:{}
@@ -159,11 +159,11 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                     {
                         name: '北京',
                         data : [
-                            [{name:'北京'}, {name:'上海',value:0}],
-                            [{name:'北京'}, {name:'广州',value:1}],
+                            [{name:'北京'}, {name:'呼和浩特',value:0}],
+                            [{name:'北京'}, {name:'海口',value:1}],
                             [{name:'北京'}, {name:'大连',value:2}],
                             [{name:'北京'}, {name:'南宁',value:3}],
-                            [{name:'北京'}, {name:'南昌',value:4}]
+                            [{name:'北京'}, {name:'西宁',value:4}]
                         ],
                         info:{}
                     },

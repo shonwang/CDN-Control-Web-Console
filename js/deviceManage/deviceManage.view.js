@@ -155,10 +155,10 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onGetNodeError: function(){},
 
-        onDeleteIpSuccess: function(){
+        onDeleteIpSuccess: function(id){
             var index;
             _.each(this.ipList, function(el, ind, list){
-                if (el.id === this.currentDeleteId)
+                if (el.id === id)
                     index = ind
             }.bind(this))
             this.ipList.splice(index, 1)
@@ -193,9 +193,9 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             } else {
                 id = $(eventTarget).attr("id");
             }
-            this.currentDeleteId = id;
+            //this.currentDeleteId = id;
             //this.collection.deleteIp({id:id})
-            this.onDeleteIpSuccess();
+            this.onDeleteIpSuccess(parseInt(id));
         },
 
         onClickAddIP: function(){

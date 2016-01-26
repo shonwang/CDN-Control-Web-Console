@@ -91,11 +91,11 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
             // }.bind(this))
             var nodeId = this.$el.find("tbody input:checked").attr("id");
             var options =  {
-                "dispGroupIds": parseInt(nodeId),//channelIds,
+                "dispGroupIds": [parseInt(nodeId)],//channelIds,
                 "channelId"   : this.model.get("id")
             }
             console.log(options)
-            //return options
+            return options
         },
 
         render: function(target) {

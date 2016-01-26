@@ -33,7 +33,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 if (el.status === 2) el.statusName =  '<span class="text-warning">挂起</span>'
                 if (el.status === 1) el.statusName =  '<span class="text-success">运行中</span>'
 
-                if (el.type === 3) el.typeName =  'relay'
+                if (el.type === 3) el.typeName =  'lvs&cache'
                 if (el.type === 2) el.typeName =  'cache'
                 if (el.type === 1) el.typeName =  'lvs'
             }.bind(this))

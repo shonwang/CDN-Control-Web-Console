@@ -210,6 +210,39 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
             $.ajax(defaultParas);
         },
 
+        getRegionAdvice: function(args){
+            var url = BASE_URL + "/rs/dispConf/disp/regionAdvice";
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+            };
+            defaultParas.data = {};
+            defaultParas.data.groupId  = args.groupId;
+            defaultParas.data.regionId = args.regionId;
+            defaultParas.data.t = new Date().valueOf();
+
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                if (res){
+                    args.success&&args.success(res);
+                } else {
+                    this.trigger("get.regionAdvice.error", response); 
+                }
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.regionAdvice.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
         getRegionOtherNodeList: function(args){
             var url = BASE_URL + "/rs/dispConf/regionOtherNodeList";
             var defaultParas = {

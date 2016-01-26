@@ -125,6 +125,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.onGetError(error)
                 this.$el.find(".opt-ctn .init").show();
             }.bind(this));
+            this.collection.on("get.regionAdvice.error", $.proxy(this.onGetError, this));
 
             this.collection.on("dispDns.success", function(){
                 // this.$el.find(".opt-ctn .sending").html('<span class="glyphicon glyphicon-send"></span>下发DNSpod');
@@ -230,8 +231,38 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.nodesEl.on("click", $.proxy(this.onClickItemEdit, this));
             this.table.find("tbody .nodes .delete").on("click", $.proxy(this.onClickItemDelete, this));
             this.table.find("tbody .add").on("click", $.proxy(this.onClickItemAdd, this));
-            // this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
-            // this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+            this.table.find("tbody .adjust").on("click", $.proxy(this.onClickItemAdjust, this));
+        },
+
+        onClickItemAdjust: function(){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+
+            //$(eventTarget).html('<span class="glyphicon glyphicon-cog"></span>Loading');
+            var args = {
+                groupId : this.queryArgs.groupId,
+                regionId: id,
+                success : function(data){
+                    //$(eventTarget).html('<span class="glyphicon glyphicon-cog"></span>调整')
+                    $(eventTarget).off("click");
+                    $(eventTarget).popover({
+                        animation  : false,
+                        "placement": "top", 
+                        "html"     : true,
+                        "content"  : data.message || data, 
+                        "trigger"  : "hover"
+                    })
+
+                    $(eventTarget).popover('toggle')
+                }.bind(this)
+            }
+
+            this.collection.getRegionAdvice(args);
         },
 
         onClickItemAdd: function(event){

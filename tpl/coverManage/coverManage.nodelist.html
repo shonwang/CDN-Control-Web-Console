@@ -1,0 +1,5 @@
+<div class="btn-group">
+    <% for(var i = 0; i < data.length; i++) { %>
+        <button class='btn btn-success <% if (i === 0 ) { %> active <% } %>' id="<%=i%>"><%=data[i]%></button>
+    <% } %>
+</div>

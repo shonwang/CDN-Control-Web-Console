@@ -181,7 +181,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                         itemStyle:{
                             normal:{
                                 borderColor:'rgba(100,149,237,1)',
-                                borderWidth: 0.5,
+                                borderWidth: 1,
                                 areaStyle:{
                                     color: '#1b1b1b'
                                 }
@@ -197,25 +197,25 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                             //     color: '#fff',
                             //     shadowBlur: 10
                             // },
-                            // itemStyle : {
-                            //     normal: {
-                            //         borderWidth:1,
-                            //         lineStyle: {
-                            //             type: 'solid',
-                            //             shadowBlur: 10
-                            //         },
-                            //         borderColor:'rgba(30,144,255, 0.8)'
-                            //     }
-                            // },
-                            symbol: ['none', 'circle'],  
-                            symbolSize : 1,
                             itemStyle : {
                                 normal: {
-                                    color:'#fff',
                                     borderWidth:1,
-                                    borderColor:'rgba(30,144,255,0.5)'
+                                    lineStyle: {
+                                        type: 'solid',
+                                        shadowBlur: 10
+                                    },
+                                    borderColor:'rgba(30,144,255, 0.8)'
                                 }
                             },
+                            // symbol: ['none', 'circle'],  
+                            // symbolSize : 1,
+                            // itemStyle : {
+                            //     normal: {
+                            //         color:'#fff',
+                            //         borderWidth:1,
+                            //         borderColor:'rgba(30,144,255,0.5)'
+                            //     }
+                            // },
                             data : [],
                         },
                         geoCoord: res.geoCoord

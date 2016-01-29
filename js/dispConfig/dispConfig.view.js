@@ -243,12 +243,12 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 id = $(eventTarget).attr("id");
             }
 
-            //$(eventTarget).html('<span class="glyphicon glyphicon-cog"></span>Loading');
+            $(eventTarget).html('<span class="glyphicon glyphicon-cog"></span>载入中');
             var args = {
                 groupId : this.queryArgs.groupId,
                 regionId: id,
                 success : function(data){
-                    //$(eventTarget).html('<span class="glyphicon glyphicon-cog"></span>调整')
+                    $(eventTarget).html('<span class="glyphicon glyphicon-cog"></span>调整')
                     $(eventTarget).off("click");
                     $(eventTarget).popover({
                         animation  : false,

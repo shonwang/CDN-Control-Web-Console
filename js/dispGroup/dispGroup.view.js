@@ -296,17 +296,17 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.$el.find(".setup #inlineCheckbox2").get(0).checked = true;
                 }
                 if (this.model.attributes.resolveIpType == "1"){
-                    this.$el.find(".ip-type #inlineCheckbox3").get(0).checked = true;
-                    this.$el.find(".ip-type #inlineCheckbox4").get(0).checked = false;
+                    this.$el.find(".ip-type #inlineRadio3").get(0).checked = true;
+                    this.$el.find(".ip-type #inlineRadio4").get(0).checked = false;
                 }
                 if (this.model.attributes.resolveIpType == "2"){
-                    this.$el.find(".ip-type #inlineCheckbox3").get(0).checked = false;
-                    this.$el.find(".ip-type #inlineCheckbox4").get(0).checked = true;
+                    this.$el.find(".ip-type #inlineRadio3").get(0).checked = false;
+                    this.$el.find(".ip-type #inlineRadio4").get(0).checked = true;
                 }
-                if (this.model.attributes.resolveIpType == "3"){
-                    this.$el.find(".ip-type #inlineCheckbox3").get(0).checked = true;
-                    this.$el.find(".ip-type #inlineCheckbox4").get(0).checked = true;
-                }
+                // if (this.model.attributes.resolveIpType == "3"){
+                //     this.$el.find(".ip-type #inlineCheckbox3").get(0).checked = true;
+                //     this.$el.find(".ip-type #inlineCheckbox4").get(0).checked = true;
+                // }
             } else {
                 this.collection.off("get.node.success");
                 this.collection.off("get.node.error");
@@ -430,10 +430,10 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 alert("IP类型至少选择一项！")
                 return false;
             }
-            if (ipNodes.length === 1&&ipNodes.get(0).id === "inlineCheckbox3"){
+            if (ipNodes.length === 1&&ipNodes.get(0).id === "inlineRadio3"){
                 options.resolveIpType = "1";
             }
-            if (ipNodes.length === 1&&ipNodes.get(0).id === "inlineCheckbox4"){
+            if (ipNodes.length === 1&&ipNodes.get(0).id === "inlineRadio4"){
                 options.resolveIpType = "2";
             }
             if (ipNodes.length === 2){

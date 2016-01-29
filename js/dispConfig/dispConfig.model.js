@@ -57,7 +57,12 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
                                 _.each(el, function(el2, key2, ls2){
                                     _.each(el2, function(el3, key3, ls3){
                                         _.each(el3, function(el4, key4, ls4){
-                                            tempObj[key3 + "." + key4] = el4
+                                            var tempKey = key3 + "." + key4
+                                            tempObj[tempKey] = el4
+                                            if (tempKey === "dispGroup.dispDomain" && !temp['dispGroup.dispDomain'])
+                                                temp['dispGroup.dispDomain'] = el4
+                                            if (tempKey === "dispGroup.ttl" && !temp['dispGroup.ttl'])
+                                                temp['dispGroup.ttl'] = el4
                                         }.bind(this))
                                     }.bind(this))
                                     tempList.push(new Model(tempObj))
@@ -65,7 +70,6 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
                                 temp.listFormated = tempList;
                             }
                         }.bind(this))
-
                         this.push(new Model(temp));
                     }.bind(this))
                     this.total = res.total;

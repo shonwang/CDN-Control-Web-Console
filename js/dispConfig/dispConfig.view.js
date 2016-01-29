@@ -189,10 +189,10 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             _.each(this.collection.models, function(el, index, list){
                 _.each(el.get("listFormated"), function(el1, index1, list1){
                     var tempObj =  {
-                      "dgroupId" : el1.get("dispGroup.id"),
+                      "dgroupId" : el.get("dispGroup.id"),
                       "nodeId"   : el1.get("node.id"),
                       "regionId" : el.get("region.id"),
-                      "ttl"      : el1.get("dispGroup.ttl")
+                      "ttl"      : el.get("dispGroup.ttl")
                     };
                     tempArray.push(tempObj)
                 }.bind(this))
@@ -476,7 +476,8 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         onDispGroupListSuccess: function(res){
             var temp = [];
             _.each(res.rows, function(el, index, list){
-                temp.push({name: el.dispDomain, value: el.id})
+                if (el.status === 1)
+                    temp.push({name: el.dispDomain, value: el.id})
             }.bind(this))
             rootNode = this.$el.find(".dropdown-disp");
             Utility.initDropMenu(rootNode, temp, function(value){

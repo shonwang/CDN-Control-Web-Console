@@ -4,7 +4,7 @@
         <!-- <th><input type="checkbox" id="inlineCheckbox7"></th> -->
         <th>调度组名称</th>
         <th>区域</th>
-        <th>记录类型/节点</th>
+        <th>节点</th>
         <th>TTL</th>
         <th>操作</th>     
       </tr>
@@ -13,14 +13,13 @@
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].attributes.id%>">
               <!-- <td><input type="checkbox" id="<%=data[i].id%>"></td> -->
-              <td><%=data[i].attributes["listFormated"][0]&&data[i].attributes["listFormated"][0].attributes["dispGroup.dispDomain"]%></td>
+              <td><%=data[i].attributes["dispGroup.dispDomain"]%></td>
               <td><%=data[i].attributes["region.name"]%></td>
               <td class="nodes">
                   <table class="table table-condensed table-striped">
                       <tbody>
                           <% for(var k = 0; k < data[i].attributes["listFormated"].length; k++) { %>
                               <tr data-id="<%=data[i].attributes["listFormated"][k].attributes.id%>" <% if(data[i].attributes["listFormated"][k].attributes["isUpdated"]) { %> class="success" <% } %>>
-                                <td><%=data[i].attributes["listFormated"][k].attributes["config.typeName"]%></td>
                                 <td style="width:400px"><%=data[i].attributes["listFormated"][k].attributes["nodeString"]%></td>
                                 <td>
                                     <a href="javascript:void(0)" id="<%=data[i].attributes["listFormated"][k].attributes['id']%>" region-id="<%=data[i].attributes.id%>" class="edit" title="编辑节点">
@@ -35,7 +34,7 @@
                       </tbody>
                   </table>
               </td>
-              <td><%=data[i].attributes["listFormated"][0]&&data[i].attributes["listFormated"][0].attributes["dispGroup.ttl"]%></td>
+              <td><%=data[i].attributes["dispGroup.ttl"]%></td>
               <td>
                   <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="add">
                       <span class="glyphicon glyphicon-plus"></span>添加节点

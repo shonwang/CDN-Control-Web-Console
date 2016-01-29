@@ -14,6 +14,7 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
             if (configTypeName === 2) this.set("config.typeName",'CName');
             if (configTypeName === 1) this.set("config.typeName", 'A记录');
             if (configTypeName === 0) this.set("config.typeName", '0');
+
             if (nodeChName){
                 var nodeString = nodeChName + "(" + nodeMinBandwidth + "/" + nodeMaxBandwidth + ")L" + crossLevel
                 this.set("nodeString", nodeString);

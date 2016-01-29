@@ -189,7 +189,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             _.each(this.collection.models, function(el, index, list){
                 _.each(el.get("listFormated"), function(el1, index1, list1){
                     var tempObj =  {
-                      "dgroupId" : el.get("dispGroup.id"),
+                      "dgroupId" : el1.get("dispGroup.id") || this.queryArgs.groupId,
                       "nodeId"   : el1.get("node.id"),
                       "regionId" : el.get("region.id"),
                       "ttl"      : el.get("dispGroup.ttl")

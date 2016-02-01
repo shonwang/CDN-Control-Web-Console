@@ -485,12 +485,12 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.onClickQueryButton();
             }.bind(this));
 
-            this.$el.find(".dropdown-disp .cur-value").html(res.rows[0].dispDomain)
+            this.$el.find(".dropdown-disp .cur-value").html(temp[0].name)
 
             this.queryArgs = {
                 page : 1,
                 count: 999999,
-                groupId: res.rows[0].id
+                groupId: temp[0].value
             }
             this.onClickQueryButton();
         },

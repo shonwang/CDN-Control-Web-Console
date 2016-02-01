@@ -655,8 +655,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 onOKCallback:  function(){
                     var options = editDispGroupView.getArgs();
                     if (!options) return;
-                    var args = _.extend(model.attributes, options)
-                    this.collection.updateDispGroup(args)
+                    this.collection.updateDispGroup(options)
                     this.editDispGroupPopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){}

@@ -1,9 +1,10 @@
-window.DEBUG = true;
+window.DEBUG = 1;
 
-
-if (window.DEBUG)
+if (window.DEBUG === 1)
+    window.BASE_URL = "http://120.92.232.203:9098";
+else if (window.DEBUG === 2)
     window.BASE_URL = "http://120.92.232.203:9088";
-else
+else if (window.DEBUG === 3)
     window.BASE_URL = "http://center.cdn.ksyun.com";
 
 requirejs.config({

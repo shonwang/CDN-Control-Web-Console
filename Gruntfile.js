@@ -65,7 +65,21 @@ module.exports = function(grunt) {
         for (var k = 0; k < mainArray.length; k++){
             line = mainArray[k];
             grunt.log.writeln(line)
-            if (line.indexOf('DEBUG') > -1&&line.indexOf('if') == -1) line = 'window.DEBUG = false;\n'
+            if (line.indexOf('DEBUG') > -1&&line.indexOf('if') == -1) line = 'window.DEBUG = 2;\n'
+            newMain.push(line);
+            grunt.log.writeln(line)
+        }
+        grunt.file.write("dest/js/main.js", newMain.join("\n"));
+    });
+
+    grunt.registerTask('online-url', '', function() {
+        var dataMain = grunt.file.read("dest/js/main.js");
+        var mainArray = dataMain.split("\n"), 
+            line, newMain = [];
+        for (var k = 0; k < mainArray.length; k++){
+            line = mainArray[k];
+            grunt.log.writeln(line)
+            if (line.indexOf('DEBUG') > -1&&line.indexOf('if') == -1) line = 'window.DEBUG = 3;\n'
             newMain.push(line);
             grunt.log.writeln(line)
         }
@@ -73,6 +87,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('temp',['underscore:compile']);
-    grunt.registerTask('set',["clean", 'underscore:compile', "copy", "seturl"]);
     grunt.registerTask('debug',["clean", 'underscore:compile', "copy"]);
+    grunt.registerTask('set',["clean", 'underscore:compile', "copy", "seturl"]);
+    grunt.registerTask('online',["clean", 'underscore:compile', "copy", "online-url"]);
 };

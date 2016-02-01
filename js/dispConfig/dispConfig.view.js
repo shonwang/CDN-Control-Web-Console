@@ -218,14 +218,18 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         initTable: function(){
             this.table = $(_.template(template['tpl/dispConfig/dispConfig.table.html'])({data: this.collection.models}));
 
-            if (this.collection.models.length === 0 || this.collection.total === 0){
+            if (this.collection.models.length === 0){
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+                this.$el.find(".opt-ctn .init").show();
+                this.$el.find(".opt-ctn .sending").hide();
+            } else if (this.collection.total === 0){
+                this.$el.find(".table-ctn").html(this.table[0]);
                 this.$el.find(".opt-ctn .init").show();
                 this.$el.find(".opt-ctn .sending").hide();
             } else {
                 this.$el.find(".table-ctn").html(this.table[0]);
                 this.$el.find(".opt-ctn .init").hide();
-                this.$el.find(".opt-ctn .sending").show();
+                this.$el.find(".opt-ctn .sending").show(); 
             }
 
             this.nodesEl = this.table.find("tbody .nodes .edit")

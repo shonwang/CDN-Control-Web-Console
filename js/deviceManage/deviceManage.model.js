@@ -13,6 +13,7 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
             if (type == 3) this.set("typeName",'relay');
 
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
+            this.set("isChecked", false);
         }
     });
 

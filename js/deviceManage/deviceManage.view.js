@@ -325,6 +325,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+            this.$el.find(".opt-ctn .multi-play").on("click", $.proxy(this.onClickMultiPlay, this));
+            this.$el.find(".opt-ctn .multi-stop").on("click", $.proxy(this.onClickMultiStop, this));
 
             if (this.query !== "none"){
                 this.query = JSON.parse(this.query);
@@ -391,18 +393,26 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/deviceManage/deviceManage.table.html'])({data: this.collection.models}));
-            if (this.collection.models.length !== 0)
-                this.$el.find(".table-ctn").html(this.table[0]);
-            else
-                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+            this.$el.find(".opt-ctn .multi-delete").attr("disabled", "disabled");
+            this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
+            this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
 
-            this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-            this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
-            this.table.find("tbody .ip-manage").on("click", $.proxy(this.onClickItemIp, this));
-            this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
-            this.table.find("tbody .hangup").on("click", $.proxy(this.onClickItemHangup, this));
-            this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));
+            this.table = $(_.template(template['tpl/deviceManage/deviceManage.table.html'])({data: this.collection.models}));
+            if (this.collection.models.length !== 0){
+                this.$el.find(".table-ctn").html(this.table[0]);
+
+                this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
+                this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+                this.table.find("tbody .ip-manage").on("click", $.proxy(this.onClickItemIp, this));
+                this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
+                this.table.find("tbody .hangup").on("click", $.proxy(this.onClickItemHangup, this));
+                this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));
+
+                this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
+                this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+            } else {
+                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+            }
         },
 
         onClickItemEdit: function(event){
@@ -489,6 +499,32 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 id = $(eventTarget).attr("id");
             }
             this.collection.updateDeviceStatus({ids:[parseInt(id)], status:1})
+        },
+
+        onClickMultiPlay: function(event){
+            var checkedList = this.collection.filter(function(model) {
+                return model.get("isChecked") === true;
+            })
+            var ids = [];
+            _.each(checkedList, function(el, index, list){
+                ids.push(el.attributes.id);
+            })
+            if (ids.length === 0) return;
+            this.collection.updateDeviceStatus({ids:ids, status:1})
+        },
+
+        onClickMultiStop : function(event){
+            var checkedList = this.collection.filter(function(model) {
+                return model.get("isChecked") === true;
+            })
+            var ids = [];
+            _.each(checkedList, function(el, index, list){
+                ids.push(el.attributes.id);
+            })
+            if (ids.length === 0) return;
+            var result = confirm("你确定要关闭节点吗？")
+            if (!result) return
+            this.collection.updateDeviceStatus({ids:ids, status:3})
         },
 
         onClickItemHangup: function(event){
@@ -580,6 +616,50 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.onClickQueryButton();
             }.bind(this));
         },
+
+        onItemCheckedUpdated: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            var id = $(eventTarget).attr("id");
+            var model = this.collection.get(id);
+            model.set("isChecked", eventTarget.checked)
+
+            var checkedList = this.collection.filter(function(model) {
+                return model.get("isChecked") === true;
+            })
+            if (checkedList.length === this.collection.models.length)
+                this.table.find("thead input").get(0).checked = true;
+            if (checkedList.length !== this.collection.models.length)
+                this.table.find("thead input").get(0).checked = false;
+            if (checkedList.length === 0) {
+                this.$el.find(".opt-ctn .multi-delete").attr("disabled", "disabled");
+                this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
+                this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
+            } else {
+                this.$el.find(".opt-ctn .multi-delete").removeAttr("disabled", "disabled");
+                this.$el.find(".opt-ctn .multi-play").removeAttr("disabled", "disabled");
+                this.$el.find(".opt-ctn .multi-stop").removeAttr("disabled", "disabled");
+            }
+        },
+
+        onAllCheckedUpdated: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            this.collection.each(function(model){
+                model.set("isChecked", eventTarget.checked);
+            }.bind(this))
+            this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
+            if (eventTarget.checked){
+                this.$el.find(".opt-ctn .multi-delete").removeAttr("disabled", "disabled");
+                this.$el.find(".opt-ctn .multi-stop").removeAttr("disabled", "disabled");
+                this.$el.find(".opt-ctn .multi-play").removeAttr("disabled", "disabled");
+            } else {
+                this.$el.find(".opt-ctn .multi-delete").attr("disabled", "disabled");
+                this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
+                this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
+            }
+        },
+
 
         hide: function(){
             this.$el.hide();

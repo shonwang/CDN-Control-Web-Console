@@ -66,14 +66,14 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
                 type           : "GET",
                 queryData      : {},
                 successCallBack: function(res){
-                    if (res) {
-                        $(".nav-username").html();
+                    if (res && res.status !== 400) {
+                        $(".nav-username").html(res.mgs);
                     } else {
-                        redirect();
+                        //redirect();
                     }
                 }.bind(this),
                 errorCallBack  : function(){
-                    redirect();
+                    //redirect();
                 }
 
             }

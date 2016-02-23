@@ -69,11 +69,11 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
                     if (res) {
                         $(".nav-username").html();
                     } else {
-                        //redirect();
+                        redirect();
                     }
                 }.bind(this),
                 errorCallBack  : function(){
-                    //redirect();
+                    redirect();
                 }
 
             }

@@ -68,6 +68,13 @@
 <script type="text/javascript" src="libs/jquery.min.js"></script>
 <script type="text/javascript" src="libs/bootstrap.min.js"></script>
 <script type="text/javascript">
+    var BASE_URL = "http://center.cdn.ksyun.com";
+
+    var onClickChange = function(argument) {
+        var url = BASE_URL + "/rs/login/validation/code?" + new Date().valueOf()
+        $(".codeimage").attr("src", url)
+    }
+    onClickChange();
     var sendRequest = function (data) {
         var defaultParas = {
             type: data.type,
@@ -105,10 +112,7 @@
         $(".alert-denger").hide();
     });
 
-    $(".btn-default").on("click", function(argument) {
-        var url = "http://center.cdn.ksyun.com/rs/login/validation/code?" + new Date().valueOf()
-        $(".codeimage").attr("src", url)
-    })
+    $(".btn-default").on("click", onClickChange)
 
     $(".btn-primary").on("click", function(argument) {
         var username = $("#inputEmail3").val(),
@@ -118,7 +122,7 @@
         if (!username || !password || !checkcode) $(".alert-denger").show();
 
         var data = {
-            url            : "http://center.cdn.ksyun.com/rs/login/doLogin?",
+            url            : BASE_URL + "/rs/login/doLogin?",
             type           : "GET",
             queryData      : {name : username, passwd : password, code : checkcode},
             successCallBack: function(res){

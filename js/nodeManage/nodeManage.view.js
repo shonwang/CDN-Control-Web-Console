@@ -155,7 +155,9 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         initialize: function(options) {
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.html'])());
-
+            this.$el.find(".opt-ctn .multi-delete").attr("disabled", "disabled");
+            this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
+            this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
             this.initNodeDropMenu();
 
             this.collection.on("get.node.success", $.proxy(this.onNodeListSuccess, this));
@@ -185,6 +187,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
 
             this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+            this.$el.find(".opt-ctn .multi-play").on("click", $.proxy(this.onClickMultiPlay, this));
 
             this.queryArgs = {
                 "page"    : 1,
@@ -253,6 +256,9 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
             this.table.find("tbody .hangup").on("click", $.proxy(this.onClickItemHangup, this));
             this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));
+
+            this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
+            this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
         },
 
         onClickItemNodeName: function(event){
@@ -324,6 +330,10 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 id = $(eventTarget).attr("id");
             }
             this.collection.updateNodeStatus({ids:[parseInt(id)], status:1})
+        },
+
+        onClickMultiPlay: function(event){
+            
         },
 
         onClickItemHangup: function(event){
@@ -416,6 +426,49 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 else
                     this.queryArgs.operator = null;
             }.bind(this));
+        },
+
+        onItemCheckedUpdated: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            var id = $(eventTarget).attr("id");
+            var model = this.collection.get(id);
+            model.set("isChecked", eventTarget.checked)
+
+            var checkedList = this.collection.filter(function(model) {
+                return model.get("isChecked") === true;
+            })
+            if (checkedList.length === this.collection.models.length)
+                this.table.find("thead input").get(0).checked = true;
+            if (checkedList.length !== this.collection.models.length)
+                this.table.find("thead input").get(0).checked = false;
+            if (checkedList.length === 0) {
+                this.$el.find(".opt-ctn .multi-delete").attr("disabled", "disabled");
+                this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
+                this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
+            } else {
+                this.$el.find(".opt-ctn .multi-delete").removeAttr("disabled", "disabled");
+                this.$el.find(".opt-ctn .multi-play").removeAttr("disabled", "disabled");
+                this.$el.find(".opt-ctn .multi-stop").removeAttr("disabled", "disabled");
+            }
+        },
+
+        onAllCheckedUpdated: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            this.collection.each(function(model){
+                model.set("isChecked", eventTarget.checked);
+            }.bind(this))
+            this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
+            if (eventTarget.checked){
+                this.$el.find(".opt-ctn .multi-delete").removeAttr("disabled", "disabled");
+                this.$el.find(".opt-ctn .multi-stop").removeAttr("disabled", "disabled");
+                this.$el.find(".opt-ctn .multi-play").removeAttr("disabled", "disabled");
+            } else {
+                this.$el.find(".opt-ctn .multi-delete").attr("disabled", "disabled");
+                this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
+                this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
+            }
         },
 
         hide: function(){

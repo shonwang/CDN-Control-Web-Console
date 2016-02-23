@@ -1,6 +1,9 @@
 <table class="table table-striped table-hover">  
     <thead> 
       <tr>
+        <th>
+          <input type="checkbox">
+        </th>
         <th>名称</th>
         <th>英文缩写</th>
         <th>运营商</th>
@@ -21,6 +24,9 @@
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].attributes.id%>">
+              <th scope="row">
+                  <input type="checkbox" id="<%=data[i].attributes['id']%>" <% if (data[i].attributes["isChecked"]) { %>checked="true"<% } %>>
+              </th>
               <td>
                   <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="node-name">
                     <%=data[i].attributes["chName"]%>

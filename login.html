@@ -126,7 +126,8 @@
                 alert("!!!")
                 location.href = "index.html"
             },
-            errorCallBack  : function(res){
+            errorCallBack  : function(response, msg){
+                console.log(response)
                 $(".alert-denger").show();
             }
         }

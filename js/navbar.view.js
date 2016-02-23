@@ -66,7 +66,7 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
                 type           : "GET",
                 queryData      : {},
                 successCallBack: function(res){
-                    if (res&&res.data&&res.data.status === 0) {
+                    if (res) {
                         $(".nav-username").html();
                     } else {
                         redirect();

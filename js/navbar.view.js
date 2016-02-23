@@ -7,7 +7,7 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
 
         initialize: function() {
             this.$el = $(_.template(template['tpl/navbar.html'])());
-            //this.initLogin();
+            this.initLogin();
         },
 
         // select: function(id){
@@ -62,7 +62,7 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
             };
 
             var data = {
-                url            : BASE_URL + "/rs/login/ISLOGINED?" + new Date().valueOf(),
+                url            : BASE_URL + "/rs/login/isLogined?" + new Date().valueOf(),
                 type           : "GET",
                 queryData      : {},
                 successCallBack: function(res){

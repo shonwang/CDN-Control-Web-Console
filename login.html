@@ -83,7 +83,6 @@
         }
         
         defaultParas.success = function(res){
-            alert("!!!")
             data.successCallBack&&data.successCallBack(res)
         }
             
@@ -123,11 +122,9 @@
             type           : "GET",
             queryData      : {name : username, passwd : password, code : checkcode},
             successCallBack: function(res){
-                alert("!!!")
                 location.href = "index.html"
             },
             errorCallBack  : function(response, msg){
-                console.log(response)
                 $(".alert-denger").show();
             }
         }

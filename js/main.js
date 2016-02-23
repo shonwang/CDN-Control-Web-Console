@@ -1,9 +1,9 @@
 window.DEBUG = 1;
 
 if (window.DEBUG === 1)
-    window.BASE_URL = "http://120.92.232.203:9098";
+    window.BASE_URL = "http://center.cdn.ksyun.com";
 else if (window.DEBUG === 2)
-    window.BASE_URL = "http://120.92.232.203:9088";
+    window.BASE_URL = "http://center.cdn.ksyun.com";
 else if (window.DEBUG === 3)
     window.BASE_URL = "http://center.cdn.ksyun.com";
 

@@ -155,9 +155,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         initialize: function(options) {
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.html'])());
-            this.$el.find(".opt-ctn .multi-delete").attr("disabled", "disabled");
-            this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
-            this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
+
             this.initNodeDropMenu();
 
             this.collection.on("get.node.success", $.proxy(this.onNodeListSuccess, this));
@@ -188,6 +186,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".opt-ctn .multi-play").on("click", $.proxy(this.onClickMultiPlay, this));
+            this.$el.find(".opt-ctn .multi-stop").on("click", $.proxy(this.onClickMultiStop, this));
 
             this.queryArgs = {
                 "page"    : 1,
@@ -244,21 +243,25 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         initTable: function(){
+            this.$el.find(".opt-ctn .multi-delete").attr("disabled", "disabled");
+            this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
+            this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
+
             this.table = $(_.template(template['tpl/nodeManage/nodeManage.table.html'])({data: this.collection.models}));
-            if (this.collection.models.length !== 0)
+            if (this.collection.models.length !== 0){
                 this.$el.find(".table-ctn").html(this.table[0]);
-            else
+                this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
+                this.table.find("tbody .node-name").on("click", $.proxy(this.onClickItemNodeName, this));
+                this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+                this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
+                this.table.find("tbody .hangup").on("click", $.proxy(this.onClickItemHangup, this));
+                this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));
+
+                this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
+                this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+            } else {
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-
-            this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-            this.table.find("tbody .node-name").on("click", $.proxy(this.onClickItemNodeName, this));
-            this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
-            this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
-            this.table.find("tbody .hangup").on("click", $.proxy(this.onClickItemHangup, this));
-            this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));
-
-            this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
-            this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+            }
         },
 
         onClickItemNodeName: function(event){
@@ -333,7 +336,15 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         onClickMultiPlay: function(event){
-            
+            var checkedList = this.collection.filter(function(model) {
+                return model.get("isChecked") === true;
+            })
+            var ids = [];
+            _.each(checkedList, function(el, index, list){
+                ids.push(el.attributes.id);
+            })
+            if (ids.length === 0) return;
+            this.collection.updateNodeStatus({ids:ids, status:1})
         },
 
         onClickItemHangup: function(event){
@@ -360,6 +371,20 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             var result = confirm("你确定要关闭节点吗？")
             if (!result) return
             this.collection.updateNodeStatus({ids:[parseInt(id)], status:3})
+        },
+
+        onClickMultiStop : function(event){
+            var checkedList = this.collection.filter(function(model) {
+                return model.get("isChecked") === true;
+            })
+            var ids = [];
+            _.each(checkedList, function(el, index, list){
+                ids.push(el.attributes.id);
+            })
+            if (ids.length === 0) return;
+            var result = confirm("你确定要关闭节点吗？")
+            if (!result) return
+            this.collection.updateNodeStatus({ids:ids, status:3})
         },
 
         initPaginator: function(){

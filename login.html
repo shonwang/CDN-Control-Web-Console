@@ -43,7 +43,7 @@
                       <input type="text" class="form-control" id="checkcode" placeholder="验证码">
                     </div>
                     <div class="col-sm-2">
-                      <img class="codeimage" src="http://center.cdn.ksyun.com:7380/rs/login/validation/code" alt="code" style="width: 80px">
+                      <img class="codeimage" src="http://center.cdn.ksyun.com/rs/login/validation/code" alt="code" style="width: 80px">
                     </div>
                     <div class="col-sm-4">
                       <button type="button" class="btn btn-default">刷新</button>
@@ -106,7 +106,7 @@
     });
 
     $(".btn-default").on("click", function(argument) {
-        var url = "http://center.cdn.ksyun.com:7380/rs/login/validation/code?" + new Date().valueOf()
+        var url = "http://center.cdn.ksyun.com/rs/login/validation/code?" + new Date().valueOf()
         $(".codeimage").attr("src", url)
     })
 
@@ -118,7 +118,7 @@
         if (!username || !password || !checkcode) $(".alert-denger").show();
 
         var data = {
-            url            : "http://center.cdn.ksyun.com:7380/rs/login/doLogin?",
+            url            : "http://center.cdn.ksyun.com/rs/login/doLogin?",
             type           : "GET",
             queryData      : {name : username, passwd : password, code : checkcode},
             successCallBack: function(res){

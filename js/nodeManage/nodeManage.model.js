@@ -14,6 +14,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
 
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
             if (startChargingTime) this.set("startChargingTimeFormated", new Date(startChargingTime).format("yyyy/MM/dd hh:mm"));
+            this.set("isChecked", false);
         }
     });
 

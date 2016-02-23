@@ -26,13 +26,13 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
                             '</div>' + 
                           '</div>'
                 var $loginTops = $(tpl),
-                    url = url || 'http://iconsole.ksyun.com/',
+                    url = url || 'login.html',
                     options = {
                         backdrop:'static'
                     };
                 $loginTops.modal(options);
                 setTimeout(function(){
-                    location.href = url + '?callback=' + encodeURIComponent(location.href);
+                    location.href = url;
                 }, 2000);
             };
 
@@ -62,19 +62,18 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
             };
 
             var data = {
-                url            : BASE_URL + "cdnuser/user/info?" + new Date().valueOf(),
+                url            : BASE_URL + "/rs/login/ISLOGINED?" + new Date().valueOf(),
                 type           : "GET",
                 queryData      : {},
                 successCallBack: function(res){
                     if (res&&res.data&&res.data.status === 0) {
-                        $(".operation-user-name").html(res.data.data.adminName);
-                        window.ADMIN_NAME = res.data.data.adminName || "习近平"
+                        $(".nav-username").html();
                     } else {
-                        //redirect();
+                        redirect();
                     }
                 }.bind(this),
                 errorCallBack  : function(){
-                    //redirect();
+                    redirect();
                 }
 
             }

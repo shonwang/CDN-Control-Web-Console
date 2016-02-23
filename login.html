@@ -122,6 +122,7 @@
             type           : "GET",
             queryData      : {name : username, passwd : password, code : checkcode},
             successCallBack: function(res){
+                alert("!!!")
                 location.href = "index.html"
             },
             errorCallBack  : function(res){

@@ -1,0 +1,42 @@
+<table class="table table-striped table-hover">  
+    <thead> 
+      <tr>
+        <th>id</th>
+        <th>fileList</th>
+        <th>ips</th>
+        <th>脚本内容</th>
+        <th>操作</th>   
+      </tr>
+    </thead>
+    <tbody>
+        <% for(var i = 0; i < data.length; i++) { %>
+            <tr data-id="<%=data[i].attributes.id%>">
+              <td><%=data[i].attributes["id"]%></td>
+              <td>
+                <ul class="list-unstyled" style="margin:0">
+                <% for(var k = 0; k < data[i].attributes["files"].length; k++) { %>
+                    <li>
+                        <a href="javascript:void(0)" id="<%=data[i].attributes["files"][k]["id"]%>" files-id="<%=data[i].attributes.id%>" class="file-name">
+                          <%=data[i].attributes["files"][k]["fileName"]%>
+                        </a>
+                    </li>
+                <% } %>
+                </ul>
+              </td>
+              <td><%=data[i].attributes["ips"]%></td>
+              <td>
+                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="btn btn-primary btn-sm shell">
+                    查看
+                  </a>
+              </td>
+              <td>
+                  <% if (data[i].attributes.status !== 1) { %>
+                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="btn btn-primary btn-sm use">
+                      使用
+                  </a>
+                  <% } %>
+              </td>
+            </tr>
+        <% } %>  
+    </tbody>
+</table>

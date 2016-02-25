@@ -1,7 +1,7 @@
 window.DEBUG = 1;
 
 if (window.DEBUG === 1)
-    window.BASE_URL = "http://center.cdn.ksyun.com";
+    window.BASE_URL = "http://120.92.232.203:9098";
 else if (window.DEBUG === 2)
     window.BASE_URL = "http://center.cdn.ksyun.com";
 else if (window.DEBUG === 3)
@@ -34,7 +34,13 @@ requirejs.config({
         "coverRegion.model"    : 'coverRegion/coverRegion.model',
 
         "coverManage.view"     : 'coverManage/coverManage.view',
-        "coverManage.model"    : 'coverManage/coverManage.model'
+        "coverManage.model"    : 'coverManage/coverManage.model',
+
+        "liveAllSetup.view"    : 'liveAllSetup/liveAllSetup.view',
+        "liveAllSetup.model"   : 'liveAllSetup/liveAllSetup.model',
+
+        "liveCurentSetup.view" : 'liveCurentSetup/liveCurentSetup.view',
+        "liveCurentSetup.model": 'liveCurentSetup/liveCurentSetup.model'
     },
     urlArgs: new Date().valueOf()
 });

@@ -1,0 +1,32 @@
+<form class="form-horizontal">
+    <% if (dataType === 1) { %>
+    <div class="form-group">
+        <label for="input-name" class="col-sm-2 control-label">文件名称</label>
+        <div class="col-sm-8">
+          <p class="form-control-static" id="input-name"><%=data.attributes.fileName%></p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="filetype" class="col-sm-2 control-label">文件类型</label>
+        <div class="col-sm-8">
+          <p class="form-control-static" id="filetype"><%=data.attributes.fileTypeId%></p>
+        </div>
+    </div>
+    <% } %>
+    <div class="form-group">
+        <label for="textarea-content" class="col-sm-2 control-label">内容</label>
+        <div class="col-sm-8">
+            <% if (dataType === 1) { %>
+            <pre class="form-control-static" id="textarea-content"><%=data.attributes.content%></pre>
+            <% } else {%>
+            <pre class="form-control-static" id="textarea-content"><%=data.attributes.shellCmd%></pre>
+            <% } %>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="textarea-comment" class="col-sm-2 control-label">备注</label>
+        <div class="col-sm-8">
+            <pre class="form-control-static" id="textarea-comment"><%=data.attributes.remark%></pre>
+        </div>
+    </div>
+</form>

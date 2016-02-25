@@ -10,7 +10,9 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             "dispGroup"           : "dispGroup",
             "dispConfig"          : "dispConfig",
             "coverRegion"         : "coverRegion",
-            "coverManage"         : "coverManage"
+            "coverManage"         : "coverManage",
+            "liveAllSetup"        : "liveAllSetup",
+            "liveCurentSetup"     : "liveCurentSetup"
         },
 
         initialize: function(){
@@ -43,10 +45,46 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                 case 'coverManage':
                   this.coverManageView.hide();
                   break;
+                case "liveAllSetup":
+                    this.liveAllSetupView.hide();
+                  break;
+                case "liveCurentSetup":
+                    this.liveCurentSetupView.hide();
+                  break;
                 default:
             }
             if (callback)
                 callback.apply(this, args);
+        },
+
+        liveCurentSetup: function(){
+            require(['liveCurentSetup.view', 'liveCurentSetup.model'], function(LiveCurentSetupView, LiveCurentSetupModel){
+                this.curPage = 'liveCurentSetup';
+                if (!this.liveCurentSetupModel)
+                    this.liveCurentSetupModel = new LiveCurentSetupModel();
+                if (!this.liveCurentSetupView ){
+                    var options = {collection: this.liveCurentSetupModel};
+                    this.liveCurentSetupView = new LiveCurentSetupView(options);
+                    this.liveCurentSetupView.render($('.ksc-content'));
+                } else {
+                    this.liveCurentSetupView.update();
+                }
+            }.bind(this));
+        },
+
+        liveAllSetup: function(){
+            require(['liveAllSetup.view', 'liveAllSetup.model'], function(LiveAllSetupView, LiveAllSetupModel){
+                this.curPage = 'liveAllSetup';
+                if (!this.liveAllSetupModel)
+                    this.liveAllSetupModel = new LiveAllSetupModel();
+                if (!this.liveAllSetupView ){
+                    var options = {collection: this.liveAllSetupModel};
+                    this.liveAllSetupView = new LiveAllSetupView(options);
+                    this.liveAllSetupView.render($('.ksc-content'));
+                } else {
+                    this.liveAllSetupView.update();
+                }
+            }.bind(this));
         },
 
         coverManage: function() {

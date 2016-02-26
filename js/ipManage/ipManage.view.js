@@ -126,7 +126,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
                 this.queryArgs.count = value;
                 this.queryArgs.page = 1;
-                this.onClickQueryButton();
+                this.onStartQueryButton();
             }.bind(this));
         },
 

@@ -75,25 +75,46 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         initList: function(){
-            this.list = $(_.template(template['tpl/dispConfig/dispConfig.selectNode.list.html'])({data: this.nodeList, nodeId: this.model.get("node.id")}));
+            if (this.isEdit){
+                this.list = $(_.template(template['tpl/dispConfig/dispConfig.selectNode.list.html'])({
+                    data: this.nodeList, 
+                    nodeId: this.model.get("node.id")
+                }));
+            } else {
+                this.list = $(_.template(template['tpl/dispConfig/dispConfig.selectNode.checklist.html'])({
+                    data: this.nodeList, 
+                    nodeId: this.model.get("node.id")
+                }));
+            }
             this.$el.find(".node-list").html(this.list[0]);
         },
 
         getArgs: function(){
-            var nodeId = this.$el.find(".node-list input:checked").attr("id");
-            if (!nodeId) return false
-            var selectedNode = _.filter(this.nodeList ,function(obj) {
-                return obj["node.id"] === parseInt(nodeId);
-            })
-            var nodeChName       = selectedNode[0]["node.chName"],
-                nodeMinBandwidth = selectedNode[0]["node.minBandwidth"],
-                nodeMaxBandwidth = selectedNode[0]["node.maxBandwidth"],
-                crossLevel       = selectedNode[0]["cover.crossLevel"];
-
-            var nodeString = nodeChName + "(" + nodeMinBandwidth + "/" + nodeMaxBandwidth + ")L" + crossLevel;
-            selectedNode[0].nodeString = nodeString;
-            selectedNode[0].id = selectedNode[0]["node.id"];
-            return selectedNode[0]
+            var checkedNodes = this.$el.find(".node-list input:checked"), checkedNodeIds = [];
+            if (checkedNodes.length  === 0) {
+                alert("至少选择一个再点确定！")
+                return false;
+            }
+            for (var i = 0; i < checkedNodes.length; i++){
+                var tempId = parseInt($(checkedNodes[i]).attr("id"));
+                checkedNodeIds.push(tempId)
+            }
+            var selectedNodes = [];
+            for (var k = 0; k < checkedNodeIds.length; k++){
+                var aSelectedNodeArray = _.filter(this.nodeList ,function(obj) {
+                    return obj["node.id"] === checkedNodeIds[k];
+                })
+                var aSelectedNode = aSelectedNodeArray[0];
+                var nodeChName       = aSelectedNode["node.chName"],
+                    nodeMinBandwidth = aSelectedNode["node.minBandwidth"],
+                    nodeMaxBandwidth = aSelectedNode["node.maxBandwidth"],
+                    crossLevel       = aSelectedNode["cover.crossLevel"];
+                var nodeString = nodeChName + "(" + nodeMinBandwidth + "/" + nodeMaxBandwidth + ")L" + crossLevel;
+                aSelectedNode.nodeString = nodeString;
+                aSelectedNode.id = aSelectedNode["node.id"];
+                selectedNodes.push(aSelectedNode)
+            }
+            return selectedNodes
         },
 
         onGetError: function(error){
@@ -298,14 +319,20 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 onOKCallback:  function(){
                     var options = selectNodeView.getArgs();
                     if (!options) return;
-                    options['dispGroup.id'] = this.queryArgs.groupId;
-                    for (var i = 0; i < list.length; i++){
-                        if (list[i]["id"] === parseInt(options["node.id"])){
-                            this.selectNodePopup.$el.modal("hide");
-                            return;
+                    for (var k = 0; k < options.length; k++){
+                        options[k]['dispGroup.id'] = this.queryArgs.groupId;
+                        for (var i = 0; i < list.length; i++){
+                            if (list[i]["id"] === parseInt(options[k]["node.id"])) options.splice(k, 1);
                         }
                     }
-                    model.get("listFormated").push(new this.collection.model(options))
+                    if (options.length === 0) {
+                        alert("你选择的节点已经添加过了！")
+                        this.selectNodePopup.$el.modal("hide");
+                        return;
+                    }
+                    for(var m = 0; m < options.length; m++){
+                        model.get("listFormated").push(new this.collection.model(options[m]))
+                    }
                     this.collection.trigger("get.dispConfig.success")
                     this.selectNodePopup.$el.modal("hide");
                 }.bind(this),
@@ -351,12 +378,12 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                     var result = confirm("你确定要修改节点吗？")
                     if (!result) return;
                     for (var i = 0; i < list.length; i++){
-                        if (list[i]["id"] === parseInt(options["node.id"])){
+                        if (list[i]["id"] === parseInt(options[0]["node.id"])){
                             this.selectNodePopup.$el.modal("hide");
                             return;
                         }
                         if (list[i]["id"] === parseInt(id)){
-                            list[i].attributes =  _.extend(selectedNode[0].attributes, options);
+                            list[i].attributes =  _.extend(selectedNode[0].attributes, options[0]);
                             list[i].set("isUpdated", true);
                             break;
                         }

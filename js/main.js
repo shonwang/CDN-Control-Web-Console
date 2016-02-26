@@ -40,7 +40,10 @@ requirejs.config({
         "liveAllSetup.model"   : 'liveAllSetup/liveAllSetup.model',
 
         "liveCurentSetup.view" : 'liveCurentSetup/liveCurentSetup.view',
-        "liveCurentSetup.model": 'liveCurentSetup/liveCurentSetup.model'
+        "liveCurentSetup.model": 'liveCurentSetup/liveCurentSetup.model',
+
+        "ipManage.view"        : 'ipManage/ipManage.view',
+        "ipManage.model"       : 'ipManage/ipManage.model'
     },
     urlArgs: new Date().valueOf()
 });

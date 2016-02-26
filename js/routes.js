@@ -12,7 +12,8 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             "coverRegion"         : "coverRegion",
             "coverManage"         : "coverManage",
             "liveAllSetup"        : "liveAllSetup",
-            "liveCurentSetup"     : "liveCurentSetup"
+            "liveCurentSetup"     : "liveCurentSetup",
+            "ipManage"            : "ipManage"
         },
 
         initialize: function(){
@@ -51,10 +52,28 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                 case "liveCurentSetup":
                     this.liveCurentSetupView.hide();
                   break;
+                case "ipManage":
+                    this.ipManageView.hide();
+                  break;
                 default:
             }
             if (callback)
                 callback.apply(this, args);
+        },
+
+        ipManage: function(){
+            require(['ipManage.view', 'ipManage.model'], function(IPManageView, IPManageModel){
+                this.curPage = 'ipManage';
+                if (!this.ipManageModel)
+                    this.ipManageModel = new IPManageModel();
+                if (!this.ipManageView ){
+                    var options = {collection: this.ipManageModel};
+                    this.ipManageView = new IPManageView(options);
+                    this.ipManageView.render($('.ksc-content'));
+                } else {
+                    this.ipManageView.update();
+                }
+            }.bind(this));
         },
 
         liveCurentSetup: function(){

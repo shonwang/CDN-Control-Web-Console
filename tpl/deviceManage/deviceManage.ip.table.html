@@ -14,6 +14,9 @@
           <td><%=data[i]["ip"]%></td>
           <td><%=data[i]["typeName"]%></td>
           <td>
+              <a href="javascript:void(0)" id="<%=data[i]['id']%>" class="edit" title="编辑">
+                  <span class="glyphicon glyphicon glyphicon-edit"></span>
+              </a>
               <a href="javascript:void(0)" id="<%=data[i]['id']%>" class="delete" title="删除">
                   <span class="glyphicon glyphicon-trash"></span>
               </a>

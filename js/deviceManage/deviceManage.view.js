@@ -12,7 +12,13 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.find(".ip-table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.ipType = 1
             this.initIpTypeDropmenu();
-            this.$el.find(".create").on("click", $.proxy(this.onClickAddIP, this))
+
+            this.$el.find(".cancel").on("click", $.proxy(this.onClickCancelEditIP, this));
+            this.$el.find(".create").on("click", $.proxy(this.onClickAddIP, this));
+
+            this.$el.find(".update").hide();
+            this.$el.find(".cancel").hide();
+
             this.collection.off("get.device.ip.success");
             this.collection.off("get.device.ip.error");
             this.collection.on("get.device.ip.success", $.proxy(this.onGetIpSuccess, this));
@@ -57,6 +63,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.table = $(_.template(template['tpl/deviceManage/deviceManage.ip.table.html'])({data: this.ipList}));
             this.$el.find(".ip-table-ctn").html(this.table[0]);
             this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+            this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
         },
 
         onGetError: function(error){
@@ -64,6 +71,32 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 alert(error.message)
             else
                 alert("出错了")
+        },
+
+        onClickItemEdit: function(event){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+            var aIPArray = _.filter(this.ipList ,function(obj) {
+                return obj["id"] === parseInt(id);
+            })
+            this.$el.find("#input-ip").val(aIPArray[0].ip);
+            this.$el.find(".ip-type .cur-value").html(aIPArray[0].typeName);
+            this.ipType = aIPArray[0].type;
+            this.$el.find(".create").hide();
+            this.$el.find(".update").show();
+            this.$el.find(".cancel").show();
+            this.$el.find("#input-ip").focus();
+        },
+
+        onClickCancelEditIP: function(){
+            this.$el.find(".create").show();
+            this.$el.find(".update").hide();
+            this.$el.find(".cancel").hide();
         },
 
         onClickItemDelete: function(event){

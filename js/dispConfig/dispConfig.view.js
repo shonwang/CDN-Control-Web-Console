@@ -91,7 +91,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
         getArgs: function(){
             var checkedNodes = this.$el.find(".node-list input:checked"), checkedNodeIds = [];
-            if (checkedNodes.length  === 0) {
+            if (checkedNodes.length === 0) {
                 alert("至少选择一个再点确定！")
                 return false;
             }

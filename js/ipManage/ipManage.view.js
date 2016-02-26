@@ -1,25 +1,47 @@
 define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
+    var IPQueryDetailView = Backbone.View.extend({
+        events: {
+            //"click .search-btn":"onClickSearch"
+        },
+
+        initialize: function(options) {
+            this.collection = options.collection;
+            this.$el = $(_.template(template['tpl/ipManage/ipManage.queryDetail.html'])());
+        },
+
+        getArgs: function(){
+            var queryKey = this.$el.find("#textarea-content").val();
+            return queryKey;
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target);
+        }
+    });
+
+
     var IPManageView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
             this.collection = options.collection;
-            this.$el = $(_.template(template['tpl/coverRegion/coverRegion.html'])());
+            this.$el = $(_.template(template['tpl/ipManage/ipManage.html'])());
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
             this.initNodeDropMenu();
 
-            this.collection.on("get.node.success", $.proxy(this.onNodeListSuccess, this));
-            this.collection.on("get.node.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.ipInfo.success", $.proxy(this.onIpInfoListSuccess, this));
+            this.collection.on("get.ipInfo.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
 
             this.queryArgs = {
                 page : 1,
-                count: 10
+                count: 10,
+                ips  : ""
             }
-            this.onClickQueryButton();
+            this.onStartQueryButton();
         },
 
         onGetError: function(error){
@@ -29,41 +51,43 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 alert("出错了")
         },
 
-        onNodeListSuccess: function(){
+        onIpInfoListSuccess: function(){
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
         },
 
-        onClickQueryButton: function(){
+        onClickQueryButton: function(event){
+            if (this.queryDetailPopup) $("#" + this.queryDetailPopup.modalId).remove();
+
+            var detailView = new IPQueryDetailView({
+                collection: this.collection
+            });
+            var options = {
+                title: "查询IP",
+                body : detailView,
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback:  function(){
+                    var options = detailView.getArgs();
+                    this.queryArgs.ips = options;
+                    this.onStartQueryButton();
+                    this.queryDetailPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){}
+            }
+            this.queryDetailPopup = new Modal(options);
+        },
+
+        onStartQueryButton: function(){
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
-            this.collection.getNodeList(this.queryArgs);
-        },
-
-        onClickCreate: function(){
-            if (this.addNodePopup) $("#" + this.addNodePopup.modalId).remove();
-
-            var addNodeView = new AddOrEditNodeView({collection: this.collection});
-            var options = {
-                title:"添加节点",
-                body : addNodeView,
-                backdrop : 'static',
-                type     : 2,
-                onOKCallback:  function(){
-                    var options = addNodeView.getArgs();
-                    if (!options) return;
-                    this.collection.addNode(options)
-                    this.addNodePopup.$el.modal("hide");
-                }.bind(this),
-                onHiddenCallback: function(){}
-            }
-            this.addNodePopup = new Modal(options);
+            this.collection.getIpInfoList(this.queryArgs);
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/coverRegion/coverRegion.table.html'])({data: this.collection.models}));
+            this.table = $(_.template(template['tpl/ipManage/ipManage.table.html'])({data: this.collection.models}));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
@@ -85,7 +109,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                         var args = _.extend(this.queryArgs);
                         args.page = num;
                         args.count = this.queryArgs.count;
-                        this.collection.getNodeList(args);
+                        this.collection.getIpInfoList(args);
                     }
                 }.bind(this)
             });
@@ -93,18 +117,6 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         initNodeDropMenu: function(){
-            var statusArray = [
-                {name: "全部", value: "All"},
-                {name: "电信", value: "电信"},
-                {name: "移动", value: "移动"},
-                {name: "联通", value: "联通"}
-            ],
-            rootNode = this.$el.find(".dropdown-region");
-            Utility.initDropMenu(rootNode, statusArray, function(value){
-                this.queryArgs.region_name = value;
-                if (value == "All") delete this.queryArgs.region_name
-            }.bind(this));
-
             var pageNum = [
                 {name: "10条", value: 10},
                 {name: "20条", value: 20},

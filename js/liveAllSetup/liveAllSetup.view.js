@@ -53,7 +53,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 var defaultValue = _.find(fileTypeList, function(object){
                     return object.value === this.model.attributes.fileTypeId
                 }.bind(this));
-                this.$el.find(".dropdown-filetype .cur-value").html(defaultValue.name)
+                this.$el.find(".dropdown-filetype .cur-value").html(defaultValue.name);
+                this.$el.find(".dropdown-filetype .dropdown-toggle").attr("disabled", "disabled")
             } else {
                 this.$el.find(".dropdown-filetype .cur-value").html(fileTypeList[0].name)
                 this.args.fileTypeId = fileTypeList[0].value;

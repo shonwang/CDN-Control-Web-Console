@@ -97,16 +97,16 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.historyList = []
 
-            this.collection.off("get.addConf.success");
-            this.collection.off("get.addConf.error");
+            // this.collection.off("get.addConf.success");
+            // this.collection.off("get.addConf.error");
             this.collection.off("get.historylist.success");
             this.collection.off("get.historylist.error");
 
-            this.collection.on("get.addConf.success", function(){
-                alert("新增成功！")
-                this.collection.getHisroryFileList(this.args)
-            }.bind(this));
-            this.collection.on("get.addConf.error", $.proxy(this.onGetError, this));
+            // this.collection.on("get.addConf.success", function(){
+            //     alert("新增成功！")
+            //     this.collection.getHisroryFileList(this.args)
+            // }.bind(this));
+            // this.collection.on("get.addConf.error", $.proxy(this.onGetError, this));
             this.collection.on("get.historylist.success", $.proxy(this.onSetupHistoryListSuccess, this));
             this.collection.on("get.historylist.error", $.proxy(this.onGetError, this));
 
@@ -118,7 +118,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.collection.getHisroryFileList(this.args)
 
-            this.$el.find(".create").on("click", $.proxy(this.onClickCreate, this))
+            //this.$el.find(".create").on("click", $.proxy(this.onClickCreate, this))
             this.$el.find(".back").on("click", $.proxy(this.onClickCancel, this))
         },
 
@@ -321,6 +321,23 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         onClickOK: function(){
             var result = confirm("Are you sure？") 
             if (!result) return;
+            var ipString = this.$el.find("#textarea-ip").val()
+            if (ipString.indexOf(",") > -1){
+                var ipStringArray = ipString.split(",");
+                for (var i = 0; i < ipStringArray.length; i++){
+                    var res = Utility.isIP(ipStringArray[i].trim())
+                    if (!res) {
+                        alert("第" + (i+1) + "个ip没填对！");
+                        return;
+                    }
+                }
+            } else {
+                var res = Utility.isIP(ipString.trim())
+                if (!res) {
+                    alert("ip没填对！")
+                    return;
+                }
+            }
             var fileIds = [];
             _.each(this.selectedModels, function(el, index, list){
                 fileIds.push(el.attributes.id);
@@ -414,7 +431,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.filelist.error", $.proxy(this.onGetError, this));
 
             this.collection.on("get.addConf.success", function(){
-                alert("编辑成功！")
+                alert("操作成功！")
                 this.collection.getAllFileList()
             }.bind(this));
             this.collection.on("get.addConf.error", $.proxy(this.onGetError, this));
@@ -422,6 +439,31 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.getAllFileList()
 
             this.$el.find(".ok").on("click", $.proxy(this.onClickConfirm, this))
+            this.$el.find(".list .create").on("click", $.proxy(this.onClickCreate, this))
+        },
+
+        onClickCreate: function(){
+            if (this.addFilePopup) $("#" + this.addFilePopup.modalId).remove();
+
+            var addFileView = new AddOrEditFlieView({
+                collection: this.collection, 
+                isEdit    : false
+            });
+            var options = {
+                title:"新建",
+                body : addFileView,
+                backdrop : 'static',
+                type     : 2,
+                width    : 800,
+                onOKCallback:  function(){
+                    var options = addFileView.getArgs();
+                    if (!options) return;
+                    this.collection.addConf(options)
+                    this.addFilePopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){}
+            }
+            this.addFilePopup = new Modal(options);
         },
 
         onClickConfirm: function(){

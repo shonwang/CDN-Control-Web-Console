@@ -18,6 +18,10 @@ define("utility", ['require','exports'], function(require, exports) {
                   fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
               return fmt;
             };
+
+            String.prototype.trim = function() {
+                 return this.replace(/(^\s*)|(\s*$)/g, "");
+            }
         },
 
         formatMillisecond: function(millisecond){
@@ -173,6 +177,11 @@ define("utility", ['require','exports'], function(require, exports) {
                 });
                 itemNode.appendTo(dropRoot);
             });
+        },
+
+        isIP: function(str_ip){
+            var re =  /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/;
+            return re.test(str_ip)
         },
 
         randomStr: function ( max ){

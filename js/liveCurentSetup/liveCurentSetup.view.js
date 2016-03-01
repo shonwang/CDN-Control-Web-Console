@@ -62,7 +62,6 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onSetupFileListSuccess: function(){
-            console.log(this.collection.models)
             this.initTable();
         },
 

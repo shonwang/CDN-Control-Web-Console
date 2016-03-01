@@ -386,6 +386,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".opt-ctn .multi-play").on("click", $.proxy(this.onClickMultiPlay, this));
             this.$el.find(".opt-ctn .multi-stop").on("click", $.proxy(this.onClickMultiStop, this));
+            this.$el.find(".opt-ctn .multi-delete").on("click", $.proxy(this.onClickMultiDelete, this));
 
             if (this.query !== "none"){
                 this.query = JSON.parse(this.query);
@@ -581,9 +582,23 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 ids.push(el.attributes.id);
             })
             if (ids.length === 0) return;
-            var result = confirm("你确定要关闭节点吗？")
+            var result = confirm("你确定要批量关闭选择的设备吗？")
             if (!result) return
             this.collection.updateDeviceStatus({ids:ids, status:3})
+        },
+
+        onClickMultiDelete: function(event){
+            var checkedList = this.collection.filter(function(model) {
+                return model.get("isChecked") === true;
+            })
+            var ids = [];
+            _.each(checkedList, function(el, index, list){
+                ids.push(el.attributes.id);
+            })
+            if (ids.length === 0) return;
+            var result = confirm("你确定要批量删除选择的设备吗？")
+            if (!result) return
+            alert(ids.join(",") + "。接口不支持，臣妾做不到啊！");
         },
 
         onClickItemHangup: function(event){

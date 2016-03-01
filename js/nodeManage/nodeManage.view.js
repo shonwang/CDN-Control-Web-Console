@@ -187,6 +187,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".opt-ctn .multi-play").on("click", $.proxy(this.onClickMultiPlay, this));
             this.$el.find(".opt-ctn .multi-stop").on("click", $.proxy(this.onClickMultiStop, this));
+            this.$el.find(".opt-ctn .multi-delete").on("click", $.proxy(this.onClickMultiDelete, this));
 
             this.queryArgs = {
                 "page"    : 1,
@@ -382,9 +383,23 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 ids.push(el.attributes.id);
             })
             if (ids.length === 0) return;
-            var result = confirm("你确定要关闭节点吗？")
+            var result = confirm("你确定要批量关闭选择的节点吗？")
             if (!result) return
             this.collection.updateNodeStatus({ids:ids, status:3})
+        },
+
+        onClickMultiDelete: function(event){
+            var checkedList = this.collection.filter(function(model) {
+                return model.get("isChecked") === true;
+            })
+            var ids = [];
+            _.each(checkedList, function(el, index, list){
+                ids.push(el.attributes.id);
+            })
+            if (ids.length === 0) return;
+            var result = confirm("你确定要批量删除选择的节点吗？")
+            if (!result) return
+            alert(ids.join(",") + "。接口不支持，臣妾做不到啊！");
         },
 
         initPaginator: function(){

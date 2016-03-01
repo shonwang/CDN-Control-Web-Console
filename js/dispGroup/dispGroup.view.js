@@ -295,14 +295,14 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.$el.find(".setup #inlineCheckbox1").get(0).checked = true;
                     this.$el.find(".setup #inlineCheckbox2").get(0).checked = true;
                 }
-                if (this.model.attributes.resolveIpType == "1"){
-                    this.$el.find(".ip-type #inlineRadio3").get(0).checked = true;
-                    this.$el.find(".ip-type #inlineRadio4").get(0).checked = false;
-                }
-                if (this.model.attributes.resolveIpType == "2"){
-                    this.$el.find(".ip-type #inlineRadio3").get(0).checked = false;
-                    this.$el.find(".ip-type #inlineRadio4").get(0).checked = true;
-                }
+                // if (this.model.attributes.resolveIpType == "1"){
+                //     this.$el.find(".ip-type #inlineRadio3").get(0).checked = true;
+                //     this.$el.find(".ip-type #inlineRadio4").get(0).checked = false;
+                // }
+                // if (this.model.attributes.resolveIpType == "2"){
+                //     this.$el.find(".ip-type #inlineRadio3").get(0).checked = false;
+                //     this.$el.find(".ip-type #inlineRadio4").get(0).checked = true;
+                // }
                 // if (this.model.attributes.resolveIpType == "3"){
                 //     this.$el.find(".ip-type #inlineCheckbox3").get(0).checked = true;
                 //     this.$el.find(".ip-type #inlineCheckbox4").get(0).checked = true;
@@ -314,7 +314,35 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.collection.on("get.node.error", $.proxy(this.onGetError, this));
                 this.crossLevel = 0;
             }
+
+            this.collection.off("ip.type.success");
+            this.collection.off("ip.type.error");
+            this.collection.on("ip.type.success", $.proxy(this.onGetIpTypeSuccess, this));
+            this.collection.on("ip.type.error", $.proxy(this.onGetError, this));
+
+            this.collection.ipTypeList();
             this.initDropmenu();
+        },
+
+        onGetIpTypeSuccess: function(data){
+            this.ipTypeList = data;
+            var typeIpArray = [];
+            _.each(this.ipTypeList, function(el, key, ls){
+                typeIpArray.push({name: el.name, value: el.id})
+            })
+            Utility.initDropMenu(this.$el.find(".ip-type"), typeIpArray, function(value){
+                this.ipType = parseInt(value);
+            }.bind(this));
+            if (!this.isEdit){
+                this.ipType = data[0].id;
+                this.$el.find(".ip-type .cur-value").html(data[0].name)
+            } else {
+                var aIpTypeArray = _.filter(this.ipTypeList ,function(obj) {
+                    return obj["id"] === this.model.get("resolveIpType");
+                }.bind(this))
+                if (aIpTypeArray[0])
+                    this.$el.find(".ip-type .cur-value").html(aIpTypeArray[0].name)
+            }
         },
 
         onGetError: function(error){
@@ -425,20 +453,20 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (setupNodes.length === 2){
                 options.priority = "1,2";
             }
-            var ipNodes = this.$el.find(".ip-type input:checked");
-            if (ipNodes.length === 0){
-                alert("IP类型至少选择一项！")
-                return false;
-            }
-            if (ipNodes.length === 1&&ipNodes.get(0).id === "inlineRadio3"){
-                options.resolveIpType = "1";
-            }
-            if (ipNodes.length === 1&&ipNodes.get(0).id === "inlineRadio4"){
-                options.resolveIpType = "2";
-            }
-            if (ipNodes.length === 2){
-                options.resolveIpType = "1,2";
-            }
+            // var ipNodes = this.$el.find(".ip-type input:checked");
+            // if (ipNodes.length === 0){
+            //     alert("IP类型至少选择一项！")
+            //     return false;
+            // }
+            // if (ipNodes.length === 1&&ipNodes.get(0).id === "inlineRadio3"){
+            //     options.resolveIpType = "1";
+            // }
+            // if (ipNodes.length === 1&&ipNodes.get(0).id === "inlineRadio4"){
+            //     options.resolveIpType = "2";
+            // }
+            // if (ipNodes.length === 2){
+            //     options.resolveIpType = "1,2";
+            // }
             var checkedList = this.nodeList.filter(function(object) {
                 return object.isChecked === true;
             })

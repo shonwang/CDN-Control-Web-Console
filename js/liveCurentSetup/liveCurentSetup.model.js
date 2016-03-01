@@ -1,6 +1,14 @@
 define("liveCurentSetup.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
-        initialize: function(){}
+        initialize: function(){
+            var ipString = this.get("ips"), 
+                ipArray = ipString.split(",");
+            var temp = [];
+            _.each(ipArray, function(el, index, ls){
+                if (el) temp.push(el)
+            })
+            this.set("ipArray", temp)
+        }
     });
 
     var LiveCurentSetupCollection = Backbone.Collection.extend({

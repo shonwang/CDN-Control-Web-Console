@@ -8,36 +8,6 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             this.$el = $(_.template(template['tpl/liveCurentSetup/liveCurentSetup.html'])());
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
-            for (var i = 0; i <= 10; i++){
-                var tempData = {
-                        "id": i,
-                        "fileList":[{
-                            "id" : i + 10,
-                            "fileTypeId" : i + 100, 
-                            "groupTypeId": i + 1000,
-                            "fileName": i,
-                            "content": i,
-                            "remark": i,
-                            "createTime": new Date().valueOf(),
-                            "md5": i
-                        },{
-                            "id" : i + 10,
-                            "fileTypeId" : i + 100, 
-                            "groupTypeId": i + 1000,
-                            "fileName": i + 100000,
-                            "content": i,
-                            "remark": i,
-                            "createTime": new Date().valueOf(),
-                            "md5": i
-                        }],
-                        "ips": "1.1.1.1",
-                        "shellCmd": i,
-                        "remark": i,
-                        "groupName": i,
-                        "status": i%2 === 0 ? 0 : 1
-                    }
-                this.collection.push(new this.collection.model(tempData))
-            }
             this.collection.on("get.fileGroup.success", $.proxy(this.onGetFileGroupSuccess, this));
             this.collection.on("get.fileGroup.error", $.proxy(this.onGetError, this));
 
@@ -56,7 +26,6 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             this.collection.on("get.effectSingleConf.error", $.proxy(this.onGetError, this));
 
             this.collection.getFileGroupList();
-            //this.collection.trigger("get.confList.success")
         },
 
         onGetError: function(error){
@@ -93,6 +62,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onSetupFileListSuccess: function(){
+            console.log(this.collection.models)
             this.initTable();
         },
 

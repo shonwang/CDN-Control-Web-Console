@@ -56,8 +56,8 @@ if(!kingSoft.tool){
 		arr.push('<div class="manage-dialog-change-btnContainer text-right"><button class="btn btn-primary">确定</button></div>');
 		arr.push('</div>');
 		var _html=arr.join('');
-		var _w=w || 300;
-		var _h=h || 180;
+		var _w=w || 400;
+		var _h=h || "auto";
 		var _zIndex=zindex || 9999;
 		var titleArr=[];
 		titleArr.push('<div class="common-dialog-title">提示</div>');

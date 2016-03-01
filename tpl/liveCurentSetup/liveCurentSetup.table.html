@@ -23,7 +23,13 @@
                 <% } %>
                 </ul>
               </td>
-              <td><%=data[i].attributes["ips"]%></td>
+              <td>
+                <ul class="list-unstyled" style="margin:0">
+                <% for(var m = 0; m < data[i].attributes["ipArray"].length; m++) { %>
+                    <li><%=data[i].attributes["ipArray"][m]%></li>
+                <% } %>
+                </ul>
+              </td>
               <td>
                   <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="btn btn-primary btn-sm shell">
                     查看

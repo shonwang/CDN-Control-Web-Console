@@ -195,6 +195,36 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
             $.ajax(defaultParas);
         },
 
+        ipTypeList: function(args){
+            var url = BASE_URL + "/rs/metaData/ipTypeList";
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+            };
+            defaultParas.data = args || {};
+            defaultParas.data.t = new Date().valueOf();
+
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                if (res)
+                    this.trigger("ip.type.success", res.rows);
+                else
+                    this.trigger("ip.type.error");
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("ip.type.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
         getNodeList: function(args){
             var url = BASE_URL + "/rs/node/list";
             var defaultParas = {

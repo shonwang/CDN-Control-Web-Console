@@ -45,13 +45,12 @@
         </div>
         <div class="form-group ip-type">
             <label class="col-sm-2 control-label">IP类型</label>
-            <div class="col-sm-8">
-                <label class="radio-inline">
-                  <input type="radio" name="inlineRadioIPOptions" id="inlineRadio3" checked="true">LVS
-                </label>
-                <label class="radio-inline">
-                  <input type="radio" name="inlineRadioIPOptions" id="inlineRadio4">cache
-                </label>
+            <div class="dropdown col-sm-8">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-ip-type" data-toggle="dropdown">
+                    <span class="cur-value">加载中...</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu"></ul>
             </div>
         </div>
     </form>

@@ -10,10 +10,9 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.model = options.model;
             this.$el = $(_.template(template['tpl/deviceManage/deviceManage.ipmanage.html'])({}));
             this.$el.find(".ip-table-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.ipType = 1
-            this.initIpTypeDropmenu();
 
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancelEditIP, this));
+            this.$el.find(".update").on("click", $.proxy(this.onClickUpateIP, this));
             this.$el.find(".create").on("click", $.proxy(this.onClickAddIP, this));
 
             this.$el.find(".update").hide();
@@ -23,10 +22,12 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.off("get.device.ip.error");
             this.collection.on("get.device.ip.success", $.proxy(this.onGetIpSuccess, this));
             this.collection.on("get.device.ip.error", $.proxy(this.onGetError, this));
+
             this.collection.off("delete.device.ip.success");
             this.collection.off("delete.device.ip.error");
             this.collection.on("delete.device.ip.success", $.proxy(this.onDeleteIpSuccess, this));
             this.collection.on("delete.device.ip.error", $.proxy(this.onGetError, this));
+
             this.collection.off("add.device.ip.success");
             this.collection.off("add.device.ip.error");
             this.collection.on("add.device.ip.success", function(){
@@ -34,6 +35,26 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.collection.getDeviceIpList({deviceId:id})
             }.bind(this));
             this.collection.on("add.device.ip.error", $.proxy(this.onGetError, this));
+
+            this.collection.off("ip.type.success");
+            this.collection.off("ip.type.error");
+            this.collection.on("ip.type.success", $.proxy(this.onGetIpTypeSuccess, this));
+            this.collection.on("ip.type.error", $.proxy(this.onGetError, this));
+
+            this.collection.ipTypeList();
+        },
+
+        onGetIpTypeSuccess: function(data){
+            this.ipTypeList = data;
+            var typeIpArray = [];
+            _.each(this.ipTypeList, function(el, key, ls){
+                typeIpArray.push({name: el.name, value: el.id})
+            })
+            Utility.initDropMenu(this.$el.find(".ip-type"), typeIpArray, function(value){
+                this.ipType = parseInt(value);
+            }.bind(this));
+            this.ipType = data[0].id;
+            this.$el.find(".ip-type .cur-value").html(data[0].name)
 
             var id = this.model.get("id");
             this.collection.getDeviceIpList({deviceId:id})
@@ -56,9 +77,10 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 return;
             }
             _.each(this.ipList, function(el, index, list){
-                if (el.type === 1) el.typeName = "内网IP";
-                if (el.type === 2) el.typeName = "外网IP";
-                if (el.type === 3) el.typeName = "虚拟IP"
+                var ipTypeArray = _.filter(this.ipTypeList ,function(obj) {
+                    return obj["id"] === parseInt(el.type);
+                })
+                if (ipTypeArray[0]) el.typeName = ipTypeArray[0].name;
             }.bind(this))
             this.table = $(_.template(template['tpl/deviceManage/deviceManage.ip.table.html'])({data: this.ipList}));
             this.$el.find(".ip-table-ctn").html(this.table[0]);
@@ -99,6 +121,10 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.find(".cancel").hide();
         },
 
+        onClickUpateIP: function(){
+            alert("接口暂未提供！")
+        },
+
         onClickItemDelete: function(event){
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN"){
@@ -110,17 +136,6 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             var result = confirm("你确定要删除绑定的IP吗？");
             if (!result) return
             this.collection.deleteDeviceIp({device_id:this.model.get("id"), ip_id: id})
-        },
-
-        initIpTypeDropmenu: function(){
-            var typeIpArray = [
-                {name: "内网IP", value: 1},
-                {name: "外网IP", value: 2},
-                {name: "虚拟IP", value: 3}
-            ]
-            Utility.initDropMenu(this.$el.find(".ip-type"), typeIpArray, function(value){
-                this.ipType = parseInt(value);
-            }.bind(this));
         },
 
         onClickAddIP: function(){
@@ -150,7 +165,6 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.$el = $(_.template(template['tpl/deviceManage/deviceManage.add&edit.html'])({}));
 
-            this.$el.find(".create").on("click", $.proxy(this.onClickAddIP, this))
             this.collection.off("add.ip.success");
             this.collection.off("add.ip.error");
             this.collection.on("add.ip.success", $.proxy(this.onAddIpSuccess, this));
@@ -171,8 +185,11 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find(".ip-ctn").hide();
             } else {
                 this.ipList = [];
-                this.ipType = 1;
-                this.deviceType = 1; 
+                this.deviceType = 1;
+                this.collection.off("ip.type.success");
+                this.collection.off("ip.type.error");
+                this.collection.on("ip.type.success", $.proxy(this.onGetIpTypeSuccess, this));
+                this.collection.on("ip.type.error", $.proxy(this.onGetError, this));
             }
             this.initIpTypeDropmenu();
         },
@@ -209,9 +226,10 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 return;
             }
             _.each(this.ipList, function(el, index, list){
-                if (el.type === 1) el.typeName = "内网IP";
-                if (el.type === 2) el.typeName = "外网IP";
-                if (el.type === 3) el.typeName = "虚拟IP"
+                var ipTypeArray = _.filter(this.ipTypeList ,function(obj) {
+                    return obj["id"] === parseInt(el.type);
+                })
+                if (ipTypeArray[0]) el.typeName = ipTypeArray[0].name;
             }.bind(this))
             this.table = $(_.template(template['tpl/deviceManage/deviceManage.ip.table.html'])({data: this.ipList}));
             this.$el.find(".ip-table-ctn").html(this.table[0]);
@@ -252,16 +270,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.collection.getNodeList();
 
-            if (!this.isEdit){ 
-                var typeIpArray = [
-                    {name: "内网IP", value: 1},
-                    {name: "外网IP", value: 2},
-                    {name: "虚拟IP", value: 3}
-                ]
-                Utility.initDropMenu(this.$el.find(".ip-type"), typeIpArray, function(value){
-                    this.ipType = parseInt(value);
-                }.bind(this));
-            } else {
+            if (this.isEdit){ 
                 var defaultValue = _.find(typeArray, function(object){
                     return object.value === this.model.attributes.type
                 }.bind(this));
@@ -288,7 +297,24 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             } else {
                 this.$el.find(".dropdown-node .cur-value").html(nameList[0].name);
                 this.nodeId = nameList[0].value;
-            }
+
+                this.collection.ipTypeList();
+            } 
+        },
+
+        onGetIpTypeSuccess: function(data){
+            this.ipTypeList = data;
+            var typeIpArray = [];
+            _.each(this.ipTypeList, function(el, key, ls){
+                typeIpArray.push({name: el.name, value: el.id})
+            })
+            Utility.initDropMenu(this.$el.find(".ip-type"), typeIpArray, function(value){
+                this.ipType = parseInt(value);
+            }.bind(this));
+            this.ipType = data[0].id
+            this.$el.find(".ip-type .cur-value").html(data[0].name)
+
+            this.$el.find(".create").on("click", $.proxy(this.onClickAddIP, this))
         },
 
         getArgs: function(){

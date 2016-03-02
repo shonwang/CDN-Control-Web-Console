@@ -9,6 +9,15 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
                 })
                 this.set("ipArray", temp)
             }
+            var status = this.get("status");
+            if (status === 1) this.set("statusName", '<span class="text-success">成功</span>');
+            if (status === -1) this.set("statusName", '<span class="text-info">未配置</span>');
+            if (status === 0) this.set("statusName", '<span class="text-danger">失败</span>');
+
+            var startTime = this.get("startTime")
+            if (startTime) this.set("startTimeFormated", new Date(startTime).format("yyyy/MM/dd hh:mm"));
+            var endTime = this.get("endTime")
+            if (endTime) this.set("endTimeFormated", new Date(endTime).format("yyyy/MM/dd hh:mm"));
         }
     });
 
@@ -147,6 +156,36 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
 
             $.ajax(defaultParas);
         },
+
+        getResInfo: function(args){
+            var url = BASE_URL + "/seed/cache/cache/resInfo"
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000
+            };
+            defaultParas.data = args || {};
+            defaultParas.data.t = new Date().valueOf();
+            
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                if (res)
+                    this.trigger("get.resInfo.success", res); 
+                else
+                    this.trigger("get.resInfo.error", res); 
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.resInfo.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        }
     });
 
     return LiveCurentSetupCollection;

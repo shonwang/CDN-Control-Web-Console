@@ -294,7 +294,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                 series.push(mapTemp)
             })
 
-            series[0].markLine.data = allLine;
+            //series[0].markLine.data = allLine;
             this.initMap(legendList, series)
         },
 

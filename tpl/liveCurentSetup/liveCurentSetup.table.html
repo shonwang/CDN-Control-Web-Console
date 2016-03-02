@@ -38,9 +38,16 @@
               <td>
                   <% if (data[i].attributes.status !== 1) { %>
                   <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="btn btn-primary btn-sm use">
-                      使用
+                      点击使用
+                  </a>
+                  <% } else {%>
+                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="btn btn-success btn-sm use" disabled="disabled">
+                      已经使用
                   </a>
                   <% } %>
+                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="btn btn-default btn-sm detail">
+                      详情
+                  </a>
               </td>
             </tr>
         <% } %>  

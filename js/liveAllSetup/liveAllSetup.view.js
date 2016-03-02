@@ -62,11 +62,13 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         getArgs: function(){
+            var fileName = this.$el.find("#input-name").val();
+            if (!fileName) return;
             var args = {
                 "id"          : this.model ? this.model.get("id") : 0,
                 "fileTypeId"  : this.args.fileTypeId,
                 "groupTypeId" : this.args.groupTypeId,
-                "fileName"    : this.$el.find("#input-name").val(),
+                "fileName"    : fileName,
                 "content"     : this.$el.find("#textarea-content").val(),
                 "remark"      : this.$el.find("#textarea-comment").val(),
             }

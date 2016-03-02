@@ -340,8 +340,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 var aIpTypeArray = _.filter(this.ipTypeList ,function(obj) {
                     return obj["id"] === this.model.get("resolveIpType");
                 }.bind(this))
-                if (aIpTypeArray[0])
+                if (aIpTypeArray[0]){
                     this.$el.find(".ip-type .cur-value").html(aIpTypeArray[0].name)
+                }
             }
         },
 
@@ -433,11 +434,12 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         getArgs: function(){
             var options = {
-                "id"         : this.model ? this.model.get("id") : 0,
-                "dispDomain" : this.$el.find("#input-name").val(),
-                "crossLevel" : this.crossLevel,
-                "ttl"        : this.$el.find("#input-ttl").val(),
-                "remark"     : this.$el.find("#textarea-comment").val(),
+                "id"           : this.model ? this.model.get("id") : 0,
+                "dispDomain"   : this.$el.find("#input-name").val(),
+                "crossLevel"   : this.crossLevel,
+                "ttl"          : this.$el.find("#input-ttl").val(),
+                "remark"       : this.$el.find("#textarea-comment").val(),
+                "resolveIpType": this.model ? this.model.get("resolveIpType") : this.ipType,
             };
             var setupNodes = this.$el.find(".setup input:checked");
             if (setupNodes.length === 0){

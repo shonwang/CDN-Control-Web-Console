@@ -342,6 +342,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 }.bind(this))
                 if (aIpTypeArray[0]){
                     this.$el.find(".ip-type .cur-value").html(aIpTypeArray[0].name)
+                    this.ipType = this.model.get("resolveIpType")
                 }
             }
         },
@@ -439,7 +440,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 "crossLevel"   : this.crossLevel,
                 "ttl"          : this.$el.find("#input-ttl").val(),
                 "remark"       : this.$el.find("#textarea-comment").val(),
-                "resolveIpType": this.model ? this.model.get("resolveIpType") : this.ipType,
+                "resolveIpType": this.ipType,
             };
             var setupNodes = this.$el.find(".setup input:checked");
             if (setupNodes.length === 0){

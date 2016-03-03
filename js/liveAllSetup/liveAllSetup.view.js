@@ -321,7 +321,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onClickOK: function(){
-            var result = confirm("Are you sure？") 
+            var result = confirm("你确定要这么做吗？") 
             if (!result) return;
             var ipString = this.$el.find("#textarea-ip").val()
             if (ipString.indexOf(",") > -1){

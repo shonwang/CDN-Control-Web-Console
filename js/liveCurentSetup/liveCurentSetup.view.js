@@ -343,6 +343,12 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
 
         update: function(){
             this.$el.show();
+            var args = {
+                groupId: this.groupTypeId,
+                page   : 1,
+                count  : 9999
+            }
+            this.collection.getConfList(args)
         },
 
         render: function(target) {

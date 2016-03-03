@@ -63,7 +63,16 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
         getArgs: function(){
             var fileName = this.$el.find("#input-name").val();
-            if (!fileName) return;
+            if (!fileName || fileName == "/"){
+                alert("文件名称填错了")
+                return;
+            } 
+            var re = /^\/[^\/]{0,}([a-z0-9\_\-\.]|\/[^\/]){0,}[^\/]{0,}$/;
+            result = re.test(fileName)
+            if (!result) {
+                alert("文件名称填错了")
+                return
+            }
             var args = {
                 "id"          : this.model ? this.model.get("id") : 0,
                 "fileTypeId"  : this.args.fileTypeId,

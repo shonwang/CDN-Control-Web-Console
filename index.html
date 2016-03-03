@@ -7,8 +7,10 @@
     <link href="css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
     <link href="css/jquery.datetimepicker.css" type="text/css" rel="stylesheet"/>
     <link href="css/animate.css" type="text/css" rel="stylesheet">
-    <link href="css/main.css" type="text/css" rel="stylesheet"/>
     <link rel="stylesheet" href="css/monokai_sublime.min.css">
+    <link href="css/ks-frame.css" type="text/css" rel="stylesheet"/>
+    <link href="css/ks-fonts.css" type="text/css" rel="stylesheet"/>
+    <link href="css/main.css" type="text/css" rel="stylesheet"/>
     <link rel="shortcut icon" href="http://www.ksyun.com/assets/img/static/favicon.ico" type="image/x-icon">
     <!--[if lt IE 9]><script>location.href='http://www.ksyun.com/console/system/browser'</script><![endif]-->
     <!--[if lte IE 8]>
@@ -19,7 +21,7 @@
     <title>金山云CDN中控系统</title>
 </head>
 <body>
-    <div class="navbar navbar-inverse">
+<!--     <div class="navbar navbar-inverse">
         <div class="container ksc-nav-ctn">
             <div class="navbar-header">
                 <a class="navbar-brand" href="#">
@@ -33,7 +35,43 @@
         <div class="row">
             <div class="col-md-12 ksc-content"></div>
         </div>
+    </div> -->
+<!-- 顶部导航栏 -->
+<header class="ctrl-nav-container">
+    <nav class="clearfix">
+        <div class="ksyun-logo pull-left">
+            <a href="javascript:;">
+                <i class="icon icon-logo-32"></i><span><strong>CDN</strong>中控系统</span>
+            </a>
+        </div>
+        <!-- 收起展开开关 -->
+        <div class="sidebar-btn pull-left text-center">
+            <i class="icon icon-shink-20"></i>
+        </div>
+        <!-- 顶部导航栏右侧菜单-->
+        <ul class="nav-navbar pull-right text-center list-unstyled">
+            <li>
+                <a href="javascript:;">
+                    <img class="head-pic" src="images/head.bmp" alt="头像">
+                    <span class="user-name">未登录</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<!-- 侧边导航栏 -->
+<div class="ctrl-sidebar-container">
+    <nav>
+        <ul class="list-unstyled"></ul>
+    </nav>
+</div>
+<div class="ctrl-main-container">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 ksc-content"></div>
+        </div>
     </div>
+</div>
 <script type="text/javascript" src="libs/jquery.min.js"></script>
 <script type="text/javascript" src="libs/bootstrap.min.js"></script>
 <script type="text/javascript" src="libs/jqPaginator.js"></script>
@@ -43,6 +81,7 @@
 <script type="text/javascript" src="libs/echart-plain.js"></script>
 <script type="text/javascript" src="libs/weige-alert.js"></script>
 <script type="text/javascript" src="libs/highlight.min.js"></script>
+<script type="text/javascript" src="libs/sidebar.js"></script>
 <script data-main="js/main.js" src="libs/require.min.js"></script>
 </body>
 </html>

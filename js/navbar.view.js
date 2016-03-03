@@ -68,7 +68,7 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
                 queryData      : {},
                 successCallBack: function(res){
                     if (res && res.status !== 400) {
-                        $(".nav-username").html(res.mgs);
+                        $(".user-name").html(res.mgs);
                     } else {
                         redirect();
                     }
@@ -82,7 +82,7 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
         },
 
         render: function(target) {
-            this.$el.appendTo(target)
+            //this.$el.appendTo(target)
         }
 
     });

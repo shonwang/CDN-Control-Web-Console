@@ -145,6 +145,15 @@ td .table{
   }
 }
 
+.nav-navbar > li:nth-child(1){
+    width: 150px;
+}
+
+.ctrl-nav-container a,
+.ctrl-sidebar-container a{
+    text-decoration:none;
+}
+
 /* dialog 基本设置 */
 .weige .dialog{position:fixed; _position:absolute; top:0; z-index:100; background:#fff; overflow:hidden;padding-bottom:15px;box-shadow:0 5px 15px rgba(0,0,0,.5);}
 .weige .dialog .head{height:80px; line-height:80px; overflow:hidden; background:#fff;position:relative;}

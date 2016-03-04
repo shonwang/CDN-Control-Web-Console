@@ -80,6 +80,9 @@ define("modal.view", ['require','exports', 'template', 'utility'],
 
         render: function() {
             this.$el.appendTo(document.body);
+            this.$el.find("pre code").each(function(i, block) {
+                hljs.highlightBlock(block);
+            });
         }
 
     });

@@ -55,6 +55,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 }.bind(this));
                 this.$el.find(".dropdown-filetype .cur-value").html(defaultValue.name);
                 this.$el.find(".dropdown-filetype .dropdown-toggle").attr("disabled", "disabled")
+                this.$el.find("#input-name").attr("disabled", "disabled")
             } else {
                 this.$el.find(".dropdown-filetype .cur-value").html(fileTypeList[0].name)
                 this.args.fileTypeId = fileTypeList[0].value;
@@ -177,7 +178,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/liveAllSetup/liveAllSetup.table.html'])({data: this.historyList, dataTpye: 3}));
+            this.table = $(_.template(template['tpl/liveAllSetup/liveAllSetup.table.html'])({data: this.historyList, dataTpye: 3, currentID: this.model.get("id")}));
             if (this.historyList.length !== 0){
                 this.$el.find(".table-ctn").html(this.table[0]);
                 this.table.find("tbody .used").on("click", $.proxy(this.onClickItemUsed, this));

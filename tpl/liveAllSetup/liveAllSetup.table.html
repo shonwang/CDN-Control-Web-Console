@@ -8,6 +8,7 @@
         <% } %> 
         <th>ID</th>
         <th>文件路径</th>
+        <th>文件类型</th>
         <th>createTime</th>
         <th>md5</th>
         <% if (dataTpye === 1 || dataTpye === 3) { %>
@@ -29,6 +30,7 @@
                     <%=data[i].attributes["fileName"]%>
                   </a>
               </td>
+              <td><%=data[i].attributes["fileTypeName"]%></td>
               <td><%=data[i].attributes["createTimeFormated"]%></td>
               <td><%=data[i].attributes["md5"]%></td>
               <% if (dataTpye === 1 || dataTpye === 3) { %>

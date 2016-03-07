@@ -113,7 +113,7 @@ Dialog.prototype.createDialog = function(){
 	this.weige = document.createElement('div');
 	this.weige.className = 'weige';
 	this.oDialog = document.createElement('div');
-	this.oDialog.className = 'dialog fadeInDown animated';
+	this.oDialog.className = 'dialog tada animated';
 	this.oDialog.style.width = this.settings.w + 'px';
 	if(this.settings.h=="auto"){
 		this.oDialog.style.height = "auto";

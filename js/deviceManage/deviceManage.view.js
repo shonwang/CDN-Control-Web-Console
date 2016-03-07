@@ -216,6 +216,13 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onAddIpSuccess: function(res){
+            var ipTypeArray = _.filter(this.ipList ,function(obj) {
+                return obj["id"] === parseInt(res.id);
+            })
+            if (ipTypeArray.length > 0){
+                alert("这个IP已经添加过了")
+                return;
+            }
             this.ipList.push(res);
             this.updateIpTable();
         },

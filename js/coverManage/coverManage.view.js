@@ -170,7 +170,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             //         },
             //     ]
             // };
-            var legendList = [],
+            var legendList = [], points = [],
                 series = [
                     {
                         name: '全国',
@@ -188,6 +188,32 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                             }
                         },
                         data:[],
+                        markPoint : {
+                              symbolSize: 5,       // 标注大小，半宽（半径）参数，当图形为方向或菱形则总宽度为symbolSize * 2
+                              itemStyle: {
+                                  normal: {
+                                      borderColor: '#87cefa',
+                                      borderWidth: 0,            // 标注边线线宽，单位px，默认为1
+                                      label: {
+                                          show: false
+                                      }
+                                  },
+                                  emphasis: {
+                                      borderColor: '#1e90ff',
+                                      borderWidth: 5,
+                                      label: {
+                                          show: true
+                                      }
+                                  }
+                              },
+                              // large: true,
+                              // effect : {
+                              //     show: true
+                              // },
+                              data : [
+                                  // {name: "湖北联通", value: 24},
+                              ]
+                          },
                         markLine : {
                             smooth:true,
                             // effect : {
@@ -225,6 +251,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
 
             _.each(res.relation, function(el, key, list){
                 legendList.push(el.name);
+                points.push({name: el.name})
                 var mapTemp = {
                         name: '',
                         type: 'map',
@@ -295,6 +322,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             })
 
             //series[0].markLine.data = allLine;
+            series[0].markPoint.data = points;
             this.initMap(legendList, series)
         },
 
@@ -335,9 +363,16 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                 dataRange: {
                     x:'left',
                     y:'top',
-                    min : 0,
-                    max : 4,
-                    calculable : true,
+                    // min : 0,
+                    // max : 4,
+                    splitList: [
+                        {start: 4, end: 4, label: 'L4'},
+                        {start: 3, end: 3, label: 'L3'},
+                        {start: 2, end: 2, label: 'L2'},
+                        {start: 1, end: 1, label: 'L1'},
+                        {start: 0, end: 0, label: 'L0'}
+                    ],
+                    //calculable : true,
                     color: ['#ff3333', 'orange', 'yellow','lime','aqua'],
                     textStyle:{
                         color:'#fff'
@@ -350,7 +385,12 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.chart.setOption(option);
             this.chart.on(echarts.config.EVENT.CLICK, function (){
                 console.log(arguments)
-            })
+                var obj = arguments[0]
+                if (obj.name.indexOf("节点") > -1){
+                    var legend = this.chart.chart['map'].component.legend;
+                    legend.setSelected(obj.name)
+                }
+            }.bind(this))
 
             this.$el.find(".list-ctn").html(_.template(template['tpl/coverManage/coverManage.nodelist.html'])({data: legendList}));
 

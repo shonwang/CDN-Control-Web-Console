@@ -344,6 +344,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.$el.find(".ip-type .cur-value").html(aIpTypeArray[0].name)
                     this.ipType = this.model.get("resolveIpType")
                 }
+                this.$el.find(".ip-type #dropdown-ip-type").attr("disabled", "disabled")
             }
         },
 

@@ -192,18 +192,20 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                               symbolSize: 5,       // 标注大小，半宽（半径）参数，当图形为方向或菱形则总宽度为symbolSize * 2
                               itemStyle: {
                                   normal: {
-                                      borderColor: '#87cefa',
+                                      borderColor: '#1e90ff',
                                       borderWidth: 0,            // 标注边线线宽，单位px，默认为1
                                       label: {
                                           show: false
-                                      }
+                                      },
+                                      color: "#fff"
                                   },
                                   emphasis: {
                                       borderColor: '#1e90ff',
-                                      borderWidth: 5,
+                                      borderWidth: 4,
                                       label: {
                                           show: true
-                                      }
+                                      },
+                                      color: "red"
                                   }
                               },
                               // large: true,

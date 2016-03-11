@@ -37,7 +37,8 @@ body .well, .container .well, .container-fluid .well, body .jumbotron, .containe
     border: 0;
 }
 
-td a{
+td a,
+td input[type="number"]{
     margin-right: 10px;
 }
 

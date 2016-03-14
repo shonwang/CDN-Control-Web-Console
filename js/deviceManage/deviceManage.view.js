@@ -41,7 +41,12 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.uploader.init();
 
             this.uploader.bind("Error", function(up, obj){
-                alert("导入失败了！")
+                try{
+                    var error = JSON.parse(obj.response)
+                    alert(error.message)
+                } catch(e){
+                    alert("导入失败了！")
+                }
                 this.isError = true;
             }.bind(this));
 
@@ -50,6 +55,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 if (this.isError) this.isError = false;
                 if (up.files.length > 1) this.uploader.splice(0, 1);
                 this.$el.find("#import-device-file").val(up.files[0].name);
+                this.$el.find(".progress-bar").css("width", "0%");
+                this.$el.find(".progress-bar").html("0%");
             }.bind(this));
 
             this.uploader.bind("FileUploaded", function(up, obj, res){
@@ -59,17 +66,15 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.uploader.bind("UploadProgress", function(up, obj){
                 if (this.uploader.state === plupload.STOPPED) return;
                 if (!obj) return;
-                //this.uploader.files[index].percent = obj.percent;
                 this.$el.find(".progress-bar").css("width", obj.percent + "%");
                 this.$el.find(".progress-bar").html(obj.percent + "%");
             }.bind(this));
 
-            this.uploader.bind("UploadComplete", function(up, obj){
+            this.uploader.bind("UploadComplete", function(up, obj, res){
                 this.isUploading = false;
                 this.uploader.disableBrowse(false);
                 this.$el.find("#import-device-button").removeAttr("disabled")
                 this.$el.find("#import-device-file").removeAttr("readonly")
-                //this.$el.find(".progress-ctn").hide();
                 if (this.isError) return;
                 alert("导入完成！")
                 this.options.uploadCompleteCallback && this.options.uploadCompleteCallback();

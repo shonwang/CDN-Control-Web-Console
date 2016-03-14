@@ -1,5 +1,94 @@
 define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
+    var ImportDevciceView = Backbone.View.extend({
+        events: {
+            //"click .search-btn":"onClickSearch"
+        },
+
+        initialize: function(options) {
+            this.options = options;
+            this.collection = options.collection;
+            this.model = options.model;
+            this.$el = $(_.template(template['tpl/deviceManage/deviceManage.import.html'])({}));
+            this.$el.find(".progress-ctn").hide();
+
+            this.isUploading = false;
+
+            this.multipartParams = {
+                "key": "${filename}",
+                "acl": "private",
+                "signature" : "",
+                "KSSAccessKeyId": "",
+                "policy": ""
+            };
+
+            this.uploadOption = {
+                runtimes : 'html5,flash,silverlight,html4', //上传模式，依次退化;
+                url: "http://kssws.ks-cdn.com/", 
+                browse_button: 'import-device-button', //触发对话框的DOM元素自身或者其ID
+                flash_swf_url : 'resource/Moxie.swf', //Flash组件的相对路径
+                silverlight_xap_url : 'resource/Moxie.xap', //Silverlight组件的相对路径;
+                multipart: true,
+                multipart_params: this.multipartParams,
+                multi_selection: false,
+                send_file_name: false, //是否添加额外的文件名，后端需要根据此计算签名，默认是true
+            };
+        },
+
+        initUploader: function(){
+            this.uploader = new plupload.Uploader(this.uploadOption);
+            this.uploader.init();
+
+            this.uploader.bind("Error", function(up, obj){
+                alert("导入失败了！")
+            });
+
+            this.uploader.bind("FilesAdded", function(up, obj){
+                if (!up) return;
+                if (up.files.length > 1) this.uploader.splice(0, 1);
+                this.$el.find("#import-device-file").val(up.files[0].name);
+            }.bind(this));
+
+            this.uploader.bind("FileUploaded", function(up, obj, res){
+                this.uploader.splice(0, 1);
+            }.bind(this)); 
+
+            this.uploader.bind("UploadProgress", function(up, obj){
+                if (this.uploader.state === plupload.STOPPED) return;
+                if (!obj) return;
+                //this.uploader.files[index].percent = obj.percent;
+                this.$el.find(".progress-bar").css("width", obj.percent);
+                this.$el.find(".progress-bar").html(obj.percent);
+            }.bind(this));
+
+            this.uploader.bind("UploadComplete", function(up, obj){
+                this.isUploading = false;
+                this.uploader.disableBrowse(false);
+                this.$el.find("#import-device-button").removeAttr("disabled")
+                this.$el.find("#import-device-file").removeAttr("readonly")
+                alert("导入完成！")
+                this.options.uploadCompleteCallback && this.options.uploadCompleteCallback();
+            }.bind(this));
+        },
+
+        onClickOK: function(){
+            if (this.isUploading) return false;
+            this.isUploading = true;
+            this.$el.find(".progress-ctn").show();
+            this.$el.find("#import-device-button").attr("disabled", "disabled")
+            this.$el.find("#import-device-file").attr("readonly", "true")
+            this.uploader.disableBrowse(true);
+            //this.uploader.start();
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target);
+            setTimeout(function(){
+                this.initUploader();
+            }.bind(this), 200)
+        }
+    });
+
     var IpManageView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
@@ -390,6 +479,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("update.device.status.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
+            this.$el.find(".opt-ctn .import").on("click", $.proxy(this.onClickImport, this));
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".opt-ctn .multi-play").on("click", $.proxy(this.onClickMultiPlay, this));
             this.$el.find(".opt-ctn .multi-stop").on("click", $.proxy(this.onClickMultiStop, this));
@@ -437,6 +527,35 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.queryArgs.devicename = this.$el.find("#input-domain").val() || null;
             this.queryArgs.nodename = this.$el.find("#input-node").val() || null;
             this.collection.getDeviceList(this.queryArgs);
+        },
+
+        onClickImport: function(){
+            if (this.importDevicePopup) $("#" + this.importDevicePopup.modalId).remove();
+
+            var importDeviceView = new ImportDevciceView({
+                collection: this.collection,
+                uploadCompleteCallback: function(){
+                    //this.importDevicePopup.$el.modal("hide");
+                    //this.onClickQueryButton();
+                }.bind(this)
+            });
+            var options = {
+                title:"导入设备",
+                body : importDeviceView,
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback:  function(){
+                    var options = importDeviceView.onClickOK();
+                    if (!options) return;
+                    //this.collection.addDevice(options)
+                    //this.importDevicePopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){
+                    importDeviceView.uploader.stop();
+                    importDeviceView.uploader.destroy();
+                }.bind(this)
+            }
+            this.importDevicePopup = new Modal(options);
         },
 
         onClickCreate: function(){

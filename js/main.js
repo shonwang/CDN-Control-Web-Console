@@ -43,7 +43,10 @@ requirejs.config({
         "liveCurentSetup.model": 'liveCurentSetup/liveCurentSetup.model',
 
         "ipManage.view"        : 'ipManage/ipManage.view',
-        "ipManage.model"       : 'ipManage/ipManage.model'
+        "ipManage.model"       : 'ipManage/ipManage.model',
+
+        "businessManage.view"  : 'businessManage/businessManage.view',
+        "businessManage.model" : 'businessManage/businessManage.model'
     },
     urlArgs: new Date().valueOf()
 });

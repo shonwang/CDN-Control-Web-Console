@@ -230,6 +230,11 @@ var sidebarData = [
 		url:"",
 		levelTwo:[
 			{
+				name:'业务管理',
+				iconClass:'icon-cache-16',
+				url:"#/businessManage"
+			},
+			{
 				name:'所有配置',
 				iconClass:'icon-set-20',
 				url:"#/liveAllSetup"

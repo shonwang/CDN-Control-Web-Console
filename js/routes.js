@@ -13,7 +13,8 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             "coverManage"         : "coverManage",
             "liveAllSetup"        : "liveAllSetup",
             "liveCurentSetup"     : "liveCurentSetup",
-            "ipManage"            : "ipManage"
+            "ipManage"            : "ipManage",
+            "businessManage"      : "businessManage"
         },
 
         initialize: function(){
@@ -55,10 +56,28 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                 case "ipManage":
                     this.ipManageView.hide();
                   break;
+                case "businessManage":
+                    this.businessManageView.hide();
+                  break;
                 default:
             }
             if (callback)
                 callback.apply(this, args);
+        },
+
+        businessManage: function(){
+            require(['businessManage.view', 'businessManage.model'], function(BusinessManageView, BusinessManageModel){
+                this.curPage = 'businessManage';
+                if (!this.businessManageModel)
+                    this.businessManageModel = new BusinessManageModel();
+                if (!this.businessManageView ){
+                    var options = {collection: this.BusinessManageModel};
+                    this.businessManageView = new BusinessManageView(options);
+                    this.businessManageView.render($('.ksc-content'));
+                } else {
+                    this.businessManageView.update();
+                }
+            }.bind(this));
         },
 
         ipManage: function(){

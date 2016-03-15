@@ -225,7 +225,7 @@ var sidebarData = [
 		]
 	},
 	{
-		name:'直播配置',
+		name:'配置拉取',
 		iconClass:'icon-webcast-16',
 		url:"",
 		levelTwo:[

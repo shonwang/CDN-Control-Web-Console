@@ -547,8 +547,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             var importDeviceView = new ImportDevciceView({
                 collection: this.collection,
                 uploadCompleteCallback: function(){
-                    //this.importDevicePopup.$el.modal("hide");
-                    //this.onClickQueryButton();
+                    this.onClickQueryButton();
                 }.bind(this)
             });
             var options = {
@@ -558,9 +557,6 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 type     : 2,
                 onOKCallback:  function(){
                     var options = importDeviceView.onClickOK();
-                    if (!options) return;
-                    //this.collection.addDevice(options)
-                    //this.importDevicePopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){
                     importDeviceView.uploader.stop();

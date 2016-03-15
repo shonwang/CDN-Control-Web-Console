@@ -78,6 +78,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 if (this.isError) return;
                 alert("导入完成！")
                 this.options.uploadCompleteCallback && this.options.uploadCompleteCallback();
+                this.$el.find("#import-device-file").val("");
             }.bind(this));
         },
 

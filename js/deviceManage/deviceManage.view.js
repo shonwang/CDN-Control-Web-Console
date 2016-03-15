@@ -14,6 +14,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.isUploading = false;
             this.isError = false;
+            this.isSelectedFile = false;
 
             this.multipartParams = {
                 "key": "${filename}",
@@ -48,6 +49,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     alert("导入失败了！")
                 }
                 this.isError = true;
+                this.uploader.splice(0, 1);
+                this.isSelectedFile = false;
             }.bind(this));
 
             this.uploader.bind("FilesAdded", function(up, obj){
@@ -57,10 +60,12 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find("#import-device-file").val(up.files[0].name);
                 this.$el.find(".progress-bar").css("width", "0%");
                 this.$el.find(".progress-bar").html("0%");
+                this.isSelectedFile = true;
             }.bind(this));
 
             this.uploader.bind("FileUploaded", function(up, obj, res){
                 this.uploader.splice(0, 1);
+                this.isSelectedFile = false;
             }.bind(this)); 
 
             this.uploader.bind("UploadProgress", function(up, obj){
@@ -75,14 +80,18 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.uploader.disableBrowse(false);
                 this.$el.find("#import-device-button").removeAttr("disabled")
                 this.$el.find("#import-device-file").removeAttr("readonly")
+                this.$el.find("#import-device-file").val("");
                 if (this.isError) return;
                 alert("导入完成！")
                 this.options.uploadCompleteCallback && this.options.uploadCompleteCallback();
-                this.$el.find("#import-device-file").val("");
             }.bind(this));
         },
 
         onClickOK: function(){
+            if (!this.isSelectedFile){
+                alert("你还没有选择要导入的文件，或者你选择的文件已经导入过了！")
+                return false;
+            }
             if (this.isUploading) return false;
             var result = confirm("你确定要导入设备吗？");
             if (!result) return false;

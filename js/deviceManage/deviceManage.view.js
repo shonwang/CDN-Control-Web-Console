@@ -32,6 +32,12 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 silverlight_xap_url : 'resource/Moxie.xap', //Silverlight组件的相对路径;
                 multipart: true,
                 //multipart_params: this.multipartParams,
+                filters: {
+                  // mime_types : [
+                  //   { title : "Excel files", extensions : "xls" }
+                  // ],
+                  max_file_size: 1024 * 1024 * 10
+                },
                 multi_selection: false,
                 send_file_name: false, //是否添加额外的文件名，后端需要根据此计算签名，默认是true
             };
@@ -42,6 +48,11 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.uploader.init();
 
             this.uploader.bind("Error", function(up, obj){
+                console.log(obj)
+                if (obj && obj.code === -600){
+                    alert(obj.message);
+                    return;
+                }
                 try{
                     var error = JSON.parse(obj.response)
                     alert(error.message)

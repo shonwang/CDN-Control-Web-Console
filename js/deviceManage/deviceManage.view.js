@@ -48,9 +48,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.uploader.init();
 
             this.uploader.bind("Error", function(up, obj){
-                console.log(obj)
                 if (obj && obj.code === -600){
-                    alert(obj.message);
+                    alert("上传文件超出最大限制:10MB");
                     return;
                 }
                 try{

@@ -51,7 +51,7 @@ if(!kingSoft.tool){
 		var _closeCallback=closeCallback || function(){};
 		var arr=[];
 		arr.push('<div class="manage-dialog-baseMessage">');
-		arr.push('<div style="height:auto;margin-bottom:10px;">'+message+'</div>');
+		arr.push('<div style="height:auto;margin-bottom:10px;max-height:500px;overflow-y:auto;">'+message+'</div>');
 		arr.push('<hr style="margin-bottom: 10px">');
 		arr.push('<div class="manage-dialog-change-btnContainer text-right"><button class="btn btn-primary">确定</button></div>');
 		arr.push('</div>');

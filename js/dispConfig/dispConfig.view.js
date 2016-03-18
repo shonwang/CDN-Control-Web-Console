@@ -256,11 +256,21 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.nodesEl = this.table.find("tbody .nodes .edit")
             this.nodesEl.on("click", $.proxy(this.onClickItemEdit, this));
             this.table.find("tbody .nodes .delete").on("click", $.proxy(this.onClickItemDelete, this));
+            this.table.find("tbody .nodes .weight").on("keyup", $.proxy(this.onClickItemWeightInput, this));
             this.table.find("tbody .add").on("click", $.proxy(this.onClickItemAdd, this));
             this.table.find("tbody .adjust").on("click", $.proxy(this.onClickItemAdjust, this));
         },
 
-        onClickItemAdjust: function(){
+        onClickItemWeightInput: function(event){
+            var eventTarget = event.srcElement || event.target,
+                value = $(eventTarget).val(),
+                maxValue = $(eventTarget).attr("max");
+            if (parseInt(value) > parseInt(maxValue)){
+                $(eventTarget).val("0")
+            }
+        },
+
+        onClickItemAdjust: function(event){
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();

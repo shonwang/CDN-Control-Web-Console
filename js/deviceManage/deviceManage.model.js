@@ -11,6 +11,7 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
             if (type == 1) this.set("typeName",'lvs');
             if (type == 2) this.set("typeName",'cache');
             if (type == 3) this.set("typeName",'relay');
+            if (type == 4) this.set("typeName",'live');
 
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
             this.set("isChecked", false);

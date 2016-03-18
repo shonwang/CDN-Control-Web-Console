@@ -23,7 +23,7 @@
                               <tr data-id="<%=data[i].attributes["listFormated"][k].attributes.id%>" <% if(data[i].attributes["listFormated"][k].attributes["isUpdated"]) { %> class="success" <% } %>>
                                 <td style="width:400px"><%=data[i].attributes["listFormated"][k].attributes["nodeString"]%></td>
                                 <td>
-                                    <input type="number" id="<%=data[i].attributes["listFormated"][k].attributes['id']%>" region-id="<%=data[i].attributes.id%>" class="weight" max="<%=data[i].attributes["listFormated"][k].attributes['dispConfIpInfo.currNum']%>" min="0" value="<%=data[i].attributes["listFormated"][k].attributes['dispConfIpInfo.currNum']%>" style="display: none">
+                                    <input type="number" id="<%=data[i].attributes["listFormated"][k].attributes['id']%>" region-id="<%=data[i].attributes.id%>" class="weight" max="<%=data[i].attributes["listFormated"][k].attributes['dispConfIpInfo.currNum']%>" min="0" value="<%=data[i].attributes["listFormated"][k].attributes['dispConfIpInfo.currNum']%>">
                                     <a href="javascript:void(0)" id="<%=data[i].attributes["listFormated"][k].attributes['id']%>" region-id="<%=data[i].attributes.id%>" class="edit" title="编辑节点">
                                       <span class="glyphicon glyphicon-edit"></span>
                                     </a>

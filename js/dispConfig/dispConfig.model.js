@@ -303,8 +303,10 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
             }.bind(this);
 
             defaultParas.error = function(response, msg){
-                if (response&&response.responseText)
-                    response = JSON.parse(response.responseText)
+                try{
+                    if (response&&response.responseText)
+                        response = JSON.parse(response.responseText)
+                } catch(e){}
                 this.trigger("dispDns.error", response); 
             }.bind(this);
 

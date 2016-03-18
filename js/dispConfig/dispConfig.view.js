@@ -114,6 +114,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 aSelectedNode.id = aSelectedNode["node.id"];
                 selectedNodes.push(aSelectedNode)
             }
+            console.log(selectedNodes)
             return selectedNodes
         },
 
@@ -213,7 +214,8 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                       "dgroupId" : el1.get("dispGroup.id") || this.queryArgs.groupId,
                       "nodeId"   : el1.get("node.id"),
                       "regionId" : el.get("region.id"),
-                      "ttl"      : el.get("dispGroup.ttl")
+                      "ttl"      : el.get("dispGroup.ttl"),
+                      "ipNum"    : el1.get("dispConfIpInfo.currNum"),
                     };
                     tempArray.push(tempObj)
                 }.bind(this))
@@ -237,6 +239,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         initTable: function(){
+            console.log(this.collection.models)
             this.table = $(_.template(template['tpl/dispConfig/dispConfig.table.html'])({data: this.collection.models}));
 
             if (this.collection.models.length === 0){
@@ -257,6 +260,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.nodesEl.on("click", $.proxy(this.onClickItemEdit, this));
             this.table.find("tbody .nodes .delete").on("click", $.proxy(this.onClickItemDelete, this));
             this.table.find("tbody .nodes .weight").on("keyup", $.proxy(this.onClickItemWeightInput, this));
+            this.table.find("tbody .nodes .weight").on("blur", $.proxy(this.onBlurItemWeightInput, this));
             this.table.find("tbody .add").on("click", $.proxy(this.onClickItemAdd, this));
             this.table.find("tbody .adjust").on("click", $.proxy(this.onClickItemAdjust, this));
         },
@@ -268,6 +272,19 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             if (parseInt(value) > parseInt(maxValue)){
                 $(eventTarget).val("0")
             }
+        },
+
+        onBlurItemWeightInput: function(event){
+            var eventTarget = event.srcElement || event.target, id, regionId, value;
+            value    = $(eventTarget).val();
+            id       = $(eventTarget).attr("id");
+            regionId = $(eventTarget).attr("region-id");
+            var model = this.collection.get(regionId),
+                list = model.get("listFormated");
+            var selectedNode = _.filter(list ,function(obj) {
+                return obj["id"] === parseInt(id);
+            })
+            selectedNode[0].set("dispConfIpInfo.currNum", parseInt(value))
         },
 
         onClickItemAdjust: function(event){

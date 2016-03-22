@@ -242,7 +242,7 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
                         var args = _.extend(this.queryArgs);
                         args.page = num;
                         args.count = this.queryArgs.count;
-                        this.collection.getNodeList(args);
+                        this.collection.queryChannel(args);
                     }
                 }.bind(this)
             });

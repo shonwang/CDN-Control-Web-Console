@@ -6,60 +6,105 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initialize: function(options) {
-            this.collection = options.collection;
-            this.isEdit     = options.isEdit;
-            this.model      = options.model;
+            this.options     = options
+            this.collection  = options.collection;
+            this.isEdit      = options.isEdit;
+            this.model       = options.model;
+            this.busTypeArray= options.busTypeArray;
 
             if (this.isEdit){
                 this.args = {
-                    "id"          : this.model.get("id"),
-                    "fileTypeId"  : this.model.get("fileTypeId"),
-                    "groupTypeId" : this.model.get("groupTypeId"),
-                    "fileName"    : this.model.get("fileName"),
-                    "content"     : this.model.get("content"),
-                    "remark"      : this.model.get("remark"),
+                    "fileName": this.model.get("fileName"),
+                    "nodeGroupId": this.model.get("nodeGroupId"),
+                    "bisTypeId": this.model.get("bisTypeId"),
+                    "confFileId": this.model.get("id"),
+                    "content": this.model.get("content"),
+                    "remark": this.model.get("remark")
                 }
             } else {
                 this.args = {
-                    "fileTypeId"  : "",
-                    "groupTypeId" : "",
-                    "fileName"    : "",
-                    "content"     : "",
-                    "remark"      : "",
+                    "fileName":"",
+                    "nodeGroupId":"",
+                    "bisTypeId":"",
+                    "content":"",
+                    "remark":""
                 }
             }
 
             this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.add&edit.html'])({data: this.args}));
+            this.$el.find(".ok-again").on("click", $.proxy(this.onClickOK, this));
+            this.$el.find(".cancel").on("click", $.proxy(this.onClickCancel, this));
+            this.$el.find(".fileContentType input").on("click", $.proxy(this.onClickfileContentTypeInput, this))
 
-            this.collection.off("get.fileType.success");
-            this.collection.off("get.fileType.error");
+            this.collection.off("get.nodeGroupList.success");
+            this.collection.off("get.nodeGroupList.error");
 
-            this.collection.on("get.fileType.success", $.proxy(this.initDropList, this));
-            this.collection.on("get.fileType.error", $.proxy(this.onGetError, this));
-            this.collection.getFileTypeList();
+            this.collection.on("get.nodeGroupList.success", $.proxy(this.initDropList, this));
+            this.collection.on("get.nodeGroupList.error", $.proxy(this.onGetError, this));
+
+            this.initBussnessDropList();
+        },
+
+        onClickfileContentTypeInput: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            if (eventTarget.checked === true && eventTarget.value == "1")
+                this.$el.find(".file-content").slideUp(200)
+            else
+                this.$el.find(".file-content").slideDown(200)
+        },
+
+        onClickCancel: function(){
+            this.options.cancelCallback&&this.options.cancelCallback();
+        },
+
+        initBussnessDropList: function(){
+            rootNode = this.$el.find(".dropdown-bustype");
+            Utility.initDropMenu(rootNode, this.busTypeArray, function(value){
+                this.args.bisTypeId = parseInt(value)
+                this.collection.getNodeGroupList({bisTypeId: this.args.bisTypeId})
+            }.bind(this));
+
+            if (!this.isEdit){
+                this.args.bisTypeId = this.busTypeArray[0].value;
+                this.$el.find(".dropdown-bustype .cur-value").html(this.busTypeArray[0].name)
+            } else {
+                this.$el.find("#input-name").attr("readonly", true);
+                this.$el.find(".fileContentType").remove();
+                var defaultValue = _.find(this.busTypeArray, function(object){
+                    return object.value === this.model.get("bisTypeId")
+                }.bind(this));
+                this.$el.find(".dropdown-bustype .cur-value").html(defaultValue.name);
+                this.$el.find(".dropdown-bustype .dropdown-toggle").attr("disabled", "disabled")
+            }
+            this.collection.getNodeGroupList({bisTypeId: this.args.bisTypeId})
         },
 
         initDropList: function(res){
-            this.fileTypeList = res;
-            var fileTypeList = [];
-            _.each(this.fileTypeList, function(el, index, list){
-                fileTypeList.push({name: el.name, value:el.id})
+            var tempNgList = [];
+            _.each(res.nodeGroupList, function(el, index, list){
+                tempNgList.push({name: el.name, value:el.id})
             });
-            Utility.initDropMenu(this.$el.find(".dropdown-filetype"), fileTypeList, function(value){
-                this.args.fileTypeId = parseInt(value);
+            Utility.initDropMenu(this.$el.find(".dropdown-node-group"), tempNgList, function(value){
+                this.args.nodeGroupId = parseInt(value);
             }.bind(this));
 
             if (this.isEdit){
-                var defaultValue = _.find(fileTypeList, function(object){
-                    return object.value === this.model.attributes.fileTypeId
+                var defaultValue = _.find(tempNgList, function(object){
+                    return object.value === this.model.get("nodeGroupId")
                 }.bind(this));
-                this.$el.find(".dropdown-filetype .cur-value").html(defaultValue.name);
-                this.$el.find(".dropdown-filetype .dropdown-toggle").attr("disabled", "disabled")
-                this.$el.find("#input-name").attr("disabled", "disabled")
+                this.$el.find(".dropdown-node-group .cur-value").html(defaultValue.name);
+                this.$el.find(".dropdown-node-group .dropdown-toggle").attr("disabled", "disabled")
             } else {
-                this.$el.find(".dropdown-filetype .cur-value").html(fileTypeList[0].name)
-                this.args.fileTypeId = fileTypeList[0].value;
+                this.$el.find(".dropdown-node-group .cur-value").html(tempNgList[0].name)
+                this.args.nodeGroupId = tempNgList[0].value;
             }
+        },
+
+        onClickOK: function(){
+            var args = this.getArgs();
+            if (!args) return;
+            this.options.okCallback&&this.options.okCallback(args);
         },
 
         getArgs: function(){
@@ -72,7 +117,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             result = re.test(fileName)
             if (!result) {
                 alert("文件名称填错了")
-                return
+                return;
             }
             var args = {
                 "id"          : this.model ? this.model.get("id") : 0,
@@ -109,53 +154,19 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.historyList = []
 
-            // this.collection.off("get.addConf.success");
-            // this.collection.off("get.addConf.error");
             this.collection.off("get.historylist.success");
             this.collection.off("get.historylist.error");
 
-            // this.collection.on("get.addConf.success", function(){
-            //     alert("新增成功！")
-            //     this.collection.getHisroryFileList(this.args)
-            // }.bind(this));
-            // this.collection.on("get.addConf.error", $.proxy(this.onGetError, this));
             this.collection.on("get.historylist.success", $.proxy(this.onSetupHistoryListSuccess, this));
             this.collection.on("get.historylist.error", $.proxy(this.onGetError, this));
 
             this.args = {
-                fileId: this.model.attributes.id,
-                page: 1,
-                count: 9999
+                confFileId: this.model.get("id")
             };
 
             this.collection.getHisroryFileList(this.args)
 
-            //this.$el.find(".create").on("click", $.proxy(this.onClickCreate, this))
             this.$el.find(".back").on("click", $.proxy(this.onClickCancel, this))
-        },
-
-        onClickCreate: function(){
-            if (this.addFilePopup) $("#" + this.addFilePopup.modalId).remove();
-
-            var addFileView = new AddOrEditFlieView({
-                collection: this.collection, 
-                isEdit    : false
-            });
-            var options = {
-                title:"新建",
-                body : addFileView,
-                backdrop : 'static',
-                type     : 2,
-                width    : 800,
-                onOKCallback:  function(){
-                    var options = addFileView.getArgs();
-                    if (!options) return;
-                    this.collection.addConf(options)
-                    this.addFilePopup.$el.modal("hide");
-                }.bind(this),
-                onHiddenCallback: function(){}
-            }
-            this.addFilePopup = new Modal(options);
         },
 
         onClickCancel: function(){
@@ -178,7 +189,11 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/liveAllSetup/liveAllSetup.table.html'])({data: this.historyList, dataTpye: 3, currentID: this.model.get("id")}));
+            this.table = $(_.template(template['tpl/liveAllSetup/liveAllSetup.table.html'])({
+                data: this.historyList, 
+                dataTpye: 3, 
+                currentHisId: this.model.get("confFileHisId")
+            }));
             if (this.historyList.length !== 0){
                 this.$el.find(".table-ctn").html(this.table[0]);
                 this.table.find("tbody .used").on("click", $.proxy(this.onClickItemUsed, this));
@@ -213,15 +228,10 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onClickItemUsed: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
+            var eventTarget = event.srcElement || event.target, historyId;
+            historyId = $(eventTarget).attr("histroy-id");
             var usedModel = _.find(this.historyList, function(object){
-                return parseInt(id) === object.attributes.id
+                return parseInt(historyId) === object.get("confFileHisId")
             }.bind(this));
             usedModel.attributes.isChecked = this.model.attributes.isChecked;
             this.options.selectedCallback&&this.options.selectedCallback(usedModel, this.model);
@@ -292,11 +302,14 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.options        = options;
             this.collection     = options.collection;
             this.selectedModels = options.selectedModels;
-            this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.confirm.html'])());
+            this.nodeGroupList  = options.nodeGroupList;
+            this.buisnessType   = options.buisnessType;
+            this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.confirm.html'])({data: options.nodeGroupList}));
             this.initTable();
 
             this.$el.find(".ok-again").on("click", $.proxy(this.onClickOK, this));
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancel, this));
+            this.$el.find("#isShellCmd").on("click", $.proxy(this.onClickShellCmdInput, this))
 
             this.collection.off("get.ip.success");
             this.collection.off("get.ip.error");
@@ -315,8 +328,17 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             }.bind(this));
             this.collection.on("get.confirmAdd.error", $.proxy(this.onGetError, this));
 
-            this.collection.getIpGroupList();
             this.collection.getFileGroupList();
+        },
+
+        onClickShellCmdInput: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+
+            if (eventTarget.checked)
+                this.$el.find("#textarea-content").slideDown(200);
+            else
+                this.$el.find("#textarea-content").slideUp(200)
         },
 
         onGetError: function(error){
@@ -333,33 +355,46 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         onClickOK: function(){
             var result = confirm("你确定要这么做吗？") 
             if (!result) return;
-            var ipString = this.$el.find("#textarea-ip").val()
-            if (ipString.indexOf(",") > -1){
-                var ipStringArray = ipString.split(",");
-                for (var i = 0; i < ipStringArray.length; i++){
-                    var res = Utility.isIP(ipStringArray[i].trim())
+
+            for (var k = 0; k < this.nodeGroupList.length; k ++){
+                var ipString = this.$el.find("#ip-" + this.nodeGroupList[k].id).val()
+                if (ipString.indexOf(",") > -1){
+                    var ipStringArray = ipString.split(",");
+                    for (var i = 0; i < ipStringArray.length; i++){
+                        var res = Utility.isIP(ipStringArray[i].trim())
+                        if (!res) {
+                            alert(this.nodeGroupList[k].name + "的第" + (i+1) + "个ip没填对！");
+                            return;
+                        }
+                    }
+                } else {
+                    var res = Utility.isIP(ipString.trim())
                     if (!res) {
-                        alert("第" + (i+1) + "个ip没填对！");
+                        alert(this.nodeGroupList[k].name + "的ip没填对！")
                         return;
                     }
                 }
-            } else {
-                var res = Utility.isIP(ipString.trim())
-                if (!res) {
-                    alert("ip没填对！")
-                    return;
-                }
             }
-            var fileIds = [];
-            _.each(this.selectedModels, function(el, index, list){
-                fileIds.push(el.attributes.id);
-            })
+
+            var nodeGroupLs = [];
+            _.each(this.nodeGroupList, function(obj, key, ls){
+                var fileIds = [];
+                _.each(this.selectedModels, function(file, key, list){
+                    if (obj.id === file.attributes.nodeGroupId)
+                        fileIds.push(file.attributes.confFileHisId);
+                })
+                nodeGroupLs.push({
+                    "nodeGroupId": obj.id,
+                    "confFileHisIds": fileIds.join(","),
+                    "ips": this.$el.find("#ip-" + obj.id).val()
+                })
+            }.bind(this))
+
             var options = {
-                "fileIds" : fileIds.join(","),
-                "ips"     : this.$el.find("#textarea-ip").val(),
+                "nodeGroupList": nodeGroupLs,
                 "shellCmd": this.$el.find("#textarea-content").val(),
                 "remark"  : this.$el.find("#textarea-comment").val(),
-                "groupTypeId" : this.groupTypeId
+                "bisTypeId": this.buisnessType
             }
             this.collection.confirmAdd(options)
         },
@@ -367,11 +402,15 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         initTable: function(){
             this.table = $(_.template(template['tpl/liveAllSetup/liveAllSetup.table.html'])({data: this.selectedModels, dataTpye: 2}));
             this.$el.find(".table-ctn").html(this.table[0]);
-
             this.table.find("tbody .file-name").on("click", $.proxy(this.onClickItemFileName, this));
-
             this.table.find("input").hide();
             this.table.find(".operator").hide();
+
+            var idArray = []
+            _.each(this.nodeGroupList, function(el, key, ls){
+                idArray.push(el.id)
+            }.bind(this))
+            this.collection.getIpGroupList(idArray);
         },
 
         onClickItemFileName: function(event){
@@ -398,18 +437,14 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onGetIpGroupSuccess: function(res){
             this.ipList = res
-            var list = [];
-            _.each(this.ipList, function(el, index, ls){
-                list.push({name: el.id, value:el.id})
-            });
-            Utility.initDropMenu(this.$el.find(".dropdown-ipgrpup"), list, function(value){
-                var defaultValue = _.find(this.ipList, function(object){
-                    return object.id === parseInt(value);
-                }.bind(this));
-                this.$el.find("#textarea-ip").val(defaultValue.ips)
-            }.bind(this));
-            this.$el.find(".dropdown-ipgrpup .cur-value").html(list[0].name)
-            this.$el.find("#textarea-ip").val(this.ipList[0].ips)
+
+            _.each(this.ipList, function(nodeGroupIps, key, ls){
+                var ipArray = []
+                _.each(nodeGroupIps, function(ipObj, upKey, list){
+                    ipArray.push(ipObj.ip);
+                }.bind(this))
+                this.$el.find("#ip-" + key).val(ipArray.join(","))
+            }.bind(this))
         },
 
         onGetFileGroupSuccess: function(res){
@@ -438,87 +473,161 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.html'])());
             this.$el.find(".list .table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.$el.find(".ok").attr("disabled", "disabled");
 
             this.collection.on("get.filelist.success", $.proxy(this.onSetupFileListSuccess, this));
             this.collection.on("get.filelist.error", $.proxy(this.onGetError, this));
 
+            this.collection.on("get.buisness.success", $.proxy(this.onGetBusinessTpye, this));
+            this.collection.on("get.buisness.error", $.proxy(this.onGetError, this));
+
             this.collection.on("get.addConf.success", function(){
-                alert("操作成功！")
-                this.collection.getAllFileList()
+                this.collection.getAllFileList({bisTypeId: this.buisnessType})
             }.bind(this));
             this.collection.on("get.addConf.error", $.proxy(this.onGetError, this));
 
-            this.collection.getAllFileList()
+            this.collection.getBusinessType();
 
             this.$el.find(".ok").on("click", $.proxy(this.onClickConfirm, this))
             this.$el.find(".list .create").on("click", $.proxy(this.onClickCreate, this))
         },
 
-        onClickCreate: function(){
-            if (this.addFilePopup) $("#" + this.addFilePopup.modalId).remove();
+        onGetBusinessTpye: function(res){
+            var typeArray = [];
+            _.each(res, function(el, key, list){
+                typeArray.push({name: el.name, value: el.id})
+            }.bind(this))
+            this.busTypeArray = typeArray;
+            rootNode = this.$el.find(".dropdown-bustype");
+            Utility.initDropMenu(rootNode, typeArray, function(value){
+                this.buisnessType = parseInt(value)
+                this.collection.getAllFileList({bisTypeId: this.buisnessType})
+            }.bind(this));
 
+            this.buisnessType = res[0].id;
+            this.$el.find(".dropdown-bustype .cur-value").html(res[0].name)
+            this.collection.getAllFileList({bisTypeId: this.buisnessType})
+        },
+
+        onClickCreate: function(){
             var addFileView = new AddOrEditFlieView({
                 collection: this.collection, 
-                isEdit    : false
-            });
-            var options = {
-                title:"新建",
-                body : addFileView,
-                backdrop : 'static',
-                type     : 2,
-                width    : 800,
-                onOKCallback:  function(){
-                    var options = addFileView.getArgs();
-                    if (!options) return;
-                    this.collection.addConf(options)
-                    this.addFilePopup.$el.modal("hide");
+                isEdit    : false,
+                busTypeArray: this.busTypeArray,
+                cancelCallback: function(){
+                    this.showMainList(".list", ".create-edit-panel", ".create-edit-ctn");
                 }.bind(this),
-                onHiddenCallback: function(){}
-            }
-            this.addFilePopup = new Modal(options);
+                okCallback:  function(options){
+                    this.collection.addConf(options);
+                    this.showMainList(".list", ".create-edit-panel", ".create-edit-ctn")
+                }.bind(this)
+            });
+            addFileView.render(this.$el.find(".create-edit-panel"));
+
+            this.hideMainList(".list", ".create-edit-panel")
+        },
+
+        hideMainList: function(mainClass, otherClass){
+            async.series([
+                function(callback){
+                    this.$el.find(mainClass).addClass("zoomOut animated");
+                    callback()
+                }.bind(this),
+                function(callback){
+                    setTimeout(function(){
+                        this.$el.find(mainClass).hide();
+                        this.$el.find(otherClass).show();
+                        this.$el.find(otherClass).addClass("zoomIn animated");
+                        callback()
+                    }.bind(this), 500)
+                }.bind(this),                
+                function(callback){
+                    setTimeout(function(){
+                        this.$el.find(otherClass).removeClass("zoomIn animated");
+                        this.$el.find(otherClass).removeClass("zoomOut animated");
+                        this.$el.find(mainClass).removeClass("zoomIn animated");
+                        this.$el.find(mainClass).removeClass("zoomOut animated");
+                        callback()
+                    }.bind(this), 1000)
+                }.bind(this)]
+            );
+        },
+
+        showMainList: function(mainClass, otherClass, otherClass1){
+            async.series([
+                function(callback){
+                    this.$el.find(otherClass).addClass("zoomOut animated");
+                    callback()
+                }.bind(this),
+                function(callback){
+                    setTimeout(function(){
+                        this.$el.find(otherClass).hide();
+                        this.$el.find(otherClass + " " + otherClass1).remove();
+                        this.$el.find(mainClass).show();
+                        this.$el.find(mainClass).addClass("zoomIn animated")
+                        callback()
+                    }.bind(this), 500)
+                }.bind(this),                
+                function(callback){
+                    setTimeout(function(){
+                        this.$el.find(otherClass).removeClass("zoomIn animated");
+                        this.$el.find(otherClass).removeClass("zoomOut animated");
+                        this.$el.find(mainClass).removeClass("zoomIn animated");
+                        this.$el.find(mainClass).removeClass("zoomOut animated");
+                        callback()
+                    }.bind(this), 1000)
+                }.bind(this)]
+            );
         },
 
         onClickConfirm: function(){
             var checkedList = this.collection.filter(function(model) {
                 return model.get("isChecked") === true;
             })
+
+            var nodeGroupList = [], temp;
+            _.each(checkedList, function(el, key, ls){
+                if (el.get("nodeGroupId") !== temp){
+                    nodeGroupList.push({id: el.get("nodeGroupId"), name:el.get("nodeGroupName")})
+                    temp = el.get("nodeGroupId");
+                }
+            }.bind(this))
+
             var options = {
                 collection    : this.collection,
                 selectedModels: checkedList,
+                nodeGroupList : nodeGroupList,
+                buisnessType  : this.buisnessType,
                 cancelCallback: $.proxy(this.onClickConfirmCancel, this) 
             };
             var confirmView = new ConfirmView(options);
             confirmView.render(this.$el.find(".confirm"));
 
-            this.$el.find(".list").slideUp(300);
-            setTimeout(function(){
-                this.$el.find(".confirm").show();
-            }.bind(this), 300)
+            this.hideMainList(".list", ".confirm")
         },
 
         onClickConfirmCancel: function(){
-            this.$el.find(".list").slideDown(300);
-            this.$el.find(".confirm").hide();
-            this.$el.find(".confirm .confirm-ctn").remove();
+            this.showMainList(".list", ".confirm", ".confirm-ctn")
         },
 
         onBackHistoryCallback: function(){
-            this.$el.find(".list").slideDown(300);
-            this.$el.find(".history-panel").hide();
-            this.$el.find(".history-panel .history-ctn").remove();
+            this.showMainList(".list", ".history-panel", ".history-ctn")
         },
 
         selectedModelsCallback: function(usedModel, originModel){
             var model = this.collection.get(originModel.get("id"))
             _.each(usedModel.attributes, function(el, key, ls){
-                model.set(key, el)
+                if (key === "version")
+                    model.set("currVersion", el)
+                else
+                    model.set(key, el)
             })
             _.each(this.collection.models, function(el, index, ls){
                 el.set("isChecked", false);
             })
             setTimeout(function(){
                 this.collection.trigger("get.filelist.success")
-            }.bind(this), 300)
+            }.bind(this), 1000)
         },
 
         onGetError: function(error){
@@ -529,11 +638,11 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onSetupFileListSuccess: function(){
+            this.$el.find(".ok").attr("disabled", "disabled");
             this.initTable();
         },
 
         initTable: function(){
-            this.$el.find(".ok").attr("disabled", "disabled");
             this.table = $(_.template(template['tpl/liveAllSetup/liveAllSetup.table.html'])({data: this.collection.models, dataTpye: 1}));
             if (this.collection.models.length !== 0){
                 this.$el.find(".list .table-ctn").html(this.table[0]);
@@ -587,10 +696,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             });
             aHistoryView.render(this.$el.find(".history-panel"));
 
-            this.$el.find(".list").slideUp(300);
-            setTimeout(function(){
-                this.$el.find(".history-panel").show();
-            }.bind(this), 300)
+            this.hideMainList(".list", ".history-panel")
         },
 
         onClickItemEdit: function(event){
@@ -603,28 +709,22 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             }
             var model = this.collection.get(id);
 
-            if (this.editFilePopup) $("#" + this.editFilePopup.modalId).remove();
-
-            var editFileView = new AddOrEditFlieView({
-                collection: this.collection, 
-                model     : model,
+            var addFileView = new AddOrEditFlieView({
+                collection: this.collection,
+                model     : model, 
                 isEdit    : true,
-            });
-            var options = {
-                title:"编辑",
-                body : editFileView,
-                backdrop : 'static',
-                type     : 2,
-                width    : 800,
-                onOKCallback:  function(){
-                    var options = editFileView.getArgs();
-                    if (!options) return;
-                    this.collection.addConf(options)
-                    this.editFilePopup.$el.modal("hide");
+                busTypeArray: this.busTypeArray,
+                cancelCallback: function(){
+                    this.showMainList(".list", ".create-edit-panel", ".create-edit-ctn");
                 }.bind(this),
-                onHiddenCallback: function(){}
-            }
-            this.editFilePopup = new Modal(options);
+                okCallback:  function(options){
+                    //this.collection.addConf(options);
+                    this.showMainList(".list", ".create-edit-panel", ".create-edit-ctn")
+                }.bind(this)
+            });
+            addFileView.render(this.$el.find(".create-edit-panel"));
+
+            this.hideMainList(".list", ".create-edit-panel")
         },
 
         onClickMultiStop : function(event){
@@ -710,9 +810,13 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         onItemCheckedUpdated: function(event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
-            var id = $(eventTarget).attr("id");
-            var model = this.collection.get(id);
-            model.set("isChecked", eventTarget.checked)
+            var nodeGroupId = $(eventTarget).attr("id"),
+                modelList = _.filter(this.collection.models, function(object){
+                    return object.get("nodeGroupId") === parseInt(nodeGroupId);
+                }.bind(this));
+            _.each(modelList, function(el, key, list){
+                el.set("isChecked", eventTarget.checked)
+            }.bind(this))
 
             var checkedList = this.collection.filter(function(model) {
                 return model.get("isChecked") === true;

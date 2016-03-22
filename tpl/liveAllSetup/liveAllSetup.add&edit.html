@@ -1,38 +1,69 @@
-<div>
-<div class="alert alert-dismissable alert-info">
-    <button type="button" class="close" data-dismiss="alert">×</button>
-    <strong>名称规则：</strong>
-    <p>1.允许字母、数字、下划线 、中划线 点号 /</p> 
-    <p>2.以/开头，不能以/结尾，不能出现连续// </p>
-</div>
-<form class="form-horizontal">
-    <div class="form-group">
-        <label for="input-name" class="col-sm-2 control-label">文件路径</label>
-        <div class="col-sm-8">
-            <input type="text" class="form-control" id="input-name" value="<%=data.fileName%>">
+<div class="create-edit-ctn">
+    <form class="form-horizontal">
+        <div class="form-group">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+                <div class="alert alert-dismissable alert-info">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <strong>名称规则：</strong>
+                    <p>1.允许字母、数字、下划线 、中划线 点号 /</p> 
+                    <p>2.以/开头，不能以/结尾，不能出现连续// </p>
+                </div>
+            </div>
+            <div class="col-sm-2"></div>
         </div>
-    </div>
-    <div class="form-group dropdown-filetype">
-        <label for="dropdown-filetype" class="col-sm-2 control-label">文件类型</label>
-        <div class="dropdown col-sm-8">
-            <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-filetype" data-toggle="dropdown">
-                <span class="cur-value">加载中...</span>
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu long-dropdown-menu"></ul>
+        <div class="form-group">
+            <label for="input-name" class="col-sm-2 control-label">文件路径</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="input-name" value="<%=data.fileName%>">
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label for="textarea-content" class="col-sm-2 control-label">文件内容</label>
-        <div class="col-sm-8">
-            <textarea class="form-control" rows="10" id="textarea-content"><%=data.content%></textarea>
+        <div class="form-group dropdown-bustype">
+            <label for="dropdown-bustype" class="col-sm-2 control-label">业务类型</label>
+            <div class="dropdown col-sm-8">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-bustype" data-toggle="dropdown">
+                    <span class="cur-value">加载中...</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu long-dropdown-menu"></ul>
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label for="textarea-comment" class="col-sm-2 control-label">备注</label>
-        <div class="col-sm-8">
-            <textarea class="form-control" rows="3" id="textarea-comment"><%=data.remark%></textarea>
+        <div class="form-group dropdown-node-group">
+            <label for="dropdown-node-group" class="col-sm-2 control-label">节点组</label>
+            <div class="dropdown col-sm-8">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-node-group" data-toggle="dropdown">
+                    <span class="cur-value">加载中...</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu long-dropdown-menu"></ul>
+            </div>
         </div>
+        <div class="form-group fileContentType">
+            <label for="textarea-content" class="col-sm-2 control-label">文件内容类型</label>
+            <div class="col-sm-8">
+                <label class="radio-inline">
+                    <input type="radio" name="fileContentType" id="fileContentType1" value="1">分块
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="fileContentType" id="fileContentType2" value="2" checked="true">整体
+                </label>
+            </div>
+        </div>
+        <div class="form-group file-content">
+            <label for="textarea-content" class="col-sm-2 control-label">文件内容</label>
+            <div class="col-sm-8">
+                <textarea class="form-control" rows="10" id="textarea-content"><%=data.content%></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="textarea-comment" class="col-sm-2 control-label">备注</label>
+            <div class="col-sm-8">
+                <textarea class="form-control" rows="2" id="textarea-comment"><%=data.remark%></textarea>
+            </div>
+        </div>
+    </form>
+    <div class="text-center opt-ctn">
+      <a href="javascript:void(0)" class="btn btn-primary ok-again">确定</a>
+      <a href="javascript:void(0)" class="btn btn-default cancel">取消</a>
     </div>
-</form>
 </div>

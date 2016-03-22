@@ -1,7 +1,9 @@
 define("liveAllSetup.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-            var createTime = this.get("createTime");
+            var createTime = this.get("createTime"), 
+                confFileId = this.get("confFileId");
+            this.set("id", confFileId);
 
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
             this.set("isChecked", false);
@@ -15,14 +17,14 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
         initialize: function(){},
 
         getAllFileList: function(args){
-            var url = BASE_URL + "/seed/conf/file/confType/perFile";
+            var url = BASE_URL + "/seed/conf/file/allConfList";
             var defaultParas = {
                 type: "GET",
                 url: url,
                 async: true,
                 timeout: 30000
             };
-            defaultParas.data = {};
+            defaultParas.data = args || {};
             defaultParas.data.t = new Date().valueOf();
 
             defaultParas.beforeSend = function(xhr){
@@ -31,8 +33,13 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
             defaultParas.success = function(res){
                 this.reset();
                 if (res){
-                    _.each(res, function(element, index, list){
-                        this.push(new Model(element));
+                    _.each(res, function(el, index, list){
+                        _.each(el.nodeGroup.confFileList, function(confFile, index, fileList){
+                            confFile.nodeGroupName = el.nodeGroup.nodeGroupName;
+                            confFile.nodeGroupId = el.nodeGroup.nodeGroupId
+                            confFile.rowspan = fileList.length;
+                            this.push(new Model(confFile));
+                        }.bind(this))
                     }.bind(this))
                     this.trigger("get.filelist.success");
                 } else {
@@ -50,7 +57,7 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
         },
 
         getHisroryFileList: function(args){
-            var url = BASE_URL + "/seed/conf/file/single/confHistory";
+            var url = BASE_URL + "/seed/conf/file/getConfFileHisList";
             var defaultParas = {
                 type: "GET",
                 url: url,
@@ -75,6 +82,37 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
                 if (response&&response.responseText)
                     response = JSON.parse(response.responseText)
                 this.trigger("get.historylist.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
+        getNodeGroupList: function(args){
+            var url = BASE_URL + "/seed/config/release/nodeGroupList";
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000
+            };
+            defaultParas.data = args || {};
+            defaultParas.data.t = new Date().valueOf();
+
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                if (res){
+                    this.trigger("get.nodeGroupList.success", res);
+                } else {
+                    this.trigger("get.nodeGroupList.error"); 
+                }
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.nodeGroupList.error", response); 
             }.bind(this);
 
             $.ajax(defaultParas);
@@ -135,16 +173,17 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
             $.ajax(defaultParas);
         },
 
-        getIpGroupList: function(){
-            var url = BASE_URL + "/seed/ip/ipGroup/list"
+        getIpGroupList: function(args){
+            var url = BASE_URL + "/seed/config/release/nodeGroup/ipList"
             var defaultParas = {
-                type: "GET",
+                type: "POST",
                 url: url,
                 async: true,
-                timeout: 30000
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
             };
-            defaultParas.data = {};
-            defaultParas.data.t = new Date().valueOf();
+            defaultParas.data = JSON.stringify(args);
             
             defaultParas.beforeSend = function(xhr){
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
@@ -196,7 +235,7 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
         },
 
         confirmAdd: function(args){
-            var url = BASE_URL + "/seed/curr/conf/effect/confirmAdd";
+            var url = BASE_URL + "/seed/conf/file/releaseConfig";
             var defaultParas = {
                 type: "POST",
                 url: url,
@@ -218,6 +257,36 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
                 if (response&&response.responseText)
                     response = JSON.parse(response.responseText)
                 this.trigger("get.confirmAdd.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
+        getBusinessType: function(args){
+            var url = BASE_URL + "/seed/metaData/config/release/list"
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000
+            };
+            defaultParas.data = args || {};
+            defaultParas.data.t = new Date().valueOf();
+            
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                if (res)
+                    this.trigger("get.buisness.success", res); 
+                else
+                    this.trigger("get.buisness.error", res);
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.buisness.error", response); 
             }.bind(this);
 
             $.ajax(defaultParas);

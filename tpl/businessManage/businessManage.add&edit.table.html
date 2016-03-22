@@ -1,0 +1,12 @@
+<table class="table table-striped table-hover long-dropdown-menu"> 
+    <tbody class="addOrEdit">  
+        <% for(var i = 0; i < data.length; i++) { %>
+            <tr data-id="<%=data[i].attributes['id']%>">
+              <td><%=data[i].attributes['chName']%></td>
+              <td>
+                  <a href="javascript:void(0)" id="<%=data[i].id%>" class="delete" title="删除"><span class="glyphicon glyphicon-trash"></span></a>
+              </td>
+            </tr>
+        <% } %>
+    </tbody>
+</table>

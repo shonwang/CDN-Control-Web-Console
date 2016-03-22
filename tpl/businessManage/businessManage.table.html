@@ -1,0 +1,22 @@
+<table class="table table-striped table-hover long-dropdown-menu">  
+    <thead> 
+      <tr>
+        <th>节点组</th>
+        <th>创建时间</th>
+        <th>操作</th>   
+      </tr>
+    </thead>
+    <tbody>  
+        <% for(var i = 0; i < data.length; i++) { %>
+            <tr data-id="<%=data[i].attributes['id']%>">
+              <td><%=data[i].attributes['name']%></td>
+              <td><%=new Date(data[i].attributes['createTime']).format("yyyy/MM/dd hh:mm")%></td>
+              <td>
+                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="edit" title="编辑">
+                      <span class="glyphicon glyphicon-edit"></span>
+                  </a>
+              </td>
+            </tr>
+        <% } %>
+    </tbody>
+</table>

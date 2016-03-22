@@ -71,7 +71,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                 if (!this.businessManageModel)
                     this.businessManageModel = new BusinessManageModel();
                 if (!this.businessManageView ){
-                    var options = {collection: this.BusinessManageModel};
+                    var options = {collection: this.businessManageModel};
                     this.businessManageView = new BusinessManageView(options);
                     this.businessManageView.render($('.ksc-content'));
                 } else {

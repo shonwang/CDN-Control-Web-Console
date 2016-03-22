@@ -14,6 +14,7 @@ requirejs.config({
         "template"             : 'template',
         "modal.view"           : "modal.view",
         "navbar.view"          : "navbar.view",
+        "searchSelect"          : "searchSelect",
         
         "channelManage.view"   : "channelManage/channelManage.view",
         "channelManage.model"  : "channelManage/channelManage.model",

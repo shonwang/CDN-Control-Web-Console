@@ -3,14 +3,14 @@
         <div class="form-group">
             <label for="input-name" class="col-sm-2 control-label">名称</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control" id="nodeGroupName" value="<%=name%>">
+                <input type="text" class="form-control" id="nodeGroupName" value="<%=data.name%>">
             </div>
         </div>
         <div class="form-group business-type">
             <label for="dropdown-level" class="col-sm-2 control-label">业务类型</label>
             <div class="dropdown col-sm-8">
                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-business" data-toggle="dropdown">
-                    <span class="cur-value" data-id="">加载中...</span>
+                    <span class="cur-value" data-id="<%=data.bisTypeId%>"><%=data.bisTypeName%></span>
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu"></ul>
@@ -20,7 +20,7 @@
             <label class="col-sm-2 control-label">设备类型</label>
             <div class="dropdown col-sm-8">
                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-device" data-toggle="dropdown">
-                    <span class="cur-value" data-id="">加载中...</span>
+                    <span class="cur-value" data-id=""><%=data.deviceTypeName%></span>
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu"></ul>

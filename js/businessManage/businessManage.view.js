@@ -6,54 +6,66 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
         initialize: function(options) {
             this.collection = options.collection;
             this.isEdit     = options.isEdit;
-            this.model      = options.model;
+            this.model      = options.model; 
             this.businessType = options.businessType;
-            this.businessId = options.businessId;
-            this.name = options.name;
+            this.deviceType = options.deviceType;
 
             var data = {
                 "page":1,
                 "count":99
             };
             var tplData = {
-                "name":""
+                "name":"",
+                "bisTypeName":"",
+                "deviceTypeName":"",
+                "bisTypeId":"",
+                "deviceTypeId":""
             };
-
-            this.deviceType = [];
             this.nodeList = [];
+
+            this.collection.getAddTableList(data);
 
             if(this.isEdit){
 
-                tplData.name = this.name;
-                this.collection.getAddTableList(data);
-                this.collection.on("get.addTableList.success", $.proxy(this.getNodeSuccess, this));
+                tplData.name = this.model.attributes.name;
+                tplData.bisTypeName = this.model.attributes.bisTypeName;
+                tplData.deviceTypeName = this.model.attributes.deviceTypeName;
+                tplData.bisTypeId = this.model.attributes.bisTypeId;
+                tplData.deviceTypeId = this.model.attributes.deviceTypeId;
+
+                this.collection.on("get.addTableList.success", $.proxy(this.getAddEditNodeSuccess, this));
             }else{
+                tplData.bisTypeName = this.businessType[0].name;
+                tplData.deviceTypeName = this.deviceType[0].name;
+                tplData.bisTypeId = this.businessType[0].value;
+                tplData.deviceTypeId = this.deviceType[0].id;
 
+                this.collection.on("get.addTableList.success", $.proxy(this.initcreateAddNodeDrop, this));
             }
-            this.$el = $(_.template(template['tpl/businessManage/businessManage.add&edit.html'])({name:tplData.name}));
+            this.$el = $(_.template(template['tpl/businessManage/businessManage.add&edit.html'])({data:tplData}));
             this.initBusinessDropMenu();
-            this.initAddNodeDrop();
+            this.initDeviceDropMenu();
 
-            this.collection.getDeviceTypeList();//获取业务列表
-            this.collection.on("get.device.success", $.proxy(this.initDeviceDropMenu, this));
         },
-        initAddNodeDrop: function(){
+        initcreateAddNodeDrop: function(res){
+            var data = [];
+            var data1 = [];
+            var _this = this;
+            _.each(res.rows, function(el, index, list){
+                data.push({name: el.chName, value:el.id});
+                data1.push({name: el.chName, id:el.id});
+            });
             var searchSelect = new SearchSelect({
                 containerID : this.$el.find('.select-addNode').get(0),
                 panelID : this.$el.find('.btn-raised').get(0),
                 openSearch:true,
                 onOk:function(data){
-                    console.log(JSON.stringify(data));
+                    //console.log(JSON.stringify(data));
+                    _this.getAddEditNodeSuccess(data1);
                 },
-                data:[
-                    {name:"aaa",value:0},
-                    {name:"bbb",value:1},
-                    {name:"ccc",value:2},
-                    {name:"ddd",value:3},
-                    {name:"eeee",value:4}
-                ],
+                data:data,
                 callback:function(data){
-                    console.log(data);
+                    //console.log(data);
                 }
             });
         },
@@ -75,30 +87,22 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
             return args;
         },
 
-        getNodeSuccess: function(){
+        getAddEditNodeSuccess: function(res){
 
-            this.table = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({data: this.collection.models}));
-            if (this.collection.models.length !== 0)
+            this.table = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({data: res.rows}));
+
+            if (res.rows.length !== 0){
                 this.$el.find(".table-ctn").html(this.table[0]);
-            else
+            }else{
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+            }
 
             this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+
         },
 
         initBusinessDropMenu: function(){
             var rootNode = this.$el.find(".business-type");
-            var businessId = this.businessId;
-            var name = "";
-
-            _.each(this.businessType,function(el,index,list){
-                if(businessId == el.value){
-                     name = el.name;  
-                }
-            });
-            this.$el.find('.business-type .cur-value').html(name);
-            this.$el.find('.business-type .cur-value').attr('data-id',this.businessId);
-
 
             Utility.initDropMenu(rootNode, this.businessType, function(value){
                 this.$el.find('.business-type .cur-value').attr('data-id',value);
@@ -106,16 +110,7 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
         },
 
         initDeviceDropMenu: function(){
-            var deviceType = [];
             var rootNode = this.$el.find(".device-type");
-
-            _.each(this.collection.models, function(el, index, list){
-                deviceType.push({name: el.attributes.name, value:el.attributes.id});
-            });
-            this.deviceType = deviceType;
-
-            this.$el.find('.device-type .cur-value').html(this.deviceType[0]["name"]);
-            this.$el.find('.device-type .cur-value').attr('data-id',this.deviceType[0]["value"]);
 
             Utility.initDropMenu(rootNode, this.deviceType, function(value){
                 this.$el.find('.device-type .cur-value').attr('data-id',value);
@@ -136,7 +131,7 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
         events: {},
 
         initialize: function(options) {
-            this.bisTypeId = 1;
+            //this.bisTypeId = 1;
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/businessManage/businessManage.html'])());
 
@@ -147,8 +142,10 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                 "device":-1
             };
 
-            this.collection.getBusinessList(); //初始化下拉列表数据
+            this.collection.getBusinessList(); //初始化业务列表数据
             this.collection.on("get.businessList.success", $.proxy(this.initNodeDropMenu, this));
+            this.collection.getDeviceTypeList();//初始化设备列表数据
+            this.collection.on("get.device.success", $.proxy(this.getDeviceData, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreateButton, this));
@@ -156,13 +153,22 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
 
         },
 
-        initNodeDropMenu: function(){
+        getDeviceData: function(res){
+            var deviceType = [];
+            _.each(res, function(el, index, list){
+                deviceType.push({name: el.name, value:el.id});
+            });
+            this.deviceType = deviceType;
+        },
+
+        initNodeDropMenu: function(res){
             var businessType = [],
             rootNode = this.$el.find(".dropdown-type");
 
-            _.each(this.collection.models, function(el, index, list){
-                businessType.push({name: el.attributes.name, value:el.attributes.id});
+            _.each(res, function(el, index, list){
+                businessType.push({name: el.name, value:el.id});
             });
+
             this.businessType = businessType;
             this.Id.business = parseInt(this.businessType[0]["value"]);
             this.$el.find('.cur-value').html(this.businessType[0]["name"]);
@@ -201,7 +207,7 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                 collection: this.collection,
                 isEdit    : false,
                 businessType: this.businessType,
-                businessId : this.Id.business
+                deviceType: this.deviceType
             });
             var options = {
                 title:"创建组",
@@ -221,9 +227,6 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
 
         onClickItemEdit: function(event){
             var eventTarget = event.srcElement || event.target,id;
-            var reviewData = {
-                "name": ""
-            }
 
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();
@@ -240,8 +243,8 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                 model     : model,
                 isEdit    : true,
                 businessType: this.businessType,
-                businessId : this.Id.business,
-                name       : this.$el.find("tr[data-id="+id+"]").children().eq(0).html()
+                deviceType: this.deviceType
+
             });
             var options = {
                 title:"编辑组",
@@ -251,9 +254,8 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                 onOKCallback:  function(){
                     var options = editBusinessView.getArgs();
                     if (!options) return;
-                    this.collection.editNode(options)
-                    reviewData.name = this.editBusinessPopup.$el.find('#nodeGroupName').val();
-                    $("tr[data-id="+id+"]").children().eq(0).html(reviewData.name);
+                    this.collection.editNode(options);
+                    this.onEditNodeSuccess(id);
                     this.editBusinessPopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){}
@@ -261,8 +263,12 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.editBusinessPopup = new Modal(options);
         },
 
-        onEditNodeSuccess: function(){
-
+        onEditNodeSuccess: function(id){
+            var reviewData = {
+                "name": ""
+            };
+            reviewData.name = this.editBusinessPopup.$el.find('#nodeGroupName').val();
+            $("tr[data-id="+id+"]").children().eq(0).html(reviewData.name);
         },
 
         hide: function(){

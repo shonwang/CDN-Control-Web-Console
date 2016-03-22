@@ -11,7 +11,7 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
         initialize: function(){},
 
         getNodeGroupList: function(args){
-            var url = BASE_URL + "/seed/config/release/pageList?bisTypeId="+args;
+            var url = BASE_URL + "/seed/config/release/nodeGroupList?bisTypeId="+args;
             var defaultParas = {
                 type: "GET",
                 url: url,
@@ -22,7 +22,7 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
             };
 
             defaultParas.success = function(res){
-                this.reset();
+            	this.reset();
                 if (res){
                     _.each(res.nodeGroupList, function(element, index, list){
                         this.push(new Model(element));
@@ -54,15 +54,7 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
             };
 
             defaultParas.success = function(res){
-                this.reset();
-                if (res){
-                    _.each(res, function(element, index, list){
-                        this.push(new Model(element));
-                    }.bind(this))
-                    this.trigger("get.device.success");
-                } else {
-                    this.trigger("get.device.error"); 
-                }
+                this.trigger("get.device.success",res);
             }.bind(this);
 
             defaultParas.error = function(response, msg){
@@ -86,15 +78,7 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
             };
 
             defaultParas.success = function(res){
-                this.reset();
-                if (res){
-                    _.each(res, function(element, index, list){
-                        this.push(new Model(element));
-                    }.bind(this))
-                    this.trigger("get.businessList.success");
-                } else {
-                    this.trigger("get.businessList.error"); 
-                }
+                this.trigger("get.businessList.success",res);
             }.bind(this);
 
             defaultParas.error = function(response, msg){
@@ -126,15 +110,7 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
             defaultParas.data = JSON.stringify(defaultParas.data);
 
             defaultParas.success = function(res){
-                this.reset();
-                if (res){
-                    _.each(res.rows, function(element, index, list){
-                        this.push(new Model(element));
-                    }.bind(this))
-                    this.trigger("get.addTableList.success");
-                } else {
-                    this.trigger("get.addTableList.error"); 
-                }
+                this.trigger("get.addTableList.success",res);
             }.bind(this);
 
             defaultParas.error = function(response, msg){
@@ -146,37 +122,6 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
             $.ajax(defaultParas);
         },
 
-        getDeviceList: function(){
-        	var url = BASE_URL + "/seed/metaData/devicetype/list";
-            var defaultParas = {
-                type: "GET",
-                url: url,
-                async: true,
-                timeout: 30000,
-                contentType: "application/json",
-                processData: false
-            };
-
-            defaultParas.success = function(res){
-                this.reset();
-                if (res){
-                    _.each(res, function(element, index, list){
-                        this.push(new Model(element));
-                    }.bind(this))
-                    this.trigger("get.deviceList.success");
-                } else {
-                    this.trigger("get.deviceList.error"); 
-                }
-            }.bind(this);
-
-            defaultParas.error = function(response, msg){
-                if (response&&response.responseText)
-                    response = JSON.parse(response.responseText)
-                this.trigger("get.deviceList.error", response); 
-            }.bind(this);
-
-            $.ajax(defaultParas);
-        },
         addNode: function(data){
         	var url = BASE_URL + "/seed/config/release/addNodeGroup";
             var defaultParas = {
@@ -191,15 +136,7 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
             defaultParas.data = JSON.stringify(data);
 
             defaultParas.success = function(res){
-                this.reset();
-                if (res){
-                    _.each(res, function(element, index, list){
-                        this.push(new Model(element));
-                    }.bind(this))
-                    this.trigger("get.addNode.success");
-                } else {
-                    this.trigger("get.addNode.error"); 
-                }
+            	 this.trigger("get.addNode.success");
             }.bind(this);
 
             defaultParas.error = function(response, msg){
@@ -224,15 +161,7 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
             defaultParas.data = JSON.stringify(data);
 
             defaultParas.success = function(res){
-                this.reset();
-                if (res){
-                    _.each(res, function(element, index, list){
-                        this.push(new Model(element));
-                    }.bind(this))
-                    this.trigger("get.editNode.success");
-                } else {
-                    this.trigger("get.editNode.error"); 
-                }
+                this.trigger("get.editNode.success");
             }.bind(this);
 
             defaultParas.error = function(response, msg){

@@ -146,8 +146,36 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
             $.ajax(defaultParas);
         },
 
+        modifyConfFile: function(args){
+            var url = BASE_URL + "/seed/conf/file/modifyConfFile";
+            var defaultParas = {
+                type: "POST",
+                url: url,
+                async: true,
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
+            };
+            defaultParas.data = JSON.stringify(args);
+
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                this.trigger("get.modifyConf.success");
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.modifyConf.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
         getFileTypeList: function(){
-            var url = BASE_URL + "/seed/metaData/fileType/list"
+            var url = BASE_URL + "/seed/metaData/filetype/list"
             var defaultParas = {
                 type: "GET",
                 url: url,
@@ -161,7 +189,10 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
             }
             defaultParas.success = function(res){
-                this.trigger("get.fileType.success", res); 
+                if (res)
+                    this.trigger("get.fileType.success", res);
+                else
+                    this.trigger("get.fileType.error", res); 
             }.bind(this);
 
             defaultParas.error = function(response, msg){
@@ -290,7 +321,7 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
             }.bind(this);
 
             $.ajax(defaultParas);
-        },
+        }
     });
 
     return LiveAllSetupCollection;

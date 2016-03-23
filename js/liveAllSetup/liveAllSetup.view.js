@@ -38,9 +38,13 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.collection.off("get.nodeGroupList.success");
             this.collection.off("get.nodeGroupList.error");
+            this.collection.off("get.fileType.success");
+            this.collection.off("get.fileType.error");
 
-            this.collection.on("get.nodeGroupList.success", $.proxy(this.initDropList, this));
+            this.collection.on("get.nodeGroupList.success", $.proxy(this.initNodeGroupDropList, this));
             this.collection.on("get.nodeGroupList.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.fileType.success", $.proxy(this.initFileTypeDropList, this));
+            this.collection.on("get.fileType.error", $.proxy(this.onGetError, this));
 
             this.initBussnessDropList();
         },
@@ -78,9 +82,10 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find(".dropdown-bustype .dropdown-toggle").attr("disabled", "disabled")
             }
             this.collection.getNodeGroupList({bisTypeId: this.args.bisTypeId})
+            //this.collection.getFileTypeList()
         },
 
-        initDropList: function(res){
+        initNodeGroupDropList: function(res){
             var tempNgList = [];
             _.each(res.nodeGroupList, function(el, index, list){
                 tempNgList.push({name: el.name, value:el.id})
@@ -99,6 +104,27 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find(".dropdown-node-group .cur-value").html(tempNgList[0].name)
                 this.args.nodeGroupId = tempNgList[0].value;
             }
+        },
+
+        initFileTypeDropList: function(res){
+            // var tempFtList = [];
+            // _.each(res.nodeGroupList, function(el, index, list){
+            //     tempFtList.push({name: el.name, value:el.id})
+            // });
+            // Utility.initDropMenu(this.$el.find(".dropdown-node-group"), tempFtList, function(value){
+            //     this.args.nodeGroupId = parseInt(value);
+            // }.bind(this));
+
+            // if (this.isEdit){
+            //     var defaultValue = _.find(tempFtList, function(object){
+            //         return object.value === this.model.get("nodeGroupId")
+            //     }.bind(this));
+            //     this.$el.find(".dropdown-node-group .cur-value").html(defaultValue.name);
+            //     this.$el.find(".dropdown-node-group .dropdown-toggle").attr("disabled", "disabled")
+            // } else {
+            //     this.$el.find(".dropdown-node-group .cur-value").html(tempFtList[0].name)
+            //     this.args.nodeGroupId = tempFtList[0].value;
+            // }
         },
 
         onClickOK: function(){
@@ -328,7 +354,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             }.bind(this));
             this.collection.on("get.confirmAdd.error", $.proxy(this.onGetError, this));
 
-            this.collection.getFileGroupList();
+            //this.collection.getFileGroupList();
         },
 
         onClickShellCmdInput: function(event){
@@ -718,7 +744,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     this.showMainList(".list", ".create-edit-panel", ".create-edit-ctn");
                 }.bind(this),
                 okCallback:  function(options){
-                    //this.collection.addConf(options);
+                    //this.collection.modifyConfFile(options);
                     this.showMainList(".list", ".create-edit-panel", ".create-edit-ctn")
                 }.bind(this)
             });

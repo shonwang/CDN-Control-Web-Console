@@ -134,8 +134,11 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             this.$el = $(_.template(template['tpl/liveCurentSetup/liveCurentSetup.html'])());
             this.$el.find(".origin-list .table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
-            this.collection.on("get.fileGroup.success", $.proxy(this.onGetFileGroupSuccess, this));
-            this.collection.on("get.fileGroup.error", $.proxy(this.onGetError, this));
+            // this.collection.on("get.fileGroup.success", $.proxy(this.onGetFileGroupSuccess, this));
+            // this.collection.on("get.fileGroup.error", $.proxy(this.onGetError, this));
+
+            this.collection.on("get.buisness.success", $.proxy(this.onGetBusinessTpye, this));
+            this.collection.on("get.buisness.error", $.proxy(this.onGetError, this));
 
             this.collection.on("get.confList.success", $.proxy(this.onSetupFileListSuccess, this));
             this.collection.on("get.confList.error", $.proxy(this.onGetError, this));
@@ -151,7 +154,8 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             }.bind(this));
             this.collection.on("get.effectSingleConf.error", $.proxy(this.onGetError, this));
 
-            this.collection.getFileGroupList();
+            //this.collection.getFileGroupList();
+            this.collection.getBusinessType();
         },
 
         onGetError: function(error){
@@ -159,6 +163,33 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
                 alert(error.message)
             else
                 alert("出错了")
+        },
+
+        onGetBusinessTpye: function(res){
+            var typeArray = [];
+            _.each(res, function(el, key, list){
+                typeArray.push({name: el.name, value: el.id})
+            }.bind(this))
+            this.busTypeArray = typeArray;
+            rootNode = this.$el.find(".dropdown-bustype");
+            Utility.initDropMenu(rootNode, typeArray, function(value){
+                this.buisnessType = parseInt(value)
+                var args = {
+                    bisTypeId: this.buisnessType,
+                    page     : 1,
+                    count    : 9999
+                }
+                this.collection.getConfList(args)
+            }.bind(this));
+
+            this.buisnessType = res[0].id;
+            this.$el.find(".dropdown-bustype .cur-value").html(res[0].name);
+            var args = {
+                bisTypeId: this.buisnessType,
+                page   : 1,
+                count  : 9999
+            }
+            this.collection.getConfList(args)
         },
 
         onGetFileGroupSuccess: function(res){
@@ -188,7 +219,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onSetupFileListSuccess: function(){
-            this.initTable();
+            //this.initTable();
         },
 
         initTable: function(){

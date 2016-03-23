@@ -114,7 +114,6 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 aSelectedNode.id = aSelectedNode["node.id"];
                 selectedNodes.push(aSelectedNode)
             }
-            console.log(selectedNodes)
             return selectedNodes
         },
 
@@ -239,7 +238,6 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         initTable: function(){
-            console.log(this.collection.models)
             this.table = $(_.template(template['tpl/dispConfig/dispConfig.table.html'])({data: this.collection.models}));
 
             if (this.collection.models.length === 0){

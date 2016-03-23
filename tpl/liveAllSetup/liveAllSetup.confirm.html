@@ -1,8 +1,7 @@
 <div class="confirm-ctn">
   <div class="table-ctn table-responsive"></div>
-  <hr>
   <form class="form-horizontal">
-      <div class="form-group dropdown-filegroup">
+<!--       <div class="form-group dropdown-filegroup">
           <label for="dropdown-filegroup" class="col-sm-2 control-label">业务类型</label>
           <div class="dropdown col-sm-8">
               <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-filegroup" data-toggle="dropdown">
@@ -21,23 +20,31 @@
               </button>
               <ul class="dropdown-menu long-dropdown-menu"></ul>
           </div>
-      </div>
+      </div> -->
       <div class="form-group">
-          <label for="textarea-ip" class="col-sm-2 control-label">IP</label>
+          <label class="col-sm-2 control-label">IP: </label>
+      </div>
+      <% for(var i = 0; i < data.length; i++) { %>
+      <div class="form-group">
+          <label for="ip-<%=data[i].id%>" class="col-sm-2 control-label"><%=data[i].name%></label>
           <div class="col-sm-8">
-              <textarea class="form-control" rows="3" id="textarea-ip"></textarea>
+              <textarea class="form-control" rows="3" id="ip-<%=data[i].id%>"></textarea>
           </div>
       </div>
-      <div class="form-group">
-          <label for="textarea-content" class="col-sm-2 control-label">脚本内容</label>
-          <div class="col-sm-8">
-              <textarea class="form-control" rows="10" id="textarea-content"></textarea>
-          </div>
-      </div>
+      <% } %>
+      <hr> 
       <div class="form-group">
           <label for="textarea-comment" class="col-sm-2 control-label">备注</label>
           <div class="col-sm-8">
-              <textarea class="form-control" rows="3" id="textarea-comment"></textarea>
+              <textarea class="form-control" rows="2" id="textarea-comment"></textarea>
+          </div>
+      </div>
+      <div class="form-group">
+          <label class="checkbox-inline col-sm-2 control-label">
+            <input type="checkbox" id="isShellCmd">脚本内容
+          </label>
+          <div class="col-sm-8">
+              <textarea class="form-control" rows="5" id="textarea-content" style="display: none"></textarea>
           </div>
       </div>
   </form>

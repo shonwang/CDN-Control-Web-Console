@@ -65,15 +65,16 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
         },
 
         getConfList: function(args){
-            var url = BASE_URL + "/seed/curr/conf/curr/confList"
+            var url = BASE_URL + "/seed/config/release/log/pageList"
             var defaultParas = {
-                type: "GET",
+                type: "POST",
                 url: url,
                 async: true,
-                timeout: 30000
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
             };
-            defaultParas.data = args;
-            defaultParas.data.t = new Date().valueOf();
+            defaultParas.data = JSON.stringify(args);
             
             defaultParas.beforeSend = function(xhr){
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
@@ -182,6 +183,36 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
                 if (response&&response.responseText)
                     response = JSON.parse(response.responseText)
                 this.trigger("get.resInfo.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
+        getBusinessType: function(args){
+            var url = BASE_URL + "/seed/metaData/config/release/list"
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000
+            };
+            defaultParas.data = args || {};
+            defaultParas.data.t = new Date().valueOf();
+            
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                if (res)
+                    this.trigger("get.buisness.success", res); 
+                else
+                    this.trigger("get.buisness.error", res);
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.buisness.error", response); 
             }.bind(this);
 
             $.ajax(defaultParas);

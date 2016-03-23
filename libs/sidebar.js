@@ -182,11 +182,11 @@ var sidebarData = [
 				iconClass:'icon-physical-16',
 				url:"#/deviceManage/none"
 			},
-			// {
-			// 	name:'IP管理',
-			// 	iconClass:'icon-ip-16',
-			// 	url:"#/ipManage"
-			// }
+			{
+				name:'IP管理',
+				iconClass:'icon-ip-16',
+				url:"#/ipManage"
+			}
 		]
 	},
 	{

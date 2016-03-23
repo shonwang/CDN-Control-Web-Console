@@ -136,13 +136,13 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
             defaultParas.data = JSON.stringify(data);
 
             defaultParas.success = function(res){
-            	 this.trigger("get.addNode.success");
+            	 this.trigger("add.node.success");
             }.bind(this);
 
             defaultParas.error = function(response, msg){
                 if (response&&response.responseText)
                     response = JSON.parse(response.responseText)
-                this.trigger("get.addNode.error", response); 
+                this.trigger("add.node.error", response); 
             }.bind(this);
 
             $.ajax(defaultParas);
@@ -161,13 +161,13 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
             defaultParas.data = JSON.stringify(data);
 
             defaultParas.success = function(res){
-                this.trigger("get.editNode.success");
+                this.trigger("edit.node.success");
             }.bind(this);
 
             defaultParas.error = function(response, msg){
                 if (response&&response.responseText)
                     response = JSON.parse(response.responseText)
-                this.trigger("get.editNode.error", response); 
+                this.trigger("edit.node.error", response); 
             }.bind(this);
 
             $.ajax(defaultParas);

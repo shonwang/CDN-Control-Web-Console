@@ -8,7 +8,7 @@
     </thead>
     <tbody>  
         <% for(var i = 0; i < data.length; i++) { %>
-            <tr data-id="<%=data[i].attributes['id']%>" data-bisName="<%=data[i].attributes['bisTypeName']%>" data-decName="<%=data[i].attributes['deviceTypeName']%>">
+            <tr data-id="<%=data[i].attributes['id']%>">
               <td><%=data[i].attributes['name']%></td>
               <td><%=new Date(data[i].attributes['createTime']).format("yyyy/MM/dd hh:mm")%></td>
               <td>

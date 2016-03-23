@@ -1,0 +1,8 @@
+<% for(var i = 0; i < data.length; i++) { %>
+    <tr data-id="<%=data[i].id%>">
+      <td><%=data[i].chName%></td>
+      <td>
+          <a href="javascript:void(0)" id="<%=data[i].id%>" class="delete" title="删除"><span class="glyphicon glyphicon-trash"></span></a>
+      </td>
+    </tr>
+<% } %>

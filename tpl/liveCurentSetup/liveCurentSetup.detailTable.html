@@ -2,6 +2,10 @@
     <thead> 
       <tr>
         <th>IP</th>
+        <th>IP类型</th>
+        <th>设备</th>
+        <th>设备类型</th>
+        <th>节点</th>
         <th>状态</th>
         <th>结果</th>
         <th>开始下发时间</th>
@@ -10,10 +14,14 @@
     </thead>
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
-            <tr data-id="<%=data[i].attributes.id%>">
-              <td><%=data[i].attributes["cacheIP"]%></td>
+            <tr data-id='<%=data[i].get("id")%>'>
+              <td><%=data[i].attributes["ip"]%></td>
+              <td><%=data[i].attributes["ipTypeName"]%></td>
+              <td><%=data[i].attributes["deviceName"]%></td>
+              <td><%=data[i].attributes["deviceTypeName"]%></td>
+              <td><%=data[i].attributes["nodeName"]%></td>
               <td><%=data[i].attributes["statusName"]%></td>
-              <td><%=data[i].attributes["msg"]%></td>
+              <td><%=data[i].attributes["result"]%></td>
               <td><%=data[i].attributes["startTimeFormated"]%></td>
               <td><%=data[i].attributes["endTimeFormated"]%></td>
             </tr>

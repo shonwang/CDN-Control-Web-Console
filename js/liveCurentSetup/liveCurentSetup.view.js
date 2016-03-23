@@ -7,7 +7,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             this.options    = options;
             this.collection = options.collection;
             this.model      = options.model;
-            this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.history.html'])());
+            this.$el = $(_.template(template['tpl/liveCurentSetup/liveCurentSetup.detail.html'])());
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
             this.detailList = []
@@ -18,13 +18,32 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             this.collection.on("get.resInfo.success", $.proxy(this.onGetInfoSuccess, this));
             this.collection.on("get.resInfo.error", $.proxy(this.onGetError, this));
 
-            this.args = {
-                confId: this.model.get("id"),
-            };
+            this.queryArgs = {
+                "confRelLogId": this.model.get("logId"),
+                "ip": null,
+                "deviceName": null,
+                "nodeName": null,
+                "status": null,
+                "page": 1,
+                "count": 1
+            }
+            this.onClickQueryButton();
+            this.$el.find(".back").on("click", $.proxy(this.onClickCancel, this));
+            this.$el.find(".query").on("click", $.proxy(this.onClickQueryButton, this));
+        },
 
-            this.collection.getResInfo(this.args)
-
-            this.$el.find(".back").on("click", $.proxy(this.onClickCancel, this))
+        onClickQueryButton: function(){
+            this.isInitPaginator = false;
+            this.queryArgs.page = 1;
+            this.queryArgs.ip = this.$el.find("#input-ip").val();
+            this.queryArgs.deviceName = this.$el.find("#input-device").val();
+            this.queryArgs.nodeName = this.$el.find("#input-node").val();
+            if (this.queryArgs.ip == "") this.queryArgs.ip = null;
+            if (this.queryArgs.deviceName == "") this.queryArgs.deviceName = null;
+            if (this.queryArgs.nodeName == "") this.queryArgs.nodeName = null;
+            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.$el.find(".pagination").html("");
+            this.collection.getResInfo(this.queryArgs);
         },
 
         onClickCancel: function(){
@@ -39,23 +58,14 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onGetInfoSuccess: function(res){
+            this.originData = res;
             this.detailList = [];
-            if (res.failed){
-                for (var i = 0; i < res.failed.length; i++){
-                    this.detailList.push(new this.collection.model(res.failed[i]))
-                }
-            }
-            if (res.notReached){
-                for (var k = 0; k < res.notReached.length; k++){
-                    this.detailList.push(new this.collection.model(res.notReached[k]))
-                }
-            }
-            if (res.success){
-                for (var m = 0; m < res.success.length; m++){
-                    this.detailList.push(new this.collection.model(res.success[m]))
-                }
+            for (var m = 0; m < res.rows.length; m++){
+                this.detailList.push(new this.collection.model(res.rows[m]))
             }
             this.initTable();
+            if (!this.isInitPaginator) this.initPaginator();
+            this.initPageDropMenu();
         },
 
         initTable: function(){
@@ -70,9 +80,9 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
         },
 
         initPaginator: function(){
-            this.$el.find(".total-items span").html(this.collection.total)
-            if (this.collection.total <= this.queryArgs.count) return;
-            var total = Math.ceil(this.collection.total/this.queryArgs.count);
+            this.$el.find(".total-items span").html(this.originData.total)
+            if (this.originData.total <= this.queryArgs.count) return;
+            var total = Math.ceil(this.originData.total/this.queryArgs.count);
 
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
@@ -84,28 +94,14 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
                         var args = _.extend(this.queryArgs);
                         args.page = num;
                         args.count = this.queryArgs.count;
-                        this.collection.getNodeList(args);
+                        this.collection.getResInfo(this.queryArgs);
                     }
                 }.bind(this)
             });
             this.isInitPaginator = true;
         },
 
-        initNodeDropMenu: function(){
-            var statusArray = [
-                {name: "全部", value: "All"},
-                {name: "运行中", value: 1},
-                {name: "挂起", value: 2},
-                {name: "已关闭", value: 3}
-            ],
-            rootNode = this.$el.find(".dropdown-status");
-            Utility.initDropMenu(rootNode, statusArray, function(value){
-                if (value !== "All")
-                    this.queryArgs.status = parseInt(value);
-                else
-                    this.queryArgs.status = null;
-            }.bind(this));
-
+        initPageDropMenu: function(){
             var pageNum = [
                 {name: "10条", value: 10},
                 {name: "20条", value: 20},
@@ -117,8 +113,6 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
                 this.queryArgs.page = 1;
                 this.onClickQueryButton();
             }.bind(this));
-
-            this.collection.getOperatorList();
         },
 
         render: function(target) {
@@ -133,9 +127,6 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/liveCurentSetup/liveCurentSetup.html'])());
             this.$el.find(".origin-list .table-ctn").html(_.template(template['tpl/loading.html'])({}));
-
-            // this.collection.on("get.fileGroup.success", $.proxy(this.onGetFileGroupSuccess, this));
-            // this.collection.on("get.fileGroup.error", $.proxy(this.onGetError, this));
 
             this.collection.on("get.buisness.success", $.proxy(this.onGetBusinessTpye, this));
             this.collection.on("get.buisness.error", $.proxy(this.onGetError, this));
@@ -153,8 +144,6 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
                 this.collection.getConfList(args)
             }.bind(this));
             this.collection.on("get.effectSingleConf.error", $.proxy(this.onGetError, this));
-
-            //this.collection.getFileGroupList();
             this.collection.getBusinessType();
         },
 
@@ -173,53 +162,26 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             this.busTypeArray = typeArray;
             rootNode = this.$el.find(".dropdown-bustype");
             Utility.initDropMenu(rootNode, typeArray, function(value){
-                this.buisnessType = parseInt(value)
-                var args = {
-                    bisTypeId: this.buisnessType,
-                    page     : 1,
-                    count    : 9999
-                }
-                this.collection.getConfList(args)
+                this.isInitPaginator = false;
+                this.queryArgs.page = 1;
+                this.$el.find(".pagination").html("");
+                this.queryArgs.bisTypeId = parseInt(value)
+                this.collection.getConfList(this.queryArgs)
             }.bind(this));
-
-            this.buisnessType = res[0].id;
+            this.isInitPaginator = false;
+            this.queryArgs = {
+                bisTypeId: res[0].id,
+                page   : 1,
+                count  : 1
+            }
             this.$el.find(".dropdown-bustype .cur-value").html(res[0].name);
-            var args = {
-                bisTypeId: this.buisnessType,
-                page   : 1,
-                count  : 9999
-            }
-            this.collection.getConfList(args)
-        },
-
-        onGetFileGroupSuccess: function(res){
-            this.fileGroupList = res
-            var groupList = [];
-            _.each(this.fileGroupList, function(el, index, list){
-                groupList.push({name: el.name, value:el.id})
-            });
-            Utility.initDropMenu(this.$el.find(".dropdown-filegroup"), groupList, function(value){
-                this.groupTypeId = parseInt(value)
-                var args = {
-                    groupId: this.groupTypeId,
-                    page   : 1,
-                    count  : 9999
-                }
-                this.collection.getConfList(args)
-            }.bind(this));
-
-            this.$el.find(".dropdown-filegroup .cur-value").html(groupList[0].name)
-            this.groupTypeId = groupList[0].value;
-            var args = {
-                groupId: this.groupTypeId,
-                page   : 1,
-                count  : 9999
-            }
-            this.collection.getConfList(args)
+            this.collection.getConfList(this.queryArgs);
         },
 
         onSetupFileListSuccess: function(){
-            //this.initTable();
+            this.initTable();
+            if (!this.isInitPaginator) this.initPaginator();
+            this.initPageDropMenu();
         },
 
         initTable: function(){
@@ -231,7 +193,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
                 this.table.find("tbody .file-name").on("click", $.proxy(this.onClickItemFile, this));
                 this.table.find("tbody .detail").on("click", $.proxy(this.onClickItemDetail, this));
             } else {
-                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+                this.$el.find(".origin-list .table-ctn").html(_.template(template['tpl/empty.html'])());
             }
         },
 
@@ -248,18 +210,64 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             });
             aDetailView.render(this.$el.find(".detail-panel"));
 
-            this.$el.find(".origin-list").slideUp(300);
-            this.$el.find(".cur-opt").slideUp(300);
-            setTimeout(function(){
-                this.$el.find(".detail-panel").show();
-            }.bind(this), 300)
+            this.hideMainList(".origin", ".detail-panel")
+        },
+
+        hideMainList: function(mainClass, otherClass){
+            async.series([
+                function(callback){
+                    this.$el.find(mainClass).addClass("zoomOut animated");
+                    callback()
+                }.bind(this),
+                function(callback){
+                    setTimeout(function(){
+                        this.$el.find(mainClass).hide();
+                        this.$el.find(otherClass).show();
+                        this.$el.find(otherClass).addClass("zoomIn animated");
+                        callback()
+                    }.bind(this), 500)
+                }.bind(this),                
+                function(callback){
+                    setTimeout(function(){
+                        this.$el.find(otherClass).removeClass("zoomIn animated");
+                        this.$el.find(otherClass).removeClass("zoomOut animated");
+                        this.$el.find(mainClass).removeClass("zoomIn animated");
+                        this.$el.find(mainClass).removeClass("zoomOut animated");
+                        callback()
+                    }.bind(this), 1000)
+                }.bind(this)]
+            );
+        },
+
+        showMainList: function(mainClass, otherClass, otherClass1){
+            async.series([
+                function(callback){
+                    this.$el.find(otherClass).addClass("zoomOut animated");
+                    callback()
+                }.bind(this),
+                function(callback){
+                    setTimeout(function(){
+                        this.$el.find(otherClass).hide();
+                        this.$el.find(otherClass + " " + otherClass1).remove();
+                        this.$el.find(mainClass).show();
+                        this.$el.find(mainClass).addClass("zoomIn animated")
+                        callback()
+                    }.bind(this), 500)
+                }.bind(this),                
+                function(callback){
+                    setTimeout(function(){
+                        this.$el.find(otherClass).removeClass("zoomIn animated");
+                        this.$el.find(otherClass).removeClass("zoomOut animated");
+                        this.$el.find(mainClass).removeClass("zoomIn animated");
+                        this.$el.find(mainClass).removeClass("zoomOut animated");
+                        callback()
+                    }.bind(this), 1000)
+                }.bind(this)]
+            );
         },
 
         onBackDetailCallback: function(){
-            this.$el.find(".origin-list").slideDown(300);
-            this.$el.find(".cur-opt").slideDown(300);
-            this.$el.find(".detail-panel").hide();
-            this.$el.find(".detail-panel .history-ctn").remove();
+            this.showMainList(".origin", ".detail-panel", ".detail-ctn")
         },
 
         onClickItemUse: function(event){
@@ -279,19 +287,13 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             var eventTarget = event.srcElement || event.target,
                 filesid = $(eventTarget).attr("files-id"),
                 id = $(eventTarget).attr("id");
-            var model = this.collection.get(filesid);
-
-            var defaultValue = _.find(model.attributes.files, function(object){
-                return object.id === parseInt(id)
-            }.bind(this));
-
-            var temp = new this.collection.model(defaultValue)
+            var model = this.collection.get(id);
 
             if (this.viewShellPopup1) $("#" + this.viewShellPopup1.modalId).remove();
 
             var options = {
                 title:"查看",
-                body : _.template(template['tpl/liveAllSetup/liveAllSetup.viewShell.html'])({data: temp, dataType: 1}),
+                body : _.template(template['tpl/liveAllSetup/liveAllSetup.viewShell.html'])({data: model, dataType: 1}),
                 backdrop : 'static',
                 type     : 1,
                 width: 800
@@ -331,28 +333,14 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
                         var args = _.extend(this.queryArgs);
                         args.page = num;
                         args.count = this.queryArgs.count;
-                        this.collection.getNodeList(args);
+                        this.collection.getConfList(args);
                     }
                 }.bind(this)
             });
             this.isInitPaginator = true;
         },
 
-        initNodeDropMenu: function(){
-            var statusArray = [
-                {name: "全部", value: "All"},
-                {name: "运行中", value: 1},
-                {name: "挂起", value: 2},
-                {name: "已关闭", value: 3}
-            ],
-            rootNode = this.$el.find(".dropdown-status");
-            Utility.initDropMenu(rootNode, statusArray, function(value){
-                if (value !== "All")
-                    this.queryArgs.status = parseInt(value);
-                else
-                    this.queryArgs.status = null;
-            }.bind(this));
-
+        initPageDropMenu: function(){
             var pageNum = [
                 {name: "10条", value: 10},
                 {name: "20条", value: 20},
@@ -362,10 +350,8 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
                 this.queryArgs.count = value;
                 this.queryArgs.page = 1;
-                this.onClickQueryButton();
+                this.collection.getConfList(this.queryArgs)
             }.bind(this));
-
-            this.collection.getOperatorList();
         },
 
         hide: function(){
@@ -374,12 +360,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
 
         update: function(){
             this.$el.show();
-            var args = {
-                groupId: this.groupTypeId,
-                page   : 1,
-                count  : 9999
-            }
-            this.collection.getConfList(args)
+            this.collection.getConfList(this.queryArgs)
         },
 
         render: function(target) {

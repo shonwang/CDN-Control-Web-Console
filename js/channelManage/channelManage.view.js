@@ -94,7 +94,6 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
                 "dispGroupIds": [parseInt(nodeId)],//channelIds,
                 "channelId"   : this.model.get("id")
             }
-            console.log(options)
             return options
         },
 

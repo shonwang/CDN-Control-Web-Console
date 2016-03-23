@@ -19,7 +19,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     "bisTypeId": this.model.get("bisTypeId"),
                     "confFileId": this.model.get("id"),
                     "content": this.model.get("content"),
-                    "remark": this.model.get("remark")
+                    "remark": this.model.get("remark"),
+                    "fileTypeId": this.model.get("fileTypeId")
                 }
             } else {
                 this.args = {
@@ -27,7 +28,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     "nodeGroupId":"",
                     "bisTypeId":"",
                     "content":"",
-                    "remark":""
+                    "remark":"",
+                    "fileTypeId": ""
                 }
             }
 
@@ -82,7 +84,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find(".dropdown-bustype .dropdown-toggle").attr("disabled", "disabled")
             }
             this.collection.getNodeGroupList({bisTypeId: this.args.bisTypeId})
-            //this.collection.getFileTypeList()
+            this.collection.getFileTypeList()
         },
 
         initNodeGroupDropList: function(res){
@@ -107,24 +109,24 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initFileTypeDropList: function(res){
-            // var tempFtList = [];
-            // _.each(res.nodeGroupList, function(el, index, list){
-            //     tempFtList.push({name: el.name, value:el.id})
-            // });
-            // Utility.initDropMenu(this.$el.find(".dropdown-node-group"), tempFtList, function(value){
-            //     this.args.nodeGroupId = parseInt(value);
-            // }.bind(this));
+            var tempNgList = [];
+            _.each(res, function(el, index, list){
+                tempNgList.push({name: el.name, value:el.id})
+            });
+            Utility.initDropMenu(this.$el.find(".dropdown-filetype"), tempNgList, function(value){
+                this.args.fileTypeId = parseInt(value);
+            }.bind(this));
 
-            // if (this.isEdit){
-            //     var defaultValue = _.find(tempFtList, function(object){
-            //         return object.value === this.model.get("nodeGroupId")
-            //     }.bind(this));
-            //     this.$el.find(".dropdown-node-group .cur-value").html(defaultValue.name);
-            //     this.$el.find(".dropdown-node-group .dropdown-toggle").attr("disabled", "disabled")
-            // } else {
-            //     this.$el.find(".dropdown-node-group .cur-value").html(tempFtList[0].name)
-            //     this.args.nodeGroupId = tempFtList[0].value;
-            // }
+            if (this.isEdit){
+                var defaultValue = _.find(tempNgList, function(object){
+                    return object.value === this.model.get("fileTypeId")
+                }.bind(this));
+                this.$el.find(".dropdown-filetype .cur-value").html(defaultValue.name);
+                this.$el.find(".dropdown-filetype .dropdown-toggle").attr("disabled", "disabled")
+            } else {
+                this.$el.find(".dropdown-filetype .cur-value").html(tempNgList[0].name)
+                this.args.fileTypeId = tempNgList[0].value;
+            }
         },
 
         onClickOK: function(){
@@ -146,12 +148,16 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 return;
             }
             var args = {
-                "id"          : this.model ? this.model.get("id") : 0,
-                "fileTypeId"  : this.args.fileTypeId,
-                "groupTypeId" : this.args.groupTypeId,
-                "fileName"    : fileName,
-                "content"     : this.$el.find("#textarea-content").val(),
-                "remark"      : this.$el.find("#textarea-comment").val(),
+                "fileName" : fileName,
+                "content"  : this.$el.find("#textarea-content").val(),
+                "remark"   : this.$el.find("#textarea-comment").val(),
+            }
+            if (this.isEdit){
+                args.confFileId = this.args.confFileId;
+            } else {
+                args.fileTypeId = this.args.fileTypeId;
+                args.bisTypeId = this.args.bisTypeId;
+                args.nodeGroupId = this.args.nodeGroupId;
             }
             return args;
         },
@@ -515,7 +521,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.getBusinessType();
 
             this.$el.find(".ok").on("click", $.proxy(this.onClickConfirm, this))
-            this.$el.find(".list .create").on("click", $.proxy(this.onClickCreate, this))
+            this.$el.find(".create").on("click", $.proxy(this.onClickCreate, this))
         },
 
         onGetBusinessTpye: function(res){
@@ -541,16 +547,16 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 isEdit    : false,
                 busTypeArray: this.busTypeArray,
                 cancelCallback: function(){
-                    this.showMainList(".list", ".create-edit-panel", ".create-edit-ctn");
+                    this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn");
                 }.bind(this),
                 okCallback:  function(options){
                     this.collection.addConf(options);
-                    this.showMainList(".list", ".create-edit-panel", ".create-edit-ctn")
+                    this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn")
                 }.bind(this)
             });
             addFileView.render(this.$el.find(".create-edit-panel"));
 
-            this.hideMainList(".list", ".create-edit-panel")
+            this.hideMainList(".main-list", ".create-edit-panel")
         },
 
         hideMainList: function(mainClass, otherClass){
@@ -629,15 +635,15 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             var confirmView = new ConfirmView(options);
             confirmView.render(this.$el.find(".confirm"));
 
-            this.hideMainList(".list", ".confirm")
+            this.hideMainList(".main-list", ".confirm")
         },
 
         onClickConfirmCancel: function(){
-            this.showMainList(".list", ".confirm", ".confirm-ctn")
+            this.showMainList(".main-list", ".confirm", ".confirm-ctn")
         },
 
         onBackHistoryCallback: function(){
-            this.showMainList(".list", ".history-panel", ".history-ctn")
+            this.showMainList(".main-list", ".history-panel", ".history-ctn")
         },
 
         selectedModelsCallback: function(usedModel, originModel){
@@ -722,7 +728,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             });
             aHistoryView.render(this.$el.find(".history-panel"));
 
-            this.hideMainList(".list", ".history-panel")
+            this.hideMainList(".main-list", ".history-panel")
         },
 
         onClickItemEdit: function(event){
@@ -741,16 +747,16 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 isEdit    : true,
                 busTypeArray: this.busTypeArray,
                 cancelCallback: function(){
-                    this.showMainList(".list", ".create-edit-panel", ".create-edit-ctn");
+                    this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn");
                 }.bind(this),
                 okCallback:  function(options){
                     //this.collection.modifyConfFile(options);
-                    this.showMainList(".list", ".create-edit-panel", ".create-edit-ctn")
+                    this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn")
                 }.bind(this)
             });
             addFileView.render(this.$el.find(".create-edit-panel"));
 
-            this.hideMainList(".list", ".create-edit-panel")
+            this.hideMainList(".main-list", ".create-edit-panel")
         },
 
         onClickMultiStop : function(event){

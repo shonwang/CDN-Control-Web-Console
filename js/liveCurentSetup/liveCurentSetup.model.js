@@ -1,23 +1,23 @@
 define("liveCurentSetup.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-            var ipString = this.get("ips");
-            if (ipString){
-                var ipArray = ipString.split(","), temp = [];
-                _.each(ipArray, function(el, index, ls){
-                    if (el) temp.push(el)
-                })
-                this.set("ipArray", temp)
-            }
             var status = this.get("status");
-            if (status === 1) this.set("statusName", '<span class="text-success">成功</span>');
-            if (status === -1) this.set("statusName", '<span class="text-info">未配置</span>');
-            if (status === 0) this.set("statusName", '<span class="text-danger">失败</span>');
+            if (status === "成功") this.set("statusName", '<span class="text-success">成功</span>');
+            if (status === "未配置") this.set("statusName", '<span class="text-info">未配置</span>');
+            if (status === "失败") this.set("statusName", '<span class="text-danger">失败</span>');
 
             var startTime = this.get("startTime")
             if (startTime) this.set("startTimeFormated", new Date(startTime).format("yyyy/MM/dd hh:mm"));
             var endTime = this.get("endTime")
             if (endTime) this.set("endTimeFormated", new Date(endTime).format("yyyy/MM/dd hh:mm"));
+            var createTime = this.get("createTime")
+            if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
+
+            var id = this.get("id"), 
+                logId = this.get("logId"), 
+                nodeGroupId = this.get("nodeGroupId"),
+                fileId = this.get("confFileId"); 
+            if (!id) this.set("id", logId + "-" + nodeGroupId + "-" + fileId)
         }
     });
 
@@ -26,43 +26,6 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
         model: Model,
 
         initialize: function(){},
-
-        getNodeList: function(args){
-            var url = BASE_URL + "/rs/node/list";
-            var defaultParas = {
-                type: "POST",
-                url: url,
-                async: true,
-                timeout: 30000,
-                contentType: "application/json",
-                processData: false
-            };
-            defaultParas.data = JSON.stringify(args);
-
-            defaultParas.beforeSend = function(xhr){
-                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
-            }
-            defaultParas.success = function(res){
-                this.reset();
-                if (res){
-                    _.each(res.rows, function(element, index, list){
-                        this.push(new Model(element));
-                    }.bind(this))
-                    this.total = res.total;
-                    this.trigger("get.node.success");
-                } else {
-                    this.trigger("get.node.error"); 
-                }
-            }.bind(this);
-
-            defaultParas.error = function(response, msg){
-                if (response&&response.responseText)
-                    response = JSON.parse(response.responseText)
-                this.trigger("get.node.error", response); 
-            }.bind(this);
-
-            $.ajax(defaultParas);
-        },
 
         getConfList: function(args){
             var url = BASE_URL + "/seed/config/release/log/pageList"
@@ -81,10 +44,23 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
             }
             defaultParas.success = function(res){
                 this.reset();
-                if (res){
-                    _.each(res, function(element, index, list){
-                        this.push(new Model(element));
+                if (res && res.rows){
+                    _.each(res.rows, function(logObj, logIndex, logList){
+                        _.each(logObj.nodeGroupList, function(nodeGroupObj, nodeGroupIndex, nodeGroupLs){
+                            _.each(nodeGroupObj.confFileList, function(fileObj, fileIndex, fileList){
+                                fileObj.isUsed = logObj.isUsed;
+                                fileObj.logId = logObj.id;
+                                fileObj.shellCmd = logObj.shellCmd;
+                                fileObj.allRowspan = nodeGroupLs.length * fileList.length;
+                                fileObj.nodeGroupId = nodeGroupObj.nodeGroupId;
+                                fileObj.nodeGroupName = nodeGroupObj.nodeGroupName;
+                                fileObj.groupRowspan = fileList.length;
+                                this.push(new Model(fileObj));
+                            }.bind(this))
+                        }.bind(this))
                     }.bind(this))
+
+                    this.total = res.total;
                     this.trigger("get.confList.success"); 
                 } else {
                     this.trigger("get.confList.error"); 
@@ -159,15 +135,16 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
         },
 
         getResInfo: function(args){
-            var url = BASE_URL + "/seed/cache/cache/resInfo"
+            var url = BASE_URL + "/seed/config/release/log/ip/pageList"
             var defaultParas = {
-                type: "GET",
+                type: "POST",
                 url: url,
                 async: true,
-                timeout: 30000
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
             };
-            defaultParas.data = args || {};
-            defaultParas.data.t = new Date().valueOf();
+            defaultParas.data = JSON.stringify(args);
             
             defaultParas.beforeSend = function(xhr){
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");

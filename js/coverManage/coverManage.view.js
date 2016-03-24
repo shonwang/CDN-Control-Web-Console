@@ -170,7 +170,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             //         },
             //     ]
             // };
-            var legendList = [], points = [],
+            var legendList = [], points = [], legendObjList = [],
                 series = [
                     {
                         name: '全国',
@@ -253,6 +253,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
 
             _.each(res.relation, function(el, key, list){
                 legendList.push(el.name);
+                legendObjList.push({name:el.name, info:el.info})
                 points.push({name: el.name})
                 var mapTemp = {
                         name: '',
@@ -325,7 +326,8 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
 
             //series[0].markLine.data = allLine;
             series[0].markPoint.data = points;
-            this.initMap(legendList, series)
+            this.initMap(legendList, series);
+            this.legendObjList = legendObjList;
         },
 
         initMap: function(legendList, series){
@@ -365,8 +367,6 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                 dataRange: {
                     x:'left',
                     y:'top',
-                    // min : 0,
-                    // max : 4,
                     splitList: [
                         {start: 4, end: 4, label: 'L4'},
                         {start: 3, end: 3, label: 'L3'},
@@ -374,7 +374,6 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                         {start: 1, end: 1, label: 'L1'},
                         {start: 0, end: 0, label: 'L0'}
                     ],
-                    //calculable : true,
                     color: ['#ff3333', 'orange', 'yellow','lime','aqua'],
                     textStyle:{
                         color:'#fff'
@@ -386,7 +385,6 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.chart = echarts.init(this.$el.find(".map-ctn")[0]);
             this.chart.setOption(option);
             this.chart.on(echarts.config.EVENT.CLICK, function (){
-                console.log(arguments)
                 var obj = arguments[0]
                 if (obj.name.indexOf("节点") > -1){
                     var legend = this.chart.chart['map'].component.legend;
@@ -973,6 +971,8 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
         onClickQueryButton: function(){
             this.$el.find(".map-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".list-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.$el.find(".map-detail-ctn").html(_.template(template['tpl/loading.html'])({}));
+            
             //this.collection.getNodeList(this.queryArgs);
         },
 

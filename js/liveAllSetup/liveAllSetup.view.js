@@ -107,6 +107,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                             el.content = options.content;
                     }.bind(this))
                     this.editPartitionPopup.$el.modal("hide");
+                    this.$el.find('.file-content tr[id=' + options.partitionId + ']').addClass("success");
                 }.bind(this),
                 onHiddenCallback: function(){}
             }

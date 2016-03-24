@@ -181,7 +181,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                         itemStyle:{
                             normal:{
                                 borderColor:'rgba(100,149,237,1)',
-                                borderWidth: 1,
+                                borderWidth: 1.5,
                                 areaStyle:{
                                     color: '#1b1b1b'
                                 }
@@ -192,12 +192,12 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                               symbolSize: 5,       // 标注大小，半宽（半径）参数，当图形为方向或菱形则总宽度为symbolSize * 2
                               itemStyle: {
                                   normal: {
-                                      borderColor: '#1e90ff',
-                                      borderWidth: 0,            // 标注边线线宽，单位px，默认为1
+                                      borderColor: '#fff',
+                                      borderWidth: 1,            // 标注边线线宽，单位px，默认为1
                                       label: {
                                           show: false
                                       },
-                                      color: "#fff"
+                                      color: "#1e90ff"
                                   },
                                   emphasis: {
                                       borderColor: '#1e90ff',
@@ -326,8 +326,8 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
 
             //series[0].markLine.data = allLine;
             series[0].markPoint.data = points;
-            this.initMap(legendList, series);
             this.legendObjList = legendObjList;
+            this.initMap(legendList, series);
         },
 
         initMap: function(legendList, series){
@@ -390,7 +390,10 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                     var legend = this.chart.chart['map'].component.legend;
                     legend.setSelected(obj.name)
                 }
-            }.bind(this))
+            }.bind(this));
+
+            $(window).off('resize', $.proxy(this.onResizeChart, this));
+            $(window).on('resize', $.proxy(this.onResizeChart, this));
 
             this.$el.find(".list-ctn").html(_.template(template['tpl/coverManage/coverManage.nodelist.html'])({data: legendList}));
 
@@ -403,10 +406,70 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
 
                 var legend = this.chart.chart['map'].component.legend;
                 legend.setSelected(legendList[parseInt(id)])
+
+                this.curNum = parseInt(id);
+                this.renderNodeInfo();
+                if (this.timer) this.$el.find(".list-ctn .pause").click();
             }.bind(this))
 
-            this.$el.find(".list-ctn").find('button[id="0"]').click();
+            this.$el.find(".list-ctn .play").on("click", function(){
+                this.timer = setInterval($.proxy(this.setNodeDetail, this), 5000);
+                this.$el.find(".list-ctn .pause").show();
+                this.$el.find(".list-ctn .play").hide();
+            }.bind(this));
 
+            this.$el.find(".list-ctn .pause").on("click", function(){
+                if (this.timer) clearInterval(this.timer)
+                this.$el.find(".list-ctn .pause").hide();
+                this.$el.find(".list-ctn .play").show();
+            }.bind(this));
+
+            this.curNum = 0;
+            this.$el.find(".list-ctn").find('button[id="0"]').click();
+            this.curNum = this.curNum + 1;
+            this.timer = setInterval($.proxy(this.setNodeDetail, this), 5000)
+        },
+
+        onResizeChart: function(){
+            if (!this.chart) return;
+            this.chart.resize();
+            this.chart.refresh();
+        },
+
+        renderNodeInfo: function(){
+            if (this.nodeDetail) this.nodeDetail.remove();
+            this.nodeDetail = $(_.template(template['tpl/coverManage/coverManage.nodeinfo.html'])({data: this.legendObjList[this.curNum]}));
+            this.nodeDetail.addClass("zoomIn animated");
+            this.$el.find(".map-detail-ctn").html("");
+            this.nodeDetail.appendTo(this.$el.find(".map-detail-ctn"))
+        },
+
+        setNodeDetail: function(){
+            async.series([
+                function(callback){
+                    this.nodeDetail.addClass("zoomOut animated");
+                    callback()
+                }.bind(this),
+                function(callback){
+                    setTimeout(function(){
+                        this.renderNodeInfo();
+                        var legend = this.chart.chart['map'].component.legend;
+                        legend.setSelected(this.legendObjList[this.curNum].name)
+                        this.$el.find(".list-ctn button").removeClass("active");
+                        this.$el.find(".list-ctn").find('button[id="' + this.curNum +'"]').addClass("active");
+                        callback()
+                    }.bind(this), 1000)
+                }.bind(this),                
+                function(callback){
+                    setTimeout(function(){
+                        this.nodeDetail.removeClass("zoomIn animated");
+                        this.curNum = this.curNum + 1;
+                        if (this.curNum >= this.legendObjList.length)
+                            this.curNum = 0;
+                        callback()
+                    }.bind(this), 1000)
+                }.bind(this)]
+            );        
         },
 
         initMapTest: function(){
@@ -991,10 +1054,12 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
 
         hide: function(){
             this.$el.hide();
+            this.$el.find(".list-ctn .pause").click();
         },
 
         update: function(){
             this.$el.show();
+            this.$el.find(".list-ctn .play").click();
         },
 
         render: function(target) {

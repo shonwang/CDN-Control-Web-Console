@@ -93,6 +93,19 @@ td input[type="number"]{
     min-height: 600px;
     margin-left: -15px;
     position: relative;
+    padding: 20px;
+}
+
+.panel-dark{
+    color: rgba(100,149,237,1);
+    border-color: rgba(100,149,237,1);
+    background-color: #1b1b1b;
+}
+
+.panel-dark>.panel-heading {
+    color: rgba(100,149,237,1);
+    background-color: #1b1b1b;
+    border-color: rgba(100,149,237,1);
 }
 
 td .radio{

@@ -1,5 +1,25 @@
 define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
     
+    var EditPartitionView = Backbone.View.extend({
+        events: {
+            //"click .search-btn":"onClickSearch"
+        },
+
+        initialize: function(options) {
+            this.options = options
+            this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.editPartition.html'])({data: options.partition}));
+        },
+
+        getArgs: function(){
+            this.options.partition.content = this.$el.find("#textarea-content").val();
+            return this.options.partition;
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target);
+        }
+    });
+
     var AddOrEditFlieView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
@@ -20,7 +40,9 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     "confFileId": this.model.get("id"),
                     "content": this.model.get("content"),
                     "remark": this.model.get("remark"),
-                    "fileTypeId": this.model.get("fileTypeId")
+                    "fileTypeId": this.model.get("fileTypeId"),
+                    "partition": this.model.get("partition"),
+                    "partitions": this.model.get("partitions"),
                 }
             } else {
                 this.args = {
@@ -29,14 +51,20 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     "bisTypeId":"",
                     "content":"",
                     "remark":"",
-                    "fileTypeId": ""
+                    "fileTypeId": "",
+                    "partition": 0
                 }
             }
 
             this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.add&edit.html'])({data: this.args}));
             this.$el.find(".ok-again").on("click", $.proxy(this.onClickOK, this));
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancel, this));
-            this.$el.find(".fileContentType input").on("click", $.proxy(this.onClickfileContentTypeInput, this))
+            this.$el.find(".fileContentType input").on("click", $.proxy(this.onClickfileContentTypeInput, this));
+
+            if (this.args.partition !== 0){
+                this.$el.find(".file-content .edit").on("click", $.proxy(this.onClickPartitionItem, this));
+            }
+
 
             this.collection.off("get.nodeGroupList.success");
             this.collection.off("get.nodeGroupList.error");
@@ -51,13 +79,50 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.initBussnessDropList();
         },
 
+        onClickPartitionItem: function(event){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+            var aPartition = _.find(this.args.partitions, function(object){
+                return object.partitionId === parseInt(id);
+            }.bind(this));
+
+            if (this.editPartitionPopup) $("#" + this.editPartitionPopup.modalId).remove();
+
+            var editPartitionView = new EditPartitionView({partition: aPartition})
+            var options = {
+                title:"编辑分块",
+                body : editPartitionView,
+                backdrop : 'static',
+                type     : 2,
+                width: 800,
+                onOKCallback:  function(){
+                    var options = editPartitionView.getArgs();
+                    _.each(this.args.partitions, function(el, key, ls){
+                        if (el.partitionId === options.partitionId)
+                            el.content = options.content;
+                    }.bind(this))
+                    this.editPartitionPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){}
+            }
+            this.editPartitionPopup = new Modal(options);
+        },
+
         onClickfileContentTypeInput: function(event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
-            if (eventTarget.checked === true && eventTarget.value == "1")
-                this.$el.find(".file-content").slideUp(200)
-            else
-                this.$el.find(".file-content").slideDown(200)
+            if (eventTarget.checked === true && eventTarget.value == "1"){
+                this.$el.find(".file-content").slideUp(200);
+                this.args.partition = 1;
+            } else {
+                this.$el.find(".file-content").slideDown(200);
+                this.args.partition = 0;
+            }
         },
 
         onClickCancel: function(){
@@ -154,10 +219,12 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             }
             if (this.isEdit){
                 args.confFileId = this.args.confFileId;
+                args. partitions = this.args.partitions
             } else {
                 args.fileTypeId = this.args.fileTypeId;
                 args.bisTypeId = this.args.bisTypeId;
                 args.nodeGroupId = this.args.nodeGroupId;
+                args.partition = this.args.partition
             }
             return args;
         },

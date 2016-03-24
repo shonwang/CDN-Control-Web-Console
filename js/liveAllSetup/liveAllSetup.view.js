@@ -247,6 +247,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 return parseInt(id) === object.attributes.id
             }.bind(this));
 
+            model.set("nodeGroupName", this.model.get("nodeGroupName"))
+
             if (this.viewShellPopup) $("#" + this.viewShellPopup.modalId).remove();
 
             var options = {
@@ -517,6 +519,11 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.collection.getAllFileList({bisTypeId: this.buisnessType})
             }.bind(this));
             this.collection.on("get.addConf.error", $.proxy(this.onGetError, this));
+            
+            this.collection.on("get.modifyConf.success", function(){
+                this.collection.getAllFileList({bisTypeId: this.buisnessType})
+            }.bind(this));
+            this.collection.on("get.modifyConf.error", $.proxy(this.onGetError, this));
 
             this.collection.getBusinessType();
 
@@ -750,7 +757,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn");
                 }.bind(this),
                 okCallback:  function(options){
-                    //this.collection.modifyConfFile(options);
+                    this.collection.modifyConfFile(options);
                     this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn")
                 }.bind(this)
             });

@@ -1,10 +1,10 @@
 define("ipManage.model", ['require','exports'], function(require, exports) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-            var ipType = this.get("ipType");
-            if (ipType === "1") this.set("ipTypeName", "内网IP");
-            if (ipType === "2") this.set("ipTypeName", "外网IP");
-            if (ipType === "3") this.set("ipTypeName", "虚拟IP");
+            var status = this.get("status");
+            if (status === "1") this.set("statusName", "内网IP");
+            if (status === "2") this.set("statusName", "外网IP");
+            if (status === "3") this.set("statusName", "虚拟IP");
         }
     });
 

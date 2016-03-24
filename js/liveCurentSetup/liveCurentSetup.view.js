@@ -136,12 +136,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
 
             this.collection.on("get.effectSingleConf.success", function(){
                 alert("操作成功！");
-                var args = {
-                    groupId: this.groupTypeId,
-                    page   : 1,
-                    count  : 10
-                }
-                this.collection.getConfList(args)
+                this.collection.getConfList(this.queryArgs);
             }.bind(this));
             this.collection.on("get.effectSingleConf.error", $.proxy(this.onGetError, this));
             this.collection.getBusinessType();
@@ -274,13 +269,9 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             var result = confirm("你确定要生效吗？")
             if (!result) return;
             var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
                 id = $(eventTarget).attr("id");
-            }
-            this.collection.effectSingleConf({currConfId: id})
+            var model = this.collection.get(id);
+            this.collection.effectSingleConf({confRelLogId: model.get("logId")})
         },
 
         onClickItemFile: function(event){

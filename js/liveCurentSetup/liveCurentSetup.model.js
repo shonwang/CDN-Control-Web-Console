@@ -77,38 +77,8 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
             $.ajax(defaultParas);
         },
 
-        getFileGroupList: function(){
-            var url = BASE_URL + "/seed/metaData/fileGroup/list"
-            var defaultParas = {
-                type: "GET",
-                url: url,
-                async: true,
-                timeout: 30000
-            };
-            defaultParas.data = {};
-            defaultParas.data.t = new Date().valueOf();
-            
-            defaultParas.beforeSend = function(xhr){
-                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
-            }
-            defaultParas.success = function(res){
-                if (res)
-                    this.trigger("get.fileGroup.success", res); 
-                else
-                    this.trigger("get.fileGroup.error", res);
-            }.bind(this);
-
-            defaultParas.error = function(response, msg){
-                if (response&&response.responseText)
-                    response = JSON.parse(response.responseText)
-                this.trigger("get.fileGroup.error", response); 
-            }.bind(this);
-
-            $.ajax(defaultParas);
-        },
-
         effectSingleConf: function(args){
-            var url = BASE_URL + "/seed/curr/conf/effectSingleConf"
+            var url = BASE_URL + "/seed/config/release/log/rollback"
             var defaultParas = {
                 type: "GET",
                 url: url,

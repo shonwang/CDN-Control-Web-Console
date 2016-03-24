@@ -2,9 +2,10 @@ define("ipManage.model", ['require','exports'], function(require, exports) {
     var Model = Backbone.Model.extend({
         initialize: function(){
             var status = this.get("status");
-            if (status === "1") this.set("statusName", "内网IP");
-            if (status === "2") this.set("statusName", "外网IP");
-            if (status === "3") this.set("statusName", "虚拟IP");
+            if (status === "1") this.set("statusName", "<span class='text-success'>运行中</span>");
+            if (status === "2") this.set("statusName", "<span class='text-warning'>暂停中</span>");
+            if (status === "4") this.set("statusName", "<span class='text-danger'>宕机</span>");
+            if (status === "6") this.set("statusName", "暂停且宕机");
         }
     });
 

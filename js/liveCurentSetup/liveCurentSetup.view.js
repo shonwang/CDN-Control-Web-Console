@@ -25,7 +25,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
                 "nodeName": null,
                 "status": null,
                 "page": 1,
-                "count": 1
+                "count": 10
             }
             this.onClickQueryButton();
             this.$el.find(".back").on("click", $.proxy(this.onClickCancel, this));
@@ -139,7 +139,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
                 var args = {
                     groupId: this.groupTypeId,
                     page   : 1,
-                    count  : 9999
+                    count  : 10
                 }
                 this.collection.getConfList(args)
             }.bind(this));
@@ -172,7 +172,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             this.queryArgs = {
                 bisTypeId: res[0].id,
                 page   : 1,
-                count  : 1
+                count  : 10
             }
             this.$el.find(".dropdown-bustype .cur-value").html(res[0].name);
             this.collection.getConfList(this.queryArgs);

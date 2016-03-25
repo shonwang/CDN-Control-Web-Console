@@ -2,9 +2,9 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
     var Model = Backbone.Model.extend({
         initialize: function(){
             var status = this.get("status");
-            if (status === "成功") this.set("statusName", '<span class="text-success">成功</span>');
-            if (status === "未配置") this.set("statusName", '<span class="text-info">未配置</span>');
-            if (status === "失败") this.set("statusName", '<span class="text-danger">失败</span>');
+            if (status === 2) this.set("statusName", '<span class="text-success">成功</span>');
+            if (status === 1) this.set("statusName", '<span class="text-info">未配置</span>');
+            if (status === 3) this.set("statusName", '<span class="text-danger">失败</span>');
 
             var startTime = this.get("startTime")
             if (startTime) this.set("startTimeFormated", new Date(startTime).format("yyyy/MM/dd hh:mm"));

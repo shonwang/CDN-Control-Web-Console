@@ -111,7 +111,9 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                     this.table = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({data: resData}));
                     this.$el.find(".table-ctn").html(this.table[0]);
                 }else{
+                    //console.log(resData);
                     this.addNode = $(_.template(template['tpl/businessManage/businessManage.addNode.html'])({data: resData}));
+                    //console.log(this.addNode[0]);
                     this.$el.find(".table-ctn .addOrEdit").prepend(this.addNode[0]);
                 }
                 this.$el.find(".addOrEdit .delete").on("click", $.proxy(this.onClickItemDelete, this));

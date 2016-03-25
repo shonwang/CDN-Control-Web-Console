@@ -102,6 +102,19 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
         },
 
         initPageDropMenu: function(){
+            var statusList = [
+                {name: "全部", value: "all"},
+                {name: "成功", value: 2},
+                {name: "失败", value: 3},
+                {name: "未配置", value: 1}
+            ]
+            Utility.initDropMenu(this.$el.find(".dropdown-status"), statusList, function(value){
+                if (value !== "all")
+                    this.queryArgs.status = parseInt(value);
+                else
+                    this.queryArgs.status = null;
+            }.bind(this));
+
             var pageNum = [
                 {name: "10条", value: 10},
                 {name: "20条", value: 20},

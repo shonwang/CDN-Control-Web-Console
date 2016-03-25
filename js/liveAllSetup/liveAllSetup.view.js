@@ -344,7 +344,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         onClickItemUsed: function(event){
             if (this.confirmUsedPopup) $("#" + this.confirmUsedPopup.modalId).remove();
             var opt = {
-                message: "你确认要这么做吗？",
+                message: "你确认要这么做吗？现在后悔还来得及！",
                 type: "alert-danger"
             }
             var options = {
@@ -359,58 +359,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 onHiddenCallback: function(){}.bind(this)
             }
             this.confirmUsedPopup = new Modal(options);
-        },
-
-        initPaginator: function(){
-            this.$el.find(".total-items span").html(this.collection.total)
-            if (this.collection.total <= this.queryArgs.count) return;
-            var total = Math.ceil(this.collection.total/this.queryArgs.count);
-
-            this.$el.find(".pagination").jqPaginator({
-                totalPages: total,
-                visiblePages: 10,
-                currentPage: 1,
-                onPageChange: function (num, type) {
-                    if (type !== "init"){
-                        this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                        var args = _.extend(this.queryArgs);
-                        args.page = num;
-                        args.count = this.queryArgs.count;
-                        this.collection.getNodeList(args);
-                    }
-                }.bind(this)
-            });
-            this.isInitPaginator = true;
-        },
-
-        initNodeDropMenu: function(){
-            var statusArray = [
-                {name: "全部", value: "All"},
-                {name: "运行中", value: 1},
-                {name: "挂起", value: 2},
-                {name: "已关闭", value: 3}
-            ],
-            rootNode = this.$el.find(".dropdown-status");
-            Utility.initDropMenu(rootNode, statusArray, function(value){
-                if (value !== "All")
-                    this.queryArgs.status = parseInt(value);
-                else
-                    this.queryArgs.status = null;
-            }.bind(this));
-
-            var pageNum = [
-                {name: "10条", value: 10},
-                {name: "20条", value: 20},
-                {name: "50条", value: 50},
-                {name: "100条", value: 100}
-            ]
-            Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
-                this.queryArgs.count = value;
-                this.queryArgs.page = 1;
-                this.onClickQueryButton();
-            }.bind(this));
-
-            this.collection.getOperatorList();
         },
 
         render: function(target) {

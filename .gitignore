@@ -3,3 +3,4 @@ temp/*
 node_modules/*
 js/data/*
 js/template.js
+.DS_Store

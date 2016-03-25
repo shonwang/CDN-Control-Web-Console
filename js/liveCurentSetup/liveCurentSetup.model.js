@@ -44,21 +44,36 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
             }
             defaultParas.success = function(res){
                 this.reset();
+                var temp = []
                 if (res && res.rows){
                     _.each(res.rows, function(logObj, logIndex, logList){
+                        var allRowspan = 0;
                         _.each(logObj.nodeGroupList, function(nodeGroupObj, nodeGroupIndex, nodeGroupLs){
+                            allRowspan = allRowspan + nodeGroupObj.confFileList.length;
+                        }.bind(this))
+                        logObj.allRowspan = allRowspan;
+                    }.bind(this))
+
+                    _.each(res.rows, function(logObj, logIndex, logList){
+                        var allRowspan = 0;
+                        _.each(logObj.nodeGroupList, function(nodeGroupObj, nodeGroupIndex, nodeGroupLs){
+                            allRowspan = allRowspan + nodeGroupObj.confFileList.length;
                             _.each(nodeGroupObj.confFileList, function(fileObj, fileIndex, fileList){
                                 fileObj.isUsed = logObj.isUsed;
                                 fileObj.logId = logObj.id;
                                 fileObj.shellCmd = logObj.shellCmd;
-                                fileObj.allRowspan = nodeGroupLs.length * fileList.length;
+                                fileObj.allRowspan = logObj.allRowspan;
                                 fileObj.nodeGroupId = nodeGroupObj.nodeGroupId;
                                 fileObj.nodeGroupName = nodeGroupObj.nodeGroupName;
                                 fileObj.groupRowspan = fileList.length;
                                 this.push(new Model(fileObj));
+                                temp.push(fileObj)
                             }.bind(this))
                         }.bind(this))
+                        logObj.allRowspan = allRowspan;
                     }.bind(this))
+
+                    console.log(temp)
 
                     this.total = res.total;
                     this.trigger("get.confList.success"); 

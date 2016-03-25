@@ -17,7 +17,9 @@
               <% if ((i === 0) || (i > 0 && data[i].get("logId") !== data[i-1].get("logId"))) { %>
               <th scope="row" rowspan='<%=data[i].get("allRowspan") %>'><%=data[i].get("logId")%></th>
               <% } %>
-              <% if ((i === 0) || (i > 0 && data[i].get("nodeGroupId") !== data[i -1].get("nodeGroupId"))) { %>
+              <% if ((i === 0) || (i > 0 && data[i].get("nodeGroupId") !== data[i-1].get("nodeGroupId"))) { %>
+              <td rowspan='<%=data[i].get("groupRowspan") %>'><%=data[i].get("nodeGroupName")%></td>
+              <% } else if (i > 0 && data[i].get("nodeGroupId") === data[i-1].get("nodeGroupId") && data[i].get("logId") !== data[i-1].get("logId")){%>
               <td rowspan='<%=data[i].get("groupRowspan") %>'><%=data[i].get("nodeGroupName")%></td>
               <% } %>
               <td>

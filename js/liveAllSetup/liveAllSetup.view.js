@@ -329,7 +329,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.viewShellPopup = new Modal(options);
         },
 
-        onClickItemUsed: function(event){
+        onConfirmUsed: function(event){
             var eventTarget = event.srcElement || event.target, historyId;
             historyId = $(eventTarget).attr("histroy-id");
             var usedModel = _.find(this.historyList, function(object){
@@ -338,6 +338,27 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             usedModel.attributes.isChecked = this.model.attributes.isChecked;
             this.options.selectedCallback&&this.options.selectedCallback(usedModel, this.model);
             this.options.cancelCallback&&this.options.cancelCallback();
+        },
+
+
+        onClickItemUsed: function(event){
+            if (this.confirmUsedPopup) $("#" + this.confirmUsedPopup.modalId).remove();
+            var opt = {
+                message: "你确认要这么做吗？",
+                type: "alert-danger"
+            }
+            var options = {
+                title:"提示",
+                body : _.template(template['tpl/alert.message.html'])({data: opt}),
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback:  function(){
+                    this.onConfirmUsed(event);
+                    this.confirmUsedPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){}.bind(this)
+            }
+            this.confirmUsedPopup = new Modal(options);
         },
 
         initPaginator: function(){
@@ -823,6 +844,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 busTypeArray: this.busTypeArray,
                 cancelCallback: function(){
                     this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn");
+                    this.collection.getAllFileList({bisTypeId: this.buisnessType})
                 }.bind(this),
                 okCallback:  function(options){
                     this.collection.modifyConfFile(options);

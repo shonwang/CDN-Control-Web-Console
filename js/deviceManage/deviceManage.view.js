@@ -283,6 +283,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection = options.collection;
             this.isEdit     = options.isEdit;
             this.model      = options.model;
+            this.deviceTypeArray = options.deviceTypeArray;
 
             this.$el = $(_.template(template['tpl/deviceManage/deviceManage.add&edit.html'])({}));
 
@@ -306,12 +307,12 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find(".ip-ctn").hide();
             } else {
                 this.ipList = [];
-                this.deviceType = 1;
                 this.collection.off("ip.type.success");
                 this.collection.off("ip.type.error");
                 this.collection.on("ip.type.success", $.proxy(this.onGetIpTypeSuccess, this));
                 this.collection.on("ip.type.error", $.proxy(this.onGetError, this));
             }
+            
             this.initIpTypeDropmenu();
         },
 
@@ -386,12 +387,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.addIp(args)
         },
 
-        initIpTypeDropmenu: function(){
-            var typeArray = [
-                {name: "lvs", value: 1},
-                {name: "cache", value: 2},
-                {name: "relay", value: 3}
-            ]
+        initIpTypeDropmenu: function(res){
+            var typeArray = this.deviceTypeArray;
             Utility.initDropMenu(this.$el.find(".dropdown-type"), typeArray, function(value){
                 this.deviceType = parseInt(value);
             }.bind(this));
@@ -402,8 +399,11 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 var defaultValue = _.find(typeArray, function(object){
                     return object.value === this.model.attributes.type
                 }.bind(this));
-
-                this.$el.find(".dropdown-type .cur-value").html(defaultValue.name)
+                if (defaultValue)
+                    this.$el.find(".dropdown-type .cur-value").html(defaultValue.name)
+            } else {
+                this.$el.find(".dropdown-type .cur-value").html(typeArray[0].name);
+                this.deviceType = typeArray[0].value
             }
         },
 
@@ -485,8 +485,6 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.query      = options.query;
             this.$el = $(_.template(template['tpl/deviceManage/deviceManage.html'])());
 
-            this.initDeviceDropMenu();
-
             this.collection.on("get.device.success", $.proxy(this.onDeviceListSuccess, this));
             this.collection.on("get.device.error", $.proxy(this.onGetError, this));
             this.collection.on("add.device.success", function(){
@@ -509,6 +507,9 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("update.device.status.error", $.proxy(this.onGetError, this));
+
+            this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
+            this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));            
 
             this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
             this.$el.find(".opt-ctn .import").on("click", $.proxy(this.onClickImport, this));
@@ -537,6 +538,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 "count"     : 10
             }
             this.onClickQueryButton();
+            this.collection.getDeviceTypeList();
         },
 
         onGetError: function(error){
@@ -589,7 +591,10 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
         onClickCreate: function(){
             if (this.addDevicePopup) $("#" + this.addDevicePopup.modalId).remove();
 
-            var addDeviceView = new AddOrEditDeviceView({collection: this.collection});
+            var addDeviceView = new AddOrEditDeviceView({
+                collection: this.collection,
+                deviceTypeArray: this.deviceTypeArray
+            });
             var options = {
                 title:"添加设备",
                 body : addDeviceView,
@@ -644,7 +649,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             var editDeviceView = new AddOrEditDeviceView({
                 collection: this.collection, 
                 model     : model,
-                isEdit    : true
+                isEdit    : true,
+                deviceTypeArray: this.deviceTypeArray
             });
             var options = {
                 title:"编辑设备",
@@ -803,14 +809,18 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.isInitPaginator = true;
         },
 
-        initDeviceDropMenu: function(){
+        initDeviceDropMenu: function(res){
+            this.deviceTypeArray = [];
             var typeArray = [
-                {name: "全部", value: "All"},
-                {name: "lvs", value: 1},
-                {name: "cache", value: 2},
-                {name: "relay", value: 3}
+                {name: "全部", value: "All"}
             ],
             rootNode = this.$el.find(".dropdown-type");
+
+            _.each(res, function(el, index, ls){
+                typeArray.push({name:el.name, value: el.id});
+                this.deviceTypeArray.push({name:el.name, value: el.id});
+            }.bind(this));
+
             Utility.initDropMenu(rootNode, typeArray, function(value){
                 if (value !== "All")
                     this.queryArgs.type = parseInt(value)

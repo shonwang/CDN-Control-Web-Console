@@ -30,6 +30,7 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.collection.getAddTableList(data);
 
             if(this.isEdit){
+                console.log(this.editEndData.ipName);
                 tplData.name = this.editEndData.name;
                 tplData.bisTypeName = this.editEndData.busName;
                 tplData.deviceTypeName = this.editEndData.devName;
@@ -44,8 +45,8 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                 tplData.deviceTypeName = this.deviceType[0].name;
                 tplData.ipTypeName = this.ipType[0].name;
                 tplData.bisTypeId = this.businessType[0].value;
-                tplData.deviceTypeId = this.deviceType[0].id;
-                tplData.ipTypeId = this.ipType[0].id;
+                tplData.deviceTypeId = this.deviceType[0].value;
+                tplData.ipTypeId = this.ipType[0].value;
 
             }
             this.collection.on("get.addTableList.success", $.proxy(this.initcreateAddNodeDrop, this));
@@ -270,7 +271,7 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                 ipType: this.ipType
             });
             var options = {
-                title:"创建组",
+                title:"创建节点组",
                 body : addBusinessView,
                 backdrop : 'static',
                 type     : 2,
@@ -306,8 +307,8 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                     'busName':model.attributes.bisTypeName,
                     'devId':model.attributes.deviceTypeId,
                     'devName':model.attributes.deviceTypeName,
-                    'ipId':model.attributes.ipTypeName,
-                    'ipName':model.attributes.ipTypeId
+                    'ipId':model.attributes.ipTypeId,
+                    'ipName':model.attributes.ipTypeName
                 }
             }
 
@@ -322,7 +323,7 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
             });
 
             var options = {
-                title:"编辑组",
+                title:"编辑节点组",
                 body : editBusinessView,
                 backdrop : 'static',
                 type     : 2,

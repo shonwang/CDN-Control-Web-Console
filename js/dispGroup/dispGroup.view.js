@@ -731,6 +731,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 body : chInfoView,
                 backdrop : 'static',
                 type     : 2,
+                width: 800,
                 onOKCallback:  function(){
                     var options = chInfoView.getArgs();
                     if (!options) return;

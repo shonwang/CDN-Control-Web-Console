@@ -8,10 +8,10 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
             if (status === 2) this.set("statusName",'<span class="text-warning">挂起</span>');
             if (status === 1) this.set("statusName", '<span class="text-success">运行中</span>');
 
-            if (type == 1) this.set("typeName",'lvs');
-            if (type == 2) this.set("typeName",'cache');
-            if (type == 3) this.set("typeName",'relay');
-            if (type == 4) this.set("typeName",'live');
+            // if (type == 12) this.set("typeName",'lvs');
+            // if (type == 14) this.set("typeName",'cache');
+            // if (type == 13) this.set("typeName",'relay');
+            // if (type == 15) this.set("typeName",'live');
 
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
             this.set("isChecked", false);
@@ -375,6 +375,30 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
                 if (response&&response.responseText)
                     response = JSON.parse(response.responseText)
                 this.trigger("add.device.ip.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
+        getDeviceTypeList: function(){
+            var url = BASE_URL + "/seed/metaData/devicetype/list";
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
+            };
+
+            defaultParas.success = function(res){
+                this.trigger("get.devicetype.success",res);
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.devicetype.error", response); 
             }.bind(this);
 
             $.ajax(defaultParas);

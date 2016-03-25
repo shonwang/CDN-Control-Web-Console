@@ -30,7 +30,6 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.collection.getAddTableList(data);
 
             if(this.isEdit){
-                console.log(this.editEndData.ipName);
                 tplData.name = this.editEndData.name;
                 tplData.bisTypeName = this.editEndData.busName;
                 tplData.deviceTypeName = this.editEndData.devName;
@@ -104,18 +103,17 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
             }else{
                 resData = res;
             }
-
-            
-
             if (resData && resData.length != 0){
                 if(this.$el.find(".table-ctn .addOrEdit").length == 0){//新建
                     this.table = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({data: resData}));
                     this.$el.find(".table-ctn").html(this.table[0]);
                 }else{
-                    //console.log(resData);
+                    console.log(resData);
                     this.addNode = $(_.template(template['tpl/businessManage/businessManage.addNode.html'])({data: resData}));
-                    //console.log(this.addNode[0]);
-                    this.$el.find(".table-ctn .addOrEdit").prepend(this.addNode[0]);
+                    console.log(this.addNode.length);
+                    for(var i=0;i<this.addNode.length;i++){
+                        this.$el.find(".table-ctn .addOrEdit").prepend(this.addNode[i]);
+                    }
                 }
                 this.$el.find(".addOrEdit .delete").on("click", $.proxy(this.onClickItemDelete, this));
             }else{

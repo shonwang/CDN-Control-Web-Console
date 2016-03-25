@@ -248,3 +248,7 @@ td .table{
 .select-select-back {height:16px;display:inline-block;background:url(../images/icon.png) 0 -14px no-repeat;line-height:16px;padding-left:20px;margin-left:10px;cursor:pointer;}
 .select-btn-ok {height:16px;display:inline-block;line-height:16px;margin-left:10px;cursor:pointer;padding-left:6px;}
 .select-select-close {height:14px;float:right;background:url(../images/icon.png) 0 0 no-repeat;width:14px;margin-top:10px;overflow:hidden;cursor:pointer;}
+
+.bisType{margin-left: 10px; margin-right: -6px;}
+
+

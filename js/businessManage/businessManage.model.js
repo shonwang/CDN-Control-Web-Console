@@ -90,6 +90,30 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
             $.ajax(defaultParas);
         },
 
+        getIpList: function(){
+            var url = BASE_URL + "/rs/metaData/ipTypeList";
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
+            };
+
+            defaultParas.success = function(res){
+                this.trigger("get.ipList.success",res);
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.ipList.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
         getAddTableList: function(data){
         	var url = BASE_URL + "/rs/node/list";
             var defaultParas = {

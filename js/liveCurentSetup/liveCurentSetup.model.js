@@ -44,7 +44,6 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
             }
             defaultParas.success = function(res){
                 this.reset();
-                var temp = []
                 if (res && res.rows){
                     _.each(res.rows, function(logObj, logIndex, logList){
                         var allRowspan = 0;
@@ -67,13 +66,10 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
                                 fileObj.nodeGroupName = nodeGroupObj.nodeGroupName;
                                 fileObj.groupRowspan = fileList.length;
                                 this.push(new Model(fileObj));
-                                temp.push(fileObj)
                             }.bind(this))
                         }.bind(this))
                         logObj.allRowspan = allRowspan;
                     }.bind(this))
-
-                    console.log(temp)
 
                     this.total = res.total;
                     this.trigger("get.confList.success"); 

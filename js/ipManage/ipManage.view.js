@@ -130,6 +130,12 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             }.bind(this));
         },
 
+        remove: function(){
+            if (this.queryDetailPopup) $("#" + this.queryDetailPopup.modalId).remove();
+            this.queryDetailPopup = null;
+            this.$el.remove();
+        },
+
         hide: function(){
             this.$el.hide();
         },

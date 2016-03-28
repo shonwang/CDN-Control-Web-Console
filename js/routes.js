@@ -30,7 +30,8 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                   this.channelManageView.hide();
                   break;
                 case 'deviceManage':
-                  this.deviceManageView.hide();
+                  this.deviceManageView.remove();
+                  this.deviceManageView = null;
                   break;
                 case 'nodeManage':
                   this.nodeManageView.hide();
@@ -54,7 +55,8 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                     this.liveCurentSetupView.hide();
                   break;
                 case "ipManage":
-                    this.ipManageView.hide();
+                    this.ipManageView.remove();
+                    this.ipManageView = null
                   break;
                 case "businessManage":
                     this.businessManageView.hide();
@@ -89,8 +91,6 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                     var options = {collection: this.ipManageModel};
                     this.ipManageView = new IPManageView(options);
                     this.ipManageView.render($('.ksc-content'));
-                } else {
-                    this.ipManageView.update();
                 }
             }.bind(this));
         },

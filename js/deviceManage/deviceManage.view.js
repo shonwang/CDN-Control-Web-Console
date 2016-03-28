@@ -898,6 +898,15 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             }
         },
 
+        remove: function(){
+            if (this.importDevicePopup) $("#" + this.importDevicePopup.modalId).remove();
+            this.importDevicePopup = null;
+            if (this.ipManagePopup) $("#" + this.ipManagePopup.modalId).remove();
+            this.ipManagePopup = null;
+            if (this.addDevicePopup) $("#" + this.addDevicePopup.modalId).remove();
+            this.addDevicePopup = null;
+            this.$el.remove();
+        },
 
         hide: function(){
             this.$el.hide();

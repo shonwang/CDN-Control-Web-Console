@@ -17,16 +17,16 @@
         <label for="textarea-content" class="col-sm-2 control-label">内容</label>
         <div class="col-sm-8">
             <% if (dataType === 1) { %>
-            <pre class="form-control-static" id="textarea-content"><code><%=data.attributes.content%></code></pre>
+            <pre class="form-control-static" id="textarea-content"><code><%=data.attributes.content || "这家伙很懒，什么都没有留下！"%></code></pre>
             <% } else {%>
-            <pre class="form-control-static" id="textarea-content"><code><%=data.attributes.shellCmd%></code></pre>
+            <pre class="form-control-static" id="textarea-content"><code><%=data.attributes.shellCmd || "这家伙很懒，什么都没有留下！"%></code></pre>
             <% } %>
         </div>
     </div>
     <div class="form-group">
         <label for="textarea-comment" class="col-sm-2 control-label">备注</label>
         <div class="col-sm-8">
-            <pre class="form-control-static" id="textarea-comment"><%=data.attributes.remark%></pre>
+            <pre class="form-control-static" id="textarea-comment"><%=data.attributes.remark || "这家伙很懒，什么都没有留下！"%></pre>
         </div>
     </div>
 </form>

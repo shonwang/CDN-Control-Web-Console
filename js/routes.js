@@ -156,12 +156,17 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         dispConfig: function() {
-            require(['dispConfig.view', 'dispConfig.model'], function(DispConfigView, DispConfigModel){
+            require(['dispConfig.view', 'dispConfig.model', 'dispGroup.model'], function(DispConfigView, DispConfigModel, DispGroupModel){
                 this.curPage = 'dispConfig';
                 if (!this.dispConfigModel)
                     this.dispConfigModel = new DispConfigModel();
+                if (!this.dispGroupModel)
+                    this.dispGroupModel = new DispGroupModel();
                 if (!this.dispConfigView ){
-                    var options = {collection: this.dispConfigModel};
+                    var options = {
+                        collection: this.dispConfigModel,
+                        dispGroupCollection: this.dispGroupModel
+                    };
                     this.dispConfigView = new DispConfigView(options);
                     this.dispConfigView.render($('.ksc-content'));
                 } else {

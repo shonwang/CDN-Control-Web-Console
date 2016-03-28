@@ -27,8 +27,12 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.id = options.id;
             this.status = options.status;
 
-            //console.log(this.data);
-            this.$el = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:this.data}));
+            //console.log(this.data);]
+            if(this.data>0){
+                this.$el = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:this.data}));
+            }else{
+                this.$el = $(_.template(template['tpl/empty.html'])());
+            }
         },
 
         onClickSubmit: function(){
@@ -36,7 +40,11 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 "id" : this.id,
                 "status" : this.status
             }
-            return submitData;
+            if(this.data.length>0){
+                return submitData;
+            }else{
+                return '';
+            }
         },
 
         render: function(target) {
@@ -52,7 +60,11 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.status = options.status;
 
             //console.log(this.data);
-            this.$el = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:this.data}));
+            if(this.data.length>0){
+                this.$el = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:this.data}));
+            }else{
+                this.$el = $(_.template(template['tpl/empty.html'])());
+            }
         },
 
         onClickSubmit: function(){
@@ -71,7 +83,11 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 "id" : this.id,
                 "status" : this.status
             }
-            return submitData;
+            if(this.data.length>0){
+                return submitData;
+            }else{
+                return '';
+            }
         },
 
         render: function(target) {
@@ -216,9 +232,11 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.clickIp = ip;
             if(status == '1'){ //开启
                 this.collection.getIpInfoStart(ip);
+                this.collection.off("get.ipInfoStart.success");
                 this.collection.on("get.ipInfoStart.success", $.proxy(this.onIpInfoStartSuccess, this));
-            }else if(status == '4'){
+            }else if(status == '2'){
                 this.collection.getIpInfoPause(ip);
+                this.collection.off("get.ipInfoPause.success");
                 this.collection.on("get.ipInfoPause.success", $.proxy(this.onIpInfoPauseSuccess, this));
             }
 
@@ -227,22 +245,12 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         onIpInfoStartSuccess: function(res){
             console.log(res);
             if (this.ipStartPopup) $("#" + this.ipStartPopup.modalId).remove();
-            // var data = [
-            //                 {
-            //                     groupName: "g3.gslb",
-            //                     regionName: "安徽电信",
-            //                     nodeName: "CDNSJZUN",
-            //                     currentIpNum: 2,
-            //                     notRunIpNum: 0,
-            //                     affectedIpNum: 1
-            //                     //ip: this.clickIp
-            //                 }
-            //             ];
             var data = res;
-            data[0].title = 'IP '+this.clickIp+'在下列调度关系中服务，点击确定，该IP将不对下列调度关系服务，点击取消，IP状态不会改变，是否确定？';
+            if(data.length>0){
+                data[0].title = 'IP '+this.clickIp+'在下列调度关系中服务，点击确定，该IP将不对下列调度关系服务，点击取消，IP状态不会改变，是否确定？';
+            }
             var ipStartView = new IPStartView({
                 collection : this.collection,
-                //data : res
                 data : data,
                 id : this.clickId,
                 status: this.clickStatus
@@ -256,11 +264,14 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 type     : 2,
                 onOKCallback:  function(){
                     var options = ipStartView.onClickSubmit();
+                    this.ipStartPopup.$el.modal("hide");
                     if (!options) return;
                     this.collection.getIpInfoSubmit(options);
-                    this.ipStartPopup.$el.modal("hide");
+                    //this.ipStartPopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+                    if (this.ipStartPopup) $("#" + this.ipStartPopup.modalId).remove();
+                }
             }
 
             this.ipStartPopup = new Modal(options);
@@ -270,18 +281,10 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             console.log(res);
             if (this.ipPausePopup) $("#" + this.ipPausePopup.modalId).remove();
 
-            var data = [
-                            {
-                                groupName: "g3.gslb",
-                                regionName: "安徽电信",
-                                nodeName: "CDNSJZUN",
-                                currentIpNum: 2,
-                                notRunIpNum: 0,
-                                affectedIpNum: 1,
-                                ip: this.clickIp
-                            }
-                        ];
-            data[0].title = 'IP '+data[0].ip+'暂停前在下列调度关系中服务，点击确定，下列调度关系将恢复，点击取消，IP状态不会变更，是否确定？';
+            var data = res;
+            if(data.length>0){
+                data[0].title = 'IP '+data[0].ip+'暂停前在下列调度关系中服务，点击确定，下列调度关系将恢复，点击取消，IP状态不会变更，是否确定？';
+            }
 
             var ipPauseView = new IPPauseView({
                 collection : this.collection,
@@ -297,11 +300,13 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 type     : 2,
                 onOKCallback:  function(){
                     var options = ipPauseView.onClickSubmit();
+                    this.ipPausePopup.$el.modal("hide");
                     if (!options) return;
                     this.collection.getIpInfoSubmit(options);
-                    this.ipPausePopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+
+                }
             }
 
             this.ipPausePopup = new Modal(options);

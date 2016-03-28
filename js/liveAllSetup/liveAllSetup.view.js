@@ -132,7 +132,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onClickCancel: function(){
-            this.model.set("partitions", this.partitionsCopy)
+            if (this.isEdit)
+                this.model.set("partitions", this.partitionsCopy)
             this.options.cancelCallback&&this.options.cancelCallback();
         },
 

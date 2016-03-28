@@ -53,8 +53,8 @@ define("ipManage.model", ['require','exports'], function(require, exports) {
         },
 
         getIpInfoStart: function(args){
-            //var url = BASE_URL + "/rs/ip/prompt/open?ip="+args;
-            var url = BASE_URL + '/rs/ip/prompt/open?ip=10.10.10.10';
+            var url = BASE_URL + "/rs/ip/prompt/open?ip="+args;
+            //var url = BASE_URL + '/rs/ip/prompt/open?ip=10.10.10.10';
             var defaultParas = {
                 type: "GET",
                 url: url,

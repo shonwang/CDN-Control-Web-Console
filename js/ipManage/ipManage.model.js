@@ -51,6 +51,92 @@ define("ipManage.model", ['require','exports'], function(require, exports) {
 
             $.ajax(defaultParas);
         },
+
+        getIpInfoStart: function(args){
+            //var url = BASE_URL + "/rs/ip/prompt/open?ip="+args;
+            var url = BASE_URL + '/rs/ip/prompt/open?ip=10.10.10.10';
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
+            };
+
+            defaultParas.success = function(res){
+                if (res){
+                    this.trigger("get.ipInfoStart.success",res);
+                } else {
+                    this.trigger("get.ipInfoStart.error"); 
+                }
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.ipInfoStart.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
+        getIpInfoPause: function(args){
+            var url = BASE_URL + "/rs/ip/prompt/pause?ip="+args;
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
+            };
+
+            defaultParas.success = function(res){
+                if (res){
+                    this.trigger("get.ipInfoPause.success",res);
+                } else {
+                    this.trigger("get.ipInfoPause.error"); 
+                }
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.ipInfoPause.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
+        getIpInfoSubmit: function(args){
+            var url = BASE_URL + "/rs/ip/status/update/confirm?id="+args.id+"&status="+args.status;
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
+            };
+
+            defaultParas.success = function(res){
+                if (res){
+                    this.trigger("get.ipInfoSubmit.success",res);
+                } else {
+                    this.trigger("get.ipInfoSubmit.error"); 
+                }
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.ipInfoSubmit.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        }
+
     });
 
     return IPManageCollection;

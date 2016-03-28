@@ -102,6 +102,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.onStartQueryButton();
             this.collection.on("get.ipInfoSubmit.success", function(){
                 alert('设置成功');
+                this.onStartQueryButton();
             }.bind(this));
             this.collection.on("get.ipInfoSubmit.error", function(){
                 alert('设置失败');

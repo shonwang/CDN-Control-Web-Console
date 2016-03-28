@@ -7,10 +7,13 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
         initialize: function(options) {
             this.options = options
-            this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.editPartition.html'])({data: options.partition}));
+            this.isEdit = options.isEdit;
+            this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.editPartition.html'])({data: options.partition, isEdit: this.isEdit}));
         },
 
         getArgs: function(){
+            if (!this.isEdit)
+                this.options.partition.domain = this.$el.find("#input-name").val()
             this.options.partition.content = this.$el.find("#textarea-content").val();
             return this.options.partition;
         },
@@ -56,19 +59,19 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     "content":"",
                     "remark":"",
                     "fileTypeId": "",
-                    "partition": 0
+                    "partition": 0,
+                    "partitions": []
                 }
             }
 
             this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.add&edit.html'])({data: this.args}));
+
             this.$el.find(".ok-again").on("click", $.proxy(this.onClickOK, this));
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancel, this));
             this.$el.find(".fileContentType input").on("click", $.proxy(this.onClickfileContentTypeInput, this));
+            this.$el.find(".partition-ctn .create-partition").on("click", $.proxy(this.onClickCreatePartition, this));
 
-            if (this.args.partition !== 0){
-                this.$el.find(".file-content .edit").on("click", $.proxy(this.onClickPartitionItem, this));
-            }
-
+            this.updatePartitonTable();
 
             this.collection.off("get.nodeGroupList.success");
             this.collection.off("get.nodeGroupList.error");
@@ -83,7 +86,64 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.initBussnessDropList();
         },
 
-        onClickPartitionItem: function(event){
+        updatePartitonTable: function(){
+            this.partitionTable = $(_.template(template['tpl/liveAllSetup/liveAllSetup.partition.table.html'])({data: this.args.partitions}));
+            this.$el.find(".partition-tb-ctn").html(this.partitionTable.get(0))
+            this.$el.find(".file-content .edit").on("click", $.proxy(this.onClickPartitionItemEdit, this));
+            this.$el.find(".file-content .delete").on("click", $.proxy(this.onClickPartitionItemDelete, this));
+        },
+
+        onClickCreatePartition: function(){
+            if (this.addPartitionPopup) $("#" + this.addPartitionPopup.modalId).remove();
+
+            var addPartitionView = new EditPartitionView({
+                partition: {},
+                isEdit: false
+            })
+            var options = {
+                title:"新建分块",
+                body : addPartitionView,
+                backdrop : 'static',
+                type     : 2,
+                width: 800,
+                onOKCallback:  function(){
+                    var options = addPartitionView.getArgs();
+                    options.partitionId = new Date().valueOf();
+                    var parObjArray = _.filter(this.args.partitions, function(obj) {
+                        return obj.domain === options.domain;
+                    })
+                    if (parObjArray.length > 0){
+                        alert("你添加的域名已经存在！")
+                        return;
+                    }
+                    this.args.partitions.push(options);
+                    this.updatePartitonTable();
+                    this.addPartitionPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){}
+            }
+            this.addPartitionPopup = new Modal(options);
+        },
+
+        onClickPartitionItemDelete: function(event) {
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+
+            for (var i = 0; i < this.args.partitions.length; i++){
+                if (this.args.partitions[i].partitionId === parseInt(id)){
+                   this.args.partitions.splice(i, 1);
+                   break;
+                }
+            }
+            this.updatePartitonTable();
+        },
+
+        onClickPartitionItemEdit: function(event){
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();
@@ -97,7 +157,10 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
             if (this.editPartitionPopup) $("#" + this.editPartitionPopup.modalId).remove();
 
-            var editPartitionView = new EditPartitionView({partition: aPartition})
+            var editPartitionView = new EditPartitionView({
+                partition: aPartition,
+                isEdit: true
+            })
             var options = {
                 title:"编辑分块",
                 body : editPartitionView,
@@ -123,10 +186,12 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked === true && eventTarget.value == "1"){
-                this.$el.find(".file-content").slideUp(200);
+                this.$el.find(".file-content #textarea-content").hide();
+                this.$el.find(".file-content .partition-ctn").show();
                 this.args.partition = 1;
             } else {
-                this.$el.find(".file-content").slideDown(200);
+                this.$el.find(".file-content #textarea-content").show();
+                this.$el.find(".file-content .partition-ctn").hide();
                 this.args.partition = 0;
             }
         },
@@ -239,7 +304,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 args.fileTypeId = this.args.fileTypeId;
                 args.bisTypeId = this.args.bisTypeId;
                 args.nodeGroupId = this.args.nodeGroupId;
-                args.partition = this.args.partition
+                args.partition = this.args.partition;
+                args. partitions = this.args.partitions;
             }
             return args;
         },

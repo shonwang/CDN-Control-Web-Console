@@ -68,32 +68,11 @@
         <div class="form-group file-content">
             <label for="textarea-content" class="col-sm-2 control-label">文件内容</label>
             <div class="col-sm-8">
-                <% if (data.partition === 0) { %>
-                <textarea class="form-control" rows="10" id="textarea-content"><%=data.content%></textarea>
-                <% } else {%>
-                <table class="table table-striped table-hover">  
-                <thead> 
-                  <tr>
-                    <th>分块ID</th>
-                    <th>域名</th>    
-                    <th>操作</th>    
-                  </tr>
-                </thead>
-                <tbody>
-                    <% for(var i = 0; i < data.partitions.length; i++) { %>
-                        <tr id="<%=data.partitions[i].partitionId%>">
-                          <td><%=data.partitions[i].partitionId%></td>
-                          <td><%=data.partitions[i].domain%></td>
-                          <td>
-                            <a href="javascript:void(0)" id='<%=data.partitions[i].partitionId%>' class="edit" title="编辑">
-                              <span class="glyphicon glyphicon-edit"></span>
-                            </a>
-                          </td>
-                        </tr>
-                    <% } %>  
-                </tbody>
-                </table>
-                <% } %>
+                <textarea class="form-control" rows="10" id="textarea-content" <% if (data.partition === 1) { %> style="display:none"<% } %> ><%=data.content%></textarea>
+                <div class="partition-ctn" <% if (data.partition === 0) { %> style="display:none"<% } %> >
+                    <div class="partition-tb-ctn"></div>
+                    <a href="javascript:void(0)" class="btn btn-success create-partition"><span class="glyphicon glyphicon-plus"></span>新建分块</a>
+                </div>
             </div>
         </div>
     </form>

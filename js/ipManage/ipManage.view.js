@@ -27,11 +27,9 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.id = options.id;
             this.status = options.status;
 
-            //console.log(this.data);]
-            if(this.data>0){
-                this.$el = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:this.data}));
-            }else{
-                this.$el = $(_.template(template['tpl/empty.html'])());
+            this.$el = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:this.data}));
+            if(this.data[0].table != '0'){
+                this.$el.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:this.data}));
             }
         },
 
@@ -40,11 +38,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 "id" : this.id,
                 "status" : this.status
             }
-            if(this.data.length>0){
-                return submitData;
-            }else{
-                return '';
-            }
+            return submitData;
         },
 
         render: function(target) {
@@ -59,11 +53,9 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.id = options.id;
             this.status = options.status;
 
-            //console.log(this.data);
-            if(this.data.length>0){
-                this.$el = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:this.data}));
-            }else{
-                this.$el = $(_.template(template['tpl/empty.html'])());
+            this.$el = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:this.data}));
+            if(this.data[0].table != '0'){
+                this.$el.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:this.data}));
             }
         },
 
@@ -83,11 +75,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 "id" : this.id,
                 "status" : this.status
             }
-            if(this.data.length>0){
-                return submitData;
-            }else{
-                return '';
-            }
+            return submitData;
         },
 
         render: function(target) {
@@ -168,7 +156,6 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         initTable: function(){
-            //console.log(this.collection.models);
             this.table = $(_.template(template['tpl/ipManage/ipManage.table.html'])({data: this.collection.models}));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
@@ -243,11 +230,15 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         onIpInfoStartSuccess: function(res){
-            console.log(res);
             if (this.ipStartPopup) $("#" + this.ipStartPopup.modalId).remove();
             var data = res;
             if(data.length>0){
                 data[0].title = 'IP '+this.clickIp+'在下列调度关系中服务，点击确定，该IP将不对下列调度关系服务，点击取消，IP状态不会改变，是否确定？';
+            }else{
+                data.push({
+                    'title': 'IP '+this.clickIp+'在下列调度关系中服务，点击确定，该IP将不对下列调度关系服务，点击取消，IP状态不会改变，是否确定？',
+                    'table':0
+                });
             }
             var ipStartView = new IPStartView({
                 collection : this.collection,
@@ -255,7 +246,6 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 id : this.clickId,
                 status: this.clickStatus
             });
-            console.log(this.clickId);
 
             var options = {
                 title:"暂停IP",
@@ -278,12 +268,16 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         onIpInfoPauseSuccess: function(res){
-            console.log(res);
             if (this.ipPausePopup) $("#" + this.ipPausePopup.modalId).remove();
 
             var data = res;
             if(data.length>0){
                 data[0].title = 'IP '+data[0].ip+'暂停前在下列调度关系中服务，点击确定，下列调度关系将恢复，点击取消，IP状态不会变更，是否确定？';
+            }else{
+                data.push({
+                    'title': 'IP '+this.clickIp+'暂停前在下列调度关系中服务，点击确定，下列调度关系将恢复，点击取消，IP状态不会变更，是否确定？',
+                    'table':0
+                });
             }
 
             var ipPauseView = new IPPauseView({

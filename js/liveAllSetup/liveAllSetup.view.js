@@ -357,7 +357,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         onClickItemUsed: function(event){
             if (this.confirmUsedPopup) $("#" + this.confirmUsedPopup.modalId).remove();
             var opt = {
-                message: "你确认要这么做吗？现在后悔还来得及！",
+                message: "如果确认使用该配置，这个配置将会覆盖这个版本以上的所有配置。此项功能一般用于回滚操作，请再次确认，谨慎使用。你确定要这么做吗？",
                 type: "alert-danger"
             }
             var options = {

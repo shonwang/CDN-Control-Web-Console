@@ -450,3 +450,7 @@ td .table {
   margin-left: 10px;
   margin-right: -6px;
 }
+
+.disabled{
+  color:gray;
+}

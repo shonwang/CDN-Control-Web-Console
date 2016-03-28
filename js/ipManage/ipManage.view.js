@@ -217,11 +217,11 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.clickId = id;
             this.clickStatus = status;
             this.clickIp = ip;
-            if(status == '1'){ //开启
+            if(status == '2' || status == '6'){ //开启
                 this.collection.getIpInfoStart(ip);
                 this.collection.off("get.ipInfoStart.success");
                 this.collection.on("get.ipInfoStart.success", $.proxy(this.onIpInfoStartSuccess, this));
-            }else if(status == '2'){
+            }else if(status == '1'){ //暂停
                 this.collection.getIpInfoPause(ip);
                 this.collection.off("get.ipInfoPause.success");
                 this.collection.on("get.ipInfoPause.success", $.proxy(this.onIpInfoPauseSuccess, this));

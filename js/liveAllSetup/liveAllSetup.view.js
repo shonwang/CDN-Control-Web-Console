@@ -44,6 +44,10 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     "partition": this.model.get("partition"),
                     "partitions": this.model.get("partitions"),
                 }
+                this.partitionsCopy = [];
+                _.each(this.args.partitions, function(el, key, ls){
+                    this.partitionsCopy.push(_.extend({}, el));
+                }.bind(this))
             } else {
                 this.args = {
                     "fileName":"",
@@ -106,6 +110,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                         if (el.partitionId === options.partitionId)
                             el.content = options.content;
                     }.bind(this))
+
                     this.editPartitionPopup.$el.modal("hide");
                     this.$el.find('.file-content tr[id=' + options.partitionId + ']').addClass("success");
                 }.bind(this),
@@ -127,6 +132,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onClickCancel: function(){
+            this.model.set("partitions", this.partitionsCopy)
             this.options.cancelCallback&&this.options.cancelCallback();
         },
 
@@ -154,6 +160,13 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initNodeGroupDropList: function(res){
+            if (res.nodeGroupList.length === 0){
+                this.args.nodeGroupId = "";
+                this.$el.find(".dropdown-node-group .cur-value").html("你还没有添加此业务类型的节点组");
+                this.$el.find(".dropdown-node-group .dropdown-menu").html("");
+                return;
+            }
+
             var tempNgList = [];
             _.each(res.nodeGroupList, function(el, index, list){
                 tempNgList.push({name: el.name, value:el.id})
@@ -792,7 +805,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 busTypeArray: this.busTypeArray,
                 cancelCallback: function(){
                     this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn");
-                    this.collection.getAllFileList({bisTypeId: this.buisnessType})
+                    //this.collection.getAllFileList({bisTypeId: this.buisnessType})
                 }.bind(this),
                 okCallback:  function(options){
                     this.collection.modifyConfFile(options);

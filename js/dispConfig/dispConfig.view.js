@@ -142,9 +142,14 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.on("get.dispGroup.error", $.proxy(this.onGetError, this));
 
             this.collection.on("get.dispConfig.success", $.proxy(this.onDispConfigListSuccess, this));
-            this.collection.on("get.dispConfig.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.dispConfig.error", function(res){
+                this.disablePopup.$el.modal('hide');
+                this.onGetError(res)
+            }.bind(this));
+
             this.collection.on("init.dispConfig.success", $.proxy(this.onDispConfigListSuccess, this));
             this.collection.on("init.dispConfig.error", function(error){
+                this.disablePopup.$el.modal('hide');
                 this.onGetError(error)
                 this.$el.find(".opt-ctn .init").show();
             }.bind(this));
@@ -190,6 +195,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         onDispConfigListSuccess: function(){
+            this.disablePopup.$el.modal('hide');
             this.$el.find(".opt-ctn .sending").show();
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
@@ -212,6 +218,16 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
             this.collection.getDispConfigList(this.queryArgs);
+
+            if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
+            var options = {
+                title    : "警告",
+                body     : '<div class="alert alert-info"><strong>数据载入中，大神们别乱点啊！</strong></div>',
+                backdrop : 'static',
+                type     : 0,
+            }
+            this.disablePopup = new Modal(options);
+            this.disablePopup.$el.find(".close").remove();
         },
 
         onClickSending: function(){
@@ -241,7 +257,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
             var options = {
                 title    : "警告",
-                body     : '<div class="alert alert-warning"><strong>下发中，大神们别乱点啊...</strong></div>',
+                body     : '<div class="alert alert-danger"><strong>下发中，大神们别乱点啊...</strong></div>',
                 backdrop : 'static',
                 type     : 0,
             }
@@ -588,7 +604,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 isCheckedAll: false, 
                 type: 1//不显示checkbox
             }));
-            if (res.length !== 0)
+            if (this.channelList.length !== 0)
                 this.$el.find(".content-ctn .channel-table-ctn").html(this.channelTable[0]);
             else
                 this.$el.find(".content-ctn .channel-table-ctn").html(_.template(template['tpl/empty.html'])());

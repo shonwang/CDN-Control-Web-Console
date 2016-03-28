@@ -309,6 +309,7 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                     if (!options) return;
                     this.collection.addNode(options)
                     this.addNodePopup.$el.modal("hide");
+                    //this.onClickQueryButton();
                 }.bind(this),
                 onHiddenCallback: function(){}
             }
@@ -363,6 +364,7 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                     this.collection.editNode(options);
                     this.onEditNodeSuccess(id);
                     this.editBusinessPopup.$el.modal("hide");
+                    //this.onClickQueryButton();
                 }.bind(this),
                 onHiddenCallback: function(){}
             }

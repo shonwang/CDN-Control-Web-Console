@@ -202,7 +202,11 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
             if (count === this.channelList.length) isCheckedAll = true
 
-            this.table = $(_.template(template['tpl/dispGroup/dispGroup.channel.table.html'])({data: this.channelList, isCheckedAll: isCheckedAll}));
+            this.table = $(_.template(template['tpl/dispGroup/dispGroup.channel.table.html'])({
+                data: this.channelList, 
+                isCheckedAll: isCheckedAll,
+                type: 0//显示checkbox
+            }));
             if (res.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else

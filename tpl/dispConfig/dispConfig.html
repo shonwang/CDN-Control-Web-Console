@@ -30,23 +30,23 @@
             <a href="javascript:void(0)" class="btn btn-primary query"><span class="glyphicon glyphicon-search"></span>查询</a>
             <a href="javascript:void(0)" class="btn btn-info init">初始化覆盖区域</a>
             <a href="javascript:void(0)" class="btn btn-success sending"><span class="glyphicon glyphicon-send"></span>下发DNSpod</a>
+            <a href="javascript:void(0)" class="btn btn-default hide-remark"><span class="glyphicon glyphicon-chevron-up"></span>收起备注和关联频道信息</a>
+            <a href="javascript:void(0)" class="btn btn-default show-remark" style="display: none"><span class="glyphicon glyphicon-chevron-down"></span>展开备注和关联频道信息</a>
         </form>
-        <hr>
         <div class="content-ctn">
-    <form class="form-horizontal">
-        <div class="form-group">
-            <label for="textarea-comment" class="col-sm-2 control-label">备注</label>
-            <div class="col-sm-8">
-                <textarea class="form-control" rows="3" id="textarea-comment"></textarea>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="input-name" class="col-sm-2 control-label"></label>
-            <div class="col-sm-8">
-                <input type="text" class="form-control" id="input-name">
-            </div>
-        </div>
-    </form>
+            <hr>
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="textarea-comment" class="col-sm-2 control-label">备注</label>
+                    <div class="col-sm-8">
+                        <p class="form-control-static" id="textarea-comment"></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="input-name" class="col-sm-2 control-label">关联频道</label>
+                    <div class="col-sm-8 channel-table-ctn table-responsive"></div>
+                </div>
+            </form>
         </div>
     </div>
     <div class="well">

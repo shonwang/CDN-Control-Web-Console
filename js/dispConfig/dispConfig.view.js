@@ -134,6 +134,8 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
         initialize: function(options) {
             this.collection = options.collection;
+            this.dispGroupCollection = options.dispGroupCollection;
+
             this.$el = $(_.template(template['tpl/dispConfig/dispConfig.html'])());
 
             this.collection.on("get.dispGroup.success", $.proxy(this.onDispGroupListSuccess, this));
@@ -149,14 +151,10 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.on("get.regionAdvice.error", $.proxy(this.onGetError, this));
 
             this.collection.on("dispDns.success", function(){
-                // this.$el.find(".opt-ctn .sending").html('<span class="glyphicon glyphicon-send"></span>下发DNSpod');
-                // this.$el.find(".opt-ctn .sending").removeAttr("disabled", "disabled");
                 this.disablePopup.$el.modal('hide');
                 alert("下发成功！")
             }.bind(this));
             this.collection.on("dispDns.error", function(res){
-                // this.$el.find(".opt-ctn .sending").html('<span class="glyphicon glyphicon-send"></span>下发DNSpod');
-                // this.$el.find(".opt-ctn .sending").removeAttr("disabled", "disabled");
                 this.disablePopup.$el.modal('hide');
                 this.onGetError(res)
             }.bind(this));
@@ -166,8 +164,22 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".opt-ctn .sending").on("click", $.proxy(this.onClickSending, this));
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".opt-ctn .init").on("click", $.proxy(this.onClickInitButton, this));
+            this.$el.find(".opt-ctn .show-remark").on("click", $.proxy(this.onClickShowRemark, this));
+            this.$el.find(".opt-ctn .hide-remark").on("click", $.proxy(this.onClickHideRemark, this));
             
             this.$el.find(".page-ctn").hide();  
+        },
+
+        onClickShowRemark: function(){
+            this.$el.find(".hide-remark").show();
+            this.$el.find(".show-remark").hide();
+            this.$el.find(".content-ctn").slideDown(200);
+        },
+
+        onClickHideRemark: function(){
+            this.$el.find(".hide-remark").hide();
+            this.$el.find(".show-remark").show();
+            this.$el.find(".content-ctn").slideUp(200);
         },
 
         onGetError: function(error){
@@ -534,22 +546,50 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             var temp = [];
             _.each(res.rows, function(el, index, list){
                 if (el.status === 1)
-                    temp.push({name: el.dispDomain, value: el.id})
+                    temp.push({name: el.dispDomain, value: el.id, remark: el.remark})
             }.bind(this))
             rootNode = this.$el.find(".dropdown-disp");
             Utility.initDropMenu(rootNode, temp, function(value){
                 this.queryArgs.groupId = parseInt(value);
+                var curGroup = _.find(temp, function(obj){
+                    return obj.value === parseInt(value)
+                }.bind(this))
+                this.$el.find(".content-ctn #textarea-comment").html(curGroup.remark || "无");
+                this.$el.find(".content-ctn .channel-table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                this.dispGroupCollection.getChannelList({groupId: this.queryArgs.groupId});
                 this.onClickQueryButton();
             }.bind(this));
 
             this.$el.find(".dropdown-disp .cur-value").html(temp[0].name)
-
             this.queryArgs = {
                 page : 1,
                 count: 999999,
                 groupId: temp[0].value
             }
             this.onClickQueryButton();
+            this.$el.find(".content-ctn #textarea-comment").html(temp[0].remark || "无");
+            this.$el.find(".content-ctn .channel-table-ctn").html(_.template(template['tpl/loading.html'])({}));
+
+            this.dispGroupCollection.on("get.channel.success", $.proxy(this.onGetChannelSuccess, this));
+            this.dispGroupCollection.on("get.channel.error", $.proxy(this.onGetError, this));
+            this.dispGroupCollection.getChannelList({groupId: temp[0].value});
+        },
+
+        onGetChannelSuccess: function(res){
+            this.channelList = res;
+            _.each(this.channelList, function(el, index, list){
+                if (el.status === 0) el.statusName = '<span class="text-danger">已停止</span>';
+                if (el.status === 1) el.statusName = '<span class="text-success">服务中</span>';
+            }.bind(this))
+            this.channelTable = $(_.template(template['tpl/dispGroup/dispGroup.channel.table.html'])({
+                data: this.channelList, 
+                isCheckedAll: false, 
+                type: 1//不显示checkbox
+            }));
+            if (res.length !== 0)
+                this.$el.find(".content-ctn .channel-table-ctn").html(this.channelTable[0]);
+            else
+                this.$el.find(".content-ctn .channel-table-ctn").html(_.template(template['tpl/empty.html'])());
         },
 
         hide: function(){

@@ -576,7 +576,9 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         onGetChannelSuccess: function(res){
-            this.channelList = res;
+            this.channelList = _.filter(res, function(obj){
+                return obj.associated === 1;
+            }.bind(this));
             _.each(this.channelList, function(el, index, list){
                 if (el.status === 0) el.statusName = '<span class="text-danger">已停止</span>';
                 if (el.status === 1) el.statusName = '<span class="text-success">服务中</span>';

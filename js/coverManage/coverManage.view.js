@@ -386,9 +386,20 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.chart.setOption(option);
             this.chart.on(echarts.config.EVENT.CLICK, function (){
                 var obj = arguments[0]
-                if (obj.name.indexOf("节点") > -1){
+                if (obj.name.indexOf("节点") > -1 && obj.name.indexOf(">") == -1){
                     var legend = this.chart.chart['map'].component.legend;
                     legend.setSelected(obj.name)
+
+                    var id = 0
+                    _.each(legendList, function(el, index, ls){
+                        if (el === obj.name) id = index;
+                    }.bind(this));
+
+                    this.curNum = id;
+                    this.$el.find(".list-ctn button").removeClass("active");
+                    this.$el.find(".list-ctn").find('button[id="' + this.curNum +'"]').addClass("active");
+                    this.renderNodeInfo();
+                    if (this.timer) this.$el.find(".list-ctn .pause").click();
                 }
             }.bind(this));
 

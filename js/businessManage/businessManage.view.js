@@ -25,7 +25,7 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                 "ipTypeId":"",
                 "ipTypeName":""
             };
-            this.nodeList = [];
+            this.nodeListFinal = [];
 
             this.collection.getAddTableList(data);
 
@@ -38,7 +38,6 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                 tplData.deviceTypeId = this.editEndData.devId;
                 tplData.ipTypeId = this.editEndData.ipId;
 
-                this.collection.on("get.addTableList.success", $.proxy(this.getAddEditNodeSuccess, this));
             }else{
                 tplData.bisTypeName = this.businessType[0].name;
                 tplData.deviceTypeName = this.deviceType[0].name;
@@ -50,13 +49,15 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
             }
             this.collection.on("get.addTableList.success", $.proxy(this.initcreateAddNodeDrop, this));
             this.$el = $(_.template(template['tpl/businessManage/businessManage.add&edit.html'])({data:tplData}));
+            if(this.isEdit){
+                this.setEditTable(this.editEndData.nodeList);
+            }
             this.initBusinessDropMenu();
             this.initDeviceDropMenu();
             this.initIpDropMenu();
         },
         initcreateAddNodeDrop: function(res){
             var data = [];
-            var data1 = [];
             var _this = this;
             _.each(res.rows, function(el, index, list){
                 data.push({name: el.chName, value:el.id});
@@ -66,11 +67,8 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                 panelID : this.$el.find('.btn-raised').get(0),
                 openSearch:true,
                 onOk:function(data){
-                    //console.log(data);
-                    _.each(data, function(el, index, list){
-                        data1.push({chName: el.name, id:el.value});
-                    });
-                    _this.getAddEditNodeSuccess(data1);
+                    //console.log('--return---'+data);
+                    _this.setaddNodeTr(data);
                 },
                 data:data,
                 callback:function(data){
@@ -79,11 +77,12 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
             });
         },
         getArgs: function(){
-            var nodeList = [];
+
+            var nodeListFinal = [];
             $('.addOrEdit tr').each(function(){
-                nodeList.push($(this).attr('data-id'));
+                nodeListFinal.push($(this).attr('data-id'));
             });
-            this.nodeList = nodeList;
+            this.nodeListFinal = nodeListFinal;
             var args = {
                 "id": this.editEndData?this.editEndData.id:'',
                 "name":this.$el.find('#nodeGroupName').val(),
@@ -91,26 +90,37 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                 "bisTypeId":this.$el.find('.business-type .cur-value').attr('data-id'),
                 "deviceTypeId":this.$el.find('.device-type .cur-value').attr('data-id'),
                 "ipTypeId":this.$el.find('.ip-type .cur-value').attr('data-id'),
-                "nodeList":this.nodeList
+                "nodeList":this.nodeListFinal
             }
+            //console.log(this.nodeListFinal);
             return args;
         },
 
-        getAddEditNodeSuccess: function(res){ //初始化节点列表以及添加节点
-            var resData = [];
-            if(res.rows){
-                resData = res.rows;
+        setEditTable: function(data){
+            if(data && data.length != 0){
+                this.table = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({data: data}));
+                this.$el.find(".table-ctn").html(this.table[0]);
+                this.$el.find(".addOrEdit .delete").on("click", $.proxy(this.onClickItemDelete, this));
             }else{
-                resData = res;
+                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
             }
-            if (resData && resData.length != 0){
+        },
+
+        setaddNodeTr: function(res){
+            var data = [];
+
+            _.each(res, function(el, index, list){
+                data.push({nodeName:el.name, nodeId:el.value});
+                //console.log(data[index].nodeName,data[index].nodeId);
+            });
+
+            if(data && data.length != 0){              
+                $.proxy(this.deleteExistNode(data),this);
                 if(this.$el.find(".table-ctn .addOrEdit").length == 0){//新建
-                    this.table = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({data: resData}));
+                    this.table = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({data: data}));
                     this.$el.find(".table-ctn").html(this.table[0]);
                 }else{
-                    console.log(resData);
-                    this.addNode = $(_.template(template['tpl/businessManage/businessManage.addNode.html'])({data: resData}));
-                    console.log(this.addNode.length);
+                    this.addNode = $(_.template(template['tpl/businessManage/businessManage.addNode.html'])({data: data}));
                     for(var i=0;i<this.addNode.length;i++){
                         this.$el.find(".table-ctn .addOrEdit").prepend(this.addNode[i]);
                     }
@@ -119,6 +129,27 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
             }else{
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
             }
+        },
+
+        deleteExistNode: function(data){
+            var exitId = [];
+            var addId = [];
+            var _this=this;
+            $('.addOrEdit tr').each(function(){
+                exitId.push($(this).attr('data-id'));
+            });
+
+            _.each(data, function(el, index){
+                for(var i=0;i<exitId.length;i++){
+                    if(el.nodeId == exitId[i]){
+
+                        _this.$el.find("tr[data-id="+el.nodeId+"]").remove();
+                        return;
+                    }
+                }
+            });
+
+
         },
 
         initBusinessDropMenu: function(){
@@ -306,7 +337,8 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                     'devId':model.attributes.deviceTypeId,
                     'devName':model.attributes.deviceTypeName,
                     'ipId':model.attributes.ipTypeId,
-                    'ipName':model.attributes.ipTypeName
+                    'ipName':model.attributes.ipTypeName,
+                    'nodeList':model.attributes.nodeList
                 }
             }
 

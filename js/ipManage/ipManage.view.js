@@ -241,6 +241,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 body : ipStartView,
                 backdrop : 'static',
                 type     : 2,
+                cancelButtonText : '取消',
                 onOKCallback:  function(){
                     var options = ipStartView.onClickSubmit();
                     this.ipStartPopup.$el.modal("hide");
@@ -281,6 +282,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 body : ipPauseView,
                 backdrop : 'static',
                 type     : 2,
+                cancelButtonText : '取消',
                 onOKCallback:  function(){
                     var options = ipPauseView.onClickSubmit();
                     this.ipPausePopup.$el.modal("hide");

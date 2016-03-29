@@ -7,6 +7,7 @@ define("modal.view", ['require','exports', 'template', 'utility'],
         initialize: function(option) {
             this.options = {
                 title   : "提示",
+                cancelButtonText: "关闭",
                 backdrop: true,
                 keyboard: true,
                 show    : true,
@@ -66,7 +67,7 @@ define("modal.view", ['require','exports', 'template', 'utility'],
                 cancelButton = this.$el.find(".modal-footer .btn-default")
             if (this.options.type === 1){
                 okButton.hide();
-                cancelButton.html("关闭");
+                cancelButton.html(this.options.cancelButtonText);
             } else if (this.options.type === 0){
                 this.$el.find(".modal-footer .btn").hide();
             } else {

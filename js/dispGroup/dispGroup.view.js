@@ -438,6 +438,22 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
         },
 
+        getPromptArgs: function(){
+            var prompt = {
+                "id": this.model ? this.model.get("id") : 0
+            }
+            var checkedList = this.nodeList.filter(function(object) {
+                return object.isChecked === true;
+            })
+            var nodeIds = [];
+            _.each(checkedList, function(el, index, list){
+                nodeIds.push(el.id)
+            })
+            prompt.nodeIdList = nodeIds.join(",");
+
+            return prompt;
+        },
+
         getArgs: function(){
             var options = {
                 "id"           : this.model ? this.model.get("id") : 0,
@@ -492,6 +508,24 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         }
     });
 
+    var PromptInfoView = Backbone.View.extend({
+        initialize: function(options){
+            this.collection = options.collection;
+            this.model      = options.model;
+            this.data = options.data;
+
+            this.$el = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:this.data}));
+            if(this.data[0].table != '0'){
+                console.log(this.data);
+                this.$el.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:this.data}));
+            }
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target);
+        }
+    });
+
     var DispGroupView = Backbone.View.extend({
         events: {},
 
@@ -539,6 +573,8 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("add.dispGroup.channel.error", $.proxy(this.onGetError, this));
+
+            this.collection.on("get.InfoPrompt.success", $.proxy(this.onGetInfoPromptSuccess, this));
 
             this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
@@ -676,6 +712,8 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             }
             var model = this.collection.get(id);
 
+            this.clickInfo = model;
+
             if (this.editDispGroupPopup) $("#" + this.editDispGroupPopup.modalId).remove();
 
             var editDispGroupView = new AddOrEditDispGroupView({
@@ -689,14 +727,56 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 backdrop : 'static',
                 type     : 2,
                 onOKCallback:  function(){
-                    var options = editDispGroupView.getArgs();
-                    if (!options) return;
-                    this.collection.updateDispGroup(options)
-                    this.editDispGroupPopup.$el.modal("hide");
+                    var prompt = editDispGroupView.getPromptArgs();
+                    this.collection.getInfoPrompt(prompt);
+
+                    this.args = editDispGroupView.getArgs();
+                   
+                    //this.editDispGroupPopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){}
             }
             this.editDispGroupPopup = new Modal(options);
+        },
+
+        onGetInfoPromptSuccess: function(res){
+            if (this.PromptPopup) $("#" + this.PromptPopup.modalId).remove();
+
+            var data = res;
+            if(data.length>0){
+                data[0].title = '取消关联的节点当前覆盖区域信息如下：';
+            }else{
+                data.push({
+                    'title': '取消关联的节点当前覆盖区域信息如下：',
+                    'table':0
+                });
+            }
+
+            var args = this.args;
+
+            var promptView = new PromptInfoView({
+                collection : this.collection,
+                data : data,
+                model : this.clickInfo
+            });
+
+            //console.log(args);
+            var options = {
+                title:"提示",
+                body : promptView,
+                backdrop : 'static',
+                type     : 2,
+                cancelButtonText : '取消',
+                onOKCallback:  function(){
+                    if (!args) return;
+                    this.collection.updateDispGroup(args);
+                    this.PromptPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){}
+            }
+
+            this.PromptPopup = new Modal(options);
+
         },
 
         onClickItemDelete: function(event){

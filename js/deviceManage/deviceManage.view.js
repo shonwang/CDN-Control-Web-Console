@@ -201,10 +201,10 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
             var data = res;
             if(data.length>0){
-                data[0].title = 'IP '+data[0].ip+'删除前在下列调度关系中服务，点击确定，下列调度关系将删除，点击取消，IP状态不会变更，是否确定？';
+                data[0].title = 'IP '+data[0].ip+'在下列调度关系中服务，点击确定，下列调度关系将彻底删除，点击取消，下列调度服务不会改变，是否确定？';
             }else{
                 data.push({
-                    'title': 'IP '+this.ip+'删除前在下列调度关系中服务，点击确定，下列调度关系将删除，点击取消，IP状态不会变更，是否确定？',
+                    'title': 'IP '+this.ip+'在下列调度关系中服务，点击确定，下列调度关系将彻底删除，点击取消，下列调度服务不会改变，是否确定？',
                     'table':0
                 });
             }
@@ -222,6 +222,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 body : ipPauseView,
                 backdrop : 'static',
                 type     : 2,
+                cancelButtonText : '取消',
                 onOKCallback:  function(){
                     var options = ipPauseView.onClickSubmit();
                     this.PausePopup.$el.modal("hide");

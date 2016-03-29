@@ -359,6 +359,39 @@ define("dispGroup.model", ['require','exports', 'utility'], function(require, ex
             }.bind(this);
 
             $.ajax(defaultParas);
+        },
+
+        getInfoPrompt: function(args){
+            var url = BASE_URL + "/rs/dispGroup/prompt/removeNode";
+            var defaultParas = {
+                type: "POST",
+                url: url,
+                async: true,
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
+            };
+            defaultParas.data = args || {
+                "id"    : "",
+                "nodeIdList"   : ""
+            };
+            defaultParas.data = JSON.stringify(defaultParas.data);
+
+            defaultParas.success = function(res){
+                if (res){
+                    this.trigger("get.InfoPrompt.success", res);
+                } else {
+                    this.trigger("get.InfoPrompt.error", res); 
+                }
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.InfoPrompt.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
         }
     });
 

@@ -564,6 +564,13 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 if (el.status === 1)
                     temp.push({name: el.dispDomain, value: el.id, remark: el.remark})
             }.bind(this))
+
+            if (temp.length === 0){
+                this.$el.find(".opt-ctn").html(_.template(template['tpl/empty.html'])());
+                this.$el.find(".table-ctn").parent().hide();
+                return;
+            }
+
             rootNode = this.$el.find(".dropdown-disp");
             Utility.initDropMenu(rootNode, temp, function(value){
                 this.queryArgs.groupId = parseInt(value);

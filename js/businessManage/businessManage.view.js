@@ -10,7 +10,7 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.businessType = options.businessType;
             this.deviceType = options.deviceType;
             this.ipType = options.ipType;
-            this.editEndData = options.editEndData;
+            //this.editEndData = options.editEndData;
 
             var data = {
                 "page":1,
@@ -30,13 +30,13 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.collection.getAddTableList(data);
 
             if(this.isEdit){
-                tplData.name = this.editEndData.name;
-                tplData.bisTypeName = this.editEndData.busName;
-                tplData.deviceTypeName = this.editEndData.devName;
-                tplData.ipTypeName = this.editEndData.ipName;
-                tplData.bisTypeId = this.editEndData.busId;
-                tplData.deviceTypeId = this.editEndData.devId;
-                tplData.ipTypeId = this.editEndData.ipId;
+                tplData.name = this.model.get("name");
+                tplData.bisTypeName = this.model.get("bisTypeName");
+                tplData.deviceTypeName = this.model.get("deviceTypeName");
+                tplData.ipTypeName = this.model.get("ipTypeName");
+                tplData.bisTypeId = this.model.get("bisTypeId");
+                tplData.deviceTypeId = this.model.get("deviceTypeId");
+                tplData.ipTypeId = this.model.get("ipTypeId");
 
             }else{
                 tplData.bisTypeName = this.businessType[0].name;
@@ -47,10 +47,11 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                 tplData.ipTypeId = this.ipType[0].value;
 
             }
+            this.collection.off("get.addTableList.success");
             this.collection.on("get.addTableList.success", $.proxy(this.initcreateAddNodeDrop, this));
             this.$el = $(_.template(template['tpl/businessManage/businessManage.add&edit.html'])({data:tplData}));
             if(this.isEdit){
-                this.setEditTable(this.editEndData.nodeList);
+                this.setEditTable(this.model.get("nodeList"));
             }
             this.initBusinessDropMenu();
             this.initDeviceDropMenu();
@@ -84,9 +85,9 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
             });
             this.nodeListFinal = nodeListFinal;
             var args = {
-                "id": this.editEndData?this.editEndData.id:'',
+                "id": this.model?this.model.get("id"):'',
                 "name":this.$el.find('#nodeGroupName').val(),
-                "oldName":this.editEndData?this.editEndData.name:'',
+                "oldName":this.model?this.model.get("name"):'',
                 "bisTypeId":this.$el.find('.business-type .cur-value').attr('data-id'),
                 "deviceTypeId":this.$el.find('.device-type .cur-value').attr('data-id'),
                 "ipTypeId":this.$el.find('.ip-type .cur-value').attr('data-id'),
@@ -202,7 +203,7 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                 "device":-1
             };
 
-            this.editEndData = [];
+            //this.editEndData = [];
 
             this.collection.getBusinessList(); //初始化业务列表数据
             this.collection.on("get.businessList.success", $.proxy(this.initNodeDropMenu, this));
@@ -309,7 +310,6 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                     if (!options) return;
                     this.collection.addNode(options)
                     this.addNodePopup.$el.modal("hide");
-                    //this.onClickQueryButton();
                 }.bind(this),
                 onHiddenCallback: function(){}
             }
@@ -329,19 +329,19 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
 
             if (this.editBusinessPopup) $("#" + this.editBusinessPopup.modalId).remove();
 
-            if(!this.flag){
-                this.editEndData = {
-                    'id' : id,
-                    'name': model.attributes.name,
-                    'busId':model.attributes.bisTypeId,
-                    'busName':model.attributes.bisTypeName,
-                    'devId':model.attributes.deviceTypeId,
-                    'devName':model.attributes.deviceTypeName,
-                    'ipId':model.attributes.ipTypeId,
-                    'ipName':model.attributes.ipTypeName,
-                    'nodeList':model.attributes.nodeList
-                }
-            }
+            // if(!this.flag){
+            //     this.editEndData = {
+            //         'id' : id,
+            //         'name': model.attributes.name,
+            //         'busId':model.attributes.bisTypeId,
+            //         'busName':model.attributes.bisTypeName,
+            //         'devId':model.attributes.deviceTypeId,
+            //         'devName':model.attributes.deviceTypeName,
+            //         'ipId':model.attributes.ipTypeId,
+            //         'ipName':model.attributes.ipTypeName,
+            //         'nodeList':model.attributes.nodeList
+            //     }
+            // }
 
             var editBusinessView = new AddOrEditBusinessView({
                 collection: this.collection, 
@@ -349,8 +349,8 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                 isEdit    : true,
                 businessType: this.businessType,
                 deviceType: this.deviceType,
-                ipType: this.ipType,
-                editEndData: this.editEndData
+                ipType: this.ipType
+                //editEndData: this.editEndData
             });
 
             var options = {
@@ -362,9 +362,8 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                     var options = editBusinessView.getArgs();
                     if (!options) return;
                     this.collection.editNode(options);
-                    this.onEditNodeSuccess(id);
+                    //this.onEditNodeSuccess(id);
                     this.editBusinessPopup.$el.modal("hide");
-                    //this.onClickQueryButton();
                 }.bind(this),
                 onHiddenCallback: function(){}
             }
@@ -372,18 +371,18 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.editBusinessPopup = new Modal(options);
         },
 
-        onEditNodeSuccess: function(id){
-            this.flag = 1;
-            this.editEndData.id = id;
-            this.editEndData.name = this.editBusinessPopup.$el.find('#nodeGroupName').val();
+        // onEditNodeSuccess: function(id){
+        //     this.flag = 1;
+        //     this.editEndData.id = id;
+        //     this.editEndData.name = this.editBusinessPopup.$el.find('#nodeGroupName').val();
 
-            this.editEndData.busId = this.editBusinessPopup.$el.find('#dropdown-business').children().eq(0).attr('data-id');
-            this.editEndData.busName = this.editBusinessPopup.$el.find('#dropdown-business').children().eq(0).html();
-            this.editEndData.devId = this.editBusinessPopup.$el.find('#dropdown-device').children().eq(0).attr('data-id');
-            this.editEndData.devName = this.editBusinessPopup.$el.find('#dropdown-device').children().eq(0).html();
-            this.editEndData.ipId = this.editBusinessPopup.$el.find('#dropdown-ip').children().eq(0).attr('data-id');
-            this.editEndData.ipName = this.editBusinessPopup.$el.find('#dropdown-ip').children().eq(0).html();
-        },
+        //     this.editEndData.busId = this.editBusinessPopup.$el.find('#dropdown-business').children().eq(0).attr('data-id');
+        //     this.editEndData.busName = this.editBusinessPopup.$el.find('#dropdown-business').children().eq(0).html();
+        //     this.editEndData.devId = this.editBusinessPopup.$el.find('#dropdown-device').children().eq(0).attr('data-id');
+        //     this.editEndData.devName = this.editBusinessPopup.$el.find('#dropdown-device').children().eq(0).html();
+        //     this.editEndData.ipId = this.editBusinessPopup.$el.find('#dropdown-ip').children().eq(0).attr('data-id');
+        //     this.editEndData.ipName = this.editBusinessPopup.$el.find('#dropdown-ip').children().eq(0).html();
+        // },
 
         hide: function(){
             this.$el.hide();

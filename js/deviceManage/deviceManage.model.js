@@ -402,6 +402,34 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
             }.bind(this);
 
             $.ajax(defaultParas);
+        },
+
+        getPauseInfo: function(args){
+            var url = BASE_URL + "/rs/ip/prompt/pause?ip="+args;
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
+            };
+
+            defaultParas.success = function(res){
+                if (res){
+                    this.trigger("get.InfoPause.success",res);
+                } else {
+                    this.trigger("get.InfoPause.error"); 
+                }
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.InfoPause.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
         }
     });
 

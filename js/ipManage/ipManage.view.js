@@ -60,17 +60,6 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         onClickSubmit: function(){
-            var data = {
-                id : this.id,
-                status : this.status
-            }
-            this.collection.getIpInfoSubmit(data);
-            this.collection.on("get.ipInfoSubmit.success", function(){
-                alert('设置成功');
-            }.bind(this));
-        },
-
-        onClickSubmit: function(){
             var submitData = {
                 "id" : this.id,
                 "status" : this.status
@@ -201,7 +190,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             }.bind(this));
         },
 
-        onClickIpOperation: function(){
+        onClickIpOperation: function(event){
             var eventTarget = event.srcElement || event.target,id,status,ip;
 
             if (eventTarget.tagName == "SPAN"){

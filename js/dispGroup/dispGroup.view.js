@@ -574,7 +574,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             }.bind(this));
             this.collection.on("add.dispGroup.channel.error", $.proxy(this.onGetError, this));
 
+            this.collection.off("get.InfoPrompt.success");
             this.collection.on("get.InfoPrompt.success", $.proxy(this.onGetInfoPromptSuccess, this));
+            this.collection.on("get.InfoPrompt.error", $.proxy(this.onGetError, this))
 
             this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
@@ -732,14 +734,16 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
                     this.args = editDispGroupView.getArgs();
                    
-                    //this.editDispGroupPopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+
+                }
             }
             this.editDispGroupPopup = new Modal(options);
         },
 
         onGetInfoPromptSuccess: function(res){
+            this.editDispGroupPopup.$el.modal("hide");
             if (this.PromptPopup) $("#" + this.PromptPopup.modalId).remove();
 
             var data = res;
@@ -772,7 +776,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.collection.updateDispGroup(args);
                     this.PromptPopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+                    this.editDispGroupPopup.$el.modal("show");
+                }.bind(this)
             }
 
             this.PromptPopup = new Modal(options);

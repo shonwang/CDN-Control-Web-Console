@@ -515,10 +515,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.data = options.data;
 
             this.$el = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:this.data}));
-            if(this.data[0].table != '0'){
-                console.log(this.data);
-                this.$el.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:this.data}));
-            }
+            this.$el.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:this.data}));
         },
 
         render: function(target) {
@@ -576,6 +573,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
             this.collection.off("get.InfoPrompt.success");
             this.collection.on("get.InfoPrompt.success", $.proxy(this.onGetInfoPromptSuccess, this));
+            this.collection.off("get.InfoPrompt.error");
             this.collection.on("get.InfoPrompt.error", $.proxy(this.onGetError, this))
 
             this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
@@ -732,7 +730,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     var prompt = editDispGroupView.getPromptArgs();
                     this.collection.getInfoPrompt(prompt);
 
-                    this.args = editDispGroupView.getArgs();
+                    this.editGroupArgs = editDispGroupView.getArgs();
                    
                 }.bind(this),
                 onHiddenCallback: function(){
@@ -747,41 +745,38 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (this.PromptPopup) $("#" + this.PromptPopup.modalId).remove();
 
             var data = res;
+            var args = this.editGroupArgs;
             if(data.length>0){
                 data[0].title = '取消关联的节点当前覆盖区域信息如下：';
-            }else{
-                data.push({
-                    'title': '取消关联的节点当前覆盖区域信息如下：',
-                    'table':0
+
+                var promptView = new PromptInfoView({
+                    collection : this.collection,
+                    data : data,
+                    model : this.clickInfo
                 });
+
+                var options = {
+                    title:"提示",
+                    body : promptView,
+                    backdrop : 'static',
+                    type     : 2,
+                    cancelButtonText : '取消',
+                    onOKCallback:  function(){
+                        if (!args) return;
+                        this.collection.updateDispGroup(args);
+                        this.PromptPopup.$el.modal("hide");
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        this.editDispGroupPopup.$el.modal("show");
+                    }.bind(this)
+                }
+
+                this.PromptPopup = new Modal(options);
+            }else{
+                var result = confirm("你确定要取消吗？");
+                if (!result) return;
+                this.collection.updateDispGroup(args);
             }
-
-            var args = this.args;
-
-            var promptView = new PromptInfoView({
-                collection : this.collection,
-                data : data,
-                model : this.clickInfo
-            });
-
-            //console.log(args);
-            var options = {
-                title:"提示",
-                body : promptView,
-                backdrop : 'static',
-                type     : 2,
-                cancelButtonText : '取消',
-                onOKCallback:  function(){
-                    if (!args) return;
-                    this.collection.updateDispGroup(args);
-                    this.PromptPopup.$el.modal("hide");
-                }.bind(this),
-                onHiddenCallback: function(){
-                    this.editDispGroupPopup.$el.modal("show");
-                }.bind(this)
-            }
-
-            this.PromptPopup = new Modal(options);
 
         },
 

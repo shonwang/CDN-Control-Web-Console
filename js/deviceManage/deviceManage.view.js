@@ -130,10 +130,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.deviceId = options.deviceId;
 
             this.$el = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:this.data}));
-            if(this.data[0].table != '0'){
-                console.log(this.data);
-                this.$el.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:this.data}));
-            }
+            this.$el.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:this.data}));
         },
 
         onClickSubmit: function(){
@@ -192,6 +189,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.collection.off("get.InfoPause.success");
             this.collection.on("get.InfoPause.success", $.proxy(this.onGetPauseSuccess, this));
+            this.collection.off("get.InfoPause.error");
+            this.collection.on("get.InfoPause.error", $.proxy(this.onGetError, this));
 
             this.collection.ipTypeList();
         },
@@ -202,40 +201,39 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             var data = res;
             if(data.length>0){
                 data[0].title = 'IP '+data[0].ip+'在下列调度关系中服务，点击确定，下列调度关系将彻底删除，点击取消，下列调度服务不会改变，是否确定？';
-            }else{
-                data.push({
-                    'title': 'IP '+this.ip+'在下列调度关系中服务，点击确定，下列调度关系将彻底删除，点击取消，下列调度服务不会改变，是否确定？',
-                    'table':0
+
+                var ipPauseView = new IPPauseView({
+                    collection : this.collection,
+                    data : data,
+                    id : this.id,
+                    status: this.status,
+                    deviceId: this.deviceId
                 });
-            }
 
-            var ipPauseView = new IPPauseView({
-                collection : this.collection,
-                data : data,
-                id : this.id,
-                status: this.status,
-                deviceId: this.deviceId
-            });
+                var options = {
+                    title:"删除IP",
+                    body : ipPauseView,
+                    backdrop : 'static',
+                    type     : 2,
+                    cancelButtonText : '取消',
+                    onOKCallback:  function(){
+                        var options = ipPauseView.onClickSubmit();
+                        this.PausePopup.$el.modal("hide");
+                        if (!options) return;
+                        this.collection.deleteDeviceIp(options);
+                        //this.collection.getIpInfoSubmit(options);
+                    }.bind(this),
+                    onHiddenCallback: function(){
 
-            var options = {
-                title:"删除IP",
-                body : ipPauseView,
-                backdrop : 'static',
-                type     : 2,
-                cancelButtonText : '取消',
-                onOKCallback:  function(){
-                    var options = ipPauseView.onClickSubmit();
-                    this.PausePopup.$el.modal("hide");
-                    if (!options) return;
-                    this.collection.deleteDeviceIp(options);
-                    //this.collection.getIpInfoSubmit(options);
-                }.bind(this),
-                onHiddenCallback: function(){
-
+                    }
                 }
-            }
 
-            this.PausePopup = new Modal(options);
+                this.PausePopup = new Modal(options);
+            }else{
+                var result = confirm("你确定要删除绑定的IP吗？");
+                if (!result) return
+                this.collection.deleteDeviceIp({device_id:this.deviceId, ip_id: this.id});
+            }
         },
 
         onGetIpTypeSuccess: function(data){

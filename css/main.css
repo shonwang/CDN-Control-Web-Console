@@ -2,25 +2,48 @@ body {
   font-family: "Microsoft Yahei";
   background-color: #eee;
 }
+
 .total-items {
   text-align: center;/*    margin: 26px 0;*/
 }
+
 .btn .caret {
   margin-left: 10px;
 }
+
 .opt-ctn a {
   margin-right: 10px;
 }
+
 .glyphicon {
   margin-right: 5px;
 }
+
 .echart {
   height: 400px;
 }
-body .well, .container .well, .container-fluid .well, body .jumbotron, .container .jumbotron, .container-fluid .jumbotron, body .well-default, .container .well-default, .container-fluid .well-default, body .jumbotron-default, .container .jumbotron-default, .container-fluid .jumbotron-default {
+
+body .well,
+.container .well,
+.container-fluid .well,
+body .jumbotron,
+.container .jumbotron,
+.container-fluid .jumbotron,
+body .well-default,
+.container .well-default,
+.container-fluid .well-default,
+body .jumbotron-default,
+.container .jumbotron-default,
+.container-fluid .jumbotron-default {
   background-color: #fff;
 }
-body .well, .container .well, .container-fluid .well, body .jumbotron, .container .jumbotron, .container-fluid .jumbotron {
+
+body .well,
+.container .well,
+.container-fluid .well,
+body .jumbotron,
+.container .jumbotron,
+.container-fluid .jumbotron {
   background-color: #fff;
   padding: 19px;
   margin-bottom: 20px;
@@ -28,38 +51,58 @@ body .well, .container .well, .container-fluid .well, body .jumbotron, .containe
   border-radius: 4px;
   border: 0;
 }
-td a, td input[type="number"] {
+
+td a,
+td input[type="number"] {
   margin-right: 10px;
 }
+
 .navbar {
   margin-bottom: 0px;
 }
-.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+
+.table>tbody>tr>td,
+.table>tbody>tr>th,
+.table>tfoot>tr>td,
+.table>tfoot>tr>th,
+.table>thead>tr>td,
+.table>thead>tr>th {
   vertical-align: middle;
 }
+
 .disp-table>tbody>tr>td {
   padding: 0 8px;
 }
-.form-group label, .form-group input, .form-group .dropdown, .form-group .dropup {
+
+.form-group label,
+.form-group input,
+.form-group .dropdown,
+.form-group .dropup {
   margin-right: 10px;
 }
+
 .long-dropdown-menu {
   max-height: 300px;
   overflow-y: auto;
 }
+
 .pagination {
   margin: 0
 }
+
 .map-ctn {
   background-color: rgb(27, 27, 27);
   margin-right: -15px;
   min-height: 600px;
   position: relative;
 }
-.map-detail-ctn .spinner, .map-ctn .spinner {
+
+.map-detail-ctn .spinner,
+.map-ctn .spinner {
   margin: 0px auto;
   top: 200px;
 }
+
 .cover-manage .map-detail-ctn {
   background-color: rgb(27, 27, 27);
   min-height: 600px;
@@ -67,42 +110,46 @@ td a, td input[type="number"] {
   position: relative;
   padding: 20px;
 }
+
 .panel-dark {
   color: rgba(100, 149, 237, 1);
   border-color: rgba(100, 149, 237, 1);
   background-color: #1b1b1b;
 }
+
 .panel-dark>.panel-heading {
   color: rgba(100, 149, 237, 1);
   background-color: #1b1b1b;
   border-color: rgba(100, 149, 237, 1);
 }
+
 td .radio {
   margin: 0;
 }
+
 td .table {
   margin-bottom: 0;
 }
 
 .loader {
-    box-sizing: border-box;
-    display: flex;
-    flex: 0 1 auto;
-    flex-direction: column;
-    flex-grow: 1;
-    flex-shrink: 0;
-    flex-basis: 25%;
-/*    max-width: 25%;*/
-    min-height: 200px;
-    align-items: center;
-    justify-content: center; 
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-basis: 25%;/*    max-width: 25%;*/
+  min-height: 200px;
+  align-items: center;
+  justify-content: center;
 }
 
-.cover-manage .map-detail-ctn .loader{
-    min-height: 560px
+.cover-manage .map-detail-ctn .loader {
+  min-height: 560px
 }
-.cover-manage .map-ctn .loader{
-    min-height: 600px;
+
+.cover-manage .map-ctn .loader {
+  min-height: 600px;
 }
 
 .spinner {
@@ -111,7 +158,9 @@ td .table {
   height: 32px;
   position: relative;
 }
-.cube1, .cube2 {
+
+.cube1,
+.cube2 {
   color: #fff;
   text-align: center;
   padding: 5px;
@@ -124,50 +173,65 @@ td .table {
   -webkit-animation: cubemove 1.8s infinite ease-in-out;
   animation: cubemove 1.8s infinite ease-in-out;
 }
+
 .cube2 {
   -webkit-animation-delay: -0.9s;
   animation-delay: -0.9s;
 }
+
 @-webkit-keyframes cubemove {
   25% {
     -webkit-transform: translateX(42px) rotate(-90deg) scale(0.5)
   }
+
   50% {
     -webkit-transform: translateX(42px) translateY(42px) rotate(-180deg)
   }
+
   75% {
     -webkit-transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5)
   }
+
   100% {
     -webkit-transform: rotate(-360deg)
   }
+
 }
+
 @keyframes cubemove {
   25% {
     transform: translateX(42px) rotate(-90deg) scale(0.5);
     -webkit-transform: translateX(42px) rotate(-90deg) scale(0.5);
   }
+
   50% {
     transform: translateX(42px) translateY(42px) rotate(-179deg);
     -webkit-transform: translateX(42px) translateY(42px) rotate(-179deg);
   }
+
   50.1% {
     transform: translateX(42px) translateY(42px) rotate(-180deg);
     -webkit-transform: translateX(42px) translateY(42px) rotate(-180deg);
   }
+
   75% {
     transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5);
     -webkit-transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5);
   }
+
   100% {
     transform: rotate(-360deg);
     -webkit-transform: rotate(-360deg);
   }
+
 }
+
 .nav-navbar > li:nth-child(1) {
   width: 150px;
 }
-.ctrl-nav-container a, .ctrl-sidebar-container a {
+
+.ctrl-nav-container a,
+.ctrl-sidebar-container a {
   text-decoration: none;
 }
 
@@ -182,6 +246,7 @@ td .table {
   padding-bottom: 15px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
 }
+
 .weige .dialog .head {
   height: 80px;
   line-height: 80px;
@@ -189,11 +254,13 @@ td .table {
   background: #fff;
   position: relative;
 }
+
 .weige .dialog .head .dialog-title {
   font-size: 14px;
   width: 100%;
   background-color: #337ab7;
 }
+
 .weige .dialog .head .dialog-close {
   padding: 10px;
   cursor: pointer;
@@ -202,6 +269,7 @@ td .table {
   top: 0;
   box-sizing: border-box;
 }
+
 .weige .dialog .head .dialog-close:before {
   display: block;
   content: "";
@@ -209,12 +277,15 @@ td .table {
   height: 18px;
   background: url(../images/ksyun_icon_05.png) no-repeat 0 -167px;
 }
+
 .weige .dialog .head .dialog-close:hover:before {
   background-position: -18px -167px;
 }
+
 .weige .dialog .head .dialog-close:hover {
   background-color: #fb6362;
 }
+
 .weige-mask {
   position: fixed;
   left: 0;
@@ -228,15 +299,18 @@ td .table {
   filter: alpha(opacity=50);
   z-index: 99;
 }
+
 .weige .manage-dialog-baseMessage {
   padding-left: 25px;
   padding-right: 25px;
   text-align: center;
   font-size: 20px;
 }
+
 .weige .manage-dialog-change-btnContainer {
   overflow: hidden;
 }
+
 .weige .manage-dialog-change-btnContainer div {
   float: left;
   width: 120px;
@@ -245,16 +319,19 @@ td .table {
   text-align: center;
   cursor: pointer;
 }
+
 .weige .manage-dialog-change-btnOk {
   background: #148cec;
   color: #fff;
 }
+
 .weige .manage-dialog-change-btnCancel {
   background: #ededed;
   color: #999;
   display: inline;
   margin-left: 10px;
 }
+
 .weige .common-dialog-title {
   width: 100%;
   text-align: left;
@@ -276,6 +353,7 @@ td .table {
   background: #fff;
   z-index: 1 !important;
 }
+
 .select-title-container {
   width: 100%;
   height: 30px;
@@ -286,6 +364,7 @@ td .table {
   padding: 0px 20px;
   line-height: 30px;
 }
+
 .select-title-container input[type=search] {
   height: 25px;
   float: left;
@@ -299,10 +378,12 @@ td .table {
   padding: 6px 0 6px 12px;
   box-sizing: border-box;
 }
+
 .select-search-tips {
   float: left;
   color: #0095d0;
 }
+
 .select-checkbox-value {
   position: relative;
   height: 15px;
@@ -310,6 +391,7 @@ td .table {
   padding-left: 18px;
   overflow: hidden;
 }
+
 .select-checkbox-value:before {
   content: "";
   width: 13px;
@@ -322,10 +404,12 @@ td .table {
   overflow: hidden;
   cursor: pointer;
 }
+
 .select-checkbox-value:after {
   border: none;
   transition: all 0.2s ease-in;
 }
+
 .select-checkboxcon {
   position: relative;
   overflow: hidden;
@@ -335,6 +419,7 @@ td .table {
   width: 100%;
   padding: 6px 20px;
 }
+
 .select-checkbox {
   display: inline-block;
   width: 0;
@@ -345,6 +430,7 @@ td .table {
   position: absolute;
   top: 5px;
 }
+
 .select-checkboxcon input[type=checkbox]:checked+ .select-checkbox-value:before {
   content: "";
   width: 13px;
@@ -356,6 +442,7 @@ td .table {
   overflow: hidden;
   cursor: pointer;
 }
+
 .select-checkboxcon input[type=checkbox]:checked+ .select-checkbox-value:after {
   cursor: pointer;
   content: "";
@@ -371,22 +458,26 @@ td .table {
   top: 4px;
   transition: all 0.2s ease-out;
 }
+
 .select-checkbox-container {
   float: left;
   color: #0095d0;
   overflow: hidden;/*padding-top:7px;*/
 }
+
 .select-checkbox-container .checkboxcon {
   float: left;
   width: auto;
   margin-left: 10px;
 }
+
 .select-value-layer {
   width: 100%;
   max-height: 135px;
   overflow-y: scroll;
   padding-left: 0;
 }
+
 .select-value-layer li {
   clear: both;
   overflow: hidden;
@@ -395,9 +486,11 @@ td .table {
   box-sizing: border-box;
   cursor: pointer;
 }
+
 .select-value-layer li.hide {
   display: none;
 }
+
 .select-value-layer li:hover {
   background: #f8f8f8;
 }
@@ -411,6 +504,7 @@ td .table {
   padding-left: 20px;
   cursor: pointer;
 }
+
 .select-cancel-all {
   height: 16px;
   display: inline-block;
@@ -420,6 +514,7 @@ td .table {
   margin-left: 10px;
   cursor: pointer;
 }
+
 .select-select-back {
   height: 16px;
   display: inline-block;
@@ -429,6 +524,7 @@ td .table {
   margin-left: 10px;
   cursor: pointer;
 }
+
 .select-btn-ok {
   height: 16px;
   display: inline-block;
@@ -437,6 +533,7 @@ td .table {
   cursor: pointer;
   padding-left: 6px;
 }
+
 .select-select-close {
   height: 14px;
   float: right;
@@ -446,11 +543,61 @@ td .table {
   overflow: hidden;
   cursor: pointer;
 }
+
 .bisType {
   margin-left: 10px;
   margin-right: -6px;
 }
 
-.disabled{
-  color:gray;
+.disabled {
+  color: gray;
 }
+
+.ctrl-nav-container{
+    box-shadow: 0 0px 10px #333;
+}
+
+.jquery-accordion-menu{
+    font-family: "Microsoft Yahei"
+}
+
+.jquery-accordion-menu{
+    position: fixed;
+    max-width: 200px;
+    min-width: 50px;
+    bottom: 0;
+    top:0;
+    box-shadow: 0 0px 20px #333;
+    background-color: #222;
+}
+
+.packup-sidebar{
+   width: 50px;
+}
+
+.jquery-accordion-menu ul li{
+  -moz-transition: all .2s linear;
+  -ms-transition: all .2s linear;
+  transition: all .2s linear;
+}
+
+.packup-sidebar .submenu-indicator{
+   display: none;
+}
+
+.packup-sidebar.jquery-accordion-menu ul li a{
+   padding: 14px 12px;
+}
+
+.packup-sidebar.jquery-accordion-menu ul ul.submenu>li>a{
+   padding-left: 12px;
+}
+
+.packup-sidebar ul li:hover{
+   width: 200px;
+}
+
+.packup-sidebar ul li:hover .submenu-indicator{
+   display: block;
+}
+

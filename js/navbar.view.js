@@ -8,6 +8,21 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
         initialize: function() {
             this.$el = $(_.template(template['tpl/navbar.html'])());
             this.initLogin();
+            this.initSidebarToggle();
+        },
+
+        initSidebarToggle: function(){
+            $(".sidebar-btn").on("click", function() {
+                if ($(".ksyun-logo").hasClass("shrink")){
+                    $(".ksyun-logo").removeClass("shrink");
+                    $(".ctrl-main-container").removeClass("large");
+                    $(".jquery-accordion-menu").removeClass("packup-sidebar");
+                } else {
+                    $(".ksyun-logo").addClass("shrink");
+                    $(".ctrl-main-container").addClass("large");
+                    $(".jquery-accordion-menu").addClass("packup-sidebar");
+                }
+            })
         },
 
         // select: function(id){
@@ -82,7 +97,8 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
         },
 
         render: function(target) {
-            //this.$el.appendTo(target)
+            //this.$el.appendTo(target);
+            $("#jquery-accordion-menu").jqueryAccordionMenu();
         }
 
     });

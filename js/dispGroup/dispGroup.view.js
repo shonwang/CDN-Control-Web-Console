@@ -774,11 +774,13 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.PromptPopup = new Modal(options);
             }else{
                 var result = confirm("你确定要添加吗？");
-                if(result){
-                   this.collection.updateDispGroup(args);
-                }else{
-                    this.editDispGroupPopup.$el.modal("show");
-                }
+                if(!result)return;
+                this.collection.updateDispGroup(args);
+                // if(result){
+                //    this.collection.updateDispGroup(args);
+                // }else{
+                //     this.editDispGroupPopup.$el.modal("show");
+                // }
             }
 
         },

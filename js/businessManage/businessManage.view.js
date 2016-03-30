@@ -91,7 +91,7 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                 "bisTypeId":this.$el.find('.business-type .cur-value').attr('data-id'),
                 "deviceTypeId":this.$el.find('.device-type .cur-value').attr('data-id'),
                 "ipTypeId":this.$el.find('.ip-type .cur-value').attr('data-id'),
-                "nodeList":this.nodeListFinal
+                "nodeList":_.uniq(this.nodeListFinal)
             }
             //console.log(this.nodeListFinal);
             return args;
@@ -360,6 +360,7 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                 type     : 2,
                 onOKCallback:  function(){
                     var options = editBusinessView.getArgs();
+
                     if (!options) return;
                     this.collection.editNode(options);
                     //this.onEditNodeSuccess(id);

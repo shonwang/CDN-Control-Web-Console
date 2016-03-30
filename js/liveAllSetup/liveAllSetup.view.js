@@ -763,6 +763,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onClickConfirmCancel: function(){
+            this.collection.getAllFileList({bisTypeId: this.buisnessType})
             this.showMainList(".main-list", ".confirm", ".confirm-ctn")
         },
 

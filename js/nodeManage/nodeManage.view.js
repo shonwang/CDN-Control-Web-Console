@@ -57,6 +57,12 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         getArgs: function(){
+            var enName = this.$el.find("#input-english").val(),
+                chName = this.$el.find("#input-name").val();
+            if (!enName || !chName){
+                alert("你还没有填写节点名称！");
+                return;
+            }
             var args = {
                 "id"                 : this.model ? this.model.get("id") : 0,
                 "name"               : this.$el.find("#input-english").val(),

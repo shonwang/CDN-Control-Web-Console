@@ -571,10 +571,10 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             }.bind(this));
             this.collection.on("add.dispGroup.channel.error", $.proxy(this.onGetError, this));
 
-            this.collection.off("get.InfoPrompt.success");
-            this.collection.on("get.InfoPrompt.success", $.proxy(this.onGetInfoPromptSuccess, this));
-            this.collection.off("get.InfoPrompt.error");
-            this.collection.on("get.InfoPrompt.error", $.proxy(this.onGetError, this))
+            // this.collection.off("get.InfoPrompt.success");
+            // this.collection.on("get.InfoPrompt.success", $.proxy(this.onGetInfoPromptSuccess, this));
+            // this.collection.off("get.InfoPrompt.error");
+            // this.collection.on("get.InfoPrompt.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
@@ -727,15 +727,19 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 backdrop : 'static',
                 type     : 2,
                 onOKCallback:  function(){
+                    this.editGroupArgs = editDispGroupView.getArgs();
                     var prompt = editDispGroupView.getPromptArgs();
                     this.collection.getInfoPrompt(prompt);
-
-                    this.editGroupArgs = editDispGroupView.getArgs();
                     this.editDispGroupPopup.$el.modal("hide");
+
+                    
                 }.bind(this),
                 onHiddenCallback: function(){
-
-                }
+                    this.collection.off("get.InfoPrompt.success");
+                    this.collection.on("get.InfoPrompt.success", $.proxy(this.onGetInfoPromptSuccess, this));
+                    this.collection.off("get.InfoPrompt.error");
+                    this.collection.on("get.InfoPrompt.error", $.proxy(this.onGetError, this));
+                }.bind(this)
             }
             this.editDispGroupPopup = new Modal(options);
         },
@@ -774,13 +778,11 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.PromptPopup = new Modal(options);
             }else{
                 var result = confirm("你确定要添加吗？");
-                if(!result)return;
-                this.collection.updateDispGroup(args);
-                // if(result){
-                //    this.collection.updateDispGroup(args);
-                // }else{
-                //     this.editDispGroupPopup.$el.modal("show");
-                // }
+                if(result){
+                   this.collection.updateDispGroup(args);
+                }else{
+                    this.editDispGroupPopup.$el.modal("show");
+                }
             }
 
         },

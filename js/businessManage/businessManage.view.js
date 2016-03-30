@@ -68,7 +68,6 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                 panelID : this.$el.find('.btn-raised').get(0),
                 openSearch:true,
                 onOk:function(data){
-                    //console.log('--return---'+data);
                     _this.setaddNodeTr(data);
                 },
                 data:data,
@@ -127,8 +126,6 @@ define("businessManage.view", ['require','exports', 'template', 'modal.view', 'u
                     }
                 }
                 this.$el.find(".addOrEdit .delete").on("click", $.proxy(this.onClickItemDelete, this));
-            }else{
-                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
             }
         },
 

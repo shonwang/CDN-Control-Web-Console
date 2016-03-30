@@ -549,8 +549,8 @@ td .table {
   margin-right: -6px;
 }
 
-.disabled {
-  color: gray;
+.css-gray{
+  color:gray;
 }
 
 .ctrl-nav-container{
@@ -600,4 +600,3 @@ td .table {
 .packup-sidebar ul li:hover .submenu-indicator{
    display: block;
 }
-

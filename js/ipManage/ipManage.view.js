@@ -202,19 +202,33 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.clickId = id;
             this.clickStatus = status;
             this.clickIp = ip;
-            if(status == '2' || status == '6'){ //开启
+            if(status == '1'){ //开启
                 this.collection.getIpInfoStart(ip);
+                //this.waitingDialog();
                 this.collection.off("get.ipInfoStart.success");
                 this.collection.on("get.ipInfoStart.success", $.proxy(this.onIpInfoStartSuccess, this));
-            }else if(status == '1'){ //暂停
+            }else if(status == '2' || status == '6'){ //暂停
                 this.collection.getIpInfoPause(ip);
+                //this.waitingDialog();
                 this.collection.off("get.ipInfoPause.success");
                 this.collection.on("get.ipInfoPause.success", $.proxy(this.onIpInfoPauseSuccess, this));
             }
 
         },
 
+        // waitingDialog:function(){
+        //     var options = {
+        //         title    : "警告",
+        //         body     : '<div class="alert alert-info"><strong>数据加载中，请耐心等待 </strong></div>',
+        //         backdrop : 'static',
+        //         type     : 0,
+        //     }
+        //     this.disablePopup = new Modal(options);
+        //     this.disablePopup.$el.find(".close").remove();
+        // },
+
         onIpInfoStartSuccess: function(res){
+            //this.disablePopup.$el.modal('hide');
             if (this.ipStartPopup) $("#" + this.ipStartPopup.modalId).remove();
             var data = res;
             if(data.length>0){
@@ -259,6 +273,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         onIpInfoPauseSuccess: function(res){
+            //this.disablePopup.$el.modal('hide');
             if (this.ipPausePopup) $("#" + this.ipPausePopup.modalId).remove();
 
             var data = res;

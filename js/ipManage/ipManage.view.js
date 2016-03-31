@@ -306,6 +306,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         remove: function(){
             if (this.queryDetailPopup) $("#" + this.queryDetailPopup.modalId).remove();
             this.queryDetailPopup = null;
+            this.collection.off();
             this.$el.remove();
         },
 

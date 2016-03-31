@@ -569,7 +569,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.collection.on("get.device.success", $.proxy(this.onDeviceListSuccess, this));
             this.collection.on("get.device.error", $.proxy(this.onGetError, this));
-            
+
             this.collection.on("add.device.success", function(){
                 alert("添加成功！")
                 this.onClickQueryButton();
@@ -991,6 +991,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.ipManagePopup = null;
             if (this.addDevicePopup) $("#" + this.addDevicePopup.modalId).remove();
             this.addDevicePopup = null;
+            this.collection.off();
             this.$el.remove();
         },
 

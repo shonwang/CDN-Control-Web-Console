@@ -25,10 +25,10 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
             })
         },
 
-        // select: function(id){
-        //     this.$el.find(".list-group-item").removeClass("current");
-        //     this.$el.find('#' + id).addClass("current");
-        // },
+        select: function(id){
+            this.$el.find(".list-group-item").removeClass("current");
+            this.$el.find('#' + id).addClass("current");
+        },
 
         initLogin: function(){
             var redirect = function (url) {

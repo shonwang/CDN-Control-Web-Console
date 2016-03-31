@@ -12,8 +12,13 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         getArgs: function(){
+            var keyName = this.$el.find("#input-name").val();
+            if (!keyName || keyName.length > 100){
+                alert("唯一KEY不能为空且长度不大于100！");
+                return false;
+            }
             if (!this.isEdit)
-                this.options.partition.domain = this.$el.find("#input-name").val()
+                this.options.partition.domain = keyName;
             this.options.partition.content = this.$el.find("#textarea-content").val();
             return this.options.partition;
         },
@@ -108,6 +113,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 width: 800,
                 onOKCallback:  function(){
                     var options = addPartitionView.getArgs();
+                    if (!options) return;
                     options.partitionId = new Date().valueOf();
                     var parObjArray = _.filter(this.args.partitions, function(obj) {
                         return obj.domain === options.domain;
@@ -169,6 +175,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 width: 800,
                 onOKCallback:  function(){
                     var options = editPartitionView.getArgs();
+                    if (!options) return;
                     _.each(this.args.partitions, function(el, key, ls){
                         if (el.partitionId === options.partitionId)
                             el.content = options.content;

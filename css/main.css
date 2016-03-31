@@ -67,7 +67,9 @@ td input[type="number"] {
 .table>tfoot>tr>th,
 .table>thead>tr>td,
 .table>thead>tr>th {
-  vertical-align: middle;
+    vertical-align: middle;
+    word-break: keep-all;
+    white-space:nowrap;
 }
 
 .disp-table>tbody>tr>td {
@@ -88,16 +90,6 @@ td input[type="number"] {
 
 .pagination {
   margin: 0
-}
-
-.node-manage .table>tbody>tr>td,
-.node-manage .table>tbody>tr>th,
-.node-manage .table>tfoot>tr>td,
-.node-manage .table>tfoot>tr>th,
-.node-manage .table>thead>tr>td,
-.node-manage .table>thead>tr>th {
-    word-break: keep-all;
-    white-space:nowrap;
 }
 
 .node-manage .table-ctn{

@@ -569,21 +569,25 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.collection.on("get.device.success", $.proxy(this.onDeviceListSuccess, this));
             this.collection.on("get.device.error", $.proxy(this.onGetError, this));
+            
             this.collection.on("add.device.success", function(){
                 alert("添加成功！")
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("add.device.error", $.proxy(this.onGetError, this));
+
             this.collection.on("update.device.success", function(){
                 alert("编辑成功！")
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("update.device.error", $.proxy(this.onGetError, this));
+
             this.collection.on("delete.device.success", function(){
                 alert("删除成功！")
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("delete.device.error", $.proxy(this.onGetError, this));
+
             this.collection.on("update.device.status.success", function(){
                 alert("操作成功！")
                 this.onClickQueryButton();

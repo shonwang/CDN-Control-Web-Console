@@ -60,7 +60,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             var enName = this.$el.find("#input-english").val(),
                 chName = this.$el.find("#input-name").val();
             if (!enName || !chName){
-                alert("你还没有填写节点名称！");
+                alert("节点名称和英文名称都要填写！");
                 return;
             }
             var args = {

@@ -32,6 +32,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
         onClickMoreButton: function(){
             this.$el.find(".more").hide();
+            this.$el.find(".node-list").html(_.template(template['tpl/loading.html'])());
             this.collection.getRegionOtherNodeList(this.args)
         },
 

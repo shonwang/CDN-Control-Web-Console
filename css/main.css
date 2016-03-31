@@ -90,6 +90,21 @@ td input[type="number"] {
   margin: 0
 }
 
+.node-manage .table>tbody>tr>td,
+.node-manage .table>tbody>tr>th,
+.node-manage .table>tfoot>tr>td,
+.node-manage .table>tfoot>tr>th,
+.node-manage .table>thead>tr>td,
+.node-manage .table>thead>tr>th {
+    word-break: keep-all;
+    white-space:nowrap;
+}
+
+.node-manage .table-ctn{
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+}
+
 .map-ctn {
   background-color: rgb(27, 27, 27);
   margin-right: -15px;

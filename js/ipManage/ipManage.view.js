@@ -76,6 +76,8 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.$el = $(_.template(template['tpl/ipManage/ipManage.html'])());
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
+            this.noticeInfoStr = '<div class="alert alert-info"><strong>数据加载中，请耐心等待 </strong></div>';
+
             this.initNodeDropMenu();
 
             this.collection.on("get.ipInfo.success", $.proxy(this.onIpInfoListSuccess, this));
@@ -95,6 +97,13 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             }.bind(this));
             this.collection.on("get.ipInfoSubmit.error", function(){
                 alert('设置失败');
+            }.bind(this));
+
+            this.collection.on("get.ipInfoStart.error", function(err){
+                this.onGetError(res);
+            }.bind(this));
+            this.collection.on("get.ipInfoPause.error", function(err){
+                this.onGetError(res);
             }.bind(this));
         },
 
@@ -204,76 +213,88 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.clickIp = ip;
             if(status == '1'){ //开启
                 this.collection.getIpInfoStart(ip);
-                //this.waitingDialog();
+                this.commonDialog("警告",this.noticeInfoStr,0,false,"关闭");
                 this.collection.off("get.ipInfoStart.success");
                 this.collection.on("get.ipInfoStart.success", $.proxy(this.onIpInfoStartSuccess, this));
             }else if(status == '2' || status == '6'){ //暂停
                 this.collection.getIpInfoPause(ip);
-                //this.waitingDialog();
+                this.commonDialog("警告",this.noticeInfoStr,0,false,"关闭");
                 this.collection.off("get.ipInfoPause.success");
                 this.collection.on("get.ipInfoPause.success", $.proxy(this.onIpInfoPauseSuccess, this));
             }
 
         },
 
-        // waitingDialog:function(){
-        //     var options = {
-        //         title    : "警告",
-        //         body     : '<div class="alert alert-info"><strong>数据加载中，请耐心等待 </strong></div>',
-        //         backdrop : 'static',
-        //         type     : 0,
-        //     }
-        //     this.disablePopup = new Modal(options);
-        //     this.disablePopup.$el.find(".close").remove();
-        // },
+        commonDialog: function(title,body,type,xBtn,cancelButtonText,oKCallback,hiddenCallback){
+            if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
+            var options = {
+                title: title,
+                body : body,
+                backdrop : 'static',
+                type     : type,
+                xBtn:xBtn,
+                cancelButtonText : cancelButtonText,
+                onOKCallback:  oKCallback?oKCallback.bind(this):function(){},
+                onHiddenCallback: hiddenCallback?hiddenCallback.bind(this):function(){}
+            }
+
+            this.commonPopup = new Modal(options);
+        },
 
         onIpInfoStartSuccess: function(res){
-            //this.disablePopup.$el.modal('hide');
-            if (this.ipStartPopup) $("#" + this.ipStartPopup.modalId).remove();
+            if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
             var data = res;
-            if(data.length>0){
-                data[0].title = 'IP '+this.clickIp+'在下列调度关系中服务，点击确定，该IP将不对下列调度关系服务，点击取消，IP状态不会改变，是否确定？';
-            
-                var ipStartView = new IPStartView({
-                    collection : this.collection,
-                    data : data,
-                    id : this.clickId,
-                    status: this.clickStatus
-                });
-
-                var options = {
-                    title:"暂停IP",
-                    body : ipStartView,
-                    backdrop : 'static',
-                    type     : 2,
-                    cancelButtonText : '取消',
-                    onOKCallback:  function(){
-                        var options = ipStartView.onClickSubmit();
-                        this.ipStartPopup.$el.modal("hide");
-                        if (!options) return;
-                        this.collection.getIpInfoSubmit(options);
-                        //this.ipStartPopup.$el.modal("hide");
-                    }.bind(this),
-                    onHiddenCallback: function(){
-                        if (this.ipStartPopup) $("#" + this.ipStartPopup.modalId).remove();
-                    }.bind(this)
-                }
-
-                this.ipStartPopup = new Modal(options);
-            }else{
-                var result = confirm("确定要暂停服务吗？")
-                if (!result) return
-                var options = {
-                    "id" : this.clickId,
-                    "status" : this.clickStatus
-                }
-                if (!options) return;
-                this.collection.getIpInfoSubmit(options);
+            if(data.length > 0){
+                
             }
         },
 
+        // onIpInfoStartSuccess: function(res){
+        //     if (this.ipStartPopup) $("#" + this.ipStartPopup.modalId).remove();
+        //     var data = res;
+        //     if(data.length>0){
+        //         data[0].title = 'IP '+this.clickIp+'在下列调度关系中服务，点击确定，该IP将不对下列调度关系服务，点击取消，IP状态不会改变，是否确定？';
+            
+        //         var ipStartView = new IPStartView({
+        //             collection : this.collection,
+        //             data : data,
+        //             id : this.clickId,
+        //             status: this.clickStatus
+        //         });
+
+        //         var options = {
+        //             title:"暂停IP",
+        //             body : ipStartView,
+        //             backdrop : 'static',
+        //             type     : 2,
+        //             cancelButtonText : '取消',
+        //             onOKCallback:  function(){
+        //                 var options = ipStartView.onClickSubmit();
+        //                 this.ipStartPopup.$el.modal("hide");
+        //                 if (!options) return;
+        //                 this.collection.getIpInfoSubmit(options);
+        //                 //this.ipStartPopup.$el.modal("hide");
+        //             }.bind(this),
+        //             onHiddenCallback: function(){
+        //                 if (this.ipStartPopup) $("#" + this.ipStartPopup.modalId).remove();
+        //             }.bind(this)
+        //         }
+
+        //         this.ipStartPopup = new Modal(options);
+        //     }else{
+        //         var result = confirm("确定要暂停服务吗？")
+        //         if (!result) return
+        //         var options = {
+        //             "id" : this.clickId,
+        //             "status" : this.clickStatus
+        //         }
+        //         if (!options) return;
+        //         this.collection.getIpInfoSubmit(options);
+        //     }
+        // },
+
         onIpInfoPauseSuccess: function(res){
-            //this.disablePopup.$el.modal('hide');
+            this.disablePopup.$el.modal('hide');
             if (this.ipPausePopup) $("#" + this.ipPausePopup.modalId).remove();
 
             var data = res;

@@ -15,6 +15,7 @@ define("modal.view", ['require','exports', 'template', 'utility'],
                 body    : "hollo world",
                 width   : null,
                 height  : null,
+                xBtn    : true,
                 onOKCallback : function(){},
                 onShownCallback : function(){},
                 onHiddenCallback : function(){}
@@ -28,6 +29,9 @@ define("modal.view", ['require','exports', 'template', 'utility'],
             this.$el.attr("id", this.modalId);
 
             this.$el.find(".modal-title").html(this.options.title);
+            if(!this.options.xBtn){
+                this.$el.find(".close").hide();
+            }
             if (typeof this.options.body === "string"){
                 this.$el.find(".modal-body").html(this.options.body);
             } else {

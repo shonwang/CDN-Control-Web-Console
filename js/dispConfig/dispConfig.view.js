@@ -222,7 +222,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
             var options = {
                 title    : "警告",
-                body     : '<div class="alert alert-info"><strong>数据载入中，大神们别乱点啊！</strong></div>',
+                body     : '<div class="alert alert-info"><strong>数据加载中，请耐心等待</strong></div>',
                 backdrop : 'static',
                 type     : 0,
             }
@@ -257,7 +257,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
             var options = {
                 title    : "警告",
-                body     : '<div class="alert alert-danger"><strong>下发中，大神们别乱点啊...</strong></div>',
+                body     : '<div class="alert alert-danger"><strong>下发中，请耐心等待...</strong></div>',
                 backdrop : 'static',
                 type     : 0,
             }

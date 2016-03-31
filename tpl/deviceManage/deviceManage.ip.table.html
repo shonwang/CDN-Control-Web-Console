@@ -4,6 +4,7 @@
     <th>#</th>
     <th>IP</th>
     <th>类型</th>
+    <th>状态</th>
     <th>操作</th> 
   </tr>
 </thead>
@@ -13,6 +14,7 @@
           <td><%=data[i]["id"]%></td>
           <td><%=data[i]["ip"]%></td>
           <td><%=data[i]["typeName"]%></td>
+          <td><%=data[i]["statusName"]%></td>
           <td>
               <a href="javascript:void(0)" id="<%=data[i]['id']%>" data-ip="<%=data[i]["ip"]%>" data-status="2" class="edit" title="编辑">
                   <span class="glyphicon glyphicon glyphicon-edit"></span>

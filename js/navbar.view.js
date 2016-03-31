@@ -17,10 +17,12 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
                     $(".ksyun-logo").removeClass("shrink");
                     $(".ctrl-main-container").removeClass("large");
                     $(".jquery-accordion-menu").removeClass("packup-sidebar");
+                    $(".sidebar-btn").removeClass("sidebar-open-btn");
                 } else {
                     $(".ksyun-logo").addClass("shrink");
                     $(".ctrl-main-container").addClass("large");
                     $(".jquery-accordion-menu").addClass("packup-sidebar");
+                    $(".sidebar-btn").addClass("sidebar-open-btn");
                 }
             })
         },

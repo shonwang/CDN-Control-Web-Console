@@ -16,14 +16,6 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.isError = false;
             this.isSelectedFile = false;
 
-            this.multipartParams = {
-                "key": "${filename}",
-                "acl": "private",
-                "signature" : "",
-                "KSSAccessKeyId": "",
-                "policy": ""
-            };
-
             this.uploadOption = {
                 runtimes : 'html5,flash,silverlight,html4', //上传模式，依次退化;
                 url: BASE_URL + "/rs/device/batchAdd", 
@@ -31,12 +23,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 flash_swf_url : 'resource/Moxie.swf', //Flash组件的相对路径
                 silverlight_xap_url : 'resource/Moxie.xap', //Silverlight组件的相对路径;
                 multipart: true,
-                //multipart_params: this.multipartParams,
                 filters: {
-                  // mime_types : [
-                  //   { title : "Excel files", extensions : "xls" }
-                  // ],
-                  max_file_size: 1024 * 1024 * 10
+                    max_file_size: 1024 * 1024 * 10
                 },
                 multi_selection: false,
                 send_file_name: false, //是否添加额外的文件名，后端需要根据此计算签名，默认是true
@@ -273,6 +261,10 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     return obj["id"] === parseInt(el.type);
                 })
                 if (ipTypeArray[0]) el.typeName = ipTypeArray[0].name;
+                if (el.status === 1) el.statusName = "<span class='text-success'>运行中</span>";
+                if (el.status === 2) el.statusName = "<span class='text-warning'>暂停中</span>";
+                if (el.status === 4) el.statusName = "<span class='text-danger'>宕机</span>";
+                if (el.status === 6) el.statusName = "暂停且宕机";
             }.bind(this))
             this.table = $(_.template(template['tpl/deviceManage/deviceManage.ip.table.html'])({data: this.ipList}));
             this.$el.find(".ip-table-ctn").html(this.table[0]);

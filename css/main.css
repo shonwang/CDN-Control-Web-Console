@@ -53,7 +53,8 @@ body .jumbotron,
 }
 
 td a,
-td input[type="number"] {
+td input[type="number"],
+td .label {
   margin-right: 10px;
 }
 

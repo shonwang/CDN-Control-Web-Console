@@ -285,16 +285,21 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.nodesEl = this.table.find("tbody .nodes .edit")
             this.nodesEl.on("click", $.proxy(this.onClickItemEdit, this));
             this.table.find("tbody .nodes .delete").on("click", $.proxy(this.onClickItemDelete, this));
-            this.table.find("tbody .nodes .weight").on("keyup", $.proxy(this.onClickItemWeightInput, this));
+            this.table.find("tbody .nodes .weight").on("keyup", $.proxy(this.onKeyupItemWeightInput, this));
             this.table.find("tbody .nodes .weight").on("blur", $.proxy(this.onBlurItemWeightInput, this));
             this.table.find("tbody .add").on("click", $.proxy(this.onClickItemAdd, this));
             this.table.find("tbody .adjust").on("click", $.proxy(this.onClickItemAdjust, this));
         },
 
-        onClickItemWeightInput: function(event){
+        onKeyupItemWeightInput: function(event){
             var eventTarget = event.srcElement || event.target,
                 value = $(eventTarget).val(),
-                maxValue = $(eventTarget).attr("max");
+                maxValue = $(eventTarget).attr("max"),
+                re = /^\d+$/;
+            if (!re.test(value)){
+                $(eventTarget).val("0");
+                return
+            }
             if (parseInt(value) > parseInt(maxValue)){
                 $(eventTarget).val("0")
             }

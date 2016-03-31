@@ -693,23 +693,23 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         hideMainList: function(mainClass, otherClass){
             async.series([
                 function(callback){
-                    this.$el.find(mainClass).addClass("zoomOut animated");
+                    this.$el.find(mainClass).addClass("fadeOutLeft animated");
                     callback()
                 }.bind(this),
                 function(callback){
                     setTimeout(function(){
                         this.$el.find(mainClass).hide();
                         this.$el.find(otherClass).show();
-                        this.$el.find(otherClass).addClass("zoomIn animated");
+                        this.$el.find(otherClass).addClass("fadeInLeft animated");
                         callback()
-                    }.bind(this), 500)
+                    }.bind(this), 1000)
                 }.bind(this),                
                 function(callback){
                     setTimeout(function(){
-                        this.$el.find(otherClass).removeClass("zoomIn animated");
-                        this.$el.find(otherClass).removeClass("zoomOut animated");
-                        this.$el.find(mainClass).removeClass("zoomIn animated");
-                        this.$el.find(mainClass).removeClass("zoomOut animated");
+                        this.$el.find(otherClass).removeClass("fadeInLeft animated");
+                        this.$el.find(otherClass).removeClass("fadeOutLeft animated");
+                        this.$el.find(mainClass).removeClass("fadeInLeft animated");
+                        this.$el.find(mainClass).removeClass("fadeOutLeft animated");
                         callback()
                     }.bind(this), 1000)
                 }.bind(this)]
@@ -719,7 +719,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         showMainList: function(mainClass, otherClass, otherClass1){
             async.series([
                 function(callback){
-                    this.$el.find(otherClass).addClass("zoomOut animated");
+                    this.$el.find(otherClass).addClass("fadeOutLeft animated");
                     callback()
                 }.bind(this),
                 function(callback){
@@ -727,16 +727,16 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                         this.$el.find(otherClass).hide();
                         this.$el.find(otherClass + " " + otherClass1).remove();
                         this.$el.find(mainClass).show();
-                        this.$el.find(mainClass).addClass("zoomIn animated")
+                        this.$el.find(mainClass).addClass("fadeInLeft animated")
                         callback()
-                    }.bind(this), 500)
+                    }.bind(this), 1000)
                 }.bind(this),                
                 function(callback){
                     setTimeout(function(){
-                        this.$el.find(otherClass).removeClass("zoomIn animated");
-                        this.$el.find(otherClass).removeClass("zoomOut animated");
-                        this.$el.find(mainClass).removeClass("zoomIn animated");
-                        this.$el.find(mainClass).removeClass("zoomOut animated");
+                        this.$el.find(otherClass).removeClass("fadeInLeft animated");
+                        this.$el.find(otherClass).removeClass("fadeOutLeft animated");
+                        this.$el.find(mainClass).removeClass("fadeInLeft animated");
+                        this.$el.find(mainClass).removeClass("fadeOutLeft animated");
                         callback()
                     }.bind(this), 1000)
                 }.bind(this)]

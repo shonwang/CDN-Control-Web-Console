@@ -6,7 +6,7 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
         },
 
         initialize: function() {
-            this.$el = $(_.template(template['tpl/navbar.html'])());
+            this.$el = $(_.template(template['tpl/sidebar.html'])());
             this.initLogin();
             this.initSidebarToggle();
         },
@@ -26,8 +26,12 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
         },
 
         select: function(id){
-            this.$el.find(".list-group-item").removeClass("current");
-            this.$el.find('#' + id).addClass("current");
+            var activeNode = this.$el.find('#' + id);
+            if (activeNode.parent().css("display") == "none") {
+                activeNode.parent().parent().click()
+            }
+            $("#jquery-accordion-menu").children("ul").find("li").removeClass("active");
+            activeNode.addClass("active");
         },
 
         initLogin: function(){
@@ -97,7 +101,7 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
         },
 
         render: function(target) {
-            //this.$el.appendTo(target);
+            this.$el.appendTo(target);
             $("#jquery-accordion-menu").jqueryAccordionMenu();
         }
 

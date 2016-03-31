@@ -20,7 +20,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         initialize: function(){
             Utility.dateFormat();
             this.navbarView = new NavbarView();
-            this.navbarView.render($('.ksc-nav-ctn'));
+            this.navbarView.render($('.jquery-accordion-menu'));
             this.curPage = "";
         },
 
@@ -70,6 +70,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         businessManage: function(){
             require(['businessManage.view', 'businessManage.model'], function(BusinessManageView, BusinessManageModel){
                 this.curPage = 'businessManage';
+                this.navbarView.select(this.curPage);
                 if (!this.businessManageModel)
                     this.businessManageModel = new BusinessManageModel();
                 if (!this.businessManageView ){
@@ -85,6 +86,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         ipManage: function(){
             require(['ipManage.view', 'ipManage.model'], function(IPManageView, IPManageModel){
                 this.curPage = 'ipManage';
+                this.navbarView.select(this.curPage);
                 if (!this.ipManageModel)
                     this.ipManageModel = new IPManageModel();
                 if (!this.ipManageView ){
@@ -98,6 +100,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         liveCurentSetup: function(){
             require(['liveCurentSetup.view', 'liveCurentSetup.model'], function(LiveCurentSetupView, LiveCurentSetupModel){
                 this.curPage = 'liveCurentSetup';
+                this.navbarView.select(this.curPage);
                 if (!this.liveCurentSetupModel)
                     this.liveCurentSetupModel = new LiveCurentSetupModel();
                 if (!this.liveCurentSetupView ){
@@ -113,6 +116,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         liveAllSetup: function(){
             require(['liveAllSetup.view', 'liveAllSetup.model'], function(LiveAllSetupView, LiveAllSetupModel){
                 this.curPage = 'liveAllSetup';
+                this.navbarView.select(this.curPage);
                 if (!this.liveAllSetupModel)
                     this.liveAllSetupModel = new LiveAllSetupModel();
                 if (!this.liveAllSetupView ){
@@ -128,6 +132,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         coverManage: function() {
             require(['coverManage.view', 'coverManage.model'], function(CoverManageView, CoverManageModel){
                 this.curPage = 'coverManage';
+                this.navbarView.select(this.curPage);
                 if (!this.coverManageModel)
                     this.coverManageModel = new CoverManageModel();
                 if (!this.coverManageView ){
@@ -142,7 +147,8 @@ define("routes", ['require','exports', 'utility','navbar.view'],
 
         coverRegion: function() {
             require(['coverRegion.view', 'coverRegion.model'], function(CoverRegionView, CoverRegionModel){
-                this.curPage = 'coverRegion';
+                    this.curPage = 'coverRegion';
+                    this.navbarView.select(this.curPage);
                     if (!this.coverRegionModel)
                         this.coverRegionModel = new CoverRegionModel();
                     if (!this.coverRegionView ){
@@ -158,6 +164,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         dispConfig: function() {
             require(['dispConfig.view', 'dispConfig.model', 'dispGroup.model'], function(DispConfigView, DispConfigModel, DispGroupModel){
                 this.curPage = 'dispConfig';
+                this.navbarView.select(this.curPage);
                 if (!this.dispConfigModel)
                     this.dispConfigModel = new DispConfigModel();
                 if (!this.dispGroupModel)
@@ -178,6 +185,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         dispGroup: function() {
             require(['dispGroup.view', 'dispGroup.model'], function(DispGroupView, DispGroupModel){
                 this.curPage = 'dispGroup';
+                this.navbarView.select(this.curPage);
                 if (!this.dispGroupModel)
                     this.dispGroupModel = new DispGroupModel();
                 if (!this.dispGroupView ){
@@ -193,6 +201,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         nodeManage: function() {
             require(['nodeManage.view', 'nodeManage.model'], function(NodeManageView, NodeManageModel){
                 this.curPage = 'nodeManage';
+                this.navbarView.select(this.curPage);
                 if (!this.nodeManageModel)
                     this.nodeManageModel = new NodeManageModel();
                 if (!this.nodeManageView ){
@@ -207,7 +216,8 @@ define("routes", ['require','exports', 'utility','navbar.view'],
 
         deviceManage: function(query) {
             require(['deviceManage.view', 'deviceManage.model'], function(DeviceManageView, DeviceManageModel){
-            this.curPage = 'deviceManage';
+                this.curPage = 'deviceManage';
+                this.navbarView.select(this.curPage);
                 if (!this.deviceManageModel)
                     this.deviceManageModel = new DeviceManageModel();
                 if (!this.deviceManageView ){
@@ -225,7 +235,8 @@ define("routes", ['require','exports', 'utility','navbar.view'],
 
         channelManage: function(){
             require(['channelManage.view', 'channelManage.model'], function(ChannelManageView, ChannelManageModel){
-            this.curPage = 'channelManage';
+                this.curPage = 'channelManage';
+                this.navbarView.select(this.curPage);
                 if (!this.channelManageModel)
                     this.channelManageModel = new ChannelManageModel();
                 if (!this.channelManageView){

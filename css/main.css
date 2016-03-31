@@ -571,6 +571,10 @@ td .table {
     background-color: #222;
 }
 
+.jquery-accordion-menu .glyphicon {
+  margin-right: 0px;
+}
+
 .packup-sidebar{
    width: 50px;
 }

@@ -20,54 +20,6 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         }
     });
 
-    var IPStartView = Backbone.View.extend({
-        initialize: function(options){
-            this.collection = options.collection;
-            this.data = options.data;
-            this.id = options.id;
-            this.status = options.status;
-
-            this.$el = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:this.data}));
-            this.$el.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:this.data}));
-        },
-
-        onClickSubmit: function(){
-            var submitData = {
-                "id" : this.id,
-                "status" : this.status
-            }
-            return submitData;
-        },
-
-        render: function(target) {
-            this.$el.appendTo(target);
-        }
-    });
-
-    var IPPauseView = Backbone.View.extend({
-        initialize: function(options){
-            this.collection = options.collection;
-            this.data = options.data;
-            this.id = options.id;
-            this.status = options.status;
-
-            this.$el = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:this.data}));
-            this.$el.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:this.data}));
-        },
-
-        onClickSubmit: function(){
-            var submitData = {
-                "id" : this.id,
-                "status" : this.status
-            }
-            return submitData;
-        },
-
-        render: function(target) {
-            this.$el.appendTo(target);
-        }
-    });
-
     var IPManageView = Backbone.View.extend({
         events: {},
 
@@ -213,141 +165,107 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.clickIp = ip;
             if(status == '1'){ //开启
                 this.collection.getIpInfoStart(ip);
-                this.commonDialog("警告",this.noticeInfoStr,0,false,"关闭");
+
+                this.commonDialog();
+                this.commonPopup.$el.find('.close').hide();
+                this.commonPopup.$el.find('.commonPopup').hide();
+
                 this.collection.off("get.ipInfoStart.success");
                 this.collection.on("get.ipInfoStart.success", $.proxy(this.onIpInfoStartSuccess, this));
             }else if(status == '2' || status == '6'){ //暂停
                 this.collection.getIpInfoPause(ip);
-                this.commonDialog("警告",this.noticeInfoStr,0,false,"关闭");
+
+                this.commonDialog();
+                this.commonPopup.$el.find('.close').hide();
+                this.commonPopup.$el.find('.commonPopup').hide();
+
                 this.collection.off("get.ipInfoPause.success");
                 this.collection.on("get.ipInfoPause.success", $.proxy(this.onIpInfoPauseSuccess, this));
             }
 
         },
 
-        commonDialog: function(title,body,type,xBtn,cancelButtonText,oKCallback,hiddenCallback){
+        commonDialog: function(){
             if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
             var options = {
-                title: title,
-                body : body,
+                title: "警告",
+                body : this.noticeInfoStr,
                 backdrop : 'static',
-                type     : type,
-                xBtn:xBtn,
-                cancelButtonText : cancelButtonText,
-                onOKCallback:  oKCallback?oKCallback.bind(this):function(){},
-                onHiddenCallback: hiddenCallback?hiddenCallback.bind(this):function(){}
+                type     : 2,
+                cancelButtonText : "关闭",
+                onOKCallback:  function(){
+                    var options = {
+                        "id" : this.clickId,
+                        "status" : this.clickStatus
+                    }
+                    if (!options) return;
+                    this.collection.getIpInfoSubmit(options);
+                    this.commonPopup.$el.modal('hide');
+                }.bind(this),
+                onCancelCallback: function(){
+                    this.commonPopup.$el.modal('hide');
+                }.bind(this)
             }
 
             this.commonPopup = new Modal(options);
         },
 
         onIpInfoStartSuccess: function(res){
-            console.log(11);
-            if (this.commonPopup) {$("#" + this.commonPopup.modalId).remove();alert(3333);}
             var data = res;
+            // var data = [
+            //         {
+            //             groupName: "g3.gslb",
+            //             regionName: "安徽电信",
+            //             nodeName: "CDNSJZUN",
+            //             currentIpNum: 2,
+            //             notRunIpNum: 0,
+            //             affectedIpNum: 1
+            //         }
+            //     ];     //for test
             var body = '';
             if(data.length > 0){
-                // data[0].title = 'IP '+this.clickIp+'在下列调度关系中服务，点击确定，该IP将不对下列调度关系服务，点击取消，IP状态不会改变，是否确定？';
-                // body = new IPStartView({
-                //     collection : this.collection,
-                //     data : data,
-                //     id : this.clickId,
-                //     status: this.clickStatus
-                // });
+                data[0].title = 'IP '+this.clickIp+'在下列调度关系中服务，点击确定，该IP将不对下列调度关系服务，点击取消，IP状态不会改变，是否确定？';
+
+                this.table_modal = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:data}));
+                this.table_modal.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:data}));
+
+                this.commonPopup.$el.find('.modal-body').html(this.table_modal);
             }else{
-                body = '确定要暂停服务吗？';
+                body = '确定要开启服务吗？';
+                this.commonPopup.$el.find('.close').show();
+                this.commonPopup.$el.find('.commonPopup').show();
+                this.commonPopup.$el.find('h4').html('恢复IP');
+                this.commonPopup.$el.find('.modal-body strong').html(body);
             }
-            this.commonDialog("暂停IP",body,2,true,"关闭");
         },
 
-        // onIpInfoStartSuccess: function(res){
-        //     if (this.ipStartPopup) $("#" + this.ipStartPopup.modalId).remove();
-        //     var data = res;
-        //     if(data.length>0){
-        //         data[0].title = 'IP '+this.clickIp+'在下列调度关系中服务，点击确定，该IP将不对下列调度关系服务，点击取消，IP状态不会改变，是否确定？';
-            
-        //         var ipStartView = new IPStartView({
-        //             collection : this.collection,
-        //             data : data,
-        //             id : this.clickId,
-        //             status: this.clickStatus
-        //         });
-
-        //         var options = {
-        //             title:"暂停IP",
-        //             body : ipStartView,
-        //             backdrop : 'static',
-        //             type     : 2,
-        //             cancelButtonText : '取消',
-        //             onOKCallback:  function(){
-        //                 var options = ipStartView.onClickSubmit();
-        //                 this.ipStartPopup.$el.modal("hide");
-        //                 if (!options) return;
-        //                 this.collection.getIpInfoSubmit(options);
-        //                 //this.ipStartPopup.$el.modal("hide");
-        //             }.bind(this),
-        //             onHiddenCallback: function(){
-        //                 if (this.ipStartPopup) $("#" + this.ipStartPopup.modalId).remove();
-        //             }.bind(this)
-        //         }
-
-        //         this.ipStartPopup = new Modal(options);
-        //     }else{
-        //         var result = confirm("确定要暂停服务吗？")
-        //         if (!result) return
-        //         var options = {
-        //             "id" : this.clickId,
-        //             "status" : this.clickStatus
-        //         }
-        //         if (!options) return;
-        //         this.collection.getIpInfoSubmit(options);
-        //     }
-        // },
-
         onIpInfoPauseSuccess: function(res){
-            this.disablePopup.$el.modal('hide');
-            if (this.ipPausePopup) $("#" + this.ipPausePopup.modalId).remove();
-
             var data = res;
-            if(data.length>0){
-                data[0].title = 'IP '+data[0].ip+'暂停前在下列调度关系中服务，点击确定，下列调度关系将恢复，点击取消，IP状态不会变更，是否确定？';
+            // var data = [
+            //         {
+            //             groupName: "g3.gslb",
+            //             regionName: "安徽电信",
+            //             nodeName: "CDNSJZUN",
+            //             currentIpNum: 2,
+            //             notRunIpNum: 0,
+            //             affectedIpNum: 1
+            //         }
+            //     ];     //for test
+            var body = '';
+            if(data.length > 0){
+                data[0].title = 'IP '+this.clickIp+'暂停前在下列调度关系中服务，点击确定，下列调度关系将恢复，点击取消，IP状态不会变更，是否确定？';
 
-                var ipPauseView = new IPPauseView({
-                    collection : this.collection,
-                    data : data,
-                    id : this.clickId,
-                    status: this.clickStatus
-                });
+                this.table_modal = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:data}));
+                this.table_modal.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:data}));
 
-                var options = {
-                    title:"恢复IP",
-                    body : ipPauseView,
-                    backdrop : 'static',
-                    type     : 2,
-                    cancelButtonText : '取消',
-                    onOKCallback:  function(){
-                        var options = ipPauseView.onClickSubmit();
-                        this.ipPausePopup.$el.modal("hide");
-                        if (!options) return;
-                        this.collection.getIpInfoSubmit(options);
-                    }.bind(this),
-                    onHiddenCallback: function(){
-
-                    }
-                }
-
-                this.ipPausePopup = new Modal(options);
+                this.commonPopup.$el.find('.modal-body').html(this.table_modal);
             }else{
-                var result = confirm("确定要开启服务吗？")
-                if (!result) return
-                var options = {
-                    "id" : this.clickId,
-                    "status" : this.clickStatus
-                }
-                if (!options) return;
-                this.collection.getIpInfoSubmit(options);
+                body = '确定要暂停服务吗？';
+                this.commonPopup.$el.find('.close').show();
+                this.commonPopup.$el.find('.commonPopup').show();
+                this.commonPopup.$el.find('h4').html('暂停IP');
+                this.commonPopup.$el.find('.modal-body strong').html(body);
             }
-
         },
 
         remove: function(){

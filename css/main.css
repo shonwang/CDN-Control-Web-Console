@@ -614,6 +614,6 @@ td .table {
 }
 
 .modal-content .modal-body .ipManage-info{
-    height: 400px;
+    max-height: 400px;
     overflow-y: auto;
 }

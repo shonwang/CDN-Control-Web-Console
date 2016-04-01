@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link href="css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
     <link href="css/animate.css" type="text/css" rel="stylesheet">
+    <link href="css/main.css" type="text/css" rel="stylesheet"/>
     <link rel="shortcut icon" href="http://www.ksyun.com/assets/img/static/favicon.ico" type="image/x-icon">
     <!--[if lt IE 9]><script>location.href='http://www.ksyun.com/console/system/browser'</script><![endif]-->
     <!--[if lte IE 8]>
@@ -14,52 +15,62 @@
         <script src="js/respond.min.js"></script>
     <![endif]-->
     <title>金山云CDN中控系统</title>
+    <style>
+        body{
+            background: url(images/login.jpg) no-repeat;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <div class="row" style="margin-top: 100px">
-            <div class="jumbotron">
-                <form class="form-horizontal">
+        <div class="row" style="margin-top: 150px">
+            <div class="col-md-offset-8 col-md-4">
+                <form class="well form-horizontal fadeInLeft animated">
                   <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                        <h1>CDN 中控系统</h1>
-                        <div>内部系统没做低版本IE兼容性处理，请用IE11、chrome、safari、firefox等现代浏览器。</div>
+                    <div class="col-sm-12">
+                        <h2 class="text-center">CDN 中控系统</h2>
                     </div>
                   </div>
                   <div class="form-group">
-                    <label for="inputEmail3" class="col-sm-2 control-label">Username</label>
-                    <div class="col-sm-6">
-                      <input type="text" class="form-control" id="inputEmail3" placeholder="Username">
+<!--                     <label for="inputEmail3" class="col-sm-2 control-label">Username</label> -->
+                    <div class="col-sm-12">
+                      <input type="text" class="form-control" id="inputEmail3" placeholder="用户名">
                     </div>
                   </div>
                   <div class="form-group">
-                    <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
-                    <div class="col-sm-6">
-                      <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
+<!--                     <label for="inputPassword3" class="col-sm-2 control-label">Password</label> -->
+                    <div class="col-sm-12">
+                      <input type="password" class="form-control" id="inputPassword3" placeholder="密码">
                     </div>
                   </div>
                   <div class="form-group">
-                    <label for="checkcode" class="col-sm-2 control-label">验证码</label>
-                    <div class="col-sm-2">
+<!--                     <label for="checkcode" class="col-sm-2 control-label">验证码</label> -->
+                    <div class="col-sm-4">
                       <input type="text" class="form-control" id="checkcode" placeholder="验证码">
                     </div>
-                    <div class="col-sm-2">
-                      <img class="codeimage" src="http://test.center.cdn.ksyun.com/rs/login/validation/code" alt="code" style="width: 80px">
+                    <div class="col-sm-4">
+                      <img class="codeimage" src="http://test.center.cdn.ksyun.com/rs/login/validation/code" alt="code" style="width: 80px;border: 1px solid;">
                     </div>
                     <div class="col-sm-4">
                       <button type="button" class="btn btn-default">换一个</button>
                     </div>
                   </div>
                   <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
+                    <div class="col-sm-12">
                         <div class="alert-denger text-danger" role="alert" style="display: none">
-                          <strong>提示：</strong> 需要输入正确的用户名、密码、还有验证码！
+                          <strong>提示：</strong> 需要输入正确的用户名、密码、验证码！
                         </div>
                     </div>
                   </div>
                   <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                      <button type="button" class="btn btn-primary">登录</button>
+                    <div class="col-sm-12">
+                      <button type="button" class="btn btn-primary" style="width: 100%;">登录</button>
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="form-group">
+                    <div class="col-sm-12">
+                      <p class="text-warning">内部系统未做低版本浏览器兼容性处理，为确保正常使用，请使用Chrome、火狐、IE11等现代浏览器！</p>
                     </div>
                   </div>
                 </form>

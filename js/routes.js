@@ -40,7 +40,8 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                   this.dispGroupView.hide();
                   break;
                 case 'dispConfig':
-                  this.dispConfigView.hide();
+                  this.dispConfigView.remove();
+                  this.dispConfigView = null
                   break;
                 case 'coverRegion':
                   this.coverRegionView.hide();

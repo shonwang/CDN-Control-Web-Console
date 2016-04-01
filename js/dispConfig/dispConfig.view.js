@@ -253,8 +253,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 list    : tempArray
             }
             this.collection.dispDns(args)
-            // this.$el.find(".opt-ctn .sending").attr("disabled", "disabled");
-            // this.$el.find(".opt-ctn .sending").html('<span class="glyphicon glyphicon-send"></span>下发中...');
+
             if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
             var options = {
                 title    : "警告",
@@ -621,6 +620,15 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.$el.find(".content-ctn .channel-table-ctn").html(this.channelTable[0]);
             else
                 this.$el.find(".content-ctn .channel-table-ctn").html(_.template(template['tpl/empty.html'])());
+        },
+
+        remove: function(){
+            if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
+            if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
+            this.disablePopup = null;
+            this.selectNodePopup = null;
+            this.collection.off();
+            this.$el.remove();
         },
 
         hide: function(){

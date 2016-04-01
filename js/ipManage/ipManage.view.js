@@ -242,17 +242,20 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         onIpInfoStartSuccess: function(res){
-            if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
+            console.log(11);
+            if (this.commonPopup) {$("#" + this.commonPopup.modalId).remove();alert(3333);}
             var data = res;
             var body = '';
             if(data.length > 0){
-                data[0].title = 'IP '+this.clickIp+'在下列调度关系中服务，点击确定，该IP将不对下列调度关系服务，点击取消，IP状态不会改变，是否确定？';
-                body = new IPStartView({
-                    collection : this.collection,
-                    data : data,
-                    id : this.clickId,
-                    status: this.clickStatus
-                });
+                // data[0].title = 'IP '+this.clickIp+'在下列调度关系中服务，点击确定，该IP将不对下列调度关系服务，点击取消，IP状态不会改变，是否确定？';
+                // body = new IPStartView({
+                //     collection : this.collection,
+                //     data : data,
+                //     id : this.clickId,
+                //     status: this.clickStatus
+                // });
+            }else{
+                body = '确定要暂停服务吗？';
             }
             this.commonDialog("暂停IP",body,2,true,"关闭");
         },

@@ -733,8 +733,6 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                         this.collection.getInfoPrompt(prompt);
                     }.bind(this), 500)
                     this.editDispGroupPopup.$el.modal("hide");
-                }.bind(this),
-                onHiddenCallback: function(){
                 }.bind(this)
             }
             this.editDispGroupPopup = new Modal(options);

@@ -126,7 +126,7 @@
 
     $(".btn-default").on("click", onClickChange)
 
-    $(".btn-primary").on("click", function(argument) {
+    var onLogin = function(argument) {
         var username = $("#inputEmail3").val(),
             password = $('#inputPassword3').val(),
             checkcode = $("#checkcode").val();
@@ -145,6 +145,13 @@
             }
         }
         sendRequest(data);
+    }
+
+    $(".btn-primary").on("click", onLogin)
+    $(document).on("keyup", function(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        if (event.keyCode === 13) onLogin()
     })
 </script>
 </body>

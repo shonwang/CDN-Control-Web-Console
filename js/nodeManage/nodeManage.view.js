@@ -58,11 +58,32 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
 
         getArgs: function(){
             var enName = this.$el.find("#input-english").val(),
-                chName = this.$el.find("#input-name").val();
+                chName = this.$el.find("#input-name").val(),
+                maxBandwidthThreshold = this.$el.find("#input-threshold").val(),
+                minBandwidthThreshold = this.$el.find("#input-minthreshold").val(),
+                maxBandwidth = this.$el.find("#input-maxbandwidth").val(),
+                minBandwidth = this.$el.find("#input-minbandwidth").val(),
+                re = /^\d+$/;
             if (!enName || !chName){
                 alert("节点名称和英文名称都要填写！");
                 return;
             }
+            if (!re.test(maxBandwidth) || !re.test(minBandwidth)){
+                alert("上联带宽和保底带宽只能填入数字！");
+                return;
+            }
+            if (parseInt(maxBandwidth) < parseInt(minBandwidth)){
+                alert("上联带宽不能小于保底带宽！");
+                return;
+            }
+            if (!re.test(maxBandwidthThreshold) || !re.test(minBandwidthThreshold)){
+                alert("上联带宽阈值和保底带宽阈值只能填入数字！");
+                return;
+            }
+            // if (parseInt(maxBandwidthThreshold) < parseInt(minBandwidthThreshold)){
+            //     alert("上联带宽阈值不能小于保底带宽阈值！");
+            //     return;
+            // }
             var args = {
                 "id"                 : this.model ? this.model.get("id") : 0,
                 "name"               : this.$el.find("#input-english").val(),

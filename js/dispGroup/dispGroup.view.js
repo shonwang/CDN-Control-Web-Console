@@ -735,11 +735,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     
                 }.bind(this),
                 onHiddenCallback: function(){
-                    this.collection.off("get.InfoPrompt.success");
-                    this.collection.off("get.InfoPrompt.error");
-                    this.collection.on("get.InfoPrompt.success", $.proxy(this.onGetInfoPromptSuccess, this));
-                    
-                    this.collection.on("get.InfoPrompt.error", $.proxy(this.onGetError, this));
+
                 }.bind(this)
             }
             this.editDispGroupPopup = new Modal(options);

@@ -612,3 +612,8 @@ td .table {
 .packup-sidebar ul li:hover .submenu-indicator{
    display: block;
 }
+
+.modal-content .modal-body .ipManage-info{
+    max-height: 400px;
+    overflow-y: auto;
+}

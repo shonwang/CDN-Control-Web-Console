@@ -392,14 +392,9 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onClickItemFileName: function(event){
             var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
+                id = $(eventTarget).attr("histroy-id");
             var model = _.find(this.historyList, function(object){
-                return parseInt(id) === object.attributes.id
+                return parseInt(id) === object.attributes.confFileHisId
             }.bind(this));
 
             model.set("nodeGroupName", this.model.get("nodeGroupName"))

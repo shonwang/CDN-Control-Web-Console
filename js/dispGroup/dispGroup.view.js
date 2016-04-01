@@ -744,7 +744,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
             var data = res;
             var args = this.editGroupArgs;
-            if (data.length === 0) {
+            if (data.length > 0) {
                 data[0].title = '取消关联的节点当前覆盖区域信息如下：';
 
                 var promptView = new PromptInfoView({

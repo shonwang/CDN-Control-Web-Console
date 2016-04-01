@@ -224,7 +224,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             //     ];     //for test
             var body = '';
             if(data.length > 0){
-                data[0].title = 'IP '+this.clickIp+'在下列调度关系中服务，点击确定，该IP将不对下列调度关系服务，点击取消，IP状态不会改变，是否确定？';
+                data[0].title = 'IP '+this.clickIp+'暂停前在下列调度关系中服务，点击确定，下列调度关系将恢复，点击取消，IP状态不会变更，是否确定？';
 
                 this.table_modal = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:data}));
                 this.table_modal.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:data}));
@@ -253,8 +253,8 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             //     ];     //for test
             var body = '';
             if(data.length > 0){
-                data[0].title = 'IP '+this.clickIp+'暂停前在下列调度关系中服务，点击确定，下列调度关系将恢复，点击取消，IP状态不会变更，是否确定？';
-
+                data[0].title = 'IP '+this.clickIp+'在下列调度关系中服务，点击确定，该IP将不对下列调度关系服务，点击取消，IP状态不会改变，是否确定？';
+                
                 this.table_modal = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:data}));
                 this.table_modal.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:data}));
 

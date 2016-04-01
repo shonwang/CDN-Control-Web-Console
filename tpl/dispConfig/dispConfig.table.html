@@ -24,6 +24,7 @@
                                 <td style="width:400px"><%=data[i].attributes["listFormated"][k].attributes["nodeString"]%></td>
                                 <td>
                                     <input type="number" id="<%=data[i].attributes["listFormated"][k].attributes['id']%>" region-id="<%=data[i].attributes.id%>" class="weight" max="<%=data[i].attributes["listFormated"][k].attributes['dispConfIpInfo.maxNum']%>" min="0" value="<%=data[i].attributes["listFormated"][k].attributes['dispConfIpInfo.currNum']%>">
+                                    <span class="label label-danger"><%=data[i].attributes["listFormated"][k].attributes['dispConfIpInfo.pauseNum']%></span>
                                     <a href="javascript:void(0)" id="<%=data[i].attributes["listFormated"][k].attributes['id']%>" region-id="<%=data[i].attributes.id%>" class="edit" title="编辑节点">
                                       <span class="glyphicon glyphicon-edit"></span>
                                     </a>

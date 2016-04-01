@@ -179,6 +179,13 @@ define("utility", ['require','exports'], function(require, exports) {
             });
         },
 
+        isDomain: function(str_url){
+            if (str_url == "" || str_url.indexOf("_")  > -1) return false;
+            if (str_url.substr(0, 4) !== "http") str_url = "http://" + str_url;
+            var strRegex = /^(http|https):\/\/([\w-]+(\.[\w-]+)+(:[0-9]{1,5})?([\w-.]*)?){1}$/;
+            return strRegex.test(str_url)
+        },
+
         isIP: function(str_ip){
             var re =  /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/;
             return re.test(str_ip)

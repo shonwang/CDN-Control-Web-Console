@@ -17,6 +17,7 @@ define("modal.view", ['require','exports', 'template', 'utility'],
                 height  : null,
                 xBtn    : true,
                 onOKCallback : function(){},
+                onCancelCallback : function(){},
                 onShownCallback : function(){},
                 onHiddenCallback : function(){}
             }
@@ -76,11 +77,16 @@ define("modal.view", ['require','exports', 'template', 'utility'],
                 this.$el.find(".modal-footer .btn").hide();
             } else {
                 okButton.on("click", $.proxy(this.onClickOK, this))
+                cancelButton.on("click", $.proxy(this.onClickCancel, this))
             }
         },
 
         onClickOK : function(){
             this.options.onOKCallback&&this.options.onOKCallback();
+        },
+
+        onClickCancel: function() {
+            this.options.onCancelCallback&&this.options.onCancelCallback();
         },
 
         render: function() {

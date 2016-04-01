@@ -53,7 +53,8 @@ body .jumbotron,
 }
 
 td a,
-td input[type="number"] {
+td input[type="number"],
+td .label {
   margin-right: 10px;
 }
 
@@ -67,7 +68,9 @@ td input[type="number"] {
 .table>tfoot>tr>th,
 .table>thead>tr>td,
 .table>thead>tr>th {
-  vertical-align: middle;
+    vertical-align: middle;
+    word-break: keep-all;
+    white-space:nowrap;
 }
 
 .disp-table>tbody>tr>td {
@@ -88,6 +91,11 @@ td input[type="number"] {
 
 .pagination {
   margin: 0
+}
+
+.node-manage .table-ctn{
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
 }
 
 .map-ctn {

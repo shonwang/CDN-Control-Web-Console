@@ -169,7 +169,7 @@ define("dispGroup.model", ['require','exports', 'utility'], function(require, ex
                 type: "POST",
                 url: url,
                 async: true,
-                timeout: 30000,
+                timeout: 100000,
                 contentType: "application/json",
                 processData: false
             };

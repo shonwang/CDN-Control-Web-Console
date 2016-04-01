@@ -566,7 +566,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.collection.on("update.dispGroup.status.error", $.proxy(this.onGetError, this));
 
             this.collection.on("add.dispGroup.channel.success", function(){
-                alert("关联成功！")
+                alert("操作成功！")
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("add.dispGroup.channel.error", $.proxy(this.onGetError, this));
@@ -729,63 +729,58 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 onOKCallback:  function(){
                     this.editGroupArgs = editDispGroupView.getArgs();
                     var prompt = editDispGroupView.getPromptArgs();
-                    this.collection.getInfoPrompt(prompt);
+                    setTimeout(function(){
+                        this.collection.getInfoPrompt(prompt);
+                    }.bind(this), 500)
                     this.editDispGroupPopup.$el.modal("hide");
-
-                    
                 }.bind(this),
                 onHiddenCallback: function(){
-                    this.collection.off("get.InfoPrompt.success");
-                    this.collection.off("get.InfoPrompt.error");
-                    this.collection.on("get.InfoPrompt.success", $.proxy(this.onGetInfoPromptSuccess, this));
-                    
-                    this.collection.on("get.InfoPrompt.error", $.proxy(this.onGetError, this));
                 }.bind(this)
             }
             this.editDispGroupPopup = new Modal(options);
         },
 
-        onGetInfoPromptSuccess: function(res){
+        onGetInfoPromptSuccess: function(res) {
             this.editDispGroupPopup.$el.modal("hide");
             if (this.PromptPopup) $("#" + this.PromptPopup.modalId).remove();
 
             var data = res;
             var args = this.editGroupArgs;
-            if(data.length>0){
+            if (data.length === 0) {
                 data[0].title = '取消关联的节点当前覆盖区域信息如下：';
 
                 var promptView = new PromptInfoView({
-                    collection : this.collection,
-                    data : data,
-                    model : this.clickInfo
+                    collection: this.collection,
+                    data: data,
+                    model: this.clickInfo
                 });
 
                 var options = {
-                    title:"提示",
-                    body : promptView,
-                    backdrop : 'static',
-                    type     : 2,
-                    cancelButtonText : '取消',
-                    onOKCallback:  function(){
+                    title: "提示",
+                    body: promptView,
+                    backdrop: 'static',
+                    type: 2,
+                    cancelButtonText: '取消',
+                    onOKCallback: function() {
                         if (!args) return;
                         this.collection.updateDispGroup(args);
                         this.PromptPopup.$el.modal("hide");
                     }.bind(this),
-                    onHiddenCallback: function(){
-                        this.editDispGroupPopup.$el.modal("show");
+                    onCancelCallback: function(argument) {
+                        setTimeout(function(){
+                            this.editDispGroupPopup.$el.modal("show");
+                        }.bind(this), 500)
                     }.bind(this)
                 }
 
                 this.PromptPopup = new Modal(options);
-            }else{
-                var result = confirm("你确定要添加吗？");
-                if(result){
-                   this.collection.updateDispGroup(args);
-                }else{
+            } else {
+                var result = confirm("取消关联的节点当前覆盖区域信息为空，仍然继续编辑吗？");
+                if (result)
+                    this.collection.updateDispGroup(args);
+                else
                     this.editDispGroupPopup.$el.modal("show");
-                }
             }
-
         },
 
         onClickItemDelete: function(event){

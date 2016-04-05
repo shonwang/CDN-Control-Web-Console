@@ -578,6 +578,13 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
             this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+
+            $(document).on('keydown', function(e){
+                if(e.keyCode == 13){
+                    this.onClickQueryButton();
+                }
+            }.bind(this));
+
             this.queryArgs = {
                 "name"  : null,//调度组名称
                 "status": null,//调度组状态

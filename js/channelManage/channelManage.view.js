@@ -121,6 +121,12 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
 
+            $(document).on('keydown', function(e){
+                if(e.keyCode == 13){
+                    this.onClickQueryButton();
+                }
+            }.bind(this));
+
             this.queryArgs = {
                 "domain"           : null,
                 "accelerateDomain" : null,

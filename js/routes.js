@@ -28,23 +28,29 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             switch(this.curPage){
                 case 'channelManage':
                   this.channelManageView.hide();
+                  $(document).off('keydown');
                   break;
                 case 'deviceManage':
                   this.deviceManageView.remove();
                   this.deviceManageView = null;
+                  $(document).off('keydown');
                   break;
                 case 'nodeManage':
                   this.nodeManageView.hide();
+                  $(document).off('keydown');
                   break;
                 case 'dispGroup':
                   this.dispGroupView.hide();
+                  $(document).off('keydown');
                   break;
                 case 'dispConfig':
                   this.dispConfigView.remove();
-                  this.dispConfigView = null
+                  this.dispConfigView = null;
+                  $(document).off('keydown');
                   break;
                 case 'coverRegion':
                   this.coverRegionView.hide();
+                  $(document).off('keydown');
                   break;
                 case 'coverManage':
                   this.coverManageView.hide();
@@ -54,6 +60,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                   break;
                 case "liveCurentSetup":
                     this.liveCurentSetupView.hide();
+                    $(document).off('keydown');
                   break;
                 case "ipManage":
                     this.ipManageView.remove();

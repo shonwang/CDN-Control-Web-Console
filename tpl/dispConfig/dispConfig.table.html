@@ -11,6 +11,7 @@
     </thead>
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
+            <% if (data[i].get("isDisplay")) { %>
             <tr data-id="<%=data[i].attributes.id%>">
               <!-- <td><input type="checkbox" id="<%=data[i].id%>"></td> -->
               <td><%=data[i].attributes["dispGroup.dispDomain"]%></td>
@@ -19,7 +20,7 @@
                   <table class="table table-condensed table-striped">
                       <tbody>
                           <% for(var k = 0; k < data[i].attributes["listFormated"].length; k++) { %>
-                              <% if(data[i].attributes["listFormated"][k].attributes["node.chName"]) { %>
+                              <% if(data[i].attributes["listFormated"][k].attributes["node.chName"] && data[i].attributes["listFormated"][k].get("isDisplay")) { %>
                               <tr data-id="<%=data[i].attributes["listFormated"][k].attributes.id%>" <% if(data[i].attributes["listFormated"][k].attributes["isUpdated"]) { %> class="success" <% } %>>
                                 <td style="width:400px"><%=data[i].attributes["listFormated"][k].attributes["nodeString"]%></td>
                                 <td>
@@ -48,6 +49,7 @@
                   </a>
               </td>
             </tr>
+            <% } %>
         <% } %>  
     </tbody>
 </table>

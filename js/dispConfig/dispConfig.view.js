@@ -227,7 +227,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".opt-ctn .show-remark").on("click", $.proxy(this.onClickShowRemark, this));
             this.$el.find(".opt-ctn .hide-remark").on("click", $.proxy(this.onClickHideRemark, this));
 
-            this.enterKeyBindQuery();
+            //this.enterKeyBindQuery();
 
             this.$el.find(".page-ctn").hide();
         },
@@ -264,6 +264,42 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".opt-ctn .sending").show();
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
+            this.$el.find("#disp-config-filter").val("")
+            this.$el.find("#disp-config-filter").on("keyup", $.proxy(this.onKeyupDispConfigListFilter, this));
+        },
+
+        onKeyupDispConfigListFilter: function() {
+            if (!this.collection.models || this.collection.models.length === 0) return;
+            var keyWord = this.$el.find("#disp-config-filter").val();
+                        
+            _.each(this.collection.models, function(model, index, list) {
+                if (keyWord === ""){
+                    model.set("isDisplay", true);
+                    _.each(model.get("listFormated"), function(modelL3, indexL3, listL3) {
+                        modelL3.set("isDisplay", true);
+                    })
+                } else if (this.curSearchType == "1"){
+                    if (model.get("region.name").indexOf(keyWord) > -1){
+                        model.set("isDisplay", true);
+                    } else {
+                        model.set("isDisplay", false);
+                    }
+                    _.each(model.get("listFormated"), function(modelL4, indexL4, listL4) {
+                        modelL4.set("isDisplay", true);
+                    })
+                } else if (this.curSearchType == "2"){
+                    model.set("isDisplay", false);
+                    _.each(model.get("listFormated"), function(modelL2, indexL2, listL2) {
+                        if (modelL2.get("node.chName") && modelL2.get("node.chName").indexOf(keyWord) > -1){
+                            modelL2.set("isDisplay", true);
+                            model.set("isDisplay", true);
+                        } else {
+                            modelL2.set("isDisplay", false);
+                        }
+                    })
+                }
+            }.bind(this));
+            this.initTable();
         },
 
         onClickInitButton: function(){
@@ -595,30 +631,29 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         initDispConfigDropMenu: function(){
-            var regionArray = [
-                {name: "全部", value: "All"},
-                {name: "电信", value: "电信"},
-                {name: "联通", value: "联通"},
-                {name: "移动", value: "移动"}
-            ],
-            rootNode = this.$el.find(".dropdown-region");
-            Utility.initDropMenu(rootNode, regionArray, function(value){
-                this.queryArgs.regionName = value;
-                if (value == "All")
-                    delete this.queryArgs.regionName
-            }.bind(this));
+            // var regionArray = [
+            //     {name: "全部", value: "All"},
+            //     {name: "电信", value: "电信"},
+            //     {name: "联通", value: "联通"},
+            //     {name: "移动", value: "移动"}
+            // ],
+            // rootNode = this.$el.find(".dropdown-region");
+            // Utility.initDropMenu(rootNode, regionArray, function(value){
+            //     this.queryArgs.regionName = value;
+            //     if (value == "All")
+            //         delete this.queryArgs.regionName
+            // }.bind(this));
 
-            var pageNum = [
-                {name: "10条", value: 10},
-                {name: "20条", value: 20},
-                {name: "50条", value: 50},
-                {name: "100条", value: 100}
-            ]
-            Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
-                this.queryArgs.count = value;
-                this.queryArgs.page = 1;
-                this.onClickQueryButton();
+            var searchArray = [
+                {name: "按区域", value: "1"},
+                {name: "按节点", value: "2"}
+            ],
+            rootNode = this.$el.find(".disp-config-filter-drop");
+            Utility.initDropMenu(rootNode, searchArray, function(value){
+                this.curSearchType = value;
+                this.onKeyupDispConfigListFilter();
             }.bind(this));
+            this.curSearchType = "1";
 
             this.collection.getDispGroupList();
         },

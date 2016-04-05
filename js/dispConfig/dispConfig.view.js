@@ -144,13 +144,13 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
             this.collection.on("get.dispConfig.success", $.proxy(this.onDispConfigListSuccess, this));
             this.collection.on("get.dispConfig.error", function(res){
-                this.disablePopup.$el.modal('hide');
+                //this.disablePopup.$el.modal('hide');
                 this.onGetError(res)
             }.bind(this));
 
             this.collection.on("init.dispConfig.success", $.proxy(this.onDispConfigListSuccess, this));
             this.collection.on("init.dispConfig.error", function(error){
-                this.disablePopup.$el.modal('hide');
+                //this.disablePopup.$el.modal('hide');
                 this.onGetError(error)
                 this.$el.find(".opt-ctn .init").show();
             }.bind(this));
@@ -196,7 +196,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         onDispConfigListSuccess: function(){
-            this.disablePopup.$el.modal('hide');
+            //this.disablePopup.$el.modal('hide');
             this.$el.find(".opt-ctn .sending").show();
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
@@ -220,15 +220,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".pagination").html("");
             this.collection.getDispConfigList(this.queryArgs);
 
-            if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
-            var options = {
-                title    : "警告",
-                body     : '<div class="alert alert-info"><strong>数据加载中，请耐心等待</strong></div>',
-                backdrop : 'static',
-                type     : 0,
-            }
-            this.disablePopup = new Modal(options);
-            this.disablePopup.$el.find(".close").remove();
+            //this.showDisablePopup("数据加载中，请耐心等待!");
         },
 
         onClickSending: function(){
@@ -254,10 +246,14 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             }
             this.collection.dispDns(args)
 
+            this.showDisablePopup("下发中，请耐心等待...")
+        },
+
+        showDisablePopup: function(msg) {
             if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
             var options = {
                 title    : "警告",
-                body     : '<div class="alert alert-danger"><strong>下发中，请耐心等待...</strong></div>',
+                body     : '<div class="alert alert-danger"><strong>' + msg +'</strong></div>',
                 backdrop : 'static',
                 type     : 0,
             }

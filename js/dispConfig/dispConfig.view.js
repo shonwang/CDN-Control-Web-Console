@@ -178,6 +178,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         onGetError: function(error){
+            this.$el.find("#node-list-filter").hide();
             if (error&&error.message)
                 alert(error.message)
             else

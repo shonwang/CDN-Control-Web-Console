@@ -15,6 +15,11 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".node-list").html(_.template(template['tpl/loading.html'])({}));
             this.nodeList = [];
 
+            this.collection.off("get.regionNode.success");
+            this.collection.off("get.regionNode.error");
+            this.collection.off("get.regionOtherNode.success");
+            this.collection.off("get.regionOtherNode.error");
+
             this.collection.on("get.regionNode.success", $.proxy(this.onGetNodeListSuccess, this));
             this.collection.on("get.regionNode.error", $.proxy(this.onGetError, this));
             this.collection.on("get.regionOtherNode.success", $.proxy(this.onGetOtherNodeSuccess, this));

@@ -10,7 +10,7 @@ define("ipManage.model", ['require','exports'], function(require, exports) {
     });
 
     var IPManageCollection = Backbone.Collection.extend({
-        
+
         model: Model,
 
         initialize: function(){},

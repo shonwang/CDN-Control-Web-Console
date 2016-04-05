@@ -172,8 +172,14 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".opt-ctn .init").on("click", $.proxy(this.onClickInitButton, this));
             this.$el.find(".opt-ctn .show-remark").on("click", $.proxy(this.onClickShowRemark, this));
             this.$el.find(".opt-ctn .hide-remark").on("click", $.proxy(this.onClickHideRemark, this));
-            
-            this.$el.find(".page-ctn").hide();  
+
+            $(document).on('keydown', function(e){
+                if(e.keyCode == 13){
+                    this.onClickQueryButton();
+                }
+            }.bind(this));
+
+            this.$el.find(".page-ctn").hide();
         },
 
         onClickShowRemark: function(){

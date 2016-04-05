@@ -30,6 +30,11 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             this.onClickQueryButton();
             this.$el.find(".back").on("click", $.proxy(this.onClickCancel, this));
             this.$el.find(".query").on("click", $.proxy(this.onClickQueryButton, this));
+            $(document).on('keydown', function(e){
+                if(e.keyCode == 13){
+                    this.onClickQueryButton();
+                }
+            }.bind(this));
         },
 
         onClickQueryButton: function(){

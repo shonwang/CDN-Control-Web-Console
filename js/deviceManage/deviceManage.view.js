@@ -596,6 +596,12 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.find(".opt-ctn .multi-stop").on("click", $.proxy(this.onClickMultiStop, this));
             this.$el.find(".opt-ctn .multi-delete").on("click", $.proxy(this.onClickMultiDelete, this));
 
+            $(document).on('keydown', function(e){
+                if(e.keyCode == 13){
+                    this.onClickQueryButton();
+                }
+            }.bind(this));
+
             if (this.query !== "none"){
                 this.query = JSON.parse(this.query);
                 this.nodeId = this.query.nodeId;

@@ -66,11 +66,13 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
                                                 temp['dispGroup.ttl'] = el4
                                         }.bind(this))
                                     }.bind(this))
+                                    tempObj.isDisplay = true;
                                     tempList.push(new Model(tempObj))
                                 }.bind(this))
                                 temp.listFormated = tempList;
                             }
                         }.bind(this))
+                        temp.isDisplay = true;
                         this.push(new Model(temp));
                     }.bind(this))
                     this.total = res.total;

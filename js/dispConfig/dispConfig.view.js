@@ -28,6 +28,25 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             }
 
             this.collection.getRegionNodeList(this.args);
+
+            this.$el.find("#node-list-filter").on("keyup", $.proxy(this.onKeyupNodeListFilter, this));
+        },
+
+        onKeyupNodeListFilter: function() {
+            if (!this.nodeList || this.nodeList.length === 0) return;
+            var keyWord = this.$el.find("#node-list-filter").val();
+            _.each(this.nodeList, function(el, index, ls) {
+                if (keyWord === ""){
+                    el.isDisplay = true;
+                } else {
+                    var nodeString = "(" + el["node.minBandwidth"] + "/" + el["node.maxBandwidth"] + ")L" + el["cover.crossLevel"]
+                    if (el["node.chName"].indexOf(keyWord) > -1 || nodeString.indexOf(keyWord) > -1)
+                        el.isDisplay = true;
+                    else
+                        el.isDisplay = false;
+                }
+            });
+            this.initList();
         },
 
         onClickMoreButton: function(){
@@ -44,12 +63,16 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                         temp[key + "." + key1] = el1
                     }.bind(this))
                 }.bind(this))
+                temp.isDisplay = true;
                 this.nodeList.push(temp);
             }.bind(this))
 
             if (this.nodeList.length === 0){
+                this.$el.find("#node-list-filter").hide();
                 this.$el.find(".node-list").html(_.template(template['tpl/empty.html'])());
                 return;
+            } else {
+                this.$el.find("#node-list-filter").show()
             }
 
             this.initList();
@@ -57,8 +80,11 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
         onGetNodeListSuccess: function(res){
             if (res.rows.length === 0){
+                this.$el.find("#node-list-filter").hide();
                 this.$el.find(".node-list").html(_.template(template['tpl/empty.html'])());
                 return;
+            } else {
+                this.$el.find("#node-list-filter").show();
             }
             _.each(res.rows, function(element, index, list){
                 var temp = {};
@@ -67,6 +93,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                         temp[key + "." + key1] = el1
                     }.bind(this))
                 }.bind(this))
+                temp.isDisplay = true;
                 this.nodeList.push(temp);
             }.bind(this))
 

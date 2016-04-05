@@ -64,6 +64,8 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                     }.bind(this))
                 }.bind(this))
                 temp.isDisplay = true;
+                temp.isChecked = false;
+                if (temp["node.id"] === this.model.get("node.id")) temp.isChecked = true;
                 this.nodeList.push(temp);
             }.bind(this))
 
@@ -94,6 +96,8 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                     }.bind(this))
                 }.bind(this))
                 temp.isDisplay = true;
+                temp.isChecked = false;
+                if (temp["node.id"] === this.model.get("node.id")) temp.isChecked = true;
                 this.nodeList.push(temp);
             }.bind(this))
 
@@ -102,11 +106,29 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.initList();
         },
 
+        onItemCheckedUpdated: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            var id = $(eventTarget).attr("id");
+
+            var selectedObj = _.find(this.nodeList, function(object){
+                return object["node.id"] === parseInt(id)
+            }.bind(this));
+            if (this.isEdit){
+                var oldCheckObj = _.find(this.nodeList, function(object){
+                    return object["isChecked"] === true;
+                }.bind(this));
+                oldCheckObj.isChecked = false;
+            }
+            selectedObj.isChecked = eventTarget.checked;
+            this.curCheckedId = selectedObj["node.id"];
+        },
+
         initList: function(){
             if (this.isEdit){
                 this.list = $(_.template(template['tpl/dispConfig/dispConfig.selectNode.list.html'])({
                     data: this.nodeList, 
-                    nodeId: this.model.get("node.id")
+                    nodeId: this.curCheckedId || this.model.get("node.id")
                 }));
             } else {
                 this.list = $(_.template(template['tpl/dispConfig/dispConfig.selectNode.checklist.html'])({
@@ -115,16 +137,21 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 }));
             }
             this.$el.find(".node-list").html(this.list[0]);
+            this.list.find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
         },
 
         getArgs: function(){
-            var checkedNodes = this.$el.find(".node-list input:checked"), checkedNodeIds = [];
+            //var checkedNodes = this.$el.find(".node-list input:checked"), checkedNodeIds = [];
+            var checkedNodes = _.filter(this.nodeList, function(object) {
+                return object["isChecked"] === true
+            }), checkedNodeIds = [];
             if (checkedNodes.length === 0) {
                 alert("至少选择一个再点确定！")
                 return false;
             }
             for (var i = 0; i < checkedNodes.length; i++){
-                var tempId = parseInt($(checkedNodes[i]).attr("id"));
+                //var tempId = parseInt($(checkedNodes[i]).attr("id"));
+                var tempId = checkedNodes[i]["node.id"];
                 checkedNodeIds.push(tempId)
             }
             var selectedNodes = [];
@@ -142,7 +169,8 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 aSelectedNode.id = aSelectedNode["node.id"];
                 selectedNodes.push(aSelectedNode)
             }
-            return selectedNodes
+            console.log(selectedNodes)
+            //return selectedNodes
         },
 
         onGetError: function(error){

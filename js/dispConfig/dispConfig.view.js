@@ -173,13 +173,17 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".opt-ctn .show-remark").on("click", $.proxy(this.onClickShowRemark, this));
             this.$el.find(".opt-ctn .hide-remark").on("click", $.proxy(this.onClickHideRemark, this));
 
+            this.enterKeyBindQuery();
+
+            this.$el.find(".page-ctn").hide();
+        },
+
+        enterKeyBindQuery:function(){
             $(document).on('keydown', function(e){
                 if(e.keyCode == 13){
                     this.onClickQueryButton();
                 }
             }.bind(this));
-
-            this.$el.find(".page-ctn").hide();
         },
 
         onClickShowRemark: function(){
@@ -635,6 +639,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.selectNodePopup = null;
             this.collection.off();
             this.$el.remove();
+            $(document).off('keydown');
         },
 
         hide: function(){
@@ -644,6 +649,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         update: function(){
             this.$el.show();
             this.collection.getDispGroupList();
+            this.enterKeyBindQuery();
         },
 
         render: function(target) {

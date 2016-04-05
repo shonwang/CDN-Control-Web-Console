@@ -121,11 +121,7 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
 
-            $(document).on('keydown', function(e){
-                if(e.keyCode == 13){
-                    this.onClickQueryButton();
-                }
-            }.bind(this));
+            this.enterKeyBindQuery();
 
             this.queryArgs = {
                 "domain"           : null,
@@ -137,6 +133,13 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
                 "count"            : 10
              }
             this.onClickQueryButton();
+        },
+        enterKeyBindQuery:function(){
+            $(document).on('keydown', function(e){
+                if(e.keyCode == 13){
+                    this.onClickQueryButton();
+                }
+            }.bind(this));
         },
 
         onGetError: function(error){
@@ -283,10 +286,12 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
 
         hide: function(){
             this.$el.hide();
+            $(document).off('keydown');
         },
 
         update: function(){
             this.$el.show();
+            this.enterKeyBindQuery();
         },
 
         render: function(target) {

@@ -596,11 +596,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.find(".opt-ctn .multi-stop").on("click", $.proxy(this.onClickMultiStop, this));
             this.$el.find(".opt-ctn .multi-delete").on("click", $.proxy(this.onClickMultiDelete, this));
 
-            $(document).on('keydown', function(e){
-                if(e.keyCode == 13){
-                    this.onClickQueryButton();
-                }
-            }.bind(this));
+            this.enterKeyBindQuery();
 
             if (this.query !== "none"){
                 this.query = JSON.parse(this.query);
@@ -623,6 +619,14 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             }
             this.onClickQueryButton();
             this.collection.getDeviceTypeList();
+        },
+
+        enterKeyBindQuery:function(){
+            $(document).on('keydown', function(e){
+                if(e.keyCode == 13){
+                    this.onClickQueryButton();
+                }
+            }.bind(this));
         },
 
         onGetError: function(error){
@@ -991,6 +995,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.addDevicePopup = null;
             this.collection.off();
             this.$el.remove();
+            $(document).off('keydown');
+
         },
 
         hide: function(){
@@ -1015,6 +1021,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find("#input-node").val("");
             }
             this.onClickQueryButton();
+            this.enterKeyBindQuery();
         },
 
         render: function(target) {

@@ -216,11 +216,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".opt-ctn .multi-stop").on("click", $.proxy(this.onClickMultiStop, this));
             this.$el.find(".opt-ctn .multi-delete").on("click", $.proxy(this.onClickMultiDelete, this));
 
-            $(document).on('keydown', function(e){
-                if(e.keyCode == 13){
-                    this.onClickQueryButton();
-                }
-            }.bind(this));
+            this.enterKeyBindQuery();
 
             this.queryArgs = {
                 "page"    : 1,
@@ -230,6 +226,14 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 "status"  : null//节点状态
             }
             this.onClickQueryButton();
+        },
+
+        enterKeyBindQuery:function(){
+            $(document).on('keydown', function(e){
+                if(e.keyCode == 13){
+                    this.onClickQueryButton();
+                }
+            }.bind(this));
         },
 
         onGetError: function(error){
@@ -546,10 +550,12 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
 
         hide: function(){
             this.$el.hide();
+            $(document).off('keydown');
         },
 
         update: function(){
             this.$el.show();
+            this.enterKeyBindQuery();
         },
 
         render: function(target) {

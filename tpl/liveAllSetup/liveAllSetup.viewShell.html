@@ -26,7 +26,11 @@
     <div class="form-group">
         <label for="textarea-comment" class="col-sm-2 control-label">备注</label>
         <div class="col-sm-8">
-            <pre class="form-control-static" id="textarea-comment"><%=data.attributes.remark || "这家伙很懒，什么都没有留下！"%></pre>
+            <% if (dataType === 1) { %>
+            <pre class="form-control-static" id="textarea-comment"><%=data.attributes.remark ||"这家伙很懒，什么都没有留下！"%></pre>
+            <% } else {%>
+            <pre class="form-control-static" id="textarea-comment"><%=data.attributes.remarkLog ||"这家伙很懒，什么都没有留下！"%></pre>
+            <% } %> 
         </div>
     </div>
 </form>

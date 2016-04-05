@@ -61,6 +61,7 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
                                 fileObj.isUsed = logObj.isUsed;
                                 fileObj.logId = logObj.id;
                                 fileObj.shellCmd = logObj.shellCmd;
+                                fileObj.remarkLog = logObj.remark;
                                 fileObj.allRowspan = logObj.allRowspan;
                                 fileObj.nodeGroupId = nodeGroupObj.nodeGroupId;
                                 fileObj.nodeGroupName = nodeGroupObj.nodeGroupName;

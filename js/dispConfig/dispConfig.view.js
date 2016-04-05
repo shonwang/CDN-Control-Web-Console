@@ -169,8 +169,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 aSelectedNode.id = aSelectedNode["node.id"];
                 selectedNodes.push(aSelectedNode)
             }
-            console.log(selectedNodes)
-            //return selectedNodes
+            return selectedNodes
         },
 
         onGetError: function(error){

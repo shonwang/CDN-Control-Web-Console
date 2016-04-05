@@ -15,17 +15,21 @@ define("coverRegion.view", ['require','exports', 'template', 'modal.view', 'util
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
 
-            $(document).on('keydown', function(e){
-                if(e.keyCode == 13){
-                    this.onClickQueryButton();
-                }
-            }.bind(this));
+            this.enterKeyBindQuery();
 
             this.queryArgs = {
                 page : 1,
                 count: 10
             }
             this.onClickQueryButton();
+        },
+
+        enterKeyBindQuery:function(){
+            $(document).on('keydown', function(e){
+                if(e.keyCode == 13){
+                    this.onClickQueryButton();
+                }
+            }.bind(this));
         },
 
         onGetError: function(error){
@@ -126,10 +130,12 @@ define("coverRegion.view", ['require','exports', 'template', 'modal.view', 'util
 
         hide: function(){
             this.$el.hide();
+            $(document).off('keydown');
         },
 
         update: function(){
             this.$el.show();
+            this.enterKeyBindQuery();
         },
 
         render: function(target) {

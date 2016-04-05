@@ -30,6 +30,10 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             this.onClickQueryButton();
             this.$el.find(".back").on("click", $.proxy(this.onClickCancel, this));
             this.$el.find(".query").on("click", $.proxy(this.onClickQueryButton, this));
+            this.enterKeyBindQuery();
+        },
+
+        enterKeyBindQuery:function(){
             $(document).on('keydown', function(e){
                 if(e.keyCode == 13){
                     this.onClickQueryButton();
@@ -365,11 +369,13 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
 
         hide: function(){
             this.$el.hide();
+            $(document).off('keydown');
         },
 
         update: function(){
             this.$el.show();
-            this.collection.getConfList(this.queryArgs)
+            this.collection.getConfList(this.queryArgs);
+            this.enterKeyBindQuery();
         },
 
         render: function(target) {

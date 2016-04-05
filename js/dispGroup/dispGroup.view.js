@@ -585,11 +585,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
 
-            $(document).on('keydown', function(e){
-                if(e.keyCode == 13){
-                    this.onClickQueryButton();
-                }
-            }.bind(this));
+            this.enterKeyBindQuery();
 
             this.queryArgs = {
                 "name"  : null,//调度组名称
@@ -599,6 +595,14 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 "count" :10
             }
             this.onClickQueryButton();
+        },
+
+        enterKeyBindQuery:function(){
+            $(document).on('keydown', function(e){
+                if(e.keyCode == 13){
+                    this.onClickQueryButton();
+                }
+            }.bind(this));
         },
 
         onGetError: function(error){
@@ -961,10 +965,12 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         hide: function(){
             this.$el.hide();
+            $(document).off('keydown');
         },
 
         update: function(){
             this.$el.show();
+            this.enterKeyBindQuery();
         },
 
         render: function(target) {

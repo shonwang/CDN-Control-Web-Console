@@ -299,18 +299,6 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.$el.find(".setup #inlineCheckbox1").get(0).checked = true;
                     this.$el.find(".setup #inlineCheckbox2").get(0).checked = true;
                 }
-                // if (this.model.attributes.resolveIpType == "1"){
-                //     this.$el.find(".ip-type #inlineRadio3").get(0).checked = true;
-                //     this.$el.find(".ip-type #inlineRadio4").get(0).checked = false;
-                // }
-                // if (this.model.attributes.resolveIpType == "2"){
-                //     this.$el.find(".ip-type #inlineRadio3").get(0).checked = false;
-                //     this.$el.find(".ip-type #inlineRadio4").get(0).checked = true;
-                // }
-                // if (this.model.attributes.resolveIpType == "3"){
-                //     this.$el.find(".ip-type #inlineCheckbox3").get(0).checked = true;
-                //     this.$el.find(".ip-type #inlineCheckbox4").get(0).checked = true;
-                // }
             } else {
                 this.collection.off("get.node.success");
                 this.collection.off("get.node.error");
@@ -318,7 +306,6 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.collection.on("get.node.error", $.proxy(this.onGetError, this));
                 this.crossLevel = 0;
             }
-
             this.collection.off("ip.type.success");
             this.collection.off("ip.type.error");
             this.collection.on("ip.type.success", $.proxy(this.onGetIpTypeSuccess, this));
@@ -326,6 +313,26 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
             this.collection.ipTypeList();
             this.initDropmenu();
+        },
+
+        onKeyupNodeListFilter: function() {
+            if (!this.nodeList || this.nodeList.length === 0) return;
+            var keyWord = this.$el.find("#node-list-filter").val();
+            _.each(this.nodeList, function(el, index, ls) {
+                if (keyWord === ""){
+                    el.isDisplay = true;
+                } else {
+                    if (el.chName.indexOf(keyWord) > -1 || el.name.indexOf(keyWord) > -1)
+                        el.isDisplay = true;
+                    else
+                        el.isDisplay = false;
+                }
+            });
+            this.initNodeTable();
+            if (keyWord === "")
+                this.table.find("#inlineCheckbox5").show();
+            else
+                this.table.find("#inlineCheckbox5").hide();
         },
 
         onGetIpTypeSuccess: function(data){
@@ -390,16 +397,24 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.nodeList = res.rows;
             else
                 this.nodeList = res;
-            var count = 0, isCheckedAll = false;
+            this.selectedCount = 0;
+            this.isCheckedAll = false;
+
             _.each(this.nodeList, function(el, index, list){
                 if (el.associated === 0) el.isChecked = false;
                 if (el.associated === 1) {
                     el.isChecked = true;
-                    count = count + 1
+                    this.selectedCount = this.selectedCount + 1;
                 }
+                el.isDisplay = true;
             }.bind(this))
-            if (count === this.nodeList.length) isCheckedAll = true
-            this.table = $(_.template(template['tpl/dispGroup/dispGroup.node.table.html'])({data: this.nodeList, isCheckedAll: isCheckedAll}));
+            if (this.selectedCount === this.nodeList.length) this.isCheckedAll = true;
+            this.initNodeTable();
+            this.$el.find("#node-list-filter").on("keyup", $.proxy(this.onKeyupNodeListFilter, this));
+        },
+
+        initNodeTable: function() {
+            this.table = $(_.template(template['tpl/dispGroup/dispGroup.node.table.html'])({data: this.nodeList, isCheckedAll: this.isCheckedAll}));
             if (this.nodeList.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
@@ -418,15 +433,19 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 return object.id === parseInt(id)
             }.bind(this));
 
-            selectedObj.isChecked = eventTarget.checked
+            selectedObj.isChecked = eventTarget.checked;
 
             var checkedList = this.nodeList.filter(function(object) {
                 return object.isChecked === true;
             })
-            if (checkedList.length === this.nodeList.length)
+            if (checkedList.length === this.nodeList.length){
                 this.table.find("thead input").get(0).checked = true;
-            if (checkedList.length !== this.nodeList.length)
+                this.isCheckedAll = true;
+            }
+            if (checkedList.length !== this.nodeList.length){
                 this.table.find("thead input").get(0).checked = false;
+                this.isCheckedAll = false;
+            }
         },
 
         onAllCheckedUpdated: function(event){
@@ -435,6 +454,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             _.each(this.nodeList, function(el, index, list){
                 el.isChecked = eventTarget.checked
             }.bind(this))
+            this.isCheckedAll = eventTarget.checked;
             this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
         },
 
@@ -477,20 +497,6 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (setupNodes.length === 2){
                 options.priority = "1,2";
             }
-            // var ipNodes = this.$el.find(".ip-type input:checked");
-            // if (ipNodes.length === 0){
-            //     alert("IP类型至少选择一项！")
-            //     return false;
-            // }
-            // if (ipNodes.length === 1&&ipNodes.get(0).id === "inlineRadio3"){
-            //     options.resolveIpType = "1";
-            // }
-            // if (ipNodes.length === 1&&ipNodes.get(0).id === "inlineRadio4"){
-            //     options.resolveIpType = "2";
-            // }
-            // if (ipNodes.length === 2){
-            //     options.resolveIpType = "1,2";
-            // }
             var checkedList = this.nodeList.filter(function(object) {
                 return object.isChecked === true;
             })

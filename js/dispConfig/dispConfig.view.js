@@ -372,12 +372,12 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
             if (this.collection.models.length === 0){
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-                this.$el.find(".opt-ctn .init").show();
+                //this.$el.find(".opt-ctn .init").show();
                 this.$el.find(".opt-ctn .sending").hide();
-            } else if (this.collection.total === 0){
-                this.$el.find(".table-ctn").html(this.table[0]);
-                this.$el.find(".opt-ctn .init").show();
-                this.$el.find(".opt-ctn .sending").hide();
+            //} else if (this.collection.total === 0){
+                //this.$el.find(".table-ctn").html(this.table[0]);
+                // this.$el.find(".opt-ctn .init").show();
+                // this.$el.find(".opt-ctn .sending").hide();
             } else {
                 this.$el.find(".table-ctn").html(this.table[0]);
                 this.$el.find(".opt-ctn .init").hide();

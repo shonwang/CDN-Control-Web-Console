@@ -13,7 +13,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
         getArgs: function(){
             var keyName = this.$el.find("#input-name").val();
-            if (!keyName || keyName.length > 100){
+            if (!this.isEdit && (!keyName || keyName.length > 100)){
                 alert("唯一KEY不能为空且长度不大于100！");
                 return false;
             }

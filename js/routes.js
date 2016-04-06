@@ -22,6 +22,14 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             this.navbarView = new NavbarView();
             this.navbarView.render($('.jquery-accordion-menu'));
             this.curPage = "";
+
+            window.onhashchange = function(argument) {
+                console.log("onhashchange")
+            }
+
+            window.onpopstate = function(argument) {
+                console.log("onpopstate")
+            }
         },
 
         execute: function(callback, args) {
@@ -69,6 +77,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         businessManage: function(){
+            alert("!!!!!!!!!!")
             require(['businessManage.view', 'businessManage.model'], function(BusinessManageView, BusinessManageModel){
                 this.curPage = 'businessManage';
                 this.navbarView.select(this.curPage);

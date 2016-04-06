@@ -8,6 +8,7 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
         initialize: function() {
             this.$el = $(_.template(template['tpl/sidebar.html'])());
             this.initLogin();
+            this.initLogout();
             this.initSidebarToggle();
         },
 
@@ -27,6 +28,23 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
             })
         },
 
+        initLogout: function(){
+            $(".logout").on("click", function() {
+                var data = {
+                    url            : BASE_URL + "/rs/login/exit?" + new Date().valueOf(),
+                    type           : "GET",
+                    queryData      : {},
+                    successCallBack: function(res){
+                        this.redirect();
+                    }.bind(this),
+                    errorCallBack  : function(){
+                        alert("中控系统岂是你说来就来，说走就走的！！！")
+                    }
+                }
+                this.sendRequest(data)
+            }.bind(this))
+        },
+
         select: function(id){
             var activeNode = this.$el.find('#' + id);
             if (activeNode.parent().css("display") == "none") {
@@ -37,52 +55,6 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
         },
 
         initLogin: function(){
-            var redirect = function (url) {
-                if (DEBUG === 1) return;
-                var tpl = '<div id="loginTips" class="modal fade bs-example-modal-sm">' + 
-                            '<div class="modal-dialog modal-sm">' + 
-                                '<div class="modal-content" style="text-align:center;padding:5px">' + 
-                                    '<div class="modal-header"><h3 class="modal-title">请登录</h3></div>' + 
-                                    '<div class="modal-body">您还没有登录,请登陆后访问本页面.系统正在为您跳转到登录页面...</div>' + 
-                                '</div>' + 
-                            '</div>' + 
-                          '</div>'
-                var $loginTops = $(tpl),
-                    url = url || 'login.html',
-                    options = {
-                        backdrop:'static'
-                    };
-                $loginTops.modal(options);
-                setTimeout(function(){
-                    location.href = url;
-                }, 2000);
-            };
-
-            var sendRequest = function (data) {
-                var defaultParas = {
-                    type: data.type,
-                    url: data.url,
-                    async: true,
-                    timeout: 60000
-                };
-
-                defaultParas.data = data.queryData;
-
-                defaultParas.beforeSend = function(xhr){
-                    xhr.setRequestHeader("Accept","application/json, text/plain, */*");
-                }
-                
-                defaultParas.success = function(res){
-                    data.successCallBack&&data.successCallBack(res)
-                }
-                    
-                defaultParas.error = function(response, msg){
-                    data.errorCallBack&&data.errorCallBack(response, msg)
-                }
-
-                $.ajax(defaultParas);
-            };
-
             var data = {
                 url            : BASE_URL + "/rs/login/isLogined?" + new Date().valueOf(),
                 type           : "GET",
@@ -91,15 +63,63 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
                     if (res && res.status !== 400) {
                         $(".user-name").html(res.mgs);
                     } else {
-                        redirect();
+                        this.redirect();
                     }
                 }.bind(this),
                 errorCallBack  : function(){
-                    redirect();
-                }
+                    this.redirect();
+                }.bind(this)
 
             }
-            sendRequest(data)
+            this.sendRequest(data, true)
+        },
+
+        redirect : function (url) {
+            if (DEBUG === 1) return;
+            var tpl = '<div id="loginTips" class="modal fade bs-example-modal-sm">' + 
+                        '<div class="modal-dialog modal-sm">' + 
+                            '<div class="modal-content" style="text-align:center;padding:5px">' + 
+                                '<div class="modal-header"><h3 class="modal-title">请登录</h3></div>' + 
+                                '<div class="modal-body">您还没有登录,请登陆后访问本页面.系统正在为您跳转到登录页面, 如果未能自动跳转，请手动刷新！</div>' + 
+                            '</div>' + 
+                        '</div>' + 
+                      '</div>'
+            var $loginTops = $(tpl),
+                url = url || 'login.html',
+                options = {
+                    backdrop:'static'
+                };
+            $loginTops.modal(options);
+            setTimeout(function(){
+                location.href = url;
+            }, 2000);
+        },
+
+        sendRequest: function (data, isJson) {
+            var defaultParas = {
+                type: data.type,
+                url: data.url,
+                async: true,
+                timeout: 60000
+            };
+
+            defaultParas.data = data.queryData;
+
+            defaultParas.beforeSend = function(xhr){
+                if (isJson)
+                    xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            
+            defaultParas.success = function(res){
+                data.successCallBack&&data.successCallBack(res)
+            }
+                
+            defaultParas.error = function(response, msg){
+                console.log(response)
+                data.errorCallBack&&data.errorCallBack(response, msg)
+            }
+
+            $.ajax(defaultParas);
         },
 
         render: function(target) {

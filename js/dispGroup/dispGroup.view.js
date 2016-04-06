@@ -299,6 +299,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.$el.find(".setup #inlineCheckbox1").get(0).checked = true;
                     this.$el.find(".setup #inlineCheckbox2").get(0).checked = true;
                 }
+                this.$el.find("#input-name").attr("readonly", true);
             } else {
                 this.collection.off("get.node.success");
                 this.collection.off("get.node.error");

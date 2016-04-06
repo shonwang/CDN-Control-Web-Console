@@ -233,7 +233,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".opt-ctn .show-remark").on("click", $.proxy(this.onClickShowRemark, this));
             this.$el.find(".opt-ctn .hide-remark").on("click", $.proxy(this.onClickHideRemark, this));
 
-            //this.enterKeyBindQuery();
+            this.enterKeyBindQuery();
 
             this.$el.find(".page-ctn").hide();
         },

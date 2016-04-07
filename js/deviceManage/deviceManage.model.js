@@ -3,15 +3,16 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
         initialize: function(){
             var status     = this.get("status"),
                 type       = this.get("type"),
+                typeName   = this.get("typeName"),
                 createTime = this.get("createTime");
             if (status === 3) this.set("statusName", '<span class="text-danger">已关闭</span>');
             if (status === 2) this.set("statusName",'<span class="text-warning">挂起</span>');
             if (status === 1) this.set("statusName", '<span class="text-success">运行中</span>');
 
-            // if (type == 12) this.set("typeName",'lvs');
-            // if (type == 14) this.set("typeName",'cache');
-            // if (type == 13) this.set("typeName",'relay');
-            // if (type == 15) this.set("typeName",'live');
+            if (!typeName && type == 12) this.set("typeName",'lvs');
+            if (!typeName && type == 14) this.set("typeName",'cache');
+            if (!typeName && type == 13) this.set("typeName",'relay');
+            if (!typeName && type == 15) this.set("typeName",'live');
 
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
             this.set("isChecked", false);

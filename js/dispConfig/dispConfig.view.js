@@ -483,12 +483,12 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                         options[k]['dispGroup.id'] = this.queryArgs.groupId;
                         for (var i = 0; i < list.length; i++){
                             if (list[i]["id"] === parseInt(options[k]["node.id"])) options.splice(k, 1);
+                            if (options.length === 0) {
+                                alert("你选择的节点已经添加过了！")
+                                this.selectNodePopup.$el.modal("hide");
+                                return;
+                            }
                         }
-                    }
-                    if (options.length === 0) {
-                        alert("你选择的节点已经添加过了！")
-                        this.selectNodePopup.$el.modal("hide");
-                        return;
                     }
                     for(var m = 0; m < options.length; m++){
                         model.get("listFormated").push(new this.collection.model(options[m]))

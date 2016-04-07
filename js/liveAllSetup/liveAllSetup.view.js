@@ -635,11 +635,13 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.buisness.error", $.proxy(this.onGetError, this));
 
             this.collection.on("get.addConf.success", function(){
+                this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn");
                 this.collection.getAllFileList({bisTypeId: this.buisnessType})
             }.bind(this));
             this.collection.on("get.addConf.error", $.proxy(this.onGetError, this));
             
             this.collection.on("get.modifyConf.success", function(){
+                this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn");
                 this.collection.getAllFileList({bisTypeId: this.buisnessType})
             }.bind(this));
             this.collection.on("get.modifyConf.error", $.proxy(this.onGetError, this));
@@ -677,7 +679,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 }.bind(this),
                 okCallback:  function(options){
                     this.collection.addConf(options);
-                    this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn")
                 }.bind(this)
             });
             addFileView.render(this.$el.find(".create-edit-panel"));
@@ -875,11 +876,9 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 busTypeArray: this.busTypeArray,
                 cancelCallback: function(){
                     this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn");
-                    //this.collection.getAllFileList({bisTypeId: this.buisnessType})
                 }.bind(this),
                 okCallback:  function(options){
                     this.collection.modifyConfFile(options);
-                    this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn")
                 }.bind(this)
             });
             addFileView.render(this.$el.find(".create-edit-panel"));

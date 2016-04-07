@@ -35,6 +35,8 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.getRegionNodeList(this.args);
 
             this.$el.find("#node-list-filter").on("keyup", $.proxy(this.onKeyupNodeListFilter, this));
+
+            $(document).off('keydown');
         },
 
         onKeyupNodeListFilter: function() {
@@ -496,7 +498,9 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                     this.collection.trigger("get.dispConfig.success")
                     this.selectNodePopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+                    this.enterKeyBindQuery();
+                }.bind(this)
             }
             this.selectNodePopup = new Modal(options);
 
@@ -552,7 +556,9 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                     this.collection.trigger("get.dispConfig.success")
                     this.selectNodePopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+                    this.enterKeyBindQuery();
+                }.bind(this)
             }
             this.selectNodePopup = new Modal(options);
         },

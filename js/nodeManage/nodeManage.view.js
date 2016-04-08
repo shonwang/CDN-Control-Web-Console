@@ -275,7 +275,9 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     this.collection.addNode(options)
                     this.addNodePopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+                    this.enterKeyBindQuery();
+                }.bind(this)
             }
             this.addNodePopup = new Modal(options);
         },
@@ -343,7 +345,9 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     this.collection.updateNode(args)
                     this.editNodePopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+                    this.enterKeyBindQuery();
+                }.bind(this)
             }
             this.editNodePopup = new Modal(options);
         },

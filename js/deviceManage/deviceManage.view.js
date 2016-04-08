@@ -212,8 +212,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                         //this.collection.getIpInfoSubmit(options);
                     }.bind(this),
                     onHiddenCallback: function(){
-
-                    }
+                        this.enterKeyBindQuery();
+                    }.bind(this)
                 }
 
                 this.PausePopup = new Modal(options);
@@ -671,6 +671,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 onHiddenCallback: function(){
                     importDeviceView.uploader.stop();
                     importDeviceView.uploader.destroy();
+                    this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.importDevicePopup = new Modal(options);
@@ -694,7 +695,9 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     this.collection.addDevice(options)
                     this.addDevicePopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+                    this.enterKeyBindQuery();
+                }.bind(this)
             }
             this.addDevicePopup = new Modal(options);
         },
@@ -752,7 +755,9 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     this.collection.updateDevice(args)
                     this.editDevicePopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+                    this.enterKeyBindQuery();
+                }.bind(this)
             }
             this.editDevicePopup = new Modal(options);
         },
@@ -793,7 +798,9 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 backdrop : 'static',
                 type     : 1,
                 onOKCallback:  function(){},
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+                    this.enterKeyBindQuery();
+                }.bind(this)
             }
             this.ipManagePopup = new Modal(options);
         },

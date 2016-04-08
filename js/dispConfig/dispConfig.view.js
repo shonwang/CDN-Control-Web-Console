@@ -35,8 +35,6 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.getRegionNodeList(this.args);
 
             this.$el.find("#node-list-filter").on("keyup", $.proxy(this.onKeyupNodeListFilter, this));
-
-            $(document).off('keydown');
         },
 
         onKeyupNodeListFilter: function() {

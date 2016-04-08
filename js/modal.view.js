@@ -54,6 +54,7 @@ define("modal.view", ['require','exports', 'template', 'utility'],
                 show: this.options.show
             }
             this.$el.modal(originOption);
+            $(document).off('keydown');
         },
 
         initSize: function(){

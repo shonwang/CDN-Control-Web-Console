@@ -63,6 +63,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 minBandwidthThreshold = this.$el.find("#input-minthreshold").val(),
                 maxBandwidth = this.$el.find("#input-maxbandwidth").val(),
                 minBandwidth = this.$el.find("#input-minbandwidth").val(),
+                unitPrice = this.$el.find("#input-unitprice").val(),
                 re = /^\d+$/;
             if (!enName || !chName){
                 alert("节点名称和英文名称都要填写！");
@@ -78,6 +79,10 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             }
             if (!re.test(maxBandwidthThreshold) || !re.test(minBandwidthThreshold)){
                 alert("上联带宽阈值和保底带宽阈值只能填入数字！");
+                return;
+            }
+            if (!re.test(unitPrice)){
+                alert("成本权值只能填入数字！");
                 return;
             }
             // if (parseInt(maxBandwidthThreshold) < parseInt(minBandwidthThreshold)){

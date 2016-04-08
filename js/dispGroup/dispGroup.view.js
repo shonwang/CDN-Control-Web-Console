@@ -487,11 +487,11 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             var ttl = this.$el.find("#input-ttl").val(), re = /^\d+$/;
             if (!re.test(ttl)){
                 alert("TTL只能填入数字！");
-                return;
+                return false;
             }
-            if (parseInt(ttl) > (Math.pow(2, 32) - 1) || parseInt(ttl) < 0){
-                alert("TTL：按照DNS标准，0 - (2^32 — 1)");
-                return; 
+            if (parseInt(ttl) > 2147483647 || parseInt(ttl) < 0){
+                alert("TTL：0 - 2147483647");
+                return false; 
             }
             var setupNodes = this.$el.find(".setup input:checked");
             if (setupNodes.length === 0){
@@ -755,6 +755,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 type     : 2,
                 onOKCallback:  function(){
                     this.editGroupArgs = editDispGroupView.getArgs();
+                    if (!this.editGroupArgs) return
                     var prompt = editDispGroupView.getPromptArgs();
                     setTimeout(function(){
                         this.collection.getInfoPrompt(prompt);

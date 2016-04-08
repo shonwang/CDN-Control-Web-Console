@@ -791,7 +791,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
                 this.PromptPopup = new Modal(options);
             } else {
-                var result = confirm("取消关联的节点当前覆盖区域信息为空，仍然继续编辑吗？");
+                var result = confirm("你确定要修改吗？");
                 if (result)
                     this.collection.updateDispGroup(args);
                 else

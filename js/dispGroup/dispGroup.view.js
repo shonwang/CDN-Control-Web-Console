@@ -484,6 +484,15 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 "remark"       : this.$el.find("#textarea-comment").val(),
                 "resolveIpType": this.ipType,
             };
+            var ttl = this.$el.find("#input-ttl").val(), re = /^\d+$/;
+            if (!re.test(ttl)){
+                alert("TTL只能填入数字！");
+                return;
+            }
+            if (parseInt(ttl) > (Math.pow(2, 32) - 1) || parseInt(ttl) < 0){
+                alert("TTL：按照DNS标准，0 - (2^32 — 1)");
+                return; 
+            }
             var setupNodes = this.$el.find(".setup input:checked");
             if (setupNodes.length === 0){
                 alert("配置至少选择一项！")
@@ -791,7 +800,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
                 this.PromptPopup = new Modal(options);
             } else {
-                var result = confirm("你确定要修改吗？");
+                var result = confirm("是否确定本次编辑？");
                 if (result)
                     this.collection.updateDispGroup(args);
                 else

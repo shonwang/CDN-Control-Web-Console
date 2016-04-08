@@ -73,6 +73,14 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 alert("上联带宽和保底带宽只能填入数字！");
                 return;
             }
+            if (parseInt(maxBandwidth) > 100000000 || parseInt(maxBandwidth) < 0){
+                alert("上联带宽：0-100000000（0-100T，单位转换按1000算）");
+                return; 
+            }
+            if (parseInt(minBandwidth) > 100000000 || parseInt(minBandwidth) < 0){
+                alert("保底带宽：0-100000000（0-100T，单位转换按1000算）");
+                return; 
+            }
             if (parseInt(maxBandwidth) < parseInt(minBandwidth)){
                 alert("上联带宽不能小于保底带宽！");
                 return;
@@ -81,14 +89,22 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 alert("上联带宽阈值和保底带宽阈值只能填入数字！");
                 return;
             }
+            if (parseInt(maxBandwidthThreshold) < 0 || parseInt(maxBandwidthThreshold) > parseInt(maxBandwidth)){
+                alert("上联带宽阈值：0-上联带宽");
+                return;
+            }
+            if (parseInt(minBandwidthThreshold) < 0 || parseInt(minBandwidthThreshold) > parseInt(maxBandwidth)){
+                alert("保底带宽阈值：0-上联带宽");
+                return;
+            }
             if (!re.test(unitPrice)){
                 alert("成本权值只能填入数字！");
                 return;
             }
-            // if (parseInt(maxBandwidthThreshold) < parseInt(minBandwidthThreshold)){
-            //     alert("上联带宽阈值不能小于保底带宽阈值！");
-            //     return;
-            // }
+            if (parseInt(unitPrice) > 1000000 || parseInt(unitPrice) < 0){
+                alert("成本权值：0-1000000");
+                return; 
+            }
             var args = {
                 "id"                 : this.model ? this.model.get("id") : 0,
                 "name"               : this.$el.find("#input-english").val(),

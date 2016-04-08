@@ -399,11 +399,11 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 maxValue = $(eventTarget).attr("max"),
                 re = /^\d+$/;
             if (!re.test(value)){
-                $(eventTarget).val("0");
+                $(eventTarget).val("1");
                 return
             }
             if (parseInt(value) > parseInt(maxValue)){
-                $(eventTarget).val("0")
+                $(eventTarget).val("1")
             }
         },
 

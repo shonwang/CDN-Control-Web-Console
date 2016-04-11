@@ -176,13 +176,19 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 onOKCallback:  function(){
                     var options = editPartitionView.getArgs();
                     if (!options) return;
-                    _.each(this.args.partitions, function(el, key, ls){
-                        if (el.partitionId === options.partitionId)
-                            el.content = options.content;
+                    _.each(this.partitionsCopy, function(el, index, ls){
+                        if (el.partitionId === options.partitionId){
+                            if (options.content !== el.content){
+                                this.args.partitions[index].modify = 1;
+                                this.$el.find('.file-content tr[id=' + options.partitionId + ']').addClass("success");
+                            } else {
+                                this.$el.find('.file-content tr[id=' + options.partitionId + ']').removeClass("success");
+                                this.args.partitions[index].modify = 0;
+                            }
+                        }
                     }.bind(this))
 
                     this.editPartitionPopup.$el.modal("hide");
-                    this.$el.find('.file-content tr[id=' + options.partitionId + ']').addClass("success");
                 }.bind(this),
                 onHiddenCallback: function(){}
             }

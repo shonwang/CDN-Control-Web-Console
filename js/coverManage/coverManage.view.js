@@ -38,10 +38,10 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                         mapType: 'china',
                         itemStyle:{
                             normal:{
-                                borderColor:'rgba(100,149,237,1)',
-                                borderWidth: 1.5,
+                                borderColor:'#fff',
+                                borderWidth: 0.5,
                                 areaStyle:{
-                                    color: '#1b1b1b'
+                                    color: '#15A892'
                                 }
                             }
                         },
@@ -53,7 +53,8 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                                       borderColor: '#fff',
                                       borderWidth: 1,            // 标注边线线宽，单位px，默认为1
                                       label: {
-                                          show: false
+                                          show: false,
+                                          position:'top'
                                       },
                                       color: "#1e90ff"
                                   },
@@ -112,7 +113,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             _.each(res.relation, function(el, key, list){
                 legendList.push(el.name);
                 legendObjList.push({name:el.name, info:el.info})
-                points.push({name: el.name})
+                points.push({name: el.name, value: 6})
                 var mapTemp = {
                         name: '',
                         type: 'map',
@@ -122,10 +123,10 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                             smooth:true,
                             effect : {
                                 show: true,
-                                scaleSize: 1,
-                                period: 30,
+                                scaleSize: 0.5,
+                                period: 60,
                                 color: '#fff',
-                                shadowBlur: 10
+                                shadowBlur: 5
                             },
                             itemStyle : {
                                 normal: {
@@ -139,22 +140,22 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                             data : []
                         },
                         markPoint : {
-                            symbol:'emptyCircle',
-                            symbolSize : function (v){
-                                return 10 + v/10
-                            },
-                            effect : {
-                                show: true,
-                                shadowBlur : 0
-                            },
-                            itemStyle:{
-                                normal:{
-                                    label:{show:false}
-                                },
-                                emphasis: {
-                                    label:{position:'top'}
-                                }
-                            },
+                            symbol: "none",//'emptyCircle',
+                            // symbolSize : function (v){
+                            //     return 10 + v/10
+                            // },
+                            // effect : {
+                            //     show: true,
+                            //     shadowBlur : 0
+                            // },
+                            // itemStyle:{
+                            //     normal:{
+                            //         label:{show:false}
+                            //     },
+                            //     emphasis: {
+                            //         label:{position:'top'}
+                            //     }
+                            // },
                             data : []
                         }
                 };
@@ -175,7 +176,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                     tempPoints.push({name: subEl[1].name, value: subEl[1].value})
                     var tempArray = [];
                     tempArray.push({name: subEl[0].name}, {name: subEl[1].name})
-                    allLine.push(tempArray)
+                    allLine.push(tempArray);
                 })
 
                 mapTemp.markPoint.data = tempPoints;
@@ -185,6 +186,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             //series[0].markLine.data = allLine;
             series[0].markPoint.data = points;
             this.legendObjList = legendObjList;
+
             this.initMap(legendList, series);
         },
 
@@ -197,7 +199,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                     selectedObj[el] = false;
             })
             var option = {
-                backgroundColor: '#1b1b1b',
+                backgroundColor: '#eee',
                 color: ['gold','aqua','lime'],
                 title : {
                     text: '',
@@ -238,7 +240,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                     ],
                     color: ['#ff3333', 'orange', 'yellow','lime','aqua'],
                     textStyle:{
-                        color:'#fff'
+                        color:'#000'
                     }
                 },
                 series : series
@@ -258,23 +260,23 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                     }.bind(this));
 
                     this.curNum = id;
-                    this.$el.find(".list-ctn button").removeClass("active");
-                    this.$el.find(".list-ctn").find('button[id="' + this.curNum +'"]').addClass("active");
+                    this.$el.find(".node-list-ctn button").removeClass("active");
+                    this.$el.find(".node-list-ctn").find('button[id="' + this.curNum +'"]').addClass("active");
                     this.renderNodeInfo();
-                    if (this.timer) this.$el.find(".list-ctn .pause").click();
+                    if (this.timer) this.$el.find(".opt-ctn .pause").click();
                 }
             }.bind(this));
 
             $(window).off('resize', $.proxy(this.onResizeChart, this));
             $(window).on('resize', $.proxy(this.onResizeChart, this));
 
-            this.$el.find(".list-ctn").html(_.template(template['tpl/coverManage/coverManage.nodelist.html'])({data: legendList}));
+            this.$el.find(".node-list-ctn").html(_.template(template['tpl/coverManage/coverManage.nodelist.html'])({data: legendList}));
 
-            this.$el.find(".list-ctn button").on("click", function(event){
+            this.$el.find(".node-list-ctn button").on("click", function(event){
                 var eventTarget = event.srcElement || event.target, id;
                 id = $(eventTarget).attr("id");
 
-                this.$el.find(".list-ctn button").removeClass("active");
+                this.$el.find(".node-list-ctn button").removeClass("active");
                 $(eventTarget).addClass("active")
 
                 var legend = this.chart.chart['map'].component.legend;
@@ -282,23 +284,23 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
 
                 this.curNum = parseInt(id);
                 this.renderNodeInfo();
-                if (this.timer) this.$el.find(".list-ctn .pause").click();
+                if (this.timer) this.$el.find(".opt-ctn .pause").click();
             }.bind(this))
 
-            this.$el.find(".list-ctn .play").on("click", function(){
+            this.$el.find(".opt-ctn .play").on("click", function(){
                 this.timer = setInterval($.proxy(this.setNodeDetail, this), 10000);
-                this.$el.find(".list-ctn .pause").show();
-                this.$el.find(".list-ctn .play").hide();
+                this.$el.find(".opt-ctn .pause").show();
+                this.$el.find(".opt-ctn .play").hide();
             }.bind(this));
 
-            this.$el.find(".list-ctn .pause").on("click", function(){
+            this.$el.find(".opt-ctn .pause").on("click", function(){
                 if (this.timer) clearInterval(this.timer)
-                this.$el.find(".list-ctn .pause").hide();
-                this.$el.find(".list-ctn .play").show();
+                this.$el.find(".opt-ctn .pause").hide();
+                this.$el.find(".opt-ctn .play").show();
             }.bind(this));
 
             this.curNum = 0;
-            this.$el.find(".list-ctn").find('button[id="0"]').click();
+            this.$el.find(".node-list-ctn").find('button[id="0"]').click();
             this.curNum = this.curNum + 1;
             this.timer = setInterval($.proxy(this.setNodeDetail, this), 10000)
         },
@@ -328,8 +330,8 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                         this.renderNodeInfo();
                         var legend = this.chart.chart['map'].component.legend;
                         legend.setSelected(this.legendObjList[this.curNum].name)
-                        this.$el.find(".list-ctn button").removeClass("active");
-                        this.$el.find(".list-ctn").find('button[id="' + this.curNum +'"]').addClass("active");
+                        this.$el.find(".node-list-ctn button").removeClass("active");
+                        this.$el.find(".node-list-ctn").find('button[id="' + this.curNum +'"]').addClass("active");
                         callback()
                     }.bind(this), 1000)
                 }.bind(this),                
@@ -343,6 +345,40 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                     }.bind(this), 1000)
                 }.bind(this)]
             );        
+        },
+
+        onClickQueryButton: function(){
+            this.$el.find(".map-ctn").html(_.template(template['tpl/loading.html'])({}));
+            
+            //this.collection.getNodeList(this.queryArgs);
+        },
+
+        initNodeDropMenu: function(){
+            var statusArray = [
+                {name: "全部", value: "All"},
+                {name: "电信", value: "电信"},
+                {name: "移动", value: "移动"},
+                {name: "联通", value: "联通"}
+            ],
+            rootNode = this.$el.find(".dropdown-region");
+            Utility.initDropMenu(rootNode, statusArray, function(value){
+
+            }.bind(this));
+        },
+
+        hide: function(){
+            this.$el.hide();
+            this.$el.find(".node-list-ctn .pause").click();
+        },
+
+        update: function(){
+            this.$el.show();
+            this.$el.find(".node-list-ctn .play").click();
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target);
+            //this.collection.trigger("get.map.success");
         },
 
         initMapTest: function(){
@@ -903,42 +939,6 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             var legend = this.chart.chart['map'].component.legend;
             legend.setSelected('广州 Top10')
         },
-
-        onClickQueryButton: function(){
-            this.$el.find(".map-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.$el.find(".list-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.$el.find(".map-detail-ctn").html(_.template(template['tpl/loading.html'])({}));
-            
-            //this.collection.getNodeList(this.queryArgs);
-        },
-
-        initNodeDropMenu: function(){
-            var statusArray = [
-                {name: "全部", value: "All"},
-                {name: "电信", value: "电信"},
-                {name: "移动", value: "移动"},
-                {name: "联通", value: "联通"}
-            ],
-            rootNode = this.$el.find(".dropdown-region");
-            Utility.initDropMenu(rootNode, statusArray, function(value){
-
-            }.bind(this));
-        },
-
-        hide: function(){
-            this.$el.hide();
-            this.$el.find(".list-ctn .pause").click();
-        },
-
-        update: function(){
-            this.$el.show();
-            this.$el.find(".list-ctn .play").click();
-        },
-
-        render: function(target) {
-            this.$el.appendTo(target);
-            //this.collection.trigger("get.map.success");
-        }
     });
 
     return NodeManageView;

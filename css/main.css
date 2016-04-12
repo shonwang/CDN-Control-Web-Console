@@ -99,10 +99,8 @@ td .label {
 }
 
 .map-ctn {
-  background-color: rgb(27, 27, 27);
-  margin-right: -15px;
-  min-height: 600px;
-  position: relative;
+  background-color: #eee;
+  min-height: 768px;
 }
 
 .map-detail-ctn .spinner,
@@ -112,23 +110,15 @@ td .label {
 }
 
 .cover-manage .map-detail-ctn {
-  background-color: rgb(27, 27, 27);
-  min-height: 600px;
-  margin-left: -15px;
-  position: relative;
-  padding: 20px;
+  background-color: #eee;
+  min-height: 768px;
+  padding: 20px
 }
 
-.panel-dark {
-  color: rgba(100, 149, 237, 1);
-  border-color: rgba(100, 149, 237, 1);
-  background-color: #1b1b1b;
-}
-
-.panel-dark>.panel-heading {
-  color: rgba(100, 149, 237, 1);
-  background-color: #1b1b1b;
-  border-color: rgba(100, 149, 237, 1);
+.cover-manage .node-list-ctn{
+  background-color:#eee;
+  height: 768px;
+  overflow: auto;
 }
 
 td .radio {

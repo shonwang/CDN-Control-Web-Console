@@ -35,6 +35,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                 this.$el.find(".map-ctn").css("height", '768px');
                 this.$el.find(".cover-detail-ctn").css("height", '768px');
                 this.$el.find(".node-list-ctn").css("height", '768px');
+                this.onResizeChart();
             }
         },
 

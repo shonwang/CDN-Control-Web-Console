@@ -333,7 +333,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 args.bisTypeId = this.args.bisTypeId;
                 args.nodeGroupId = this.args.nodeGroupId;
                 args.partition = this.args.partition;
-                args. partitions = this.args.partitions;
+                args.partitions = this.args.partitions;
+                args.releaseModel = this.args.releaseModel;
             }
             return args;
         },

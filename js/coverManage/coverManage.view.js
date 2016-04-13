@@ -12,12 +12,9 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.collection.on("get.map.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.queryArgs = {
-                page : 1,
-                count: 10
-            }
+            this.$el.find(".map-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.onClickQueryButton();
-            this.collection.getMapData();
+            this.mapDataTimer = setInterval($.proxy(this.onClickQueryButton, this), 33000);
         },
 
         onGetError: function(error){
@@ -25,6 +22,8 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                 alert(error.message)
             else
                 alert("出错了")
+            if (this.timer) clearInterval(this.timer);
+            if (this.mapDataTimer) clearInterval(this.mapDataTimer);
         },
 
         onNodeListSuccess: function(res){
@@ -245,7 +244,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                 },
                 series : series
             };
-
+            if (this.chart) this.chart.dispose();
             this.chart = echarts.init(this.$el.find(".map-ctn")[0]);
             this.chart.setOption(option);
             this.chart.on(echarts.config.EVENT.CLICK, function (){
@@ -267,9 +266,6 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                 }
             }.bind(this));
 
-            $(window).off('resize', $.proxy(this.onResizeChart, this));
-            $(window).on('resize', $.proxy(this.onResizeChart, this));
-
             this.$el.find(".node-list-ctn").html(_.template(template['tpl/coverManage/coverManage.nodelist.html'])({data: legendList}));
 
             this.$el.find(".node-list-ctn button").on("click", function(event){
@@ -287,21 +283,32 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                 if (this.timer) this.$el.find(".opt-ctn .pause").click();
             }.bind(this))
 
+            this.initTimer();
+        },
+
+        initTimer: function(argument) {
+            $(window).off('resize', $.proxy(this.onResizeChart, this));
+            $(window).on('resize', $.proxy(this.onResizeChart, this));
+
+            this.$el.find(".opt-ctn .play").off();
             this.$el.find(".opt-ctn .play").on("click", function(){
+                if (this.timer) clearInterval(this.timer);
                 this.timer = setInterval($.proxy(this.setNodeDetail, this), 10000);
                 this.$el.find(".opt-ctn .pause").show();
                 this.$el.find(".opt-ctn .play").hide();
             }.bind(this));
 
+            this.$el.find(".opt-ctn .pause").off();
             this.$el.find(".opt-ctn .pause").on("click", function(){
-                if (this.timer) clearInterval(this.timer)
+                if (this.timer) clearInterval(this.timer);
                 this.$el.find(".opt-ctn .pause").hide();
                 this.$el.find(".opt-ctn .play").show();
             }.bind(this));
 
-            this.curNum = 0;
-            this.$el.find(".node-list-ctn").find('button[id="0"]').click();
+            if(!this.curNum) this.curNum = 0;
+            this.$el.find(".node-list-ctn").find('button[id="' + this.curNum + '"]').click();
             this.curNum = this.curNum + 1;
+            if (this.timer) clearInterval(this.timer);
             this.timer = setInterval($.proxy(this.setNodeDetail, this), 10000)
         },
 
@@ -348,9 +355,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
         },
 
         onClickQueryButton: function(){
-            this.$el.find(".map-ctn").html(_.template(template['tpl/loading.html'])({}));
-            
-            //this.collection.getNodeList(this.queryArgs);
+            this.collection.getMapData();
         },
 
         initNodeDropMenu: function(){

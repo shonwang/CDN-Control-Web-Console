@@ -112,7 +112,8 @@ td .label {
 .cover-manage .map-detail-ctn {
   background-color: #eee;
   min-height: 768px;
-  padding: 20px
+  padding-top: 20px;
+  padding-right: 20px;
 }
 
 .cover-manage .node-list-ctn{

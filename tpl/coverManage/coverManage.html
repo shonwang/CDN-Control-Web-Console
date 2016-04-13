@@ -21,11 +21,12 @@
                 </div>
                 <a href="javascript:void(0)" class="btn btn-success play" style="display: none"><span class="glyphicon glyphicon-play"></span>自动播放</a>
                 <a href="javascript:void(0)" class="btn btn-danger pause"><span class="glyphicon glyphicon-pause"></span>暂停</a>
+                <a href="javascript:void(0)" class="btn btn-info fullscreen"><span class="glyphicon glyphicon-fullscreen"></span>全屏</a>
             </form>
         </div>
     </div>
     </div>
-    <div class="row">
+    <div class="row cover-ctn" style="width: 100%;">
         <div class="col-md-1 col-lg-1" style="padding: 0;">
             <div class="node-list-ctn"></div>
         </div>
@@ -33,7 +34,13 @@
             <div class="map-ctn"></div>
         </div>
         <div class="col-md-2 col-lg-2" style="padding: 0;">
-            <div  class="map-detail-ctn"></div>
+            <div class="cover-detail-ctn">
+                <div class="well">
+                    <div class="text-muted">最后更新时间：</div>
+                    <div class="last-update-time text-center h4"></div>
+                </div>
+                <div  class="map-detail-ctn"></div>
+            </div>
         </div>
     </div>
 </div>

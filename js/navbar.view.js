@@ -115,7 +115,6 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
             }
                 
             defaultParas.error = function(response, msg){
-                console.log(response)
                 data.errorCallBack&&data.errorCallBack(response, msg)
             }
 

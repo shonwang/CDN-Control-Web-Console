@@ -313,7 +313,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 return;
             } 
             var re = /^\/[^\/]{0,}([a-z0-9\_\-\.]|\/[^\/]){0,}[^\/]{0,}$/;
-            if (this.args.releaseModel === 1)
+            if (this.args.releaseModel === 1 && !this.isEdit)
                 re = /^\/[^\/]{0,}([a-z0-9\_\-\.]|\/[^\/]){0,}\/$/;
             result = re.test(fileName)
             if (!result) {

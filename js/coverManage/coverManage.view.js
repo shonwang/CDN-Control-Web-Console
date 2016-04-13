@@ -12,10 +12,30 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.collection.on("get.map.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+            this.$el.find(".opt-ctn .fullscreen").on("click", $.proxy(this.onLaunchFullScreen, this));    
             this.$el.find(".map-ctn").html(_.template(template['tpl/loading.html'])({}));
+            $(document).on('keyup', $.proxy(this.onKeyupFullscreen, this));
             this.onClickQueryButton();
             this.isPaused = false;
             this.mapDataTimer = setInterval($.proxy(this.onClickQueryButton, this), 33000);
+        },
+
+        onLaunchFullScreen: function(){
+            Utility.launchFullscreen(this.$el.find(".cover-ctn").get(0));
+            var height = window.screen.height;
+            this.$el.find(".map-ctn").css("height", height + 'px');
+            this.$el.find(".cover-detail-ctn").css("height", height + 'px');
+            this.$el.find(".node-list-ctn").css("height", height + 'px');
+        },
+
+        onKeyupFullscreen: function(event){
+            event.stopPropagation();
+            event.preventDefault();
+            if (event.keyCode == 27 || event.keyCode == 122){
+                this.$el.find(".map-ctn").css("height", '768px');
+                this.$el.find(".cover-detail-ctn").css("height", '768px');
+                this.$el.find(".node-list-ctn").css("height", '768px');
+            }
         },
 
         onGetError: function(error){
@@ -29,6 +49,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
         },
 
         onNodeListSuccess: function(res){
+            this.$el.find(".last-update-time").html(new Date().format("yyyy/MM/dd hh:mm"))
             this.isGettingMapData = false;
             var legendList = [], points = [], legendObjList = [],
                 series = [
@@ -44,6 +65,12 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                                 borderWidth: 0.5,
                                 areaStyle:{
                                     color: '#15A892'
+                                },
+                                label:{
+                                    show:true,
+                                    textStyle: {
+                                        color: '#333'
+                                    }
                                 }
                             }
                         },
@@ -297,7 +324,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.$el.find(".opt-ctn .play").on("click", function(){
                 this.isPaused = false;
                 if (this.timer) clearInterval(this.timer);
-                this.timer = setInterval($.proxy(this.setNodeDetail, this), 10000);
+                this.timer = setInterval($.proxy(this.setNodeDetail, this), 20000);
                 this.$el.find(".opt-ctn .pause").show();
                 this.$el.find(".opt-ctn .play").hide();
             }.bind(this));

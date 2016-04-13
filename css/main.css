@@ -101,6 +101,7 @@ td .label {
 .map-ctn {
   background-color: #eee;
   min-height: 768px;
+  height: 100%;
 }
 
 .map-detail-ctn .spinner,
@@ -109,10 +110,9 @@ td .label {
   top: 200px;
 }
 
-.cover-manage .map-detail-ctn {
+.cover-manage .cover-detail-ctn{
   background-color: #eee;
   min-height: 768px;
-  padding-top: 20px;
   padding-right: 20px;
 }
 
@@ -153,10 +153,6 @@ td .table {
   min-height: 200px;
   align-items: center;
   justify-content: center;
-}
-
-.cover-manage .map-detail-ctn .loader {
-  min-height: 560px
 }
 
 .cover-manage .map-ctn .loader {

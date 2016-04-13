@@ -65,6 +65,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     "remark":"",
                     "fileTypeId": "",
                     "partition": 0,
+                    "releaseModel": 2,
                     "partitions": []
                 }
             }
@@ -216,6 +217,18 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initBussnessDropList: function(){
+            var releaseModes = [
+                {name: "多个分块为一个文件下发", value: 2},
+                {name: "一个分块为一个文件下发", value: 1}
+            ]
+            Utility.initDropMenu(this.$el.find(".file-content"), releaseModes, function(value){
+                this.args.releaseModel = parseInt(value)
+            }.bind(this));
+            if (this.isEdit){
+                this.$el.find(".file-content .partition-ctn label").hide();
+                this.$el.find(".file-content .dropdown").hide();
+            }
+
             rootNode = this.$el.find(".dropdown-bustype");
             Utility.initDropMenu(rootNode, this.busTypeArray, function(value){
                 this.args.bisTypeId = parseInt(value)
@@ -300,6 +313,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 return;
             } 
             var re = /^\/[^\/]{0,}([a-z0-9\_\-\.]|\/[^\/]){0,}[^\/]{0,}$/;
+            if (this.args.releaseModel === 1)
+                re = /^\/[^\/]{0,}([a-z0-9\_\-\.]|\/[^\/]){0,}\/$/;
             result = re.test(fileName)
             if (!result) {
                 alert("文件名称填错了")

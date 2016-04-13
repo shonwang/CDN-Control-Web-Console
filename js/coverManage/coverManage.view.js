@@ -17,7 +17,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             $(document).on('keyup', $.proxy(this.onKeyupFullscreen, this));
             this.onClickQueryButton();
             this.isPaused = false;
-            //this.mapDataTimer = setInterval($.proxy(this.onClickQueryButton, this), 33000);
+            this.mapDataTimer = setInterval($.proxy(this.onClickQueryButton, this), 33000);
         },
 
         onLaunchFullScreen: function(){

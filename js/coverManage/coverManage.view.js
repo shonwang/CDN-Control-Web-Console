@@ -14,10 +14,12 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".map-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.onClickQueryButton();
+            this.isPaused = false;
             this.mapDataTimer = setInterval($.proxy(this.onClickQueryButton, this), 33000);
         },
 
         onGetError: function(error){
+            this.isGettingMapData = false;
             if (error&&error.message)
                 alert(error.message)
             else
@@ -27,6 +29,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
         },
 
         onNodeListSuccess: function(res){
+            this.isGettingMapData = false;
             var legendList = [], points = [], legendObjList = [],
                 series = [
                     {
@@ -262,7 +265,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                     this.$el.find(".node-list-ctn button").removeClass("active");
                     this.$el.find(".node-list-ctn").find('button[id="' + this.curNum +'"]').addClass("active");
                     this.renderNodeInfo();
-                    if (this.timer) this.$el.find(".opt-ctn .pause").click();
+                    if (!this.isPaused) this.$el.find(".opt-ctn .pause").click();
                 }
             }.bind(this));
 
@@ -280,7 +283,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
 
                 this.curNum = parseInt(id);
                 this.renderNodeInfo();
-                if (this.timer) this.$el.find(".opt-ctn .pause").click();
+                if (!this.isPaused) this.$el.find(".opt-ctn .pause").click();
             }.bind(this))
 
             this.initTimer();
@@ -292,6 +295,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
 
             this.$el.find(".opt-ctn .play").off();
             this.$el.find(".opt-ctn .play").on("click", function(){
+                this.isPaused = false;
                 if (this.timer) clearInterval(this.timer);
                 this.timer = setInterval($.proxy(this.setNodeDetail, this), 10000);
                 this.$el.find(".opt-ctn .pause").show();
@@ -300,16 +304,38 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
 
             this.$el.find(".opt-ctn .pause").off();
             this.$el.find(".opt-ctn .pause").on("click", function(){
+                this.isPaused = true
                 if (this.timer) clearInterval(this.timer);
                 this.$el.find(".opt-ctn .pause").hide();
                 this.$el.find(".opt-ctn .play").show();
             }.bind(this));
 
+            this.$el.find(".opt-ctn #input-node-search").val("");
+            this.$el.find(".opt-ctn #input-node-search").off();
+            this.$el.find(".opt-ctn #input-node-search").on("keyup", $.proxy(this.onKeyupSearchNode, this));
+
             if(!this.curNum) this.curNum = 0;
             this.$el.find(".node-list-ctn").find('button[id="' + this.curNum + '"]').click();
             this.curNum = this.curNum + 1;
-            if (this.timer) clearInterval(this.timer);
-            this.timer = setInterval($.proxy(this.setNodeDetail, this), 10000)
+            this.$el.find(".opt-ctn .play").click();
+            //this.timer = setInterval($.proxy(this.setNodeDetail, this), 10000)
+        },
+
+        onKeyupSearchNode: function(event) {
+            this.$el.find(".opt-ctn .pause").click()
+            var keyWord = this.$el.find(".opt-ctn #input-node-search").val(),
+                nodeElements = this.$el.find(".node-list-ctn .btn");
+            if (event.keyCode !== 13){
+                _.each(nodeElements, function(el, key, ls){
+                    if (keyWord === ""){
+                        $(el).show();
+                    } else if ($(el).html().indexOf(keyWord) > -1){
+                        $(el).show();
+                    } else {
+                        $(el).hide();
+                    }
+                })
+            }
         },
 
         onResizeChart: function(){
@@ -327,6 +353,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
         },
 
         setNodeDetail: function(){
+            if (this.isGettingMapData) return;
             async.series([
                 function(callback){
                     this.nodeDetail.addClass("zoomOut animated");
@@ -355,6 +382,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
         },
 
         onClickQueryButton: function(){
+            this.isGettingMapData = true;
             this.collection.getMapData();
         },
 
@@ -373,12 +401,15 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
 
         hide: function(){
             this.$el.hide();
-            this.$el.find(".node-list-ctn .pause").click();
+            if (this.mapDataTimer) clearInterval(this.mapDataTimer);
+            this.$el.find(".opt-ctn .pause").click();
         },
 
         update: function(){
             this.$el.show();
-            this.$el.find(".node-list-ctn .play").click();
+            this.$el.find(".opt-ctn .play").click();
+            if (this.mapDataTimer) clearInterval(this.mapDataTimer);
+            this.mapDataTimer = setInterval($.proxy(this.onClickQueryButton, this), 33000);
         },
 
         render: function(target) {

@@ -122,6 +122,18 @@ td .label {
   overflow: auto;
 }
 
+.badge-primary {
+   background-color: #337ab7;
+}
+
+.badge-danger {
+   background-color: #d9534f;
+}
+
+.badge-success{
+   background-color: #5cb85c;
+}
+
 td .radio {
   margin: 0;
 }

@@ -24,20 +24,10 @@
             this.selectContainer = document.createElement("div");
             this.selectContainer.className = "select-container";
 
-            //title
             var oTitleContainer = document.createElement("div");
             oTitleContainer.className = "select-title-container";
             this.oTitleContainer = oTitleContainer;
             this.createTitle();
-            //var oSelectInput=document.createElement("input");
-            //oSelectInput.type="search";
-            //oTitleContainer.appendChild(oSelectInput);
-
-            //var oCheckBoxContainer=this.createElement("div");
-            //oCheckBoxContainer.className="checkbox-container";
-            //oCheckBoxContainer.appendChild(this.createCheckBtn());
-
-            //oTitleContainer.appendChild(oCheckBoxContainer);
 
             this.selectContainer.appendChild(oTitleContainer);
 
@@ -76,7 +66,6 @@
                 oDiv.appendChild(oTips);
                 oDiv.appendChild(oSelectInput);
                 this.oTitleContainer.appendChild(oDiv);
-                //this.oTitleContainer.appendChild(oSelectInput);
                 this.oSelectInput = oSelectInput;
             }
             if (!this.isSingle) {
@@ -91,8 +80,6 @@
             oClose.className = "select-select-close";
             this.oTitleContainer.appendChild(oClose);
             this.btnClose = oClose;
-
-
         },
 
         bindInputPanel: function() {
@@ -313,16 +300,9 @@
                         } else {
                             delete me.checkList[value];
                         }
-                        //console.log(JSON.stringify(me.checkList));
                         var checkedList = me.getCheckedValue();
                         me.callback && me.callback(checkedList);
                     }
-                    /*
-                    aLi[i].onclick=selectList[i].onclick=function(ev){
-                        var oEvent=window.event || ev;
-                        oEvent.cancelBubble=true;
-                    }*/
-
             }
         },
 
@@ -381,9 +361,7 @@
                         value: _val,
                         name: _name
                     };
-                    //selectList[i].checked=true;
                 } else {
-                    //selectList[i].checked=false;
                     delete this.checkList[_val];
                 }
             }
@@ -460,6 +438,4 @@
     else {
         root.SearchSelect = SearchSelect;
     }
-
-
 }());

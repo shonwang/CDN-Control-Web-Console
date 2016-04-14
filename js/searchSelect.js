@@ -64,13 +64,17 @@
 
 		createTitle:function(){
 			if(this.openSearch){
+                var oDiv=document.createElement("div");
+                oDiv.className="search-ctn";
 				var oTips=document.createElement("span");
 				oTips.className="select-search-tips";
 				oTips.innerHTML="过滤";
 				var oSelectInput=document.createElement("input");
 				oSelectInput.type="search";
-				this.oTitleContainer.appendChild(oTips);
-				this.oTitleContainer.appendChild(oSelectInput);
+                oDiv.appendChild(oTips);
+                oDiv.appendChild(oSelectInput);
+				this.oTitleContainer.appendChild(oDiv);
+				//this.oTitleContainer.appendChild(oSelectInput);
 				this.oSelectInput=oSelectInput;
 			}
             if(!this.isSingle){
@@ -130,17 +134,17 @@
 
 		createCheckBtn :function(){
 			var html=[];
-			var oCheckAll=this.createElement("span");
+			var oCheckAll=this.createElement("div");
 			oCheckAll.className="select-check-all";
-			oCheckAll.innerHTML="全选";
-			var oCancelAll=this.createElement("span");
+			oCheckAll.innerHTML="<span class='icon-check-all'></span><span>全选</span>";
+			var oCancelAll=this.createElement("div");
 			oCancelAll.className="select-cancel-all";
-			oCancelAll.innerHTML="全不选";
+			oCancelAll.innerHTML="<span class='icon-check-cancel'></span><span>全不选</span>";
 
-			var oSelectBack=this.createElement("span");
+			var oSelectBack=this.createElement("div");
 			oSelectBack.className="select-select-back";
-			oSelectBack.innerHTML="反选";
-            var oSelectBtnOK=this.createElement("span");
+			oSelectBack.innerHTML="<span class='icon-check-back'></span><span>反选</span>";
+            var oSelectBtnOK=this.createElement("div");
             if(this.hasOkBtn){
                 oSelectBtnOK.className="select-btn-ok";
                 oSelectBtnOK.innerHTML="确定";

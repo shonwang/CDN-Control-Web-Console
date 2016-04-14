@@ -77,7 +77,7 @@
 				//this.oTitleContainer.appendChild(oSelectInput);
 				this.oSelectInput=oSelectInput;
 			}
-            if(!this.isSingle && this.selectData.length>1){
+            if(!this.isSingle){
 			    var oCheckBoxContainer=this.createElement("div");
 			    oCheckBoxContainer.className="select-checkbox-container";
 			    oCheckBoxContainer.appendChild(this.createCheckBtn());
@@ -146,7 +146,7 @@
 			oSelectBack.innerHTML="<span class='icon-check-back'></span><span>反选</span>";
             var oSelectBtnOK=this.createElement("div");
             if(this.hasOkBtn){
-                oSelectBtnOK.className="select-btn-ok btn btn-sm btn-primary";
+                oSelectBtnOK.className="select-btn-ok";
                 oSelectBtnOK.innerHTML="确定";
             }
 
@@ -218,7 +218,7 @@
 			}
 
 
-            if(!this.isSingle &&  this.selectData.length>1){
+            if(!this.isSingle){
 
                 var btnCheckAll=this.btnCheckAll;
                 var btnCancelAll=this.btnCancelAll;

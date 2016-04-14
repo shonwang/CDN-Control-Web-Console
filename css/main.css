@@ -359,7 +359,7 @@ td .table {
   display: none;
   position: absolute;
   left: 10px;
-  top: 24px;
+  top: 35px;
   background: #fff;
   z-index: 999999;
 }
@@ -579,7 +579,6 @@ td .table {
 
 .select-select-back {
   height: 16px;
-  display: inline-block;
   line-height: 16px;
   padding-left: 10px;
   margin-left: 10px;

@@ -778,12 +778,12 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onClickItemIp: function(event){
             var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
+            //if (eventTarget.tagName == "SPAN"){
+            //    eventTarget = $(eventTarget).parent();
+            //    id = eventTarget.attr("id");
+            //} else {
                 id = $(eventTarget).attr("id");
-            }
+            //}
             var model = this.collection.get(id);
 
             if (this.ipManagePopup) $("#" + this.ipManagePopup.modalId).remove();

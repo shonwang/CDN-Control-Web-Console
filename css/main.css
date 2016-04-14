@@ -405,7 +405,6 @@ td .table {
   height: 16px;
   display: inline-block;
   line-height: 16px;
-  padding-left: 20px;
   cursor: pointer;
 }
 
@@ -414,7 +413,7 @@ td .table {
   display: inline-block;
 
   line-height: 16px;
-  padding-left: 20px;
+  padding-left: 10px;
   margin-left: 10px;
   cursor: pointer;
 }
@@ -424,22 +423,18 @@ td .table {
   display: inline-block;
 
   line-height: 16px;
-  padding-left: 20px;
+  padding-left: 10px;
   margin-left: 10px;
   cursor: pointer;
   padding-right:10px;
 }
 
-.select-btn-ok {
-  display: inline-block;
-  margin-left: 10px;
-  cursor: pointer;
-}
+
 
 .select-select-close {
   height: 14px;
   float: right;
-
+  background:url(../images/icon.png) 0 0 no-repeat;
   width: 14px;
   margin-top: 10px;
   overflow: hidden;
@@ -447,15 +442,12 @@ td .table {
 }
 /* title上的按钮 */
 .select-check-all {height:16px;display:inline-block;line-height:16px;cursor:pointer;display:table-cell;vertical-align:middle;}
-.select-cancel-all {height:16px;display:inline-block;line-height:16px;margin-left:10px;cursor:pointer;display:table-cell;vertical-align:middle;}
-.select-select-back {height:16px;display:inline-block;line-height:16px;margin-left:10px;cursor:pointer;display:table-cell;vertical-align:middle;}
+.select-cancel-all {height:16px;display:inline-block;line-height:16px;cursor:pointer;display:table-cell;vertical-align:middle;}
+.select-select-back {height:16px;display:inline-block;line-height:16px;cursor:pointer;display:table-cell;vertical-align:middle;}
 .select-btn-ok {
-  height: 16px;
-  line-height: 16px;
-  margin-left: 10px;
-  cursor: pointer;
-  padding-left: 6px;
-  line-height:16px;cursor:pointer;display:table-cell;vertical-align:middle;}
+
+
+cursor:pointer;display:table-cell;vertical-align:middle;}
 
 .bisType {
   margin-left: 10px;

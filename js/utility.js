@@ -198,6 +198,18 @@ define("utility", ['require','exports'], function(require, exports) {
                 rv += randomStr_str[Math.floor(Math.random() * randomStr_str.length)];
             }
             return rv;
+        },
+
+        launchFullscreen: function(element) {
+          if(element.requestFullscreen) {
+            element.requestFullscreen();
+          } else if(element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+          } else if(element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen();
+          } else if(element.msRequestFullscreen) {
+            element.msRequestFullscreen();
+          }
         }
     };
     return Utility;

@@ -7,7 +7,8 @@
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <strong>文件路径规则：</strong>
                     <p>1.允许字母、数字、下划线 、中划线 点号 /</p> 
-                    <p>2.以/开头，不能以/结尾，不能出现连续// </p>
+                    <p>2.多个分块为一个文件下发时，文件路径以/开头，不能以/结尾，不能出现连续// </p>
+                    <p>3.一个分块为一个文件下发时，文件路径以/开头，以/结尾，不能出现连续// </p>
                 </div>
             </div>
             <div class="col-sm-2"></div>
@@ -48,6 +49,12 @@
                 <ul class="dropdown-menu long-dropdown-menu"></ul>
             </div>
         </div>
+        <div class="form-group">
+            <label for="textarea-comment" class="col-sm-2 control-label">备注</label>
+            <div class="col-sm-8">
+                <textarea class="form-control" rows="2" id="textarea-comment"><%=data.remark%></textarea>
+            </div>
+        </div>
         <div class="form-group fileContentType">
             <label for="textarea-content" class="col-sm-2 control-label">文件内容类型</label>
             <div class="col-sm-8">
@@ -59,19 +66,21 @@
                 </label>
             </div>
         </div>
-        <div class="form-group">
-            <label for="textarea-comment" class="col-sm-2 control-label">备注</label>
-            <div class="col-sm-8">
-                <textarea class="form-control" rows="2" id="textarea-comment"><%=data.remark%></textarea>
-            </div>
-        </div>
         <div class="form-group file-content">
             <label for="textarea-content" class="col-sm-2 control-label">文件内容</label>
             <div class="col-sm-8">
                 <textarea class="form-control" rows="10" id="textarea-content" <% if (data.partition === 1) { %> style="display:none"<% } %> ><%=data.content%></textarea>
-                <div class="partition-ctn" <% if (data.partition === 0) { %> style="display:none"<% } %> >
+                <div class="partition-ctn row" <% if (data.partition === 0) { %> style="display:none"<% } %> >
+                    <div class="col-sm-2"><a href="javascript:void(0)" class="btn btn-success create-partition"><span class="glyphicon glyphicon-plus"></span>新建分块</a></div>
+                    <label for="dropdown-release-model" class="col-xs-2 col-sm-2 control-label">下发模式</label>
+                    <div class="dropdown col-sm-4">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-release-model" data-toggle="dropdown">
+                            <span class="cur-value">多个分块为一个文件下发</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu"></ul>
+                    </div>
                     <div class="partition-tb-ctn"></div>
-                    <a href="javascript:void(0)" class="btn btn-success create-partition"><span class="glyphicon glyphicon-plus"></span>新建分块</a>
                 </div>
             </div>
         </div>

@@ -1,4 +1,4 @@
-define("businessManage.view", ['require', 'exports', 'template', 'modal.view', 'utility', 'searchSelect'], function(require, exports, template, Modal, Utility, SearchSelect) {
+define("businessManage.view", ['require', 'exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
     var AddOrEditBusinessView = Backbone.View.extend({
         events: {},
@@ -70,14 +70,13 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.select-addNode').get(0),
                 panelID: this.$el.find('.btn-raised').get(0),
+                // isSingle: true,
                 openSearch: true,
                 onOk: function(data) {
                     _this.setaddNodeTr(data);
                 },
                 data: data,
-                callback: function(data) {
-                    //console.log(data);
-                }
+                callback: function(data) {}
             });
         },
         getArgs: function() {

@@ -18,6 +18,8 @@
     <style>
         body{
             background: url(images/login.jpg) no-repeat;
+            background-size: cover;
+            min-height: 989px;
         }
     </style>
 </head>
@@ -25,10 +27,10 @@
     <div class="container">
         <div class="row" style="margin-top: 150px">
             <div class="col-md-offset-8 col-md-4">
-                <form class="well form-horizontal fadeInLeft animated">
+                <form class="well form-horizontal zoomInUp animated">
                   <div class="form-group">
                     <div class="col-sm-12">
-                        <h2 class="text-center">CDN 中控系统</h2>
+                        <h2 class="text-center text-danger">金山云 CDN 中控系统</h2>
                     </div>
                   </div>
                   <div class="form-group">
@@ -45,13 +47,13 @@
                   </div>
                   <div class="form-group">
 <!--                     <label for="checkcode" class="col-sm-2 control-label">验证码</label> -->
-                    <div class="col-sm-4">
+                    <div class="col-xs-4 col-sm-4">
                       <input type="text" class="form-control" id="checkcode" placeholder="验证码">
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-xs-4 col-sm-4">
                       <img class="codeimage" src="http://test.center.cdn.ksyun.com/rs/login/validation/code" alt="code" style="width: 80px;border: 1px solid;">
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-xs-4 col-sm-4">
                       <button type="button" class="btn btn-default">换一个</button>
                     </div>
                   </div>
@@ -64,13 +66,13 @@
                   </div>
                   <div class="form-group">
                     <div class="col-sm-12">
-                      <button type="button" class="btn btn-primary" style="width: 100%;">登  录</button>
+                      <button type="button" class="btn btn-danger logoin-btn" style="width: 100%;">登  录</button>
                     </div>
                   </div>
                   <hr>
                   <div class="form-group">
                     <div class="col-sm-12">
-                      <p class="text-warning">内部系统未做低版本浏览器兼容性处理，为确保正常使用，请使用Chrome、火狐、IE11等现代浏览器！</p>
+                      <p class="text-warning">内部系统未做低版本浏览器兼容性处理，为确保最佳体验，请使用最新版本的Chrome（强烈建议）、火狐、IE11、Safari等现代浏览器，猎豹、QQ等国产浏览器请调整至Chromium内核模式！</p>
                     </div>
                   </div>
                 </form>
@@ -147,7 +149,7 @@
         sendRequest(data);
     }
 
-    $(".btn-primary").on("click", onLogin)
+    $(".logoin-btn").on("click", onLogin)
     $(document).on("keyup", function(event) {
         event.stopPropagation();
         event.preventDefault();

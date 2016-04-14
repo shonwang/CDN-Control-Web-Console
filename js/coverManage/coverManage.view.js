@@ -12,22 +12,46 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.collection.on("get.map.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.queryArgs = {
-                page : 1,
-                count: 10
-            }
+            this.$el.find(".opt-ctn .fullscreen").on("click", $.proxy(this.onLaunchFullScreen, this));    
+            this.$el.find(".map-ctn").html(_.template(template['tpl/loading.html'])({}));
+            $(document).on('keyup', $.proxy(this.onKeyupFullscreen, this));
             this.onClickQueryButton();
-            this.collection.getMapData();
+            this.isPaused = false;
+            this.mapDataTimer = setInterval($.proxy(this.onClickQueryButton, this), 63000);
+        },
+
+        onLaunchFullScreen: function(){
+            Utility.launchFullscreen(this.$el.find(".cover-ctn").get(0));
+            var height = window.screen.height;
+            this.$el.find(".map-ctn").css("height", height + 'px');
+            this.$el.find(".cover-detail-ctn").css("height", height + 'px');
+            this.$el.find(".node-list-ctn").css("height", height + 'px');
+        },
+
+        onKeyupFullscreen: function(event){
+            event.stopPropagation();
+            event.preventDefault();
+            if (event.keyCode == 27 || event.keyCode == 122){
+                this.$el.find(".map-ctn").css("height", '768px');
+                this.$el.find(".cover-detail-ctn").css("height", '768px');
+                this.$el.find(".node-list-ctn").css("height", '768px');
+                this.onResizeChart();
+            }
         },
 
         onGetError: function(error){
+            this.isGettingMapData = false;
             if (error&&error.message)
                 alert(error.message)
             else
                 alert("出错了")
+            if (this.timer) clearInterval(this.timer);
+            if (this.mapDataTimer) clearInterval(this.mapDataTimer);
         },
 
         onNodeListSuccess: function(res){
+            this.$el.find(".last-update-time").html(new Date().format("yyyy/MM/dd hh:mm"))
+            this.isGettingMapData = false;
             var legendList = [], points = [], legendObjList = [],
                 series = [
                     {
@@ -38,10 +62,16 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                         mapType: 'china',
                         itemStyle:{
                             normal:{
-                                borderColor:'rgba(100,149,237,1)',
-                                borderWidth: 1.5,
+                                borderColor:'#fff',
+                                borderWidth: 0.5,
                                 areaStyle:{
-                                    color: '#1b1b1b'
+                                    color: '#15A892'
+                                },
+                                label:{
+                                    show:true,
+                                    textStyle: {
+                                        color: '#333'
+                                    }
                                 }
                             }
                         },
@@ -53,7 +83,8 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                                       borderColor: '#fff',
                                       borderWidth: 1,            // 标注边线线宽，单位px，默认为1
                                       label: {
-                                          show: false
+                                          show: false,
+                                          position:'top'
                                       },
                                       color: "#1e90ff"
                                   },
@@ -112,7 +143,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             _.each(res.relation, function(el, key, list){
                 legendList.push(el.name);
                 legendObjList.push({name:el.name, info:el.info})
-                points.push({name: el.name})
+                points.push({name: el.name, value: 6})
                 var mapTemp = {
                         name: '',
                         type: 'map',
@@ -122,10 +153,10 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                             smooth:true,
                             effect : {
                                 show: true,
-                                scaleSize: 1,
-                                period: 30,
+                                scaleSize: 0.5,
+                                period: 60,
                                 color: '#fff',
-                                shadowBlur: 10
+                                shadowBlur: 5
                             },
                             itemStyle : {
                                 normal: {
@@ -139,22 +170,22 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                             data : []
                         },
                         markPoint : {
-                            symbol:'emptyCircle',
-                            symbolSize : function (v){
-                                return 10 + v/10
-                            },
-                            effect : {
-                                show: true,
-                                shadowBlur : 0
-                            },
-                            itemStyle:{
-                                normal:{
-                                    label:{show:false}
-                                },
-                                emphasis: {
-                                    label:{position:'top'}
-                                }
-                            },
+                            symbol: "none",//'emptyCircle',
+                            // symbolSize : function (v){
+                            //     return 10 + v/10
+                            // },
+                            // effect : {
+                            //     show: true,
+                            //     shadowBlur : 0
+                            // },
+                            // itemStyle:{
+                            //     normal:{
+                            //         label:{show:false}
+                            //     },
+                            //     emphasis: {
+                            //         label:{position:'top'}
+                            //     }
+                            // },
                             data : []
                         }
                 };
@@ -175,7 +206,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                     tempPoints.push({name: subEl[1].name, value: subEl[1].value})
                     var tempArray = [];
                     tempArray.push({name: subEl[0].name}, {name: subEl[1].name})
-                    allLine.push(tempArray)
+                    allLine.push(tempArray);
                 })
 
                 mapTemp.markPoint.data = tempPoints;
@@ -185,6 +216,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             //series[0].markLine.data = allLine;
             series[0].markPoint.data = points;
             this.legendObjList = legendObjList;
+
             this.initMap(legendList, series);
         },
 
@@ -197,7 +229,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                     selectedObj[el] = false;
             })
             var option = {
-                backgroundColor: '#1b1b1b',
+                backgroundColor: '#eee',
                 color: ['gold','aqua','lime'],
                 title : {
                     text: '',
@@ -238,12 +270,12 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                     ],
                     color: ['#ff3333', 'orange', 'yellow','lime','aqua'],
                     textStyle:{
-                        color:'#fff'
+                        color:'#000'
                     }
                 },
                 series : series
             };
-
+            if (this.chart) this.chart.dispose();
             this.chart = echarts.init(this.$el.find(".map-ctn")[0]);
             this.chart.setOption(option);
             this.chart.on(echarts.config.EVENT.CLICK, function (){
@@ -258,23 +290,20 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                     }.bind(this));
 
                     this.curNum = id;
-                    this.$el.find(".list-ctn button").removeClass("active");
-                    this.$el.find(".list-ctn").find('button[id="' + this.curNum +'"]').addClass("active");
+                    this.$el.find(".node-list-ctn button").removeClass("active");
+                    this.$el.find(".node-list-ctn").find('button[id="' + this.curNum +'"]').addClass("active");
                     this.renderNodeInfo();
-                    if (this.timer) this.$el.find(".list-ctn .pause").click();
+                    if (!this.isPaused) this.$el.find(".opt-ctn .pause").click();
                 }
             }.bind(this));
 
-            $(window).off('resize', $.proxy(this.onResizeChart, this));
-            $(window).on('resize', $.proxy(this.onResizeChart, this));
+            this.$el.find(".node-list-ctn").html(_.template(template['tpl/coverManage/coverManage.nodelist.html'])({data: legendList}));
 
-            this.$el.find(".list-ctn").html(_.template(template['tpl/coverManage/coverManage.nodelist.html'])({data: legendList}));
-
-            this.$el.find(".list-ctn button").on("click", function(event){
+            this.$el.find(".node-list-ctn button").on("click", function(event){
                 var eventTarget = event.srcElement || event.target, id;
                 id = $(eventTarget).attr("id");
 
-                this.$el.find(".list-ctn button").removeClass("active");
+                this.$el.find(".node-list-ctn button").removeClass("active");
                 $(eventTarget).addClass("active")
 
                 var legend = this.chart.chart['map'].component.legend;
@@ -282,25 +311,58 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
 
                 this.curNum = parseInt(id);
                 this.renderNodeInfo();
-                if (this.timer) this.$el.find(".list-ctn .pause").click();
+                if (!this.isPaused) this.$el.find(".opt-ctn .pause").click();
             }.bind(this))
 
-            this.$el.find(".list-ctn .play").on("click", function(){
-                this.timer = setInterval($.proxy(this.setNodeDetail, this), 10000);
-                this.$el.find(".list-ctn .pause").show();
-                this.$el.find(".list-ctn .play").hide();
+            this.initTimer();
+        },
+
+        initTimer: function(argument) {
+            $(window).off('resize', $.proxy(this.onResizeChart, this));
+            $(window).on('resize', $.proxy(this.onResizeChart, this));
+
+            this.$el.find(".opt-ctn .play").off();
+            this.$el.find(".opt-ctn .play").on("click", function(){
+                this.isPaused = false;
+                if (this.timer) clearInterval(this.timer);
+                this.timer = setInterval($.proxy(this.setNodeDetail, this), 20000);
+                this.$el.find(".opt-ctn .pause").show();
+                this.$el.find(".opt-ctn .play").hide();
             }.bind(this));
 
-            this.$el.find(".list-ctn .pause").on("click", function(){
-                if (this.timer) clearInterval(this.timer)
-                this.$el.find(".list-ctn .pause").hide();
-                this.$el.find(".list-ctn .play").show();
+            this.$el.find(".opt-ctn .pause").off();
+            this.$el.find(".opt-ctn .pause").on("click", function(){
+                this.isPaused = true
+                if (this.timer) clearInterval(this.timer);
+                this.$el.find(".opt-ctn .pause").hide();
+                this.$el.find(".opt-ctn .play").show();
             }.bind(this));
 
-            this.curNum = 0;
-            this.$el.find(".list-ctn").find('button[id="0"]').click();
+            this.$el.find(".opt-ctn #input-node-search").val("");
+            this.$el.find(".opt-ctn #input-node-search").off();
+            this.$el.find(".opt-ctn #input-node-search").on("keyup", $.proxy(this.onKeyupSearchNode, this));
+
+            if(!this.curNum) this.curNum = 0;
+            this.$el.find(".node-list-ctn").find('button[id="' + this.curNum + '"]').click();
             this.curNum = this.curNum + 1;
-            this.timer = setInterval($.proxy(this.setNodeDetail, this), 10000)
+            this.$el.find(".opt-ctn .play").click();
+        },
+
+        onKeyupSearchNode: function(event) {
+            this.$el.find(".opt-ctn .pause").click()
+            var keyWord = this.$el.find(".opt-ctn #input-node-search").val(),
+                nodeElements = this.$el.find(".node-list-ctn .btn");
+            if (event.keyCode !== 13){
+                _.each(nodeElements, function(el, key, ls){
+                    if (keyWord === ""){
+                        $(el).show();
+                    } else if ($(el).html().indexOf(keyWord) > -1){
+                        $(el).show();
+                    } else {
+                        $(el).hide();
+                    }
+                })
+            }
         },
 
         onResizeChart: function(){
@@ -318,6 +380,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
         },
 
         setNodeDetail: function(){
+            if (this.isGettingMapData) return;
             async.series([
                 function(callback){
                     this.nodeDetail.addClass("zoomOut animated");
@@ -328,10 +391,10 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                         this.renderNodeInfo();
                         var legend = this.chart.chart['map'].component.legend;
                         legend.setSelected(this.legendObjList[this.curNum].name)
-                        this.$el.find(".list-ctn button").removeClass("active");
-                        this.$el.find(".list-ctn").find('button[id="' + this.curNum +'"]').addClass("active");
+                        this.$el.find(".node-list-ctn button").removeClass("active");
+                        this.$el.find(".node-list-ctn").find('button[id="' + this.curNum +'"]').addClass("active");
                         callback()
-                    }.bind(this), 1000)
+                    }.bind(this), 500)
                 }.bind(this),                
                 function(callback){
                     setTimeout(function(){
@@ -340,9 +403,44 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                         if (this.curNum >= this.legendObjList.length)
                             this.curNum = 0;
                         callback()
-                    }.bind(this), 1000)
+                    }.bind(this), 500)
                 }.bind(this)]
             );        
+        },
+
+        onClickQueryButton: function(){
+            this.isGettingMapData = true;
+            this.collection.getMapData();
+        },
+
+        initNodeDropMenu: function(){
+            var statusArray = [
+                {name: "全部", value: "All"},
+                {name: "电信", value: "电信"},
+                {name: "移动", value: "移动"},
+                {name: "联通", value: "联通"}
+            ],
+            rootNode = this.$el.find(".dropdown-region");
+            Utility.initDropMenu(rootNode, statusArray, function(value){
+
+            }.bind(this));
+        },
+
+        hide: function(){
+            this.$el.hide();
+            if (this.mapDataTimer) clearInterval(this.mapDataTimer);
+            this.$el.find(".opt-ctn .pause").click();
+        },
+
+        update: function(){
+            this.$el.show();
+            this.$el.find(".opt-ctn .play").click();
+            if (this.mapDataTimer) clearInterval(this.mapDataTimer);
+            this.mapDataTimer = setInterval($.proxy(this.onClickQueryButton, this), 33000);
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target);
         },
 
         initMapTest: function(){
@@ -903,42 +1001,6 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             var legend = this.chart.chart['map'].component.legend;
             legend.setSelected('广州 Top10')
         },
-
-        onClickQueryButton: function(){
-            this.$el.find(".map-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.$el.find(".list-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.$el.find(".map-detail-ctn").html(_.template(template['tpl/loading.html'])({}));
-            
-            //this.collection.getNodeList(this.queryArgs);
-        },
-
-        initNodeDropMenu: function(){
-            var statusArray = [
-                {name: "全部", value: "All"},
-                {name: "电信", value: "电信"},
-                {name: "移动", value: "移动"},
-                {name: "联通", value: "联通"}
-            ],
-            rootNode = this.$el.find(".dropdown-region");
-            Utility.initDropMenu(rootNode, statusArray, function(value){
-
-            }.bind(this));
-        },
-
-        hide: function(){
-            this.$el.hide();
-            this.$el.find(".list-ctn .pause").click();
-        },
-
-        update: function(){
-            this.$el.show();
-            this.$el.find(".list-ctn .play").click();
-        },
-
-        render: function(target) {
-            this.$el.appendTo(target);
-            //this.collection.trigger("get.map.success");
-        }
     });
 
     return NodeManageView;

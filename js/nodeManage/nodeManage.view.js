@@ -149,6 +149,25 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         initDropList: function(list){
+            var cityArray = [
+                {name: "北京", value: 'N39.9-E116.3'},
+                {name: "天津", value: 'N53.2-E123.3'}
+            ];
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-city').get(0),
+                panelID: this.$el.find('#dropdown-city').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                onOk: function(){},
+                data: cityArray,
+                callback: function(data) {
+                    this.$el.find('#dropdown-city .cur-value').html(data.name)
+                    this.$el.find('#input-longitude-latitude').val(data.value);
+                }.bind(this)
+            });
+            this.$el.find('#input-longitude-latitude').val(cityArray[0].value);
+
             var nameList = [
                 {name: "95峰值", value: 1}
                 // {name: "免费", value: 0}

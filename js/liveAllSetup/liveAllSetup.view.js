@@ -51,6 +51,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     "fileTypeId": this.model.get("fileTypeId"),
                     "partition": this.model.get("partition"),
                     "partitions": this.model.get("partitions"),
+                    "releaseModel": parseInt(this.model.get("releaseModel"))
                 }
                 this.partitionsCopy = [];
                 _.each(this.args.partitions, function(el, key, ls){
@@ -65,6 +66,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     "remark":"",
                     "fileTypeId": "",
                     "partition": 0,
+                    "releaseModel": 2,
                     "partitions": []
                 }
             }
@@ -176,13 +178,19 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 onOKCallback:  function(){
                     var options = editPartitionView.getArgs();
                     if (!options) return;
-                    _.each(this.args.partitions, function(el, key, ls){
-                        if (el.partitionId === options.partitionId)
-                            el.content = options.content;
+                    _.each(this.partitionsCopy, function(el, index, ls){
+                        if (el.partitionId === options.partitionId){
+                            if (options.content !== el.content){
+                                this.args.partitions[index].modify = 1;
+                                this.$el.find('.file-content tr[id=' + options.partitionId + ']').addClass("success");
+                            } else {
+                                this.$el.find('.file-content tr[id=' + options.partitionId + ']').removeClass("success");
+                                this.args.partitions[index].modify = 0;
+                            }
+                        }
                     }.bind(this))
 
                     this.editPartitionPopup.$el.modal("hide");
-                    this.$el.find('.file-content tr[id=' + options.partitionId + ']').addClass("success");
                 }.bind(this),
                 onHiddenCallback: function(){}
             }
@@ -210,6 +218,21 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initBussnessDropList: function(){
+            var releaseModes = [
+                {name: "多个分块为一个文件下发", value: 2},
+                {name: "一个分块为一个文件下发", value: 1}
+            ]
+            Utility.initDropMenu(this.$el.find(".file-content"), releaseModes, function(value){
+                this.args.releaseModel = parseInt(value)
+            }.bind(this));
+            if (this.isEdit){
+                var aReleaseModel= _.find(releaseModes, function(object){
+                    return parseInt(object.value) === parseInt(this.args.releaseModel);
+                }.bind(this));
+                this.$el.find(".file-content .cur-value").html(aReleaseModel.name);
+                this.$el.find(".file-content .dropdown-toggle").attr("disabled", "disabled")
+            }
+
             rootNode = this.$el.find(".dropdown-bustype");
             Utility.initDropMenu(rootNode, this.busTypeArray, function(value){
                 this.args.bisTypeId = parseInt(value)
@@ -294,6 +317,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 return;
             } 
             var re = /^\/[^\/]{0,}([a-z0-9\_\-\.]|\/[^\/]){0,}[^\/]{0,}$/;
+            if (this.args.releaseModel === 1)
+                re = /^\/[^\/]{0,}([a-z0-9\_\-\.]|\/[^\/]){0,}\/$/;
             result = re.test(fileName)
             if (!result) {
                 alert("文件名称填错了")
@@ -312,7 +337,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 args.bisTypeId = this.args.bisTypeId;
                 args.nodeGroupId = this.args.nodeGroupId;
                 args.partition = this.args.partition;
-                args. partitions = this.args.partitions;
+                args.partitions = this.args.partitions;
+                args.releaseModel = this.args.releaseModel;
             }
             return args;
         },
@@ -698,7 +724,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                         this.$el.find(otherClass).show();
                         this.$el.find(otherClass).addClass("fadeInLeft animated");
                         callback()
-                    }.bind(this), 1000)
+                    }.bind(this), 500)
                 }.bind(this),                
                 function(callback){
                     setTimeout(function(){
@@ -707,7 +733,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                         this.$el.find(mainClass).removeClass("fadeInLeft animated");
                         this.$el.find(mainClass).removeClass("fadeOutLeft animated");
                         callback()
-                    }.bind(this), 1000)
+                    }.bind(this), 500)
                 }.bind(this)]
             );
         },
@@ -725,7 +751,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                         this.$el.find(mainClass).show();
                         this.$el.find(mainClass).addClass("fadeInLeft animated")
                         callback()
-                    }.bind(this), 1000)
+                    }.bind(this), 500)
                 }.bind(this),                
                 function(callback){
                     setTimeout(function(){
@@ -734,7 +760,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                         this.$el.find(mainClass).removeClass("fadeInLeft animated");
                         this.$el.find(mainClass).removeClass("fadeOutLeft animated");
                         callback()
-                    }.bind(this), 1000)
+                    }.bind(this), 500)
                 }.bind(this)]
             );
         },
@@ -787,7 +813,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             })
             setTimeout(function(){
                 this.collection.trigger("get.filelist.success")
-            }.bind(this), 1000)
+            }.bind(this), 500)
         },
 
         onGetError: function(error){

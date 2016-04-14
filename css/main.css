@@ -350,7 +350,7 @@ td .table {
 }
 
 /*过滤框样式*/
-.select-container {width:448px;border:1px solid #f2f2f2;display:none;position:absolute;left:10px;top:24px;background:#fff;}
+.select-container {width:448px;border:1px solid #f2f2f2;display:none;position:absolute;left:10px;top:24px;background:#fff;z-index:999999;}
 .select-title-container {width:100%;background:#d7edff;overflow:hidden;box-sizing:border-box;font-size:12px;padding:10px 20px;line-height:30px;display:table;vertical-align:middle;}
 .select-title-container input[type=search] {height:25px;border:1px solid #e5e5e5;width:98px;font-size:12px;line-height:25px;margin-left:4px;margin-top:2px;padding:6px 0 6px 
 12px;box-sizing:border-box;float:left;}
@@ -358,7 +358,7 @@ td .table {
 .select-search-tips {color:#0095d0;float:left;}
 .select-checkbox-value {position:relative;height:15px;line-height:15px;padding-left:18px;overflow:hidden;}
 .select-checkbox-value:before {
-	content:"";width:13px;height:13px;position:absolute;border:1px solid #e5e5e5;left:0;top:0;background:#fff;overflow:hidden;cursor:pointer;
+	content:"";width:13px;height:13px;position:absolute;border:1px solid #e5e5e5;left:1px;top:0;background:#fff;overflow:hidden;cursor:pointer;
 }
 .select-checkbox-value:after {
 	border:none;
@@ -367,7 +367,7 @@ td .table {
 .select-checkboxcon {position:relative;overflow:hidden;box-sizing:border-box;display:table;vertical-align:middle;width:100%;padding:6px 20px;}
 .select-checkbox {display:inline-block;width:0;height:0;opacity:0;*width:20px;*height:20px;position:absolute;top:5px;}
 .select-checkboxcon input[type=checkbox]:checked+ .select-checkbox-value:before {
-	content:"";width:13px;height:13px;position:absolute;border:1px solid #e5e5e5;left:0;top:0;overflow:hidden;cursor:pointer;
+	content:"";width:13px;height:13px;position:absolute;border:1px solid #e5e5e5;left:1px;top:0;overflow:hidden;cursor:pointer;
 }
 .select-checkboxcon input[type=checkbox]:checked+ .select-checkbox-value:after {
 	cursor:pointer;
@@ -384,7 +384,7 @@ td .table {
 
 .select-checkbox-container {color:#0095d0;overflow:hidden;display:table-cell;vertical-align:middle;}
 .select-checkbox-container .checkboxcon {float:left;width:auto;margin-left:10px;}
-.select-value-layer {width:100%;max-height:135px;overflow-y:scroll;}
+.select-value-layer {width:100%;max-height:135px;overflow-y:scroll;padding-left:0;}
 .select-value-layer li {clear:both;overflow:hidden;display: table;width:100%;box-sizing:border-box;cursor:pointer;}
 .select-value-layer li.hide {display:none;}
 .select-value-layer li:hover {background:#f8f8f8;}
@@ -404,7 +404,6 @@ td .table {
 .select-check-all {
   height: 16px;
   display: inline-block;
-  background: url(../images/icon.png) 0 -46px no-repeat;
   line-height: 16px;
   padding-left: 20px;
   cursor: pointer;
@@ -428,15 +427,13 @@ td .table {
   padding-left: 20px;
   margin-left: 10px;
   cursor: pointer;
+  padding-right:10px;
 }
 
 .select-btn-ok {
-  height: 16px;
   display: inline-block;
-  line-height: 16px;
   margin-left: 10px;
   cursor: pointer;
-  padding-left: 6px;
 }
 
 .select-select-close {
@@ -449,10 +446,16 @@ td .table {
   cursor: pointer;
 }
 /* title上的按钮 */
-.select-check-all {height:16px;display:inline-block;line-height:16px;cursor:pointer;padding-top:5px;display:table-cell;vertical-align:middle;padding-right:10px;}
-.select-cancel-all {height:16px;display:inline-block;line-height:16px;margin-left:10px;cursor:pointer;padding-top:5px;display:table-cell;vertical-align:middle;padding-right:10px;}
-.select-select-back {height:16px;display:inline-block;line-height:16px;margin-left:10px;cursor:pointer;padding-top:5px;display:table-cell;vertical-align:middle;padding-right:10px;}
-.select-btn-ok {height:16px;display:inline-block;line-height:16px;margin-left:10px;cursor:pointer;border:1px solid red;padding:1px 5px;border-radius:2px;display:table-cell;vertical-align:middle;}
+.select-check-all {height:16px;display:inline-block;line-height:16px;cursor:pointer;display:table-cell;vertical-align:middle;}
+.select-cancel-all {height:16px;display:inline-block;line-height:16px;margin-left:10px;cursor:pointer;display:table-cell;vertical-align:middle;}
+.select-select-back {height:16px;display:inline-block;line-height:16px;margin-left:10px;cursor:pointer;display:table-cell;vertical-align:middle;}
+.select-btn-ok {
+  height: 16px;
+  line-height: 16px;
+  margin-left: 10px;
+  cursor: pointer;
+  padding-left: 6px;
+  line-height:16px;cursor:pointer;display:table-cell;vertical-align:middle;}
 
 .bisType {
   margin-left: 10px;

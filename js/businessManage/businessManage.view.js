@@ -76,9 +76,7 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                     _this.setaddNodeTr(data);
                 },
                 data: data,
-                callback: function(data) {
-                    alert(data.name)
-                }
+                callback: function(data) {}
             });
         },
         getArgs: function() {

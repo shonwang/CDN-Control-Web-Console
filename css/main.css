@@ -396,9 +396,9 @@ td .table {
 .select-checkboxcon.isSingle .select-checkbox-value:after {display:none;}
 .select-checkboxcon.isSingle .select-checkbox-value:before {display:none;}
 
-.icon-check-all:before {content:'';display:inline-block;float:left;height:16px;width:16px;background:url(icon.png) 0 -46px no-repeat;}
-.icon-check-cancel:before {content:'';display:inline-block;float:left;height:16px;width:16px;background:url(icon.png) 0 -30px no-repeat;}
-.icon-check-back:before {content:'';display:inline-block;float:left;height:16px;width:16px;background:url(icon.png) 0 -14px no-repeat;}
+.icon-check-all:before {content:'';display:inline-block;float:left;height:16px;width:16px;background:url(../images/icon.png) 0 -46px no-repeat;}
+.icon-check-cancel:before {content:'';display:inline-block;float:left;height:16px;width:16px;background:url(../images/icon.png) 0 -30px no-repeat;}
+.icon-check-back:before {content:'';display:inline-block;float:left;height:16px;width:16px;background:url(../images/icon.png) 0 -14px no-repeat;}
 
 /* title上的按钮 */
 .select-check-all {
@@ -413,7 +413,7 @@ td .table {
 .select-cancel-all {
   height: 16px;
   display: inline-block;
-  background: url(../images/icon.png) 0 -30px no-repeat;
+
   line-height: 16px;
   padding-left: 20px;
   margin-left: 10px;
@@ -423,7 +423,7 @@ td .table {
 .select-select-back {
   height: 16px;
   display: inline-block;
-  background: url(../images/icon.png) 0 -14px no-repeat;
+
   line-height: 16px;
   padding-left: 20px;
   margin-left: 10px;
@@ -442,7 +442,7 @@ td .table {
 .select-select-close {
   height: 14px;
   float: right;
-  background: url(../images/icon.png) 0 0 no-repeat;
+
   width: 14px;
   margin-top: 10px;
   overflow: hidden;

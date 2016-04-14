@@ -346,7 +346,6 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.$el.find(".node-list-ctn").find('button[id="' + this.curNum + '"]').click();
             this.curNum = this.curNum + 1;
             this.$el.find(".opt-ctn .play").click();
-            //this.timer = setInterval($.proxy(this.setNodeDetail, this), 10000)
         },
 
         onKeyupSearchNode: function(event) {
@@ -442,7 +441,6 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
 
         render: function(target) {
             this.$el.appendTo(target);
-            //this.collection.trigger("get.map.success");
         },
 
         initMapTest: function(){

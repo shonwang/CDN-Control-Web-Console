@@ -51,9 +51,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     "fileTypeId": this.model.get("fileTypeId"),
                     "partition": this.model.get("partition"),
                     "partitions": this.model.get("partitions"),
-                    "releaseModel": this.model.get("releaseModel")
+                    "releaseModel": parseInt(this.model.get("releaseModel"))
                 }
-                console.log(this.args)
                 this.partitionsCopy = [];
                 _.each(this.args.partitions, function(el, key, ls){
                     this.partitionsCopy.push(_.extend({}, el));
@@ -227,8 +226,13 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.args.releaseModel = parseInt(value)
             }.bind(this));
             if (this.isEdit){
-                this.$el.find(".file-content .partition-ctn label").hide();
-                this.$el.find(".file-content .dropdown").hide();
+                // this.$el.find(".file-content .partition-ctn label").hide();
+                // this.$el.find(".file-content .dropdown").hide();
+                var aReleaseModel= _.find(releaseModes, function(object){
+                    return parseInt(object.value) === parseInt(this.args.releaseModel);
+                }.bind(this));
+                this.$el.find(".file-content .cur-value").html(aReleaseModel.name);
+                this.$el.find(".file-content .dropdown-toggle").attr("disabled", "disabled")
             }
 
             rootNode = this.$el.find(".dropdown-bustype");

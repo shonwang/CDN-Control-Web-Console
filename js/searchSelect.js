@@ -77,7 +77,7 @@
 				//this.oTitleContainer.appendChild(oSelectInput);
 				this.oSelectInput=oSelectInput;
 			}
-            if(!this.isSingle){
+            if(!this.isSingle && this.selectData.length>1){
 			    var oCheckBoxContainer=this.createElement("div");
 			    oCheckBoxContainer.className="select-checkbox-container";
 			    oCheckBoxContainer.appendChild(this.createCheckBtn());
@@ -218,7 +218,7 @@
 			}
 
 
-            if(!this.isSingle){
+            if(!this.isSingle &&  this.selectData.length>1){
 
                 var btnCheckAll=this.btnCheckAll;
                 var btnCancelAll=this.btnCancelAll;

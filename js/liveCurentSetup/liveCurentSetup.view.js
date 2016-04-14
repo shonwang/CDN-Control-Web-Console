@@ -242,7 +242,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
                         this.$el.find(otherClass).show();
                         this.$el.find(otherClass).addClass("fadeInLeft animated");
                         callback()
-                    }.bind(this), 1000)
+                    }.bind(this), 500)
                 }.bind(this),                
                 function(callback){
                     setTimeout(function(){
@@ -251,7 +251,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
                         this.$el.find(mainClass).removeClass("fadeInLeft animated");
                         this.$el.find(mainClass).removeClass("fadeOutLeft animated");
                         callback()
-                    }.bind(this), 1000)
+                    }.bind(this), 500)
                 }.bind(this)]
             );
         },
@@ -269,7 +269,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
                         this.$el.find(mainClass).show();
                         this.$el.find(mainClass).addClass("fadeInLeft animated")
                         callback()
-                    }.bind(this), 1000)
+                    }.bind(this), 500)
                 }.bind(this),                
                 function(callback){
                     setTimeout(function(){
@@ -278,7 +278,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
                         this.$el.find(mainClass).removeClass("fadeInLeft animated");
                         this.$el.find(mainClass).removeClass("fadeOutLeft animated");
                         callback()
-                    }.bind(this), 1000)
+                    }.bind(this), 500)
                 }.bind(this)]
             );
         },

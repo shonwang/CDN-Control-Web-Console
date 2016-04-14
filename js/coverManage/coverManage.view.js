@@ -394,7 +394,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                         this.$el.find(".node-list-ctn button").removeClass("active");
                         this.$el.find(".node-list-ctn").find('button[id="' + this.curNum +'"]').addClass("active");
                         callback()
-                    }.bind(this), 1000)
+                    }.bind(this), 500)
                 }.bind(this),                
                 function(callback){
                     setTimeout(function(){
@@ -403,7 +403,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                         if (this.curNum >= this.legendObjList.length)
                             this.curNum = 0;
                         callback()
-                    }.bind(this), 1000)
+                    }.bind(this), 500)
                 }.bind(this)]
             );        
         },

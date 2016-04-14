@@ -1,4 +1,4 @@
-define("businessManage.view", ['require', 'exports', 'template', 'modal.view', 'utility', 'searchSelect'], function(require, exports, template, Modal, Utility, SearchSelect) {
+define("businessManage.view", ['require', 'exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
     var AddOrEditBusinessView = Backbone.View.extend({
         events: {},

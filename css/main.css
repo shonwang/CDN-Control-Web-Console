@@ -68,9 +68,9 @@ td .label {
 .table>tfoot>tr>th,
 .table>thead>tr>td,
 .table>thead>tr>th {
-    vertical-align: middle;
-    word-break: keep-all;
-    white-space:nowrap;
+  vertical-align: middle;
+  word-break: keep-all;
+  white-space: nowrap;
 }
 
 .disp-table>tbody>tr>td {
@@ -93,9 +93,9 @@ td .label {
   margin: 0
 }
 
-.node-manage .table-ctn{
-    margin-bottom: 20px;
-    border: 1px solid #ddd;
+.node-manage .table-ctn {
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
 }
 
 .map-ctn {
@@ -110,28 +110,28 @@ td .label {
   top: 200px;
 }
 
-.cover-manage .cover-detail-ctn{
+.cover-manage .cover-detail-ctn {
   background-color: #eee;
   min-height: 768px;
   padding-right: 20px;
 }
 
-.cover-manage .node-list-ctn{
-  background-color:#eee;
+.cover-manage .node-list-ctn {
+  background-color: #eee;
   height: 768px;
   overflow: auto;
 }
 
 .badge-primary {
-   background-color: #337ab7;
+  background-color: #337ab7;
 }
 
 .badge-danger {
-   background-color: #d9534f;
+  background-color: #d9534f;
 }
 
-.badge-success{
-   background-color: #5cb85c;
+.badge-success {
+  background-color: #5cb85c;
 }
 
 td .radio {
@@ -350,55 +350,215 @@ td .table {
 }
 
 /*过滤框样式*/
-.select-container {width:448px;border:1px solid #f2f2f2;display:none;position:absolute;left:10px;top:24px;background:#fff;z-index:999999;}
-.select-title-container {width:100%;background:#d7edff;overflow:hidden;box-sizing:border-box;font-size:12px;padding:10px 20px;line-height:30px;display:table;vertical-align:middle;}
-.select-title-container input[type=search] {height:25px;border:1px solid #e5e5e5;width:98px;font-size:12px;line-height:25px;margin-left:4px;margin-top:2px;padding:6px 0 6px 
-12px;box-sizing:border-box;float:left;}
-.search-ctn {display:table-cell;vertical-align:middle;height:25px;}
-.select-search-tips {color:#0095d0;float:left;}
-.select-checkbox-value {position:relative;height:15px;line-height:15px;padding-left:18px;overflow:hidden;}
+.select-container {
+  border-radius: 4px;
+  -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175); 
+  box-shadow: 0 6px 12px rgba(0,0,0,.175);
+  width: 448px;
+  border: 1px solid #f2f2f2;
+  display: none;
+  position: absolute;
+  left: 10px;
+  top: 24px;
+  background: #fff;
+  z-index: 999999;
+}
+
+.select-title-container {
+  width: 100%;
+  background: #d7edff;
+  overflow: hidden;
+  box-sizing: border-box;
+  font-size: 12px;
+  padding: 10px 20px;
+  line-height: 30px;
+  display: table;
+  vertical-align: middle;
+}
+
+.select-title-container input[type=search] {
+  height: 25px;
+  border: 1px solid #e5e5e5;
+  width: 98px;
+  font-size: 12px;
+  line-height: 25px;
+  margin-left: 4px;
+  margin-top: 2px;
+  padding: 6px 0 6px 
+  12px;
+  box-sizing: border-box;
+  float: left;
+}
+
+.search-ctn {
+  display: table-cell;
+  vertical-align: middle;
+  height: 25px;
+}
+
+.select-search-tips {
+  color: #0095d0;
+  float: left;
+}
+
+.select-checkbox-value {
+  position: relative;
+  height: 15px;
+  line-height: 15px;
+  padding-left: 18px;
+  overflow: hidden;
+}
+
 .select-checkbox-value:before {
-	content:"";width:13px;height:13px;position:absolute;border:1px solid #e5e5e5;left:1px;top:0;background:#fff;overflow:hidden;cursor:pointer;
+  content: "";
+  width: 13px;
+  height: 13px;
+  position: absolute;
+  border: 1px solid #e5e5e5;
+  left: 1px;
+  top: 0;
+  background: #fff;
+  overflow: hidden;
+  cursor: pointer;
 }
+
 .select-checkbox-value:after {
-	border:none;
-	transition:all 0.2s ease-in;
+  border: none;
+  transition: all 0.2s ease-in;
 }
-.select-checkboxcon {position:relative;overflow:hidden;box-sizing:border-box;display:table;vertical-align:middle;width:100%;padding:6px 20px;}
-.select-checkbox {display:inline-block;width:0;height:0;opacity:0;*width:20px;*height:20px;position:absolute;top:5px;}
+
+.select-checkboxcon {
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: table;
+  vertical-align: middle;
+  width: 100%;
+  padding: 6px 20px;
+}
+
+.select-checkbox {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  *width: 20px;
+  *height: 20px;
+  position: absolute;
+  top: 5px;
+}
+
 .select-checkboxcon input[type=checkbox]:checked+ .select-checkbox-value:before {
-	content:"";width:13px;height:13px;position:absolute;border:1px solid #e5e5e5;left:1px;top:0;overflow:hidden;cursor:pointer;
+  content: "";
+  width: 13px;
+  height: 13px;
+  position: absolute;
+  border: 1px solid #e5e5e5;
+  left: 1px;
+  top: 0;
+  overflow: hidden;
+  cursor: pointer;
 }
+
 .select-checkboxcon input[type=checkbox]:checked+ .select-checkbox-value:after {
-	cursor:pointer;
-	content:"";
-	width:3px;height:6px;border-right:1px solid #0097d3;border-bottom:1px solid #0097d3;
-	-webkit-transform: rotate(45deg);
-	-ms-transform: rotate(45deg);
-	transform: rotate(45deg);
-	position:absolute;
-	left:5px;
-	top:4px;
-	transition:all 0.2s ease-out;
+  cursor: pointer;
+  content: "";
+  width: 3px;
+  height: 6px;
+  border-right: 1px solid #0097d3;
+  border-bottom: 1px solid #0097d3;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+  position: absolute;
+  left: 5px;
+  top: 4px;
+  transition: all 0.2s ease-out;
 }
 
-.select-checkbox-container {color:#0095d0;overflow:hidden;display:table-cell;vertical-align:middle;}
-.select-checkbox-container .checkboxcon {float:left;width:auto;margin-left:10px;}
-.select-value-layer {width:100%;max-height:135px;overflow-y:scroll;padding-left:0;}
-.select-value-layer li {clear:both;overflow:hidden;display: table;width:100%;box-sizing:border-box;cursor:pointer;}
-.select-value-layer li.hide {display:none;}
-.select-value-layer li:hover {background:#f8f8f8;}
+.select-checkbox-container {
+  color: #0095d0;
+  overflow: hidden;
+  display: table-cell;
+  vertical-align: middle;
+}
 
-.select-checkboxcon.isSingle {padding:6px 0px;}
-.select-checkboxcon.isSingle input[type=checkbox] .select-checkbox-value:after {display:none;}
-.select-checkboxcon.isSingle input[type=checkbox] .select-checkbox-value:before {display:none;}
+.select-checkbox-container .checkboxcon {
+  float: left;
+  width: auto;
+  margin-left: 10px;
+}
 
-.select-checkboxcon.isSingle .select-checkbox-value:after {display:none;}
-.select-checkboxcon.isSingle .select-checkbox-value:before {display:none;}
+.select-value-layer {
+  width: 100%;
+  max-height: 135px;
+  overflow-y: scroll;
+  padding-left: 0;
+}
 
-.icon-check-all:before {content:'';display:inline-block;float:left;height:16px;width:16px;background:url(../images/icon.png) 0 -46px no-repeat;}
-.icon-check-cancel:before {content:'';display:inline-block;float:left;height:16px;width:16px;background:url(../images/icon.png) 0 -30px no-repeat;}
-.icon-check-back:before {content:'';display:inline-block;float:left;height:16px;width:16px;background:url(../images/icon.png) 0 -14px no-repeat;}
+.select-value-layer li {
+  clear: both;
+  overflow: hidden;
+  display: table;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.select-value-layer li.hide {
+  display: none;
+}
+
+.select-value-layer li:hover {
+  background: #f8f8f8;
+}
+
+.select-checkboxcon.isSingle {
+  padding: 6px 0px;
+}
+
+.select-checkboxcon.isSingle input[type=checkbox] .select-checkbox-value:after {
+  display: none;
+}
+
+.select-checkboxcon.isSingle input[type=checkbox] .select-checkbox-value:before {
+  display: none;
+}
+
+.select-checkboxcon.isSingle .select-checkbox-value:after {
+  display: none;
+}
+
+.select-checkboxcon.isSingle .select-checkbox-value:before {
+  display: none;
+}
+
+.icon-check-all:before {
+  content: '';
+  display: inline-block;
+  float: left;
+  height: 16px;
+  width: 16px;
+  background: url(../images/icon.png) 0 -46px no-repeat;
+}
+
+.icon-check-cancel:before {
+  content: '';
+  display: inline-block;
+  float: left;
+  height: 16px;
+  width: 16px;
+  background: url(../images/icon.png) 0 -30px no-repeat;
+}
+
+.icon-check-back:before {
+  content: '';
+  display: inline-block;
+  float: left;
+  height: 16px;
+  width: 16px;
+  background: url(../images/icon.png) 0 -14px no-repeat;
+}
 
 /* title上的按钮 */
 .select-check-all {
@@ -411,7 +571,6 @@ td .table {
 .select-cancel-all {
   height: 16px;
   display: inline-block;
-
   line-height: 16px;
   padding-left: 10px;
   margin-left: 10px;
@@ -421,96 +580,119 @@ td .table {
 .select-select-back {
   height: 16px;
   display: inline-block;
-
   line-height: 16px;
   padding-left: 10px;
   margin-left: 10px;
   cursor: pointer;
-  padding-right:10px;
+  padding-right: 10px;
 }
-
-
 
 .select-select-close {
   height: 14px;
   float: right;
-  background:url(../images/icon.png) 0 0 no-repeat;
+  background: url(../images/icon.png) 0 0 no-repeat;
   width: 14px;
   margin-top: 10px;
   overflow: hidden;
   cursor: pointer;
 }
+
 /* title上的按钮 */
-.select-check-all {height:16px;display:inline-block;line-height:16px;cursor:pointer;display:table-cell;vertical-align:middle;}
-.select-cancel-all {height:16px;display:inline-block;line-height:16px;cursor:pointer;display:table-cell;vertical-align:middle;}
-.select-select-back {height:16px;display:inline-block;line-height:16px;cursor:pointer;display:table-cell;vertical-align:middle;}
+.select-check-all {
+  height: 16px;
+  display: inline-block;
+  line-height: 16px;
+  cursor: pointer;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.select-cancel-all {
+  height: 16px;
+  display: inline-block;
+  line-height: 16px;
+  cursor: pointer;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.select-select-back {
+  height: 16px;
+  display: inline-block;
+  line-height: 16px;
+  cursor: pointer;
+  display: table-cell;
+  vertical-align: middle;
+}
+
 .select-btn-ok {
-
-
-cursor:pointer;display:table-cell;vertical-align:middle;}
+  cursor: pointer;
+  display: table-cell;
+  vertical-align: middle;
+}
 
 .bisType {
   margin-left: 10px;
   margin-right: -6px;
 }
 
-.css-gray{
-  color:gray;
+.css-gray {
+  color: gray;
 }
 
-.ctrl-nav-container{
-    box-shadow: 0 0px 10px #333;
+.ctrl-nav-container {
+  box-shadow: 0 0px 10px #333;
 }
 
-.jquery-accordion-menu{
-    font-family: "Microsoft Yahei"
+.jquery-accordion-menu {
+  font-family: "Microsoft Yahei"
 }
 
-.jquery-accordion-menu{
-    position: fixed;
-    max-width: 200px;
-    min-width: 50px;
-    bottom: 0;
-    top:0;
-    box-shadow: 0 0px 20px #333;
-    background-color: #222;
+.jquery-accordion-menu {
+  position: fixed;
+  max-width: 200px;
+  min-width: 50px;
+  bottom: 0;
+  top: 0;
+  box-shadow: 0 0px 20px #333;
+  background-color: #222;
 }
 
 .jquery-accordion-menu .glyphicon {
   margin-right: 0px;
 }
 
-.packup-sidebar{
-   width: 50px;
+.packup-sidebar {
+  width: 50px;
 }
 
-.jquery-accordion-menu ul li{
+.jquery-accordion-menu ul li {
   -moz-transition: all .2s linear;
   -ms-transition: all .2s linear;
   transition: all .2s linear;
 }
 
-.packup-sidebar .submenu-indicator{
-   display: none;
+.packup-sidebar .submenu-indicator {
+  display: none;
 }
 
-.packup-sidebar.jquery-accordion-menu ul li a{
-   padding: 14px 12px;
+.packup-sidebar.jquery-accordion-menu ul li a {
+  padding: 14px 12px;
 }
 
-.packup-sidebar.jquery-accordion-menu ul ul.submenu>li>a{
-   padding-left: 12px;
+.packup-sidebar.jquery-accordion-menu ul ul.submenu>li>a {
+  padding-left: 12px;
 }
 
-.packup-sidebar ul li:hover{
-   width: 200px;
+.packup-sidebar ul li:hover {
+  width: 200px;
 }
 
-.packup-sidebar ul li:hover .submenu-indicator{
-   display: block;
+.packup-sidebar ul li:hover .submenu-indicator {
+  display: block;
 }
 
-.modal-content .modal-body .ipManage-info{
-    max-height: 400px;
-    overflow-y: auto;
+.modal-content .modal-body .ipManage-info {
+  max-height: 400px;
+  overflow-y: auto;
 }

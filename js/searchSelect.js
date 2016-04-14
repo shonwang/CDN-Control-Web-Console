@@ -146,7 +146,7 @@
 			oSelectBack.innerHTML="<span class='icon-check-back'></span><span>反选</span>";
             var oSelectBtnOK=this.createElement("div");
             if(this.hasOkBtn){
-                oSelectBtnOK.className="select-btn-ok btn btn-primary";
+                oSelectBtnOK.className="select-btn-ok btn btn-sm btn-primary";
                 oSelectBtnOK.innerHTML="确定";
             }
 

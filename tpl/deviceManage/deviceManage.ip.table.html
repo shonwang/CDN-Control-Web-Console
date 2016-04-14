@@ -1,29 +1,45 @@
-<table class="table table-striped table-hover">  
-<thead> 
-  <tr>
-    <th>#</th>
-    <th>IP</th>
-    <th>类型</th>
-    <th>状态</th>
-    <th>操作</th> 
-  </tr>
-</thead>
-<tbody>
+<table class="table table-striped table-hover">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>IP</th>
+        <th>类型</th>
+        <th>状态</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
     <% for(var i = 0; i < data.length; i++) { %>
-        <tr data-id="<%=data[i].id%>">
-          <td><%=data[i]["id"]%></td>
-          <td><%=data[i]["ip"]%></td>
-          <td><%=data[i]["typeName"]%></td>
-          <td><%=data[i]["statusName"]%></td>
-          <td>
-              <a href="javascript:void(0)" id="<%=data[i]['id']%>" data-ip="<%=data[i]["ip"]%>" data-status="2" class="edit" title="编辑" style="display: none">
-                  <span class="glyphicon glyphicon glyphicon-edit"></span>
-              </a>
-              <a href="javascript:void(0)" id="<%=data[i]['id']%>" data-ip="<%=data[i]["ip"]%>" data-status="2" class="delete" title="删除">
-                  <span class="glyphicon glyphicon-trash"></span>
-              </a>
-          </td>
-        </tr>
-    <% } %>  
-</tbody>
+    <tr data-id="<%=data[i].id%>">
+        <td><%=data[i]["id"]%></td>
+        <td><%=data[i]["ip"]%></td>
+        <td><%=data[i]["typeName"]%></td>
+        <td><%=data[i]["statusName"]%></td>
+        <td>
+            <a href="javascript:void(0)" id="<%=data[i]['id']%>" data-ip="<%=data[i]['ip']%>" data-status="2" class="edit" title="编辑" style="display: none">
+                <span class="glyphicon glyphicon glyphicon-edit"></span>
+            </a>
+            <a href="javascript:void(0)" id="<%=data[i]['id']%>" data-ip="<%=data[i]['ip']%>" data-status="2" class="delete" title="删除">
+                <span class="glyphicon glyphicon-trash"></span>
+            </a>
+            <% if(data[i]['status'] == '2' || data[i]['status'] == '6'){ %>
+                <a href="javascript:void(0)" id="<%=data[i]['id']%>" class="ipOperation" data-ip="<%=data[i]['ip']%>" data-status="1" title="开启">
+                    <span class="glyphicon glyphicon-play-circle"></span>
+                </a>
+            <% }else if(data[i]['status'] == '1'){ %>
+                <a href="javascript:void(0)" id="<%=data[i]['id']%>" class="ipOperation" data-ip="<%=data[i]['ip']%>" data-status="2" title="暂停">
+                    <span class="glyphicon glyphicon-pause"></span>
+                 </a>
+            <% }else{ %>
+                <a href="javascript:void(0)">
+                    <span class="glyphicon glyphicon-off css-gray"></span>
+                </a>
+                <a href="javascript:void(0)">
+                    <span class="glyphicon glyphicon-play-circle css-gray"></span>
+                </a>
+            <% } %>
+        </td>
+    </tr>
+    <% } %>
+    </tbody>
 </table>

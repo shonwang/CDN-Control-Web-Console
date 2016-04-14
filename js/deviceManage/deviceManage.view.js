@@ -145,6 +145,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el = $(_.template(template['tpl/deviceManage/deviceManage.ipmanage.html'])({}));
             this.$el.find(".ip-table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
+            this.noticeInfoStr = '<div class="alert alert-info"><strong>数据加载中，请耐心等待 </strong></div>';
+
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancelEditIP, this));
             this.$el.find(".update").on("click", $.proxy(this.onClickUpateIP, this));
             this.$el.find(".create").on("click", $.proxy(this.onClickAddIP, this));
@@ -175,10 +177,13 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("ip.type.success", $.proxy(this.onGetIpTypeSuccess, this));
             this.collection.on("ip.type.error", $.proxy(this.onGetError, this));
 
-            this.collection.off("get.InfoPause.success");
-            this.collection.on("get.InfoPause.success", $.proxy(this.onGetPauseSuccess, this));
-            this.collection.off("get.InfoPause.error");
-            this.collection.on("get.InfoPause.error", $.proxy(this.onGetError, this));
+            this.collection.off("get.ipInfoPause.success");
+            this.collection.on("get.ipInfoPause.success", $.proxy(this.onGetPauseSuccess, this));
+            this.collection.off("get.ipInfoPause.error");
+            this.collection.on("get.ipInfoPause.error", $.proxy(this.onGetError, this));
+
+            this.collection.off("get.ipInfoSubmit.error");
+            this.collection.on("get.ipInfoSubmit.error",  $.proxy(this.onGetError, this));
 
             this.collection.ipTypeList();
         },
@@ -269,6 +274,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.table = $(_.template(template['tpl/deviceManage/deviceManage.ip.table.html'])({data: this.ipList}));
             this.$el.find(".ip-table-ctn").html(this.table[0]);
             this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+            this.table.find("tbody .ipOperation").on("click", $.proxy(this.onClickIpOperation, this));
             this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
         },
 
@@ -324,12 +330,114 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.id = id;
             this.ip = ip;
             this.deviceId = this.model.get("id");
-            this.collection.getPauseInfo(ip);
+            this.collection.getIpInfoPause(ip);
 
             //var result = confirm("你确定要删除绑定的IP吗？");
             //if (!result) return
             //console.log(this.model.get("id"));
             //this.collection.deleteDeviceIp({device_id:this.model.get("id"), ip_id: id})
+        },
+
+        onClickIpOperation: function(event){
+            var eventTarget = event.srcElement || event.target,id,status,ip;
+
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+                status = eventTarget.attr("data-status");
+                ip = eventTarget.attr("data-ip");
+            } else {
+                id = $(eventTarget).attr("id");
+                status = $(eventTarget).attr("data-status");
+                ip = $(eventTarget).attr("data-ip");
+            }
+            this.id = id;
+            this.status = status;
+            this.ip = ip;
+            if(status == '1'){ //开启
+                this.collection.getIpInfoStart(ip);
+
+                this.commonDialog();
+                this.commonPopup.$el.find('.close').hide();
+                this.commonPopup.$el.find('.commonPopup').hide();
+
+                this.collection.off("get.ipInfoStart.success");
+                this.collection.on("get.ipInfoStart.success", $.proxy(this.onIpInfoStartSuccess, this));
+            }else if(status == '2' || status == '6'){ //暂停
+                this.collection.getIpInfoPause(ip);
+
+                this.commonDialog();
+                this.commonPopup.$el.find('.close').hide();
+                this.commonPopup.$el.find('.commonPopup').hide();
+
+                this.collection.off("get.ipInfoPause.success");
+                this.collection.on("get.ipInfoPause.success", $.proxy(this.onIpInfoPauseSuccess, this));
+            }
+
+        },
+
+        commonDialog: function(){
+            if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
+            var options = {
+                title: "警告",
+                body : this.noticeInfoStr,
+                backdrop : 'static',
+                type     : 2,
+                cancelButtonText : "关闭",
+                onOKCallback:  function(){
+                    var options = {
+                        "id" : this.id,
+                        "status" : this.status
+                    }
+                    if (!options) return;
+                    this.collection.getIpInfoSubmit(options);
+                    this.commonPopup.$el.modal('hide');
+                    //this.ipManagePopup.$el.modal('hide');
+                }.bind(this),
+                onCancelCallback: function(){
+                    this.commonPopup.$el.modal('hide');
+                }.bind(this)
+            }
+
+            this.commonPopup = new Modal(options);
+        },
+
+        onIpInfoStartSuccess: function(res){
+            var data = res;
+            var body = '';
+            if(data.length > 0){
+                data[0].title = 'IP '+this.ip+'暂停前在下列调度关系中服务，点击确定，下列调度关系将恢复，点击取消，IP状态不会变更，是否确定？';
+
+                this.table_modal = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:data}));
+                this.table_modal.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:data}));
+
+                this.commonPopup.$el.find('.modal-body').html(this.table_modal);
+            }else{
+                body = '确定要开启服务吗？';
+                this.commonPopup.$el.find('.close').show();
+                this.commonPopup.$el.find('.commonPopup').show();
+                this.commonPopup.$el.find('h4').html('恢复IP');
+                this.commonPopup.$el.find('.modal-body strong').html(body);
+            }
+        },
+
+        onIpInfoPauseSuccess: function(res){
+            var data = res;
+            var body = '';
+            if(data.length > 0){
+                data[0].title = 'IP '+this.ip+'在下列调度关系中服务，点击确定，该IP将不对下列调度关系服务，点击取消，IP状态不会改变，是否确定？';
+
+                this.table_modal = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:data}));
+                this.table_modal.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:data}));
+
+                this.commonPopup.$el.find('.modal-body').html(this.table_modal);
+            }else{
+                body = '确定要暂停服务吗？';
+                this.commonPopup.$el.find('.close').show();
+                this.commonPopup.$el.find('.commonPopup').show();
+                this.commonPopup.$el.find('h4').html('暂停IP');
+                this.commonPopup.$el.find('.modal-body strong').html(body);
+            }
         },
 
         onClickAddIP: function(){
@@ -714,6 +822,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
                 this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
                 this.table.find("tbody .ip-manage").on("click", $.proxy(this.onClickItemIp, this));
+
                 this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
                 this.table.find("tbody .hangup").on("click", $.proxy(this.onClickItemHangup, this));
                 this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));

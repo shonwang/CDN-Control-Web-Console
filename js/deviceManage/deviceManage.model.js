@@ -405,7 +405,35 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
             $.ajax(defaultParas);
         },
 
-        getPauseInfo: function(args){
+        //getPauseInfo: function(args){
+        //    var url = BASE_URL + "/rs/ip/prompt/pause?ip="+args;
+        //    var defaultParas = {
+        //        type: "GET",
+        //        url: url,
+        //        async: true,
+        //        timeout: 30000,
+        //        contentType: "application/json",
+        //        processData: false
+        //    };
+        //
+        //    defaultParas.success = function(res){
+        //        if (res){
+        //            this.trigger("get.InfoPause.success",res);
+        //        } else {
+        //            this.trigger("get.InfoPause.error");
+        //        }
+        //    }.bind(this);
+        //
+        //    defaultParas.error = function(response, msg){
+        //        if (response&&response.responseText)
+        //            response = JSON.parse(response.responseText)
+        //        this.trigger("get.InfoPause.error", response);
+        //    }.bind(this);
+        //
+        //    $.ajax(defaultParas);
+        //},
+
+        getIpInfoPause: function(args){
             var url = BASE_URL + "/rs/ip/prompt/pause?ip="+args;
             var defaultParas = {
                 type: "GET",
@@ -418,20 +446,78 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
 
             defaultParas.success = function(res){
                 if (res){
-                    this.trigger("get.InfoPause.success",res);
+                    this.trigger("get.ipInfoPause.success",res);
                 } else {
-                    this.trigger("get.InfoPause.error"); 
+                    this.trigger("get.ipInfoPause.error",res);
                 }
             }.bind(this);
 
             defaultParas.error = function(response, msg){
                 if (response&&response.responseText)
                     response = JSON.parse(response.responseText)
-                this.trigger("get.InfoPause.error", response); 
+                this.trigger("get.ipInfoPause.error", response);
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
+        getIpInfoStart: function(args){
+            var url = BASE_URL + "/rs/ip/prompt/open?ip="+args;
+            //var url = BASE_URL + '/rs/ip/prompt/open?ip=10.10.10.10';
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
+            };
+
+            defaultParas.success = function(res){
+                if (res){
+                    this.trigger("get.ipInfoStart.success",res);
+                } else {
+                    this.trigger("get.ipInfoStart.error",res);
+                }
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.ipInfoStart.error", response);
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
+        getIpInfoSubmit: function(args){
+            var url = BASE_URL + "/rs/ip/status/update/confirm?id="+args.id+"&status="+args.status;
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
+            };
+
+            defaultParas.success = function(res){
+                if (res){
+                    this.trigger("get.ipInfoSubmit.success",res);
+                } else {
+                    this.trigger("get.ipInfoSubmit.error",res);
+                }
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.ipInfoSubmit.error", response);
             }.bind(this);
 
             $.ajax(defaultParas);
         }
+
     });
 
     return DeviceManageCollection;

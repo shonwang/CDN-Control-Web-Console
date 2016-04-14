@@ -502,6 +502,14 @@ td .table {
   background: #f8f8f8;
 }
 
+
+.select-checkboxcon.isSingle {padding:6px 0px;}
+.select-checkboxcon.isSingle input[type=checkbox] .select-checkbox-value:after {display:none;}
+.select-checkboxcon.isSingle input[type=checkbox] .select-checkbox-value:before {display:none;}
+
+.select-checkboxcon.isSingle .select-checkbox-value:after {display:none;}
+.select-checkboxcon.isSingle .select-checkbox-value:before {display:none;}
+
 /* title上的按钮 */
 .select-check-all {
   height: 16px;

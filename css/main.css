@@ -242,6 +242,23 @@ td .table {
   text-decoration: none;
 }
 
+.search-ctn{
+    min-width: 300px;
+    padding: 7px;
+}
+
+.search-ctn .form-control{
+    display: inline-block;
+    width: 200px;
+    padding-left: 40px;
+}
+
+.search-ctn .glyphicon{
+    margin-right: -30px;
+    margin-top: 6px;
+    font-size: 20px;
+}
+
 /* dialog 基本设置 */
 .weige .dialog {
   position: fixed;
@@ -641,8 +658,9 @@ td .table {
   color: gray;
 }
 
+.user-info,
 .ctrl-nav-container {
-  box-shadow: 0 0px 10px #333;
+    box-shadow: 0 8px 17px 0 rgba(0, 0, 0, .2), 0 6px 20px 0 rgba(0, 0, 0, .19);
 }
 
 .jquery-accordion-menu {

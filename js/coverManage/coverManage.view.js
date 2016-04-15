@@ -1,5 +1,5 @@
 define("coverManage.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
-    var NodeManageView = Backbone.View.extend({
+    var CoverManageView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
@@ -341,6 +341,12 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.$el.find(".opt-ctn #input-node-search").val("");
             this.$el.find(".opt-ctn #input-node-search").off();
             this.$el.find(".opt-ctn #input-node-search").on("keyup", $.proxy(this.onKeyupSearchNode, this));
+            this.$el.find(".opt-ctn #input-node-search").on("keydown", function(e){
+                if(e.keyCode == 13){
+                    e.stopPropagation();
+                    e.preventDefault();
+                }
+            });
 
             if(!this.curNum) this.curNum = 0;
             this.$el.find(".node-list-ctn").find('button[id="' + this.curNum + '"]').click();
@@ -1003,5 +1009,5 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
         },
     });
 
-    return NodeManageView;
+    return CoverManageView;
 });

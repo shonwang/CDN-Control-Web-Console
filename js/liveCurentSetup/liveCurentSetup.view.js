@@ -375,7 +375,6 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
         update: function(){
             this.$el.show();
             this.collection.getConfList(this.queryArgs);
-            this.enterKeyBindQuery();
         },
 
         render: function(target) {

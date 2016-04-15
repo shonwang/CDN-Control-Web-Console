@@ -405,36 +405,8 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
             $.ajax(defaultParas);
         },
 
-        //getPauseInfo: function(args){
-        //    var url = BASE_URL + "/rs/ip/prompt/pause?ip="+args;
-        //    var defaultParas = {
-        //        type: "GET",
-        //        url: url,
-        //        async: true,
-        //        timeout: 30000,
-        //        contentType: "application/json",
-        //        processData: false
-        //    };
-        //
-        //    defaultParas.success = function(res){
-        //        if (res){
-        //            this.trigger("get.InfoPause.success",res);
-        //        } else {
-        //            this.trigger("get.InfoPause.error");
-        //        }
-        //    }.bind(this);
-        //
-        //    defaultParas.error = function(response, msg){
-        //        if (response&&response.responseText)
-        //            response = JSON.parse(response.responseText)
-        //        this.trigger("get.InfoPause.error", response);
-        //    }.bind(this);
-        //
-        //    $.ajax(defaultParas);
-        //},
-
-        getIpInfoPause: function(args){
-            var url = BASE_URL + "/rs/ip/prompt/pause?ip="+args;
+        getIpInfoPause: function(ip,operation){
+            var url = BASE_URL + "/rs/ip/prompt/pause?ip="+ip;
             var defaultParas = {
                 type: "GET",
                 url: url,
@@ -446,16 +418,18 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
 
             defaultParas.success = function(res){
                 if (res){
-                    this.trigger("get.ipInfoPause.success",res);
+                    var data = {
+                        res : res,
+                        operation: operation
+                    }
+                    this.trigger("get.ipInfoPause.success",data);
                 } else {
-                    this.trigger("get.ipInfoPause.error",res);
+                    this.trigger("get.ipInfoPause.error",data.res);
                 }
             }.bind(this);
 
-            defaultParas.error = function(response, msg){
-                if (response&&response.responseText)
-                    response = JSON.parse(response.responseText)
-                this.trigger("get.ipInfoPause.error", response);
+            defaultParas.error = function(response){
+                this.trigger("get.ipInfoPause.error", response.responseText);
             }.bind(this);
 
             $.ajax(defaultParas);
@@ -481,10 +455,9 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
                 }
             }.bind(this);
 
-            defaultParas.error = function(response, msg){
-                if (response&&response.responseText)
-                    response = JSON.parse(response.responseText)
-                this.trigger("get.ipInfoStart.error", response);
+            defaultParas.error = function(response){
+                this.trigger("get.ipInfoStart.error", response.responseText);
+
             }.bind(this);
 
             $.ajax(defaultParas);
@@ -501,6 +474,10 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
                 processData: false
             };
 
+            defaultParas.beforeSend = function(data){
+                //console.log(data);
+            }
+
             defaultParas.success = function(res){
                 if (res){
                     this.trigger("get.ipInfoSubmit.success",res);
@@ -509,10 +486,8 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
                 }
             }.bind(this);
 
-            defaultParas.error = function(response, msg){
-                if (response&&response.responseText)
-                    response = JSON.parse(response.responseText)
-                this.trigger("get.ipInfoSubmit.error", response);
+            defaultParas.error = function(response){
+                this.trigger("get.ipInfoSubmit.error", response.responseText);
             }.bind(this);
 
             $.ajax(defaultParas);

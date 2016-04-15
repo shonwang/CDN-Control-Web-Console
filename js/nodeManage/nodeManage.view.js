@@ -271,6 +271,8 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         enterKeyBindQuery:function(){
             $(document).on('keydown', function(e){
                 if(e.keyCode == 13){
+                    e.stopPropagation();
+                    e.preventDefault();
                     this.onClickQueryButton();
                 }
             }.bind(this));

@@ -245,18 +245,82 @@ td .table {
 .search-ctn{
     min-width: 300px;
     padding: 7px;
+    position: relative;
 }
 
 .search-ctn .form-control{
     display: inline-block;
-    width: 200px;
+    width: 300px;
     padding-left: 40px;
+    padding-right: 40px;
+    -moz-transition: all .2s linear;
+    -ms-transition: all .2s linear;
+    transition: all .2s linear;
+    position: absolute;
+    right: 10px;
 }
 
-.search-ctn .glyphicon{
-    margin-right: -30px;
-    margin-top: 6px;
+.search-ctn .form-control:focus{
+    width: 400px;
+}
+
+.search-ctn .glyphicon-search{
+    top: 14px;
+    left: 0px;
     font-size: 20px;
+    position: absolute;
+    -moz-transition: all .2s linear;
+    -ms-transition: all .2s linear;
+    transition: all .2s linear;
+  }
+
+.search-ctn .glyphicon-remove{
+    font-size: 16px;
+    right: 15px;
+    top: 18px;
+    cursor: pointer;
+    position: absolute;
+}
+
+.search-ctn .form-control:focus~.glyphicon{
+    color: #337ab7;
+}
+
+.search-ctn .form-control:focus~.glyphicon-search{
+    left: -100px;
+}
+
+.search-view .search-detail{
+    position: fixed;
+    top: 50px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1050;
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+    outline: 0;
+    padding: 50px;
+}
+
+.search-view .search-backdrop{
+    position: fixed;
+    top: 50px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1040;
+    background-color: #000;
+    opacity: 0.5
+}
+
+.search-view .glyphicon-remove{
+    background-color: #000;
+    color: #fff;
+    font-size: 20px;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
 }
 
 /* dialog 基本设置 */

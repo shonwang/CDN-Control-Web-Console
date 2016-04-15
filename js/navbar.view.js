@@ -1,5 +1,29 @@
 define("navbar.view", ['require','exports', 'template'], function(require, exports, template) {
 
+    var SearchView = Backbone.View.extend({
+        initialize: function(options) {
+            this.keyWord = options.keyWord
+            console.log(this.keyWord)
+            //this.collection = options.collection;
+            this.$el = $(_.template(template['tpl/search.view.html'])());
+            this.$el.find(".search-detail .search-detail-ctn").html(_.template(template['tpl/empty-2.html'])({data: {message: "张彬在胸前摸索了一番，却什么也没有找到！"}}));
+
+            this.$el.find(".search-detail .glyphicon-remove").on("click", $.proxy(this.remove, this));
+        },
+
+        remove: function(){
+            this.$el.find(".search-detail").removeClass("fadeInDown animated");
+            this.$el.find(".search-detail").addClass("fadeOutUp animated");
+            setTimeout(function(){
+                this.$el.remove();
+            }.bind(this), 500)
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target)
+        }
+    });
+
     var NavbarView = Backbone.View.extend({
         events: {
             //"click li":"open"
@@ -10,6 +34,29 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
             this.initLogin();
             this.initLogout();
             this.initSidebarToggle();
+            this.initGlobleSearch();
+        },
+
+        initGlobleSearch: function(){
+            $(".search-ctn input").on("keydown", function(event) {
+                var keyWord = $(".search-ctn input").val();
+                if(keyWord === "") return
+                if(event.keyCode == 13){
+                    event.stopPropagation();
+                    event.preventDefault();
+                    if (this.mySearchView) {
+                        this.mySearchView.remove();
+                        this.mySearchView = null;
+                    }
+                    this.mySearchView = new SearchView({keyWord: keyWord});
+                    setTimeout(function(){
+                        this.mySearchView.render($(document.body));
+                    }.bind(this), 500)
+                }
+            }.bind(this))
+            $(".search-ctn .glyphicon-remove").on("click", function(){
+                $(".search-ctn input").val("");
+            })
         },
 
         initSidebarToggle: function(){

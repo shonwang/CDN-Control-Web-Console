@@ -242,13 +242,13 @@ td .table {
   text-decoration: none;
 }
 
-.search-ctn{
+.ctrl-nav-container .search-ctn{
     min-width: 300px;
     padding: 7px;
     position: relative;
 }
 
-.search-ctn .form-control{
+.ctrl-nav-container .search-ctn .form-control{
     display: inline-block;
     width: 300px;
     padding-left: 40px;
@@ -260,11 +260,11 @@ td .table {
     right: 10px;
 }
 
-.search-ctn .form-control:focus{
+.ctrl-nav-container .search-ctn .form-control:focus{
     width: 400px;
 }
 
-.search-ctn .glyphicon-search{
+.ctrl-nav-container .search-ctn .glyphicon-search{
     top: 14px;
     left: 0px;
     font-size: 20px;
@@ -274,7 +274,7 @@ td .table {
     transition: all .2s linear;
   }
 
-.search-ctn .glyphicon-remove{
+.ctrl-nav-container .search-ctn .glyphicon-remove{
     font-size: 16px;
     right: 15px;
     top: 18px;
@@ -282,11 +282,11 @@ td .table {
     position: absolute;
 }
 
-.search-ctn .form-control:focus~.glyphicon{
+.ctrl-nav-container .search-ctn .form-control:focus~.glyphicon{
     color: #337ab7;
 }
 
-.search-ctn .form-control:focus~.glyphicon-search{
+.ctrl-nav-container .search-ctn .form-control:focus~.glyphicon-search{
     left: -100px;
 }
 

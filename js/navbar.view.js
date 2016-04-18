@@ -3,7 +3,6 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
     var SearchView = Backbone.View.extend({
         initialize: function(options) {
             this.keyWord = options.keyWord
-            console.log(this.keyWord)
             //this.collection = options.collection;
             this.$el = $(_.template(template['tpl/search.view.html'])());
             this.$el.find(".search-detail .search-detail-ctn").html(_.template(template['tpl/empty-2.html'])({data: {message: "张彬在胸前摸索了一番，却什么也没有找到！"}}));

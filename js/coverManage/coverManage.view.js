@@ -357,7 +357,6 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                 this.renderNodeInfo();
                 if (!this.isPaused) this.$el.find(".opt-ctn .pause").click();
             }.bind(this))
-            console.log(this.chart.chart['map']);
             this.initTimer();
         },
 

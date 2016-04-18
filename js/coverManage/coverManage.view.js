@@ -14,7 +14,9 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".opt-ctn .fullscreen").on("click", $.proxy(this.onLaunchFullScreen, this));
             this.$el.find(".opt-ctn .show-relation").on("click", $.proxy(this.onClickShowRelation, this));   
-            this.$el.find(".opt-ctn .hide-relation").on("click", $.proxy(this.onClickHideRelation, this));       
+            this.$el.find(".opt-ctn .hide-relation").on("click", $.proxy(this.onClickHideRelation, this));
+            this.$el.find(".opt-ctn .node-region").on("click", $.proxy(this.onClickNode2Region, this));   
+            this.$el.find(".opt-ctn .region-node").on("click", $.proxy(this.onClickRegion2Node, this));          
             this.$el.find(".map-ctn").html(_.template(template['tpl/loading.html'])({}));
             $(document).on('keyup', $.proxy(this.onKeyupFullscreen, this));
             this.onClickQueryButton();
@@ -23,11 +25,23 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.mapDataTimer = setInterval($.proxy(this.onClickQueryButton, this), 63000);
         },
 
+        onClickNode2Region: function(){
+            this.$el.find(".opt-ctn .node-region").hide();
+            this.$el.find(".opt-ctn .region-node").show();
+        },
+
+        onClickRegion2Node: function(){
+            this.$el.find(".opt-ctn .region-node").hide();
+            this.$el.find(".opt-ctn .node-region").show();
+        },
+
         onClickShowRelation: function(){
             this.isShowNodeRegion = true;
             this.onNodeListSuccess(this.mapAllData);
             this.$el.find(".opt-ctn .show-relation").hide();
             this.$el.find(".opt-ctn .hide-relation").show();
+            this.$el.find(".opt-ctn .node-region").removeAttr("disabled");
+            this.$el.find(".opt-ctn .region-node").removeAttr("disabled");
         },
 
         onClickHideRelation: function(){
@@ -35,6 +49,8 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.onNodeListSuccess(this.mapAllData);
             this.$el.find(".opt-ctn .hide-relation").hide();
             this.$el.find(".opt-ctn .show-relation").show();
+            this.$el.find(".opt-ctn .node-region").attr("disabled", "disabled");
+            this.$el.find(".opt-ctn .region-node").attr("disabled", "disabled");
         },
 
         onLaunchFullScreen: function(){
@@ -150,7 +166,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                         geoCoord: res.geoCoord
                     },
                     {
-                        name: 'Top5',
+                        name: 'alert',
                         type: 'map',
                         mapType: 'china',
                         data:[],
@@ -291,7 +307,19 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                 },
                 tooltip : {
                     trigger: 'item',
-                    formatter: '{b}'
+                    formatter: function(param){
+                        var str = param[1];
+                        if (param[1].indexOf("节点") > -1 && param[1].indexOf(">") === -1){
+                            var node = _.find(this.mapAllData.relation, function(obj){
+                                return obj.name === param[1];
+                            }.bind(this))
+                            str = param[1] + "<br>" +
+                                  "上联带宽：<br>" +  
+                                  "保底带宽：<br>" + 
+                                  "实时带宽：" 
+                        }
+                        return str;
+                    }.bind(this)
                 },
                 legend: {
                     show: false,

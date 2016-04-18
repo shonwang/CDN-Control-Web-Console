@@ -12,12 +12,29 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.collection.on("get.map.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.$el.find(".opt-ctn .fullscreen").on("click", $.proxy(this.onLaunchFullScreen, this));    
+            this.$el.find(".opt-ctn .fullscreen").on("click", $.proxy(this.onLaunchFullScreen, this));
+            this.$el.find(".opt-ctn .show-relation").on("click", $.proxy(this.onClickShowRelation, this));   
+            this.$el.find(".opt-ctn .hide-relation").on("click", $.proxy(this.onClickHideRelation, this));       
             this.$el.find(".map-ctn").html(_.template(template['tpl/loading.html'])({}));
             $(document).on('keyup', $.proxy(this.onKeyupFullscreen, this));
             this.onClickQueryButton();
             this.isPaused = false;
+            this.isShowNodeRegion = true;
             this.mapDataTimer = setInterval($.proxy(this.onClickQueryButton, this), 63000);
+        },
+
+        onClickShowRelation: function(){
+            this.isShowNodeRegion = true;
+            this.onNodeListSuccess(this.mapAllData);
+            this.$el.find(".opt-ctn .show-relation").hide();
+            this.$el.find(".opt-ctn .hide-relation").show();
+        },
+
+        onClickHideRelation: function(){
+            this.isShowNodeRegion = false;
+            this.onNodeListSuccess(this.mapAllData);
+            this.$el.find(".opt-ctn .hide-relation").hide();
+            this.$el.find(".opt-ctn .show-relation").show();
         },
 
         onLaunchFullScreen: function(){
@@ -50,6 +67,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
         },
 
         onNodeListSuccess: function(res){
+            this.mapAllData = res;
             this.$el.find(".last-update-time").html(new Date().format("yyyy/MM/dd hh:mm"))
             this.isGettingMapData = false;
             var legendList = [], points = [], legendObjList = [],
@@ -92,18 +110,12 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                                       borderColor: '#1e90ff',
                                       borderWidth: 4,
                                       label: {
-                                          show: true
+                                          show: false
                                       },
                                       color: "red"
                                   }
                               },
-                              // large: true,
-                              // effect : {
-                              //     show: true
-                              // },
-                              data : [
-                                  // {name: "湖北联通", value: 24},
-                              ]
+                              data : []
                           },
                         markLine : {
                             smooth:true,
@@ -136,14 +148,37 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                             data : [],
                         },
                         geoCoord: res.geoCoord
+                    },
+                    {
+                        name: 'Top5',
+                        type: 'map',
+                        mapType: 'china',
+                        data:[],
+                        markPoint : {
+                            symbol:'emptyCircle',
+                            symbolSize : 15,
+                            effect : {
+                                show: true,
+                                shadowBlur : 0
+                            },
+                            itemStyle:{
+                                normal:{
+                                    label:{show:false}
+                                }
+                            },
+                            data : [
+                                {name: "太原联通节点", value: 1000},
+                                {name: "石家庄移动节点", value: 1000}
+                            ]
+                        }
                     }
                 ],
                 allLine = [];
 
             _.each(res.relation, function(el, key, list){
                 legendList.push(el.name);
-                legendObjList.push({name:el.name, info:el.info})
-                points.push({name: el.name, value: 6})
+                legendObjList.push({name:el.name, info:el.info});
+                points.push({name: el.name, value: 0})
                 var mapTemp = {
                         name: '',
                         type: 'map',
@@ -210,8 +245,8 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                 })
 
                 mapTemp.markPoint.data = tempPoints;
-                series.push(mapTemp)
-            })
+                if (this.isShowNodeRegion) series.push(mapTemp)
+            }.bind(this))
 
             //series[0].markLine.data = allLine;
             series[0].markPoint.data = points;
@@ -228,6 +263,21 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                 else
                     selectedObj[el] = false;
             })
+            var splitList = [
+                {start: 1000, label: "报警"},
+                {start: 4, end: 4, label: 'L4'},
+                {start: 3, end: 3, label: 'L3'},
+                {start: 2, end: 2, label: 'L2'},
+                {start: 1, end: 1, label: 'L1'},
+                {start: 0, end: 0, label: 'L0'}
+            ];
+            var dataRangeColor = ['maroon', '#ff3333', 'orange', "yellow", 'lime', 'aqua']
+            if (!this.isShowNodeRegion){
+                splitList = [
+                    {start: 1000, label: "报警"}
+                ];
+                dataRangeColor = ['maroon'];
+            }
             var option = {
                 backgroundColor: '#eee',
                 color: ['gold','aqua','lime'],
@@ -261,14 +311,8 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                 dataRange: {
                     x:'left',
                     y:'top',
-                    splitList: [
-                        {start: 4, end: 4, label: 'L4'},
-                        {start: 3, end: 3, label: 'L3'},
-                        {start: 2, end: 2, label: 'L2'},
-                        {start: 1, end: 1, label: 'L1'},
-                        {start: 0, end: 0, label: 'L0'}
-                    ],
-                    color: ['#ff3333', 'orange', 'yellow','lime','aqua'],
+                    splitList: splitList,
+                    color: dataRangeColor,
                     textStyle:{
                         color:'#000'
                     }
@@ -313,7 +357,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                 this.renderNodeInfo();
                 if (!this.isPaused) this.$el.find(".opt-ctn .pause").click();
             }.bind(this))
-
+            console.log(this.chart.chart['map']);
             this.initTimer();
         },
 

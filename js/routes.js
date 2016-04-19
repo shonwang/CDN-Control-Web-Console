@@ -85,13 +85,18 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         ipManage: function(){
-            require(['ipManage.view', 'ipManage.model'], function(IPManageView, IPManageModel){
+            require(['ipManage.view', 'ipManage.model', 'deviceManage.model'], function(IPManageView, IPManageModel, DeviceManageModel){
                 this.curPage = 'ipManage';
                 this.navbarView.select(this.curPage);
                 if (!this.ipManageModel)
                     this.ipManageModel = new IPManageModel();
+                if (!this.deviceManageModel)
+                    this.deviceManageModel = new DeviceManageModel();
                 if (!this.ipManageView ){
-                    var options = {collection: this.ipManageModel};
+                    var options = {
+                        collection: this.ipManageModel,
+                        deviceCollection: this.deviceManageModel
+                    };
                     this.ipManageView = new IPManageView(options);
                     this.ipManageView.render($('.ksc-content'));
                 }
@@ -131,13 +136,18 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         coverManage: function() {
-            require(['coverManage.view', 'coverManage.model'], function(CoverManageView, CoverManageModel){
+            require(['coverManage.view', 'coverManage.model', 'nodeManage.model'], function(CoverManageView, CoverManageModel, NodeManageModel){
                 this.curPage = 'coverManage';
                 this.navbarView.select(this.curPage);
                 if (!this.coverManageModel)
                     this.coverManageModel = new CoverManageModel();
+                if (!this.nodeManageModel)
+                    this.nodeManageModel = new NodeManageModel();
                 if (!this.coverManageView ){
-                    var options = {collection: this.coverManageModel};
+                    var options = {
+                        collection: this.coverManageModel,
+                        nodeCollection: this.nodeManageModel
+                    };
                     this.coverManageView = new CoverManageView(options);
                     this.coverManageView.render($('.ksc-content'));
                 } else {

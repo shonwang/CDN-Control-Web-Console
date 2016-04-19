@@ -4,25 +4,47 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
 
         initialize: function(options) {
             this.collection = options.collection;
+            this.nodeCollection = options.nodeCollection;
             this.$el = $(_.template(template['tpl/coverManage/coverManage.html'])());
-
-            this.initNodeDropMenu();
+            this.$el.find(".map-ctn").html(_.template(template['tpl/loading.html'])({}));
 
             this.collection.on("get.map.success", $.proxy(this.onNodeListSuccess, this));
             this.collection.on("get.map.error", $.proxy(this.onGetError, this));
+            this.nodeCollection.on("get.operator.success", $.proxy(this.initNodeDropMenu, this));
+            this.nodeCollection.on("get.operator.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".opt-ctn .fullscreen").on("click", $.proxy(this.onLaunchFullScreen, this));
             this.$el.find(".opt-ctn .show-relation").on("click", $.proxy(this.onClickShowRelation, this));   
             this.$el.find(".opt-ctn .hide-relation").on("click", $.proxy(this.onClickHideRelation, this));
             this.$el.find(".opt-ctn .node-region").on("click", $.proxy(this.onClickNode2Region, this));   
-            this.$el.find(".opt-ctn .region-node").on("click", $.proxy(this.onClickRegion2Node, this));          
-            this.$el.find(".map-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.$el.find(".opt-ctn .region-node").on("click", $.proxy(this.onClickRegion2Node, this));
+            this.$el.find(".opt-ctn .global").on("click", $.proxy(this.onClickGlobal, this));   
+            this.$el.find(".opt-ctn .china").on("click", $.proxy(this.onClickChina, this));  
+
             $(document).on('keyup', $.proxy(this.onKeyupFullscreen, this));
-            this.onClickQueryButton();
+
             this.isPaused = false;
             this.isShowNodeRegion = true;
+            this.isGlobal = false;
+
             this.mapDataTimer = setInterval($.proxy(this.onClickQueryButton, this), 63000);
+            this.onClickQueryButton();
+            this.nodeCollection.getOperatorList();
+        },
+
+        onClickGlobal: function(){
+            this.isGlobal = true;
+            this.onNodeListSuccess(this.mapAllData);
+            this.$el.find(".opt-ctn .global").hide();
+            this.$el.find(".opt-ctn .china").show();
+        },
+
+        onClickChina: function(){
+            this.isGlobal = false;
+            this.onNodeListSuccess(this.mapAllData);
+            this.$el.find(".opt-ctn .global").show();
+            this.$el.find(".opt-ctn .china").hide();
         },
 
         onClickNode2Region: function(){
@@ -86,6 +108,8 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.mapAllData = res;
             this.$el.find(".last-update-time").html(new Date().format("yyyy/MM/dd hh:mm"))
             this.isGettingMapData = false;
+            this.mapType = 'china';
+            if (this.isGlobal) this.mapType = "world"
             var legendList = [], points = [], legendObjList = [],
                 series = [
                     {
@@ -93,7 +117,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                         type: 'map',
                         roam: true,
                         hoverable: false,
-                        mapType: 'china',
+                        mapType: this.mapType,
                         itemStyle:{
                             normal:{
                                 borderColor:'#fff',
@@ -102,7 +126,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                                     color: '#15A892'
                                 },
                                 label:{
-                                    show:true,
+                                    show: this.isGlobal ? false : true,
                                     textStyle: {
                                         color: '#333'
                                     }
@@ -168,7 +192,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                     {
                         name: 'alert',
                         type: 'map',
-                        mapType: 'china',
+                        mapType: this.mapType,
                         data:[],
                         markPoint : {
                             symbol:'emptyCircle',
@@ -198,7 +222,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                 var mapTemp = {
                         name: '',
                         type: 'map',
-                        mapType: 'china',
+                        mapType: this.mapType,
                         data:[],
                         markLine : {
                             smooth:true,
@@ -490,15 +514,13 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.collection.getMapData();
         },
 
-        initNodeDropMenu: function(){
-            var statusArray = [
-                {name: "全部", value: "All"},
-                {name: "电信", value: "电信"},
-                {name: "移动", value: "移动"},
-                {name: "联通", value: "联通"}
-            ],
-            rootNode = this.$el.find(".dropdown-region");
-            Utility.initDropMenu(rootNode, statusArray, function(value){
+        initNodeDropMenu: function(res){
+            this.operatorList = res
+            var nameList = [{name: "全部", value: "All"}];
+            _.each(res.rows, function(el, index, list){
+                nameList.push({name: el.name, value:el.id})
+            });
+            Utility.initDropMenu(this.$el.find(".dropdown-operation"), nameList, function(value){
 
             }.bind(this));
         },

@@ -2,7 +2,50 @@
     <h3>资源管理<small>/IP管理</small></h3>
     <div class="error-ctn"></div>
     <div class="well opt-ctn">
+<!--         <form class="form-inline">
+            <a href="javascript:void(0)" class="btn btn-primary query"><span class="glyphicon glyphicon-search"></span>查询</a>
+        </form> -->
         <form class="form-inline">
+            <div class="form-group">
+                <label for="input-ip">IP</label>
+                <input type="text" class="form-control" id="input-ip">
+            </div>
+            <div class="form-group">
+                <label for="dropdown-type">IP类型</label>
+            </div>
+            <div class="form-group dropdown-type">
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-type" data-toggle="dropdown">
+                        <span class="cur-value">全部</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu"></ul>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="input-device">设备</label>
+                <input type="text" class="form-control" id="input-device">
+            </div>
+            <div class="form-group">
+                <label for="input-node">节点</label>
+                <input type="text" class="form-control" id="input-node">
+            </div>
+            <div class="form-group">
+                <label for="input-group">调度组</label>
+                <input type="text" class="form-control" id="input-group">
+            </div>
+            <div class="form-group">
+                <label for="dropdown-status">状态</label>
+            </div>
+            <div class="form-group dropdown-status">
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-status" data-toggle="dropdown">
+                        <span class="cur-value">全部</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu"></ul>
+                </div>
+            </div>
             <a href="javascript:void(0)" class="btn btn-primary query"><span class="glyphicon glyphicon-search"></span>查询</a>
         </form>
     </div>

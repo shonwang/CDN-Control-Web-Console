@@ -25,6 +25,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
 
         initialize: function(options) {
             this.collection = options.collection;
+            this.deviceCollection = options.deviceCollection;
             this.$el = $(_.template(template['tpl/ipManage/ipManage.html'])());
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
@@ -34,6 +35,8 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
 
             this.collection.on("get.ipInfo.success", $.proxy(this.onIpInfoListSuccess, this));
             this.collection.on("get.ipInfo.error", $.proxy(this.onGetError, this));
+            this.deviceCollection.on("ip.type.success", $.proxy(this.onGetIpTypeList, this));
+            this.deviceCollection.on("ip.type.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
 
@@ -56,6 +59,17 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             }.bind(this));
             this.collection.on("get.ipInfoPause.error", function(err){
                 this.onGetError(res);
+            }.bind(this));
+        },
+
+        onGetIpTypeList: function(data){
+            this.ipTypeList = data;
+            var typeIpArray = [{name: "全部", value: "all"}];
+            _.each(this.ipTypeList, function(el, key, ls){
+                typeIpArray.push({name: el.name, value: el.id})
+            })
+            Utility.initDropMenu(this.$el.find(".dropdown-type"), typeIpArray, function(value){
+
             }.bind(this));
         },
 
@@ -134,6 +148,16 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         initNodeDropMenu: function(){
+            var status = [
+                {name: "全部", value: "all"},
+                {name: "运行中", value: 1},
+                {name: "暂停中", value: 2},
+                {name: "宕机中", value: 3},
+                {name: "暂停且宕机", value: 4}
+            ]
+            Utility.initDropMenu(this.$el.find(".dropdown-status"), status, function(value){
+                //if (value === "all")
+            }.bind(this));            
             var pageNum = [
                 {name: "10条", value: 10},
                 {name: "20条", value: 20},
@@ -145,6 +169,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 this.queryArgs.page = 1;
                 this.onStartQueryButton();
             }.bind(this));
+            this.deviceCollection.ipTypeList();
         },
 
         onClickIpOperation: function(event){
@@ -212,16 +237,6 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
 
         onIpInfoStartSuccess: function(res){
             var data = res;
-            // var data = [
-            //         {
-            //             groupName: "g3.gslb",
-            //             regionName: "安徽电信",
-            //             nodeName: "CDNSJZUN",
-            //             currentIpNum: 2,
-            //             notRunIpNum: 0,
-            //             affectedIpNum: 1
-            //         }
-            //     ];     //for test
             var body = '';
             if(data.length > 0){
                 data[0].title = 'IP '+this.clickIp+'暂停前在下列调度关系中服务，点击确定，下列调度关系将恢复，点击取消，IP状态不会变更，是否确定？';
@@ -241,16 +256,6 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
 
         onIpInfoPauseSuccess: function(res){
             var data = res;
-            // var data = [
-            //         {
-            //             groupName: "g3.gslb",
-            //             regionName: "安徽电信",
-            //             nodeName: "CDNSJZUN",
-            //             currentIpNum: 2,
-            //             notRunIpNum: 0,
-            //             affectedIpNum: 1
-            //         }
-            //     ];     //for test
             var body = '';
             if(data.length > 0){
                 data[0].title = 'IP '+this.clickIp+'在下列调度关系中服务，点击确定，该IP将不对下列调度关系服务，点击取消，IP状态不会改变，是否确定？';

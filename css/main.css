@@ -323,7 +323,126 @@ td .table {
     cursor: pointer;
 }
 
-/* dialog 基本设置 */
+.bisType {
+  margin-left: 10px;
+  margin-right: -6px;
+}
+
+.css-gray {
+  color: gray;
+}
+
+.user-info,
+.ctrl-nav-container {
+    box-shadow: 0 8px 17px 0 rgba(0, 0, 0, .2), 0 6px 20px 0 rgba(0, 0, 0, .19);
+}
+
+.jquery-accordion-menu {
+  font-family: "Microsoft Yahei"
+}
+
+.jquery-accordion-menu {
+  position: fixed;
+  max-width: 200px;
+  min-width: 50px;
+  bottom: 0;
+  top: 0;
+  box-shadow: 0 0px 20px #333;
+  background-color: #222;
+}
+
+.jquery-accordion-menu .glyphicon {
+  margin-right: 0px;
+}
+
+.packup-sidebar {
+  width: 50px;
+}
+
+.jquery-accordion-menu ul li {
+  -moz-transition: all .2s linear;
+  -ms-transition: all .2s linear;
+  transition: all .2s linear;
+}
+
+.packup-sidebar .submenu-indicator {
+  display: none;
+}
+
+.packup-sidebar.jquery-accordion-menu ul li a {
+  padding: 14px 12px;
+}
+
+.packup-sidebar.jquery-accordion-menu ul ul.submenu>li>a {
+  padding-left: 12px;
+}
+
+.packup-sidebar ul li:hover {
+  width: 200px;
+}
+
+.packup-sidebar ul li:hover .submenu-indicator {
+  display: block;
+}
+
+.modal-content .modal-body .ipManage-info {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.disp-config-history .daily li {
+    border-left: 2px solid #ddd;
+    margin-left: 10px;
+    padding-left: 30px;
+    padding-bottom: 10px;
+    position: relative;
+}
+
+.disp-config-history .dailycont {
+    background-color: #ddd;
+    border: 4px solid #ddd;
+    border-radius: 4px;
+    padding: 10px 15px 15px;
+    position: relative;
+}
+
+.disp-config-history .circle{
+    left: -8px;
+    right: 0;
+    top: 18px;
+    width: 16px;
+    position: absolute;
+    color: #ddd;
+}
+
+.disp-config-history .arrowl{
+    left: -14px;
+    right: 0;
+    position: absolute;
+    top: 13px;
+    color: #ddd;
+}
+
+.disp-config-history .daily .card{
+    background-image:url(https://mailimg.teambition.com/logos/cover-media.jpg);
+    margin: 10px 20px 0 0;
+    width: 150px;
+    padding: 8px;
+    border: none;
+    background-color: #fff;
+    border-radius: 4px;
+    display: inline-block;
+    vertical-align: top;
+    cursor: pointer;
+    color: #fff;
+    text-shadow: 0 1px 1px rgba(0,0,0,.35);
+}
+
+.disp-config-history .card:hover{
+    box-shadow: 0 8px 17px 0 rgba(0, 0, 0, .2), 0 6px 20px 0 rgba(0, 0, 0, .19);
+}
+
+/* 纬哥插件样式：dialog 基本设置 =====================================*/
 .weige .dialog {
   position: fixed;
   _position: absolute;
@@ -712,70 +831,4 @@ td .table {
   display: table-cell;
   vertical-align: middle;
 }
-
-.bisType {
-  margin-left: 10px;
-  margin-right: -6px;
-}
-
-.css-gray {
-  color: gray;
-}
-
-.user-info,
-.ctrl-nav-container {
-    box-shadow: 0 8px 17px 0 rgba(0, 0, 0, .2), 0 6px 20px 0 rgba(0, 0, 0, .19);
-}
-
-.jquery-accordion-menu {
-  font-family: "Microsoft Yahei"
-}
-
-.jquery-accordion-menu {
-  position: fixed;
-  max-width: 200px;
-  min-width: 50px;
-  bottom: 0;
-  top: 0;
-  box-shadow: 0 0px 20px #333;
-  background-color: #222;
-}
-
-.jquery-accordion-menu .glyphicon {
-  margin-right: 0px;
-}
-
-.packup-sidebar {
-  width: 50px;
-}
-
-.jquery-accordion-menu ul li {
-  -moz-transition: all .2s linear;
-  -ms-transition: all .2s linear;
-  transition: all .2s linear;
-}
-
-.packup-sidebar .submenu-indicator {
-  display: none;
-}
-
-.packup-sidebar.jquery-accordion-menu ul li a {
-  padding: 14px 12px;
-}
-
-.packup-sidebar.jquery-accordion-menu ul ul.submenu>li>a {
-  padding-left: 12px;
-}
-
-.packup-sidebar ul li:hover {
-  width: 200px;
-}
-
-.packup-sidebar ul li:hover .submenu-indicator {
-  display: block;
-}
-
-.modal-content .modal-body .ipManage-info {
-  max-height: 400px;
-  overflow-y: auto;
-}
+/*==================================================*/

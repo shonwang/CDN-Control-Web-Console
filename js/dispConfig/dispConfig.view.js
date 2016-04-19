@@ -1,5 +1,70 @@
 define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
+    var HistoryView = Backbone.View.extend({
+        events: {
+            //"click .search-btn":"onClickSearch"
+        },
+
+        initialize: function(options) {
+            this.collection = options.collection;
+            this.groupId  = options.groupId;
+
+            this.$el = $(_.template(template['tpl/dispConfig/dispConfig.history.html'])({}));
+            //this.$el.find(".node-list").html(_.template(template['tpl/loading.html'])({}));
+            this.$el.find(".list-ctn").html(_.template(template['tpl/dispConfig/dispConfig.history.list.html'])({}));
+
+            this.startTime = new Date().valueOf();
+            this.endTime = new Date().valueOf() - 1000 * 60 * 60 * 24 * 7;
+            this.initChargeDatePicker();
+        },
+
+        getArgs: function(){
+
+        },
+
+        initChargeDatePicker: function(){
+            var startVal = null, endVal = null;
+            if (this.startTime)
+                startVal = new Date(this.startTime).format("yyyy/MM/dd");
+            var startOption = {
+                lang:'ch',
+                timepicker: false,
+                scrollInput: false,
+                format:'Y/m/d', 
+                value: startVal, 
+                onChangeDateTime: function(){
+                    this.startTime = new Date(arguments[0]).valueOf();
+                }.bind(this)
+            };
+            this.$el.find("#input-start").datetimepicker(startOption);
+            if (this.endTime)
+                endVal = new Date(this.endTime).format("yyyy/MM/dd");
+            var endOption = {
+                lang:'ch',
+                timepicker: false,
+                scrollInput: false,
+                format:'Y/m/d', 
+                value: endVal, 
+                onChangeDateTime: function(){
+                    this.endTime = new Date(arguments[0]).valueOf();
+                }.bind(this)
+            };
+            this.$el.find("#input-end").datetimepicker(endOption);
+        },
+
+        onGetError: function(error){
+            if (error&&error.message)
+                alert(error.message)
+            else
+                alert("出错了")
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target);
+        }
+    });
+
+
     var SelectNodeView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
@@ -232,10 +297,34 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".opt-ctn .init").on("click", $.proxy(this.onClickInitButton, this));
             this.$el.find(".opt-ctn .show-remark").on("click", $.proxy(this.onClickShowRemark, this));
             this.$el.find(".opt-ctn .hide-remark").on("click", $.proxy(this.onClickHideRemark, this));
+            this.$el.find(".opt-ctn .histroy").on("click", $.proxy(this.onClickHistory, this));
 
             this.enterKeyBindQuery();
 
             this.$el.find(".page-ctn").hide();
+        },
+
+        onClickHistory: function(){
+            if (this.historyPopup) $("#" + this.historyPopup.modalId).remove();
+
+            var aHistoryView = new HistoryView({
+                collection: this.collection, 
+                groupId   : this.queryArgs.groupId
+            });
+
+            var options = {
+                title    : "历史记录",
+                body     : aHistoryView,
+                backdrop : 'static',
+                type     : 1,
+                width    : 800,
+                onOKCallback:  function(){
+                    this.historyPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){
+                }.bind(this)
+            }
+            this.historyPopup = new Modal(options);
         },
 
         enterKeyBindQuery:function(){

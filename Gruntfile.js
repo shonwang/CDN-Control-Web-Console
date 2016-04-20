@@ -77,7 +77,7 @@ module.exports = function(grunt) {
         modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 2;\n');
     });
 
-    grunt.registerTask('develop-url', '', function() {
+    grunt.registerTask('test-url', '', function() {
         modifyFile("dest/js/main.js", 'DEBUG', 'window.DEBUG = 4;\n');
         modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 4;\n');
     });
@@ -90,6 +90,6 @@ module.exports = function(grunt) {
     grunt.registerTask('temp',['underscore:compile']);
     grunt.registerTask('debug',["clean", 'underscore:compile', "copy"]);
     grunt.registerTask('set',["clean", 'underscore:compile', "copy", "set-url"]);
-    grunt.registerTask('develop',["clean", 'underscore:compile', "copy", "develop-url"]);
+    grunt.registerTask('test',["clean", 'underscore:compile', "copy", "test-url"]);
     grunt.registerTask('online',["clean", 'underscore:compile', "copy", "online-url"]);
 };

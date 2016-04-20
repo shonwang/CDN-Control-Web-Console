@@ -58,36 +58,38 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
 
-    grunt.registerTask('seturl', '', function() {
-        var dataMain = grunt.file.read("dest/js/main.js");
+    var modifyFile = function(filePath, key, val){
+        var dataMain = grunt.file.read(filePath);
         var mainArray = dataMain.split("\n"), 
             line, newMain = [];
         for (var k = 0; k < mainArray.length; k++){
             line = mainArray[k];
             grunt.log.writeln(line)
-            if (line.indexOf('DEBUG') > -1&&line.indexOf('if') == -1) line = 'window.DEBUG = 2;\n'
+            if (line.indexOf(key) > -1&&line.indexOf('if') == -1) line = val;
             newMain.push(line);
             grunt.log.writeln(line)
         }
-        grunt.file.write("dest/js/main.js", newMain.join("\n"));
+        grunt.file.write(filePath, newMain.join("\n"));
+    };
+
+    grunt.registerTask('set-url', '', function() {
+        modifyFile("dest/js/main.js", 'DEBUG', 'window.DEBUG = 2;\n');
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 2;\n');
+    });
+
+    grunt.registerTask('develop-url', '', function() {
+        modifyFile("dest/js/main.js", 'DEBUG', 'window.DEBUG = 4;\n');
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 4;\n');
     });
 
     grunt.registerTask('online-url', '', function() {
-        var dataMain = grunt.file.read("dest/js/main.js");
-        var mainArray = dataMain.split("\n"), 
-            line, newMain = [];
-        for (var k = 0; k < mainArray.length; k++){
-            line = mainArray[k];
-            grunt.log.writeln(line)
-            if (line.indexOf('DEBUG') > -1&&line.indexOf('if') == -1) line = 'window.DEBUG = 3;\n'
-            newMain.push(line);
-            grunt.log.writeln(line)
-        }
-        grunt.file.write("dest/js/main.js", newMain.join("\n"));
+        modifyFile("dest/js/main.js", 'DEBUG', 'window.DEBUG = 3;\n');
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 3;\n');
     });
 
     grunt.registerTask('temp',['underscore:compile']);
     grunt.registerTask('debug',["clean", 'underscore:compile', "copy"]);
-    grunt.registerTask('set',["clean", 'underscore:compile', "copy", "seturl"]);
+    grunt.registerTask('set',["clean", 'underscore:compile', "copy", "set-url"]);
+    grunt.registerTask('develop',["clean", 'underscore:compile', "copy", "develop-url"]);
     grunt.registerTask('online',["clean", 'underscore:compile', "copy", "online-url"]);
 };

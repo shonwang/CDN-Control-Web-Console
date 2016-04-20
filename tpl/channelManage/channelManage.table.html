@@ -27,11 +27,7 @@
               <td><%=data[i].attributes["clientName"]%></td>
               <td><%=data[i].attributes["statusName"]%></td>
               <td><%=data[i].attributes["startTimeFormated"]%></td>
-              <td>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="edit" title="关联调度组">
-                      <span class="glyphicon glyphicon-edit"></span>
-                  </a>
-              </td>
+              <td><%=data[i].attributes["dispDomain"]%></td>
             </tr>
         <% } %>  
     </tbody>

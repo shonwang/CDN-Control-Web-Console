@@ -33,7 +33,7 @@ define("modal.view", ['require','exports', 'template', 'utility'],
                 this.$el.find(".modal-body").html(this.options.body);
             } else {
                 this.$el.find(".modal-body").html("");
-                this.options.body.render(this.$el.find(".modal-body"));
+                this.options.body.render(this.$el.find(".modal-body"), this.$el);
             }
 
             this.$el.on('hidden.bs.modal', function (e) {

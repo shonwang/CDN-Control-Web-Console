@@ -187,9 +187,13 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         onClickItemDelete: function(e) {
-            var eTarget = e.srcElement || e.target,
-                id;
-            $(eTarget).parents('tr').remove(); //删除当前行
+            var eTarget = e.srcElement || e.target, id;
+            var len = $(eTarget).parents('.addOrEdit').children().length;
+            if(len > 1){
+                $(eTarget).parents('tr').remove(); //删除当前行
+            }else{
+                alert("不可删除节点组下所有节点！");
+            }
         },
 
         render: function(target) {
@@ -212,8 +216,6 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                 "business": -1,
                 "device": -1
             };
-
-            //this.editEndData = [];
 
             this.collection.getBusinessList(); //初始化业务列表数据
             this.collection.on("get.businessList.success", $.proxy(this.initNodeDropMenu, this));
@@ -358,7 +360,6 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                 businessType: this.businessType,
                 deviceType: this.deviceType,
                 ipType: this.ipType
-                    //editEndData: this.editEndData
             });
 
             var options = {

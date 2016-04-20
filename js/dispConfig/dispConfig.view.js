@@ -64,6 +64,64 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         }
     });
 
+    var SelectVSView = Backbone.View.extend({
+        events: {
+            //"click .search-btn":"onClickSearch"
+        },
+
+        initialize: function(options) {
+            this.collection = options.collection;
+            this.groupId  = options.groupId;
+
+            this.$el = $(_.template(template['tpl/dispConfig/dispConfig.selectVS.html'])({}));
+
+            this.$el.find("#oneHistory").on("click", $.proxy(this.onClickHistory, this));
+            this.$el.find("#anotherHistory").on("click", $.proxy(this.onClickHistory, this))
+        },
+
+        onClickHistory: function(){
+             this.rootNode.modal("hide");
+            if (this.historyPopup) $("#" + this.historyPopup.modalId).remove();
+
+            var aHistoryView = new HistoryView({
+                collection: this.collection, 
+                groupId   : this.groupId
+            });
+
+            var options = {
+                title    : "历史记录",
+                body     : aHistoryView,
+                backdrop : 'static',
+                type     : 1,
+                width    : 800,
+                onOKCallback:  function(){
+                    this.historyPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){
+                    this.rootNode.modal("show");
+                }.bind(this)
+            }
+            setTimeout(function(){
+                this.historyPopup = new Modal(options);
+            }.bind(this), 500)
+        },
+
+        getArgs: function(){
+
+        },
+
+        onGetError: function(error){
+            if (error&&error.message)
+                alert(error.message)
+            else
+                alert("出错了")
+        },
+
+        render: function(target, rootNode) {
+            this.$el.appendTo(target);
+            if (rootNode) this.rootNode = rootNode;
+        }
+    });
 
     var SelectNodeView = Backbone.View.extend({
         events: {
@@ -298,6 +356,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".opt-ctn .show-remark").on("click", $.proxy(this.onClickShowRemark, this));
             this.$el.find(".opt-ctn .hide-remark").on("click", $.proxy(this.onClickHideRemark, this));
             this.$el.find(".opt-ctn .histroy").on("click", $.proxy(this.onClickHistory, this));
+            this.$el.find(".opt-ctn .vs").on("click", $.proxy(this.onClickSelectVS, this));
 
             this.enterKeyBindQuery();
 
@@ -325,6 +384,29 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 }.bind(this)
             }
             this.historyPopup = new Modal(options);
+        },
+
+        onClickSelectVS: function(){
+            if (this.selectVSPopup) $("#" + this.selectVSPopup.modalId).remove();
+
+            var aSelectVSView = new SelectVSView({
+                collection: this.collection, 
+                groupId   : this.queryArgs.groupId,
+                selectVSPopup: this.selectVSPopup
+            });
+
+            var options = {
+                title    : "对比历史记录",
+                body     : aSelectVSView,
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback:  function(){
+                    this.selectVSPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){
+                }.bind(this)
+            }
+            this.selectVSPopup = new Modal(options);
         },
 
         enterKeyBindQuery:function(){

@@ -438,9 +438,37 @@ td .table {
     text-shadow: 0 1px 1px rgba(0,0,0,.35);
 }
 
+.disp-config-vs .card-ctn .card:hover,
 .disp-config-history .card:hover{
     box-shadow: 0 8px 17px 0 rgba(0, 0, 0, .2), 0 6px 20px 0 rgba(0, 0, 0, .19);
 }
+
+.disp-config-vs .card-ctn{
+    height: 150px;
+    padding: 10px;
+    width: 100%;
+    position: relative;
+}
+
+.disp-config-vs .card-ctn .card{
+    background-image:url(https://mailimg.teambition.com/logos/cover-media.jpg);
+    margin-top: -30px;
+    margin-left: -75px;
+    width: 150px;
+    padding: 8px;
+    border: none;
+    background-color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #fff;
+    height: 60px;
+    text-shadow: 0 1px 1px rgba(0,0,0,.35);   
+    position: absolute;
+    top: 50%;
+    left: 50% 
+}
+
+
 
 /* 纬哥插件样式：dialog 基本设置 =====================================*/
 .weige .dialog {

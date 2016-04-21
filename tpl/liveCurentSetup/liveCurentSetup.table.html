@@ -30,12 +30,12 @@
               <% if ((i === 0) || (i > 0 && data[i].get("logId") !== data[i-1].get("logId"))) { %>
               <td rowspan='<%=data[i].get("allRowspan") %>'>
                   <a href="javascript:void(0)" id='<%=data[i].get("id")%>' class="btn btn-primary btn-sm detail">
-                    查看
+                    IPS查看
                   </a>
               </td>
               <td rowspan='<%=data[i].get("allRowspan") %>'>
                   <a href="javascript:void(0)" id='<%=data[i].get("id")%>' class="btn btn-primary btn-sm shell">
-                    查看
+                    脚本查看
                   </a>
               </td>
               <td rowspan='<%=data[i].get("allRowspan") %>'>

@@ -880,7 +880,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 onOKCallback:  function(){
                     var options = editDeviceView.getArgs();
                     if (!options) return;
-                    var args = _.extend(model.attributes, options)
+                    var tmp = _.extend({}, model.attributes),
+                        args = _.extend(tmp, options);
                     this.collection.updateDevice(args)
                     this.editDevicePopup.$el.modal("hide");
                 }.bind(this),

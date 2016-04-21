@@ -95,11 +95,12 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                     "ipTypeId": this.$el.find('.ip-type .cur-value').attr('data-id'),
                     "nodeList": _.uniq(this.nodeListFinal)
                 }
-                //console.log(this.nodeListFinal);
+                //console.log(args.nodeList);
             return args;
         },
 
         setEditTable: function(data) {
+            //console.log(data);
             if (data && data.length != 0) {
                 this.table = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
                     data: data
@@ -188,12 +189,7 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
 
         onClickItemDelete: function(e) {
             var eTarget = e.srcElement || e.target, id;
-            var len = $(eTarget).parents('.addOrEdit').children().length;
-            if(len > 1){
-                $(eTarget).parents('tr').remove(); //删除当前行
-            }else{
-                alert("不可删除节点组下所有节点！");
-            }
+            $(eTarget).parents('tr').remove(); //删除当前行
         },
 
         render: function(target) {
@@ -369,10 +365,14 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                 type: 2,
                 onOKCallback: function() {
                     var options = editBusinessView.getArgs();
-
                     if (!options) return;
-                    this.collection.editNode(options);
-                    this.editBusinessPopup.$el.modal("hide");
+                    var len = this.editBusinessPopup.$el.find('.addOrEdit').children().length;
+                    if(len < 1){
+                        alert('请添加节点');
+                    }else{
+                        this.collection.editNode(options);
+                        this.editBusinessPopup.$el.modal("hide");
+                    }
                 }.bind(this),
                 onHiddenCallback: function() {}
             }

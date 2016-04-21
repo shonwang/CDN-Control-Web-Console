@@ -79,10 +79,10 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                 callback: function(data) {}
             });
         },
-        getArgs: function() {
+        getArgs: function(popup) {
 
             var nodeListFinal = [];
-            $('.addOrEdit tr').each(function() {
+            popup.$el.find('.addOrEdit').children().each(function() {
                 nodeListFinal.push($(this).attr('data-id'));
             });
             this.nodeListFinal = nodeListFinal;
@@ -227,7 +227,11 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                 alert("添加成功！")
                 this.onClickQueryButton();
             }.bind(this));
-            this.collection.on("add.node.error", $.proxy(this.onGetError, this));
+            //this.collection.on("add.node.error", $.proxy(this.onGetError, this));
+            this.collection.on("add.node.error", function(err){
+                this.onGetError(err);
+                this.onClickQueryButton();
+            }.bind(this));
             this.collection.on("edit.node.success", function() {
                 alert("编辑成功！")
                 this.onClickQueryButton();
@@ -325,7 +329,7 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                 backdrop: 'static',
                 type: 2,
                 onOKCallback: function() {
-                    var options = addBusinessView.getArgs();
+                    var options = addBusinessView.getArgs(this.addNodePopup);
                     if (!options) return;
                     this.collection.addNode(options)
                     this.addNodePopup.$el.modal("hide");
@@ -364,7 +368,7 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                 backdrop: 'static',
                 type: 2,
                 onOKCallback: function() {
-                    var options = editBusinessView.getArgs();
+                    var options = editBusinessView.getArgs(this.editBusinessPopup);
                     if (!options) return;
                     var len = this.editBusinessPopup.$el.find('.addOrEdit').children().length;
                     if(len < 1){

@@ -39,12 +39,25 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.deviceCollection.on("ip.type.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-
+            this.$el.find(".opt-ctn .query-single").on("click", $.proxy(this.onClickQuerySingleButton, this));
+            this.isMultiIPSearch = true;
             this.queryArgs = {
                 page : 1,
                 count: 10,
                 ips  : ""
-            }
+            };
+
+            this.anotherQuery = {
+                "ip": null,
+                "ipType": null, //ip类型
+                "ipStatus": null, //状态
+                "deviceName": null, //设备名称
+                "nodeName": null,  //节点名称
+                "dispDomain": null,  //调度组名称
+                "page" : 1,
+                "count": 10,
+            };
+
             this.onStartQueryButton();
             this.collection.on("get.ipInfoSubmit.success", function(){
                 alert('设置成功');
@@ -85,6 +98,11 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             if (!this.isInitPaginator) this.initPaginator();
         },
 
+        onClickQuerySingleButton: function(){
+            this.isMultiIPSearch = false;
+            this.onStartQueryButton();
+        },
+
         onClickQueryButton: function(event){
             if (this.queryDetailPopup) $("#" + this.queryDetailPopup.modalId).remove();
 
@@ -99,6 +117,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 onOKCallback:  function(){
                     var options = detailView.getArgs();
                     this.queryArgs.ips = options;
+                    this.isMultiIPSearch = true;
                     this.onStartQueryButton();
                     this.queryDetailPopup.$el.modal("hide");
                 }.bind(this),
@@ -109,10 +128,15 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
 
         onStartQueryButton: function(){
             this.isInitPaginator = false;
-            this.queryArgs.page = 1;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
-            this.collection.getIpInfoList(this.queryArgs);
+            if (this.isMultiIPSearch){
+                this.queryArgs.page = 1;
+                this.collection.getIpInfoList(this.queryArgs);
+            } else {
+                this.anotherQuery.page = 1;
+                console.log("条件查询")
+            }
         },
 
         initTable: function(){
@@ -137,10 +161,18 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 onPageChange: function (num, type) {
                     if (type !== "init"){
                         this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                        var args = _.extend(this.queryArgs);
-                        args.page = num;
-                        args.count = this.queryArgs.count;
-                        this.collection.getIpInfoList(args);
+                        var args;
+                        if (this.isMultiIPSearch){
+                            args = _.extend(this.queryArgs);
+                            args.page = num;
+                            args.count = this.queryArgs.count;
+                            this.collection.getIpInfoList(args);
+                        } else {
+                            args = _.extend(this.anotherQuery);
+                            args.page = num;
+                            args.count = this.anotherQuery.count;
+                            console.log("条件查询")
+                        }
                     }
                 }.bind(this)
             });
@@ -152,8 +184,8 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 {name: "全部", value: "all"},
                 {name: "运行中", value: 1},
                 {name: "暂停中", value: 2},
-                {name: "宕机中", value: 3},
-                {name: "暂停且宕机", value: 4}
+                {name: "宕机中", value: 4},
+                {name: "暂停且宕机", value: 6}
             ]
             Utility.initDropMenu(this.$el.find(".dropdown-status"), status, function(value){
                 //if (value === "all")
@@ -165,9 +197,15 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 {name: "100条", value: 100}
             ]
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
-                this.queryArgs.count = value;
-                this.queryArgs.page = 1;
-                this.onStartQueryButton();
+                if (this.isMultiIPSearch){
+                    this.queryArgs.count = value;
+                    this.queryArgs.page = 1;
+                    this.onStartQueryButton();
+                } else {
+                    this.anotherQuery.count = value;
+                    this.anotherQuery.page = 1;
+                    this.onStartQueryButton();
+                }
             }.bind(this));
             this.deviceCollection.ipTypeList();
         },

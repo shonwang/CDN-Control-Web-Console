@@ -162,6 +162,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             }.bind(this));
             this.collection.on("get.effectSingleConf.error", $.proxy(this.onGetError, this));
             this.collection.getBusinessType();
+            this.initPageDropMenu();
         },
 
         onGetError: function(error){
@@ -189,7 +190,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             this.queryArgs = {
                 bisTypeId: res[0].id,
                 page   : 1,
-                count  : 10
+                count  : 5
             }
             this.$el.find(".dropdown-bustype .cur-value").html(res[0].name);
             this.collection.getConfList(this.queryArgs);
@@ -198,7 +199,6 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
         onSetupFileListSuccess: function(){
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
-            this.initPageDropMenu();
         },
 
         initTable: function(){
@@ -355,14 +355,15 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
 
         initPageDropMenu: function(){
             var pageNum = [
+                {name: "5条", value: 5},
                 {name: "10条", value: 10},
-                {name: "20条", value: 20},
-                {name: "50条", value: 50},
-                {name: "100条", value: 100}
+                {name: "20条", value: 20}
             ]
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
                 this.queryArgs.count = value;
+                this.isInitPaginator = false;
                 this.queryArgs.page = 1;
+                this.$el.find(".pagination").html("");
                 this.collection.getConfList(this.queryArgs)
             }.bind(this));
         },

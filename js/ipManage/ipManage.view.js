@@ -35,6 +35,8 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
 
             this.collection.on("get.ipInfo.success", $.proxy(this.onIpInfoListSuccess, this));
             this.collection.on("get.ipInfo.error", $.proxy(this.onGetError, this));
+            this.collection.on("query.ipInfo.success", $.proxy(this.onIpInfoListSuccess, this));
+            this.collection.on("query.ipInfo.error", $.proxy(this.onGetError, this));
             this.deviceCollection.on("ip.type.success", $.proxy(this.onGetIpTypeList, this));
             this.deviceCollection.on("ip.type.error", $.proxy(this.onGetError, this));
 
@@ -73,6 +75,15 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.collection.on("get.ipInfoPause.error", function(err){
                 this.onGetError(res);
             }.bind(this));
+            $(document).on('keydown', $.proxy(this.onEnterQuery, this));
+        },
+
+        onEnterQuery: function(e){
+            if (e.keyCode !== 13) return;
+            e.stopPropagation();
+            e.preventDefault();
+            this.isMultiIPSearch = false;
+            this.onStartQueryButton();
         },
 
         onGetIpTypeList: function(data){
@@ -82,7 +93,8 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 typeIpArray.push({name: el.name, value: el.id})
             })
             Utility.initDropMenu(this.$el.find(".dropdown-type"), typeIpArray, function(value){
-
+                if (value === 'all') this.anotherQuery.ipType = null
+                if (value !== 'all') this.anotherQuery.ipType = parseInt(value);
             }.bind(this));
         },
 
@@ -135,7 +147,11 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 this.collection.getIpInfoList(this.queryArgs);
             } else {
                 this.anotherQuery.page = 1;
-                console.log("条件查询")
+                this.anotherQuery.ip = this.$el.find("#input-ip").val();
+                this.anotherQuery.deviceName = this.$el.find("#input-device").val();
+                this.anotherQuery.nodeName = this.$el.find("#input-node").val();
+                this.anotherQuery.dispDomain = this.$el.find("#input-group").val();
+                this.collection.queryIpInfoList(this.anotherQuery);
             }
         },
 
@@ -171,7 +187,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                             args = _.extend(this.anotherQuery);
                             args.page = num;
                             args.count = this.anotherQuery.count;
-                            console.log("条件查询")
+                            this.collection.queryIpInfoList(this.anotherQuery);
                         }
                     }
                 }.bind(this)
@@ -188,7 +204,8 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 {name: "暂停且宕机", value: 6}
             ]
             Utility.initDropMenu(this.$el.find(".dropdown-status"), status, function(value){
-                //if (value === "all")
+                if (value !== "all") this.anotherQuery.ipStatus = parseInt(value);
+                if (value === "all") this.anotherQuery.ipStatus = null;
             }.bind(this));            
             var pageNum = [
                 {name: "10条", value: 10},
@@ -312,6 +329,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         remove: function(){
+            $(document).off('keydown', $.proxy(this.onEnterQuery, this));
             if (this.queryDetailPopup) $("#" + this.queryDetailPopup.modalId).remove();
             this.queryDetailPopup = null;
             this.collection.off();
@@ -319,11 +337,13 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         hide: function(){
+            $(document).off('keydown', $.proxy(this.onEnterQuery, this));
             this.$el.hide();
         },
 
         update: function(){
             this.$el.show();
+            $(document).on('keydown', $.proxy(this.onEnterQuery, this));
         },
 
         render: function(target) {

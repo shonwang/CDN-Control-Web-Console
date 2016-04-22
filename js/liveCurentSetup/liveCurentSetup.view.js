@@ -162,6 +162,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             }.bind(this));
             this.collection.on("get.effectSingleConf.error", $.proxy(this.onGetError, this));
             this.collection.getBusinessType();
+            this.initPageDropMenu();
         },
 
         onGetError: function(error){
@@ -193,7 +194,6 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             }
             this.$el.find(".dropdown-bustype .cur-value").html(res[0].name);
             this.collection.getConfList(this.queryArgs);
-            this.initPageDropMenu();
         },
 
         onSetupFileListSuccess: function(){

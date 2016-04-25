@@ -167,9 +167,13 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
 
         initPaginator: function(){
             this.$el.find(".total-items span").html(this.collection.total)
-            if (this.collection.total <= this.queryArgs.count) return;
-            var total = Math.ceil(this.collection.total/this.queryArgs.count);
 
+            if (this.isMultiIPSearch && this.collection.total <= this.queryArgs.count) return;
+            if (!this.isMultiIPSearch && this.collection.total <= this.anotherQuery.count) return;
+            
+            var total = Math.ceil(this.collection.total/this.queryArgs.count);
+            if (!this.isMultiIPSearch)
+                total = Math.ceil(this.collection.total/this.anotherQuery.count);
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
                 visiblePages: 10,
@@ -215,11 +219,11 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             ]
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
                 if (this.isMultiIPSearch){
-                    this.queryArgs.count = value;
+                    this.queryArgs.count = parseInt(value);
                     this.queryArgs.page = 1;
                     this.onStartQueryButton();
                 } else {
-                    this.anotherQuery.count = value;
+                    this.anotherQuery.count = parseInt(value);
                     this.anotherQuery.page = 1;
                     this.onStartQueryButton();
                 }

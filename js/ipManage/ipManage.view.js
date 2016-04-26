@@ -34,15 +34,16 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.initNodeDropMenu();
 
             this.collection.on("get.ipInfo.success", $.proxy(this.onIpInfoListSuccess, this));
-            this.collection.on("get.ipInfo.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.ipInfo.error", $.proxy(this.onQueryError, this));
             this.collection.on("query.ipInfo.success", $.proxy(this.onIpInfoListSuccess, this));
-            this.collection.on("query.ipInfo.error", $.proxy(this.onGetError, this));
+            this.collection.on("query.ipInfo.error", $.proxy(this.onQueryError, this));
             this.deviceCollection.on("ip.type.success", $.proxy(this.onGetIpTypeList, this));
             this.deviceCollection.on("ip.type.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".opt-ctn .query-single").on("click", $.proxy(this.onClickQuerySingleButton, this));
             this.isMultiIPSearch = true;
+            this.isQuering = false;
             this.queryArgs = {
                 page : 1,
                 count: 10,
@@ -98,6 +99,11 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             }.bind(this));
         },
 
+        onQueryError: function(error){
+            this.isQuering = false;
+            this.onGetError(error)
+        },
+
         onGetError: function(error){
             if (error&&error.message)
                 alert(error.message)
@@ -106,6 +112,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         onIpInfoListSuccess: function(){
+            this.isQuering = false;
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
         },
@@ -139,6 +146,8 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         onStartQueryButton: function(){
+            if (this.isQuering) return;
+            this.isQuering = true;
             this.isInitPaginator = false;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");

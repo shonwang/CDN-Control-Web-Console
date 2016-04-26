@@ -100,6 +100,8 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         onQueryError: function(error){
+            this.$el.find(".opt-ctn .query").removeAttr("disabled");
+            this.$el.find(".opt-ctn .query-single").removeAttr("disabled");
             this.isQuering = false;
             this.onGetError(error)
         },
@@ -112,6 +114,8 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         onIpInfoListSuccess: function(){
+            this.$el.find(".opt-ctn .query").removeAttr("disabled");
+            this.$el.find(".opt-ctn .query-single").removeAttr("disabled");
             this.isQuering = false;
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
@@ -146,6 +150,8 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         onStartQueryButton: function(){
+            this.$el.find(".opt-ctn .query").attr("disabled", "disabled");
+            this.$el.find(".opt-ctn .query-single").attr("disabled", "disabled");
             if (this.isQuering) return;
             this.isQuering = true;
             this.isInitPaginator = false;

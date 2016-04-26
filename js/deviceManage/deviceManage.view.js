@@ -218,7 +218,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
         onDeleteIpSuccess: function(){
             alert("删除成功！")
             var id = this.model.get("id");
-            this.collection.getDeviceIpList({deviceId:id})
+            this.collection.getDeviceIpList({deviceId:id});
+            this.showIpManagePopup();
         },
 
         updateIpTable: function(){

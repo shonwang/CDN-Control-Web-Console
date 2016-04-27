@@ -75,6 +75,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.$el.find(".ok-again").on("click", $.proxy(this.onClickOK, this));
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancel, this));
+            this.$el.find(".lock-name").on("click", $.proxy(this.onClickLockName, this));
+            this.$el.find(".edit-name").on("click", $.proxy(this.onClickEditName, this));
             this.$el.find(".fileContentType input").on("click", $.proxy(this.onClickfileContentTypeInput, this));
             this.$el.find(".partition-ctn .create-partition").on("click", $.proxy(this.onClickCreatePartition, this));
 
@@ -91,6 +93,19 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.fileType.error", $.proxy(this.onGetError, this));
 
             this.initBussnessDropList();
+        },
+
+        onClickLockName: function(){
+            this.$el.find(".lock-name").hide();
+            this.$el.find(".edit-name").show();
+            this.$el.find("#input-name").attr("readonly", true);
+        },
+
+        onClickEditName: function(){
+            this.$el.find(".lock-name").show();
+            this.$el.find(".edit-name").hide();
+            alert("编辑文件路径有风险，请谨慎修改！")
+            this.$el.find("#input-name").removeAttr("readonly");
         },
 
         updatePartitonTable: function(){

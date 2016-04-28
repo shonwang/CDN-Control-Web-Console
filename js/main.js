@@ -9,7 +9,7 @@ else if (window.DEBUG === 3)
 else if(window.DEBUG === 4)
     window.BASE_URL = "http://test-cdn.center.cdn.ksyun.com";
 else if(window.DEBUG === 5)
-    window.BASE_URL = "http://gray.center.cdn.ksyun.com:9999";
+    window.BASE_URL = "http://gray.center.cdn.ksyun.com";
 
 requirejs.config({
     paths: {

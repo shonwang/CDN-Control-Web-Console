@@ -87,9 +87,15 @@ module.exports = function(grunt) {
         modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 3;\n');
     });
 
+    grunt.registerTask('gray-url', '', function() {
+        modifyFile("dest/js/main.js", 'DEBUG', 'window.DEBUG = 5;\n');
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 5;\n');
+    });
+
     grunt.registerTask('temp',['underscore:compile']);
     grunt.registerTask('debug',["clean", 'underscore:compile', "copy"]);
     grunt.registerTask('set',["clean", 'underscore:compile', "copy", "set-url"]);
     grunt.registerTask('test',["clean", 'underscore:compile', "copy", "test-url"]);
     grunt.registerTask('online',["clean", 'underscore:compile', "copy", "online-url"]);
+    grunt.registerTask('gray',["clean", 'underscore:compile', "copy", "gray-url"]);
 };

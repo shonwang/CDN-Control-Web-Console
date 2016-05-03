@@ -150,8 +150,8 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
 
         initDropList: function(list){
             var cityArray = [
-                {name: "北京", value: 'N39.9-E116.3'},
-                {name: "天津", value: 'N53.2-E123.3'}
+                {name: "北京", value: 'N39.9-E116.3', isDisplay: false},
+                {name: "天津", value: 'N53.2-E123.3', isDisplay: false}
             ];
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.dropdown-city').get(0),
@@ -159,6 +159,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 isSingle: true,
                 openSearch: true,
                 selectWidth: 200,
+                isDataVisible: true,
                 onOk: function(){},
                 data: cityArray,
                 callback: function(data) {

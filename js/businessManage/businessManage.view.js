@@ -31,14 +31,13 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
 
             if (this.isEdit) {
                 tplData.name = this.model.get("name");
+                if (this.model.get("name").indexOf("[") === -1 || this.model.get("name").indexOf("]") === -1) return;
                 tplData.bisTypeName = this.model.get("bisTypeName");
                 tplData.deviceTypeName = this.model.get("deviceTypeName");
                 tplData.ipTypeName = this.model.get("ipTypeName");
                 tplData.bisTypeId = this.model.get("bisTypeId");
                 tplData.deviceTypeId = this.model.get("deviceTypeId");
                 tplData.ipTypeId = this.model.get("ipTypeId");
-
-                alert("由于后端返回的名称是一个字符串，前端无法拆分该字符串到各个下拉菜单，只能显示为文本框！")
             } else {
                 tplData.bisTypeName = this.businessType[0].name;
                 tplData.deviceTypeName = this.deviceType[0].name;
@@ -61,24 +60,26 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
             this.initIpDropMenu();
 
             if (this.isEdit){
+                this.nodeGroupNamePart1 = this.model.get("name").split("[")[0];
+                this.nodeGroupNamePart2 = this.model.get("name").split("[")[1].split("]")[0];
+                this.nodeGroupNamePart3 = this.model.get("name").split("[")[1].split("]")[1].split("节点组")[0];
             } else {
                 this.nodeGroupNamePart1 = "上层";
                 this.nodeGroupNamePart2 = "北京";
                 this.nodeGroupNamePart3 = "电信";
-
-                this.nodeCollection.off("get.city.success");
-                this.nodeCollection.off("get.city.error");
-                this.nodeCollection.on("get.city.success", $.proxy(this.onGetAllCity, this));
-                this.nodeCollection.on("get.city.error", $.proxy(this.onGetError, this));
-
-                this.nodeCollection.off("get.operator.success");
-                this.nodeCollection.off("get.operator.error");
-                this.nodeCollection.on("get.operator.success", $.proxy(this.onGetAllOperator, this));
-                this.nodeCollection.on("get.operator.error", $.proxy(this.onGetError, this));
-
-                this.nodeCollection.getOperatorList();
-                this.nodeCollection.getAllCity();
             }
+            this.nodeCollection.off("get.city.success");
+            this.nodeCollection.off("get.city.error");
+            this.nodeCollection.on("get.city.success", $.proxy(this.onGetAllCity, this));
+            this.nodeCollection.on("get.city.error", $.proxy(this.onGetError, this));
+
+            this.nodeCollection.off("get.operator.success");
+            this.nodeCollection.off("get.operator.error");
+            this.nodeCollection.on("get.operator.success", $.proxy(this.onGetAllOperator, this));
+            this.nodeCollection.on("get.operator.error", $.proxy(this.onGetError, this));
+
+            this.nodeCollection.getOperatorList();
+            this.nodeCollection.getAllCity();
         },
 
         onGetAllCity: function(res){
@@ -101,6 +102,7 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                     this.nodeGroupNamePart2 = data.name
                 }.bind(this)
             });
+            this.$el.find("#dropdown-city .cur-value").html(this.nodeGroupNamePart2)
         },
 
         onGetAllOperator: function(res){
@@ -112,6 +114,7 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
             Utility.initDropMenu(this.$el.find(".dropdown-oper"), nameList, function(value){
                 this.nodeGroupNamePart3 = value
             }.bind(this));
+            this.$el.find("#dropdown-oper .cur-value").html(this.nodeGroupNamePart3)
 
             var nameList = [
                 {name: "上层", value: "上层"},
@@ -120,6 +123,7 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
             Utility.initDropMenu(this.$el.find(".dropdown-level"), nameList, function(value){
                 this.nodeGroupNamePart1 = value
             }.bind(this));
+            this.$el.find("#dropdown-level .cur-value").html(this.nodeGroupNamePart1)
         },
 
         initcreateAddNodeDrop: function(res) {
@@ -149,9 +153,7 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                 nodeListFinal.push($(this).attr('data-id'));
             });
             this.nodeListFinal = nodeListFinal;
-            var nodeGroupName = this.$el.find('#nodeGroupName').val();
-            if (!this.isEdit)
-                nodeGroupName = this.nodeGroupNamePart1 + "[" + this.nodeGroupNamePart2 + "]" + this.nodeGroupNamePart3 + this.$el.find('#node-group').val()
+            var nodeGroupName = this.nodeGroupNamePart1 + "[" + this.nodeGroupNamePart2 + "]" + this.nodeGroupNamePart3 + this.$el.find('#node-group').val()
             var args = {
                     "id": this.model ? this.model.get("id") : '',
                     "name": nodeGroupName,
@@ -257,6 +259,12 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         render: function(target) {
+            if (this.isEdit){
+                if (this.model.get("name").indexOf("[") === -1 || this.model.get("name").indexOf("]") === -1){
+                    var message = "返回的名称不符合规范，无法编辑！"
+                    this.$el = $('<div>' + message + '</div>');
+                }
+            }
             this.$el.appendTo(target);
         }
     });

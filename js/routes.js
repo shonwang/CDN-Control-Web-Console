@@ -69,13 +69,18 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         businessManage: function(){
-            require(['businessManage.view', 'businessManage.model'], function(BusinessManageView, BusinessManageModel){
+            require(['businessManage.view', 'businessManage.model', 'nodeManage.model'], function(BusinessManageView, BusinessManageModel, NodeManageModel){
                 this.curPage = 'businessManage';
                 this.navbarView.select(this.curPage);
                 if (!this.businessManageModel)
                     this.businessManageModel = new BusinessManageModel();
+                if (!this.nodeManageModel)
+                    this.nodeManageModel = new NodeManageModel();
                 if (!this.businessManageView ){
-                    var options = {collection: this.businessManageModel};
+                    var options = {
+                        collection: this.businessManageModel,
+                        nodeCollection: this.nodeManageModel
+                    };
                     this.businessManageView = new BusinessManageView(options);
                     this.businessManageView.render($('.ksc-content'));
                 } else {

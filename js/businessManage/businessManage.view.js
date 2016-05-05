@@ -65,7 +65,7 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                 this.nodeGroupNamePart3 = this.model.get("name").split("[")[1].split("]")[1].split("节点组")[0];
             } else {
                 this.nodeGroupNamePart1 = "上层";
-                this.nodeGroupNamePart2 = "北京";
+                this.nodeGroupNamePart2 = "默认";
                 this.nodeGroupNamePart3 = "电信";
             }
             this.nodeCollection.off("get.city.success");
@@ -83,7 +83,7 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         onGetAllCity: function(res){
-            var cityArray = [];
+            var cityArray = [{name:"默认", value: "默认", isDisplay: false}];
             res = _.uniq(res);
             _.each(res, function(el, index, list){
                 cityArray.push({name:el, value: el, isDisplay: false})

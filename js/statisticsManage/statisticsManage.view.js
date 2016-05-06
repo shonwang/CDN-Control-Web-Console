@@ -154,13 +154,6 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
             _.each(res, function(el, index, list){
                 nameList.push({name: el, value:el})
             });
-            // Utility.initDropMenu(this.$el.find(".dropdown-customer"), nameList, function(value){
-            //     this.clientName = value;
-            //     this.collection.getDomain({clientName: value, type: this.type});
-            // }.bind(this));
-            // this.$el.find("#dropdown-customer .cur-value").html(res[0])
-            // this.collection.getDomain({clientName: res[0], type: this.type});
-            // this.clientName = res[0];
 
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.dropdown-customer').get(0),
@@ -183,7 +176,8 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
 
         initCharts: function(res){
             this.bandInfo = JSON.parse(res.calculateBandwidth.bandwidth)
-            if (this.bandInfo.length === 0){
+            console.log(this.bandInfo)
+            if (this.bandInfo.length === 0 || this.checkedDomain === ""){
                 this.$el.find(".charts-ctn").html(_.template(template['tpl/empty-2.html'])({data:{message: "汪伟在胸口摸索了一翻，但是却没有找到数据！"}}));
                 return
             }

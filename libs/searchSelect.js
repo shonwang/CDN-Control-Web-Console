@@ -117,7 +117,7 @@
             var selectObject = this.selectObject;
             var inputPanel = this.panel;
             var selectContainer = this.selectContainer;
-            inputPanel.onclick = function() {
+            inputPanel.onclick = function(ev) {
                 var oEvent = window.event || ev;
                 oEvent.cancelBubble = true;
                 selectContainer.style.display = "block";

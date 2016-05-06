@@ -187,6 +187,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.off("get.ipInfoSubmit.success");
             this.collection.on("get.ipInfoSubmit.success", function(res){
                 alert(res);
+                this.showIpManagePopup();
+                this.collection.ipTypeList();
             }.bind(this));
             this.collection.off("get.ipInfoSubmit.error");
             this.collection.on("get.ipInfoSubmit.error",  $.proxy(this.onGetError, this));

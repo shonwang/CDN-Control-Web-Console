@@ -176,7 +176,8 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
 
         initCharts: function(res){
             this.bandInfo = JSON.parse(res.calculateBandwidth.bandwidth)
-            if (this.bandInfo.length === 0){
+            console.log(this.bandInfo)
+            if (this.bandInfo.length === 0 || this.checkedDomain === ""){
                 this.$el.find(".charts-ctn").html(_.template(template['tpl/empty-2.html'])({data:{message: "汪伟在胸口摸索了一翻，但是却没有找到数据！"}}));
                 return
             }

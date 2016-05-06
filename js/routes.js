@@ -274,10 +274,15 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             require(['statisticsManage.view', 'statisticsManage.model'], function(StatisticsManageView, StatisticsManageModel){
                 this.curPage = 'statisticsManage';
                 this.navbarView.select(this.curPage);
-                if (!this.statisticsManageModel)
-                    this.statisticsManageModel = new StatisticsManageModel();
+                if (!this.downloadStatisticsManageModel)
+                    this.downloadStatisticsManageModel = new StatisticsManageModel();
+                if (!this.liveStatisticsManageModel)
+                    this.liveStatisticsManageModel = new StatisticsManageModel();
                 if (!this.statisticsManageView ){
-                    var options = {collection: this.statisticsManageModel};
+                    var options = {
+                        collection: this.downloadStatisticsManageModel,
+                        liveCollection: this.liveStatisticsManageModel,
+                    };
                     this.statisticsManageView = new StatisticsManageView(options);
                     this.statisticsManageView.render($('.ksc-content'));
                 }

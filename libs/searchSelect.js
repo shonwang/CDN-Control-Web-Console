@@ -14,6 +14,7 @@
         this.hasOkBtn = options.onOk || false;
         this.checkList = {};
         this.isSingle = options.isSingle || false;
+        this.defaultChecked = options.defaultChecked || false;
         this.init();
 
     };
@@ -21,6 +22,12 @@
         init: function() {
             this.draw();
         },
+
+        destroy: function(){
+            this.container.removeChild(this.selectContainer);
+            this.selectList = null;
+        },
+
         draw: function() {
             this.selectContainer = document.createElement("div");
             this.selectContainer.className = "select-container";
@@ -185,6 +192,12 @@
                     if ((_data[i]["isDisplay"] && this.isDataVisible) || !this.isDataVisible){
                         var _html = this.createCheckBox(_data[i]["name"]);
                         arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
+                        if (this.defaultChecked){
+                            this.checkList[_data[i]["value"]] = {
+                                name:  _data[i]["name"],
+                                value: _data[i]["value"]
+                            };
+                        }
                     }
                 }
                 oUl.innerHTML = arr.join('');
@@ -354,7 +367,10 @@
             var _class = this.isSingle ? "isSingle" : "";
             var html = [];
             html.push('<label class="select-checkboxcon ' + _class + '">');
-            html.push('<input class="select-checkbox" type="checkbox" />');
+            if (this.defaultChecked)
+                html.push('<input class="select-checkbox" type="checkbox" checked="true"/>');
+            else
+                html.push('<input class="select-checkbox" type="checkbox" />');
             html.push('<div class="select-checkbox-value">' + tit + '</div>');
             html.push('</label>');
             return html.join('');

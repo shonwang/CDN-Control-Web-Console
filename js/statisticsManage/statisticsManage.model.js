@@ -10,71 +10,46 @@ define("statisticsManage.model", ['require','exports', 'utility'], function(requ
 
         initialize: function(){},
 
-        post: function(args){
-            var url = BASE_URL + "/rs/channel/query"
-            var defaultParas = {
-                type: "POST",
-                url: url,
-                async: true,
-                timeout: 30000,
-                contentType: "application/json",
-                processData: false
-            };
-            defaultParas.data = JSON.stringify(args);
-
-            defaultParas.beforeSend = function(xhr){
-                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
-            }
-            defaultParas.success = function(res){
-                this.reset();
-                if (res){
-                    _.each(res.rows, function(element, index, list){
-                        this.push(new Model(element));
-                    }.bind(this))
-                    this.total = res.total;
-                    this.trigger("get.channel.success");
-                } else {
-                    this.trigger("get.channel.error"); 
-                }
+        getAllClient: function(args){
+            var url = BASE_URL + "/rs/channel/getAllClient",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("get.client.success", res);
+                else
+                    this.trigger("get.client.error", res); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.client.error", response);
             }.bind(this);
-
-            defaultParas.error = function(response, msg){
-                if (response&&response.responseText)
-                    response = JSON.parse(response.responseText)
-                this.trigger("get.channel.error", response); 
-            }.bind(this);
-
-            $.ajax(defaultParas);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        get: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/get";
-            var defaultParas = {
-                type: "GET",
-                url: url,
-                async: true,
-                timeout: 30000,
-            };
-            defaultParas.data = args;
-
-            defaultParas.beforeSend = function(xhr){
-                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
-            }
-            defaultParas.success = function(res){
-                if (res){
-                    this.trigger("channel.dispgroup.success", res);
-                } else {
-                    this.trigger("channel.dispgroup.error", res); 
-                }
+        getBandInfo: function(args){
+            var url = BASE_URL + "/rs/channel/bandInfo",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("get.bandInfo.success", res);
+                else
+                    this.trigger("get.bandInfo.error", res); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.bandInfo.error", response);
             }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
 
-            defaultParas.error = function(response, msg){
-                if (response&&response.responseText)
-                    response = JSON.parse(response.responseText)
-                this.trigger("channel.dispgroup.error", response); 
+        getDomain: function(args){
+            var url = BASE_URL + "/rs/channel/getDomain",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("get.domain.success", res);
+                else
+                    this.trigger("get.domain.error", res); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.domain.error", response);
             }.bind(this);
-
-            $.ajax(defaultParas);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         }
     });
 

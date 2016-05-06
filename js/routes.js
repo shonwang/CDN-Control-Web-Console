@@ -14,6 +14,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             "liveAllSetup"        : "liveAllSetup",
             "liveCurentSetup"     : "liveCurentSetup",
             "ipManage"            : "ipManage",
+            "statisticsManage"    : "statisticsManage",
             "businessManage"      : "businessManage"
         },
 
@@ -61,6 +62,10 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                   break;
                 case "businessManage":
                     this.businessManageView.hide();
+                  break;
+                case 'statisticsManage':
+                  this.statisticsManageView.remove();
+                  this.statisticsManageView = null;
                   break;
                 default:
             }
@@ -261,6 +266,20 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                     this.channelManageView.render($('.ksc-content'));
                 } else {
                     this.channelManageView.update();
+                }
+            }.bind(this));
+        },
+
+        statisticsManage: function(){
+            require(['statisticsManage.view', 'statisticsManage.model'], function(StatisticsManageView, StatisticsManageModel){
+                this.curPage = 'statisticsManage';
+                this.navbarView.select(this.curPage);
+                if (!this.statisticsManageModel)
+                    this.statisticsManageModel = new StatisticsManageModel();
+                if (!this.statisticsManageView ){
+                    var options = {collection: this.statisticsManageModel};
+                    this.statisticsManageView = new StatisticsManageView(options);
+                    this.statisticsManageView.render($('.ksc-content'));
                 }
             }.bind(this));
         }

@@ -50,7 +50,9 @@ requirejs.config({
         "ipManage.model"       : 'ipManage/ipManage.model',
 
         "businessManage.view"  : 'businessManage/businessManage.view',
-        "businessManage.model" : 'businessManage/businessManage.model'
+        "businessManage.model" : 'businessManage/businessManage.model',
+        "statisticsManage.view"  : 'statisticsManage/statisticsManage.view',
+        "statisticsManage.model" : 'statisticsManage/statisticsManage.model'
     },
     urlArgs: new Date().valueOf()
 });

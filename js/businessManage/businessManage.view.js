@@ -95,6 +95,7 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                 openSearch: true,
                 selectWidth: 200,
                 isDataVisible: true,
+                zIndex: 3,
                 onOk: function(){},
                 data: cityArray,
                 callback: function(data) {

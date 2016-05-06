@@ -59,6 +59,7 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
                 // maxTime  : new Date().format("yyyy/MM/dd hh:mm"),
                 value: new Date().format("yyyy/MM/dd") + " 00:00",
                 //closeOnWithoutClick : false,
+                scrollInput: false,
                 timepicker: false,
                 onChangeDateTime: function(){
                     var startTime = new Date(arguments[0]);
@@ -74,6 +75,7 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
                 value: new Date().format("yyyy/MM/dd hh:mm"),
                 //closeOnWithoutClick : false,
                 timepicker: false, 
+                scrollInput: false,
                 onChangeDateTime: function(){
                     var endTime = new Date(arguments[0]);
                     if (endTime.format("yyyyMMdd") === new Date().format("yyyyMMdd")){

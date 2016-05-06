@@ -168,7 +168,7 @@
 
             //设置zIndex
             for (var i = 0; i < selectObject.length; i++) {
-                selectObject[i]["container"].style.zIndex = i + 1;
+                selectObject[i]["container"].style.zIndex = i + 3;
             }
 
 

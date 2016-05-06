@@ -154,10 +154,28 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
             _.each(res, function(el, index, list){
                 nameList.push({name: el, value:el})
             });
-            Utility.initDropMenu(this.$el.find(".dropdown-customer"), nameList, function(value){
-                this.clientName = value;
-                this.collection.getDomain({clientName: value, type: this.type});
-            }.bind(this));
+            // Utility.initDropMenu(this.$el.find(".dropdown-customer"), nameList, function(value){
+            //     this.clientName = value;
+            //     this.collection.getDomain({clientName: value, type: this.type});
+            // }.bind(this));
+            // this.$el.find("#dropdown-customer .cur-value").html(res[0])
+            // this.collection.getDomain({clientName: res[0], type: this.type});
+            // this.clientName = res[0];
+
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-customer').get(0),
+                panelID: this.$el.find('#dropdown-customer').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                onOk: function(){},
+                data: nameList,
+                callback: function(data) {
+                    this.clientName = data.value;
+                    this.collection.getDomain({clientName: data.value, type: this.type});
+                    this.$el.find("#dropdown-customer .cur-value").html(this.clientName)
+                }.bind(this)
+            });
             this.$el.find("#dropdown-customer .cur-value").html(res[0])
             this.collection.getDomain({clientName: res[0], type: this.type});
             this.clientName = res[0];

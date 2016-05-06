@@ -651,7 +651,7 @@ td .table {
 
 .select-checkbox-value {
   position: relative;
-  height: 15px;
+  height: 20px;
   line-height: 15px;
   padding-left: 25px;
   overflow: hidden;
@@ -904,7 +904,11 @@ td .table {
 .nav-tabs > li {
   float: left;
   margin-bottom: -1px;
-  box-shadow: -8px 0 17px -9px rgba(0, 0, 0, .2)
+
+}
+
+.nav-tabs li.active{
+    box-shadow: -8px 0 17px -9px rgba(0, 0, 0, .2)
 }
 
 .nav-tabs > li > a {

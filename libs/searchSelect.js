@@ -3,6 +3,7 @@
     var SearchSelect = function(options) {
         this.openSearch = options.openSearch || false;
         this.selectData = options.data || null;
+        this.isDataVisible = options.isDataVisible || false;
         var containerID = options.containerID;
         var panelID = options.panelID;
         this.container = this.getID(containerID);
@@ -13,6 +14,7 @@
         this.hasOkBtn = options.onOk || false;
         this.checkList = {};
         this.isSingle = options.isSingle || false;
+        this.defaultChecked = options.defaultChecked || false;
         this.init();
 
     };
@@ -20,6 +22,12 @@
         init: function() {
             this.draw();
         },
+
+        destroy: function(){
+            this.container.removeChild(this.selectContainer);
+            this.selectList = null;
+        },
+
         draw: function() {
             this.selectContainer = document.createElement("div");
             this.selectContainer.className = "select-container";
@@ -60,7 +68,7 @@
                 oDiv.className = "search-ctn";
                 var oTips = document.createElement("span");
                 oTips.className = "select-search-tips";
-                oTips.innerHTML = "过滤";
+                oTips.innerHTML = "搜索";
                 var oSelectInput = document.createElement("input");
                 oSelectInput.type = "search";
                 oDiv.appendChild(oTips);
@@ -181,8 +189,16 @@
             var arr = [];
             if (_data && _data.length > 0) {
                 for (var i = 0, _len = _data.length; i < _len; i++) {
-                    var _html = this.createCheckBox(_data[i]["name"]);
-                    arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
+                    if ((_data[i]["isDisplay"] && this.isDataVisible) || !this.isDataVisible){
+                        var _html = this.createCheckBox(_data[i]["name"]);
+                        arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
+                        if (this.defaultChecked){
+                            this.checkList[_data[i]["value"]] = {
+                                name:  _data[i]["name"],
+                                value: _data[i]["value"]
+                            };
+                        }
+                    }
                 }
                 oUl.innerHTML = arr.join('');
                 this.bindClick();
@@ -267,14 +283,27 @@
         search: function(obj) {
             var value = obj.value;
             var oUl = this.selectValueLayer;
-            var aLi = oUl.getElementsByTagName("li");
-            for (var i = 0; i < aLi.length; i++) {
-                var _value = aLi[i].getAttribute("data-name");
-                if (_value.indexOf(value) > -1) {
-                    aLi[i].className = "";
-                } else {
-                    aLi[i].className = "hide";
+            if (!this.isDataVisible){
+                var aLi = oUl.getElementsByTagName("li");
+                for (var i = 0; i < aLi.length; i++) {
+                    var _value = aLi[i].getAttribute("data-name");
+                    if (_value.indexOf(value) > -1) {
+                        aLi[i].className = "";
+                    } else {
+                        aLi[i].className = "hide";
+                    }
                 }
+            } else {
+                oUl.innerHTML = "";
+                if (value == "") return;
+                for (var i = 0; i < this.selectData.length; i++) {
+                    if (this.selectData[i]["name"].indexOf(value) > -1) {
+                        this.selectData[i]["isDisplay"] = true;
+                    } else {
+                        this.selectData[i]["isDisplay"] = false;
+                    }
+                }
+                this.setData();
             }
         },
 
@@ -338,7 +367,10 @@
             var _class = this.isSingle ? "isSingle" : "";
             var html = [];
             html.push('<label class="select-checkboxcon ' + _class + '">');
-            html.push('<input class="select-checkbox" type="checkbox" />');
+            if (this.defaultChecked)
+                html.push('<input class="select-checkbox" type="checkbox" checked="true"/>');
+            else
+                html.push('<input class="select-checkbox" type="checkbox" />');
             html.push('<div class="select-checkbox-value">' + tit + '</div>');
             html.push('</label>');
             return html.join('');

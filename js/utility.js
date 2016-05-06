@@ -136,7 +136,7 @@ define("utility", ['require','exports'], function(require, exports) {
                 return num + 'Tbps';
             }*/
 			else {
-                return num.toFixed(2) + "bps";
+                return num.toFixed(2) + "B";
             }
         },
 

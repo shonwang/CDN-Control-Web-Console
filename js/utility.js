@@ -210,6 +210,66 @@ define("utility", ['require','exports'], function(require, exports) {
           } else if(element.msRequestFullscreen) {
             element.msRequestFullscreen();
           }
+        },
+
+        postAjax: function(url, args, successCallback, errorCallback, timeout){
+            var defaultParas = {
+                type: "POST",
+                url: url,
+                async: true,
+                timeout: timeout || 30000,
+                contentType: "application/json",
+                processData: false
+            };
+            defaultParas.data = JSON.stringify(args);
+
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                successCallback && successCallback(res)
+            };
+
+            defaultParas.error = function(response, msg){
+                try{
+                    if (response&&response.responseText)
+                        response = JSON.parse(response.responseText)
+                    errorCallback && errorCallback(response)
+                } catch(e){
+                    errorCallback && errorCallback(response)
+                } 
+            };
+
+            $.ajax(defaultParas);
+        },
+
+        getAjax: function(url, args, successCallback, errorCallback, timeout){
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: timeout || 30000,
+            };
+            defaultParas.data = args || {t: new Date().valueOf()};
+
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                successCallback && successCallback(res)
+            };
+
+            defaultParas.error = function(response, msg){
+                try{
+                    if (response&&response.responseText)
+                        response = JSON.parse(response.responseText)
+                    errorCallback && errorCallback(response)
+                } catch(e){
+                    errorCallback && errorCallback(response)
+                } 
+            };
+
+            $.ajax(defaultParas);
         }
     };
     return Utility;

@@ -84,6 +84,13 @@ td .label {
   margin-right: 10px;
 }
 
+.valuable-customer .form-group label,
+.valuable-customer .form-group input,
+.valuable-customer .form-group .dropdown,
+.valuable-customer .form-group .dropup {
+  margin-right: 0;
+}
+
 .long-dropdown-menu {
   max-height: 300px;
   overflow-y: auto;
@@ -132,6 +139,19 @@ td .label {
 
 .badge-success {
   background-color: #5cb85c;
+}
+
+.valuable-customer .dropdown .btn{
+    width: 100%;
+}
+
+.valuable-customer .dropdown .cur-value{
+    width: 90%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: inline-block;
+    vertical-align: top;
 }
 
 td .radio {
@@ -860,3 +880,64 @@ td .table {
   vertical-align: middle;
 }
 /*==================================================*/
+
+.valuable-customer .dropdown-menu{
+    left: 15px;
+}
+
+.nav>li>a {
+    padding: 15px 35px;
+    color: #999999;
+}
+
+.nav > li > a:hover,
+.nav > li > a:focus {
+    color: #ed4646;
+}
+
+.nav-tabs {
+    border: none;
+    border-radius: 0px;
+    box-shadow: 0 1px 1px rgba(0,0,0,.05);
+}
+
+.nav-tabs > li {
+  float: left;
+  margin-bottom: -1px;
+  box-shadow: -8px 0 17px -9px rgba(0, 0, 0, .2)
+}
+
+.nav-tabs > li > a {
+  margin-right: 0; 
+  border-radius: 0;
+  border: none; 
+  cursor: pointer;
+}
+
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+  color: #ed4646;
+  border: none;
+  background-color: #fff;
+}
+
+.nav > li > a:before{
+  content: "";
+  position: absolute;
+  width: 100%;
+  border-top: 3px solid transparent;
+  top: 15px;
+  left: 0;
+  -webkit-transition: all .3s linear;
+  -moz-transition: all .3s linear;
+  -o-transition: all .3s linear;
+  -ms-transition: all .3s linear;
+  transition: all .3s linear;
+}
+
+.nav > .active > a:before,
+.nav > li > a:hover:before {
+  border-top-color: #ed4646;
+  top: 0;
+}

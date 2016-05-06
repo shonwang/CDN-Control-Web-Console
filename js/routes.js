@@ -14,6 +14,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             "liveAllSetup"        : "liveAllSetup",
             "liveCurentSetup"     : "liveCurentSetup",
             "ipManage"            : "ipManage",
+            "statisticsManage"    : "statisticsManage",
             "businessManage"      : "businessManage"
         },
 
@@ -62,6 +63,10 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                 case "businessManage":
                     this.businessManageView.hide();
                   break;
+                case 'statisticsManage':
+                  this.statisticsManageView.remove();
+                  this.statisticsManageView = null;
+                  break;
                 default:
             }
             if (callback)
@@ -69,13 +74,18 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         businessManage: function(){
-            require(['businessManage.view', 'businessManage.model'], function(BusinessManageView, BusinessManageModel){
+            require(['businessManage.view', 'businessManage.model', 'nodeManage.model'], function(BusinessManageView, BusinessManageModel, NodeManageModel){
                 this.curPage = 'businessManage';
                 this.navbarView.select(this.curPage);
                 if (!this.businessManageModel)
                     this.businessManageModel = new BusinessManageModel();
+                if (!this.nodeManageModel)
+                    this.nodeManageModel = new NodeManageModel();
                 if (!this.businessManageView ){
-                    var options = {collection: this.businessManageModel};
+                    var options = {
+                        collection: this.businessManageModel,
+                        nodeCollection: this.nodeManageModel
+                    };
                     this.businessManageView = new BusinessManageView(options);
                     this.businessManageView.render($('.ksc-content'));
                 } else {
@@ -256,6 +266,20 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                     this.channelManageView.render($('.ksc-content'));
                 } else {
                     this.channelManageView.update();
+                }
+            }.bind(this));
+        },
+
+        statisticsManage: function(){
+            require(['statisticsManage.view', 'statisticsManage.model'], function(StatisticsManageView, StatisticsManageModel){
+                this.curPage = 'statisticsManage';
+                this.navbarView.select(this.curPage);
+                if (!this.statisticsManageModel)
+                    this.statisticsManageModel = new StatisticsManageModel();
+                if (!this.statisticsManageView ){
+                    var options = {collection: this.statisticsManageModel};
+                    this.statisticsManageView = new StatisticsManageView(options);
+                    this.statisticsManageView.render($('.ksc-content'));
                 }
             }.bind(this));
         }

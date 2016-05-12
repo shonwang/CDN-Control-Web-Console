@@ -7,6 +7,7 @@
     <th>Level</th>
     <th>状态</th>
     <th>更新时间</th>
+    <th>备注</th>
     <th>操作</th> 
   </tr>
 </thead>
@@ -23,6 +24,7 @@
           <td><%=data[i].attributes["crossLevelName"]%></td>
           <td><%=data[i].attributes["statusName"]%></td>
           <td><%=data[i].attributes["updateTimeFormated"]%></td>
+          <td><a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="remark" title="<%=data[i].attributes['remark'] || '无'%>">备注</a></td>
           <td>
               <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="edit" title="编辑">
                   <span class="glyphicon glyphicon-edit"></span>

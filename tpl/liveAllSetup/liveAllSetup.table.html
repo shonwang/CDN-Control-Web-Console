@@ -11,6 +11,7 @@
         <th>节点组</th>
         <% } %>
         <th>文件路径</th>
+        <th>分块</th>
         <th>版本号</th>
         <th>创建时间</th>
         <th>MD5</th>
@@ -39,6 +40,7 @@
                       <%=data[i].get("fileName") %>
                   </a>
               </td>
+              <td><% if (data[i].get("partition") === 1) { %><span class="glyphicon glyphicon-th"></span><% } %></td>
               <td><%=data[i].get("currVersion") || data[i].get("version")%></td>
               <td><%=data[i].get("createTimeFormated") %></td>
               <td><%=data[i].attributes["md5"]%></td>

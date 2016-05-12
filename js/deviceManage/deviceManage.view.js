@@ -187,6 +187,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.off("get.ipInfoSubmit.success");
             this.collection.on("get.ipInfoSubmit.success", function(res){
                 alert(res);
+                this.showIpManagePopup();
+                this.collection.ipTypeList();
             }.bind(this));
             this.collection.off("get.ipInfoSubmit.error");
             this.collection.on("get.ipInfoSubmit.error",  $.proxy(this.onGetError, this));
@@ -647,14 +649,18 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         getArgs: function(){
-            var options = {};
+            var options = {}, deviceName = this.$el.find("#input-name").val(), re = /^[a-zA-Z\d\.\-]+$/;
+            if (!re.test(deviceName)){
+                alert("设备名称只能输入如下字符：英文 数字 - .");
+                return;
+            }
             if (!this.isEdit){
                 var ipIdArray = [];
                 _.each(this.ipList, function(el, ind, list){
                     ipIdArray.push(el.id)
                 }.bind(this))
                 options = {
-                     "name"   : this.$el.find("#input-name").val(),
+                     "name"   : deviceName,
                      "nodeId" : this.nodeId,
                      "type"   : this.deviceType,
                      "status" : 1,
@@ -663,7 +669,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 }
             } else {
                 options = {
-                     "name"   : this.$el.find("#input-name").val(),
+                     "name"   : deviceName,
                      "nodeId" : this.nodeId,
                      "type"   : this.deviceType,
                      "status" : 1,

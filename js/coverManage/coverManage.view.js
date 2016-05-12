@@ -27,6 +27,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.isPaused = false;
             this.isShowNodeRegion = true;
             this.isGlobal = false;
+            this.operatorId = null;
 
             this.mapDataTimer = setInterval($.proxy(this.onClickQueryButton, this), 63000);
             this.onClickQueryButton();
@@ -511,7 +512,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
 
         onClickQueryButton: function(){
             this.isGettingMapData = true;
-            this.collection.getMapData();
+            this.collection.getMapData({operatorId: this.operatorId});
         },
 
         initNodeDropMenu: function(res){
@@ -521,7 +522,13 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                 nameList.push({name: el.name, value:el.id})
             });
             Utility.initDropMenu(this.$el.find(".dropdown-operation"), nameList, function(value){
-
+                if (value === "all")
+                    this.operatorId = null
+                else
+                    this.operatorId = parseInt(value)
+                var keyWord = this.$el.find(".opt-ctn #input-node-search").val();
+                if (keyWord) this.$el.find(".opt-ctn #input-node-search").val("");
+                this.onClickQueryButton();
             }.bind(this));
         },
 

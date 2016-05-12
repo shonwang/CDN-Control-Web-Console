@@ -52,6 +52,16 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
 
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.add&edit.html'])({data: this.args}));
 
+            this.collection.off("get.city.success");
+            this.collection.off("get.city.error");
+            this.collection.on("get.city.success", $.proxy(this.onGetAllCity, this));
+            this.collection.on("get.city.error", $.proxy(this.onGetError, this));
+
+            this.collection.off("get.location.success");
+            this.collection.off("get.location.error");
+            this.collection.on("get.location.success", $.proxy(this.onGetLocation, this));
+            this.collection.on("get.location.error", $.proxy(this.onGetLocation, this));
+
             this.initDropList(options.list);
             this.initChargeDatePicker();
         },
@@ -64,7 +74,13 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 maxBandwidth = this.$el.find("#input-maxbandwidth").val(),
                 minBandwidth = this.$el.find("#input-minbandwidth").val(),
                 unitPrice = this.$el.find("#input-unitprice").val(),
-                re = /^\d+$/;
+                longitudeLatitude = this.$el.find('#input-longitude-latitude').val(),
+                re = /^\d+$/,
+                reLocation = /^\d+(\.\d+)?----\d+(\.\d+)?$/;
+            // if (!reLocation.test(longitudeLatitude)){
+            //     alert("您需要填写正确的经纬度，否则该节点无法在地图中展示！");
+            //     return
+            // }
             if (!enName || !chName){
                 alert("节点名称和英文名称都要填写！");
                 return;
@@ -149,25 +165,6 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         initDropList: function(list){
-            var cityArray = [
-                {name: "北京", value: 'N39.9-E116.3'},
-                {name: "天津", value: 'N53.2-E123.3'}
-            ];
-            var searchSelect = new SearchSelect({
-                containerID: this.$el.find('.dropdown-city').get(0),
-                panelID: this.$el.find('#dropdown-city').get(0),
-                isSingle: true,
-                openSearch: true,
-                selectWidth: 200,
-                onOk: function(){},
-                data: cityArray,
-                callback: function(data) {
-                    this.$el.find('#dropdown-city .cur-value').html(data.name)
-                    this.$el.find('#input-longitude-latitude').val(data.value);
-                }.bind(this)
-            });
-            this.$el.find('#input-longitude-latitude').val(cityArray[0].value);
-
             var nameList = [
                 {name: "95峰值", value: 1}
                 // {name: "免费", value: 0}
@@ -183,7 +180,46 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.$el.find(".dropdown-charging .cur-value").html(defaultValue.name)
             }
 
-            this.onGetOperatorSuccess(list)
+            this.onGetOperatorSuccess(list);
+            this.collection.getAllCity();
+        },
+
+        onGetAllCity: function(res){
+            var cityArray = [];
+            res = _.uniq(res);
+            _.each(res, function(el, index, list){
+                cityArray.push({name:el, value: el, isDisplay: false})
+            }.bind(this))
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-city').get(0),
+                panelID: this.$el.find('#dropdown-city').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: true,
+                onOk: function(){},
+                data: cityArray,
+                callback: function(data) {
+                    this.$el.find('#dropdown-city .cur-value').html(data.name);
+                    this.$el.find('#input-longitude-latitude').val("查找中...");
+                    this.$el.find('#dropdown-city').attr("disabled", "disabled");
+                    this.collection.getLocation({addr: data.value})
+                }.bind(this)
+            });
+            this.$el.find('#input-longitude-latitude').val("查找中...");
+            this.$el.find('#dropdown-city').attr("disabled", "disabled");
+            this.collection.getLocation({addr: "北京"})
+        },
+
+        onGetLocation: function(res){
+            if (typeof res !== "string" && res.status !== 200){
+                this.$el.find('#input-longitude-latitude').val("没有查到该城市的经纬度，请自己谷歌百度后填写！");
+                this.$el.find('#input-longitude-latitude').removeAttr("readonly");
+            } else {
+                this.$el.find('#input-longitude-latitude').val(res);
+                this.$el.find('#input-longitude-latitude').attr("readonly", true);
+            }
+            this.$el.find('#dropdown-city').removeAttr("disabled");
         },
 
         initChargeDatePicker: function(){

@@ -5,6 +5,7 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
 
         initialize: function(options) {
             this.collection = options.collection;
+            this.nodeCollection = options.nodeCollection
             this.isEdit = options.isEdit;
             this.model = options.model;
             this.businessType = options.businessType;
@@ -30,13 +31,13 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
 
             if (this.isEdit) {
                 tplData.name = this.model.get("name");
+                if (this.model.get("name").indexOf("[") === -1 || this.model.get("name").indexOf("]") === -1) return;
                 tplData.bisTypeName = this.model.get("bisTypeName");
                 tplData.deviceTypeName = this.model.get("deviceTypeName");
                 tplData.ipTypeName = this.model.get("ipTypeName");
                 tplData.bisTypeId = this.model.get("bisTypeId");
                 tplData.deviceTypeId = this.model.get("deviceTypeId");
                 tplData.ipTypeId = this.model.get("ipTypeId");
-
             } else {
                 tplData.bisTypeName = this.businessType[0].name;
                 tplData.deviceTypeName = this.deviceType[0].name;
@@ -44,12 +45,12 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                 tplData.bisTypeId = this.businessType[0].value;
                 tplData.deviceTypeId = this.deviceType[0].value;
                 tplData.ipTypeId = this.ipType[0].value;
-
             }
             this.collection.off("get.addTableList.success");
             this.collection.on("get.addTableList.success", $.proxy(this.initcreateAddNodeDrop, this));
             this.$el = $(_.template(template['tpl/businessManage/businessManage.add&edit.html'])({
-                data: tplData
+                data: tplData,
+                isEdit: this.isEdit
             }));
             if (this.isEdit) {
                 this.setEditTable(this.model.get("nodeList"));
@@ -57,7 +58,75 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
             this.initBusinessDropMenu();
             this.initDeviceDropMenu();
             this.initIpDropMenu();
+
+            if (this.isEdit){
+                this.nodeGroupNamePart1 = this.model.get("name").split("[")[0];
+                this.nodeGroupNamePart2 = this.model.get("name").split("[")[1].split("]")[0];
+                this.nodeGroupNamePart3 = this.model.get("name").split("[")[1].split("]")[1].split("节点组")[0];
+            } else {
+                this.nodeGroupNamePart1 = "上层";
+                this.nodeGroupNamePart2 = "默认";
+                this.nodeGroupNamePart3 = "电信";
+            }
+            this.nodeCollection.off("get.city.success");
+            this.nodeCollection.off("get.city.error");
+            this.nodeCollection.on("get.city.success", $.proxy(this.onGetAllCity, this));
+            this.nodeCollection.on("get.city.error", $.proxy(this.onGetError, this));
+
+            this.nodeCollection.off("get.operator.success");
+            this.nodeCollection.off("get.operator.error");
+            this.nodeCollection.on("get.operator.success", $.proxy(this.onGetAllOperator, this));
+            this.nodeCollection.on("get.operator.error", $.proxy(this.onGetError, this));
+
+            this.nodeCollection.getOperatorList();
+            this.nodeCollection.getAllCity();
         },
+
+        onGetAllCity: function(res){
+            var cityArray = [{name:"默认", value: "默认", isDisplay: false}];
+            res = _.uniq(res);
+            _.each(res, function(el, index, list){
+                cityArray.push({name:el, value: el, isDisplay: false})
+            }.bind(this))
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-city').get(0),
+                panelID: this.$el.find('#dropdown-city').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: true,
+                zIndex: 3,
+                onOk: function(){},
+                data: cityArray,
+                callback: function(data) {
+                    this.$el.find('#dropdown-city .cur-value').html(data.name);
+                    this.nodeGroupNamePart2 = data.name
+                }.bind(this)
+            });
+            this.$el.find("#dropdown-city .cur-value").html(this.nodeGroupNamePart2)
+        },
+
+        onGetAllOperator: function(res){
+            this.operatorList = res
+            var nameList = [];
+            _.each(res.rows, function(el, index, list){
+                nameList.push({name: el.name, value:el.name})
+            });
+            Utility.initDropMenu(this.$el.find(".dropdown-oper"), nameList, function(value){
+                this.nodeGroupNamePart3 = value
+            }.bind(this));
+            this.$el.find("#dropdown-oper .cur-value").html(this.nodeGroupNamePart3)
+
+            var nameList = [
+                {name: "上层", value: "上层"},
+                {name: "下层", value: "下层"}
+            ];
+            Utility.initDropMenu(this.$el.find(".dropdown-level"), nameList, function(value){
+                this.nodeGroupNamePart1 = value
+            }.bind(this));
+            this.$el.find("#dropdown-level .cur-value").html(this.nodeGroupNamePart1)
+        },
+
         initcreateAddNodeDrop: function(res) {
             var data = [];
             var _this = this;
@@ -80,27 +149,25 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
             });
         },
         getArgs: function(popup) {
-
             var nodeListFinal = [];
             popup.$el.find('.addOrEdit').children().each(function() {
                 nodeListFinal.push($(this).attr('data-id'));
             });
             this.nodeListFinal = nodeListFinal;
+            var nodeGroupName = this.nodeGroupNamePart1 + "[" + this.nodeGroupNamePart2 + "]" + this.nodeGroupNamePart3 + this.$el.find('#node-group').val()
             var args = {
                     "id": this.model ? this.model.get("id") : '',
-                    "name": this.$el.find('#nodeGroupName').val(),
+                    "name": nodeGroupName,
                     "oldName": this.model ? this.model.get("name") : '',
                     "bisTypeId": this.$el.find('.business-type .cur-value').attr('data-id'),
                     "deviceTypeId": this.$el.find('.device-type .cur-value').attr('data-id'),
                     "ipTypeId": this.$el.find('.ip-type .cur-value').attr('data-id'),
                     "nodeList": _.uniq(this.nodeListFinal)
                 }
-                //console.log(args.nodeList);
             return args;
         },
 
         setEditTable: function(data) {
-            //console.log(data);
             if (data && data.length != 0) {
                 this.table = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
                     data: data
@@ -193,6 +260,12 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         render: function(target) {
+            if (this.isEdit){
+                if (this.model.get("name").indexOf("[") === -1 || this.model.get("name").indexOf("]") === -1){
+                    var message = "返回的名称不符合规范，无法编辑！"
+                    this.$el = $('<div>' + message + '</div>');
+                }
+            }
             this.$el.appendTo(target);
         }
     });
@@ -203,6 +276,7 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
         initialize: function(options) {
             this.flag = 0;
             this.collection = options.collection;
+            this.nodeCollection = options.nodeCollection
             this.$el = $(_.template(template['tpl/businessManage/businessManage.html'])());
 
             this.businessType = [];
@@ -321,7 +395,8 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                 isEdit: false,
                 businessType: this.businessType,
                 deviceType: this.deviceType,
-                ipType: this.ipType
+                ipType: this.ipType,
+                nodeCollection: this.nodeCollection
             });
             var options = {
                 title: "创建节点组",
@@ -359,7 +434,8 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                 isEdit: true,
                 businessType: this.businessType,
                 deviceType: this.deviceType,
-                ipType: this.ipType
+                ipType: this.ipType,
+                nodeCollection: this.nodeCollection
             });
 
             var options = {

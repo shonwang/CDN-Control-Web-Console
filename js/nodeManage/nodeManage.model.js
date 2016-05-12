@@ -167,6 +167,57 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             $.ajax(defaultParas);
         },
 
+        getAllCity: function(args){
+            var url = BASE_URL + "/rs/query/getAllAddr?" + new Date().valueOf(); 
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000
+            };
+
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                this.trigger("get.city.success", res); 
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.city.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
+        getLocation: function(args){
+            var url = BASE_URL + "/rs/query/location"; 
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000
+            };
+
+            defaultParas.data = {addr: args.addr, t: new Date().valueOf()}
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                this.trigger("get.location.success", res); 
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.location.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
         updateNodeStatus: function(args){
             var url = BASE_URL + "/rs/node/modifyStatus";
             var defaultParas = {

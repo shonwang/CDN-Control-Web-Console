@@ -77,10 +77,10 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 longitudeLatitude = this.$el.find('#input-longitude-latitude').val(),
                 re = /^\d+$/,
                 reLocation = /^\d+(\.\d+)?----\d+(\.\d+)?$/;
-            if (!reLocation.test(longitudeLatitude)){
-                alert("您需要填写正确的经纬度，否则该节点无法在地图中展示！");
-                return
-            }
+            // if (!reLocation.test(longitudeLatitude)){
+            //     alert("您需要填写正确的经纬度，否则该节点无法在地图中展示！");
+            //     return
+            // }
             if (!enName || !chName){
                 alert("节点名称和英文名称都要填写！");
                 return;

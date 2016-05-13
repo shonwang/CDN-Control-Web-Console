@@ -123,8 +123,8 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             }
             var args = {
                 "id"                 : this.model ? this.model.get("id") : 0,
-                "name"               : this.$el.find("#input-english").val(),
-                "chName"             : this.$el.find("#input-name").val(),
+                "name"               : this.$el.find("#input-english").val().replace(/\s+/g, ""),
+                "chName"             : this.$el.find("#input-name").val().replace(/\s+/g, ""),
                 "operatorId"         : this.operatorId,
                 "operatorName"       : this.operatorName,
                 "minBandwidth"       : this.$el.find("#input-minbandwidth").val(),

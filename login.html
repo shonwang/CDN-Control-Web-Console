@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link href="css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
     <link href="css/animate.css" type="text/css" rel="stylesheet">
+    <link href="css/style.css" type="text/css" rel="stylesheet"/>
     <link href="css/main.css" type="text/css" rel="stylesheet"/>
     <link rel="shortcut icon" href="http://www.ksyun.com/assets/img/static/favicon.ico" type="image/x-icon">
     <!--[if lt IE 9]><script>location.href='http://www.ksyun.com/console/system/browser'</script><![endif]-->
@@ -15,15 +16,15 @@
         <script src="js/respond.min.js"></script>
     <![endif]-->
     <title>金山云CDN中控系统</title>
-    <style>
-        body{
-            background: url(images/login.jpg) no-repeat;
-            background-size: cover;
-            min-height: 989px;
-        }
-    </style>
 </head>
 <body>
+    <!-- count particles -->
+    <div class="count-particles">
+      <span class="js-count-particles">109</span> particles
+    </div>
+
+    <!-- particles.js container -->
+    <div id="particles-js"><canvas class="particles-js-canvas-el" style="width: 100%; height: 100%;"></canvas></div>
     <div class="container">
         <div class="row" style="margin-top: 150px">
             <div class="col-md-offset-8 col-md-4">
@@ -81,6 +82,8 @@
     </div>
 <script type="text/javascript" src="libs/jquery.min.js"></script>
 <script type="text/javascript" src="libs/bootstrap.min.js"></script>
+<script type="text/javascript" src="libs/particles.min.js"></script>
+<script type="text/javascript" src="libs/app.js"></script>
 <script type="text/javascript">
     window.DEBUG = 1;
 
@@ -166,6 +169,16 @@
         event.preventDefault();
         if (event.keyCode === 13) onLogin()
     })
+
+    var count_particles, update;
+    count_particles = document.querySelector('.js-count-particles');
+    update = function() {
+      if (window.pJSDom[0].pJS.particles && window.pJSDom[0].pJS.particles.array) {
+        count_particles.innerText = window.pJSDom[0].pJS.particles.array.length;
+      }
+      requestAnimationFrame(update);
+    };
+    requestAnimationFrame(update);
 </script>
 </body>
 </html>

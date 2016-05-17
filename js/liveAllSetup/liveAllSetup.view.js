@@ -295,6 +295,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             } else {
                 this.$el.find(".dropdown-node-group .cur-value").html(tempNgList[0].name)
                 this.args.nodeGroupId = tempNgList[0].value;
+                this.$el.find(".edit-name").hide();
             }
         },
 

@@ -945,3 +945,14 @@ td .table {
   border-top-color: #ed4646;
   top: 0;
 }
+
+.node-ctn{
+    overflow: auto;
+    margin: 0;
+}
+
+.node-ctn .node-item{
+    display: inline-block;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}

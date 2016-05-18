@@ -67,8 +67,8 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         getArgs: function(){
-            var enName = this.$el.find("#input-english").val(),
-                chName = this.$el.find("#input-name").val(),
+            var enName = this.$el.find("#input-english").val().replace(/\s+/g, ""),
+                chName = this.$el.find("#input-name").val().replace(/\s+/g, ""),
                 maxBandwidthThreshold = this.$el.find("#input-threshold").val(),
                 minBandwidthThreshold = this.$el.find("#input-minthreshold").val(),
                 maxBandwidth = this.$el.find("#input-maxbandwidth").val(),

@@ -490,6 +490,130 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         }
     });
 
+    var SelectDeviceView = Backbone.View.extend({
+        events: {},
+
+        initialize: function(options) {
+            this.options    = options;
+            this.collection = options.collection
+            this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.confirm.selectDevice.html'])());
+            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+
+            this.$el.find(".checkAll").on("click", $.proxy(this.onClickCheckAll, this));
+            this.$el.find(".cancelAll").on("click", $.proxy(this.onClickCancelCheckAll, this));
+            this.$el.find("#node-list-filter").on("keyup", $.proxy(this.onKeyupSearch, this));
+            // this.collection.off("get.allDevice.success");
+            // this.collection.off("get.allDevice.error");
+            // this.collection.on("get.allDevice.success", $.proxy(this.onGetAllDeviceSuccess, this));
+            // this.collection.on("get.allDevice.error", $.proxy(this.onGetError, this));
+            this.initTree();
+        },
+
+        onGetError: function(error){
+            if (error&&error.message)
+                alert(error.message)
+            else
+                alert("出错了")
+        },
+
+        initTree: function(){
+            var setting = {
+                check: {
+                    enable: true
+                },
+                data: {
+                    simpleData: {
+                        enable: true
+                    }
+                },
+                callback: {
+                    onCheck: function(){
+                        this.getSelected();
+                    }.bind(this)
+                }
+            };
+
+            var zNodes =[
+                { id:1, pId:0, name:"随意勾选 1", open:true, checked:true},
+                { id:11, pId:1, name:"随意勾选 1-1", checked:true, highlight: true},
+                { id:12, pId:1, name:"随意勾选 1-2", checked:true},
+                { id:2, pId:0, name:"随意勾选 2", open:true},
+                { id:21, pId:2, name:"随意勾选 2-1"},
+                { id:22, pId:2, name:"随意勾选 2-2"},
+                { id:23, pId:2, name:"随意勾选 2-3"}
+            ];
+
+            this.treeObj = $.fn.zTree.init(this.$el.find(".node-device-ctn #tree"), setting, zNodes);
+            this.getSelected();
+        },
+
+        onKeyupSearch: function(event){
+            if (!this.treeObj) return;
+            var keyWord = this.$el.find("#node-list-filter").val(),
+                notMatchFilter = function(node){
+                    return node.name.indexOf(keyWord) === -1;
+                },
+                notMatchNodes = this.treeObj.getNodesByFilter(notMatchFilter),
+                matchFilter = function(node){
+                    return node.name.indexOf(keyWord) > -1;
+                },
+                matchNodes = this.treeObj.getNodesByFilter(matchFilter);
+            this.treeObj.hideNodes(notMatchNodes);
+            this.treeObj.showNodes(matchNodes);
+
+            _.each(matchNodes, function(el, index, ls){
+                var parentNode = el.getParentNode();
+                if (parentNode&&parentNode.isHidden) this.treeObj.showNode(parentNode)
+            }.bind(this))
+        },
+
+        onClickCheckAll: function(event){
+            if (!this.treeObj) return;
+            this.treeObj.checkAllNodes(true);
+            this.getSelected();
+        },
+
+        onClickCancelCheckAll: function(event){
+            if (!this.treeObj) return;
+            this.treeObj.checkAllNodes(false);
+            this.getSelected();
+        },
+
+        getSelected: function(){
+            if (!this.treeObj) return;
+            var matchFilter = function(node){
+                return node.checked === true && node.pId === null;
+            };
+            this.matchNodes = this.treeObj.getNodesByFilter(matchFilter);
+            this.$el.find(".node-num").html(this.matchNodes.length);
+            var matchDeviceFilter = function(node){
+                return node.checked === true && node.pId !== null;
+            };
+            this.matchDeviceNodes = this.treeObj.getNodesByFilter(matchDeviceFilter);
+            this.$el.find(".device-num").html(this.matchDeviceNodes.length);
+        },
+
+        getArgs: function(){
+            var selectedObj = {
+                nodes: this.matchNodes,
+                devices: this.matchDeviceNodes
+            }
+            return selectedObj
+        },
+
+        onGetAllDeviceSuccess: function(res){
+            // this.historyList = [];
+            // for (var i = 0; i < res.length; i++){
+            //     this.historyList.push(new this.collection.model(res[i]))
+            // }
+            // this.initTable();
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target)
+        }
+    });
+
     var ConfirmView = Backbone.View.extend({
         events: {},
 
@@ -506,23 +630,22 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancel, this));
             this.$el.find("#isShellCmd").on("click", $.proxy(this.onClickShellCmdInput, this))
 
-            this.collection.off("get.ip.success");
-            this.collection.off("get.ip.error");
-            this.collection.off("get.fileGroup.success");
-            this.collection.off("get.fileGroup.error");
             this.collection.off("get.confirmAdd.success");
             this.collection.off("get.confirmAdd.error");
-
-            this.collection.on("get.ip.success", $.proxy(this.onGetIpGroupSuccess, this));
-            this.collection.on("get.ip.error", $.proxy(this.onGetError, this));
-            this.collection.on("get.fileGroup.success", $.proxy(this.onGetFileGroupSuccess, this));
-            this.collection.on("get.fileGroup.error", $.proxy(this.onGetError, this));
             this.collection.on("get.confirmAdd.success", function(){
                 alert("操作成功！")
                 this.onClickCancel();
             }.bind(this));
             this.collection.on("get.confirmAdd.error", $.proxy(this.onGetError, this));
 
+            // this.collection.off("get.ip.success");
+            // this.collection.off("get.ip.error");
+            // this.collection.on("get.ip.success", $.proxy(this.onGetIpGroupSuccess, this));
+            // this.collection.on("get.ip.error", $.proxy(this.onGetError, this));
+            // this.collection.off("get.fileGroup.success");
+            // this.collection.off("get.fileGroup.error");
+            // this.collection.on("get.fileGroup.success", $.proxy(this.onGetFileGroupSuccess, this));
+            // this.collection.on("get.fileGroup.error", $.proxy(this.onGetError, this));
             //this.collection.getFileGroupList();
         },
 
@@ -543,6 +666,42 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 alert("出错了")
         },
 
+        onClickSelectDevice: function(event){
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id").split("-")[1],
+                nodeCtn = this.$el.find("#panel-" + id + " .node-ctn"),
+                currentNodeDevice = _.find(this.nodeDeviceArray, function(obj){
+                    return obj.id === parseInt(id)
+                }.bind(this));
+
+            if (this.addDevicePopup) $("#" + this.addDevicePopup.modalId).remove();
+
+            var addDeviceView = new SelectDeviceView({
+                collection: this.collection,
+                currentNodeDevice: currentNodeDevice
+            });
+            var options = {
+                title:"添加节点设备",
+                body : addDeviceView,
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback:  function(){
+                    var resultObj = addDeviceView.getArgs();
+                    if (!resultObj) return;
+                    currentNodeDevice.nodes = resultObj.nodes;
+                    currentNodeDevice.devices = resultObj.devices;
+                    nodeCtn.find("li").remove();
+                    _.each(currentNodeDevice.nodes, function(el, index, ls){
+                        var aNode = $('<li class="node-item"><span class="label label-primary">'+ el.name + '</span></li>');
+                        aNode.appendTo(nodeCtn)
+                    }.bind(this))
+                    this.addDevicePopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){}.bind(this)
+            }
+            this.addDevicePopup = new Modal(options);
+        },
+
         onClickCancel: function(){
             this.options.cancelCallback&&this.options.cancelCallback();
         },
@@ -551,23 +710,30 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             var result = confirm("你确定要这么做吗？") 
             if (!result) return;
 
-            for (var k = 0; k < this.nodeGroupList.length; k ++){
-                var ipString = this.$el.find("#ip-" + this.nodeGroupList[k].id).val()
-                if (ipString.indexOf(",") > -1){
-                    var ipStringArray = ipString.split(",");
-                    for (var i = 0; i < ipStringArray.length; i++){
-                        var res = Utility.isIP(ipStringArray[i].trim())
-                        if (!res) {
-                            alert(this.nodeGroupList[k].name + "的第" + (i+1) + "个ip没填对！");
-                            return;
-                        }
-                    }
-                } else {
-                    var res = Utility.isIP(ipString.trim())
-                    if (!res) {
-                        alert(this.nodeGroupList[k].name + "的ip没填对！")
-                        return;
-                    }
+            // for (var k = 0; k < this.nodeGroupList.length; k ++){
+            //     var ipString = this.$el.find("#ip-" + this.nodeGroupList[k].id).val()
+            //     if (ipString.indexOf(",") > -1){
+            //         var ipStringArray = ipString.split(",");
+            //         for (var i = 0; i < ipStringArray.length; i++){
+            //             var res = Utility.isIP(ipStringArray[i].trim())
+            //             if (!res) {
+            //                 alert(this.nodeGroupList[k].name + "的第" + (i+1) + "个ip没填对！");
+            //                 return;
+            //             }
+            //         }
+            //     } else {
+            //         var res = Utility.isIP(ipString.trim())
+            //         if (!res) {
+            //             alert(this.nodeGroupList[k].name + "的ip没填对！")
+            //             return;
+            //         }
+            //     }
+            // }
+
+            for (var i = 0; i < this.nodeDeviceArray.length; k++){
+                if (!this.nodeDeviceArray[i].nodes || this.nodeDeviceArray[i].nodes.length === 0){
+                    alert(this.nodeDeviceArray[i].name + "还没有选择任何节点和设备")
+                    return;
                 }
             }
 
@@ -601,11 +767,18 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.table.find("input").hide();
             this.table.find(".operator").hide();
 
-            var idArray = []
+            // var idArray = []
+            // _.each(this.nodeGroupList, function(el, key, ls){
+            //     idArray.push(el.id)
+            // }.bind(this))
+            //this.collection.getIpGroupList(idArray);
+
+            this.nodeDeviceArray = [];
             _.each(this.nodeGroupList, function(el, key, ls){
-                idArray.push(el.id)
+                this.nodeDeviceArray.push({id: el.id, name: el.name})
             }.bind(this))
-            this.collection.getIpGroupList(idArray);
+
+            this.$el.find(".edit-name").on("click", $.proxy(this.onClickSelectDevice, this))
         },
 
         onClickItemFileName: function(event){

@@ -23,9 +23,19 @@
       </div> -->
       <% for(var i = 0; i < data.length; i++) { %>
       <div class="form-group">
-          <label for="ip-<%=data[i].id%>" class="col-sm-2 control-label"><%=data[i].name%>-IP</label>
-          <div class="col-sm-8">
-              <textarea class="form-control" rows="3" id="ip-<%=data[i].id%>"></textarea>
+          <label for="node-<%=data[i].id%>" class="col-sm-2 control-label"><%=data[i].name%></label>
+          <div class="col-sm-7">
+<!--               <textarea class="form-control" rows="3" id="ip-<%=data[i].id%>"></textarea> -->
+              <div class="panel panel-default" id="panel-<%=data[i].id%>">
+                <div class="panel-body" style="padding-bottom: 10px">
+                  <ul class="list-unstyled node-ctn"></ul>
+                </div>
+              </div>
+          </div>
+          <div class="col-sm-1">
+              <a href="javascript:void(0)" class="btn btn-default edit-name" id="edit-<%=data[i].id%>">
+                  添加节点设备
+              </a>
           </div>
       </div>
       <% } %>

@@ -1,0 +1,21 @@
+<div class="confirm-select-ctn">
+    <div class="form-horizontal">
+        <div class="form-group dropdown-filegroup">
+            <label for="node-list-filter" class="col-sm-2 control-label">搜索</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="node-list-filter" placeholder="节点名、设备名">
+            </div>
+        </div>
+        <hr>
+    </div>
+    <div style="margin-left: 50px">
+        <div class="opt-ctn">
+            <a href="javascript:void(0)" class="btn btn-sm btn-primary checkAll">全选</a>
+            <a href="javascript:void(0)" class="btn btn-sm btn-default cancelAll">全不选</a>
+            <span>已经选中节点数: <strong class="node-num"></strong>, 设备数: <strong class="device-num"></strong></span>
+        </div>
+        <div class="node-device-ctn">
+            <ul id="tree" class="ztree"></ul>
+        </div>
+    </div>
+</div>

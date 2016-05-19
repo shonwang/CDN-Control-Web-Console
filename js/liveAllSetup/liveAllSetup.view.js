@@ -638,10 +638,10 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             }.bind(this));
             this.collection.on("get.confirmAdd.error", $.proxy(this.onGetError, this));
 
-            // this.collection.off("get.ip.success");
-            // this.collection.off("get.ip.error");
-            // this.collection.on("get.ip.success", $.proxy(this.onGetIpGroupSuccess, this));
-            // this.collection.on("get.ip.error", $.proxy(this.onGetError, this));
+            this.collection.off("get.ip.success");
+            this.collection.off("get.ip.error");
+            this.collection.on("get.ip.success", $.proxy(this.onGetIpGroupSuccess, this));
+            this.collection.on("get.ip.error", $.proxy(this.onGetError, this));
             // this.collection.off("get.fileGroup.success");
             // this.collection.off("get.fileGroup.error");
             // this.collection.on("get.fileGroup.success", $.proxy(this.onGetFileGroupSuccess, this));
@@ -730,12 +730,12 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             //     }
             // }
 
-            for (var i = 0; i < this.nodeDeviceArray.length; k++){
-                if (!this.nodeDeviceArray[i].nodes || this.nodeDeviceArray[i].nodes.length === 0){
-                    alert(this.nodeDeviceArray[i].name + "还没有选择任何节点和设备")
-                    return;
-                }
-            }
+            // for (var i = 0; i < this.nodeDeviceArray.length; k++){
+            //     if (!this.nodeDeviceArray[i].nodes || this.nodeDeviceArray[i].nodes.length === 0){
+            //         alert(this.nodeDeviceArray[i].name + "还没有选择任何节点和设备")
+            //         return;
+            //     }
+            // }
 
             var nodeGroupLs = [];
             _.each(this.nodeGroupList, function(obj, key, ls){
@@ -767,11 +767,11 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.table.find("input").hide();
             this.table.find(".operator").hide();
 
-            // var idArray = []
-            // _.each(this.nodeGroupList, function(el, key, ls){
-            //     idArray.push(el.id)
-            // }.bind(this))
-            //this.collection.getIpGroupList(idArray);
+            var idArray = []
+            _.each(this.nodeGroupList, function(el, key, ls){
+                idArray.push(el.id)
+            }.bind(this))
+            this.collection.getIpGroupList(idArray);
 
             this.nodeDeviceArray = [];
             _.each(this.nodeGroupList, function(el, key, ls){

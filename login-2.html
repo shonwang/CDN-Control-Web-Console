@@ -94,6 +94,8 @@
         window.BASE_URL = "http://test-cdn.center.cdn.ksyun.com";
     else if(window.DEBUG === 5)
         window.BASE_URL = "http://gray.center.cdn.ksyun.com";
+    else if(window.DEBUG === 6)
+        window.BASE_URL = "http://develop.center.cdn.ksyun.com";
 
     var onClickChange = function(argument) {
         var url = BASE_URL + "/rs/login/validation/code?" + new Date().valueOf()

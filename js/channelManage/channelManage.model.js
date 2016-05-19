@@ -8,6 +8,7 @@ define("channelManage.model", ['require','exports'], function(require, exports) 
             if (status === 0) this.set("statusName", '<span class="text-danger">已停止</span>');
             if (status === 1) this.set("statusName", '<span class="text-success">服务中</span>');
             if (businessType === 1) this.set("businessTypeName", '下载加速');
+            if (businessType === 2) this.set("businessTypeName", '直播加速');
             if (startTime) this.set("startTimeFormated", new Date(startTime).format("yyyy/MM/dd hh:mm"));
         }
     });

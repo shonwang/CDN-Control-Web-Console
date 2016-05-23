@@ -52,7 +52,9 @@ requirejs.config({
         "businessManage.view"  : 'businessManage/businessManage.view',
         "businessManage.model" : 'businessManage/businessManage.model',
         "statisticsManage.view"  : 'statisticsManage/statisticsManage.view',
-        "statisticsManage.model" : 'statisticsManage/statisticsManage.model'
+        "statisticsManage.model" : 'statisticsManage/statisticsManage.model',
+        "domainStatistics.view"  : 'domainStatistics/domainStatistics.view',
+        "domainStatistics.model" : 'domainStatistics/domainStatistics.model'
     },
     urlArgs: new Date().valueOf()
 });

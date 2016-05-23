@@ -15,6 +15,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             "liveCurentSetup"     : "liveCurentSetup",
             "ipManage"            : "ipManage",
             "statisticsManage"    : "statisticsManage",
+            "domainStatistics"    : "domainStatistics",
             "businessManage"      : "businessManage"
         },
 
@@ -66,6 +67,10 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                 case 'statisticsManage':
                   this.statisticsManageView.remove();
                   this.statisticsManageView = null;
+                  break;
+                case 'domainStatistics':
+                  this.domainStatisticsView.remove();
+                  this.domainStatisticsView = null;
                   break;
                 default:
             }
@@ -266,6 +271,25 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                     this.channelManageView.render($('.ksc-content'));
                 } else {
                     this.channelManageView.update();
+                }
+            }.bind(this));
+        },
+
+        domainStatistics: function(){
+            require(['domainStatistics.view', 'domainStatistics.model'], function(DomainStatisticsView, DomainStatisticsModel){
+                this.curPage = 'domainStatistics';
+                this.navbarView.select(this.curPage);
+                if (!this.downloadDomainStatisticsModel)
+                    this.downloadDomainStatisticsModel = new DomainStatisticsModel();
+                if (!this.liveDomainStatisticsModel)
+                    this.liveDomainStatisticsModel = new DomainStatisticsModel();
+                if (!this.domainStatisticsView ){
+                    var options = {
+                        collection: this.downloadDomainStatisticsModel,
+                        liveCollection: this.liveDomainStatisticsModel,
+                    };
+                    this.domainStatisticsView = new DomainStatisticsView(options);
+                    this.domainStatisticsView.render($('.ksc-content'));
                 }
             }.bind(this));
         },

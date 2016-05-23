@@ -1,14 +1,14 @@
-define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view', 'utility'], 
+define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view', 'utility'], 
     function(require, exports, template, Modal, Utility) {
 
-    var TabStatisticsManageView = Backbone.View.extend({
+    var TabDomainStatisticsView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
             this.collection = options.collection;
             this.type = options.type;
 
-            this.$el = $(_.template(template['tpl/statisticsManage/statisticsManage.download.html'])());
+            this.$el = $(_.template(template['tpl/domainStatistics/domainStatistics.download.html'])());
             this.$el.find(".charts-ctn").html(_.template(template['tpl/loading.html'])({}));
 
             this.threeTimeNode = this.$el.find(".three-time");
@@ -82,7 +82,6 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
                         this.endTime = endTime.format("yyyyMMddhhmm");
                     } else {
                         this.endTime = endTime.format("yyyyMMdd") + "2359";
-                        this.$el.find('#endtime').val(endTime.format("yyyy/MM/dd") + " 23:59")
                     }
                 }.bind(this)
             };
@@ -345,21 +344,22 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
         }
     });
 
-    var StatisticsManageView = Backbone.View.extend({
+    var DomainStatisticsView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
             this.collection = options.collection;
             this.liveCollection = options.liveCollection;
 
-            this.$el = $(_.template(template['tpl/statisticsManage/statisticsManage.html'])());
+            this.$el = $(_.template(template['tpl/domainStatistics/domainStatistics.html'])());
 
-            this.downloadStatisticsManageView = new TabStatisticsManageView({
+            this.downloadDomainStatisticsView = new TabDomainStatisticsView({
                 collection: this.collection,
                 type: 1 //下载
             })
 
             this.$el.find('a[data-toggle="tab"]').on('shown.bs.tab', $.proxy(this.onShownTab, this));
+            console.log("!11")
         },
 
         onShownTab: function (e) {
@@ -372,12 +372,12 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
                 break;
                 case "#valuable-customer-live":
                     this.currentTab = "#valuable-customer-live";
-                    if(this.liveStatisticsManageView) return;
-                    this.liveStatisticsManageView = new TabStatisticsManageView({
+                    if(this.liveDomainStatisticsView) return;
+                    this.liveDomainStatisticsView = new TabDomainStatisticsView({
                         collection: this.liveCollection,
                         type: 2 //直播
                     })
-                    this.liveStatisticsManageView.render(this.$el.find("#valuable-customer-live"))
+                    this.liveDomainStatisticsView.render(this.$el.find("#valuable-customer-live"))
                 break;
             }
         },
@@ -396,9 +396,9 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
 
         render: function(target) {
             this.$el.appendTo(target);
-            this.downloadStatisticsManageView.render(this.$el.find("#valuable-customer-download"))
+            this.downloadDomainStatisticsView.render(this.$el.find("#valuable-customer-download"))
         }
     });
 
-    return StatisticsManageView;
+    return DomainStatisticsView;
 });

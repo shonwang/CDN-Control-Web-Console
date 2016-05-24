@@ -951,7 +951,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.onGetError(error)
             }.bind(this));
 
-            this.collection.lockFile({confFileId: model.get("confFileId"), userId: "123"});
+            this.collection.lockFile({confFileId: model.get("confFileId")});
         },
 
         onClickMultiStop : function(event){

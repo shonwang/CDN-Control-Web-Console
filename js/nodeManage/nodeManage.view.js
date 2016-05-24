@@ -117,8 +117,8 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 alert("成本权值只能填入数字！");
                 return;
             }
-            if (parseInt(unitPrice) > 1000000 || parseInt(unitPrice) < 0){
-                alert("成本权值：0-1000000");
+            if (parseInt(unitPrice) > 2147483647 || parseInt(unitPrice) < 0){
+                alert("成本权值不能小于0且大于长整型的最大值");
                 return; 
             }
             var args = {

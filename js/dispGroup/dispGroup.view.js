@@ -489,8 +489,8 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 alert("TTL只能填入数字！");
                 return false;
             }
-            if (parseInt(ttl) > 2147483647 || parseInt(ttl) <= 0){
-                alert("TTL：1 - 2147483647");
+            if (parseInt(ttl) >= 3600 || parseInt(ttl) <= 60){
+                alert("60 < TTL < 3600");
                 return false; 
             }
             var setupNodes = this.$el.find(".setup input:checked");

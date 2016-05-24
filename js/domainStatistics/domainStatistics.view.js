@@ -15,16 +15,10 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
             this.threeTimeNode.find(".btn-default").on("click",  $.proxy(this.onClickSpecificTime, this));
             this.$el.find(".query").on("click",  $.proxy(this.onClickApplyButton, this));
             this.initCalendar();
+            setTimeout(function(){
+                this.initCharts();  
+            }.bind(this), 1000)
 
-            this.collection.on("get.client.success", $.proxy(this.onGetAllCustomer, this));
-            this.collection.on("get.client.error", $.proxy(this.onGetError, this));
-            this.collection.getAllClient();
-
-            this.collection.on("get.domain.success", $.proxy(this.onGetAllDomain, this));
-            this.collection.on("get.domain.error", $.proxy(this.onGetError, this));
-
-            this.collection.on("get.bandInfo.success", $.proxy(this.initCharts, this));
-            this.collection.on("get.bandInfo.error", $.proxy(this.onGetError, this));
         },
 
         onGetError: function(error){
@@ -35,9 +29,11 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
         },
 
         onClickApplyButton: function(){
-            if (this.chart) {
-                this.chart.dispose();
-                this.chart = null;
+            if (this.chartArray.length !== 0) {
+                for(var i = 0; i < this.chartArray.length; i++){
+                    this.chartArray[i].dispose();
+                }
+                this.chartArray = null;
             }
             this.$el.find(".charts-ctn").html(_.template(template['tpl/loading.html'])({}));
             if (!this.startTime) this.startTime = new Date().format("yyyyMMdd") + "0000";
@@ -49,7 +45,7 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
                 endTime: this.endTime,
                 type: this.type
             }
-            this.collection.getBandInfo(args)
+            //this.collection.getBandInfo(args)
         },
 
         initCalendar: function(tpl,tplindex){
@@ -82,6 +78,7 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
                         this.endTime = endTime.format("yyyyMMddhhmm");
                     } else {
                         this.endTime = endTime.format("yyyyMMdd") + "2359";
+                        this.$el.find('#endtime').val(endTime.format("yyyy/MM/dd") + " 23:59")
                     }
                 }.bind(this)
             };
@@ -98,7 +95,7 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
                 this.endTime   = endTime.format("yyyyMMddhhmm");
             }
             if ($(eventTarget).hasClass("month")){
-                var timeDiff = new Date().valueOf() - 1000 * 60 * 60 * 24 * 30,
+                var timeDiff = new Date().valueOf() - 1000 * 60 * 60 * 24 * 15,
                     startTime = new Date(timeDiff),
                     endTime   = new Date();
 
@@ -117,211 +114,249 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
             this.onClickApplyButton();
         },
 
-        onGetAllDomain: function(res){
-            this.checkedDomain = res.join(";")
-            var cityArray = [];
-            _.each(res, function(el, index, list){
-                cityArray.push({name:el, value: el})
-            }.bind(this))
-            if (this.searchSelect) this.searchSelect.destroy();
-            this.searchSelect = new SearchSelect({
-                containerID: this.$el.find('.dropdown-domain').get(0),
-                panelID: this.$el.find('#dropdown-domain').get(0),
-                isSingle: false,
-                openSearch: true,
-                selectWidth: 400,
-                isDataVisible: false,
-                defaultChecked: true,
-                onOk: function(data){
-                    var temp = [];
-                    _.each(data, function(el, key, list){
-                        temp.push(el.name)
-                    }.bind(this))
-                    this.checkedDomain = temp.join(";")
-                }.bind(this),
-                data: cityArray,
-                callback: function(data) {
-                    this.checkedDomain = data.join(";")
-                    this.$el.find("#dropdown-domain .cur-value").html("选中域名个数：" + data.length + "/" + res.length)
-                }.bind(this)
-            });
-            this.$el.find("#dropdown-domain .cur-value").html("选中域名个数：" + res.length + "/" + res.length);
-            this.onClickApplyButton();
-        },
-
-        onGetAllCustomer: function(res){
-            var nameList = [];
-            _.each(res, function(el, index, list){
-                nameList.push({name: el, value:el})
-            });
-
-            var searchSelect = new SearchSelect({
-                containerID: this.$el.find('.dropdown-customer').get(0),
-                panelID: this.$el.find('#dropdown-customer').get(0),
-                isSingle: true,
-                openSearch: true,
-                selectWidth: 200,
-                onOk: function(){},
-                data: nameList,
-                callback: function(data) {
-                    this.clientName = data.value;
-                    this.collection.getDomain({clientName: data.value, type: this.type});
-                    this.$el.find("#dropdown-customer .cur-value").html(this.clientName)
-                }.bind(this)
-            });
-            this.$el.find("#dropdown-customer .cur-value").html(res[0])
-            this.collection.getDomain({clientName: res[0], type: this.type});
-            this.clientName = res[0];
-        },
-
         initCharts: function(res){
-            this.bandInfo = JSON.parse(res.calculateBandwidth.bandwidth)
-            console.log(this.bandInfo)
-            if (this.bandInfo.length === 0 || this.checkedDomain === ""){
-                this.$el.find(".charts-ctn").html(_.template(template['tpl/empty-2.html'])({data:{message: "汪伟在胸口摸索了一翻，但是却没有找到数据！"}}));
-                return
-            }
-            var timeData = [], domainData, bandwidthData = [], flowData = [];
-            domainData = this.bandInfo[0];
-            for (var i = 0; i < domainData.data.length; i++){
-                var tempObj = domainData.data[i];
-                timeData.push(tempObj.time * 1000)
-                var bandwidthCount = 0, flowCount = 0
-                for (var k = 0; k < this.bandInfo.length; k++){
-                    bandwidthCount = bandwidthCount + parseFloat(this.bandInfo[k].data[i].bandwidth);
-                    flowCount = flowCount + parseFloat(this.bandInfo[k].data[i].flow);
-                }
-                bandwidthData.push(bandwidthCount);
-                flowData.push(flowCount)
+            // this.bandInfo = JSON.parse(res.calculateBandwidth.bandwidth)
+            // console.log(this.bandInfo)
+            // if (this.bandInfo.length === 0 || this.checkedDomain === ""){
+            //     this.$el.find(".charts-ctn").html(_.template(template['tpl/empty-2.html'])({data:{message: "汪伟在胸口摸索了一翻，但是却没有找到数据！"}}));
+            //     return
+            // }
+            // var timeData = [], domainData, bandwidthData = [], flowData = [];
+            // domainData = this.bandInfo[0];
+            // for (var i = 0; i < domainData.data.length; i++){
+            //     var tempObj = domainData.data[i];
+            //     timeData.push(tempObj.time * 1000)
+            //     var bandwidthCount = 0, flowCount = 0
+            //     for (var k = 0; k < this.bandInfo.length; k++){
+            //         bandwidthCount = bandwidthCount + parseFloat(this.bandInfo[k].data[i].bandwidth);
+            //         flowCount = flowCount + parseFloat(this.bandInfo[k].data[i].flow);
+            //     }
+            //     bandwidthData.push(bandwidthCount);
+            //     flowData.push(flowCount)
+            // }
+
+            // option = {
+            //     title: {
+            //         text: this.clientName,
+            //         subtext: '按产品要求，数据按1000转换, 带宽单位最大到MB，流量单位最大到GB',
+            //         x: 'center'
+            //     },
+            //     tooltip: {
+            //         trigger: 'axis',
+            //         formatter: function (params) {
+            //             var str = "";
+            //             if (params[0].seriesName !== "流量")
+            //                 str =  Utility.handlerToBps(params[0].value)
+            //             else
+            //                 str = Utility.handlerToB(params[0].value)
+            //             return new Date(params[0].name).format("yyyy/MM/dd hh:mm") + '<br/>'
+            //                 + params[0].seriesName + ' : ' + str;
+            //         },
+            //         axisPointer: {
+            //             animation: false
+            //         }
+            //     },
+            //     legend: {
+            //         data:['带宽', '流量'],
+            //         x: 'left'
+            //     },
+            //     dataZoom: [
+            //         {
+            //             show: true,
+            //             realtime: true,
+            //             start: 30,
+            //             end: 70,
+            //             xAxisIndex: [0, 1],
+            //             labelFormatter: function(value){
+            //                 return new Date(value).format("MM/dd hh:mm")
+            //             }
+            //         },
+            //         {
+            //             type: 'inside',
+            //             realtime: true,
+            //             start: 30,
+            //             end: 70,
+            //             xAxisIndex: [0, 1],
+            //             labelFormatter: function(value){
+            //                 return new Date(value).format("MM/dd hh:mm")
+            //             }
+            //         }
+            //     ],
+            //     grid: [{
+            //         left: 100,
+            //         right: 50,
+            //         height: '37%'
+            //     },
+            //     {
+            //         left: 100,
+            //         right: 50,
+            //         top: '53%',
+            //         height: '37%'
+            //     }],
+            //     xAxis : [
+            //         {
+            //             type : 'category',
+            //             boundaryGap : false,
+            //             axisLine: {onZero: true},
+            //             data: timeData,
+            //             axisLabel: {
+            //                 formatter: function(value){
+            //                     return new Date(value).format("MM/dd hh:mm")
+            //                 }
+            //             }
+            //         },
+            //         {
+            //             gridIndex: 1,
+            //             type : 'category',
+            //             boundaryGap : false,
+            //             axisLine: {onZero: true},
+            //             data: timeData,
+            //             axisLabel: {
+            //                 formatter: function(value){
+            //                     return new Date(value).format("MM/dd hh:mm")
+            //                 }
+            //             }
+            //         }
+            //     ],
+            //     yAxis : [
+            //         {
+            //             type : 'value',
+            //             name: "带宽",
+            //             axisLabel: {
+            //                 formatter: Utility.handlerToBps
+            //             }
+            //         },
+            //         {
+            //             gridIndex: 1,
+            //             type : 'value',
+            //             name: "流量",
+            //             axisLabel: {
+            //                 formatter: Utility.handlerToB
+            //             }
+            //         }
+            //     ],
+            //     series : [
+            //         {
+            //             name:'带宽',
+            //             type:'line',
+            //             symbolSize: 8,
+            //             hoverAnimation: false,
+            //             data: bandwidthData
+            //         },
+            //         {
+            //             name:'流量',
+            //             type:'line',
+            //             symbolSize: 8,
+            //             xAxisIndex: 1,
+            //             yAxisIndex: 1,
+            //             hoverAnimation: false,
+            //             data: flowData
+            //         }
+            //     ]
+            // };
+
+            this.chartArray = [];
+            this.$el.find(".charts-ctn").html("");
+            for (var i = 0; i < 10; i++){
+                var option = {
+                    title: {
+                        text: i + 1, 
+                        subtext: '按产品要求，数据按1000转换, 带宽单位最大到MB，流量单位最大到GB',
+                        x: 'center'
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data:['yinyuetai.hdllive.ks-cdn.com','联盟广告','视频广告','直接访问','搜索引擎1111'],
+                        orient: "vertical",
+                        right: "right",
+                        top: "50px"
+                    },
+                    dataZoom: [
+                        {
+                            show: true,
+                            realtime: true,
+                            start: 30,
+                            end: 70,
+                            xAxisIndex: [0],
+                            // labelFormatter: function(value){
+                            //     return new Date(value).format("MM/dd hh:mm")
+                            // }
+                        },
+                        // {
+                        //     type: 'inside',
+                        //     realtime: true,
+                        //     start: 30,
+                        //     end: 70,
+                        //     xAxisIndex: [0],
+                        //     labelFormatter: function(value){
+                        //         return new Date(value).format("MM/dd hh:mm")
+                        //     }
+                        // }
+                    ],
+                    grid: {
+                        left: '3%',
+                        right: '20%',
+                        bottom: '15%',
+                        containLabel: true
+                    },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: ['周一','周二','周三','周四','周五','周六','周日']
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [
+                        {
+                            name:'yinyuetai.hdllive.ks-cdn.com',
+                            type:'line',
+                            stack: '总量',
+                            data:[120, 132, 101, 134, 90, 230, 210]
+                        },
+                        {
+                            name:'联盟广告',
+                            type:'line',
+                            stack: '总量',
+                            data:[220, 182, 191, 234, 290, 330, 310]
+                        },
+                        {
+                            name:'视频广告',
+                            type:'line',
+                            stack: '总量',
+                            data:[150, 232, 201, 154, 190, 330, 410]
+                        },
+                        {
+                            name:'直接访问',
+                            type:'line',
+                            stack: '总量',
+                            data:[320, 332, 301, 334, 390, 330, 320]
+                        },
+                        {
+                            name:'搜索引擎1111',
+                            type:'line',
+                            stack: '总量',
+                            data:[820, 932, 901, 934, 1290, 1330, 1320]
+                        }
+                    ]
+                };
+                var tpl = '<div class="chart" style="width: 100%;height:350px;" id="' + i + '"></div>'
+                $(tpl).appendTo(this.$el.find(".charts-ctn"));
+                var chart = echarts.init(this.$el.find(".charts-ctn #" + i).get(0));
+                chart.setOption(option);
+                this.chartArray.push(chart)
             }
 
-            option = {
-                title: {
-                    text: this.clientName,
-                    subtext: '按产品要求，数据按1000转换, 带宽单位最大到MB，流量单位最大到GB',
-                    x: 'center'
-                },
-                tooltip: {
-                    trigger: 'axis',
-                    formatter: function (params) {
-                        var str = "";
-                        if (params[0].seriesName !== "流量")
-                            str =  Utility.handlerToBps(params[0].value)
-                        else
-                            str = Utility.handlerToB(params[0].value)
-                        return new Date(params[0].name).format("yyyy/MM/dd hh:mm") + '<br/>'
-                            + params[0].seriesName + ' : ' + str;
-                    },
-                    axisPointer: {
-                        animation: false
-                    }
-                },
-                legend: {
-                    data:['带宽', '流量'],
-                    x: 'left'
-                },
-                dataZoom: [
-                    {
-                        show: true,
-                        realtime: true,
-                        start: 30,
-                        end: 70,
-                        xAxisIndex: [0, 1],
-                        labelFormatter: function(value){
-                            return new Date(value).format("MM/dd hh:mm")
-                        }
-                    },
-                    {
-                        type: 'inside',
-                        realtime: true,
-                        start: 30,
-                        end: 70,
-                        xAxisIndex: [0, 1],
-                        labelFormatter: function(value){
-                            return new Date(value).format("MM/dd hh:mm")
-                        }
-                    }
-                ],
-                grid: [{
-                    left: 100,
-                    right: 50,
-                    height: '37%'
-                },
-                {
-                    left: 100,
-                    right: 50,
-                    top: '53%',
-                    height: '37%'
-                }],
-                xAxis : [
-                    {
-                        type : 'category',
-                        boundaryGap : false,
-                        axisLine: {onZero: true},
-                        data: timeData,
-                        axisLabel: {
-                            formatter: function(value){
-                                return new Date(value).format("MM/dd hh:mm")
-                            }
-                        }
-                    },
-                    {
-                        gridIndex: 1,
-                        type : 'category',
-                        boundaryGap : false,
-                        axisLine: {onZero: true},
-                        data: timeData,
-                        axisLabel: {
-                            formatter: function(value){
-                                return new Date(value).format("MM/dd hh:mm")
-                            }
-                        }
-                    }
-                ],
-                yAxis : [
-                    {
-                        type : 'value',
-                        name: "带宽",
-                        axisLabel: {
-                            formatter: Utility.handlerToBps
-                        }
-                    },
-                    {
-                        gridIndex: 1,
-                        type : 'value',
-                        name: "流量",
-                        axisLabel: {
-                            formatter: Utility.handlerToB
-                        }
-                    }
-                ],
-                series : [
-                    {
-                        name:'带宽',
-                        type:'line',
-                        symbolSize: 8,
-                        hoverAnimation: false,
-                        data: bandwidthData
-                    },
-                    {
-                        name:'流量',
-                        type:'line',
-                        symbolSize: 8,
-                        xAxisIndex: 1,
-                        yAxisIndex: 1,
-                        hoverAnimation: false,
-                        data: flowData
-                    }
-                ]
-            };
-            this.$el.find(".charts-ctn").html('<div class="chart" style="width: 100%;height:768px;"></div>');
-            this.chart = echarts.init(this.$el.find(".chart").get(0));
-            this.chart.setOption(option);
+            this.onResizeChart();
         },
 
         onResizeChart: function(){
-            if (!this.chart) return;
-            this.chart.resize();
+            if (this.chartArray.length === 0) return;
+            for(var i = 0; i < this.chartArray.length; i++){
+                this.chartArray[i].resize();
+            }
         },
 
         remove: function(){
@@ -359,7 +394,6 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
             })
 
             this.$el.find('a[data-toggle="tab"]').on('shown.bs.tab', $.proxy(this.onShownTab, this));
-            console.log("!11")
         },
 
         onShownTab: function (e) {

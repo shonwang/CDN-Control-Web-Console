@@ -77,10 +77,10 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 longitudeLatitude = this.$el.find('#input-longitude-latitude').val(),
                 re = /^\d+$/,
                 reLocation = /^\d+(\.\d+)?----\d+(\.\d+)?$/;
-            if (!reLocation.test(longitudeLatitude)){
-                alert("您需要填写正确的经纬度，否则该节点无法在地图中展示！");
-                return
-            }
+            // if (!reLocation.test(longitudeLatitude)){
+            //     alert("您需要填写正确的经纬度，否则该节点无法在地图中展示！");
+            //     return
+            // }
             if (!enName || !chName){
                 alert("节点名称和英文名称都要填写！");
                 return;
@@ -117,8 +117,8 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 alert("成本权值只能填入数字！");
                 return;
             }
-            if (parseInt(unitPrice) > 1000000 || parseInt(unitPrice) < 0){
-                alert("成本权值：0-1000000");
+            if (parseInt(unitPrice) > 2147483647 || parseInt(unitPrice) < 0){
+                alert("成本权值不能小于0且大于长整型的最大值");
                 return; 
             }
             var args = {

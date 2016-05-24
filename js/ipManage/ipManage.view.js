@@ -50,6 +50,8 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 ips  : ""
             };
 
+            this.currentPage = 1;
+
             this.anotherQuery = {
                 "ip": null,
                 "ipType": null, //ip类型
@@ -84,6 +86,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             e.stopPropagation();
             e.preventDefault();
             this.isMultiIPSearch = false;
+            this.currentPage = 1;
             this.onStartQueryButton();
         },
 
@@ -123,6 +126,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
 
         onClickQuerySingleButton: function(){
             this.isMultiIPSearch = false;
+            this.currentPage = 1;
             this.onStartQueryButton();
         },
 
@@ -141,6 +145,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                     var options = detailView.getArgs();
                     this.queryArgs.ips = options;
                     this.isMultiIPSearch = true;
+                    this.currentPage = 1;
                     this.onStartQueryButton();
                     this.queryDetailPopup.$el.modal("hide");
                 }.bind(this),
@@ -158,10 +163,10 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
             if (this.isMultiIPSearch){
-                this.queryArgs.page = 1;
+                this.queryArgs.page = this.currentPage;
                 this.collection.getIpInfoList(this.queryArgs);
             } else {
-                this.anotherQuery.page = 1;
+                this.anotherQuery.page = this.currentPage;
                 this.anotherQuery.ip = this.$el.find("#input-ip").val();
                 this.anotherQuery.deviceName = this.$el.find("#input-device").val();
                 this.anotherQuery.nodeName = this.$el.find("#input-node").val();
@@ -192,7 +197,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
                 visiblePages: 10,
-                currentPage: 1,
+                currentPage: this.currentPage,
                 onPageChange: function (num, type) {
                     if (type !== "init"){
                         this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
@@ -208,6 +213,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                             args.count = this.anotherQuery.count;
                             this.collection.queryIpInfoList(this.anotherQuery);
                         }
+                        this.currentPage = num;
                     }
                 }.bind(this)
             });
@@ -228,9 +234,9 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             }.bind(this));            
             var pageNum = [
                 {name: "10条", value: 10},
-                {name: "20条", value: 20},
                 {name: "50条", value: 50},
-                {name: "100条", value: 100}
+                {name: "100条", value: 100},
+                {name: "300条", value: 300}
             ]
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
                 if (this.isMultiIPSearch){

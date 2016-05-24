@@ -383,7 +383,11 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
         },
 
         remove: function(){
+            if(this.downloadDomainStatisticsView) this.downloadDomainStatisticsView.remove();
+            if(this.liveDomainStatisticsView) this.liveDomainStatisticsView.remove();
             this.$el.remove();
+            this.collection.off();
+            this.liveCollection.off();
         },
 
         hide: function() {

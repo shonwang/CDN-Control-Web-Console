@@ -383,7 +383,11 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
         },
 
         remove: function(){
+            if(this.downloadStatisticsManageView) this.downloadStatisticsManageView.remove();
+            if(this.liveStatisticsManageView) this.liveStatisticsManageView.remove();
             this.$el.remove();
+            this.collection.off();
+            this.liveCollection.off();
         },
 
         hide: function() {

@@ -346,6 +346,17 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
                 this.trigger("unlock.file.error", response);
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        checkLastVersion: function(args){
+            var url = BASE_URL + "/seed/conf/file/checkversion",
+            successCallback = function(res){
+                this.trigger("check.version.success", res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("check.version.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         }
     });
 

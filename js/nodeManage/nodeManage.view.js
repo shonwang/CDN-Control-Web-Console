@@ -181,7 +181,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             }
 
             this.onGetOperatorSuccess(list);
-            this.collection.getAllCity();
+            //this.collection.getAllCity();
         },
 
         onGetAllCity: function(res){
@@ -208,7 +208,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             });
             this.$el.find('#input-longitude-latitude').val("查找中...");
             this.$el.find('#dropdown-city').attr("disabled", "disabled");
-            this.collection.getLocation({addr: "北京"})
+            //this.collection.getLocation({addr: "北京"})
         },
 
         onGetLocation: function(res){

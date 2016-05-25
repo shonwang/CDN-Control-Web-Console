@@ -890,10 +890,16 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             rootNode = this.$el.find(".dropdown-bustype");
             Utility.initDropMenu(rootNode, typeArray, function(value){
                 this.buisnessType = parseInt(value)
-                this.collection.getAllFileList({bisTypeId: this.buisnessType})
+                this.collection.getAllFileList({bisTypeId: this.buisnessType});
+                var businessTpye = _.find(res, function(obj){
+                    return obj.id === value;
+                }.bind(this))
+                if (businessTpye) this.enableEditConfFile = businessTpye.enableEditConfFile;
+
             }.bind(this));
 
             this.buisnessType = res[0].id;
+            this.enableEditConfFile = res[0].enableEditConfFile;
             this.$el.find(".dropdown-bustype .cur-value").html(res[0].name)
             this.collection.getAllFileList({bisTypeId: this.buisnessType})
         },
@@ -1040,8 +1046,16 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.table.find("tbody .history").on("click", $.proxy(this.onClickItemHistory, this));
                 this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
                 this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+                if (this.enableEditConfFile === 0){
+                    this.$el.find(".ok").hide();
+                    this.table.find("tbody .edit").hide();
+                } else if (this.enableEditConfFile === 1){
+                    this.$el.find(".ok").show();
+                    this.table.find("tbody .edit").show();
+                }                    
             } else {
                 this.$el.find(".list .table-ctn").html(_.template(template['tpl/empty.html'])());
+                this.$el.find(".ok").hide();
             }
         },
 

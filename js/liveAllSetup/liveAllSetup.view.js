@@ -94,7 +94,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.fileType.error", $.proxy(this.onGetError, this));
 
             this.initBussnessDropList();
-            this.initLockTime();
         },
 
         initLockTime: function(){
@@ -258,7 +257,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     return parseInt(object.value) === parseInt(this.args.releaseModel);
                 }.bind(this));
                 this.$el.find(".file-content .cur-value").html(aReleaseModel.name);
-                this.$el.find(".file-content .dropdown-toggle").attr("disabled", "disabled")
+                this.$el.find(".file-content .dropdown-toggle").attr("disabled", "disabled");
+                this.initLockTime();
             }
 
             rootNode = this.$el.find(".dropdown-bustype");
@@ -946,8 +946,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
                 this.hideMainList(".main-list", ".create-edit-panel")
             }.bind(this));
-            this.collection.on("lock.file.error", function(){
-                var error = {message: "此文件已经被锁定，无法编辑！"}
+            this.collection.on("lock.file.error", function(error){
+                //var error = {message: "此文件已经被锁定，无法编辑！"}
                 this.onGetError(error)
             }.bind(this));
 

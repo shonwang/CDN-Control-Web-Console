@@ -945,3 +945,8 @@ td .table {
   border-top-color: #ed4646;
   top: 0;
 }
+
+/*#valuable-customer-download{
+    max-height: 668px;
+    overflow: auto;
+}*/

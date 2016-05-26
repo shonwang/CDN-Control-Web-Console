@@ -16,9 +16,20 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
             this.$el.find(".query").on("click",  $.proxy(this.onClickApplyButton, this));
             this.initCalendar();
             setTimeout(function(){
-                this.initCharts();  
-            }.bind(this), 1000)
+                this.initCharts(); 
+                $(document).on("scroll", function(){
+                    var hh = document.documentElement.clientHeight,
+                        scrollTop = document.body.scrollTop,
+                        scrollHHeight = document.body.scrollHeight;
+                    console.log("height:", hh)
+                    console.log("scrollTop:", scrollTop)
+                    console.log("scrollHeight:", scrollHHeight)
 
+                    if (hh + scrollTop === scrollHHeight) {
+                        console.log("到底")
+                    }
+                }.bind(this)) 
+            }.bind(this), 1000)
         },
 
         onGetError: function(error){

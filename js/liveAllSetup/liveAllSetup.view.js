@@ -938,27 +938,28 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             }
             var model = this.collection.get(id);
 
-            this.collection.off("check.version.success");
-            this.collection.off("check.version.error");
+            // this.collection.off("check.version.success");
+            // this.collection.off("check.version.error");
 
-            this.collection.on("check.version.success", function(res){
-                if (res.statusCode === 0){
-                    this.onLockFile(model);
-                } else if (res.statusCode === 1){
-                    var result = confirm(res.message);
-                    if (result){
-                        this.onLockFile(model);
-                    } else {
-                        this.$el.find(".list .table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                        this.collection.getAllFileList({bisTypeId: this.buisnessType})
-                    }
-                }
-            }.bind(this));
-            this.collection.on("check.version.error", $.proxy(this.onGetError, this));
-            this.collection.checkLastVersion({
-                confFileId: model.get("confFileId"),
-                confFileHisId: model.get("confFileHisId")
-            });            
+            // this.collection.on("check.version.success", function(res){
+            //     if (res.statusCode === 0){
+            //         this.onLockFile(model);
+            //     } else if (res.statusCode === 1){
+            //         var result = confirm(res.message);
+            //         if (result){
+            //             this.onLockFile(model);
+            //         } else {
+            //             this.$el.find(".list .table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            //             this.collection.getAllFileList({bisTypeId: this.buisnessType})
+            //         }
+            //     }
+            // }.bind(this));
+            // this.collection.on("check.version.error", $.proxy(this.onGetError, this));
+            // this.collection.checkLastVersion({
+            //     confFileId: model.get("confFileId"),
+            //     confFileHisId: model.get("confFileHisId")
+            // });
+            this.onLockFile(model);            
         },
 
         onLockFile: function(model){

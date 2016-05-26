@@ -1,7 +1,7 @@
 window.DEBUG = 1;
 
 if (window.DEBUG === 1)
-    window.BASE_URL = "http://10.4.2.38:9098";
+    window.BASE_URL = "http://10.4.2.38:9098";//"http://192.168.158.213:9098";//http://120.92.232.203:9098";
 else if (window.DEBUG === 2)
     window.BASE_URL = "http://test.center.cdn.ksyun.com";
 else if (window.DEBUG === 3)
@@ -54,7 +54,9 @@ requirejs.config({
         "businessManage.view"  : 'businessManage/businessManage.view',
         "businessManage.model" : 'businessManage/businessManage.model',
         "statisticsManage.view"  : 'statisticsManage/statisticsManage.view',
-        "statisticsManage.model" : 'statisticsManage/statisticsManage.model'
+        "statisticsManage.model" : 'statisticsManage/statisticsManage.model',
+        "domainStatistics.view"  : 'domainStatistics/domainStatistics.view',
+        "domainStatistics.model" : 'domainStatistics/domainStatistics.model'
     },
     urlArgs: new Date().valueOf()
 });

@@ -18,7 +18,7 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
 
             this.collection.on("get.client.success", $.proxy(this.onGetAllCustomer, this));
             this.collection.on("get.client.error", $.proxy(this.onGetError, this));
-            this.collection.getAllClient();
+            this.collection.getAllClient({type:this.type});
 
             this.collection.on("get.domain.success", $.proxy(this.onGetAllDomain, this));
             this.collection.on("get.domain.error", $.proxy(this.onGetError, this));
@@ -82,6 +82,7 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
                         this.endTime = endTime.format("yyyyMMddhhmm");
                     } else {
                         this.endTime = endTime.format("yyyyMMdd") + "2359";
+                        this.$el.find('#endtime').val(endTime.format("yyyy/MM/dd") + " 23:59")
                     }
                 }.bind(this)
             };
@@ -175,148 +176,152 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
         },
 
         initCharts: function(res){
-            this.bandInfo = JSON.parse(res.calculateBandwidth.bandwidth)
-            console.log(this.bandInfo)
-            if (this.bandInfo.length === 0 || this.checkedDomain === ""){
-                this.$el.find(".charts-ctn").html(_.template(template['tpl/empty-2.html'])({data:{message: "汪伟在胸口摸索了一翻，但是却没有找到数据！"}}));
-                return
-            }
-            var timeData = [], domainData, bandwidthData = [], flowData = [];
-            domainData = this.bandInfo[0];
-            for (var i = 0; i < domainData.data.length; i++){
-                var tempObj = domainData.data[i];
-                timeData.push(tempObj.time * 1000)
-                var bandwidthCount = 0, flowCount = 0
-                for (var k = 0; k < this.bandInfo.length; k++){
-                    bandwidthCount = bandwidthCount + parseFloat(this.bandInfo[k].data[i].bandwidth);
-                    flowCount = flowCount + parseFloat(this.bandInfo[k].data[i].flow);
+            try{
+                this.bandInfo = JSON.parse(res.calculateBandwidth.bandwidth)
+                console.log(this.bandInfo)
+                if (this.bandInfo.length === 0 || this.checkedDomain === ""){
+                    this.$el.find(".charts-ctn").html(_.template(template['tpl/empty-2.html'])({data:{message: "汪伟在胸口摸索了一翻，但是却没有找到数据！"}}));
+                    return
                 }
-                bandwidthData.push(bandwidthCount);
-                flowData.push(flowCount)
-            }
+                var timeData = [], domainData, bandwidthData = [], flowData = [];
+                domainData = this.bandInfo[0];
+                for (var i = 0; i < domainData.data.length; i++){
+                    var tempObj = domainData.data[i];
+                    timeData.push(tempObj.time * 1000)
+                    var bandwidthCount = 0, flowCount = 0
+                    for (var k = 0; k < this.bandInfo.length; k++){
+                        bandwidthCount = bandwidthCount + parseFloat(this.bandInfo[k].data[i].bandwidth);
+                        flowCount = flowCount + parseFloat(this.bandInfo[k].data[i].flow);
+                    }
+                    bandwidthData.push(bandwidthCount);
+                    flowData.push(flowCount)
+                }
 
-            option = {
-                title: {
-                    text: this.clientName,
-                    subtext: '按产品要求，数据按1000转换, 带宽单位最大到MB，流量单位最大到GB',
-                    x: 'center'
-                },
-                tooltip: {
-                    trigger: 'axis',
-                    formatter: function (params) {
-                        var str = "";
-                        if (params[0].seriesName !== "流量")
-                            str =  Utility.handlerToBps(params[0].value)
-                        else
-                            str = Utility.handlerToB(params[0].value)
-                        return new Date(params[0].name).format("yyyy/MM/dd hh:mm") + '<br/>'
-                            + params[0].seriesName + ' : ' + str;
+                option = {
+                    title: {
+                        text: this.clientName,
+                        subtext: '按产品要求，数据按1024转换, 带宽单位最大到Tbps，流量单位最大到TB',
+                        x: 'center'
                     },
-                    axisPointer: {
-                        animation: false
-                    }
-                },
-                legend: {
-                    data:['带宽', '流量'],
-                    x: 'left'
-                },
-                dataZoom: [
-                    {
-                        show: true,
-                        realtime: true,
-                        start: 30,
-                        end: 70,
-                        xAxisIndex: [0, 1],
-                        labelFormatter: function(value){
-                            return new Date(value).format("MM/dd hh:mm")
+                    tooltip: {
+                        trigger: 'axis',
+                        formatter: function (params) {
+                            var str = "";
+                            if (params[0].seriesName !== "流量")
+                                str =  Utility.handlerToBps1024(params[0].value)
+                            else
+                                str = Utility.handlerToB1024(params[0].value)
+                            return new Date(params[0].name).format("yyyy/MM/dd hh:mm") + '<br/>'
+                                + params[0].seriesName + ' : ' + str;
+                        },
+                        axisPointer: {
+                            animation: false
                         }
                     },
-                    {
-                        type: 'inside',
-                        realtime: true,
-                        start: 30,
-                        end: 70,
-                        xAxisIndex: [0, 1],
-                        labelFormatter: function(value){
-                            return new Date(value).format("MM/dd hh:mm")
-                        }
-                    }
-                ],
-                grid: [{
-                    left: 100,
-                    right: 50,
-                    height: '37%'
-                },
-                {
-                    left: 100,
-                    right: 50,
-                    top: '53%',
-                    height: '37%'
-                }],
-                xAxis : [
-                    {
-                        type : 'category',
-                        boundaryGap : false,
-                        axisLine: {onZero: true},
-                        data: timeData,
-                        axisLabel: {
-                            formatter: function(value){
+                    legend: {
+                        data:['带宽', '流量'],
+                        x: 'left'
+                    },
+                    dataZoom: [
+                        {
+                            show: true,
+                            realtime: true,
+                            start: 0,
+                            end: 100,
+                            xAxisIndex: [0, 1],
+                            labelFormatter: function(value){
+                                return new Date(value).format("MM/dd hh:mm")
+                            }
+                        },
+                        {
+                            type: 'inside',
+                            realtime: true,
+                            start: 0,
+                            end: 100,
+                            xAxisIndex: [0, 1],
+                            labelFormatter: function(value){
                                 return new Date(value).format("MM/dd hh:mm")
                             }
                         }
+                    ],
+                    grid: [{
+                        left: 100,
+                        right: 50,
+                        height: '37%'
                     },
                     {
-                        gridIndex: 1,
-                        type : 'category',
-                        boundaryGap : false,
-                        axisLine: {onZero: true},
-                        data: timeData,
-                        axisLabel: {
-                            formatter: function(value){
-                                return new Date(value).format("MM/dd hh:mm")
+                        left: 100,
+                        right: 50,
+                        top: '53%',
+                        height: '37%'
+                    }],
+                    xAxis : [
+                        {
+                            type : 'category',
+                            boundaryGap : false,
+                            axisLine: {onZero: true},
+                            data: timeData,
+                            axisLabel: {
+                                formatter: function(value){
+                                    return new Date(value).format("MM/dd hh:mm")
+                                }
+                            }
+                        },
+                        {
+                            gridIndex: 1,
+                            type : 'category',
+                            boundaryGap : false,
+                            axisLine: {onZero: true},
+                            data: timeData,
+                            axisLabel: {
+                                formatter: function(value){
+                                    return new Date(value).format("MM/dd hh:mm")
+                                }
                             }
                         }
-                    }
-                ],
-                yAxis : [
-                    {
-                        type : 'value',
-                        name: "带宽",
-                        axisLabel: {
-                            formatter: Utility.handlerToBps
+                    ],
+                    yAxis : [
+                        {
+                            type : 'value',
+                            name: "带宽",
+                            axisLabel: {
+                                formatter: Utility.handlerToBps1024
+                            }
+                        },
+                        {
+                            gridIndex: 1,
+                            type : 'value',
+                            name: "流量",
+                            axisLabel: {
+                                formatter: Utility.handlerToB1024
+                            }
                         }
-                    },
-                    {
-                        gridIndex: 1,
-                        type : 'value',
-                        name: "流量",
-                        axisLabel: {
-                            formatter: Utility.handlerToB
+                    ],
+                    series : [
+                        {
+                            name:'带宽',
+                            type:'line',
+                            symbolSize: 8,
+                            hoverAnimation: false,
+                            data: bandwidthData
+                        },
+                        {
+                            name:'流量',
+                            type:'line',
+                            symbolSize: 8,
+                            xAxisIndex: 1,
+                            yAxisIndex: 1,
+                            hoverAnimation: false,
+                            data: flowData
                         }
-                    }
-                ],
-                series : [
-                    {
-                        name:'带宽',
-                        type:'line',
-                        symbolSize: 8,
-                        hoverAnimation: false,
-                        data: bandwidthData
-                    },
-                    {
-                        name:'流量',
-                        type:'line',
-                        symbolSize: 8,
-                        xAxisIndex: 1,
-                        yAxisIndex: 1,
-                        hoverAnimation: false,
-                        data: flowData
-                    }
-                ]
-            };
-            this.$el.find(".charts-ctn").html('<div class="chart" style="width: 100%;height:768px;"></div>');
-            this.chart = echarts.init(this.$el.find(".chart").get(0));
-            this.chart.setOption(option);
+                    ]
+                };
+                this.$el.find(".charts-ctn").html('<div class="chart" style="width: 100%;height:768px;"></div>');
+                this.chart = echarts.init(this.$el.find(".chart").get(0));
+                this.chart.setOption(option);
+            } catch (e){
+                alert("返回数据的JSON格式有误！")
+            }
         },
 
         onResizeChart: function(){

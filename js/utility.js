@@ -145,6 +145,26 @@ define("utility", ['require','exports'], function(require, exports) {
             var num = parseFloat(input);
             if (input >= 1024 && input < 1024 * 1024) {
                 num = parseFloat(input / 1024).toFixed(2);
+                return num + 'Kbps';
+            } else if (input >= 1024 * 1024 && input < 1024 * 1024 * 1024) {
+                num = parseFloat(input / 1024 / 1024).toFixed(2)
+                return num + 'Mbps';
+            } else if (input >= 1024 * 1024 * 1024 && input < 1024 * 1024 * 1024 * 1024) {
+                num = parseFloat(input / 1024 / 1024 / 1024).toFixed(2);
+                return num + 'Gbps';
+            } else if (input >= 1024 * 1024 * 1024 * 1024) {
+                num = parseFloat(input / 1024 / 1024 / 1024 / 1024).toFixed(2)
+                return num + 'Tbps';
+            } else {
+                return num.toFixed(2) + "bps";
+            }
+        },
+
+        handlerToB1024: function(input) {
+            var input = input || 0;
+            var num = parseFloat(input);
+            if (input >= 1024 && input < 1024 * 1024) {
+                num = parseFloat(input / 1024).toFixed(2);
                 return num + 'Kb';
             } else if (input >= 1024 * 1024 && input < 1024 * 1024 * 1024) {
                 num = parseFloat(input / 1024 / 1024).toFixed(2)

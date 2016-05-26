@@ -57,6 +57,8 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
 
         appendToCharts: function(){
             if (this.isLoading) return
+            this.start = this.end + 1;
+            this.end = this.end + 10;
             $(_.template(template['tpl/loading.html'])({})).appendTo(this.$el.find(".charts-ctn"));
             if (!this.startTime) this.startTime = new Date().format("yyyyMMdd") + "0000";
             if (!this.endTime) this.endTime = new Date().format("yyyyMMddhhmm");
@@ -235,8 +237,6 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
                 scrollTop = document.body.scrollTop,
                 scrollHHeight = document.body.scrollHeight;
             if (hh + scrollTop === scrollHHeight) {
-                this.start = this.end + 1;
-                this.end = this.end + 10;
                 this.appendToCharts();
             }
         },

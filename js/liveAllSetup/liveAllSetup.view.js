@@ -274,7 +274,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find("#input-name").attr("readonly", true);
                 this.$el.find(".fileContentType").remove();
                 var defaultValue = _.find(this.busTypeArray, function(object){
-                    return object.value === this.model.get("bisTypeId")
+                    return parseInt(object.value) === this.model.get("bisTypeId")
                 }.bind(this));
                 this.$el.find(".dropdown-bustype .cur-value").html(defaultValue.name);
                 this.$el.find(".dropdown-bustype .dropdown-toggle").attr("disabled", "disabled")

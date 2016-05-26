@@ -57,6 +57,8 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
 
         appendToCharts: function(){
             if (this.isLoading) return
+            this.start = this.end + 1;
+            this.end = this.end + 10;
             $(_.template(template['tpl/loading.html'])({})).appendTo(this.$el.find(".charts-ctn"));
             if (!this.startTime) this.startTime = new Date().format("yyyyMMdd") + "0000";
             if (!this.endTime) this.endTime = new Date().format("yyyyMMddhhmm");
@@ -165,7 +167,7 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
                         formatter: function (params) {
                             var timeString = new Date(params[0].name).format("yyyy/MM/dd hh:mm"), message = '';
                             for (var n = 0; n < params.length; n++){
-                                message = message + params[n].seriesName + ": " + Utility.handlerToBps1024(params[0].data) + "<br>"
+                                message = message + params[n].seriesName + ": " + Utility.handlerToBps1024(params[n].data) + "<br>"
                             }
                             return timeString + "<br>" + message;
                         },
@@ -180,8 +182,8 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
                         {
                             show: true,
                             realtime: true,
-                            start: 30,
-                            end: 70,
+                            start: 0,
+                            end: 100,
                             xAxisIndex: [0],
                             labelFormatter: function(value){
                                 return new Date(value).format("MM/dd hh:mm")
@@ -235,8 +237,6 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
                 scrollTop = document.body.scrollTop,
                 scrollHHeight = document.body.scrollHeight;
             if (hh + scrollTop === scrollHHeight) {
-                this.start = this.end + 1;
-                this.end = this.end + 10;
                 this.appendToCharts();
             }
         },

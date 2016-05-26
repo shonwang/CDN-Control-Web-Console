@@ -10,46 +10,18 @@ define("domainStatistics.model", ['require','exports', 'utility'], function(requ
 
         initialize: function(){},
 
-        getAllClient: function(args){
-            var url = BASE_URL + "/rs/channel/getAllClient",
+        getDomainBandInfo: function(args){
+            var url = BASE_URL + "/rs/channel/domainBandInfo",
             successCallback = function(res){
                 if (res)
-                    this.trigger("get.client.success", res);
+                    this.trigger("get.domainBand.success", res);
                 else
-                    this.trigger("get.client.error", res); 
+                    this.trigger("get.domainBand.error", res); 
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("get.client.error", response);
+                this.trigger("get.domainBand.error", response);
             }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
-        },
-
-        getBandInfo: function(args){
-            var url = BASE_URL + "/rs/channel/bandInfo",
-            successCallback = function(res){
-                if (res)
-                    this.trigger("get.bandInfo.success", res);
-                else
-                    this.trigger("get.bandInfo.error", res); 
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("get.bandInfo.error", response);
-            }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
-        },
-
-        getDomain: function(args){
-            var url = BASE_URL + "/rs/channel/getDomain",
-            successCallback = function(res){
-                if (res)
-                    this.trigger("get.domain.success", res);
-                else
-                    this.trigger("get.domain.error", res); 
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("get.domain.error", response);
-            }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
+            Utility.postAjax(url, args, successCallback, errorCallback, 300000);
         }
     });
 

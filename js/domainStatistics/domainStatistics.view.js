@@ -14,25 +14,19 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
             this.threeTimeNode = this.$el.find(".three-time");
             this.threeTimeNode.find(".btn-default").on("click",  $.proxy(this.onClickSpecificTime, this));
             this.$el.find(".query").on("click",  $.proxy(this.onClickApplyButton, this));
-            this.initCalendar();
-            setTimeout(function(){
-                this.initCharts(); 
-                $(document).on("scroll", function(){
-                    var hh = document.documentElement.clientHeight,
-                        scrollTop = document.body.scrollTop,
-                        scrollHHeight = document.body.scrollHeight;
-                    console.log("height:", hh)
-                    console.log("scrollTop:", scrollTop)
-                    console.log("scrollHeight:", scrollHHeight)
 
-                    if (hh + scrollTop === scrollHHeight) {
-                        console.log("到底")
-                    }
-                }.bind(this)) 
-            }.bind(this), 1000)
+            this.collection.on("get.domainBand.success", $.proxy(this.initCharts, this));
+            this.collection.on("get.domainBand.error", $.proxy(this.onGetError, this));
+
+            this.start = 0;
+            this.end = 19;
+            this.isLoading = false;
+            this.initCalendar();
         },
 
         onGetError: function(error){
+            this.isLoading = false;
+            this.$el.find(".charts-ctn .loader").remove();
             if (error&&error.message)
                 alert(error.message)
             else
@@ -40,7 +34,8 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
         },
 
         onClickApplyButton: function(){
-            if (this.chartArray.length !== 0) {
+            if (this.isLoading) return
+            if (this.chartArray&&this.chartArray.length !== 0) {
                 for(var i = 0; i < this.chartArray.length; i++){
                     this.chartArray[i].dispose();
                 }
@@ -50,13 +45,30 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
             if (!this.startTime) this.startTime = new Date().format("yyyyMMdd") + "0000";
             if (!this.endTime) this.endTime = new Date().format("yyyyMMddhhmm");
             var args = {
-                clientName: this.clientName,
-                domain: this.checkedDomain,
+                start: this.start,
+                end: this.end,
                 startTime: this.startTime,
                 endTime: this.endTime,
                 type: this.type
             }
-            //this.collection.getBandInfo(args)
+            this.collection.getDomainBandInfo(args)
+            this.isLoading = true;
+        },
+
+        appendToCharts: function(){
+            if (this.isLoading) return
+            $(_.template(template['tpl/loading.html'])({})).appendTo(this.$el.find(".charts-ctn"));
+            if (!this.startTime) this.startTime = new Date().format("yyyyMMdd") + "0000";
+            if (!this.endTime) this.endTime = new Date().format("yyyyMMddhhmm");
+            var args = {
+                start: this.start,
+                end: this.end,
+                startTime: this.startTime,
+                endTime: this.endTime,
+                type: this.type
+            }
+            this.collection.getDomainBandInfo(args)
+            this.isLoading = true;
         },
 
         initCalendar: function(tpl,tplindex){
@@ -94,6 +106,7 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
                 }.bind(this)
             };
             this.$el.find('#endtime').datetimepicker(endOption);
+            this.onClickApplyButton();
         },
 
         onClickSpecificTime: function(event){
@@ -126,160 +139,39 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
         },
 
         initCharts: function(res){
-            // this.bandInfo = JSON.parse(res.calculateBandwidth.bandwidth)
-            // console.log(this.bandInfo)
-            // if (this.bandInfo.length === 0 || this.checkedDomain === ""){
-            //     this.$el.find(".charts-ctn").html(_.template(template['tpl/empty-2.html'])({data:{message: "汪伟在胸口摸索了一翻，但是却没有找到数据！"}}));
-            //     return
-            // }
-            // var timeData = [], domainData, bandwidthData = [], flowData = [];
-            // domainData = this.bandInfo[0];
-            // for (var i = 0; i < domainData.data.length; i++){
-            //     var tempObj = domainData.data[i];
-            //     timeData.push(tempObj.time * 1000)
-            //     var bandwidthCount = 0, flowCount = 0
-            //     for (var k = 0; k < this.bandInfo.length; k++){
-            //         bandwidthCount = bandwidthCount + parseFloat(this.bandInfo[k].data[i].bandwidth);
-            //         flowCount = flowCount + parseFloat(this.bandInfo[k].data[i].flow);
-            //     }
-            //     bandwidthData.push(bandwidthCount);
-            //     flowData.push(flowCount)
-            // }
-
-            // option = {
-            //     title: {
-            //         text: this.clientName,
-            //         subtext: '按产品要求，数据按1000转换, 带宽单位最大到MB，流量单位最大到GB',
-            //         x: 'center'
-            //     },
-            //     tooltip: {
-            //         trigger: 'axis',
-            //         formatter: function (params) {
-            //             var str = "";
-            //             if (params[0].seriesName !== "流量")
-            //                 str =  Utility.handlerToBps(params[0].value)
-            //             else
-            //                 str = Utility.handlerToB(params[0].value)
-            //             return new Date(params[0].name).format("yyyy/MM/dd hh:mm") + '<br/>'
-            //                 + params[0].seriesName + ' : ' + str;
-            //         },
-            //         axisPointer: {
-            //             animation: false
-            //         }
-            //     },
-            //     legend: {
-            //         data:['带宽', '流量'],
-            //         x: 'left'
-            //     },
-            //     dataZoom: [
-            //         {
-            //             show: true,
-            //             realtime: true,
-            //             start: 30,
-            //             end: 70,
-            //             xAxisIndex: [0, 1],
-            //             labelFormatter: function(value){
-            //                 return new Date(value).format("MM/dd hh:mm")
-            //             }
-            //         },
-            //         {
-            //             type: 'inside',
-            //             realtime: true,
-            //             start: 30,
-            //             end: 70,
-            //             xAxisIndex: [0, 1],
-            //             labelFormatter: function(value){
-            //                 return new Date(value).format("MM/dd hh:mm")
-            //             }
-            //         }
-            //     ],
-            //     grid: [{
-            //         left: 100,
-            //         right: 50,
-            //         height: '37%'
-            //     },
-            //     {
-            //         left: 100,
-            //         right: 50,
-            //         top: '53%',
-            //         height: '37%'
-            //     }],
-            //     xAxis : [
-            //         {
-            //             type : 'category',
-            //             boundaryGap : false,
-            //             axisLine: {onZero: true},
-            //             data: timeData,
-            //             axisLabel: {
-            //                 formatter: function(value){
-            //                     return new Date(value).format("MM/dd hh:mm")
-            //                 }
-            //             }
-            //         },
-            //         {
-            //             gridIndex: 1,
-            //             type : 'category',
-            //             boundaryGap : false,
-            //             axisLine: {onZero: true},
-            //             data: timeData,
-            //             axisLabel: {
-            //                 formatter: function(value){
-            //                     return new Date(value).format("MM/dd hh:mm")
-            //                 }
-            //             }
-            //         }
-            //     ],
-            //     yAxis : [
-            //         {
-            //             type : 'value',
-            //             name: "带宽",
-            //             axisLabel: {
-            //                 formatter: Utility.handlerToBps
-            //             }
-            //         },
-            //         {
-            //             gridIndex: 1,
-            //             type : 'value',
-            //             name: "流量",
-            //             axisLabel: {
-            //                 formatter: Utility.handlerToB
-            //             }
-            //         }
-            //     ],
-            //     series : [
-            //         {
-            //             name:'带宽',
-            //             type:'line',
-            //             symbolSize: 8,
-            //             hoverAnimation: false,
-            //             data: bandwidthData
-            //         },
-            //         {
-            //             name:'流量',
-            //             type:'line',
-            //             symbolSize: 8,
-            //             xAxisIndex: 1,
-            //             yAxisIndex: 1,
-            //             hoverAnimation: false,
-            //             data: flowData
-            //         }
-            //     ]
-            // };
-
             this.chartArray = [];
-            this.$el.find(".charts-ctn").html("");
-            for (var i = 0; i < 10; i++){
+            this.$el.find(".charts-ctn .loader").remove();
+            for (var i = 0; i < res.length; i++){
+                var domainArray = res[i];
+                var timeData = [], bandwidthData = [], damainNameArray = [], domainObj;
+                for (var k = 0; k < domainArray.length; k++){
+                    domainObj = JSON.parse(domainArray[k].calculateBandwidth.bandwidth)[0];
+                    damainNameArray.push(domainObj.domain);
+                    var data = [];
+                    for (var m = 0; m < domainObj.data.length; m++){
+                        data.push(domainObj.data[m].bandwidth);
+                        if (k === 0) timeData.push(domainObj.data[m].time * 1000)
+                    }
+                    var seriesObj = {
+                        name:domainObj.domain,
+                        type:'line',
+                        data:data
+                    };
+                    bandwidthData.push(seriesObj)
+                }
                 var option = {
-                    title: {
-                        text: i + 1, 
-                        subtext: '按产品要求，数据按1000转换, 带宽单位最大到MB，流量单位最大到GB',
-                        x: 'center'
-                    },
                     tooltip: {
-                        trigger: 'axis'
+                        trigger: 'axis',
+                        formatter: function (params) {
+                            var timeString = new Date(params[0].name).format("yyyy/MM/dd hh:mm"), message = '';
+                            for (var n = 0; n < params.length; n++){
+                                message = message + params[n].seriesName + ": " + Utility.handlerToBps1024(params[0].data) + "<br>"
+                            }
+                            return timeString + "<br>" + message;
+                        },
                     },
                     legend: {
-                        data:['yinyuetai.hdllive.ks-cdn.com','联盟广告','视频广告','直接访问','搜索引擎1111'],
+                        data: damainNameArray,
                         orient: "vertical",
                         right: "right",
                         top: "50px"
@@ -291,20 +183,10 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
                             start: 30,
                             end: 70,
                             xAxisIndex: [0],
-                            // labelFormatter: function(value){
-                            //     return new Date(value).format("MM/dd hh:mm")
-                            // }
-                        },
-                        // {
-                        //     type: 'inside',
-                        //     realtime: true,
-                        //     start: 30,
-                        //     end: 70,
-                        //     xAxisIndex: [0],
-                        //     labelFormatter: function(value){
-                        //         return new Date(value).format("MM/dd hh:mm")
-                        //     }
-                        // }
+                            labelFormatter: function(value){
+                                return new Date(value).format("MM/dd hh:mm")
+                            }
+                        }
                     ],
                     grid: {
                         left: '3%',
@@ -315,56 +197,52 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
                     xAxis: {
                         type: 'category',
                         boundaryGap: false,
-                        data: ['周一','周二','周三','周四','周五','周六','周日']
+                        data: timeData,
+                        axisLabel: {
+                            formatter: function(value){
+                                return new Date(value).format("MM/dd hh:mm")
+                            }
+                        }
                     },
                     yAxis: {
-                        type: 'value'
-                    },
-                    series: [
-                        {
-                            name:'yinyuetai.hdllive.ks-cdn.com',
-                            type:'line',
-                            stack: '总量',
-                            data:[120, 132, 101, 134, 90, 230, 210]
-                        },
-                        {
-                            name:'联盟广告',
-                            type:'line',
-                            stack: '总量',
-                            data:[220, 182, 191, 234, 290, 330, 310]
-                        },
-                        {
-                            name:'视频广告',
-                            type:'line',
-                            stack: '总量',
-                            data:[150, 232, 201, 154, 190, 330, 410]
-                        },
-                        {
-                            name:'直接访问',
-                            type:'line',
-                            stack: '总量',
-                            data:[320, 332, 301, 334, 390, 330, 320]
-                        },
-                        {
-                            name:'搜索引擎1111',
-                            type:'line',
-                            stack: '总量',
-                            data:[820, 932, 901, 934, 1290, 1330, 1320]
+                        type: 'value',
+                        axisLabel: {
+                            formatter: Utility.handlerToBps1024
                         }
-                    ]
+                    },
+                    series: bandwidthData
                 };
-                var tpl = '<div class="chart" style="width: 100%;height:350px;" id="' + i + '"></div>'
+                if (this.start === 0 && i === 0) {
+                    option.title = {
+                        text: "Top100", 
+                        subtext: '按产品要求，数据按1024转换, 带宽单位最大到Tbps，流量单位最大到TB',
+                        x: 'center'
+                    };
+                }
+                var randomId = Utility.randomStr(8)
+                var tpl = '<div class="chart" style="width: 100%;height:400px;" id="' + randomId + '"></div>'
                 $(tpl).appendTo(this.$el.find(".charts-ctn"));
-                var chart = echarts.init(this.$el.find(".charts-ctn #" + i).get(0));
+                var chart = echarts.init(this.$el.find(".charts-ctn #" + randomId).get(0));
                 chart.setOption(option);
                 this.chartArray.push(chart)
             }
-
             this.onResizeChart();
+            this.isLoading = false;
+        },
+
+        onScrollToBottom: function(){
+            var hh = document.documentElement.clientHeight,
+                scrollTop = document.body.scrollTop,
+                scrollHHeight = document.body.scrollHeight;
+            if (hh + scrollTop === scrollHHeight) {
+                this.start = this.end + 1;
+                this.end = this.end + 10;
+                this.appendToCharts();
+            }
         },
 
         onResizeChart: function(){
-            if (this.chartArray.length === 0) return;
+            if (!this.chartArray || this.chartArray.length === 0) return;
             for(var i = 0; i < this.chartArray.length; i++){
                 this.chartArray[i].resize();
             }
@@ -373,7 +251,17 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
         remove: function(){
             this.$el.find('#starttime').datetimepicker("destroy");
             this.$el.find('#endtime').datetimepicker("destroy");
+            $(window).off('resize', $.proxy(this.onResizeChart, this));
+            this.offDocumentScroll();
             this.$el.remove();
+        },
+
+        onDocumentScroll: function(){
+            $(document).on("scroll", $.proxy(this.onScrollToBottom, this));
+        },
+
+        offDocumentScroll: function(){
+            $(document).off("scroll", $.proxy(this.onScrollToBottom, this));
         },
 
         hide: function() {
@@ -387,6 +275,7 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
         render: function(target) {
             this.$el.appendTo(target);
             $(window).on('resize', $.proxy(this.onResizeChart, this));
+            this.onDocumentScroll();
         }
     });
 
@@ -414,10 +303,18 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
             switch(id){
                 case "#valuable-customer-download":
                     this.currentTab = "#valuable-customer-download";
+                    if(this.liveDomainStatisticsView)
+                        this.liveDomainStatisticsView.offDocumentScroll();
+                    this.downloadDomainStatisticsView.onDocumentScroll();
                 break;
                 case "#valuable-customer-live":
                     this.currentTab = "#valuable-customer-live";
-                    if(this.liveDomainStatisticsView) return;
+                    if(this.downloadDomainStatisticsView)
+                        this.downloadDomainStatisticsView.offDocumentScroll();
+                    if(this.liveDomainStatisticsView){
+                        this.liveDomainStatisticsView.onDocumentScroll();
+                        return;
+                    };
                     this.liveDomainStatisticsView = new TabDomainStatisticsView({
                         collection: this.liveCollection,
                         type: 2 //直播

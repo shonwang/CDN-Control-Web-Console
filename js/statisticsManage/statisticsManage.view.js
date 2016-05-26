@@ -18,7 +18,7 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
 
             this.collection.on("get.client.success", $.proxy(this.onGetAllCustomer, this));
             this.collection.on("get.client.error", $.proxy(this.onGetError, this));
-            this.collection.getAllClient();
+            this.collection.getAllClient({type:this.type});
 
             this.collection.on("get.domain.success", $.proxy(this.onGetAllDomain, this));
             this.collection.on("get.domain.error", $.proxy(this.onGetError, this));

@@ -321,6 +321,42 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
             }.bind(this);
 
             $.ajax(defaultParas);
+        },
+
+        lockFile: function(args){
+            var url = BASE_URL + "/seed/conf/file/lock",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("lock.file.success", res);
+                else
+                    this.trigger("lock.file.error", res); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("lock.file.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        cancelLockFile: function(args){
+            var url = BASE_URL + "/seed/conf/file/unlock",
+            successCallback = function(res){
+                this.trigger("unlock.file.success", res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("unlock.file.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        checkLastVersion: function(args){
+            var url = BASE_URL + "/seed/conf/file/checkversion",
+            successCallback = function(res){
+                this.trigger("check.version.success", res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("check.version.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         }
     });
 

@@ -39,6 +39,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.isEdit      = options.isEdit;
             this.model       = options.model;
             this.busTypeArray= options.busTypeArray;
+            this.lockTime    = options.lockTime;
 
             if (this.isEdit){
                 this.args = {
@@ -93,6 +94,16 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.fileType.error", $.proxy(this.onGetError, this));
 
             this.initBussnessDropList();
+        },
+
+        initLockTime: function(){
+            var message = "此文件编辑剩余时间：" + "<strong>" + this.lockTime + "</strong>秒";
+            this.$el.find(".lock-time").html(message);
+            this.timer = setInterval(function(){
+                this.lockTime -= 1;
+                this.$el.find(".lock-time").html("此文件编辑剩余时间：" + "<strong>" + this.lockTime + "</strong>秒")
+                if (this.lockTime === 0 && this.timer) clearInterval(this.timer)
+            }.bind(this), 1000)
         },
 
         onClickLockName: function(){
@@ -227,6 +238,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onClickCancel: function(){
+            if (this.timer) clearInterval(this.timer)
             if (this.isEdit)
                 this.model.set("partitions", this.partitionsCopy)
             this.options.cancelCallback&&this.options.cancelCallback();
@@ -245,7 +257,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     return parseInt(object.value) === parseInt(this.args.releaseModel);
                 }.bind(this));
                 this.$el.find(".file-content .cur-value").html(aReleaseModel.name);
-                this.$el.find(".file-content .dropdown-toggle").attr("disabled", "disabled")
+                this.$el.find(".file-content .dropdown-toggle").attr("disabled", "disabled");
+                this.initLockTime();
             }
 
             rootNode = this.$el.find(".dropdown-bustype");
@@ -261,7 +274,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find("#input-name").attr("readonly", true);
                 this.$el.find(".fileContentType").remove();
                 var defaultValue = _.find(this.busTypeArray, function(object){
-                    return object.value === this.model.get("bisTypeId")
+                    return parseInt(object.value) === this.model.get("bisTypeId")
                 }.bind(this));
                 this.$el.find(".dropdown-bustype .cur-value").html(defaultValue.name);
                 this.$el.find(".dropdown-bustype .dropdown-toggle").attr("disabled", "disabled")
@@ -355,6 +368,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 args.partitions = this.args.partitions;
                 args.releaseModel = this.args.releaseModel;
             }
+            if (this.timer) clearInterval(this.timer)
             return args;
         },
 
@@ -702,10 +716,16 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             rootNode = this.$el.find(".dropdown-bustype");
             Utility.initDropMenu(rootNode, typeArray, function(value){
                 this.buisnessType = parseInt(value)
-                this.collection.getAllFileList({bisTypeId: this.buisnessType})
+                this.collection.getAllFileList({bisTypeId: this.buisnessType});
+                var businessTpye = _.find(res, function(obj){
+                    return obj.id === value;
+                }.bind(this))
+                if (businessTpye) this.enableEditConfFile = businessTpye.enableEditConfFile;
+
             }.bind(this));
 
             this.buisnessType = res[0].id;
+            this.enableEditConfFile = res[0].enableEditConfFile;
             this.$el.find(".dropdown-bustype .cur-value").html(res[0].name)
             this.collection.getAllFileList({bisTypeId: this.buisnessType})
         },
@@ -852,8 +872,16 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.table.find("tbody .history").on("click", $.proxy(this.onClickItemHistory, this));
                 this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
                 this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+                if (this.enableEditConfFile === 0){
+                    this.$el.find(".ok").hide();
+                    this.table.find("tbody .edit").hide();
+                } else if (this.enableEditConfFile === 1){
+                    this.$el.find(".ok").show();
+                    this.table.find("tbody .edit").show();
+                }                    
             } else {
                 this.$el.find(".list .table-ctn").html(_.template(template['tpl/empty.html'])());
+                this.$el.find(".ok").hide();
             }
         },
 
@@ -910,21 +938,56 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             }
             var model = this.collection.get(id);
 
-            var addFileView = new AddOrEditFlieView({
-                collection: this.collection,
-                model     : model, 
-                isEdit    : true,
-                busTypeArray: this.busTypeArray,
-                cancelCallback: function(){
-                    this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn");
-                }.bind(this),
-                okCallback:  function(options){
-                    this.collection.modifyConfFile(options);
-                }.bind(this)
-            });
-            addFileView.render(this.$el.find(".create-edit-panel"));
+            // this.collection.off("check.version.success");
+            // this.collection.off("check.version.error");
 
-            this.hideMainList(".main-list", ".create-edit-panel")
+            // this.collection.on("check.version.success", function(res){
+            //     if (res.statusCode === 0){
+            //         this.onLockFile(model);
+            //     } else if (res.statusCode === 1){
+            //         var result = confirm(res.message);
+            //         if (result){
+            //             this.onLockFile(model);
+            //         } else {
+            //             this.$el.find(".list .table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            //             this.collection.getAllFileList({bisTypeId: this.buisnessType})
+            //         }
+            //     }
+            // }.bind(this));
+            // this.collection.on("check.version.error", $.proxy(this.onGetError, this));
+            // this.collection.checkLastVersion({
+            //     confFileId: model.get("confFileId"),
+            //     confFileHisId: model.get("confFileHisId")
+            // });
+            this.onLockFile(model);            
+        },
+
+        onLockFile: function(model){
+            this.collection.off("lock.file.success");
+            this.collection.off("lock.file.error");
+
+            this.collection.on("lock.file.success", function(res){
+                var addFileView = new AddOrEditFlieView({
+                    collection: this.collection,
+                    model     : model, 
+                    isEdit    : true,
+                    lockTime  : res.lockTime,
+                    busTypeArray: this.busTypeArray,
+                    cancelCallback: function(){
+                        this.collection.cancelLockFile({confFileId: model.get("confFileId")})
+                        this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn");
+                    }.bind(this),
+                    okCallback:  function(options){
+                        this.collection.modifyConfFile(options);
+                    }.bind(this)
+                });
+                addFileView.render(this.$el.find(".create-edit-panel"));
+
+                this.hideMainList(".main-list", ".create-edit-panel")
+            }.bind(this));
+            this.collection.on("lock.file.error", $.proxy(this.onGetError, this));
+
+            this.collection.lockFile({confFileId: model.get("confFileId")});
         },
 
         onClickMultiStop : function(event){

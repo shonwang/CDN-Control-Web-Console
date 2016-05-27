@@ -27,10 +27,28 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
         onGetError: function(error){
             this.isLoading = false;
             this.$el.find(".charts-ctn .loader").remove();
-            if (error&&error.message)
-                alert(error.message)
-            else
+            if (error&&error.message){
+                if (error.message.indexOf("没有数据") > -1)
+                    this.onNoData(error.message)
+                else
+                    alert(error.message)
+            } else {
                 alert("出错了")
+            }
+        },
+
+        onNoData: function(msg){
+            var alert = this.$el.find(".charts-ctn .alert-info").get(0);
+            if (alert) {
+                $(alert).find("strong").html("真的没有数据了！")
+                return
+            }
+            var message = {
+                isClose: false,
+                type: "alert-info",
+                message: msg
+            }
+            $(_.template(template['tpl/alert.message.html'])({data: message})).appendTo(this.$el.find(".charts-ctn"));
         },
 
         onClickApplyButton: function(){
@@ -44,6 +62,8 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
             this.$el.find(".charts-ctn").html(_.template(template['tpl/loading.html'])({}));
             if (!this.startTime) this.startTime = new Date().format("yyyyMMdd") + "0000";
             if (!this.endTime) this.endTime = new Date().format("yyyyMMddhhmm");
+            this.start = 0;
+            this.end = 19;
             var args = {
                 start: this.start,
                 end: this.end,
@@ -59,7 +79,8 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
             if (this.isLoading) return
             this.start = this.end + 1;
             this.end = this.end + 10;
-            $(_.template(template['tpl/loading.html'])({})).appendTo(this.$el.find(".charts-ctn"));
+            var alert = this.$el.find(".charts-ctn .alert-info").get(0);
+            if (!alert) $(_.template(template['tpl/loading.html'])({})).appendTo(this.$el.find(".charts-ctn"));
             if (!this.startTime) this.startTime = new Date().format("yyyyMMdd") + "0000";
             if (!this.endTime) this.endTime = new Date().format("yyyyMMddhhmm");
             var args = {
@@ -142,91 +163,96 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
 
         initCharts: function(res){
             this.chartArray = [];
+            this.$el.find(".charts-ctn .alert-info").remove();
             this.$el.find(".charts-ctn .loader").remove();
-            for (var i = 0; i < res.length; i++){
-                var domainArray = res[i];
-                var timeData = [], bandwidthData = [], damainNameArray = [], domainObj;
-                for (var k = 0; k < domainArray.length; k++){
-                    domainObj = JSON.parse(domainArray[k].calculateBandwidth.bandwidth)[0];
-                    damainNameArray.push(domainObj.domain);
-                    var data = [];
-                    for (var m = 0; m < domainObj.data.length; m++){
-                        data.push(domainObj.data[m].bandwidth);
-                        if (k === 0) timeData.push(domainObj.data[m].time * 1000)
+            try{
+                for (var i = 0; i < res.length; i++){
+                    var domainArray = res[i];
+                    var timeData = [], bandwidthData = [], damainNameArray = [], domainObj;
+                    for (var k = 0; k < domainArray.length; k++){
+                        domainObj = JSON.parse(domainArray[k].calculateBandwidth.bandwidth)[0];
+                        damainNameArray.push(domainObj.domain);
+                        var data = [];
+                        for (var m = 0; m < domainObj.data.length; m++){
+                            data.push(domainObj.data[m].bandwidth);
+                            if (k === 0) timeData.push(domainObj.data[m].time * 1000)
+                        }
+                        var seriesObj = {
+                            name:domainObj.domain,
+                            type:'line',
+                            data:data
+                        };
+                        bandwidthData.push(seriesObj)
                     }
-                    var seriesObj = {
-                        name:domainObj.domain,
-                        type:'line',
-                        data:data
-                    };
-                    bandwidthData.push(seriesObj)
-                }
-                var option = {
-                    tooltip: {
-                        trigger: 'axis',
-                        formatter: function (params) {
-                            var timeString = new Date(params[0].name).format("yyyy/MM/dd hh:mm"), message = '';
-                            for (var n = 0; n < params.length; n++){
-                                message = message + params[n].seriesName + ": " + Utility.handlerToBps1024(params[n].data) + "<br>"
-                            }
-                            return timeString + "<br>" + message;
+                    var option = {
+                        tooltip: {
+                            trigger: 'axis',
+                            formatter: function (params) {
+                                var timeString = new Date(params[0].name).format("yyyy/MM/dd hh:mm"), message = '';
+                                for (var n = 0; n < params.length; n++){
+                                    message = message + params[n].seriesName + ": " + Utility.handlerToBps1024(params[n].data) + "<br>"
+                                }
+                                return timeString + "<br>" + message;
+                            },
                         },
-                    },
-                    legend: {
-                        data: damainNameArray,
-                        orient: "vertical",
-                        right: "right",
-                        top: "50px"
-                    },
-                    dataZoom: [
-                        {
-                            show: true,
-                            realtime: true,
-                            start: 0,
-                            end: 100,
-                            xAxisIndex: [0],
-                            labelFormatter: function(value){
-                                return new Date(value).format("MM/dd hh:mm")
+                        legend: {
+                            data: damainNameArray,
+                            orient: "vertical",
+                            right: "right",
+                            top: "50px"
+                        },
+                        dataZoom: [
+                            {
+                                show: true,
+                                realtime: true,
+                                start: 0,
+                                end: 100,
+                                xAxisIndex: [0],
+                                labelFormatter: function(value){
+                                    return new Date(value).format("MM/dd hh:mm")
+                                }
                             }
-                        }
-                    ],
-                    grid: {
-                        left: '3%',
-                        right: '20%',
-                        bottom: '15%',
-                        containLabel: true
-                    },
-                    xAxis: {
-                        type: 'category',
-                        boundaryGap: false,
-                        data: timeData,
-                        axisLabel: {
-                            formatter: function(value){
-                                return new Date(value).format("MM/dd hh:mm")
+                        ],
+                        grid: {
+                            left: '3%',
+                            right: '20%',
+                            bottom: '15%',
+                            containLabel: true
+                        },
+                        xAxis: {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: timeData,
+                            axisLabel: {
+                                formatter: function(value){
+                                    return new Date(value).format("MM/dd hh:mm")
+                                }
                             }
-                        }
-                    },
-                    yAxis: {
-                        type: 'value',
-                        axisLabel: {
-                            formatter: Utility.handlerToBps1024
-                        }
-                    },
-                    series: bandwidthData
-                };
-                if (this.start === 0 && i === 0) {
-                    option.title = {
-                        text: "Top100", 
-                        subtext: '按产品要求，数据按1024转换, 带宽单位最大到Tbps，流量单位最大到TB',
-                        x: 'center'
+                        },
+                        yAxis: {
+                            type: 'value',
+                            axisLabel: {
+                                formatter: Utility.handlerToBps1024
+                            }
+                        },
+                        series: bandwidthData
                     };
+                    if (this.start === 0 && i === 0) {
+                        option.title = {
+                            text: "Top100", 
+                            subtext: '按产品要求，数据按1024转换, 带宽单位最大到Tbps，流量单位最大到TB',
+                            x: 'center'
+                        };
+                    }
+                    var randomId = Utility.randomStr(8)
+                    var tpl = '<div class="chart" style="width: 100%;height:400px;" id="' + randomId + '"></div>'
+                    $(tpl).appendTo(this.$el.find(".charts-ctn"));
+                    var chart = echarts.init(this.$el.find(".charts-ctn #" + randomId).get(0));
+                    chart.setOption(option);
+                    this.chartArray.push(chart)
                 }
-                var randomId = Utility.randomStr(8)
-                var tpl = '<div class="chart" style="width: 100%;height:400px;" id="' + randomId + '"></div>'
-                $(tpl).appendTo(this.$el.find(".charts-ctn"));
-                var chart = echarts.init(this.$el.find(".charts-ctn #" + randomId).get(0));
-                chart.setOption(option);
-                this.chartArray.push(chart)
+            } catch (e){
+                alert("数据中心返回数据的JSON格式有误！")
             }
             this.onResizeChart();
             this.isLoading = false;
@@ -236,7 +262,10 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
             var hh = document.documentElement.clientHeight,
                 scrollTop = document.body.scrollTop,
                 scrollHHeight = document.body.scrollHeight;
-            if (hh + scrollTop === scrollHHeight) {
+            // console.log("clientHeight: " + hh);
+            // console.log("scrollTop: " + scrollTop);
+            // console.log("scrollHeight: " + scrollHHeight);
+            if (scrollHHeight - (hh + scrollTop)) {
                 this.appendToCharts();
             }
         },
@@ -306,6 +335,7 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
                     if(this.liveDomainStatisticsView)
                         this.liveDomainStatisticsView.offDocumentScroll();
                     this.downloadDomainStatisticsView.onDocumentScroll();
+                    this.downloadDomainStatisticsView.onResizeChart();
                 break;
                 case "#valuable-customer-live":
                     this.currentTab = "#valuable-customer-live";
@@ -313,6 +343,7 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
                         this.downloadDomainStatisticsView.offDocumentScroll();
                     if(this.liveDomainStatisticsView){
                         this.liveDomainStatisticsView.onDocumentScroll();
+                        this.liveDomainStatisticsView.onResizeChart();
                         return;
                     };
                     this.liveDomainStatisticsView = new TabDomainStatisticsView({

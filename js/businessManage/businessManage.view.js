@@ -27,7 +27,7 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
             };
             this.nodeListFinal = [];
 
-            this.collection.getAddTableList(data);
+            this.collection.nodeListToAddNodeGroup({bisTypeId:this.businessType[0].value});
 
             if (this.isEdit) {
                 tplData.name = this.model.get("name");
@@ -136,7 +136,8 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                     value: el.id
                 });
             });
-            var searchSelect = new SearchSelect({
+            if (this.searchSelect) this.searchSelect.destroy();
+            this.searchSelect = new SearchSelect({
                 containerID: this.$el.find('.select-addNode').get(0),
                 panelID: this.$el.find('.btn-raised').get(0),
                 // isSingle: true,
@@ -226,8 +227,6 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                     }
                 }
             });
-
-
         },
 
         initBusinessDropMenu: function() {
@@ -235,6 +234,7 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
 
             Utility.initDropMenu(rootNode, this.businessType, function(value) {
                 this.$el.find('.business-type .cur-value').attr('data-id', value);
+                this.collection.nodeListToAddNodeGroup({bisTypeId:value});
             }.bind(this));
         },
 

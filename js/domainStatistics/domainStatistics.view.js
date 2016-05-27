@@ -19,7 +19,7 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
             this.collection.on("get.domainBand.error", $.proxy(this.onGetError, this));
 
             this.start = 0;
-            this.end = 19;
+            this.end = 29;
             this.isLoading = false;
             this.chartArray = [];
             this.initCalendar();
@@ -64,7 +64,7 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
             if (!this.startTime) this.startTime = new Date().format("yyyyMMdd") + "0000";
             if (!this.endTime) this.endTime = new Date().format("yyyyMMddhhmm");
             this.start = 0;
-            this.end = 19;
+            this.end = 29;
             var args = {
                 start: this.start,
                 end: this.end,

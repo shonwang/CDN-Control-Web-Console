@@ -265,7 +265,7 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
             // console.log("clientHeight: " + hh);
             // console.log("scrollTop: " + scrollTop);
             // console.log("scrollHeight: " + scrollHHeight);
-            if (scrollHHeight - (hh + scrollTop)) {
+            if (scrollHHeight - (hh + scrollTop) < 20) {
                 this.appendToCharts();
             }
         },

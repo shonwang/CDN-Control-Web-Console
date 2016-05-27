@@ -230,7 +230,7 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
                             end: 100,
                             xAxisIndex: [0, 1],
                             labelFormatter: function(value){
-                                return new Date(value).format("MM/dd hh:mm")
+                                return new Date(timeData[value]).format("MM/dd hh:mm")
                             }
                         },
                         {

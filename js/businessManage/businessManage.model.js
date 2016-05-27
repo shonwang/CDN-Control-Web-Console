@@ -146,6 +146,20 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
             $.ajax(defaultParas);
         },
 
+        nodeListToAddNodeGroup: function(args){
+            var url = BASE_URL + "/rs/node/nodeListToAddNodeGroup",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("get.addTableList.success", res);
+                else
+                    this.trigger("get.addTableList.error", res); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.addTableList.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
         addNode: function(data){
         	var url = BASE_URL + "/seed/config/release/addNodeGroup";
             var defaultParas = {

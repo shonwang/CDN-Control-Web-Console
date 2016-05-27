@@ -31,7 +31,7 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
             if (error&&error.message)
                 alert(error.message)
             else
-                alert("出错了")
+                alert("网络阻塞，请刷新重试！")
         },
 
         onClickApplyButton: function(){

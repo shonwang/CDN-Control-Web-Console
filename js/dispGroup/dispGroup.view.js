@@ -23,7 +23,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (error&&error.message)
                 alert(error.message)
             else
-                alert("出错了")
+                alert("网络阻塞，请刷新重试！")
         },
 
         onGetNodeSuccess: function(res){
@@ -65,7 +65,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (error&&error.message)
                 alert(error.message)
             else
-                alert("出错了")
+                alert("网络阻塞，请刷新重试！")
         },
 
         getArgs: function(){
@@ -104,7 +104,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (error&&error.message)
                 alert(error.message)
             else
-                alert("出错了")
+                alert("网络阻塞，请刷新重试！")
         },
 
         onGetNodeSuccess: function(res){
@@ -184,7 +184,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (error&&error.message)
                 alert(error.message)
             else
-                alert("出错了")
+                alert("网络阻塞，请刷新重试！")
         },
 
         onGetChannelSuccess: function(res){
@@ -364,7 +364,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (error&&error.message)
                 alert(error.message)
             else
-                alert("出错了")
+                alert("网络阻塞，请刷新重试！")
         },
 
         initDropmenu: function(){
@@ -619,7 +619,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (error&&error.message)
                 alert(error.message)
             else
-                alert("出错了")
+                alert("网络阻塞，请刷新重试！")
         },
 
         onDispGroupListSuccess: function(){

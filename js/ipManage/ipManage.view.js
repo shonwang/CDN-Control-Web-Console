@@ -113,7 +113,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             if (error&&error.message)
                 alert(error.message)
             else
-                alert("出错了")
+                alert("网络阻塞，请刷新重试！")
         },
 
         onIpInfoListSuccess: function(){

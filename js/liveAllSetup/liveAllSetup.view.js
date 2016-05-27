@@ -377,7 +377,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             if (error&&error.message)
                 alert(error.message)
             else
-                alert("出错了")
+                alert("网络阻塞，请刷新重试！")
         },
 
         render: function(target) {
@@ -420,7 +420,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             if (error&&error.message)
                 alert(error.message)
             else
-                alert("出错了")
+                alert("网络阻塞，请刷新重试！")
         },
 
         onSetupHistoryListSuccess: function(res){
@@ -682,7 +682,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             if (error&&error.message)
                 alert(error.message)
             else
-                alert("出错了")
+                alert("网络阻塞，请刷新重试！")
         },
 
         onClickSelectDevice: function(event){
@@ -1059,7 +1059,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             if (error&&error.message)
                 alert(error.message)
             else
-                alert("出错了")
+                alert("网络阻塞，请刷新重试！")
         },
 
         onSetupFileListSuccess: function(){

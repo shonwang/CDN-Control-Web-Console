@@ -56,7 +56,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             if (error&&error.message)
                 alert(error.message)
             else
-                alert("出错了")
+                alert("网络阻塞，请刷新重试！")
         },
 
         render: function(target) {
@@ -114,7 +114,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             if (error&&error.message)
                 alert(error.message)
             else
-                alert("出错了")
+                alert("网络阻塞，请刷新重试！")
         },
 
         render: function(target, rootNode) {
@@ -305,7 +305,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             if (error&&error.message)
                 alert(error.message)
             else
-                alert("出错了")
+                alert("网络阻塞，请刷新重试！")
         },
 
         render: function(target) {
@@ -433,7 +433,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             if (error&&error.message)
                 alert(error.message)
             else
-                alert("出错了")
+                alert("网络阻塞，请刷新重试！")
         },
 
         onDispConfigListSuccess: function(){

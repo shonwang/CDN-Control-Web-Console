@@ -21,6 +21,7 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
             this.start = 0;
             this.end = 19;
             this.isLoading = false;
+            this.chartArray = [];
             this.initCalendar();
         },
 
@@ -57,7 +58,7 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
                 for(var i = 0; i < this.chartArray.length; i++){
                     this.chartArray[i].dispose();
                 }
-                this.chartArray = null;
+                this.chartArray = [];
             }
             this.$el.find(".charts-ctn").html(_.template(template['tpl/loading.html'])({}));
             if (!this.startTime) this.startTime = new Date().format("yyyyMMdd") + "0000";
@@ -162,7 +163,6 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
         },
 
         initCharts: function(res){
-            this.chartArray = [];
             this.$el.find(".charts-ctn .alert-info").remove();
             this.$el.find(".charts-ctn .loader").remove();
             try{

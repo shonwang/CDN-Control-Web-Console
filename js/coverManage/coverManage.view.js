@@ -100,7 +100,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             if (error&&error.message)
                 alert(error.message)
             else
-                alert("出错了")
+                alert("网络阻塞，请刷新重试！")
             if (this.timer) clearInterval(this.timer);
             if (this.mapDataTimer) clearInterval(this.mapDataTimer);
         },

@@ -320,7 +320,7 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
                 this.chart = echarts.init(this.$el.find(".chart").get(0));
                 this.chart.setOption(option);
             } catch (e){
-                alert("返回数据的JSON格式有误！")
+                alert("数据中心返回数据的JSON格式有误！")
             }
         },
 

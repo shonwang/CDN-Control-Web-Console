@@ -442,7 +442,8 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                 businessType: this.businessType,
                 deviceType: this.deviceType,
                 ipType: this.ipType,
-                nodeCollection: this.nodeCollection
+                nodeCollection: this.nodeCollection,
+                currentBisType: this.Id.business
             });
 
             var options = {

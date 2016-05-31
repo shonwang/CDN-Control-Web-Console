@@ -391,6 +391,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.options    = options;
             this.collection = options.collection;
             this.model      = options.model;
+            this.enableEditConfFile = options.enableEditConfFile;
             this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.history.html'])());
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
@@ -440,6 +441,11 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find(".table-ctn").html(this.table[0]);
                 this.table.find("tbody .used").on("click", $.proxy(this.onClickItemUsed, this));
                 this.table.find("tbody .file-name").on("click", $.proxy(this.onClickItemFileName, this));
+                if (this.enableEditConfFile === 0){
+                    this.table.find("tbody .used").hide();
+                } else if (this.enableEditConfFile === 1){
+                    this.table.find("tbody .used").show();
+                } 
             } else {
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
             }
@@ -901,13 +907,13 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.table.find("tbody .history").on("click", $.proxy(this.onClickItemHistory, this));
                 this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
                 this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
-                if (this.enableEditConfFile === 0){
-                    this.$el.find(".ok").hide();
-                    this.table.find("tbody .edit").hide();
-                } else if (this.enableEditConfFile === 1){
-                    this.$el.find(".ok").show();
-                    this.table.find("tbody .edit").show();
-                }                    
+                // if (this.enableEditConfFile === 0){
+                //     this.$el.find(".ok").hide();
+                //     this.table.find("tbody .edit").hide();
+                // } else if (this.enableEditConfFile === 1){
+                //     this.$el.find(".ok").show();
+                //     this.table.find("tbody .edit").show();
+                // }                    
             } else {
                 this.$el.find(".list .table-ctn").html(_.template(template['tpl/empty.html'])());
                 this.$el.find(".ok").hide();
@@ -949,6 +955,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             var aHistoryView = new HistoryView({
                 collection: this.collection, 
                 model     : model,
+                enableEditConfFile:this.enableEditConfFile,
                 cancelCallback: $.proxy(this.onBackHistoryCallback, this),
                 selectedCallback: $.proxy(this.selectedModelsCallback, this)
             });

@@ -526,7 +526,11 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             // this.collection.off("get.allDevice.error");
             // this.collection.on("get.allDevice.success", $.proxy(this.onGetAllDeviceSuccess, this));
             // this.collection.on("get.allDevice.error", $.proxy(this.onGetError, this));
-            this.initTree();
+            this.collection.off("get.nodeTreeData.success");
+            this.collection.off("get.nodeTreeData.error");
+            this.collection.on("get.nodeTreeData.success",$.proxy(this.onGetNodeTreeDataSuccess,this));
+            this.collection.on("get.nodeTreeData.error",$.proxy(this.onGetError,this));
+            //this.initTree();
         },
 
         onGetError: function(error){
@@ -536,7 +540,11 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 alert("出错了")
         },
 
-        initTree: function(){
+        onGetNodeTreeDataSuccess:function(res){
+            this.initTree(res);
+        },
+
+        initTree: function(res){
             var setting = {
                 check: {
                     enable: true
@@ -553,15 +561,17 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 }
             };
 
-            var zNodes =[
-                { id:1, pId:0, name:"随意勾选 1", open:true, checked:true},
-                { id:11, pId:1, name:"随意勾选 1-1", checked:true, highlight: true},
-                { id:12, pId:1, name:"随意勾选 1-2", checked:true},
-                { id:2, pId:0, name:"随意勾选 2", open:true},
-                { id:21, pId:2, name:"随意勾选 2-1"},
-                { id:22, pId:2, name:"随意勾选 2-2"},
-                { id:23, pId:2, name:"随意勾选 2-3"}
-            ];
+            var zNodes = res;
+
+            // var zNodes =[
+            //     { id:1, pId:0, name:"随意勾选 1", open:true, checked:true},
+            //     { id:11, pId:1, name:"随意勾选 1-1", checked:true, highlight: true},
+            //     { id:12, pId:1, name:"随意勾选 1-2", checked:true},
+            //     { id:2, pId:0, name:"随意勾选 2", open:true},
+            //     { id:21, pId:2, name:"随意勾选 2-1"},
+            //     { id:22, pId:2, name:"随意勾选 2-2"},
+            //     { id:23, pId:2, name:"随意勾选 2-3"}
+            // ];
 
             this.treeObj = $.fn.zTree.init(this.$el.find(".node-device-ctn #tree"), setting, zNodes);
             this.getSelected();
@@ -667,6 +677,11 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.off("get.ip.error");
             this.collection.on("get.ip.success", $.proxy(this.onGetIpGroupSuccess, this));
             this.collection.on("get.ip.error", $.proxy(this.onGetError, this));
+
+            this.collection.off("get.nodeTreeData.success");
+            this.collection.off("get.nodeTreeData.error");
+            this.collection.on("get.nodeTreeData.success",$.proxy(this.onGetNodeTreeDataSuccess,this));
+            this.collection.on("get.nodeTreeData.error",$.proxy(this.onGetError,this));
             // this.collection.off("get.fileGroup.success");
             // this.collection.off("get.fileGroup.error");
             // this.collection.on("get.fileGroup.success", $.proxy(this.onGetFileGroupSuccess, this));
@@ -699,6 +714,10 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     return obj.id === parseInt(id)
                 }.bind(this));
 
+            this.collection.getNodeTreeData({nodeGroupId:id});
+
+
+
             if (this.addDevicePopup) $("#" + this.addDevicePopup.modalId).remove();
 
             var addDeviceView = new SelectDeviceView({
@@ -726,6 +745,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             }
             this.addDevicePopup = new Modal(options);
         },
+
 
         onClickCancel: function(){
             this.options.cancelCallback&&this.options.cancelCallback();

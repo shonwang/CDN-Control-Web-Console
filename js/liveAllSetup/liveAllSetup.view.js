@@ -563,6 +563,18 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
             var zNodes = res;
 
+            _.each(zNodes,function(el,index,ls){
+                el.checked = false;
+                el.open = false;
+                el.highlight = false;
+                if(el.pId == -1){
+                    el.open = true;
+                }
+                if(el.deviceStatus != 1 && el.pId != -1){
+                    el.highlight = true;
+                }
+            }.bind(this));
+
             // var zNodes =[
             //     { id:1, pId:0, name:"随意勾选 1", open:true, checked:true},
             //     { id:11, pId:1, name:"随意勾选 1-1", checked:true, highlight: true},
@@ -715,8 +727,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 }.bind(this));
 
             this.collection.getNodeTreeData({nodeGroupId:id});
-
-
 
             if (this.addDevicePopup) $("#" + this.addDevicePopup.modalId).remove();
 

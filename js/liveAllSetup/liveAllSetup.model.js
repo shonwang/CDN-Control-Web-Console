@@ -356,7 +356,7 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
             errorCallback = function(response){
                 this.trigger("check.version.error", response);
             }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         }
     });
 

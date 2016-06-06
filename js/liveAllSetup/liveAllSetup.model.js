@@ -265,6 +265,37 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
             $.ajax(defaultParas);
         },
 
+        getNodeTreeData: function(args){
+            var url = BASE_URL + "/seed/config/release/nodeGroup/getNodeTreeData";
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000
+            };
+            defaultParas.data = args;
+            defaultParas.data.t = new Date().valueOf();
+
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                if (res){
+                    this.trigger("get.nodeTreeData.success", res);
+                } else {
+                    this.trigger("get.nodeTreeData.error"); 
+                }
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.nodeTreeData.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
         confirmAdd: function(args){
             var url = BASE_URL + "/seed/conf/file/releaseConfig";
             var defaultParas = {

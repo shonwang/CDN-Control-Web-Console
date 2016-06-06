@@ -526,7 +526,11 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             // this.collection.off("get.allDevice.error");
             // this.collection.on("get.allDevice.success", $.proxy(this.onGetAllDeviceSuccess, this));
             // this.collection.on("get.allDevice.error", $.proxy(this.onGetError, this));
-            this.initTree();
+            this.collection.off("get.nodeTreeData.success");
+            this.collection.off("get.nodeTreeData.error");
+            this.collection.on("get.nodeTreeData.success",$.proxy(this.onGetNodeTreeDataSuccess,this));
+            this.collection.on("get.nodeTreeData.error",$.proxy(this.onGetError,this));
+            //this.initTree();
         },
 
         onGetError: function(error){
@@ -536,7 +540,11 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 alert("出错了")
         },
 
-        initTree: function(){
+        onGetNodeTreeDataSuccess:function(res){
+            this.initTree(res);
+        },
+
+        initTree: function(res){
             var setting = {
                 check: {
                     enable: true
@@ -553,15 +561,29 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 }
             };
 
-            var zNodes =[
-                { id:1, pId:0, name:"随意勾选 1", open:true, checked:true},
-                { id:11, pId:1, name:"随意勾选 1-1", checked:true, highlight: true},
-                { id:12, pId:1, name:"随意勾选 1-2", checked:true},
-                { id:2, pId:0, name:"随意勾选 2", open:true},
-                { id:21, pId:2, name:"随意勾选 2-1"},
-                { id:22, pId:2, name:"随意勾选 2-2"},
-                { id:23, pId:2, name:"随意勾选 2-3"}
-            ];
+            var zNodes = res;
+
+            _.each(zNodes,function(el,index,ls){
+                el.checked = false;
+                el.open = false;
+                el.highlight = false;
+                if(el.pId == -1){
+                    el.open = true;
+                }
+                if(el.deviceStatus != 1 && el.pId != -1){
+                    el.highlight = true;
+                }
+            }.bind(this));
+
+            // var zNodes =[
+            //     { id:1, pId:0, name:"随意勾选 1", open:true},
+            //     { id:11, pId:1, name:"随意勾选 1-1", highlight: true},
+            //     { id:12, pId:1, name:"随意勾选 1-2"},
+            //     { id:2, pId:0, name:"随意勾选 2", open:true},
+            //     { id:21, pId:2, name:"随意勾选 2-1"},
+            //     { id:22, pId:2, name:"随意勾选 2-2"},
+            //     { id:23, pId:2, name:"随意勾选 2-3"}
+            // ];
 
             this.treeObj = $.fn.zTree.init(this.$el.find(".node-device-ctn #tree"), setting, zNodes);
             this.getSelected();
@@ -618,7 +640,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 nodes: this.matchNodes,
                 devices: this.matchDeviceNodes
             }
-            return selectedObj
+            console.log(selectedObj);
+            return selectedObj;
         },
 
         onGetAllDeviceSuccess: function(res){
@@ -667,6 +690,11 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.off("get.ip.error");
             this.collection.on("get.ip.success", $.proxy(this.onGetIpGroupSuccess, this));
             this.collection.on("get.ip.error", $.proxy(this.onGetError, this));
+
+            this.collection.off("get.nodeTreeData.success");
+            this.collection.off("get.nodeTreeData.error");
+            this.collection.on("get.nodeTreeData.success",$.proxy(this.onGetNodeTreeDataSuccess,this));
+            this.collection.on("get.nodeTreeData.error",$.proxy(this.onGetError,this));
             // this.collection.off("get.fileGroup.success");
             // this.collection.off("get.fileGroup.error");
             // this.collection.on("get.fileGroup.success", $.proxy(this.onGetFileGroupSuccess, this));
@@ -699,6 +727,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     return obj.id === parseInt(id)
                 }.bind(this));
 
+            this.collection.getNodeTreeData({nodeGroupId:id});
+
             if (this.addDevicePopup) $("#" + this.addDevicePopup.modalId).remove();
 
             var addDeviceView = new SelectDeviceView({
@@ -716,16 +746,25 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     currentNodeDevice.nodes = resultObj.nodes;
                     currentNodeDevice.devices = resultObj.devices;
                     nodeCtn.find("li").remove();
-                    _.each(currentNodeDevice.nodes, function(el, index, ls){
-                        var aNode = $('<li class="node-item"><span class="label label-primary">'+ el.name + '</span></li>');
-                        aNode.appendTo(nodeCtn)
-                    }.bind(this))
-                    this.addDevicePopup.$el.modal("hide");
+                    if(currentNodeDevice.devices.length > 0){
+                        _.each(currentNodeDevice.nodes, function(el, index, ls){
+                            var deviceIdsList = [];
+                            _.each(currentNodeDevice.devices, function(ele, j, dls){
+                                if(el.id == ele.pId){
+                                    deviceIdsList.push(ele.deviceId);
+                                }
+                            }.bind(this));
+                            var aNode = $('<li class="node-item" data-deviceId="'+deviceIdsList.join(',')+'"><span class="label label-primary">'+ el.name + '</span></li>');
+                            aNode.appendTo(nodeCtn)
+                        }.bind(this))
+                        this.addDevicePopup.$el.modal("hide");
+                    }
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
             this.addDevicePopup = new Modal(options);
         },
+
 
         onClickCancel: function(){
             this.options.cancelCallback&&this.options.cancelCallback();
@@ -794,10 +833,16 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     if (obj.id === file.attributes.nodeGroupId)
                         fileIds.push(file.attributes.confFileHisId);
                 })
+                var devicelistDom = this.$el.find("#panel-"+obj.id+" .node-item");
+                var devicelist = [];
+                devicelistDom.each(function(i){
+                    devicelist.push(devicelistDom.eq(i).attr('data-deviceid'));
+                }.bind(this));
                 nodeGroupLs.push({
                     "nodeGroupId": obj.id,
                     "confFileHisIds": fileIds.join(","),
-                    "ips": this.$el.find("#ip-" + obj.id).val()
+                    //"ips": this.$el.find("#ip-" + obj.id).val()
+                    "deviceIds":devicelist.join(",")
                 })
             }.bind(this))
 
@@ -807,7 +852,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 "remark"  : this.$el.find("#textarea-comment").val(),
                 "bisTypeId": this.buisnessType
             }
-            this.collection.confirmAdd(options)
+            console.log(options);
+            //this.collection.confirmAdd(options)
         },
 
         initTable: function(){

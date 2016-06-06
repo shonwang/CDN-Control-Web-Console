@@ -161,7 +161,7 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
                 panelID: this.$el.find('#dropdown-customer').get(0),
                 isSingle: true,
                 openSearch: true,
-                selectWidth: 400,
+                selectWidth: 500,
                 onOk: function(){},
                 data: nameList,
                 callback: function(data) {

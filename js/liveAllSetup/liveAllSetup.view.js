@@ -1134,7 +1134,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 // } else if (this.enableEditConfFile === 1){
                 //     this.$el.find(".ok").show();
                 //     this.table.find("tbody .edit").show();
-                // }                    
+                // }
+                this.$el.find(".ok").show();                    
             } else {
                 this.$el.find(".list .table-ctn").html(_.template(template['tpl/empty.html'])());
                 this.$el.find(".ok").hide();

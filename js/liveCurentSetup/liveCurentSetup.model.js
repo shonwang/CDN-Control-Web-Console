@@ -117,7 +117,7 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
         },
 
         getResInfo: function(args){
-            var url = BASE_URL + "/seed/config/release/log/ip/pageList"
+            var url = BASE_URL + "/seed/config/release/log/device/pageList"
             var defaultParas = {
                 type: "POST",
                 url: url,

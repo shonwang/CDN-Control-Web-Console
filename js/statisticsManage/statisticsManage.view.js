@@ -376,10 +376,15 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
             switch(id){
                 case "#valuable-customer-download":
                     this.currentTab = "#valuable-customer-download";
+                    if (this.downloadStatisticsManageView)
+                        this.downloadStatisticsManageView.onResizeChart();
                 break;
                 case "#valuable-customer-live":
                     this.currentTab = "#valuable-customer-live";
-                    if(this.liveStatisticsManageView) return;
+                    if(this.liveStatisticsManageView) {
+                        this.liveStatisticsManageView.onResizeChart();
+                        return;
+                    }
                     this.liveStatisticsManageView = new TabStatisticsManageView({
                         collection: this.liveCollection,
                         type: 2 //直播

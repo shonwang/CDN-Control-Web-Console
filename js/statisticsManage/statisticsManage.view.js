@@ -43,7 +43,8 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
             if (!this.startTime) this.startTime = new Date().format("yyyyMMdd") + "0000";
             if (!this.endTime) this.endTime = new Date().format("yyyyMMddhhmm");
             var args = {
-                clientName: this.clientName,
+                //clientName: this.clientName,
+                userid: this.userId,
                 domain: this.checkedDomain,
                 startTime: this.startTime,
                 endTime: this.endTime,
@@ -153,7 +154,7 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
         onGetAllCustomer: function(res){
             var nameList = [];
             _.each(res, function(el, index, list){
-                nameList.push({name: el, value:el})
+                nameList.push({name: el.userid + "-" +el.clientName, value:el.userid})
             });
 
             var searchSelect = new SearchSelect({
@@ -161,18 +162,20 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
                 panelID: this.$el.find('#dropdown-customer').get(0),
                 isSingle: true,
                 openSearch: true,
-                selectWidth: 500,
+                selectWidth: 550,
                 onOk: function(){},
                 data: nameList,
                 callback: function(data) {
-                    this.clientName = data.value;
-                    this.collection.getDomain({clientName: data.value, type: this.type});
+                    this.clientName = data.name;
+                    this.userId = data.value;
+                    this.collection.getDomain({userid: data.value, type: this.type});
                     this.$el.find("#dropdown-customer .cur-value").html(this.clientName)
                 }.bind(this)
             });
-            this.$el.find("#dropdown-customer .cur-value").html(res[0])
-            this.collection.getDomain({clientName: res[0], type: this.type});
-            this.clientName = res[0];
+            this.$el.find("#dropdown-customer .cur-value").html(res[0].userid + "-" +res[0].clientName)
+            this.collection.getDomain({userid: res[0].userid, type: this.type});
+            this.clientName = res[0].userid + "-" +res[0].clientName;
+            this.userId = res[0].userid;
         },
 
         initCharts: function(res){

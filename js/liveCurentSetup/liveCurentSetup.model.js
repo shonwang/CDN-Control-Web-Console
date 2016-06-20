@@ -66,6 +66,7 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
                                 fileObj.nodeGroupId = nodeGroupObj.nodeGroupId;
                                 fileObj.nodeGroupName = nodeGroupObj.nodeGroupName;
                                 fileObj.groupRowspan = fileList.length;
+                                fileObj.percentage = logObj.percentage;
                                 this.push(new Model(fileObj));
                             }.bind(this))
                         }.bind(this))
@@ -172,6 +173,36 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
                 if (response&&response.responseText)
                     response = JSON.parse(response.responseText)
                 this.trigger("get.buisness.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
+        getProgress: function(args){
+            var url = BASE_URL + "/seed/config/release/log/progress"
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000
+            };
+            defaultParas.data = args || {};
+            defaultParas.data.t = new Date().valueOf();
+            
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                if (res)
+                    this.trigger("get.progress.success", res ,args.confRelLogId); 
+                else
+                    this.trigger("get.progress.error", res);
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.progress.error", response); 
             }.bind(this);
 
             $.ajax(defaultParas);

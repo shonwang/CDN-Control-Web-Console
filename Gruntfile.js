@@ -92,9 +92,15 @@ module.exports = function(grunt) {
         modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 5;\n');
     });
 
+
     grunt.registerTask('dev-url', '', function() {
         modifyFile("dest/js/main.js", 'DEBUG', 'window.DEBUG = 6;\n');
         modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 6;\n');
+    });
+
+    grunt.registerTask('shanghai-url', '', function() {
+        modifyFile("dest/js/main.js", 'DEBUG', 'window.DEBUG = 7;\n');
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 7;\n');
     });
 
     grunt.registerTask('temp',['underscore:compile']);
@@ -104,4 +110,5 @@ module.exports = function(grunt) {
     grunt.registerTask('online',["clean", 'underscore:compile', "copy", "online-url"]);
     grunt.registerTask('gray',["clean", 'underscore:compile', "copy", "gray-url"]);
     grunt.registerTask('develop',["clean", 'underscore:compile', "copy", "dev-url"]);
+    grunt.registerTask('shanghai',["clean", 'underscore:compile', "copy", "shanghai-url"]);
 };

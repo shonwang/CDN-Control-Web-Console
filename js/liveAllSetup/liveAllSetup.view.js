@@ -841,8 +841,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 nodeGroupLs.push({
                     "nodeGroupId": obj.id,
                     "confFileHisIds": fileIds.join(","),
-                    //"ips": this.$el.find("#ip-" + obj.id).val()
-                    "deviceIds":devicelist.join(",")
+                    "ips": this.$el.find("#ip-" + obj.id).val()
+                    //"deviceIds":devicelist.join(",")
                 })
             }.bind(this))
 
@@ -852,8 +852,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 "remark"  : this.$el.find("#textarea-comment").val(),
                 "bisTypeId": this.buisnessType
             }
-            console.log(options);
-            //this.collection.confirmAdd(options)
+            this.collection.confirmAdd(options)
         },
 
         initTable: function(){

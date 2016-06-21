@@ -841,8 +841,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 nodeGroupLs.push({
                     "nodeGroupId": obj.id,
                     "confFileHisIds": fileIds.join(","),
-                    "ips": this.$el.find("#ip-" + obj.id).val()
-                    //"deviceIds":devicelist.join(",")
+                    //"ips": this.$el.find("#ip-" + obj.id).val()
+                    "deviceIds":devicelist.join(",")
                 })
             }.bind(this))
 

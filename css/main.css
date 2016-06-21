@@ -959,3 +959,9 @@ td .table {
 .node-device-ctn{
     margin-top: 10px;
 }
+
+@media (max-width: 1400px){
+  .temp{
+    display: none;
+  }
+}

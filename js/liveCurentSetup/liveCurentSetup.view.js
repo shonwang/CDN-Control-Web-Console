@@ -20,7 +20,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
 
             this.queryArgs = {
                 "confRelLogId": this.model.get("logId"),
-                "ip": null,
+                //"ip": null,
                 "deviceName": null,
                 "nodeName": null,
                 "status": null,
@@ -44,10 +44,10 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
         onClickQueryButton: function(){
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
-            this.queryArgs.ip = this.$el.find("#input-ip").val();
+            //this.queryArgs.ip = this.$el.find("#input-ip").val();
             this.queryArgs.deviceName = this.$el.find("#input-device").val();
             this.queryArgs.nodeName = this.$el.find("#input-node").val();
-            if (this.queryArgs.ip == "") this.queryArgs.ip = null;
+            //if (this.queryArgs.ip == "") this.queryArgs.ip = null;
             if (this.queryArgs.deviceName == "") this.queryArgs.deviceName = null;
             if (this.queryArgs.nodeName == "") this.queryArgs.nodeName = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
@@ -163,6 +163,10 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             this.collection.on("get.effectSingleConf.error", $.proxy(this.onGetError, this));
             this.collection.getBusinessType();
             this.initPageDropMenu();
+
+            /*成功率*/
+            this.collection.on("get.progress.success", $.proxy(this.onGetProgressSuccess, this));
+            this.collection.on("get.progress.error", $.proxy(this.onGetError, this));
         },
 
         onGetError: function(error){
@@ -170,6 +174,10 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
+        },
+
+        onGetProgressSuccess: function(res,logId){
+            this.table.find(".refresh[logId="+logId+"]").parent().prev().html(res.percentage);
         },
 
         onGetBusinessTpye: function(res){
@@ -209,6 +217,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
                 this.table.find("tbody .use").on("click", $.proxy(this.onClickItemUse, this));
                 this.table.find("tbody .file-name").on("click", $.proxy(this.onClickItemFile, this));
                 this.table.find("tbody .detail").on("click", $.proxy(this.onClickItemDetail, this));
+                this.table.find("tbody .refresh").on("click", $.proxy(this.onClickItemRefresh, this));
             } else {
                 this.$el.find(".origin-list .table-ctn").html(_.template(template['tpl/empty.html'])());
             }
@@ -228,6 +237,14 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             aDetailView.render(this.$el.find(".detail-panel"));
 
             this.hideMainList(".origin", ".detail-panel")
+        },
+
+        onClickItemRefresh: function(e){
+            var eTarget = e.srcElement || e.target;
+
+            var logId = $(eTarget).attr("logId");
+
+            this.collection.getProgress({confRelLogId:logId});
         },
 
         hideMainList: function(mainClass, otherClass){

@@ -959,3 +959,7 @@ td .table {
 .node-device-ctn{
     margin-top: 10px;
 }
+
+.horizontal-slip{
+  overflow: scroll;
+}

@@ -16,7 +16,8 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             "ipManage"            : "ipManage",
             "statisticsManage"    : "statisticsManage",
             "domainStatistics"    : "domainStatistics",
-            "businessManage"      : "businessManage"
+            "businessManage"      : "businessManage",
+            "domainManage"        : "domainManage"
         },
 
         initialize: function(){
@@ -72,6 +73,9 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                   this.domainStatisticsView.remove();
                   this.domainStatisticsView = null;
                   break;
+                case 'domainManage':
+                    this.domainManageView.hide();
+                    this.domainManageView = null;
                 default:
             }
             if (callback)
@@ -309,6 +313,22 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                     };
                     this.statisticsManageView = new StatisticsManageView(options);
                     this.statisticsManageView.render($('.ksc-content'));
+                }
+            }.bind(this));
+        },
+
+        domainManage: function(){
+            require(['domainManage.view', 'domainManage.model'], function(DomainManageView, DomainManageModel){
+                this.curPage = 'domainManage';
+                this.navbarView.select(this.curPage);
+                if (!this.domainManageModel)
+                    this.domainManageModel = new DomainManageModel();
+                if (!this.domainManageView){
+                    var options = {collection: this.domainManageModel};
+                    this.domainManageView = new DomainManageView(options);
+                    this.domainManageView.render($('.ksc-content'));
+                } else {
+                    this.domainManageView.update();
                 }
             }.bind(this));
         }

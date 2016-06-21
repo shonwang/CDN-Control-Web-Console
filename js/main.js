@@ -62,7 +62,10 @@ requirejs.config({
         "statisticsManage.view"  : 'statisticsManage/statisticsManage.view',
         "statisticsManage.model" : 'statisticsManage/statisticsManage.model',
         "domainStatistics.view"  : 'domainStatistics/domainStatistics.view',
-        "domainStatistics.model" : 'domainStatistics/domainStatistics.model'
+        "domainStatistics.model" : 'domainStatistics/domainStatistics.model',
+
+        "domainManage.model" : "domainManage/domainManage.model",
+        "domainManage.view" : "domainManage/domainManage.view"
     },
     urlArgs: new Date().valueOf()
 });

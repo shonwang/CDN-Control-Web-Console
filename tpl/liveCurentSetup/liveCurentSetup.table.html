@@ -6,7 +6,7 @@
         <th>文件路径</th>
         <th>版本</th>
         <th>创建时间</th>
-        <th>设备</th>
+        <th>IPS</th>
         <th>脚本内容</th>
         <th>操作</th>   
       </tr>
@@ -30,7 +30,7 @@
               <% if ((i === 0) || (i > 0 && data[i].get("logId") !== data[i-1].get("logId"))) { %>
               <td rowspan='<%=data[i].get("allRowspan") %>'>
                   <a href="javascript:void(0)" id='<%=data[i].get("id")%>' class="btn btn-primary btn-sm detail">
-                    设备查看
+                    IPS查看
                   </a>
               </td>
               <td rowspan='<%=data[i].get("allRowspan") %>'>

@@ -15,8 +15,8 @@
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id='<%=data[i].get("id")%>'>
-              <td><%=data[i].attributes[ip]%></td>
-              <td><%=data[i].attributes[ipTypeName]%></td>
+              <td><%=data[i].attributes["ip"]%></td>
+              <td><%=data[i].attributes["ipTypeName"]%></td>
               <td><%=data[i].attributes["deviceName"]%></td>
               <td><%=data[i].attributes["deviceTypeName"]%></td>
               <td><%=data[i].attributes["nodeName"]%></td>

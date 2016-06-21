@@ -963,3 +963,8 @@ td .table {
 .horizontal-slip{
   overflow: scroll;
 }
+
+.domainManage-sec{
+  display: inline;
+  vertical-align: -webkit-baseline-middle;
+}

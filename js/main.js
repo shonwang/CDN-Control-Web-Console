@@ -2,7 +2,6 @@ window.DEBUG = 1;
 
 if (window.DEBUG === 1)
     window.BASE_URL = "http://120.92.232.203:9098";
-    //window.BASE_URL = "http://192.168.158.85:9098";//翟磊电脑ip
 else if (window.DEBUG === 1.1)
     window.BASE_URL = "http://192.168.158.213:9098";
 else if (window.DEBUG === 1.2)
@@ -63,7 +62,10 @@ requirejs.config({
         "statisticsManage.view"  : 'statisticsManage/statisticsManage.view',
         "statisticsManage.model" : 'statisticsManage/statisticsManage.model',
         "domainStatistics.view"  : 'domainStatistics/domainStatistics.view',
-        "domainStatistics.model" : 'domainStatistics/domainStatistics.model'
+        "domainStatistics.model" : 'domainStatistics/domainStatistics.model',
+
+        "domainManage.model" : "domainManage/domainManage.model",
+        "domainManage.view" : "domainManage/domainManage.view"
     },
     urlArgs: new Date().valueOf()
 });

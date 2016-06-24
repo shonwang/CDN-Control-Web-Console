@@ -964,4 +964,13 @@ td .table {
   .temp{
     display: none;
   }
+
+.horizontal-slip{
+  overflow: scroll;
+}
+
+.domainManage-sec{
+  display: inline;
+  vertical-align: -webkit-baseline-middle;
+
 }

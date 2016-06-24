@@ -199,6 +199,28 @@ define("utility", ['require','exports'], function(require, exports) {
             });
         },
 
+        isFileName: function(fileName){
+            //var re = /^[^\\\/:\*\?"<>|\s\0]+$/
+            var re=/^[a-z0-9A-Z]+$/;
+            return re.test(fileName)
+        },
+
+        isDir: function(dirName){
+            if (dirName == "") return false;
+            var strRegex = /^\/[^\\:\*\?"<>|\s\0]*\/$/,
+                result   = strRegex.test(dirName);
+            if (result){
+                var dirNames = dirName.split("/");
+                for(var i = 0; i < dirNames.length; i++){
+                    if (dirNames[i] === "" && i !== 0 && i !== dirNames.length -1) 
+                        return false
+                }
+                return true;
+            } else {
+                return false;
+            }
+        },
+
         isDomain: function(str_url){
             if (str_url == "" || str_url.indexOf("_")  > -1) return false;
             if (str_url.substr(0, 4) !== "http") str_url = "http://" + str_url;
@@ -206,9 +228,24 @@ define("utility", ['require','exports'], function(require, exports) {
             return strRegex.test(str_url)
         },
 
+        isHostHeader:function(str_url){
+            var reg=/^([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
+            return reg.test(str_url);
+        },
+
+        isURL: function(str_url){
+            var strRegex = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/
+            return strRegex.test(str_url)
+        },
+
         isIP: function(str_ip){
             var re =  /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/;
             return re.test(str_ip)
+        },
+
+        isNumber:function(val){
+            var reg=/^\d+$/g;
+            return reg.test(val);
         },
 
         randomStr: function ( max ){

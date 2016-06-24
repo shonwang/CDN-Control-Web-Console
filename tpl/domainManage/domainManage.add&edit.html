@@ -3,36 +3,26 @@
         <div class="form-group">
             <label for="input-name" class="col-sm-4 control-label">加速域名</label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" id="input-name" value="">
+                <input type="text" class="form-control" id="input-name" value="<%=data.domain%>">
             </div>
         </div>
         <div class="form-group">
             <label for="input-userId" class="col-sm-4 control-label">用户ID</label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" id="input-userId" value="">
+                <input type="text" class="form-control" id="input-userId" value="<%=data.user_id%>">
             </div>
         </div>
         <div class="form-group">
             <label for="input-cname" class="col-sm-4 control-label">cname</label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" id="input-cname" value="">
+                <input type="text" class="form-control" id="input-cname" value="<%=data.cname%>">
             </div>
         </div>
-        <div class="form-group dropdown-type">
+        <div class="form-group">
             <label for="dropdown-type" class="col-sm-4 control-label">加速类型</label>
-            <div class="dropdown col-sm-6">
+            <div class="dropdown col-sm-6 dropdown-type">
                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-type" data-toggle="dropdown">
-                    <span class="cur-value">加载中...</span>
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu"></ul>
-            </div>
-        </div>
-        <div class="form-group dropdown-status">
-            <label for="dropdown-status" class="col-sm-4 control-label">审核状态</label>
-            <div class="dropdown col-sm-6">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-status" data-toggle="dropdown">
-                    <span class="cur-value">加载中...</span>
+                    <span class="cur-value">下载</span>
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu"></ul>
@@ -41,14 +31,14 @@
         <div class="form-group">
             <label for="input-testUrl" class="col-sm-4 control-label">测试地址</label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" id="input-testUrl" value="">
+                <input type="text" class="form-control" id="input-testUrl" value="<%=data.test_url%>">
             </div>
         </div>
-        <div class="form-group dropdown-originType">
+        <div class="form-group">
             <label for="dropdown-originType" class="col-sm-4 control-label">回源类型</label>
-            <div class="dropdown col-sm-6">
+            <div class="dropdown col-sm-6 dropdown-originType">
                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-originType" data-toggle="dropdown">
-                    <span class="cur-value">加载中...</span>
+                    <span class="cur-value">IP</span>
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu"></ul>
@@ -57,79 +47,76 @@
         <div class="form-group">
             <label for="textarea-originAddress" class="col-sm-4 control-label">回源地址</label>
             <div class="col-sm-6">
-                <textarea class="form-control" rows="3" id="textarea-originAddress" placeholder="多个IP 或者 单个域名 或者 单个OSS域名, 多个ip以分号分隔"></textarea>
+                <textarea class="form-control" rows="3" id="textarea-originAddress" placeholder="多个IP 或者 单个域名 或者 单个OSS域名, 多个ip以分号分隔"><%=data.origin_address%></textarea>
             </div>
         </div>
-        <div class="form-group dropdown-cdnFactory">
-            <label for="dropdown-cdnFactory" class="col-sm-4 control-label">CDN厂商</label>
-            <div class="dropdown col-sm-6">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-cdnFactory" data-toggle="dropdown">
-                    <span class="cur-value">加载中...</span>
+        <div class="form-group">
+            <label for="dropdown-confParam" class="col-sm-4 control-label">过滤参数</label>
+            <div class="dropdown col-sm-6 dropdown-confParam">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-confParam" data-toggle="dropdown">
+                    <span class="cur-value">是</span>
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu"></ul>
             </div>
         </div>
         <div class="form-group">
-            <label for="input-confParam" class="col-sm-4 control-label">过滤参数</label>
-            <div class="col-sm-6">
-                <input type="text" class="form-control" id="input-confParam" value="">
+            <label for="dropdown-confRange" class="col-sm-4 control-label">range回源</label>
+            <div class="dropdown col-sm-6 dropdown-confRange">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-confRange" data-toggle="dropdown">
+                    <span class="cur-value">是</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu"></ul>
             </div>
         </div>
         <div class="form-group">
-            <label for="input-confRange" class="col-sm-4 control-label">range回源</label>
-            <div class="col-sm-6">
-                <input type="text" class="form-control" id="input-confRange" value="">
-            </div>
-        </div>
-        <div class="form-group dropdown-referNullable">
             <label for="dropdown-referNullable" class="col-sm-4 control-label">Referer是否为空</label>
-            <div class="dropdown col-sm-6">
+            <div class="dropdown col-sm-6 dropdown-referNullable">
                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-referNullable" data-toggle="dropdown">
                     <span class="cur-value">是</span>
                     <span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu">
-                    <li data-value="1">是</li>
-                    <li data-value="0">否</li>
-                </ul>
+                <ul class="dropdown-menu"></ul>
             </div>
         </div>
-        <div class="form-group dropdown-referVisitControl">
+        <div class="form-group">
             <label for="dropdown-referVisitControl" class="col-sm-4 control-label">Referer防盗链开关及类型</label>
-            <div class="dropdown col-sm-6">
+            <div class="dropdown col-sm-6 dropdown-referVisitControl">
                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-referVisitControl" data-toggle="dropdown">
-                    <span class="cur-value">加载中...</span>
+                    <span class="cur-value">关闭</span>
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu"></ul>
             </div>
         </div>
-        <div class="form-group dropdown-referVisitContent">
-            <label for="dropdown-referVisitContent" class="col-sm-4 control-label">Referer防盗链名单列表</label>
-            <div class="dropdown col-sm-6">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-referVisitContent" data-toggle="dropdown">
-                    <span class="cur-value">加载中...</span>
+        <div class="form-group">
+            <label for="textarea-referVisitContent" class="col-sm-4 control-label">Referer防盗链名单列表</label>
+            <div class="col-sm-6">
+                <textarea class="form-control" rows="3" id="textarea-referVisitContent" placeholder="黑名单或白名单"><%=data.refer_visit_content%></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="dropdown-ipVisitControl" class="col-sm-4 control-label">IP防盗链开关及类型</label>
+            <div class="dropdown col-sm-6 dropdown-ipVisitControl">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-ipVisitControl" data-toggle="dropdown">
+                    <span class="cur-value">关闭</span>
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu"></ul>
             </div>
         </div>
-        <div class="form-group dropdown-ipVisitControl">
-            <label for="dropdown-ipVisitContent" class="col-sm-4 control-label">IP防盗链开关及类型</label>
-            <div class="dropdown col-sm-6">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-ipVisitContent" data-toggle="dropdown">
-                    <span class="cur-value">加载中...</span>
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu"></ul>
+        <div class="form-group">
+            <label for="textarea-ipVisitContent" class="col-sm-4 control-label">IP防盗链名单列表</label>
+            <div class="col-sm-6">
+                <textarea class="form-control" rows="3" id="textarea-ipVisitContent" placeholder="黑名单或白名单"><%=data.ip_visit_content%></textarea>
             </div>
         </div>
-        <div class="form-group dropdown-wildcard">
+        <div class="form-group">
             <label for="dropdown-wildcard" class="col-sm-4 control-label">泛域名标识</label>
-            <div class="dropdown col-sm-6">
+            <div class="dropdown col-sm-6 dropdown-wildcard">
                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-wildcard" data-toggle="dropdown">
-                    <span class="cur-value">加载中...</span>
+                    <span class="cur-value">普通域名</span>
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu"></ul>
@@ -138,81 +125,55 @@
         <div class="form-group">
             <label for="textarea-region" class="col-sm-4 control-label">域名所属region</label>
             <div class="col-sm-6">
-                <textarea class="form-control" rows="3" id="textarea-region" placeholder="可以有多个，多个以分号分隔"></textarea>
+                <textarea class="form-control" rows="3" id="textarea-region" placeholder="可以有多个，多个以分号分隔"><%=data.region%></textarea>
             </div>
         </div>
-        <div class="form-group dropdown-hostType">
+        <div class="form-group">
             <label for="dropdown-hostType" class="col-sm-4 control-label">回源host头类型</label>
-            <div class="dropdown col-sm-6">
+            <div class="dropdown col-sm-6 dropdown-hostType">
                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-hostType" data-toggle="dropdown">
-                    <span class="cur-value">加载中...</span>
+                    <span class="cur-value">加速域名</span>
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu"></ul>
             </div>
         </div>
-        <div class="form-group dropdown-protocol">
+        <div class="form-group">
             <label for="dropdown-protocol" class="col-sm-4 control-label">使用的协议</label>
-            <div class="dropdown col-sm-6">
+            <div class="dropdown col-sm-6 dropdown-protocol">
                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-protocol" data-toggle="dropdown">
-                    <span class="cur-value">加载中...</span>
+                    <span class="cur-value">http+flv</span>
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu"></ul>
             </div>
         </div>
-        <div class="form-group dropdown-originPolicy">
+        <div class="form-group">
             <label for="dropdown-originPolicy" class="col-sm-4 control-label">源站是否有缓存规则</label>
-            <div class="dropdown col-sm-6">
+            <div class="dropdown col-sm-6 dropdown-originPolicy">
                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-originPolicy" data-toggle="dropdown">
                     <span class="cur-value">是</span>
                     <span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu">
-                    <li>是</li>
-                    <li>否</li>
-                </ul>
+                <ul class="dropdown-menu"></ul>
             </div>
         </div>
         <div class="form-group">
             <label for="input-customHostHeader" class="col-sm-4 control-label">自定义host头</label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" id="input-customHostHeader" value="">
-            </div>
-        </div>
-        <div class="form-group dropdown-wsUsed">
-            <label for="dropdown-wsUsed" class="col-sm-4 control-label">是否用过网宿</label>
-            <div class="dropdown col-sm-6">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-wsUsed" data-toggle="dropdown">
-                    <span class="cur-value">是</span>
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li>是</li>
-                    <li>否</li>
-                </ul>
-            </div>
-        </div>
-        <div class="form-group dropdown-ipVisitContent">
-            <label for="dropdown-ipVisitContent" class="col-sm-4 control-label">IP防盗链名单列表</label>
-            <div class="dropdown col-sm-6">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-ipVisitContent" data-toggle="dropdown">
-                    <span class="cur-value">加载中...</span>
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu"></ul>
+                <input type="text" class="form-control" id="input-customHostHeader" value="<%=data.custom_host_header%>">
             </div>
         </div>
         <div class="form-group">
-            <label for="textarea-comment" class="col-sm-4 control-label">备注</label>
+            <label for="textarea-description" class="col-sm-4 control-label">备注</label>
             <div class="col-sm-6">
-                <textarea class="form-control" rows="3" id="textarea-comment"></textarea>
+                <textarea class="form-control" rows="3" id="textarea-description"><%=data.description%></textarea>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-4 control-label">缓存规则</label>
-            <div class="col-sm-6 addCacheRule">
-                <a href="javascript:void(0)" class="btn btn-default btn-raised">添加缓存规则</a>
+            <div class="col-sm-6">
+                <a href="javascript:void(0)" class="btn btn-default btn-raised addCacheRule">添加缓存规则</a>
             </div>
         </div>
     </form>

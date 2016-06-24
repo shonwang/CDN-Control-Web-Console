@@ -1,0 +1,26 @@
+<tr id="<%=data.user_id%>">
+    <!-- <td value="<%=data.user_id%>"><%=data.user_id%></td>
+    <td value="<%=data.kscdn_origin_id%>"><%=data.kscdn_origin_id%></td> -->
+    <td value="<%=data.type%>">
+        <% if(data.type == 0){ %>
+            文件后缀
+        <% }else if(data.type == 1){ %>
+            目录
+        <% }else if(data.type == 2){ %>
+            具体url
+        <% }else if(data.type == 3){ %>
+            正则预留
+        <% }else if(data.type == 4){ %>
+            url包含指定参数
+        <% }else if(data.type == 9){ %>
+            全局默认缓存配置项
+        <% } %>
+    </td>
+    <td value="<%=data.policy%>"><%=data.policy%></td>
+    <td value="<%=data.expire_time%>"><%=data.expire_time%></td>
+    <td>
+        <a href="javascript:void(0)" id="<%=data.user_id%>" class="delete" title="删除">
+            <span class="glyphicon glyphicon-trash"></span>
+        </a>
+    </td>
+</tr>

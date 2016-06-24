@@ -15,9 +15,13 @@
     <% for(var i = 0; i < data.length; i++) { %>
         <tr data-id="<%=data[i].attributes.id%>">
           <td>
+              <% if (permission.ClickGslbGroup) { %>
               <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="disp-domain">
                   <%=data[i].attributes["dispDomain"]%>
               </a>
+              <% } else {%>
+                  <%=data[i].attributes["dispDomain"]%>
+              <% } %>
           </td>
           <td><%=data[i].attributes["priorityName"]%></td>
           <td><%=data[i].attributes["ttl"]%></td>
@@ -26,31 +30,37 @@
           <td><%=data[i].attributes["updateTimeFormated"]%></td>
           <td><a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="remark" title="<%=data[i].attributes['remark'] || '无'%>">备注</a></td>
           <td>
+              <% if (permission.EditGslbGroup) { %>
               <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="edit" title="编辑">
                   <span class="glyphicon glyphicon-edit"></span>
               </a>
+              <% } %>
               <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="copy" title="复制" style="display:none">
                   <span class="glyphicon glyphicon-duplicate"></span>
               </a>
+              <% if (permission.ChannelInformation) { %>
               <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="channel" title="频道信息">
                   <span class="glyphicon glyphicon glyphicon-tasks"></span>
               </a>
+              <% } %>
               <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="version" title="版本信息" style="display:none">
                   <span class="glyphicon glyphicon glyphicon-list-alt"></span>
               </a>
-              <% if (data[i].attributes.status !== 1) { %>
+              <% if (data[i].attributes.status !== 1 && permission.EnableorPauseGslbGroup) { %>
               <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="play" title="开启">
                   <span class="glyphicon glyphicon-play-circle"></span>
               </a>
               <% } %>
-              <% if (data[i].attributes.status !== 0) { %>
+              <% if (data[i].attributes.status !== 0 && permission.EnableorPauseGslbGroup) { %>
               <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="stop" title="关闭">
                   <span class="glyphicon glyphicon-off"></span>
               </a>
               <% } %>
+              <% if (permission.DeleteGslbGroup) { %>
               <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="delete" title="删除">
                   <span class="glyphicon glyphicon-trash"></span>
               </a>
+              <% } %>
           </td>
         </tr>
     <% } %>  

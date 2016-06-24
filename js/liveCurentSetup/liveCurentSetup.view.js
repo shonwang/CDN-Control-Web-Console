@@ -29,8 +29,13 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
             }
             this.onClickQueryButton();
             this.$el.find(".back").on("click", $.proxy(this.onClickCancel, this));
-            this.$el.find(".query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.enterKeyBindQuery();
+
+            if (AUTH_OBJ.QueryIPConfigDetails){
+                this.$el.find(".query").on("click", $.proxy(this.onClickQueryButton, this));
+                this.enterKeyBindQuery();
+            } else {
+                this.$el.find(".query").remove();
+            }
         },
 
         enterKeyBindQuery:function(){
@@ -202,7 +207,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/liveCurentSetup/liveCurentSetup.table.html'])({data: this.collection.models}));
+            this.table = $(_.template(template['tpl/liveCurentSetup/liveCurentSetup.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
             if (this.collection.models.length !== 0){
                 this.$el.find(".origin-list .table-ctn").html(this.table[0]);
                 this.table.find("tbody .shell").on("click", $.proxy(this.onClickItemShell, this));

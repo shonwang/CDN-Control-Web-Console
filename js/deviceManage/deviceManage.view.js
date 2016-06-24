@@ -103,9 +103,13 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
         render: function(target) {
             this.$el.appendTo(target);
-            setTimeout(function(){
-                this.initUploader();
-            }.bind(this), 200)
+            if (!AUTH_OBJ.BrowseHostFile){
+                this.$el.find("#import-device-button").remove();
+            } else {
+                setTimeout(function(){
+                    this.initUploader();
+                }.bind(this), 200)
+            }
         }
     });
 
@@ -150,7 +154,10 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancelEditIP, this));
             this.$el.find(".update").on("click", $.proxy(this.onClickUpateIP, this));
-            this.$el.find(".create").on("click", $.proxy(this.onClickAddIP, this));
+            if (AUTH_OBJ.CreateIP)
+                this.$el.find(".create").on("click", $.proxy(this.onClickAddIP, this));
+            else
+                this.$el.find(".create").remove()
 
             this.$el.find(".update").hide();
             this.$el.find(".cancel").hide();
@@ -239,7 +246,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 if (el.status === 4) el.statusName = "<span class='text-danger'>宕机</span>";
                 if (el.status === 6) el.statusName = "暂停且宕机";
             }.bind(this))
-            this.table = $(_.template(template['tpl/deviceManage/deviceManage.ip.table.html'])({data: this.ipList}));
+            this.table = $(_.template(template['tpl/deviceManage/deviceManage.ip.table.html'])({data: this.ipList, permission: AUTH_OBJ}));
             this.$el.find(".ip-table-ctn").html(this.table[0]);
             this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
             this.table.find("tbody .ipOperation").on("click", $.proxy(this.onClickIpOperation, this));
@@ -562,7 +569,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 })
                 if (ipTypeArray[0]) el.typeName = ipTypeArray[0].name;
             }.bind(this))
-            this.table = $(_.template(template['tpl/deviceManage/deviceManage.ip.table.html'])({data: this.ipList}));
+            this.table = $(_.template(template['tpl/deviceManage/deviceManage.ip.table.html'])({data: this.ipList, permission: AUTH_OBJ}));
             this.$el.find(".ip-table-ctn").html(this.table[0]);
 
             this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
@@ -644,8 +651,10 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             }.bind(this));
             this.ipType = data[0].id
             this.$el.find(".ip-type .cur-value").html(data[0].name)
-
-            this.$el.find(".create").on("click", $.proxy(this.onClickAddIP, this))
+            if (AUTH_OBJ.CreateIP)
+                this.$el.find(".create").on("click", $.proxy(this.onClickAddIP, this))
+            else
+                this.$el.find(".create").remove();
         },
 
         getArgs: function(){
@@ -720,16 +729,31 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("update.device.status.error", $.proxy(this.onGetError, this));
 
             this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
-            this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));            
+            this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
 
-            this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
-            this.$el.find(".opt-ctn .import").on("click", $.proxy(this.onClickImport, this));
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.$el.find(".opt-ctn .multi-play").on("click", $.proxy(this.onClickMultiPlay, this));
+            if (AUTH_OBJ.CreateHost)
+                this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
+            else 
+                this.$el.find(".opt-ctn .create").remove();
+
+            if (AUTH_OBJ.ImportHostFile)
+                this.$el.find(".opt-ctn .import").on("click", $.proxy(this.onClickImport, this));
+            else
+                this.$el.find(".opt-ctn .import").remove(); 
+
+            if (AUTH_OBJ.QueryHost) {
+                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+                this.enterKeyBindQuery();
+            } else {
+                this.$el.find(".opt-ctn .query").remove();
+            }
+            if (AUTH_OBJ.EnableorPauseHost)
+                this.$el.find(".opt-ctn .multi-play").on("click", $.proxy(this.onClickMultiPlay, this));
+            else
+                this.$el.find(".opt-ctn .multi-play").remove();
+
             this.$el.find(".opt-ctn .multi-stop").on("click", $.proxy(this.onClickMultiStop, this));
             this.$el.find(".opt-ctn .multi-delete").on("click", $.proxy(this.onClickMultiDelete, this));
-
-            this.enterKeyBindQuery();
 
             if (this.query !== "none"){
                 this.query = JSON.parse(this.query);
@@ -804,12 +828,16 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     var options = importDeviceView.onClickOK();
                 }.bind(this),
                 onHiddenCallback: function(){
-                    importDeviceView.uploader.stop();
-                    importDeviceView.uploader.destroy();
-                    this.enterKeyBindQuery();
+                    if (AUTH_OBJ.BrowseHostFile){
+                        importDeviceView.uploader.stop();
+                        importDeviceView.uploader.destroy();
+                    }  
+                    if (AUTH_OBJ.QueryHost) this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.importDevicePopup = new Modal(options);
+            if (AUTH_OBJ.ApplyImportHostFile)
+                this.importDevicePopup.$el.find(".modal-footer .btn-primary").remove();
         },
 
         onClickCreate: function(){
@@ -831,10 +859,12 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     this.addDevicePopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){
-                    this.enterKeyBindQuery();
+                    if (AUTH_OBJ.QueryHost) this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.addDevicePopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyCreateHost)
+                this.addDevicePopup.$el.find(".modal-footer .btn-primary").remove();
         },
 
         initTable: function(){
@@ -842,7 +872,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
             this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
 
-            this.table = $(_.template(template['tpl/deviceManage/deviceManage.table.html'])({data: this.collection.models}));
+            this.table = $(_.template(template['tpl/deviceManage/deviceManage.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
             if (this.collection.models.length !== 0){
                 this.$el.find(".table-ctn").html(this.table[0]);
 
@@ -893,10 +923,12 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     this.editDevicePopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){
-                    this.enterKeyBindQuery();
+                    if (AUTH_OBJ.QueryHost) this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.editDevicePopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyEditHost)
+                this.editDevicePopup.$el.find(".modal-footer .btn-primary").remove();
         },
 
         onClickItemDelete: function(event){
@@ -936,7 +968,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 type     : 1,
                 onOKCallback:  function(){},
                 onHiddenCallback: function(){
-                    this.enterKeyBindQuery();
+                    if (AUTH_OBJ.QueryHost) this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.ipManagePopup = new Modal(options);
@@ -1166,7 +1198,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find("#input-node").val("");
             }
             this.onClickQueryButton();
-            this.enterKeyBindQuery();
+            if (AUTH_OBJ.QueryHost) this.enterKeyBindQuery();
         },
 
         render: function(target) {

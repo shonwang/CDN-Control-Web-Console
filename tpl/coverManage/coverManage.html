@@ -4,6 +4,7 @@
     <div class="row">
         <div class="col-md-12 opt-ctn">
             <form class="form-inline">
+                <% if (!permission.QuickSearchNode) { %>
                 <div class="form-group">
                     <div class="input-group" style="margin-right: 10px">
                         <input type="text" class="form-control" id="input-node-search" placeholder="快速搜索">
@@ -16,6 +17,7 @@
                         </div>
                     </div>
                 </div>
+                <% } %>
 <!--                 <div class="form-group">
                     <input type="text" class="form-control" id="input-node-search" placeholder="节点快速搜索">
                 </div>

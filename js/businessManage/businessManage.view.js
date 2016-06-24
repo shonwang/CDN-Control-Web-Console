@@ -298,7 +298,11 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
             this.collection.getIpList(); //初始化ip列表数据
             this.collection.on("get.ipList.success", $.proxy(this.getIpData, this));
 
-            this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreateButton, this));
+            if (AUTH_OBJ.CreateNodeGroup)
+                this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreateButton, this));
+            else
+                this.$el.find(".opt-ctn .create").remove();
+
             this.collection.on("get.editNode.success", $.proxy(this.onEditNodeSuccess), this);
 
             this.collection.on("add.node.success", function() {
@@ -379,7 +383,8 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
         initTable: function() {
 
             this.table = $(_.template(template['tpl/businessManage/businessManage.table.html'])({
-                data: this.collection.models
+                data: this.collection.models,
+                permission: AUTH_OBJ
             }));
 
             if (this.collection.models.length !== 0) {
@@ -391,7 +396,6 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         onClickCreateButton: function() {
-
             if (this.addNodePopup) $("#" + this.addNodePopup.modalId).remove();
 
             var addBusinessView = new AddOrEditBusinessView({
@@ -417,6 +421,8 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                 onHiddenCallback: function() {}
             }
             this.addNodePopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyCreateNodeGroup)
+                this.addNodePopup.$el.find(".btn-primary").remove();
         },
 
         onClickItemEdit: function(event) {
@@ -464,6 +470,8 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
             }
 
             this.editBusinessPopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyEditNodeGroup)
+                this.editBusinessPopup.$el.find(".btn-primary").remove();
         },
 
         hide: function() {

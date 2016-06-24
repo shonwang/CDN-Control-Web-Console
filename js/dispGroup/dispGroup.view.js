@@ -592,10 +592,16 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.collection.on("get.InfoPrompt.success", $.proxy(this.onGetInfoPromptSuccess, this));
             this.collection.on("get.InfoPrompt.error", $.proxy(this.onGetError, this));
 
-            this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-
-            this.enterKeyBindQuery();
+            if (AUTH_OBJ.CreateGslbGroup) {
+                this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
+                this.enterKeyBindQuery();
+            } else {
+                this.$el.find(".opt-ctn .create").remove();
+            }
+            if (AUTH_OBJ.QueryGslbGroup)
+                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+            else
+                this.$el.find(".opt-ctn .query").remove();
 
             this.queryArgs = {
                 "name"  : null,//调度组名称
@@ -654,10 +660,12 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 onHiddenCallback: function(){}
             }
             this.addDispGroupPopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyCreateGslbGroup)
+                 this.addDispGroupPopup.$el.find(".btn-primary").remove();
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/dispGroup/dispGroup.table.html'])({data: this.collection.models}));
+            this.table = $(_.template(template['tpl/dispGroup/dispGroup.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
@@ -764,6 +772,8 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 }.bind(this)
             }
             this.editDispGroupPopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyEditGslbGroup)
+                 this.editDispGroupPopup.$el.find(".btn-primary").remove();
         },
 
         onGetInfoPromptSuccess: function(res) {
@@ -856,6 +866,8 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             }
             this.channelInfoPopup = new Modal(options);
             this.channelInfoPopup.$el.find(".btn-primary").html('<span class="glyphicon glyphicon-link"></span>关联');
+            if (!AUTH_OBJ.GslbGroupAssociatetoDomain)
+                 this.channelInfoPopup.$el.find(".btn-primary").remove()
         },
 
         onClickItemPlay: function(event){
@@ -981,7 +993,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         update: function(){
             this.$el.show();
-            this.enterKeyBindQuery();
+            if (AUTH_OBJ.CreateGslbGroup) this.enterKeyBindQuery();
         },
 
         render: function(target) {

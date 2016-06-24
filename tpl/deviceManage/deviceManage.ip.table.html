@@ -19,9 +19,12 @@
             <a href="javascript:void(0)" id="<%=data[i]['id']%>" data-ip="<%=data[i]['ip']%>" data-status="2" class="edit" title="编辑" style="display: none">
                 <span class="glyphicon glyphicon glyphicon-edit"></span>
             </a>
+            <% if(permission.DeleteIP){ %>
             <a href="javascript:void(0)" id="<%=data[i]['id']%>" data-ip="<%=data[i]['ip']%>" data-status="2" class="delete" title="删除">
                 <span class="glyphicon glyphicon-trash"></span>
             </a>
+            <% } %>
+            <% if(permission.EnableorPauseIPinManageHosts){ %>
             <% if(data[i]['status'] == '2' || data[i]['status'] == '6'){ %>
                 <a href="javascript:void(0)" id="<%=data[i]['id']%>" class="ipOperation" data-ip="<%=data[i]['ip']%>" data-status="1" title="开启">
                     <span class="glyphicon glyphicon-play-circle"></span>
@@ -37,6 +40,7 @@
                 <a href="javascript:void(0)">
                     <span class="glyphicon glyphicon-play-circle css-gray"></span>
                 </a>
+            <% } %>
             <% } %>
         </td>
     </tr>

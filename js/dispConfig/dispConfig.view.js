@@ -148,7 +148,10 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.on("get.regionOtherNode.success", $.proxy(this.onGetOtherNodeSuccess, this));
             this.collection.on("get.regionOtherNode.error", $.proxy(this.onGetError, this));
 
-            this.$el.find(".more").on("click", $.proxy(this.onClickMoreButton, this));
+            if (AUTH_OBJ.ShowMoreNode)
+                this.$el.find(".more").on("click", $.proxy(this.onClickMoreButton, this));
+            else
+                this.$el.find(".more").remove();
 
             this.args = {
                 regionId: this.regionId,
@@ -320,7 +323,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection = options.collection;
             this.dispGroupCollection = options.dispGroupCollection;
 
-            this.$el = $(_.template(template['tpl/dispConfig/dispConfig.html'])());
+            this.$el = $(_.template(template['tpl/dispConfig/dispConfig.html'])({permission: AUTH_OBJ}));
 
             this.collection.on("get.dispGroup.success", $.proxy(this.onDispGroupListSuccess, this));
             this.collection.on("get.dispGroup.error", $.proxy(this.onGetError, this));
@@ -349,16 +352,30 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             }.bind(this));
 
             this.initDispConfigDropMenu();
+            
+            if (AUTH_OBJ.DispatchGslbConfig)
+                this.$el.find(".opt-ctn .sending").on("click", $.proxy(this.onClickSending, this));
+            else
+                this.$el.find(".opt-ctn .sending").remove();
 
-            this.$el.find(".opt-ctn .sending").on("click", $.proxy(this.onClickSending, this));
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+            if (AUTH_OBJ.QueryGslbConfig){
+                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+                this.enterKeyBindQuery();
+            } else {
+                this.$el.find(".opt-ctn .query").remove();
+            }
             this.$el.find(".opt-ctn .init").on("click", $.proxy(this.onClickInitButton, this));
-            this.$el.find(".opt-ctn .show-remark").on("click", $.proxy(this.onClickShowRemark, this));
-            this.$el.find(".opt-ctn .hide-remark").on("click", $.proxy(this.onClickHideRemark, this));
+
+            if (AUTH_OBJ.ShoworHideNoteandRelatedDomains) {
+                this.$el.find(".opt-ctn .show-remark").on("click", $.proxy(this.onClickShowRemark, this));
+                this.$el.find(".opt-ctn .hide-remark").on("click", $.proxy(this.onClickHideRemark, this));
+            } else {
+                this.$el.find(".opt-ctn .show-remark").remove();
+                this.$el.find(".opt-ctn .hide-remark").remove();
+            }
+
             this.$el.find(".opt-ctn .histroy").on("click", $.proxy(this.onClickHistory, this));
             this.$el.find(".opt-ctn .vs").on("click", $.proxy(this.onClickSelectVS, this));
-
-            this.enterKeyBindQuery();
 
             this.$el.find(".page-ctn").hide();
         },
@@ -539,7 +556,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/dispConfig/dispConfig.table.html'])({data: this.collection.models}));
+            this.table = $(_.template(template['tpl/dispConfig/dispConfig.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
 
             if (this.collection.models.length === 0){
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
@@ -668,11 +685,13 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                     this.selectNodePopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){
-                    this.enterKeyBindQuery();
+                    if (AUTH_OBJ.QueryGslbConfig) this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.selectNodePopup = new Modal(options);
 
+            if (!AUTH_OBJ.ApplyAddNodeList)
+                this.selectNodePopup.$el.find(".btn-primary").remove();
         },
 
         onClickItemEdit: function(event){
@@ -726,10 +745,13 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                     this.selectNodePopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){
-                    this.enterKeyBindQuery();
+                    if (AUTH_OBJ.QueryGslbConfig) this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.selectNodePopup = new Modal(options);
+
+            if (!AUTH_OBJ.ApplyAddNodeList)
+                this.selectNodePopup.$el.find(".btn-primary").remove();
         },
 
         onClickItemDelete: function(event){
@@ -915,7 +937,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         update: function(){
             this.$el.show();
             this.collection.getDispGroupList();
-            this.enterKeyBindQuery();
+            if (AUTH_OBJ.QueryGslbConfig) this.enterKeyBindQuery();
         },
 
         render: function(target) {

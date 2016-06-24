@@ -29,16 +29,21 @@
               <td><%=data[i].get("createTimeFormated")%></td>
               <% if ((i === 0) || (i > 0 && data[i].get("logId") !== data[i-1].get("logId"))) { %>
               <td rowspan='<%=data[i].get("allRowspan") %>'>
+                  <% if (permission.ViewIPConfigDetails) { %>
                   <a href="javascript:void(0)" id='<%=data[i].get("id")%>' class="btn btn-primary btn-sm detail">
                     IPS查看
                   </a>
+                  <% } %>
               </td>
               <td rowspan='<%=data[i].get("allRowspan") %>'>
+                  <% if (permission.ViewScript) { %>
                   <a href="javascript:void(0)" id='<%=data[i].get("id")%>' class="btn btn-primary btn-sm shell">
                     脚本查看
                   </a>
+                  <% } %>
               </td>
               <td rowspan='<%=data[i].get("allRowspan") %>'>
+                  <% if (permission.UseConfigs) { %>
                   <% if (data[i].get("isUsed") !== 1) { %>
                   <a href="javascript:void(0)" id='<%=data[i].get("id")%>' class="btn btn-primary btn-sm use">
                       点击使用
@@ -47,6 +52,7 @@
                   <a href="javascript:void(0)" id='<%=data[i].get("id")%>' class="btn btn-success btn-sm use" disabled="disabled">
                       已经使用
                   </a>
+                  <% } %>
                   <% } %>
               </td>
               <% } %>

@@ -232,7 +232,7 @@ define("utility", ['require','exports'], function(require, exports) {
           }
         },
 
-        postAjax: function(url, args, successCallback, errorCallback, timeout){
+        postAjax: function(url, args, successCallback, errorCallback, timeout, dataType){
             var defaultParas = {
                 type: "POST",
                 url: url,
@@ -242,6 +242,8 @@ define("utility", ['require','exports'], function(require, exports) {
                 processData: false
             };
             defaultParas.data = JSON.stringify(args);
+
+            if (dataType) defaultParas.dataType = dataType;
 
             defaultParas.beforeSend = function(xhr){
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");

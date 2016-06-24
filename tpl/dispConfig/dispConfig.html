@@ -68,6 +68,7 @@
             <div class="form-group" style="margin-right: 20px;">
                 <div class="label label-success">Last Version</div>
             </div>
+            <% if (permission.QuickSearchNodeorRegion) { %>
             <div class="form-group">
                 <div class="input-group">
                     <div class="input-group-btn disp-config-filter-drop">
@@ -80,6 +81,7 @@
                     <input type="text" class="form-control" id="disp-config-filter" placeholder="快速搜索">
                 </div><!-- /input-group -->
             </div>
+            <% } %>
         </div>
         <div class="table-ctn table-responsive"></div>
         <div class="page-ctn row">

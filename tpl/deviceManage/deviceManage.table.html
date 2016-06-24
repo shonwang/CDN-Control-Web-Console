@@ -19,25 +19,33 @@
               <input type="checkbox" id="<%=data[i].attributes['id']%>" <% if (data[i].attributes["isChecked"]) { %>checked="true"<% } %>>
           </th>
           <td>
+              <% if (permission.ClickHostname) { %>
               <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="ip-manage">
                   <%=data[i].attributes["name"]%>
               </a>
+              <% } else { %>
+              <%=data[i].attributes["name"]%>
+              <% } %>
           </td>
           <td><%=data[i].attributes["nodeName"]%></td>
           <td><%=data[i].attributes["typeName"]%></td>
           <td><%=data[i].attributes["statusName"]%></td>
           <td><%=data[i].attributes["createTimeFormated"]%></td>
           <td>
+              <% if (permission.EditHost) { %>
               <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="edit" title="编辑">
                   <span class="glyphicon glyphicon-edit"></span>
               </a>
-              <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="delete" title="删除" style="display: none">
+              <% } %>
+              <% if (permission.DeleteHost) { %>
+              <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="delete" title="删除">
                   <span class="glyphicon glyphicon-trash"></span>
               </a>
+              <% } %>
               <!--<a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="ip-manage" title="ip管理">-->
                   <!--<span class="glyphicon glyphicon-list-alt"></span>-->
               <!--</a>-->
-              <% if (data[i].attributes.status !== 1) { %>
+              <% if (data[i].attributes.status !== 1 && permission.EnableorPauseHost) { %>
               <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="play" title="开启">
                   <span class="glyphicon glyphicon-play-circle"></span>
               </a>
@@ -47,8 +55,8 @@
                   <span class="glyphicon glyphicon-time"></span>
               </a>
               <% } %> -->
-              <% if (data[i].attributes.status !== 3) { %>
-              <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="stop" title="关闭" style="display: none">
+              <% if (data[i].attributes.status !== 3 && permission.EnableorPauseHost) { %>
+              <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="stop" title="关闭">
                   <span class="glyphicon glyphicon-off"></span>
               </a>
               <% } %>

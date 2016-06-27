@@ -29,6 +29,16 @@
               <td><%=data[i].get("createTimeFormated")%></td>
               <% if ((i === 0) || (i > 0 && data[i].get("logId") !== data[i-1].get("logId"))) { %>
               <td rowspan='<%=data[i].get("allRowspan") %>'>
+                <div class="row">
+                  <div class="col-xs-2 col-sm-2 col-md-2 temp"></div>
+                  <div class="col-xs-4 col-sm-4 col-md-4 text-center"><%=data[i].get("percentage")%></div>
+                    <div class="col-xs-4 col-sm-4 col-md-4 text-center">
+                      <a class="refresh" href="javascript:void(0)" id='<%=data[i].get("id")%>' logId='<%=data[i].get("logId")%>'>刷新</a>
+                    </div>
+                    <div  class="col-xs-2 col-sm-2 col-md-2"></div>
+                </div>
+              </td>
+              <td rowspan='<%=data[i].get("allRowspan") %>'>
                   <a href="javascript:void(0)" id='<%=data[i].get("id")%>' class="btn btn-primary btn-sm detail">
                     设备查看
                   </a>

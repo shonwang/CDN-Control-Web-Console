@@ -20,7 +20,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
 
             this.queryArgs = {
                 "confRelLogId": this.model.get("logId"),
-                "ip": null,
+                //"ip": null,
                 "deviceName": null,
                 "nodeName": null,
                 "status": null,
@@ -44,10 +44,10 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
         onClickQueryButton: function(){
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
-            this.queryArgs.ip = this.$el.find("#input-ip").val();
+            //this.queryArgs.ip = this.$el.find("#input-ip").val();
             this.queryArgs.deviceName = this.$el.find("#input-device").val();
             this.queryArgs.nodeName = this.$el.find("#input-node").val();
-            if (this.queryArgs.ip == "") this.queryArgs.ip = null;
+            //if (this.queryArgs.ip == "") this.queryArgs.ip = null;
             if (this.queryArgs.deviceName == "") this.queryArgs.deviceName = null;
             if (this.queryArgs.nodeName == "") this.queryArgs.nodeName = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));

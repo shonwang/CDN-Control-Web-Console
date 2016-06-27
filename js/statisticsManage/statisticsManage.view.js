@@ -13,7 +13,12 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
 
             this.threeTimeNode = this.$el.find(".three-time");
             this.threeTimeNode.find(".btn-default").on("click",  $.proxy(this.onClickSpecificTime, this));
-            this.$el.find(".query").on("click",  $.proxy(this.onClickApplyButton, this));
+
+            if (!AUTH_OBJ.QueryCustomerBandwidth)
+                this.$el.find(".query").on("click",  $.proxy(this.onClickApplyButton, this));
+            else
+                this.$el.find(".query").remove()
+
             this.initCalendar();
 
             this.collection.on("get.client.success", $.proxy(this.onGetAllCustomer, this));
@@ -359,14 +364,16 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
             this.collection = options.collection;
             this.liveCollection = options.liveCollection;
 
-            this.$el = $(_.template(template['tpl/statisticsManage/statisticsManage.html'])());
-
-            this.downloadStatisticsManageView = new TabStatisticsManageView({
-                collection: this.collection,
-                type: 1 //下载
-            })
+            this.$el = $(_.template(template['tpl/statisticsManage/statisticsManage.html'])({permission: AUTH_OBJ}));
 
             this.$el.find('a[data-toggle="tab"]').on('shown.bs.tab', $.proxy(this.onShownTab, this));
+
+            if (AUTH_OBJ.DownloadAccelerate){
+                this.downloadStatisticsManageView = new TabStatisticsManageView({
+                    collection: this.collection,
+                    type: 1 //下载
+                })
+            }
         },
 
         onShownTab: function (e) {
@@ -412,7 +419,10 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
 
         render: function(target) {
             this.$el.appendTo(target);
-            this.downloadStatisticsManageView.render(this.$el.find("#valuable-customer-download"))
+            if (AUTH_OBJ.DownloadAccelerate) 
+                this.downloadStatisticsManageView.render(this.$el.find("#valuable-customer-download"))
+            else if (AUTH_OBJ.LiveAccelerate) 
+                this.$el.find('a[href="#valuable-customer-live"]').click();
         }
     });
 

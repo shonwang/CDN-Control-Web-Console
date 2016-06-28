@@ -78,14 +78,14 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
         initLogout: function(){
             $(".logout").on("click", function() {
                 var data = {
-                    url            : BASE_URL + "/rs/login/exit?" + new Date().valueOf(),
+                    url            : BASE_URL + "/gateway/admin/login/out?" + new Date().valueOf(),
                     type           : "GET",
                     queryData      : {},
                     successCallBack: function(res){
                         this.redirect();
                     }.bind(this),
                     errorCallBack  : function(){
-                        alert("中控系统岂是你说来就来，说走就走的！！！")
+                        alert("权限系统岂是你说来就来，说走就走的！！！")
                     }
                 }
                 this.sendRequest(data)
@@ -134,7 +134,7 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
         },
 
         redirect : function (url) {
-            if (DEBUG === 1) return;
+            //if (DEBUG === 1) return;
             var tpl = '<div id="loginTips" class="modal fade bs-example-modal-sm">' + 
                         '<div class="modal-dialog modal-sm">' + 
                             '<div class="modal-content" style="text-align:center;padding:5px">' + 

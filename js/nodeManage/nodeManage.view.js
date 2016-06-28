@@ -489,7 +489,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             }
         },
 
-        onClickDispGroupInfo: function(){
+        onClickDispGroupInfo: function(event){
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();

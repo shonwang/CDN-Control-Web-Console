@@ -232,7 +232,7 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
             }
             this.channelInfoPopup = new Modal(options);
             this.channelInfoPopup.$el.find(".btn-primary").html('<span class="glyphicon glyphicon-link"></span>关联');
-            if (!AUTH_OBJ.ClickDomain)
+            if (!AUTH_OBJ.DomainAssociatetoGslbGroup)
                 this.channelInfoPopup.$el.find(".btn-primary").remove();
         },
 

@@ -273,6 +273,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         initialize: function(options) {
             this.collection = options.collection;
             this.isEdit     = options.isEdit;
+            this.isCopy     = options.isCopy;
             this.model      = options.model;
 
             this.$el = $(_.template(template['tpl/dispGroup/dispGroup.add&edit.html'])({}));
@@ -299,7 +300,8 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.$el.find(".setup #inlineCheckbox1").get(0).checked = true;
                     this.$el.find(".setup #inlineCheckbox2").get(0).checked = true;
                 }
-                this.$el.find("#input-name").attr("readonly", true);
+                if (!this.isCopy)
+                    this.$el.find("#input-name").attr("readonly", true);
             } else {
                 this.collection.off("get.node.success");
                 this.collection.off("get.node.error");
@@ -421,8 +423,13 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
-            this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+            if (!this.isCopy) {
+                this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
+                this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+            } else {
+                this.table.find("tbody tr").find("input").prop("disabled", true);
+                this.table.find("thead input").prop("disabled", true);
+            }
         },
 
         onItemCheckedUpdated: function(event){
@@ -515,7 +522,6 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 nodeIds.push(el.id)
             })
             options.nodeIdList = nodeIds.join(",");
-
             return options
         },
 
@@ -697,6 +703,38 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.dgDetailPopup = new Modal(options);
         },
 
+        // onClickItemCopy: function(event){
+        //     var eventTarget = event.srcElement || event.target, id;
+        //     if (eventTarget.tagName == "SPAN"){
+        //         eventTarget = $(eventTarget).parent();
+        //         id = eventTarget.attr("id");
+        //     } else {
+        //         id = $(eventTarget).attr("id");
+        //     }
+        //     var model = this.collection.get(id);
+
+        //     if (this.copyDispGroupPopup) $("#" + this.copyDispGroupPopup.modalId).remove();
+
+        //     var cyDispGroupView = new CopyDispGroupView({
+        //         collection: this.collection,
+        //         model: model
+        //     });
+        //     var options = {
+        //         title:"复制调度组：" + model.get("dispDomain"),
+        //         body : cyDispGroupView,
+        //         backdrop : 'static',
+        //         type     : 2,
+        //         onOKCallback:  function(){
+        //             var options = cyDispGroupView.getArgs();
+        //             if (!options) return;
+        //             this.collection.copyDispGroup(options)
+        //             this.copyDispGroupPopup.$el.modal("hide");
+        //         }.bind(this),
+        //         onHiddenCallback: function(){}
+        //     }
+        //     this.copyDispGroupPopup = new Modal(options);
+        // },
+
         onClickItemCopy: function(event){
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN"){
@@ -709,22 +747,23 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
             if (this.copyDispGroupPopup) $("#" + this.copyDispGroupPopup.modalId).remove();
 
-            var cyDispGroupView = new CopyDispGroupView({
-                collection: this.collection,
-                model: model
+            var copyDispGroupView = new AddOrEditDispGroupView({
+                collection: this.collection, 
+                model     : model,
+                isEdit    : true,
+                isCopy    : true
             });
             var options = {
                 title:"复制调度组：" + model.get("dispDomain"),
-                body : cyDispGroupView,
+                body : copyDispGroupView,
                 backdrop : 'static',
                 type     : 2,
                 onOKCallback:  function(){
-                    var options = cyDispGroupView.getArgs();
-                    if (!options) return;
-                    this.collection.copyDispGroup(options)
+                    var options = copyDispGroupView.getArgs();
+                    if (!options) return
+                    this.collection.copyDispGroup(options);
                     this.copyDispGroupPopup.$el.modal("hide");
-                }.bind(this),
-                onHiddenCallback: function(){}
+                }.bind(this)
             }
             this.copyDispGroupPopup = new Modal(options);
         },

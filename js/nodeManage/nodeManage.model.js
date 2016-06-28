@@ -244,6 +244,34 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             }.bind(this);
 
             $.ajax(defaultParas);
+        },
+
+        getAssocateDispGroups: function(args){
+            var url = BASE_URL + "/rs/node/getAssocateDispGroups",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("get.assocateDispGroups.success", res);
+                else
+                    this.trigger("get.assocateDispGroups.error", res); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.assocateDispGroups.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        addAssocateDispGroups: function(args, nodeId){
+            var url = BASE_URL + "/rs/node/addAssocateDispGroups?nodeId=" + nodeId,
+            successCallback = function(res){
+                if (res)
+                    this.trigger("add.assocateDispGroups.success", res);
+                else
+                    this.trigger("add.assocateDispGroups.error", res); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("add.assocateDispGroups.error", response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         }
     });
 

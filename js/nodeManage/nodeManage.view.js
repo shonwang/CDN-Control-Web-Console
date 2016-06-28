@@ -1,5 +1,112 @@
 define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
+    var DispGroupInfoView = Backbone.View.extend({
+        events: {
+            //"click .search-btn":"onClickSearch"
+        },
+
+        initialize: function(options) {
+            this.collection = options.collection;
+            this.model      = options.model;
+
+            this.$el = $(_.template(template['tpl/dispGroup/dispGroup.channel.html'])({}));
+            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+
+            this.collection.off("get.assocateDispGroups.success");
+            this.collection.off("get.assocateDispGroups.error");
+            this.collection.on("get.assocateDispGroups.success", $.proxy(this.onGetDispConfigSuccess, this));
+            this.collection.on("get.assocateDispGroups.error", $.proxy(this.onGetError, this));
+
+            this.collection.getAssocateDispGroups({nodeId: this.model.get("id")});
+        },
+
+        onGetError: function(error){
+            if (error&&error.message)
+                alert(error.message)
+            else
+                alert("网络阻塞，请刷新重试！")
+        },
+
+        onGetDispConfigSuccess: function(res){
+            this.channelList = res;
+            var count = 0, isCheckedAll = false;
+            _.each(this.channelList, function(el, index, list){
+                if (el.associated === 0) el.isChecked = false;
+                if (el.associated === 1) {
+                    el.isChecked = true;
+                    count = count + 1
+                }
+                if (el.status === 0) el.statusName = '<span class="text-danger">已停止</span>';
+                if (el.status === 1) el.statusName = '<span class="text-success">运行中</span>';
+                if (el.isInserive === 0) el.isInseriveName = '<span class="text-danger">未服务</span>';
+                if (el.isInserive === 1) el.isInseriveName = '<span class="text-success">服务中</span>';
+                if (el.priority == 1) el.priorityName = '成本优先';
+                if (el.priority == 2) el.priorityName = '质量优先';
+                if (el.priority == 3) el.priorityName = '兼顾成本与质量';
+            }.bind(this))
+
+            if (count === this.channelList.length) isCheckedAll = true
+
+            this.table = $(_.template(template['tpl/nodeManage/nodeManage.dispGroup.table.html'])({data: this.channelList, isCheckedAll: isCheckedAll}));
+            if (res.length !== 0)
+                this.$el.find(".table-ctn").html(this.table[0]);
+            else
+                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+
+            this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
+            this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+        },
+
+        onItemCheckedUpdated: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            var id = $(eventTarget).attr("id");
+
+            var selectedObj = _.find(this.channelList, function(object){
+                return object.dispId === parseInt(id)
+            }.bind(this));
+
+            selectedObj.isChecked = eventTarget.checked
+
+            var checkedList = this.channelList.filter(function(object) {
+                return object.isChecked === true;
+            })
+            if (checkedList.length === this.channelList.length)
+                this.table.find("thead input").get(0).checked = true;
+            if (checkedList.length !== this.channelList.length)
+                this.table.find("thead input").get(0).checked = false;
+        },
+
+        onAllCheckedUpdated: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            this.table.find("tbody tr").find("input").each(function(index, node){
+                if (!$(node).prop("disabled")){
+                    $(node).prop("checked", eventTarget.checked);
+                    this.channelList[index].isChecked = eventTarget.checked
+                }
+            }.bind(this))
+        },
+
+        getArgs: function(){
+            var checkedList = this.channelList.filter(function(object) {
+                return object.isChecked === true;
+            })
+            if (checkedList.length === 0) return false;
+            _.each(checkedList, function(el, inx, list){
+                el.associated = el.isChecked ? 1 : 0;
+                delete el.priorityName
+                delete el.statusName
+                delete el.isInseriveName
+            }.bind(this))
+            return checkedList
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target);
+        }
+    });
+
     var AddOrEditNodeView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
@@ -251,7 +358,6 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         }
     });
 
-
     var NodeManageView = Backbone.View.extend({
         events: {},
 
@@ -374,12 +480,49 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
                 this.table.find("tbody .hangup").on("click", $.proxy(this.onClickItemHangup, this));
                 this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));
+                this.table.find("tbody .disp-info").on("click", $.proxy(this.onClickDispGroupInfo, this));
 
                 this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
                 this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
             } else {
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
             }
+        },
+
+        onClickDispGroupInfo: function(){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+            var model = this.collection.get(id);
+
+            if (this.dispGroupPopup) $("#" + this.dispGroupPopup.modalId).remove();
+
+            var dispGroupInfoView = new DispGroupInfoView({
+                collection: this.collection, 
+                model     : model,
+                isEdit    : true
+            });
+            var options = {
+                title: model.get("chName") + "关联调度组信息",
+                body : dispGroupInfoView,
+                backdrop : 'static',
+                type     : 2,
+                width: 800,
+                onOKCallback:  function(){
+                    var options = dispGroupInfoView.getArgs();
+                    if (!options) return;
+                    this.collection.addAssocateDispGroups(options, model.get("id"))
+                    this.dispGroupPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){
+                    this.enterKeyBindQuery();
+                }.bind(this)
+            }
+            this.dispGroupPopup = new Modal(options);
         },
 
         onClickItemNodeName: function(event){
@@ -412,7 +555,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 list      : this.operatorList
             });
             var options = {
-                title:"编辑设备",
+                title:"编辑节点",
                 body : editNodeView,
                 backdrop : 'static',
                 type     : 2,

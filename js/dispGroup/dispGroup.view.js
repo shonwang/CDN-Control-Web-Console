@@ -593,6 +593,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             }.bind(this));
             this.collection.on("add.dispGroup.channel.error", $.proxy(this.onGetError, this));
 
+            this.collection.on("ip.type.success", $.proxy(this.onGetIpTypeSuccess, this));
+            this.collection.on("ip.type.error", $.proxy(this.onGetError, this));
+
             this.collection.off("get.InfoPrompt.success");
             this.collection.off("get.InfoPrompt.error");
             this.collection.on("get.InfoPrompt.success", $.proxy(this.onGetInfoPromptSuccess, this));
@@ -629,6 +632,16 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         onDispGroupListSuccess: function(){
+            this.collection.ipTypeList();
+        },
+
+        onGetIpTypeSuccess: function(data){
+            _.each(this.collection.models, function(el, inx, list){
+                var ipObj = _.find(data, function(obj){
+                    return obj.id === el.get("resolveIpType")
+                }.bind(this))
+                el.set("resolveIpTypeName", ipObj.name)
+            }.bind(this))
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
         },

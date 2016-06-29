@@ -1,4 +1,4 @@
-define("channelManage.model", ['require','exports'], function(require, exports) {
+define("channelManage.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
             var businessType = this.get("businessType"),
@@ -113,6 +113,20 @@ define("channelManage.model", ['require','exports'], function(require, exports) 
 
             $.ajax(defaultParas);
         },
+
+        ipTypeList: function(args){
+            var url = BASE_URL + "/rs/metaData/ipTypeList",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("ip.type.success", res.rows);
+                else
+                    this.trigger("ip.type.error");
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("ip.type.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        }
     });
 
     return ChannelManageCollection;

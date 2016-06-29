@@ -794,12 +794,12 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             //     }
             // }
 
-            // for (var i = 0; i < this.nodeDeviceArray.length; k++){
-            //     if (!this.nodeDeviceArray[i].nodes || this.nodeDeviceArray[i].nodes.length === 0){
-            //         alert(this.nodeDeviceArray[i].name + "还没有选择任何节点和设备")
-            //         return;
-            //     }
-            // }
+            for (var i = 0; i < this.nodeDeviceArray.length; i++){
+                if (!this.nodeDeviceArray[i].nodes || this.nodeDeviceArray[i].nodes.length === 0){
+                    alert(this.nodeDeviceArray[i].name + "还没有选择任何节点设备")
+                    return;
+                }
+            }
 
             var forCheckList = [];
             _.each(this.selectedModels, function(file, key, list){
@@ -809,7 +809,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     fileName: file.get("fileName")
                 })
             })
-
+            // console.log(forCheckList);
+            // return;
             this.collection.checkLastVersion(forCheckList);
         },
 
@@ -841,8 +842,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 nodeGroupLs.push({
                     "nodeGroupId": obj.id,
                     "confFileHisIds": fileIds.join(","),
-                    "ips": this.$el.find("#ip-" + obj.id).val()
-                    //"deviceIds":devicelist.join(",")
+                    //"ips": this.$el.find("#ip-" + obj.id).val()
+                    "deviceIds":devicelist.join(",")
                 })
             }.bind(this))
 

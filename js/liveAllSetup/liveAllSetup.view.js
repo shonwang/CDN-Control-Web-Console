@@ -1,4 +1,4 @@
-define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+Adefine("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
     
     var EditPartitionView = Backbone.View.extend({
         events: {
@@ -773,7 +773,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 onHiddenCallback: function(){}.bind(this)
             }
             this.addDevicePopup = new Modal(options);
-            if (AUTH_OBJ.ApplyAddNodeListandHostList)
+            if (!AUTH_OBJ.ApplyAddNodeListandHostList)
                 this.addDevicePopup.$el.find(".modal-footer .btn-primary").remove();
         },
 

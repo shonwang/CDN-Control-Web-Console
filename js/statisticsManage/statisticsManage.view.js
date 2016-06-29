@@ -14,7 +14,7 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
             this.threeTimeNode = this.$el.find(".three-time");
             this.threeTimeNode.find(".btn-default").on("click",  $.proxy(this.onClickSpecificTime, this));
 
-            if (!AUTH_OBJ.QueryCustomerBandwidth)
+            if (AUTH_OBJ.QueryCustomerBandwidth)
                 this.$el.find(".query").on("click",  $.proxy(this.onClickApplyButton, this));
             else
                 this.$el.find(".query").remove()

@@ -768,6 +768,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                             aNode.appendTo(nodeCtn)
                         }.bind(this))
                         this.addDevicePopup.$el.modal("hide");
+                    } else {
+                        alert("没有选中任何设备！")
                     }
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)

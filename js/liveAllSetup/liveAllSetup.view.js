@@ -1,4 +1,4 @@
-Adefine("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
     
     var EditPartitionView = Backbone.View.extend({
         events: {

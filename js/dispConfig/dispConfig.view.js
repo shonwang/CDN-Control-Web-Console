@@ -10,11 +10,14 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.groupId  = options.groupId;
 
             this.$el = $(_.template(template['tpl/dispConfig/dispConfig.history.html'])({}));
-            //this.$el.find(".node-list").html(_.template(template['tpl/loading.html'])({}));
-            this.$el.find(".list-ctn").html(_.template(template['tpl/dispConfig/dispConfig.history.list.html'])({}));
+            this.$el.find(".list-ctn").html(_.template(template['tpl/loading.html'])({}));
 
-            this.startTime = new Date().valueOf() - 1000 * 60 * 60 * 24 * 7;
-            this.endTime = new Date().valueOf();
+            // this.startTime = new Date().valueOf() - 1000 * 60 * 60 * 24 * 7;
+            // this.endTime = new Date().valueOf();
+            // this.startTime = new Date(new Date(this.startTime).format("yyyy/MM/dd hh") + ":00:00").valueOf()
+            // this.endTime = new Date(new Date(this.endTime).format("yyyy/MM/dd hh") + ":00:00").valueOf()
+            this.startTime = 1464710400000;
+            this.endTime = 1466751750000;
             this.initChargeDatePicker();
 
             this.collection.off("get.allDnsRecord.success");
@@ -22,11 +25,40 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.on("get.allDnsRecord.success", $.proxy(this.onGetRecordListSuccess, this));
             this.collection.on("get.allDnsRecord.error", $.proxy(this.onGetError, this));
 
-            this.collection.getAllDnsRecord();
+            this.collection.getAllDnsRecord({
+                startTime: this.startTime,
+                endTime: this.endTime,
+                groupId: 20,//this.groupId,
+                from: 0,
+                size: 10,
+                userName: ""
+            });
         },
 
-        onGetRecordListSuccess: function(){
-            
+        onGetRecordListSuccess: function(data){
+            var dateArray = [];
+            for (var i = 0; i < data.length; i++){
+                dateArray.push(new Date(data[i].time).format("yyyy/MM"))
+            }
+            dateArray = _.uniq(dateArray);
+            var dateObj = {};
+            _.each(dateArray, function(el, inx, list){
+                dateObj[el] = []
+            })
+            _.each(data, function(el, inx, list){
+                el.timeFormated = new Date(el.time).format("yyyy/MM/dd hh:mm")
+                dateObj[new Date(el.time).format("yyyy/MM")].push(el)
+            })
+
+            this.list = $(_.template(template['tpl/dispConfig/dispConfig.history.list.html'])({
+                dateArray: dateArray, 
+                dateObj: dateObj
+            }));
+
+            if (dateArray.length !== 0)
+                this.$el.find(".list-ctn").html(this.list[0]);
+            else
+                this.$el.find(".list-ctn").html(_.template(template['tpl/empty.html'])());
         },
 
         getArgs: function(){
@@ -36,12 +68,12 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         initChargeDatePicker: function(){
             var startVal = null, endVal = null;
             if (this.startTime)
-                startVal = new Date(this.startTime).format("yyyy/MM/dd");
+                startVal = new Date(this.startTime).format("yyyy/MM/dd hh:mm");
             var startOption = {
                 lang:'ch',
-                timepicker: false,
+                timepicker: true,
                 scrollInput: false,
-                format:'Y/m/d', 
+                format:'Y/m/d H:i', 
                 value: startVal, 
                 onChangeDateTime: function(){
                     this.startTime = new Date(arguments[0]).valueOf();
@@ -49,12 +81,12 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             };
             this.$el.find("#input-start").datetimepicker(startOption);
             if (this.endTime)
-                endVal = new Date(this.endTime).format("yyyy/MM/dd");
+                endVal = new Date(this.endTime).format("yyyy/MM/dd hh:mm");
             var endOption = {
                 lang:'ch',
-                timepicker: false,
+                timepicker: true,
                 scrollInput: false,
-                format:'Y/m/d', 
+                format:'Y/m/d H:i', 
                 value: endVal, 
                 onChangeDateTime: function(){
                     this.endTime = new Date(arguments[0]).valueOf();

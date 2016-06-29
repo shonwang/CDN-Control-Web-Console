@@ -13,9 +13,20 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             //this.$el.find(".node-list").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".list-ctn").html(_.template(template['tpl/dispConfig/dispConfig.history.list.html'])({}));
 
-            this.startTime = new Date().valueOf();
-            this.endTime = new Date().valueOf() - 1000 * 60 * 60 * 24 * 7;
+            this.startTime = new Date().valueOf() - 1000 * 60 * 60 * 24 * 7;
+            this.endTime = new Date().valueOf();
             this.initChargeDatePicker();
+
+            this.collection.off("get.allDnsRecord.success");
+            this.collection.off("get.allDnsRecord.error");
+            this.collection.on("get.allDnsRecord.success", $.proxy(this.onGetRecordListSuccess, this));
+            this.collection.on("get.allDnsRecord.error", $.proxy(this.onGetError, this));
+
+            this.collection.getAllDnsRecord();
+        },
+
+        onGetRecordListSuccess: function(){
+            
         },
 
         getArgs: function(){
@@ -140,7 +151,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
             this.collection.off("get.regionNode.success");
             this.collection.off("get.regionNode.error");
-            this.collection.off("get.regionOtherNode.success");
+            this.collection.off("get.allDnsRecord.success");
             this.collection.off("get.regionOtherNode.error");
 
             this.collection.on("get.regionNode.success", $.proxy(this.onGetNodeListSuccess, this));

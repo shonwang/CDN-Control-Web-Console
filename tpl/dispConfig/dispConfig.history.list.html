@@ -7,7 +7,7 @@
             <span class="h4"><%=dateArray[i]%></span>
             <ul class="list-unstyled">
                 <% for(var k = 0; k < dateObj[dateArray[i]].length; k++) { %>
-                <li class="card flipInX animated-1s">
+                <li class="card flipInX animated-1s" id='<%=dateObj[dateArray[i]][k].id%>'>
                     <div><%=dateObj[dateArray[i]][k].timeFormated%></div>
                     <div>下发人: <%=dateObj[dateArray[i]][k].userName%></div>
                 </li>

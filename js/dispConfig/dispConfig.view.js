@@ -12,26 +12,33 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el = $(_.template(template['tpl/dispConfig/dispConfig.history.html'])({}));
             this.$el.find(".list-ctn").html(_.template(template['tpl/loading.html'])({}));
 
-            // this.startTime = new Date().valueOf() - 1000 * 60 * 60 * 24 * 7;
-            // this.endTime = new Date().valueOf();
-            // this.startTime = new Date(new Date(this.startTime).format("yyyy/MM/dd hh") + ":00:00").valueOf()
-            // this.endTime = new Date(new Date(this.endTime).format("yyyy/MM/dd hh") + ":00:00").valueOf()
-            this.startTime = 1464710400000;
-            this.endTime = 1466751750000;
-            this.initChargeDatePicker();
+            this.startTime = new Date().valueOf() - 1000 * 60 * 60 * 24 * 7;
+            this.endTime = new Date().valueOf();
+            this.startTime = new Date(new Date(this.startTime).format("yyyy/MM/dd hh") + ":00:00").valueOf()
+            this.endTime = new Date(new Date(this.endTime).format("yyyy/MM/dd hh") + ":00:00").valueOf()
+
+            this.index = 0;
+            this.size = 10;
 
             this.collection.off("get.allDnsRecord.success");
             this.collection.off("get.allDnsRecord.error");
             this.collection.on("get.allDnsRecord.success", $.proxy(this.onGetRecordListSuccess, this));
             this.collection.on("get.allDnsRecord.error", $.proxy(this.onGetError, this));
 
+            this.$el.find(".query").on("click", $.proxy(this.onClickSearch, this));
+            
+            this.initChargeDatePicker();
+            this.onClickSearch()
+        },
+
+        onClickSearch: function(){
             this.collection.getAllDnsRecord({
                 startTime: this.startTime,
                 endTime: this.endTime,
-                groupId: 20,//this.groupId,
-                from: 0,
-                size: 10,
-                userName: ""
+                groupId: this.groupId,
+                from: this.index,
+                size: this.size,
+                userName: this.$el.find("#input-user").val()
             });
         },
 
@@ -55,10 +62,22 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 dateObj: dateObj
             }));
 
-            if (dateArray.length !== 0)
+            if (dateArray.length !== 0){
                 this.$el.find(".list-ctn").html(this.list[0]);
-            else
+                this.list.find(".card").on("click", $.proxy(this.onClickCard, this));
+            } else {
                 this.$el.find(".list-ctn").html(_.template(template['tpl/empty.html'])());
+            }
+        },
+
+        onClickCard: function(event){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "DIV"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
         },
 
         getArgs: function(){

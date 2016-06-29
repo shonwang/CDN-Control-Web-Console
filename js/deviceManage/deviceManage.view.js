@@ -836,7 +836,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 }.bind(this)
             }
             this.importDevicePopup = new Modal(options);
-            if (AUTH_OBJ.ApplyImportHostFile)
+            if (!AUTH_OBJ.ApplyImportHostFile)
                 this.importDevicePopup.$el.find(".modal-footer .btn-primary").remove();
         },
 

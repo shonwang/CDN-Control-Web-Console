@@ -569,8 +569,10 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 el.checked = true;
                 el.open = false;
                 el.highlight = false;
+                el.nodeIcon = false;
                 if(el.pId == -1){
                     el.open = true;
+                    el.nodeIcon = true; //节点显示“文件夹”图标
                 }
                 if(el.deviceStatus != 1 && el.pId != -1){
                     el.highlight = true;

@@ -876,10 +876,10 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 devicelistDom.each(function(i){
                     devicelist.push(devicelistDom.eq(i).attr('data-deviceid'));
                 }.bind(this));
+                console.log(devicelist);
                 nodeGroupLs.push({
                     "nodeGroupId": obj.id,
                     "confFileHisIds": fileIds.join(","),
-                    //"ips": this.$el.find("#ip-" + obj.id).val()
                     "deviceIds":devicelist.join(",")
                 })
             }.bind(this))

@@ -812,7 +812,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             //         }
             //     }
             // }
-            console.log(this.nodeDeviceArray);
 
             for (var i = 0; i < this.nodeDeviceArray.length; i++){
                 if (!this.nodeDeviceArray[i].nodes || this.nodeDeviceArray[i].nodes.length === 0){
@@ -820,7 +819,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     return;
                 }
             }
-            return;
             var forCheckList = [];
             _.each(this.selectedModels, function(file, key, list){
                 forCheckList.push({

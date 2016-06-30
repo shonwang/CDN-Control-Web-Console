@@ -2,48 +2,48 @@ define("domainManage.model", ['require','exports', 'utility'], function(require,
     var Model = Backbone.Model.extend({
         initialize: function(){
             //加速类型
-            if(this.get("type") === 1) this.set("type_name","下载"); 
-            if(this.get("type") === 2) this.set("type_name","直播"); 
+            if(this.get("type") === 1) this.set("typeName","下载"); 
+            if(this.get("type") === 2) this.set("typeName","直播"); 
             //审核状态
-            if(this.get("audit_status") === 0) this.set("audit_status_name","审核中");
-            if(this.get("audit_status") === -1) this.set("audit_status_name","删除");
-            if(this.get("audit_status") === 1) this.set("audit_status_name","审核通过");
-            if(this.get("audit_status") === 2) this.set("audit_status_name","审核驳回");
-            if(this.get("audit_status") === 3) this.set("audit_status_name","暂停");
+            if(this.get("auditStatus") === 0) this.set("auditStatusName","审核中");
+            if(this.get("auditStatus") === -1) this.set("auditStatusName","删除");
+            if(this.get("auditStatus") === 1) this.set("auditStatusName","审核通过");
+            if(this.get("auditStatus") === 2) this.set("auditStatusName","审核驳回");
+            if(this.get("auditStatus") === 3) this.set("auditStatusName","暂停");
             //回源类型
-            if(this.get("origin_type") === 1) this.set("origin_type_name","IP");
-            if(this.get("origin_type") === 2) this.set("origin_type_name","源站域名");
-            if(this.get("origin_type") === 3) this.set("origin_type_name","OSS域名");
+            if(this.get("originType") === 1) this.set("originTypeName","IP");
+            if(this.get("originType") === 2) this.set("originTypeName","源站域名");
+            if(this.get("originType") === 3) this.set("originTypeName","OSS域名");
             //过滤参数
-            if(this.get("conf_param") === true) this.set("conf_param_name","是");
-            if(this.get("conf_param") === false) this.set("conf_param_name","否");
+            if(this.get("confParam") === true) this.set("confParamName","是");
+            if(this.get("confParam") === false) this.set("confParamName","否");
             //range回源
-            if(this.get("conf_range") === true) this.set("conf_range_name","是");
-            if(this.get("conf_range") === false) this.set("conf_range_name","否");
+            if(this.get("confRange") === true) this.set("confRangeName","是");
+            if(this.get("confRange") === false) this.set("confRangeName","否");
             //Referer可否为空
-            if(this.get("refer_nullable") === true) this.set("refer_nullable_name","是");
-            if(this.get("refer_nullable") === false) this.set("refer_nullable_name","否");
+            if(this.get("referNullable") === true) this.set("referNullableName","是");
+            if(this.get("referNullable") === false) this.set("referNullableName","否");
             //Referer防盗链开关及类型
-            if(this.get("refer_visit_control") === 0) this.set("refer_visit_control_name","关闭");
-            if(this.get("refer_visit_control") === 1) this.set("refer_visit_control_name","白名单");
-            if(this.get("refer_visit_control") === 2) this.set("refer_visit_control_name","黑名单");
+            if(this.get("referVisitControl") === 0) this.set("referVisitControlName","关闭");
+            if(this.get("referVisitControl") === 1) this.set("referVisitControlName","白名单");
+            if(this.get("referVisitControl") === 2) this.set("referVisitControlName","黑名单");
             //IP防盗链开关及类型
-            if(this.get("ip_visit_control") === 0) this.set("ip_visit_control_name","关闭");
-            if(this.get("ip_visit_control") === 1) this.set("ip_visit_control_name","白名单");
-            if(this.get("ip_visit_control") === 2) this.set("ip_visit_control_name","黑名单");
+            if(this.get("ipVisitControl") === 0) this.set("ipVisitControlName","关闭");
+            if(this.get("ipVisitControl") === 1) this.set("ipVisitControlName","白名单");
+            if(this.get("ipVisitControl") === 2) this.set("ipVisitControlName","黑名单");
             //泛域名标识
-            if(this.get("wildcard") === 1) this.set("wildcard_name","普通域名"); 
-            if(this.get("wildcard") === 2) this.set("wildcard_name","泛域名"); 
+            if(this.get("wildcard") === 1) this.set("wildcardName","普通域名"); 
+            if(this.get("wildcard") === 2) this.set("wildcardName","泛域名"); 
             //回源host头类型
-            if(this.get("host_type") === 1) this.set("host_type_name","加速域名"); 
-            if(this.get("host_type") === 2) this.set("host_type_name","回源域名"); 
+            if(this.get("hostType") === 1) this.set("hostTypeName","加速域名"); 
+            if(this.get("hostType") === 2) this.set("hostTypeName","回源域名"); 
             //使用的协议
-            if(this.get("protocol") === 1) this.set("protocol_name","http+flv"); 
-            if(this.get("protocol") === 2) this.set("protocol_name","hls"); 
-            if(this.get("protocol") === 3) this.set("protocol_name","rtmp"); 
+            if(this.get("protocol") === 1) this.set("protocolName","http+flv"); 
+            if(this.get("protocol") === 2) this.set("protocolName","hls"); 
+            if(this.get("protocol") === 3) this.set("protocolName","rtmp"); 
             //源站是否有缓存规则
-            if(this.get("has_origin_policy") === true) this.set("has_origin_policy_name","有"); 
-            if(this.get("has_origin_policy") === false) this.set("has_origin_policy_name","没有"); 
+            if(this.get("hasOriginPolicy") === true) this.set("hasOriginPolicyName","有"); 
+            if(this.get("hasOriginPolicy") === false) this.set("hasOriginPolicyName","没有"); 
         }
     });
 

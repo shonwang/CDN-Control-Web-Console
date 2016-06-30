@@ -12,58 +12,58 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 this.args = {
                     id : this.model.get("id"),
                     domain : this.model.get("domain"),
-                    user_id : this.model.get("user_id"),
+                    userId : this.model.get("userId"),
                     cname : this.model.get("cname"),
                     type : this.model.get("type"),
-                    audit_status : this.model.get("audit_status"),
-                    test_url : this.model.get("test_url"),
+                    auditStatus : this.model.get("auditStatus"),
+                    testUrl : this.model.get("testUrl"),
                     description : this.model.get("description"),
-                    origin_type : this.model.get("origin_type"),
-                    origin_address : this.model.get("origin_address"),
-                    cdn_factory : this.model.get("cdn_factory"),
-                    conf_param : this.model.get("conf_param"),
-                    conf_range : this.model.get("conf_range"),
-                    refer_nullable : this.model.get("refer_nullable"),
-                    refer_visit_control : this.model.get("refer_visit_control"),
-                    refer_visit_content : this.model.get("refer_visit_content"),
-                    ip_visit_control : this.model.get("ip_visit_control"),
+                    originType : this.model.get("originType"),
+                    originAddress : this.model.get("originAddress"),
+                    cdnFactory : this.model.get("cdnFactory"),
+                    confParam : this.model.get("confParam"),
+                    confRange : this.model.get("confRange"),
+                    referNullable : this.model.get("referNullable"),
+                    referVisitControl : this.model.get("referVisitControl"),
+                    referVisitContent : this.model.get("referVisitContent"),
+                    ipVisitControl : this.model.get("ipVisitControl"),
                     wildcard : this.model.get("wildcard"),
                     region : this.model.get("region"),
-                    host_type : this.model.get("host_type"),
+                    hostType : this.model.get("hostType"),
                     protocol : this.model.get("protocol"),
-                    has_origin_policy : this.model.get("has_origin_policy"),
-                    custom_host_header : this.model.get("custom_host_header"),
-                    ws_used : this.model.get("ws_used"),
-                    ip_visit_content : this.model.get("ip_visit_content"),
+                    hasOriginPolicy : this.model.get("hasOriginPolicy"),
+                    customHostHeader : this.model.get("customHostHeader"),
+                    wsUsed : this.model.get("wsUsed"),
+                    ipVisitContent : this.model.get("ipVisitContent"),
                     policys:[]
                 }
             }else{
                 this.args = {
                     id : 0,
                     domain:"",
-                    user_id:"",
+                    userId:"",
                     cname:"",
                     type:1,
-                    audit_status:null,
-                    test_url:"",
+                    auditStatus:null,
+                    testUrl:"",
                     description:"",
-                    origin_type:1,
-                    origin_address:"",
-                    cdn_factory : 1,
-                    conf_param:true,
-                    conf_range:true,
-                    refer_nullable:true,
-                    refer_visit_control:0,
-                    refer_visit_content:"",
-                    ip_visit_control:0,
+                    originType:1,
+                    originAddress:"",
+                    cdnFactory : 1,
+                    confParam:true,
+                    confRange:true,
+                    referNullable:true,
+                    referVisitControl:0,
+                    referVisitContent:"",
+                    ipVisitControl:0,
                     wildcard:1,
                     region:"",
-                    host_type:1,
+                    hostType:1,
                     protocol:1,
-                    has_origin_policy:true,
-                    custom_host_header:"",
-                    ws_used : 0,
-                    ip_visit_content:"",
+                    hasOriginPolicy:true,
+                    customHostHeader:"",
+                    wsUsed : 0,
+                    ipVisitContent:"",
                     policys:[]
                 }
             }
@@ -119,11 +119,11 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "否", value: false}
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-confParam"), confParamList, function(value){
-                this.args.conf_param = $.trim(value);
+                this.args.confParam = $.trim(value);
             }.bind(this));
             if(this.isEdit){
                 $.each(confParamList,function(k,v){
-                    if(v.value == this.model.get("conf_param")){
+                    if(v.value == this.model.get("confParam")){
                         this.$el.find("#dropdown-confParam .cur-value").html(v.name);
                     }
                 }.bind(this));
@@ -135,11 +135,11 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "OSS域名", value: 3}
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-originType"), originTypeList, function(value){
-                this.args.origin_type = parseInt($.trim(value));
+                this.args.originType = parseInt($.trim(value));
             }.bind(this));
             if(this.isEdit){
                 $.each(originTypeList,function(k,v){
-                    if(v.value == this.model.get("origin_type")){
+                    if(v.value == this.model.get("originType")){
                         this.$el.find("#dropdown-originType .cur-value").html(v.name);
                     }
                 }.bind(this));
@@ -150,11 +150,11 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "否", value: false}
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-confRange"), confRangeList, function(value){
-                this.args.conf_range = $.trim(value);
+                this.args.confRange = $.trim(value);
             }.bind(this));
             if(this.isEdit){
                 $.each(confRangeList,function(k,v){
-                    if(v.value == this.model.get("conf_range")){
+                    if(v.value == this.model.get("confRange")){
                         this.$el.find("#dropdown-confRange .cur-value").html(v.name);
                     }
                 }.bind(this));
@@ -165,11 +165,11 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "否", value: false}
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-referNullable"), referNullableList, function(value){
-                this.args.refer_nullable = $.trim(value);
+                this.args.referNullable = $.trim(value);
             }.bind(this));
             if(this.isEdit){
                 $.each(referNullableList,function(k,v){
-                    if(v.value == this.model.get("refer_nullable")){
+                    if(v.value == this.model.get("referNullable")){
                         this.$el.find("#dropdown-referNullable .cur-value").html(v.name);
                     }
                 }.bind(this));
@@ -181,11 +181,11 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "黑名单", value: 2}
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-referVisitControl"), referVisitControlList, function(value){
-                this.args.refer_visit_control = parseInt($.trim(value));
+                this.args.referVisitControl = parseInt($.trim(value));
             }.bind(this));
             if(this.isEdit){
                 $.each(referVisitControlList,function(k,v){
-                    if(v.value == this.model.get("refer_visit_control")){
+                    if(v.value == this.model.get("referVisitControl")){
                         this.$el.find("#dropdown-referVisitControl .cur-value").html(v.name);
                     }
                 }.bind(this));
@@ -197,11 +197,11 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "黑名单", value: 2}
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-ipVisitControl"), ipVisitControlList, function(value){
-                this.args.ip_visit_control = parseInt($.trim(value));
+                this.args.ipVisitControl = parseInt($.trim(value));
             }.bind(this));
             if(this.isEdit){
                 $.each(ipVisitControlList,function(k,v){
-                    if(v.value == this.model.get("ip_visit_control")){
+                    if(v.value == this.model.get("ipVisitControl")){
                         this.$el.find("#dropdown-ipVisitControl .cur-value").html(v.name);
                     }
                 }.bind(this));
@@ -227,11 +227,11 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "回源域名", value: 2}
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-hostType"), hostTypeList, function(value){
-                this.args.host_type = parseInt($.trim(value));
+                this.args.hostType = parseInt($.trim(value));
             }.bind(this));
             if(this.isEdit){
                 $.each(hostTypeList,function(k,v){
-                    if(v.value == this.model.get("host_type")){
+                    if(v.value == this.model.get("hostType")){
                         this.$el.find("#dropdown-hostType .cur-value").html(v.name);
                     }
                 }.bind(this));
@@ -258,11 +258,11 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "否", value: false}
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-originPolicy"), originPolicyList, function(value){
-                this.args.has_origin_policy = $.trim(value);
+                this.args.hasOriginPolicy = $.trim(value);
             }.bind(this));
             if(this.isEdit){
                 $.each(originPolicyList,function(k,v){
-                    if(v.value == this.model.get("has_origin_policy")){
+                    if(v.value == this.model.get("hasOriginPolicy")){
                         this.$el.find("#dropdown-originPolicy .cur-value").html(v.name);
                     }
                 }.bind(this));
@@ -347,14 +347,14 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
 
         getArgs: function() {
             this.args.domain = $.trim(this.$el.find("#input-name").val());
-            this.args.user_id = $.trim(this.$el.find("#input-userId").val());
+            this.args.userId = $.trim(this.$el.find("#input-userId").val());
             this.args.cname = $.trim(this.$el.find("#input-cname").val());
-            this.args.test_url = $.trim(this.$el.find("#input-testUrl").val());
-            this.args.origin_address = $.trim(this.$el.find("#textarea-originAddress").val());
-            this.args.refer_visit_content = $.trim(this.$el.find("#textarea-referVisitContent").val());
-            this.args.ip_visit_content = $.trim(this.$el.find("#textarea-ipVisitContent").val());
+            this.args.testUrl = $.trim(this.$el.find("#input-testUrl").val());
+            this.args.originAddress = $.trim(this.$el.find("#textarea-originAddress").val());
+            this.args.referVisitContent = $.trim(this.$el.find("#textarea-referVisitContent").val());
+            this.args.ipVisitContent = $.trim(this.$el.find("#textarea-ipVisitContent").val());
             this.args.region = $.trim(this.$el.find("#textarea-region").val());
-            this.args.custom_host_header = $.trim(this.$el.find("#input-customHostHeader").val());
+            this.args.customHostHeader = $.trim(this.$el.find("#input-customHostHeader").val());
             this.args.description = $.trim(this.$el.find("#textarea-description").val());
 
             //收集缓存规则
@@ -363,7 +363,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 var json = {
                     type : $.trim(this.$el.find(".table-ctn tbody").children().eq(i).children().eq(0).attr("value")),
                     policy : $.trim(this.$el.find(".table-ctn tbody").children().eq(i).children().eq(1).attr("value")),
-                    expire_time : $.trim(this.$el.find(".table-ctn tbody").children().eq(i).children().eq(2).attr("value"))
+                    expireTime : $.trim(this.$el.find(".table-ctn tbody").children().eq(i).children().eq(2).attr("value"))
                 }
                 this.args.policys.push(json);
             }
@@ -402,7 +402,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             return {
                 type : this.type ? this.type : this.$el.find("#dropdown-type").siblings().children().eq(0).attr('value'),
                 policy : $.trim(this.$el.find("#textarea-policy").val()),
-                expire_time : parseInt($.trim(this.$el.find("#input-expireTime").val()))
+                expireTime : parseInt($.trim(this.$el.find("#input-expireTime").val()))
             }
         },
 

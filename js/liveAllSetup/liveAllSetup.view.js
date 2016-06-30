@@ -883,8 +883,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 var devicelistDom = this.$el.find("#panel-"+obj.id+" .node-item");
                 var devicelist = [],deviceName = [];
                 devicelistDom.each(function(i){
-                    devicelist.push(devicelistDom.eq(i).attr('data-deviceid').split(","));
-                    deviceName.push(devicelistDom.eq(i).attr('data-deviceName').split(","));
+                    devicelist.push(devicelistDom.eq(i).attr('data-deviceid'));
+                    deviceName.push(devicelistDom.eq(i).attr('data-deviceName'));
                 }.bind(this));
 
                 var arr = [];
@@ -901,6 +901,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     "confFileHisIds": fileIds.join(","),
                     "device": arr
                 })
+
             }.bind(this))
 
             var options = {

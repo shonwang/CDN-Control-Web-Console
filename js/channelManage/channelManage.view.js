@@ -17,6 +17,11 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
             this.collection.on("channel.dispgroup.success", $.proxy(this.onGetChannelSuccess, this));
             this.collection.on("channel.dispgroup.error", $.proxy(this.onGetError, this));
 
+            this.collection.off("ip.type.success");
+            this.collection.off("ip.type.error");
+            this.collection.on("ip.type.success", $.proxy(this.onGetIpTypeSuccess, this));
+            this.collection.on("ip.type.error", $.proxy(this.onGetError, this));
+
             this.collection.getChannelDispgroup({channelid: this.model.get("id")});
         },
 
@@ -28,7 +33,11 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         onGetChannelSuccess: function(res){
+            this.collection.ipTypeList();
             this.channelList = res;
+        },
+
+        onGetIpTypeSuccess: function(data){
             var count = 0, isCheckedAll = false;
             _.each(this.channelList, function(el, index, list){
                 if (el.associated === 0) el.isChecked = false;
@@ -38,12 +47,20 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
                 }
                 if (el.status === 0) el.statusName = '<span class="text-danger">已停止</span>';
                 if (el.status === 1) el.statusName = '<span class="text-success">运行中</span>';
+                if (el.priority == 1) el.priorityName = '成本优先';
+                if (el.priority == 2) el.priorityName = '质量优先';
+                if (el.priority == 3) el.priorityName = '兼顾成本与质量';
+
+                var ipObj = _.find(data, function(obj){
+                    return obj.id === el.resolveIpType
+                }.bind(this))
+                el.resolveIpTypeName = ipObj.name;
             }.bind(this))
 
             if (count === this.channelList.length) isCheckedAll = true
 
             this.table = $(_.template(template['tpl/channelManage/channelManage.disp.table.html'])({data: this.channelList, isCheckedAll: isCheckedAll}));
-            if (res.length !== 0)
+            if (this.channelList.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
@@ -114,7 +131,7 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
             this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
             this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
             this.collection.on("add.dispGroup.channel.success", function(){
-                alert("关联成功！")
+                alert("操作成功！")
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("add.dispGroup.channel.error", $.proxy(this.onGetError, this));
@@ -228,6 +245,14 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
                 onHiddenCallback: function(){}
             }
             this.channelInfoPopup = new Modal(options);
+            $('<button type="button" class="btn btn-warning">取消关联</button>').insertBefore(this.channelInfoPopup.$el.find(".btn-primary"));
+            this.channelInfoPopup.$el.find(".btn-warning").on("click", function(){
+                this.collection.addDispGroupChannel({
+                    channelId: model.get("id"),
+                    dispGroupIds: []
+                })
+                this.channelInfoPopup.$el.modal("hide");
+            }.bind(this))
             this.channelInfoPopup.$el.find(".btn-primary").html('<span class="glyphicon glyphicon-link"></span>关联');
         },
 

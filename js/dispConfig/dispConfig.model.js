@@ -314,6 +314,20 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
 
             $.ajax(defaultParas);
         },
+
+        getAllDnsRecord: function(args){
+            var url = BASE_URL + "/rs/history/dns/center/dns/allDnsRecord",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("get.allDnsRecord.success", res);
+                else
+                    this.trigger("get.allDnsRecord.error", res); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.allDnsRecord.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
     });
 
     return DispConfigCollection;

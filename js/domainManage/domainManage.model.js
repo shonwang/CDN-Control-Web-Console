@@ -54,7 +54,7 @@ define("domainManage.model", ['require','exports', 'utility'], function(require,
         initialize: function(){},
 
         getDomainList: function(args){
-            var url = BASE_URL + "/origin/getPage";
+            var url = BASE_URL + "/rs/origin/getPage";
             var defaultParas = {
                 type: "POST",
                 url: url,
@@ -88,7 +88,7 @@ define("domainManage.model", ['require','exports', 'utility'], function(require,
         },
 
         addDomain: function(args){
-            var url = BASE_URL + "/origin/addOrigin";
+            var url = BASE_URL + "/rs/origin/addOrigin";
             var defaultParas = {
                 type: "POST",
                 url: url,
@@ -113,7 +113,7 @@ define("domainManage.model", ['require','exports', 'utility'], function(require,
         },
 
         editDomain: function(args){
-            var url = BASE_URL + "/origin/editOrigin";
+            var url = BASE_URL + "/rs/origin/editOrigin";
             var defaultParas = {
                 type: "POST",
                 url: url,
@@ -138,7 +138,7 @@ define("domainManage.model", ['require','exports', 'utility'], function(require,
         },
 
         deleteDomain: function(args){
-            var url = BASE_URL + "/origin/deleteOrigin?originId="+args;
+            var url = BASE_URL + "/rs/origin/deleteOrigin?originId="+args;
             var defaultParas = {
                 type: "GET",
                 url: url,
@@ -163,7 +163,7 @@ define("domainManage.model", ['require','exports', 'utility'], function(require,
         },
 
         sendDomain: function(args){
-            var url = BASE_URL + "/origin/sendOrigin?originId="+args;
+            var url = BASE_URL + "/rs/origin/sendOrigin?originId="+args;
             var defaultParas = {
                 type: "GET",
                 url: url,
@@ -188,7 +188,7 @@ define("domainManage.model", ['require','exports', 'utility'], function(require,
         },
 
         getCacheRuleList: function(args){
-            var url = BASE_URL + "/origin/getPolicyByOrigin?originId="+args;
+            var url = BASE_URL + "/rs/origin/getPolicyByOrigin?originId="+args;
             var defaultParas = {
                 type: "GET",
                 url: url,

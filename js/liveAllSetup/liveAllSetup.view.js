@@ -557,8 +557,9 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     }
                 },
                 callback: {
-                    onCheck: function(){
+                    onCheck: function(e,treeId,treeNode){
                         this.getSelected();
+                        this.getChecked(e,treeId,treeNode);
                     }.bind(this)
                 }
             };
@@ -566,7 +567,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             var zNodes = res[this.nodeGroupId];
 
             _.each(zNodes,function(el,index,ls){
-                //el.checked = true;
                 el.open = false;
                 el.highlight = false;
                 el.nodeIcon = false;
@@ -638,6 +638,19 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.matchDeviceNodes = this.treeObj.getNodesByFilter(matchDeviceFilter);
             this.$el.find(".device-num").html(this.matchDeviceNodes.length);
 
+        },
+
+        getChecked: function(e,treeId,treeNode){
+            _.each(this.nodeTreeLists[this.nodeGroupId], function(nodeGroupObj, k, l){
+                
+                if(treeNode.checked === false){
+                    this.nodeTreeLists[this.nodeGroupId][k].checked = false;
+                }
+                if(treeNode.checked === true){
+                    this.nodeTreeLists[this.nodeGroupId][k].checked = true;
+                }
+
+            }.bind(this));
         },
 
         getArgs: function(){
@@ -768,7 +781,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     if (!resultObj) return;
                     currentNodeDevice.nodes = resultObj.nodes;
                     currentNodeDevice.devices = resultObj.devices;
-                    console.log(this.nodeDeviceArray);
+                    //console.log(this.nodeDeviceArray);
                     nodeCtn.find("li").remove();
                     //if(currentNodeDevice.devices.length > 0){
                         _.each(currentNodeDevice.nodes, function(el, index, ls){
@@ -833,8 +846,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     fileName: file.get("fileName")
                 })
             })
-            // console.log(this.nodeDeviceArray);
-            // return;
+            console.log(forCheckList);
+            return;
             this.collection.checkLastVersion(forCheckList);
         },
 

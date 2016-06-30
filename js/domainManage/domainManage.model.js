@@ -15,14 +15,14 @@ define("domainManage.model", ['require','exports', 'utility'], function(require,
             if(this.get("originType") === 2) this.set("originTypeName","源站域名");
             if(this.get("originType") === 3) this.set("originTypeName","OSS域名");
             //过滤参数
-            if(this.get("confParam") === true) this.set("confParamName","是");
-            if(this.get("confParam") === false) this.set("confParamName","否");
+            if(this.get("confParam") === 1) this.set("confParamName","是");
+            if(this.get("confParam") === 0) this.set("confParamName","否");
             //range回源
-            if(this.get("confRange") === true) this.set("confRangeName","是");
-            if(this.get("confRange") === false) this.set("confRangeName","否");
+            if(this.get("confRange") === 1) this.set("confRangeName","是");
+            if(this.get("confRange") === 0) this.set("confRangeName","否");
             //Referer可否为空
-            if(this.get("referNullable") === true) this.set("referNullableName","是");
-            if(this.get("referNullable") === false) this.set("referNullableName","否");
+            if(this.get("referNullable") === 1) this.set("referNullableName","是");
+            if(this.get("referNullable") === 0) this.set("referNullableName","否");
             //Referer防盗链开关及类型
             if(this.get("referVisitControl") === 0) this.set("referVisitControlName","关闭");
             if(this.get("referVisitControl") === 1) this.set("referVisitControlName","白名单");
@@ -42,8 +42,8 @@ define("domainManage.model", ['require','exports', 'utility'], function(require,
             if(this.get("protocol") === 2) this.set("protocolName","hls"); 
             if(this.get("protocol") === 3) this.set("protocolName","rtmp"); 
             //源站是否有缓存规则
-            if(this.get("hasOriginPolicy") === true) this.set("hasOriginPolicyName","有"); 
-            if(this.get("hasOriginPolicy") === false) this.set("hasOriginPolicyName","没有"); 
+            if(this.get("hasOriginPolicy") === 1) this.set("hasOriginPolicyName","有"); 
+            if(this.get("hasOriginPolicy") === 0) this.set("hasOriginPolicyName","没有"); 
         }
     });
 

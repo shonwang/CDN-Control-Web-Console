@@ -84,6 +84,11 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
         },
 
+        removeDatetimepicker: function(){
+            this.$el.find("#input-start").datetimepicker("destroy");
+            this.$el.find("#input-end").datetimepicker("destroy");
+        },
+
         initChargeDatePicker: function(){
             var startVal = null, endVal = null;
             if (this.startTime)
@@ -443,6 +448,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                     this.historyPopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){
+                    aHistoryView.removeDatetimepicker();
                 }.bind(this)
             }
             this.historyPopup = new Modal(options);

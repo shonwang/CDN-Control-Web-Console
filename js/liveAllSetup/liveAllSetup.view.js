@@ -515,22 +515,28 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
         initialize: function(options) {
             this.options    = options;
-            this.collection = options.collection
+            this.collection = options.collection;
+            this.nodeTreeLists = options.nodeTreeLists;
+            this.nodeGroupId = options.nodeGroupId;
+
             this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.confirm.selectDevice.html'])());
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
             this.$el.find(".checkAll").on("click", $.proxy(this.onClickCheckAll, this));
             this.$el.find(".cancelAll").on("click", $.proxy(this.onClickCancelCheckAll, this));
             this.$el.find("#node-list-filter").on("keyup", $.proxy(this.onKeyupSearch, this));
+
+            this.initTree(this.nodeTreeLists);
+
             // this.collection.off("get.allDevice.success");
             // this.collection.off("get.allDevice.error");
             // this.collection.on("get.allDevice.success", $.proxy(this.onGetAllDeviceSuccess, this));
             // this.collection.on("get.allDevice.error", $.proxy(this.onGetError, this));
-            this.collection.off("get.nodeTreeData.success");
-            this.collection.off("get.nodeTreeData.error");
-            this.collection.on("get.nodeTreeData.success",$.proxy(this.onGetNodeTreeDataSuccess,this));
-            this.collection.on("get.nodeTreeData.error",$.proxy(this.onGetError,this));
-            //this.initTree();
+            
+            // this.collection.off("get.nodeTreeData.success");
+            // this.collection.off("get.nodeTreeData.error");
+            // this.collection.on("get.nodeTreeData.success",$.proxy(this.onGetNodeTreeDataSuccess,this));
+            // this.collection.on("get.nodeTreeData.error",$.proxy(this.onGetError,this));
         },
 
         onGetError: function(error){
@@ -538,10 +544,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 alert(error.message)
             else
                 alert("出错了")
-        },
-
-        onGetNodeTreeDataSuccess:function(res){
-            this.initTree(res);
         },
 
         initTree: function(res){
@@ -561,10 +563,10 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 }
             };
 
-            var zNodes = res;
+            var zNodes = res[this.nodeGroupId];
 
             _.each(zNodes,function(el,index,ls){
-                el.checked = false;
+                el.checked = true;
                 el.open = false;
                 el.highlight = false;
                 if(el.pId == -1){
@@ -576,8 +578,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             }.bind(this));
 
             // var zNodes =[
-            //     { id:1, pId:0, name:"随意勾选 1", open:true},
-            //     { id:11, pId:1, name:"随意勾选 1-1", highlight: true},
+            //     { id:1, pId:0, name:"随意勾选 1", open:true,checked:true},
+            //     { id:11, pId:1, name:"随意勾选 1-1", highlight: true,checked:true},
             //     { id:12, pId:1, name:"随意勾选 1-2"},
             //     { id:2, pId:0, name:"随意勾选 2", open:true},
             //     { id:21, pId:2, name:"随意勾选 2-1"},
@@ -640,7 +642,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 nodes: this.matchNodes,
                 devices: this.matchDeviceNodes
             }
-            console.log(selectedObj);
             return selectedObj;
         },
 
@@ -686,11 +687,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("check.version.success", $.proxy(this.onCheckVersionSuccess, this));
             this.collection.on("check.version.error", $.proxy(this.onGetError, this));
 
-            this.collection.off("get.ip.success");
-            this.collection.off("get.ip.error");
-            this.collection.on("get.ip.success", $.proxy(this.onGetIpGroupSuccess, this));
-            this.collection.on("get.ip.error", $.proxy(this.onGetError, this));
-
             this.collection.off("get.nodeTreeData.success");
             this.collection.off("get.nodeTreeData.error");
             this.collection.on("get.nodeTreeData.success",$.proxy(this.onGetNodeTreeDataSuccess,this));
@@ -700,6 +696,29 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             // this.collection.on("get.fileGroup.success", $.proxy(this.onGetFileGroupSuccess, this));
             // this.collection.on("get.fileGroup.error", $.proxy(this.onGetError, this));
             //this.collection.getFileGroupList();
+        },
+
+        onGetNodeTreeDataSuccess:function(res){
+            this.nodeTreeLists = res;  //返回所有节点组节点以及设备
+
+            var nodeGroupIdList = Object.keys(this.nodeTreeLists);
+            _.each(nodeGroupIdList, function(itemNodeGroupDevices, key, list){
+                var aNode = "";
+                _.each(this.nodeTreeLists[itemNodeGroupDevices], function(deviceObj, objKey, l){
+                    if(deviceObj.pId === -1){
+                        aNode += '<li class="node-item" data-deviceId="'+deviceObj.id+'"><span class="label label-primary">'+ deviceObj.name + '</span></li>';
+                        var arr = [];
+                        arr.push(deviceObj);
+                        this.nodeDeviceArray[key].nodes = arr;
+                    }else{
+                        var ar = [];
+                        ar.push(deviceObj);
+                        this.nodeDeviceArray[key].devices = ar;
+                    }
+                }.bind(this));
+
+                this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn").append(aNode);
+            }.bind(this));
         },
 
         onClickShellCmdInput: function(event){
@@ -727,13 +746,13 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     return obj.id === parseInt(id)
                 }.bind(this));
 
-            this.collection.getNodeTreeData({nodeGroupId:id});
-
             if (this.addDevicePopup) $("#" + this.addDevicePopup.modalId).remove();
 
             var addDeviceView = new SelectDeviceView({
                 collection: this.collection,
-                currentNodeDevice: currentNodeDevice
+                currentNodeDevice: currentNodeDevice,
+                nodeTreeLists: this.nodeTreeLists,
+                nodeGroupId : id
             });
             var options = {
                 title:"添加节点设备",
@@ -746,7 +765,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     currentNodeDevice.nodes = resultObj.nodes;
                     currentNodeDevice.devices = resultObj.devices;
                     nodeCtn.find("li").remove();
-                    if(currentNodeDevice.devices.length > 0){
+                    //if(currentNodeDevice.devices.length > 0){
                         _.each(currentNodeDevice.nodes, function(el, index, ls){
                             var deviceIdsList = [];
                             _.each(currentNodeDevice.devices, function(ele, j, dls){
@@ -758,7 +777,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                             aNode.appendTo(nodeCtn)
                         }.bind(this))
                         this.addDevicePopup.$el.modal("hide");
-                    }
+                    //}
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
@@ -793,6 +812,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             //         }
             //     }
             // }
+            console.log(this.nodeDeviceArray);
 
             for (var i = 0; i < this.nodeDeviceArray.length; i++){
                 if (!this.nodeDeviceArray[i].nodes || this.nodeDeviceArray[i].nodes.length === 0){
@@ -800,7 +820,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     return;
                 }
             }
-
+            return;
             var forCheckList = [];
             _.each(this.selectedModels, function(file, key, list){
                 forCheckList.push({
@@ -865,9 +885,11 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
             var idArray = []
             _.each(this.nodeGroupList, function(el, key, ls){
-                idArray.push(el.id)
+                idArray.push(el.id);
             }.bind(this))
-            this.collection.getIpGroupList(idArray);
+
+            //console.log(idArray);
+            this.collection.getNodeTreeData(idArray);
 
             this.nodeDeviceArray = [];
             _.each(this.nodeGroupList, function(el, key, ls){
@@ -897,18 +919,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 width: 800
             }
             this.viewShellPopup = new Modal(options);
-        },
-
-        onGetIpGroupSuccess: function(res){
-            this.ipList = res
-
-            _.each(this.ipList, function(nodeGroupIps, key, ls){
-                var ipArray = []
-                _.each(nodeGroupIps, function(ipObj, upKey, list){
-                    ipArray.push(ipObj.ip);
-                }.bind(this))
-                this.$el.find("#ip-" + key).val(ipArray.join(","))
-            }.bind(this))
         },
 
         onGetFileGroupSuccess: function(res){

@@ -42,8 +42,8 @@ define("domainManage.model", ['require','exports', 'utility'], function(require,
             if(this.get("protocol") === 2) this.set("protocolName","hls"); 
             if(this.get("protocol") === 3) this.set("protocolName","rtmp"); 
             //源站是否有缓存规则
-            if(this.get("hasOriginPolicy") === 1) this.set("hasOriginPolicyName","有"); 
-            if(this.get("hasOriginPolicy") === 0) this.set("hasOriginPolicyName","没有"); 
+            if(this.get("hasOriginPolicy") === true) this.set("hasOriginPolicyName","有"); 
+            if(this.get("hasOriginPolicy") === false) this.set("hasOriginPolicyName","没有"); 
         }
     });
 

@@ -32,8 +32,8 @@ define("domainManage.model", ['require','exports', 'utility'], function(require,
             if(this.get("ipVisitControl") === 1) this.set("ipVisitControlName","白名单");
             if(this.get("ipVisitControl") === 2) this.set("ipVisitControlName","黑名单");
             //泛域名标识
-            if(this.get("wildcard") === 1) this.set("wildcardName","普通域名"); 
-            if(this.get("wildcard") === 2) this.set("wildcardName","泛域名"); 
+            if(this.get("wildcard") === 1 || this.get("wildcard") === "1") this.set("wildcardName","普通域名"); 
+            if(this.get("wildcard") === 2 || this.get("wildcard") === "2") this.set("wildcardName","泛域名"); 
             //回源host头类型
             if(this.get("hostType") === 1) this.set("hostTypeName","加速域名"); 
             if(this.get("hostType") === 2) this.set("hostTypeName","回源域名"); 

@@ -719,22 +719,29 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
             var nodeGroupIdList = Object.keys(this.nodeTreeLists);
             _.each(nodeGroupIdList, function(itemNodeGroupDevices, key, list){
-                var aNode = "";
+                var aNode = "",deviceId = [],nodeId = "",deviceName = [];
                 _.each(this.nodeTreeLists[itemNodeGroupDevices], function(deviceObj, objKey, l){
                     this.nodeTreeLists[itemNodeGroupDevices][objKey].checked = true;
                     if(deviceObj.pId === -1){
-                        aNode += '<li class="node-item" data-deviceId="'+deviceObj.id+'"><span class="label label-primary">'+ deviceObj.name + '</span></li>';
+                        aNode += '<li class="node-item" data-nodeId="'+deviceObj.id+'"><span class="label label-primary">'+ deviceObj.name + '</span></li>';
                         var arr = [];
                         arr.push(deviceObj);
                         this.nodeDeviceArray[key].nodes = arr;
+
+                        nodeId = deviceObj.id;
                     }else{
                         var ar = [];
                         ar.push(deviceObj);
                         this.nodeDeviceArray[key].devices = ar;
+
+                        deviceId.push(deviceObj.deviceId);
+                        deviceName.push(deviceObj.name);
                     }
                 }.bind(this));
 
                 this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn").append(aNode);
+                this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn li[data-nodeId="+nodeId+"]").attr("data-deviceId",deviceId.join(","));
+                this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn li[data-nodeId="+nodeId+"]").attr("data-deviceName",deviceName.join(","));
             }.bind(this));
         },
 
@@ -785,13 +792,17 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     nodeCtn.find("li").remove();
                     //if(currentNodeDevice.devices.length > 0){
                         _.each(currentNodeDevice.nodes, function(el, index, ls){
-                            var deviceIdsList = [];
+                            var deviceIdsList = [],nodeId = "",deviceName = [];
                             _.each(currentNodeDevice.devices, function(ele, j, dls){
                                 if(el.id == ele.pId){
                                     deviceIdsList.push(ele.deviceId);
+                                    deviceName.push(ele.deviceName);
+                                }
+                                if(el.pId == -1){
+                                    nodeId = el.id;
                                 }
                             }.bind(this));
-                            var aNode = $('<li class="node-item" data-deviceId="'+deviceIdsList.join(',')+'"><span class="label label-primary">'+ el.name + '</span></li>');
+                            var aNode = $('<li class="node-item" data-nodeId="'+nodeId+'" data-deviceId="'+deviceIdsList.join(',')+'" data-deviceName="'+deviceName.join(',')+'"><span class="label label-primary">'+ el.name + '</span></li>');
                             aNode.appendTo(nodeCtn);
                         }.bind(this))
 
@@ -846,8 +857,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     fileName: file.get("fileName")
                 })
             })
-            console.log(forCheckList);
-            return;
             this.collection.checkLastVersion(forCheckList);
         },
 
@@ -872,15 +881,25 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                         fileIds.push(file.attributes.confFileHisId);
                 })
                 var devicelistDom = this.$el.find("#panel-"+obj.id+" .node-item");
-                var devicelist = [];
+                var devicelist = [],deviceName = [];
                 devicelistDom.each(function(i){
-                    devicelist.push(devicelistDom.eq(i).attr('data-deviceid'));
+                    devicelist.push(devicelistDom.eq(i).attr('data-deviceid').split(","));
+                    deviceName.push(devicelistDom.eq(i).attr('data-deviceName').split(","));
                 }.bind(this));
-                console.log(devicelist);
+
+                var arr = [];
+
+                for(var i =0; i< devicelist.length; i++){
+                    arr.push({
+                        id : devicelist[i],
+                        deviceName : deviceName[i]
+                    });
+                }
+
                 nodeGroupLs.push({
                     "nodeGroupId": obj.id,
                     "confFileHisIds": fileIds.join(","),
-                    "deviceIds":devicelist.join(",")
+                    "device": arr
                 })
             }.bind(this))
 

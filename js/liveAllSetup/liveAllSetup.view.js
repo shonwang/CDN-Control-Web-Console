@@ -566,11 +566,13 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             var zNodes = res[this.nodeGroupId];
 
             _.each(zNodes,function(el,index,ls){
-                el.checked = true;
+                //el.checked = true;
                 el.open = false;
                 el.highlight = false;
+                el.nodeIcon = false;
                 if(el.pId == -1){
                     el.open = true;
+                    el.nodeIcon = true; //节点显示“文件夹”图标
                 }
                 if(el.deviceStatus != 1 && el.pId != -1){
                     el.highlight = true;
@@ -635,6 +637,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             };
             this.matchDeviceNodes = this.treeObj.getNodesByFilter(matchDeviceFilter);
             this.$el.find(".device-num").html(this.matchDeviceNodes.length);
+
         },
 
         getArgs: function(){
@@ -705,6 +708,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             _.each(nodeGroupIdList, function(itemNodeGroupDevices, key, list){
                 var aNode = "";
                 _.each(this.nodeTreeLists[itemNodeGroupDevices], function(deviceObj, objKey, l){
+                    this.nodeTreeLists[itemNodeGroupDevices][objKey].checked = true;
                     if(deviceObj.pId === -1){
                         aNode += '<li class="node-item" data-deviceId="'+deviceObj.id+'"><span class="label label-primary">'+ deviceObj.name + '</span></li>';
                         var arr = [];
@@ -764,6 +768,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     if (!resultObj) return;
                     currentNodeDevice.nodes = resultObj.nodes;
                     currentNodeDevice.devices = resultObj.devices;
+                    console.log(this.nodeDeviceArray);
                     nodeCtn.find("li").remove();
                     //if(currentNodeDevice.devices.length > 0){
                         _.each(currentNodeDevice.nodes, function(el, index, ls){
@@ -774,8 +779,9 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                                 }
                             }.bind(this));
                             var aNode = $('<li class="node-item" data-deviceId="'+deviceIdsList.join(',')+'"><span class="label label-primary">'+ el.name + '</span></li>');
-                            aNode.appendTo(nodeCtn)
+                            aNode.appendTo(nodeCtn);
                         }.bind(this))
+
                         this.addDevicePopup.$el.modal("hide");
                     //}
                 }.bind(this),
@@ -827,7 +833,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     fileName: file.get("fileName")
                 })
             })
-            // console.log(forCheckList);
+            // console.log(this.nodeDeviceArray);
             // return;
             this.collection.checkLastVersion(forCheckList);
         },

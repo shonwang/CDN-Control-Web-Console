@@ -1269,7 +1269,11 @@
 				if (node.isParent) {
 					icoCss.push(node.open ? consts.folder.OPEN : consts.folder.CLOSE);
 				} else {
-					icoCss.push(consts.folder.DOCU);
+					if(node.nodeIcon){
+						icoCss.push(node.open ? consts.folder.OPEN : consts.folder.CLOSE);
+					}else{
+						icoCss.push(consts.folder.DOCU);
+					}
 				}
 			}
 			return consts.className.BUTTON + " " + icoCss.join('_');

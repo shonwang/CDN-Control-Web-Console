@@ -44,7 +44,6 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         onGetRecordListSuccess: function(data){
-            if (data.length === 0) return;
             this.allDnsRecord = this.allDnsRecord.concat(data);
             var dateArray = [];
             for (var i = 0; i < this.allDnsRecord.length; i++){

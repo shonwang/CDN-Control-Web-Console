@@ -62,7 +62,7 @@ define("modal.view", ['require','exports', 'template', 'utility'],
                 this.$el.find(".modal-dialog").css("width", this.options.width + "px");
             if (this.options.height){
                 this.$el.find(".modal-body").css("overflow", "auto");
-                this.$el.find(".modal-body").css("height", this.options.height + "px");
+                this.$el.find(".modal-body").css("max-height", this.options.height + "px");
             }
         },
 

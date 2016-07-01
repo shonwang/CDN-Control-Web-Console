@@ -656,7 +656,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         getArgs: function(){
             var selectedObj = {
                 nodes: this.matchNodes,
-                devices: this.matchDeviceNodes
+                devices: this.matchDeviceNodes,
+                nodeTreeLists: this.nodeTreeLists
             }
             return selectedObj;
         },
@@ -727,29 +728,37 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
             var nodeGroupIdList = Object.keys(this.nodeTreeLists);
             _.each(nodeGroupIdList, function(itemNodeGroupDevices, key, list){
-                var aNode = "",deviceId = [],nodeId = "",deviceName = [];
+                var aNode = "",deviceId = [],nodeId = "",deviceName = [],nodeDeviceJson = {};
                 _.each(this.nodeTreeLists[itemNodeGroupDevices], function(deviceObj, objKey, l){
                     this.nodeTreeLists[itemNodeGroupDevices][objKey].checked = true;
                     if(deviceObj.pId === -1){
-                        aNode += '<li class="node-item" data-nodeId="'+deviceObj.id+'"><span class="label label-primary">'+ deviceObj.name + '</span></li>';
+                        aNode += '<li class="node-item" data-nodeid="'+deviceObj.id+'"><span class="label label-primary">'+ deviceObj.name + '</span></li>';
                         var arr = [];
                         arr.push(deviceObj);
                         this.nodeDeviceArray[key].nodes = arr;
 
                         nodeId = deviceObj.id;
+                        nodeDeviceJson[deviceObj.id] = {
+                            deviceId : [],
+                            deviceName : []
+                        };
                     }else{
                         var ar = [];
                         ar.push(deviceObj);
                         this.nodeDeviceArray[key].devices = ar;
 
-                        deviceId.push(deviceObj.deviceId);
-                        deviceName.push(deviceObj.name);
+                        nodeDeviceJson[nodeId].deviceId.push(deviceObj.deviceId);
+                        nodeDeviceJson[nodeId].deviceName.push(deviceObj.name);
                     }
                 }.bind(this));
 
                 this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn").append(aNode);
-                this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn li[data-nodeId="+nodeId+"]").attr("data-deviceId",deviceId.join(","));
-                this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn li[data-nodeId="+nodeId+"]").attr("data-deviceName",deviceName.join(","));
+
+                _.each(Object.keys(nodeDeviceJson),function(v,k,l){
+                    this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn li[data-nodeid="+v+"]").attr("data-deviceId",nodeDeviceJson[v].deviceId.join(","));
+                    this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn li[data-nodeid="+v+"]").attr("data-deviceName",nodeDeviceJson[v].deviceName.join(","));
+                }.bind(this));
+                
             }.bind(this));
         },
 
@@ -796,26 +805,24 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     if (!resultObj) return;
                     currentNodeDevice.nodes = resultObj.nodes;
                     currentNodeDevice.devices = resultObj.devices;
-                    //console.log(this.nodeDeviceArray);
+                    this.nodeTreeLists = resultObj.nodeTreeLists;
                     nodeCtn.find("li").remove();
-                    //if(currentNodeDevice.devices.length > 0){
                         _.each(currentNodeDevice.nodes, function(el, index, ls){
                             var deviceIdsList = [],nodeId = "",deviceName = [];
                             _.each(currentNodeDevice.devices, function(ele, j, dls){
                                 if(el.id == ele.pId){
                                     deviceIdsList.push(ele.deviceId);
-                                    deviceName.push(ele.deviceName);
+                                    deviceName.push(ele.name);
                                 }
                                 if(el.pId == -1){
                                     nodeId = el.id;
                                 }
                             }.bind(this));
-                            var aNode = $('<li class="node-item" data-nodeId="'+nodeId+'" data-deviceId="'+deviceIdsList.join(',')+'" data-deviceName="'+deviceName.join(',')+'"><span class="label label-primary">'+ el.name + '</span></li>');
+                            var aNode = $('<li class="node-item" data-nodeid="'+nodeId+'" data-deviceId="'+deviceIdsList.join(',')+'" data-deviceName="'+deviceName.join(',')+'"><span class="label label-primary">'+ el.name + '</span></li>');
                             aNode.appendTo(nodeCtn);
                         }.bind(this))
 
                         this.addDevicePopup.$el.modal("hide");
-                    //}
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
@@ -898,10 +905,14 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 var arr = [];
 
                 for(var i =0; i< devicelist.length; i++){
-                    arr.push({
-                        id : devicelist[i],
-                        deviceName : deviceName[i]
-                    });
+                    if(devicelist[i] && devicelist[i] != ""){
+                        for(var j=0; j<devicelist[i].split(",").length;j++){
+                            arr.push({
+                                id : devicelist[i].split(",")[j],
+                                deviceName : deviceName[i].split(",")[j]
+                            });
+                        }
+                    }
                 }
 
                 nodeGroupLs.push({
@@ -933,7 +944,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 idArray.push(el.id);
             }.bind(this))
 
-            //console.log(idArray);
             this.collection.getNodeTreeData(idArray);
 
             this.nodeDeviceArray = [];

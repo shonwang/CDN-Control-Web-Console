@@ -647,20 +647,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         getChecked: function(e,treeId,treeNode){
-            // console.log(treeNode,treeId);
-            // _.each(this.nodeTreeLists[this.nodeGroupId], function(nodeGroupObj, k, l){
-            //     console.log(nodeGroupObj);
-                
-            //     if(treeNode.checked === false){
-            //         this.nodeTreeLists[this.nodeGroupId][k].checked = false;
-            //     }
-            //     if(treeNode.checked === true){
-            //         this.nodeTreeLists[this.nodeGroupId][k].checked = true;
-            //     }
-
-            // }.bind(this));
-            //console.log(this.nodeTreeLists);
-            //
             _.each(this.nodeTreeLists[this.nodeGroupId], function(nodeGroupObj, k, l){
                 var node = this.treeObj.getNodeByParam("id", nodeGroupObj.id, null);
                 nodeGroupObj.checked = node.checked
@@ -821,9 +807,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     currentNodeDevice.nodes = resultObj.nodes;
                     currentNodeDevice.devices = resultObj.devices;
                     this.nodeTreeLists = resultObj.nodeTreeLists;
-                    //console.log(this.nodeDeviceArray);
                     nodeCtn.find("li").remove();
-                    //if(currentNodeDevice.devices.length > 0){
                         _.each(currentNodeDevice.nodes, function(el, index, ls){
                             var deviceIdsList = [],nodeId = "",deviceName = [];
                             _.each(currentNodeDevice.devices, function(ele, j, dls){
@@ -840,7 +824,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                         }.bind(this))
 
                         this.addDevicePopup.$el.modal("hide");
-                    //}
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
@@ -962,7 +945,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 idArray.push(el.id);
             }.bind(this))
 
-            //console.log(idArray);
             this.collection.getNodeTreeData(idArray);
 
             this.nodeDeviceArray = [];

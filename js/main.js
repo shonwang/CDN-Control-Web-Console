@@ -1,4 +1,4 @@
-window.DEBUG = 1;
+window.DEBUG = 1.2;
 
 if (window.DEBUG === 1)
     window.BASE_URL = "http://120.92.232.203:9098";

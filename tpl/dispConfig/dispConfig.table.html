@@ -6,7 +6,9 @@
         <th>区域</th>
         <th>节点</th>
         <th>TTL</th>
-        <th>操作</th>     
+        <% if (!isHistory) { %>
+        <th>操作</th>
+        <% } %>     
       </tr>
     </thead>
     <tbody>
@@ -14,24 +16,41 @@
             <% if (data[i].get("isDisplay")) { %>
             <tr data-id="<%=data[i].attributes.id%>">
               <!-- <td><input type="checkbox" id="<%=data[i].id%>"></td> -->
-              <td><%=data[i].attributes["dispGroup.dispDomain"]%></td>
-              <td><%=data[i].attributes["region.name"]%>(<%=data[i].attributes["region.maxBandWidth"].toFixed(2)%>)</td>
+              <td><%=data[i].get("dispGroup.dispDomain")%></td>
+              <td><%=data[i].get("region.name")%>(<%=data[i].get("region.maxBandWidth").toFixed(2)%>)</td>
               <td class="nodes">
                   <table class="table table-condensed table-striped">
                       <tbody>
-                          <% for(var k = 0; k < data[i].attributes["listFormated"].length; k++) { %>
-                              <% if(data[i].attributes["listFormated"][k].attributes["node.chName"] && data[i].attributes["listFormated"][k].get("isDisplay")) { %>
-                              <tr data-id="<%=data[i].attributes["listFormated"][k].attributes.id%>" <% if(data[i].attributes["listFormated"][k].attributes["isUpdated"]) { %> class="success" <% } %>>
-                                <td style="width:400px"><%=data[i].attributes["listFormated"][k].attributes["nodeString"]%></td>
+                          <% for(var k = 0; k < data[i].get("listFormated").length; k++) { %>
+                              <% if(data[i].get("listFormated")[k].get("node.chName") && data[i].get("listFormated")[k].get("isDisplay")) { %>
+                              <tr data-id='<%=data[i].get("listFormated")[k].get("id")%>' 
+                                <% if(data[i].get("listFormated")[k].get("isUpdated")) { %> 
+                                    class="warning" 
+                                <% } else if (data[i].get("listFormated")[k].get("type") === 1) { %>
+                                    class="success"
+                                <% } else if (data[i].get("listFormated")[k].get("type") === -1) { %>
+                                    class="danger"
+                                <% } %> >
+                                <td style="width:400px"><%=data[i].get("listFormated")[k].get("nodeString")%></td>
                                 <td>
-                                    <input type="number" id="<%=data[i].attributes["listFormated"][k].attributes['id']%>" region-id="<%=data[i].attributes.id%>" class="weight" max="<%=data[i].attributes["listFormated"][k].attributes['dispConfIpInfo.maxNum']%>" min="0" value="<%=data[i].attributes["listFormated"][k].attributes['dispConfIpInfo.currNum']%>">
-                                    <span class="label label-danger"><%=data[i].attributes["listFormated"][k].attributes['dispConfIpInfo.pauseNum']%></span>
-                                    <a href="javascript:void(0)" id="<%=data[i].attributes["listFormated"][k].attributes['id']%>" region-id="<%=data[i].attributes.id%>" class="edit" title="编辑节点">
-                                      <span class="glyphicon glyphicon-edit"></span>
+                                    <% if (!isHistory) { %>
+                                    <input type="number" class="weight" id='<%=data[i].get("listFormated")[k].get("id")%>' region-id='<%=data[i].get("id")%>' max='<%=data[i].get("listFormated")[k].get("dispConfIpInfo.maxNum")%>' min="0" value='<%=data[i].get("listFormated")[k].get("dispConfIpInfo.currNum")%>'>
+                                    <% } else { %>
+                                    <span class="label label-primary">
+                                        <%=data[i].get("listFormated")[k].get("dispConfIpInfo.currNum")%>
+                                    </span>
+                                    <% } %>  
+                                    <span class="label label-danger">
+                                        <%=data[i].get("listFormated")[k].get("dispConfIpInfo.pauseNum")%>
+                                    </span>
+                                    <% if (!isHistory) { %>
+                                    <a href="javascript:void(0)" class="edit" id='<%=data[i].get("listFormated")[k].get("id")%>' region-id='<%=data[i].get("id")%>' title="编辑节点">
+                                        <span class="glyphicon glyphicon-edit"></span>
                                     </a>
-                                    <a href="javascript:void(0)" id="<%=data[i].attributes["listFormated"][k].attributes['id']%>" region-id="<%=data[i].attributes.id%>" class="delete" title="删除">
+                                    <a href="javascript:void(0)" class="delete" id='<%=data[i].get("listFormated")[k].get("id")%>' region-id='<%=data[i].get("id")%>'  title="删除">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </a>
+                                    <% } %> 
                                 </td>
                               </tr>
                               <% } %> 
@@ -39,15 +58,17 @@
                       </tbody>
                   </table>
               </td>
-              <td><%=data[i].attributes["dispGroup.ttl"]%></td>
+              <td><%=data[i].get("dispGroup.ttl")%></td>
+              <% if (!isHistory) { %>
               <td>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="add">
+                  <a href="javascript:void(0)" id='<%=data[i].get("id")%>' class="add">
                       <span class="glyphicon glyphicon-plus"></span>添加节点
                   </a>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="adjust">
+                  <a href="javascript:void(0)" id='<%=data[i].get("id")%>' class="adjust">
                       <span class="glyphicon glyphicon-cog"></span>调整
                   </a>
               </td>
+              <% } %>
             </tr>
             <% } %>
         <% } %>  

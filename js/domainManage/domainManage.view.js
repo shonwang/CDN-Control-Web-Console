@@ -50,9 +50,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     originType:1,
                     originAddress:"",
                     cdnFactory : 1,
-                    confParam:true,
-                    confRange:true,
-                    referNullable:true,
+                    confParam:1,
+                    confRange:1,
+                    referNullable:1,
                     referVisitControl:0,
                     referVisitContent:"",
                     ipVisitControl:0,
@@ -115,11 +115,11 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             }
             //过滤参数
             var confParamList = [
-                {name: "是", value: true},
-                {name: "否", value: false}
+                {name: "是", value: 1},
+                {name: "否", value: 0}
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-confParam"), confParamList, function(value){
-                this.args.confParam = $.trim(value);
+                this.args.confParam = parseInt($.trim(value));
             }.bind(this));
             if(this.isEdit){
                 $.each(confParamList,function(k,v){
@@ -146,11 +146,11 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             }
             //range回源
             var confRangeList = [
-                {name: "是", value: true},
-                {name: "否", value: false}
+                {name: "是", value: 1},
+                {name: "否", value: 0}
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-confRange"), confRangeList, function(value){
-                this.args.confRange = $.trim(value);
+                this.args.confRange = parseInt($.trim(value));
             }.bind(this));
             if(this.isEdit){
                 $.each(confRangeList,function(k,v){
@@ -161,11 +161,11 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             }
             //refer是否为空
             var referNullableList = [
-                {name: "是", value: true},
-                {name: "否", value: false}
+                {name: "是", value: 1},
+                {name: "否", value: 0}
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-referNullable"), referNullableList, function(value){
-                this.args.referNullable = $.trim(value);
+                this.args.referNullable = parseInt($.trim(value));
             }.bind(this));
             if(this.isEdit){
                 $.each(referNullableList,function(k,v){

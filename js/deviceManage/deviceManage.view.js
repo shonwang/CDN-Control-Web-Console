@@ -610,7 +610,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             }
         },
 
-        onGetNodeSuccess: function(res){
+        onGetNodeSuccessOld: function(res){
             var nameList = [];
             _.each(res.rows, function(el, index, list){
                 nameList.push({name: el.chName, value:el.id})
@@ -618,6 +618,39 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             Utility.initDropMenu(this.$el.find(".dropdown-node"), nameList, function(value){
                 this.nodeId = value;
             }.bind(this));
+            if (this.isEdit){
+                var defaultValue = _.find(nameList, function(object){
+                    return object.value === this.model.attributes.nodeId
+                }.bind(this));
+
+                this.$el.find(".dropdown-node .cur-value").html(defaultValue.name)
+                this.nodeId = defaultValue.value;
+            } else {
+                this.$el.find(".dropdown-node .cur-value").html(nameList[0].name);
+                this.nodeId = nameList[0].value;
+
+                this.collection.ipTypeList();
+            } 
+        },
+
+        onGetNodeSuccess: function(res){
+            var nameList = [];
+            _.each(res.rows, function(el, index, list){
+                nameList.push({name: el.chName, value:el.id})
+            });
+
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-node').get(0),
+                panelID: this.$el.find('#dropdown-node').get(0),
+                isSingle: true,
+                openSearch: true,
+                onOk: function(){},
+                data: nameList,
+                callback: function(data) {
+                    this.nodeId = data.value;
+                    this.$el.find('#dropdown-node .cur-value').html(data.name);
+                }.bind(this)
+            });
             if (this.isEdit){
                 var defaultValue = _.find(nameList, function(object){
                     return object.value === this.model.attributes.nodeId

@@ -121,7 +121,7 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
         },
 
         redirect : function (url) {
-            if (DEBUG === 1) return;
+            if (DEBUG === 1 || DEBUG === 1.2) return;
             var tpl = '<div id="loginTips" class="modal fade bs-example-modal-sm">' + 
                         '<div class="modal-dialog modal-sm">' + 
                             '<div class="modal-content" style="text-align:center;padding:5px">' + 

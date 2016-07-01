@@ -29,7 +29,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.isGlobal = false;
             this.operatorId = null;
 
-            this.mapDataTimer = setInterval($.proxy(this.onClickQueryButton, this), 63000);
+            //this.mapDataTimer = setInterval($.proxy(this.onClickQueryButton, this), 63000);
             this.onClickQueryButton();
             this.nodeCollection.getOperatorList();
         },
@@ -190,29 +190,29 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
                         },
                         geoCoord: res.geoCoord
                     },
-                    {
-                        name: 'alert',
-                        type: 'map',
-                        mapType: this.mapType,
-                        data:[],
-                        markPoint : {
-                            symbol:'emptyCircle',
-                            symbolSize : 15,
-                            effect : {
-                                show: true,
-                                shadowBlur : 0
-                            },
-                            itemStyle:{
-                                normal:{
-                                    label:{show:false}
-                                }
-                            },
-                            data : [
-                                {name: "太原联通节点", value: 1000},
-                                {name: "石家庄移动节点", value: 1000}
-                            ]
-                        }
-                    }
+                    // {
+                    //     name: 'alert',
+                    //     type: 'map',
+                    //     mapType: this.mapType,
+                    //     data:[],
+                    //     markPoint : {
+                    //         symbol:'emptyCircle',
+                    //         symbolSize : 15,
+                    //         effect : {
+                    //             show: true,
+                    //             shadowBlur : 0
+                    //         },
+                    //         itemStyle:{
+                    //             normal:{
+                    //                 label:{show:false}
+                    //             }
+                    //         },
+                    //         data : [
+                    //             {name: "太原联通节点", value: 1000},
+                    //             {name: "石家庄移动节点", value: 1000}
+                    //         ]
+                    //     }
+                    // }
                 ],
                 allLine = [];
 
@@ -447,7 +447,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             if(!this.curNum) this.curNum = 0;
             this.$el.find(".node-list-ctn").find('button[id="' + this.curNum + '"]').click();
             this.curNum = this.curNum + 1;
-            this.$el.find(".opt-ctn .play").click();
+            //this.$el.find(".opt-ctn .play").click();
         },
 
         onKeyupSearchNode: function(event) {
@@ -542,7 +542,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.$el.show();
             this.$el.find(".opt-ctn .play").click();
             if (this.mapDataTimer) clearInterval(this.mapDataTimer);
-            this.mapDataTimer = setInterval($.proxy(this.onClickQueryButton, this), 33000);
+            //this.mapDataTimer = setInterval($.proxy(this.onClickQueryButton, this), 33000);
         },
 
         render: function(target) {

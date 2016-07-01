@@ -747,7 +747,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                         ar.push(deviceObj);
                         this.nodeDeviceArray[key].devices = ar;
 
-
                         nodeDeviceJson[nodeId].deviceId.push(deviceObj.deviceId);
                         nodeDeviceJson[nodeId].deviceName.push(deviceObj.name);
                     }

@@ -720,31 +720,49 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         onGetNodeTreeDataSuccess:function(res){
             this.nodeTreeLists = res;  //返回所有节点组节点以及设备
 
+            _.each(this.nodeTreeLists, function(el, inx, ls){
+                _.each(el, function(elSub, inxSub, lsSub){
+                    if (elSub.pId !== -1){
+                        elSub.id = elSub.pId + "-" + elSub.id
+                    }
+                }.bind(this))
+            }.bind(this))
+
             var nodeGroupIdList = Object.keys(this.nodeTreeLists);
             _.each(nodeGroupIdList, function(itemNodeGroupDevices, key, list){
-                var aNode = "",deviceId = [],nodeId = "",deviceName = [];
+                var aNode = "",deviceId = [],nodeId = "",deviceName = [],nodeDeviceJson = {};
                 _.each(this.nodeTreeLists[itemNodeGroupDevices], function(deviceObj, objKey, l){
                     this.nodeTreeLists[itemNodeGroupDevices][objKey].checked = true;
                     if(deviceObj.pId === -1){
-                        aNode += '<li class="node-item" data-nodeId="'+deviceObj.id+'"><span class="label label-primary">'+ deviceObj.name + '</span></li>';
+                        aNode += '<li class="node-item" data-nodeid="'+deviceObj.id+'"><span class="label label-primary">'+ deviceObj.name + '</span></li>';
                         var arr = [];
                         arr.push(deviceObj);
                         this.nodeDeviceArray[key].nodes = arr;
 
                         nodeId = deviceObj.id;
+                        nodeDeviceJson[deviceObj.id] = {
+                            deviceId : [],
+                            deviceName : []
+                        };
                     }else{
                         var ar = [];
                         ar.push(deviceObj);
                         this.nodeDeviceArray[key].devices = ar;
 
-                        deviceId.push(deviceObj.deviceId);
-                        deviceName.push(deviceObj.name);
+
+                        nodeDeviceJson[nodeId].deviceId.push(deviceObj.deviceId);
+                        nodeDeviceJson[nodeId].deviceName.push(deviceObj.name);
                     }
                 }.bind(this));
+                console.log(nodeDeviceJson);
 
                 this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn").append(aNode);
-                this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn li[data-nodeId="+nodeId+"]").attr("data-deviceId",deviceId.join(","));
-                this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn li[data-nodeId="+nodeId+"]").attr("data-deviceName",deviceName.join(","));
+
+                _.each(Object.keys(nodeDeviceJson),function(v,k,l){
+                    this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn li[data-nodeid="+v+"]").attr("data-deviceId",nodeDeviceJson[v].deviceId.join(","));
+                    this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn li[data-nodeid="+v+"]").attr("data-deviceName",nodeDeviceJson[v].deviceName.join(","));
+                }.bind(this));
+                
             }.bind(this));
         },
 
@@ -799,13 +817,13 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                             _.each(currentNodeDevice.devices, function(ele, j, dls){
                                 if(el.id == ele.pId){
                                     deviceIdsList.push(ele.deviceId);
-                                    deviceName.push(ele.deviceName);
+                                    deviceName.push(ele.name);
                                 }
                                 if(el.pId == -1){
                                     nodeId = el.id;
                                 }
                             }.bind(this));
-                            var aNode = $('<li class="node-item" data-nodeId="'+nodeId+'" data-deviceId="'+deviceIdsList.join(',')+'" data-deviceName="'+deviceName.join(',')+'"><span class="label label-primary">'+ el.name + '</span></li>');
+                            var aNode = $('<li class="node-item" data-nodeid="'+nodeId+'" data-deviceId="'+deviceIdsList.join(',')+'" data-deviceName="'+deviceName.join(',')+'"><span class="label label-primary">'+ el.name + '</span></li>');
                             aNode.appendTo(nodeCtn);
                         }.bind(this))
 
@@ -892,11 +910,15 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
                 var arr = [];
 
+                console.log(devicelist);
+
                 for(var i =0; i< devicelist.length; i++){
-                    arr.push({
-                        id : devicelist[i],
-                        deviceName : deviceName[i]
-                    });
+                    if(devicelist[i]){
+                        arr.push({
+                            id : devicelist[i],
+                            deviceName : deviceName[i]
+                        });
+                    }
                 }
 
                 nodeGroupLs.push({

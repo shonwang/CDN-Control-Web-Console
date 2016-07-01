@@ -577,6 +577,9 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 if(el.deviceStatus != 1 && el.pId != -1){
                     el.highlight = true;
                 }
+                if(el.nodeStatus != 1 && el.pId == -1){
+                    el.highlight = true;
+                }
             }.bind(this));
 
             // var zNodes =[

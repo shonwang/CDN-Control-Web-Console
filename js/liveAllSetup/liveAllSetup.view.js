@@ -611,6 +611,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.treeObj.showNodes(matchNodes);
 
             _.each(matchNodes, function(el, index, ls){
+                if (el.isParent&&el.children.length > 0) this.treeObj.showNodes(el.children);
                 var parentNode = el.getParentNode();
                 if (parentNode&&parentNode.isHidden) this.treeObj.showNode(parentNode)
             }.bind(this))
@@ -754,7 +755,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                         nodeDeviceJson[nodeId].deviceName.push(deviceObj.name);
                     }
                 }.bind(this));
-                console.log(nodeDeviceJson);
 
                 this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn").append(aNode);
 
@@ -913,11 +913,13 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 console.log(devicelist);
 
                 for(var i =0; i< devicelist.length; i++){
-                    if(devicelist[i]){
-                        arr.push({
-                            id : devicelist[i],
-                            deviceName : deviceName[i]
-                        });
+                    if(devicelist[i] && devicelist[i] != ""){
+                        for(var j=0; j<devicelist[i].split(",").length;j++){
+                            arr.push({
+                                id : devicelist[i].split(",")[j],
+                                deviceName : deviceName[i].split(",")[j]
+                            });
+                        }
                     }
                 }
 

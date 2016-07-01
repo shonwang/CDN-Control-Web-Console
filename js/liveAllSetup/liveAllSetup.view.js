@@ -611,6 +611,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.treeObj.showNodes(matchNodes);
 
             _.each(matchNodes, function(el, index, ls){
+                if (el.isParent&&el.children.length > 0) this.treeObj.showNodes(el.children);
                 var parentNode = el.getParentNode();
                 if (parentNode&&parentNode.isHidden) this.treeObj.showNode(parentNode)
             }.bind(this))
@@ -620,12 +621,14 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             if (!this.treeObj) return;
             this.treeObj.checkAllNodes(true);
             this.getSelected();
+            this.getChecked();
         },
 
         onClickCancelCheckAll: function(event){
             if (!this.treeObj) return;
             this.treeObj.checkAllNodes(false);
             this.getSelected();
+            this.getChecked();
         },
 
         getSelected: function(){
@@ -645,14 +648,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
         getChecked: function(e,treeId,treeNode){
             _.each(this.nodeTreeLists[this.nodeGroupId], function(nodeGroupObj, k, l){
-                
-                if(treeNode.checked === false){
-                    this.nodeTreeLists[this.nodeGroupId][k].checked = false;
-                }
-                if(treeNode.checked === true){
-                    this.nodeTreeLists[this.nodeGroupId][k].checked = true;
-                }
-
+                var node = this.treeObj.getNodeByParam("id", nodeGroupObj.id, null);
+                nodeGroupObj.checked = node.checked
             }.bind(this));
         },
 
@@ -719,6 +716,14 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onGetNodeTreeDataSuccess:function(res){
             this.nodeTreeLists = res;  //返回所有节点组节点以及设备
+
+            _.each(this.nodeTreeLists, function(el, inx, ls){
+                _.each(el, function(elSub, inxSub, lsSub){
+                    if (elSub.pId !== -1){
+                        elSub.id = elSub.pId + "-" + elSub.id
+                    }
+                }.bind(this))
+            }.bind(this))
 
             var nodeGroupIdList = Object.keys(this.nodeTreeLists);
             _.each(nodeGroupIdList, function(itemNodeGroupDevices, key, list){

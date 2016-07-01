@@ -12,9 +12,11 @@
               <td><%=data[i].attributes['name']%></td>
               <td><%=new Date(data[i].attributes['createTime']).format("yyyy/MM/dd hh:mm")%></td>
               <td>
+                  <% if (permission.EditNodeGroup) { %>
                   <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="edit" title="编辑">
                       <span class="glyphicon glyphicon-edit"></span>
                   </a>
+                  <% } %>
               </td>
             </tr>
         <% } %>

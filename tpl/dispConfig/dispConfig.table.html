@@ -33,6 +33,7 @@
                                 <% } %> >
                                 <td style="width:400px"><%=data[i].get("listFormated")[k].get("nodeString")%></td>
                                 <td>
+<<<<<<< HEAD
                                     <% if (!isHistory) { %>
                                     <input type="number" class="weight" id='<%=data[i].get("listFormated")[k].get("id")%>' region-id='<%=data[i].get("id")%>' max='<%=data[i].get("listFormated")[k].get("dispConfIpInfo.maxNum")%>' min="0" value='<%=data[i].get("listFormated")[k].get("dispConfIpInfo.currNum")%>'>
                                     <% } else { %>
@@ -44,12 +45,16 @@
                                         <%=data[i].get("listFormated")[k].get("dispConfIpInfo.pauseNum")%>
                                     </span>
                                     <% if (!isHistory) { %>
+                                    <% if (permission.EditNodeList) { %>
                                     <a href="javascript:void(0)" class="edit" id='<%=data[i].get("listFormated")[k].get("id")%>' region-id='<%=data[i].get("id")%>' title="编辑节点">
                                         <span class="glyphicon glyphicon-edit"></span>
                                     </a>
+                                    <% } %>
+                                    <% if (permission.DeleteNodeList) { %>
                                     <a href="javascript:void(0)" class="delete" id='<%=data[i].get("listFormated")[k].get("id")%>' region-id='<%=data[i].get("id")%>'  title="删除">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </a>
+                                    % } %>
                                     <% } %> 
                                 </td>
                               </tr>
@@ -61,10 +66,12 @@
               <td><%=data[i].get("dispGroup.ttl")%></td>
               <% if (!isHistory) { %>
               <td>
-                  <a href="javascript:void(0)" id='<%=data[i].get("id")%>' class="add">
+                  <% if (permission.AddNodeList) { %>
+                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="add">
                       <span class="glyphicon glyphicon-plus"></span>添加节点
                   </a>
-                  <a href="javascript:void(0)" id='<%=data[i].get("id")%>' class="adjust">
+                  <% } %>
+                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="adjust">
                       <span class="glyphicon glyphicon-cog"></span>调整
                   </a>
               </td>

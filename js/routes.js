@@ -23,7 +23,6 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         initialize: function(){
             Utility.dateFormat();
             this.navbarView = new NavbarView();
-            this.navbarView.render($('.jquery-accordion-menu'));
             this.curPage = "";
         },
 
@@ -82,6 +81,11 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         businessManage: function(){
+            this.navbarView.initLogin($.proxy(this.businessManageCallback, this))
+        },
+
+        businessManageCallback: function(){
+            if (!AUTH_OBJ.ManageNodeGroups) return;
             require(['businessManage.view', 'businessManage.model', 'nodeManage.model'], function(BusinessManageView, BusinessManageModel, NodeManageModel){
                 this.curPage = 'businessManage';
                 this.navbarView.select(this.curPage);
@@ -103,6 +107,11 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         ipManage: function(){
+            this.navbarView.initLogin($.proxy(this.ipManageCallback, this))
+        },
+
+        ipManageCallback: function(){
+            if (!AUTH_OBJ.ManageIPs) return;
             require(['ipManage.view', 'ipManage.model', 'deviceManage.model'], function(IPManageView, IPManageModel, DeviceManageModel){
                 this.curPage = 'ipManage';
                 this.navbarView.select(this.curPage);
@@ -122,6 +131,11 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         liveCurentSetup: function(){
+            this.navbarView.initLogin($.proxy(this.liveCurentSetupCallback, this))
+        },
+
+        liveCurentSetupCallback: function(){
+            if (!AUTH_OBJ.CurrentConfigurations) return;
             require(['liveCurentSetup.view', 'liveCurentSetup.model'], function(LiveCurentSetupView, LiveCurentSetupModel){
                 this.curPage = 'liveCurentSetup';
                 this.navbarView.select(this.curPage);
@@ -138,6 +152,11 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         liveAllSetup: function(){
+            this.navbarView.initLogin($.proxy(this.liveAllSetupCallback, this))
+        },
+
+        liveAllSetupCallback: function(){
+            if (!AUTH_OBJ.ManageConfigs) return;
             require(['liveAllSetup.view', 'liveAllSetup.model'], function(LiveAllSetupView, LiveAllSetupModel){
                 this.curPage = 'liveAllSetup';
                 this.navbarView.select(this.curPage);
@@ -153,7 +172,12 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             }.bind(this));
         },
 
-        coverManage: function() {
+        coverManage: function(){
+            this.navbarView.initLogin($.proxy(this.coverManageCallback, this))
+        },
+
+        coverManageCallback: function() {
+            if (!AUTH_OBJ.ManageCoverrelateds) return;
             require(['coverManage.view', 'coverManage.model', 'nodeManage.model'], function(CoverManageView, CoverManageModel, NodeManageModel){
                 this.curPage = 'coverManage';
                 this.navbarView.select(this.curPage);
@@ -174,7 +198,12 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             }.bind(this));
         },
 
-        coverRegion: function() {
+        coverRegion: function(){
+            this.navbarView.initLogin($.proxy(this.coverRegionCallback, this))
+        },
+
+        coverRegionCallback: function() {
+            if (!AUTH_OBJ.Coverrelateds) return;
             require(['coverRegion.view', 'coverRegion.model'], function(CoverRegionView, CoverRegionModel){
                     this.curPage = 'coverRegion';
                     this.navbarView.select(this.curPage);
@@ -190,7 +219,12 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                 }.bind(this));
         },
 
-        dispConfig: function() {
+        dispConfig: function(){
+            this.navbarView.initLogin($.proxy(this.dispConfigCallback, this))
+        },
+
+        dispConfigCallback: function() {
+            if (!AUTH_OBJ.GslbConfig) return;
             require(['dispConfig.view', 'dispConfig.model', 'dispGroup.model'], function(DispConfigView, DispConfigModel, DispGroupModel){
                 this.curPage = 'dispConfig';
                 this.navbarView.select(this.curPage);
@@ -211,7 +245,12 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             }.bind(this));
         },
 
-        dispGroup: function() {
+        dispGroup: function(){
+            this.navbarView.initLogin($.proxy(this.dispGroupCallback, this))
+        },
+
+        dispGroupCallback: function() {
+            if (!AUTH_OBJ.ManageGslbGroups) return;
             require(['dispGroup.view', 'dispGroup.model'], function(DispGroupView, DispGroupModel){
                 this.curPage = 'dispGroup';
                 this.navbarView.select(this.curPage);
@@ -227,7 +266,12 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             }.bind(this));
         },
 
-        nodeManage: function() {
+        nodeManage: function(){
+            this.navbarView.initLogin($.proxy(this.nodeManageCallback, this))
+        },
+
+        nodeManageCallback: function() {
+            if (!AUTH_OBJ.ManageNodes) return;
             require(['nodeManage.view', 'nodeManage.model'], function(NodeManageView, NodeManageModel){
                 this.curPage = 'nodeManage';
                 this.navbarView.select(this.curPage);
@@ -243,7 +287,12 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             }.bind(this));
         },
 
-        deviceManage: function(query) {
+        deviceManage: function(query){
+            this.navbarView.initLogin($.proxy(this.deviceManageCallback, this, query))
+        },
+
+        deviceManageCallback: function(query) {
+            if (!AUTH_OBJ.ManageHosts) return;
             require(['deviceManage.view', 'deviceManage.model'], function(DeviceManageView, DeviceManageModel){
                 this.curPage = 'deviceManage';
                 this.navbarView.select(this.curPage);
@@ -263,6 +312,11 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         channelManage: function(){
+            this.navbarView.initLogin($.proxy(this.channelManageCallback, this))
+        },
+
+        channelManageCallback: function(){
+            if (!AUTH_OBJ.ManageChannels) return;
             require(['channelManage.view', 'channelManage.model'], function(ChannelManageView, ChannelManageModel){
                 this.curPage = 'channelManage';
                 this.navbarView.select(this.curPage);
@@ -279,6 +333,11 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         domainStatistics: function(){
+            this.navbarView.initLogin($.proxy(this.domainStatisticsCallback, this))
+        },
+
+        domainStatisticsCallback: function(){
+            if (!AUTH_OBJ.KACustomerBandwidthStatistics) return;
             require(['domainStatistics.view', 'domainStatistics.model'], function(DomainStatisticsView, DomainStatisticsModel){
                 this.curPage = 'domainStatistics';
                 this.navbarView.select(this.curPage);
@@ -298,6 +357,11 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         statisticsManage: function(){
+            this.navbarView.initLogin($.proxy(this.statisticsManageCallback, this))
+        },
+
+        statisticsManageCallback: function(){
+            if (!AUTH_OBJ.CustomerBandwidthStatistics) return;
             require(['statisticsManage.view', 'statisticsManage.model'], function(StatisticsManageView, StatisticsManageModel){
                 this.curPage = 'statisticsManage';
                 this.navbarView.select(this.curPage);

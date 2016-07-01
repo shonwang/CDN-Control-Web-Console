@@ -74,7 +74,9 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.add&edit.html'])({data: this.args}));
 
-            this.$el.find(".ok-again").on("click", $.proxy(this.onClickOK, this));
+            if (AUTH_OBJ.ApplyCreateConfig || AUTH_OBJ.ApplyEditConfig)
+                this.$el.find(".ok-again").on("click", $.proxy(this.onClickOK, this));
+
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancel, this));
             this.$el.find(".lock-name").on("click", $.proxy(this.onClickLockName, this));
             this.$el.find(".edit-name").on("click", $.proxy(this.onClickEditName, this));
@@ -436,7 +438,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.table = $(_.template(template['tpl/liveAllSetup/liveAllSetup.table.html'])({
                 data: this.historyList, 
                 dataTpye: 3, 
-                currentHisId: this.model.get("confFileHisId")
+                currentHisId: this.model.get("confFileHisId"),
+                permission: AUTH_OBJ
             }));
             if (this.historyList.length !== 0){
                 this.$el.find(".table-ctn").html(this.table[0]);
@@ -684,10 +687,17 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.selectedModels = options.selectedModels;
             this.nodeGroupList  = options.nodeGroupList;
             this.buisnessType   = options.buisnessType;
-            this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.confirm.html'])({data: options.nodeGroupList}));
+            this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.confirm.html'])({
+                data: options.nodeGroupList, 
+                permission: AUTH_OBJ
+            }));
             this.initTable();
 
-            this.$el.find(".ok-again").on("click", $.proxy(this.onClickOK, this));
+            if (AUTH_OBJ.ApplyAddConfigs)
+                this.$el.find(".ok-again").on("click", $.proxy(this.onClickOK, this));
+            else
+                this.$el.find(".ok-again").remove();
+
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancel, this));
             this.$el.find("#isShellCmd").on("click", $.proxy(this.onClickShellCmdInput, this))
 
@@ -827,6 +837,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 onHiddenCallback: function(){}.bind(this)
             }
             this.addDevicePopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyAddNodeListandHostList)
+                this.addDevicePopup.$el.find(".modal-footer .btn-primary").remove();
         },
 
 
@@ -933,7 +945,11 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/liveAllSetup/liveAllSetup.table.html'])({data: this.selectedModels, dataTpye: 2}));
+            this.table = $(_.template(template['tpl/liveAllSetup/liveAllSetup.table.html'])({
+                data: this.selectedModels, 
+                dataTpye: 2,
+                permission: AUTH_OBJ
+            }));
             this.$el.find(".table-ctn").html(this.table[0]);
             this.table.find("tbody .file-name").on("click", $.proxy(this.onClickItemFileName, this));
             this.table.find("input").hide();
@@ -951,7 +967,10 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.nodeDeviceArray.push({id: el.id, name: el.name})
             }.bind(this))
 
-            this.$el.find(".edit-name").on("click", $.proxy(this.onClickSelectDevice, this))
+            if (AUTH_OBJ.AddNodeListandHostList)
+                this.$el.find(".edit-name").on("click", $.proxy(this.onClickSelectDevice, this))
+            else
+                this.$el.find(".edit-name").remove();
         },
 
         onClickItemFileName: function(event){
@@ -1024,8 +1043,15 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.collection.getBusinessType();
 
-            this.$el.find(".ok").on("click", $.proxy(this.onClickConfirm, this))
-            this.$el.find(".create").on("click", $.proxy(this.onClickCreate, this))
+            if (AUTH_OBJ.AddConfigs)
+                this.$el.find(".ok").on("click", $.proxy(this.onClickConfirm, this))
+            else
+                this.$el.find(".ok").remove();
+
+            if (AUTH_OBJ.CreateConfig)
+                this.$el.find(".create").on("click", $.proxy(this.onClickCreate, this))
+            else
+                this.$el.find(".create").remove();
         },
 
         onGetBusinessTpye: function(res){
@@ -1066,6 +1092,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             addFileView.render(this.$el.find(".create-edit-panel"));
 
             this.hideMainList(".main-list", ".create-edit-panel")
+            if (!AUTH_OBJ.ApplyCreateConfig)
+                addFileView.$el.find(".ok-again").remove()
         },
 
         hideMainList: function(mainClass, otherClass){
@@ -1185,7 +1213,11 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/liveAllSetup/liveAllSetup.table.html'])({data: this.collection.models, dataTpye: 1}));
+            this.table = $(_.template(template['tpl/liveAllSetup/liveAllSetup.table.html'])({
+                data: this.collection.models, 
+                dataTpye: 1,
+                permission: AUTH_OBJ
+            }));
             if (this.collection.models.length !== 0){
                 this.$el.find(".list .table-ctn").html(this.table[0]);
                 this.table.find("tbody .file-name").on("click", $.proxy(this.onClickItemFileName, this));
@@ -1309,6 +1341,9 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 addFileView.render(this.$el.find(".create-edit-panel"));
 
                 this.hideMainList(".main-list", ".create-edit-panel")
+
+                if (!AUTH_OBJ.ApplyEditConfig)
+                    addFileView.$el.find(".ok-again").remove()
             }.bind(this));
             this.collection.on("lock.file.error", $.proxy(this.onGetError, this));
 

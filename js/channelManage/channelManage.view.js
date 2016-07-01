@@ -136,9 +136,12 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
             }.bind(this));
             this.collection.on("add.dispGroup.channel.error", $.proxy(this.onGetError, this));
 
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-
-            this.enterKeyBindQuery();
+            if (AUTH_OBJ.QueryChannel){
+                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+                this.enterKeyBindQuery();
+            } else {
+                this.$el.find(".opt-ctn .query").remove();
+            }
 
             this.queryArgs = {
                 "domain"           : null,
@@ -204,7 +207,7 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/channelManage/channelManage.table.html'])({data: this.collection.models}));
+            this.table = $(_.template(template['tpl/channelManage/channelManage.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
@@ -254,6 +257,8 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
                 this.channelInfoPopup.$el.modal("hide");
             }.bind(this))
             this.channelInfoPopup.$el.find(".btn-primary").html('<span class="glyphicon glyphicon-link"></span>关联');
+            if (!AUTH_OBJ.DomainAssociatetoGslbGroup)
+                this.channelInfoPopup.$el.find(".btn-primary").remove();
         },
 
         onClickItemEdit: function(event){

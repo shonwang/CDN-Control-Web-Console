@@ -13,7 +13,11 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
 
             this.threeTimeNode = this.$el.find(".three-time");
             this.threeTimeNode.find(".btn-default").on("click",  $.proxy(this.onClickSpecificTime, this));
-            this.$el.find(".query").on("click",  $.proxy(this.onClickApplyButton, this));
+
+            if (AUTH_OBJ.QueryKACustomerBandwidth)
+                this.$el.find(".query").on("click",  $.proxy(this.onClickApplyButton, this));
+            else
+                this.$el.find(".query").remove();
 
             this.collection.on("get.domainBand.success", $.proxy(this.initCharts, this));
             this.collection.on("get.domainBand.error", $.proxy(this.onGetError, this));

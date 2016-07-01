@@ -19,6 +19,7 @@
           <td><%=data[i].attributes.nodeChName%></td>
           <td><%=data[i].attributes.dispDomain%></td>
           <td><%=data[i].attributes.statusName%></td>
+          <% if(permission.EnableorPauseIPinManageIPs){ %>
           <% if(data[i].attributes.status == '2' || data[i].attributes.status == '6'){ %>
             <td>
               <a href="javascript:void(0)" id="<%=data[i].attributes.ipId%>" class="ipOperation" data-ip="<%=data[i].attributes.ip%>" data-status="1" title="开启">
@@ -40,6 +41,7 @@
                 <span class="glyphicon glyphicon-play-circle css-gray"></span>
               </a>
             </td>
+          <% } %>
           <% } %>
         </tr>
     <% } %>  

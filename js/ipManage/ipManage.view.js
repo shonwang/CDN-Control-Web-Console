@@ -40,8 +40,18 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.deviceCollection.on("ip.type.success", $.proxy(this.onGetIpTypeList, this));
             this.deviceCollection.on("ip.type.error", $.proxy(this.onGetError, this));
 
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.$el.find(".opt-ctn .query-single").on("click", $.proxy(this.onClickQuerySingleButton, this));
+            if (AUTH_OBJ.QueryIPList)
+                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+            else
+                this.$el.find(".opt-ctn .query").remove();
+
+            if (AUTH_OBJ.QueryIP){
+                this.$el.find(".opt-ctn .query-single").on("click", $.proxy(this.onClickQuerySingleButton, this));
+                $(document).on('keydown', $.proxy(this.onEnterQuery, this));
+            } else {
+                this.$el.find(".opt-ctn .query-single").remove();
+            }
+
             this.isMultiIPSearch = true;
             this.isQuering = false;
             this.queryArgs = {
@@ -78,7 +88,6 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.collection.on("get.ipInfoPause.error", function(err){
                 this.onGetError(err);
             }.bind(this));
-            $(document).on('keydown', $.proxy(this.onEnterQuery, this));
         },
 
         onEnterQuery: function(e){
@@ -176,7 +185,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/ipManage/ipManage.table.html'])({data: this.collection.models}));
+            this.table = $(_.template(template['tpl/ipManage/ipManage.table.html'])({data: this.collection.models, permission : AUTH_OBJ}));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
@@ -354,7 +363,8 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         remove: function(){
-            $(document).off('keydown', $.proxy(this.onEnterQuery, this));
+            if (AUTH_OBJ.QueryIP)
+                $(document).off('keydown', $.proxy(this.onEnterQuery, this));
             if (this.queryDetailPopup) $("#" + this.queryDetailPopup.modalId).remove();
             this.queryDetailPopup = null;
             this.collection.off();
@@ -362,13 +372,15 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         hide: function(){
-            $(document).off('keydown', $.proxy(this.onEnterQuery, this));
+            if (AUTH_OBJ.QueryIP)
+                $(document).off('keydown', $.proxy(this.onEnterQuery, this));
             this.$el.hide();
         },
 
         update: function(){
             this.$el.show();
-            $(document).on('keydown', $.proxy(this.onEnterQuery, this));
+            if (AUTH_OBJ.QueryIP)
+                $(document).on('keydown', $.proxy(this.onEnterQuery, this));
         },
 
         render: function(target) {

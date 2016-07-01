@@ -392,13 +392,22 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
 
-            this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.$el.find(".opt-ctn .multi-play").on("click", $.proxy(this.onClickMultiPlay, this));
+            if (AUTH_OBJ.CreateNode)
+                this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
+            else
+                this.$el.find(".opt-ctn .create").remove();
+            if (AUTH_OBJ.QueryNode){
+                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+                this.enterKeyBindQuery();
+            } else {
+                this.$el.find(".opt-ctn .query").remove();
+            }
+            if (AUTH_OBJ.EnableorPauseNode)
+                this.$el.find(".opt-ctn .multi-play").on("click", $.proxy(this.onClickMultiPlay, this));
+            else
+                this.$el.find(".opt-ctn .multi-play").remove();
             this.$el.find(".opt-ctn .multi-stop").on("click", $.proxy(this.onClickMultiStop, this));
             this.$el.find(".opt-ctn .multi-delete").on("click", $.proxy(this.onClickMultiDelete, this));
-
-            this.enterKeyBindQuery();
 
             this.queryArgs = {
                 "page"    : 1,
@@ -460,10 +469,11 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     this.addNodePopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){
-                    this.enterKeyBindQuery();
+                    if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.addNodePopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyCreateNode) this.addNodePopup.$el.find(".modal-footer .btn-primary").remove();
         },
 
         initTable: function(){
@@ -471,7 +481,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
             this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
 
-            this.table = $(_.template(template['tpl/nodeManage/nodeManage.table.html'])({data: this.collection.models}));
+            this.table = $(_.template(template['tpl/nodeManage/nodeManage.table.html'])({data: this.collection.models, permission:AUTH_OBJ}));
             if (this.collection.models.length !== 0){
                 this.$el.find(".table-ctn").html(this.table[0]);
                 this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
@@ -567,10 +577,12 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     this.editNodePopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){
-                    this.enterKeyBindQuery();
+                    if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.editNodePopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyEditNode)
+                this.editNodePopup.$el.find(".modal-footer .btn-primary").remove();
         },
 
         onClickItemDelete: function(event){
@@ -780,7 +792,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
 
         update: function(){
             this.$el.show();
-            this.enterKeyBindQuery();
+            if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
         },
 
         render: function(target) {

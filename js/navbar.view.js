@@ -29,11 +29,12 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
         },
 
         initialize: function() {
-            this.$el = $(_.template(template['tpl/sidebar.html'])());
-            this.initLogin();
+            //this.initLogin();
             this.initLogout();
             this.initSidebarToggle();
             this.initGlobleSearch();
+            this.isRender = false;
+            this.isLogin = false;
         },
 
         initGlobleSearch: function(){
@@ -77,14 +78,14 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
         initLogout: function(){
             $(".logout").on("click", function() {
                 var data = {
-                    url            : BASE_URL + "/rs/login/exit?" + new Date().valueOf(),
+                    url            : BASE_URL + "/gateway/admin/login/out?" + new Date().valueOf(),
                     type           : "GET",
                     queryData      : {},
                     successCallBack: function(res){
                         this.redirect();
                     }.bind(this),
                     errorCallBack  : function(){
-                        alert("中控系统岂是你说来就来，说走就走的！！！")
+                        alert("权限系统岂是你说来就来，说走就走的！！！")
                     }
                 }
                 this.sendRequest(data)
@@ -100,14 +101,21 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
             activeNode.addClass("active");
         },
 
-        initLogin: function(){
+        initLogin: function(callback){
             var data = {
-                url            : BASE_URL + "/rs/login/isLogined?" + new Date().valueOf(),
+                url            : BASE_URL + "/gateway/auth/owns/authed?" + new Date().valueOf(),
                 type           : "GET",
                 queryData      : {},
                 successCallBack: function(res){
-                    if (res && res.status !== 400) {
-                        $(".user-name").html(res.mgs);
+                    if (res && res.userInfoVo && res.purviewList) {
+                        $(".user-name").html(res.userInfoVo.name);
+                        window.AUTH_OBJ = {};
+                        _.each(res.purviewList.list, function(el, index, list){
+                            window.AUTH_OBJ[el.value] = el.auth === -1 ? false : true;
+                        })
+                        console.log(AUTH_OBJ)
+                        callback&&callback();
+                        if (!this.isRender) this.render();
                     } else {
                         this.redirect();
                     }
@@ -117,7 +125,12 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
                 }.bind(this)
 
             }
-            this.sendRequest(data, true)
+            if (!this.isLogin){
+                this.sendRequest(data, true);
+                this.isLogin = true;
+            } else {
+                callback&&callback();
+            }
         },
 
         redirect : function (url) {
@@ -154,6 +167,7 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
             defaultParas.beforeSend = function(xhr){
                 if (isJson)
                     xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+                xhr.setRequestHeader("systemKey","resourcemanager");
             }
             
             defaultParas.success = function(res){
@@ -167,9 +181,11 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
             $.ajax(defaultParas);
         },
 
-        render: function(target) {
-            this.$el.appendTo(target);
+        render: function() {
+            this.$el = $(_.template(template['tpl/sidebar.html'])({permission:AUTH_OBJ}));
+            this.$el.appendTo($('.jquery-accordion-menu'));
             $("#jquery-accordion-menu").jqueryAccordionMenu();
+            this.isRender = true;
         }
 
     });

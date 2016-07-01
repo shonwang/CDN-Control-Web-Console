@@ -621,12 +621,14 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             if (!this.treeObj) return;
             this.treeObj.checkAllNodes(true);
             this.getSelected();
+            this.getChecked();
         },
 
         onClickCancelCheckAll: function(event){
             if (!this.treeObj) return;
             this.treeObj.checkAllNodes(false);
             this.getSelected();
+            this.getChecked();
         },
 
         getSelected: function(){
@@ -645,22 +647,31 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         getChecked: function(e,treeId,treeNode){
-            _.each(this.nodeTreeLists[this.nodeGroupId], function(nodeGroupObj, k, l){
+            // console.log(treeNode,treeId);
+            // _.each(this.nodeTreeLists[this.nodeGroupId], function(nodeGroupObj, k, l){
+            //     console.log(nodeGroupObj);
                 
-                if(treeNode.checked === false){
-                    this.nodeTreeLists[this.nodeGroupId][k].checked = false;
-                }
-                if(treeNode.checked === true){
-                    this.nodeTreeLists[this.nodeGroupId][k].checked = true;
-                }
+            //     if(treeNode.checked === false){
+            //         this.nodeTreeLists[this.nodeGroupId][k].checked = false;
+            //     }
+            //     if(treeNode.checked === true){
+            //         this.nodeTreeLists[this.nodeGroupId][k].checked = true;
+            //     }
 
+            // }.bind(this));
+            //console.log(this.nodeTreeLists);
+            //
+            _.each(this.nodeTreeLists[this.nodeGroupId], function(nodeGroupObj, k, l){
+                var node = this.treeObj.getNodeByParam("id", nodeGroupObj.id, null);
+                nodeGroupObj.checked = node.checked
             }.bind(this));
         },
 
         getArgs: function(){
             var selectedObj = {
                 nodes: this.matchNodes,
-                devices: this.matchDeviceNodes
+                devices: this.matchDeviceNodes,
+                nodeTreeLists: this.nodeTreeLists
             }
             return selectedObj;
         },
@@ -809,6 +820,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     if (!resultObj) return;
                     currentNodeDevice.nodes = resultObj.nodes;
                     currentNodeDevice.devices = resultObj.devices;
+                    this.nodeTreeLists = resultObj.nodeTreeLists;
                     //console.log(this.nodeDeviceArray);
                     nodeCtn.find("li").remove();
                     //if(currentNodeDevice.devices.length > 0){
@@ -909,8 +921,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 }.bind(this));
 
                 var arr = [];
-
-                console.log(devicelist);
 
                 for(var i =0; i< devicelist.length; i++){
                     if(devicelist[i] && devicelist[i] != ""){

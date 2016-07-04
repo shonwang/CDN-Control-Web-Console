@@ -1,9 +1,9 @@
-window.DEBUG = 1.2;
+window.DEBUG = 1.1;
 
 if (window.DEBUG === 1)
     window.BASE_URL = "http://develop.gateway.center.cdn.ksyun.com";
 else if (window.DEBUG === 1.1)
-    window.BASE_URL = "http://192.168.158.213:9098";
+    window.BASE_URL = "http://local.center.ksyun.com";
 else if (window.DEBUG === 1.2)
     window.BASE_URL = "http://10.4.2.38:9098";
 else if (window.DEBUG === 2)

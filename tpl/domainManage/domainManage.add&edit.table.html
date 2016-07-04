@@ -4,6 +4,7 @@
 			<!-- <th>用户ID</th>
 			<th>关联域名表ID</th> -->
 			<th>类型</th>
+			<th>源站是否有缓存规则</th>
 			<th>目录</th>
 			<th>过期时间(秒)</th>
 			<th>操作</th>
@@ -29,6 +30,7 @@
 			            全局默认缓存配置项
 			        <% } %>
 			    </td>
+			    <td value="<%=data[i].hasOriginPolicy%>"><%=data[i].hasOriginPolicy%></td>
 			    <td value="<%=data[i].policy%>"><%=data[i].policy%></td>
 			    <td value="<%=data[i].expireTime%>"><%=data[i].expireTime%></td>
 				<td>

@@ -12,23 +12,33 @@
         </div>
     </div> -->
     <div class="form-group dropdown-type">
-            <label for="dropdown-type" class="col-sm-3 control-label">类型</label>
-            <div class="dropdown col-sm-6">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-type" data-toggle="dropdown">
-                    <span class="cur-value">文件后缀</span>
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu"></ul>
-            </div>
+        <label for="dropdown-type" class="col-sm-4 control-label">类型</label>
+        <div class="dropdown col-sm-6">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-type" data-toggle="dropdown">
+                <span class="cur-value">文件后缀</span>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu"></ul>
         </div>
+    </div>
     <div class="form-group">
-        <label for="textarea-policy" class="col-sm-3 control-label">目录</label>
+        <label for="dropdown-hasOriginPolicy" class="col-sm-4 control-label">源站是否有缓存规则</label>
+        <div class="dropdown col-sm-6 dropdown-hasOriginPolicy">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-hasOriginPolicy" data-toggle="dropdown">
+                <span class="cur-value">是</span>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu"></ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="textarea-policy" class="col-sm-4 control-label">目录</label>
         <div class="col-sm-6">
             <textarea class="form-control" rows="3" id="textarea-policy" placeholder="目录须以/开头, 如:/www/directory/folder;  文件后缀用英文半角分号分隔开,如:jpg,txt"></textarea>
         </div>
     </div>
     <div class="form-group">
-        <label for="input-expireTime" class="col-sm-3 control-label">过期时间</label>
+        <label for="input-expireTime" class="col-sm-4 control-label">过期时间</label>
         <div class="col-sm-6">
             <input type="text" class="form-control" id="input-expireTime" value="" placeholder="单位:秒">
         </div>

@@ -31,7 +31,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     region : this.model.get("region"),
                     hostType : this.model.get("hostType"),
                     protocol : this.model.get("protocol"),
-                    hasOriginPolicy : this.model.get("hasOriginPolicy"),
+                    //hasOriginPolicy : this.model.get("hasOriginPolicy"),
                     customHostHeader : this.model.get("customHostHeader"),
                     wsUsed : this.model.get("wsUsed"),
                     ipVisitContent : this.model.get("ipVisitContent"),
@@ -60,7 +60,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     region:"",
                     hostType:1,
                     protocol:1,
-                    hasOriginPolicy:true,
+                    //hasOriginPolicy:true,
                     customHostHeader:"",
                     wsUsed : 0,
                     ipVisitContent:"",
@@ -253,20 +253,20 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 }.bind(this));
             }
             //源站是否有缓存规则
-            var originPolicyList = [
-                {name: "是", value: true},
-                {name: "否", value: false}
-            ];
-            Utility.initDropMenu(this.$el.find(".dropdown-originPolicy"), originPolicyList, function(value){
-                this.args.hasOriginPolicy = $.trim(value);
-            }.bind(this));
-            if(this.isEdit){
-                $.each(originPolicyList,function(k,v){
-                    if(v.value == this.model.get("hasOriginPolicy")){
-                        this.$el.find("#dropdown-originPolicy .cur-value").html(v.name);
-                    }
-                }.bind(this));
-            }
+            // var originPolicyList = [
+            //     {name: "是", value: true},
+            //     {name: "否", value: false}
+            // ];
+            // Utility.initDropMenu(this.$el.find(".dropdown-originPolicy"), originPolicyList, function(value){
+            //     this.args.hasOriginPolicy = $.trim(value);
+            // }.bind(this));
+            // if(this.isEdit){
+            //     $.each(originPolicyList,function(k,v){
+            //         if(v.value == this.model.get("hasOriginPolicy")){
+            //             this.$el.find("#dropdown-originPolicy .cur-value").html(v.name);
+            //         }
+            //     }.bind(this));
+            // }
         },
 
         onClickAddCacheRule:function(){
@@ -308,6 +308,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 type     : 2,
                 onOKCallback:  function(){
                     var options = addCacheRuleView.getArgs();
+                    console.log(options);
                     if (!options) return;
                     this.addCacheRulePopup.$el.modal("hide");
                     if(this.isEdit){
@@ -362,8 +363,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             for(var i = 0; i< trLen; i++){
                 var json = {
                     type : $.trim(this.$el.find(".table-ctn tbody").children().eq(i).children().eq(0).attr("value")),
-                    policy : $.trim(this.$el.find(".table-ctn tbody").children().eq(i).children().eq(1).attr("value")),
-                    expireTime : $.trim(this.$el.find(".table-ctn tbody").children().eq(i).children().eq(2).attr("value"))
+                    hasOriginPolicy : $.trim(this.$el.find(".table-ctn tbody").children().eq(i).children().eq(1).attr("value")),
+                    policy : $.trim(this.$el.find(".table-ctn tbody").children().eq(i).children().eq(2).attr("value")),
+                    expireTime : $.trim(this.$el.find(".table-ctn tbody").children().eq(i).children().eq(3).attr("value"))
                 }
                 this.args.policys.push(json);
             }
@@ -385,6 +387,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
         },
 
         initDropMenu:function(){
+            //类型
             var typeList = [
                 {name: "文件后缀", value: 0},
                 {name: "目录", value: 1},
@@ -396,11 +399,21 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             Utility.initDropMenu(this.$el.find(".dropdown-type"), typeList, function(value){
                 this.type = value;
             }.bind(this));
+
+            //源站是否有缓存规则
+            var originPolicyList = [
+                {name: "是", value: true},
+                {name: "否", value: false}
+            ];
+            Utility.initDropMenu(this.$el.find(".dropdown-hasOriginPolicy"), originPolicyList, function(value){
+                this.hasOriginPolicy = $.trim(value);
+            }.bind(this));
         },
 
         getArgs: function() {
             return {
                 type : this.type ? this.type : this.$el.find("#dropdown-type").siblings().children().eq(0).attr('value'),
+                hasOriginPolicy : this.hasOriginPolicy ? this.hasOriginPolicy : this.$el.find("#dropdown-hasOriginPolicy").siblings().children().eq(0).attr('value'),
                 policy : $.trim(this.$el.find("#textarea-policy").val()),
                 expireTime : parseInt($.trim(this.$el.find("#input-expireTime").val()))
             }

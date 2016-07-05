@@ -11,6 +11,41 @@
             <input type="text" class="form-control" id="input-english" value="<%=data.name%>">
         </div>
     </div>
+    <hr>
+    <div class="alert alert-dismissable alert-warning text-center">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <strong>计费区域生效后，不可在线上系统进行更改，请确保选择的计费区域正确</strong>
+    </div>
+    <div class="form-group dropdown-continent">
+        <label for="dropdown-continent" class="col-sm-4 control-label">计费区域 大洲</label>
+        <div class="dropdown col-sm-6">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-continent" data-toggle="dropdown">
+                <span class="cur-value">加载中...</span>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu"></ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="input-longitude-latitude" class="col-sm-4 control-label">国家</label>
+        <div class="dropdown col-sm-6 dropdown-country" style="z-index: 1">
+            <button class="btn btn-default" type="button" id="dropdown-country">
+                <span class="cur-value">加载中...</span>
+                <span class="caret"></span>
+            </button>
+        </div>
+    </div>
+    <div class="form-group dropdown-operator">
+        <label for="dropdown-operator" class="col-sm-4 control-label">运营商</label>
+        <div class="dropdown col-sm-6">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-operator" data-toggle="dropdown">
+                <span class="cur-value">加载中...</span>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu"></ul>
+        </div>
+    </div>
+    <hr>
     <div class="form-group" style="display: none">
         <label for="dropdown-city" class="col-sm-4 control-label">城市</label>
         <div class="dropdown col-sm-6 dropdown-city" style="z-index: 1">
@@ -24,16 +59,6 @@
         <label for="input-longitude-latitude" class="col-sm-4 control-label">经纬度</label>
         <div class="col-sm-6">
             <input type="text" class="form-control" id="input-longitude-latitude" value="" readonly="true">
-        </div>
-    </div>
-    <div class="form-group dropdown-operator">
-        <label for="dropdown-operator" class="col-sm-4 control-label">运营商</label>
-        <div class="dropdown col-sm-6">
-            <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-operator" data-toggle="dropdown">
-                <span class="cur-value">加载中...</span>
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu"></ul>
         </div>
     </div>
     <div class="form-group dropdown-charging">

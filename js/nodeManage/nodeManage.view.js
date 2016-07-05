@@ -122,6 +122,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     "id"                 : this.model.get("id"),
                     "name"               : this.model.get("name"),
                     "chName"             : this.model.get("chName"),
+                    //"ChargingRegion"     : this.model.get("ChargingRegion"),
                     "operator"           : this.model.get("operator"),
                     "chargingType"       : this.model.get("chargingType"),
                     "minBandwidth"       : this.model.get("minBandwidth"),
@@ -142,6 +143,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     "name"               : "",
                     "chName"             : "",
                     "operator"           : "",
+                    //"ChargingRegion"     : "",
                     "chargingType"       : 1 ,
                     "minBandwidth"       : "",
                     "maxBandwidth"       : "",
@@ -288,7 +290,53 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             }
 
             this.onGetOperatorSuccess(list);
+            this.onGetAllContinent();
             //this.collection.getAllCity();
+        },
+
+        onGetAllContinent: function(list){
+            var nameList = [
+                {name: "亚洲（除中国大陆）", value: 1}
+                // {name: "免费", value: 0}
+            ];
+            Utility.initDropMenu(this.$el.find(".dropdown-continent"), nameList, function(value){
+                //this.args.chargingType = parseInt(value);
+            }.bind(this));
+
+            if (this.isEdit){
+                // var defaultValue = _.find(nameList, function(object){
+                //     return object.value === this.model.attributes.chargingType
+                // }.bind(this));
+                // this.$el.find(".dropdown-continent .cur-value").html(defaultValue.name)
+                this.$el.find("#dropdown-continent").prop("disabled", true)
+                this.onGetCountryByContinent();
+            } else {
+                this.$el.find(".dropdown-continent .cur-value").html(nameList[0].name)
+            }
+
+            this.onGetCountryByContinent();
+        },
+
+        onGetCountryByContinent: function(){
+            var nameList = [
+                {name: "日本", value: "日本"}
+                // {name: "免费", value: 0}
+            ];
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-country').get(0),
+                panelID: this.$el.find('#dropdown-country').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function(){},
+                data: nameList,
+                callback: function(data) {
+                    this.$el.find('#dropdown-country .cur-value').html(data.name);
+                }.bind(this)
+            });
+
+            this.$el.find('#dropdown-country .cur-value').html(nameList[0].name);
         },
 
         onGetAllCity: function(res){

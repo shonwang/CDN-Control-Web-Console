@@ -51,13 +51,16 @@
             </div>
         </div>
         <div class="form-group">
-            <label for="dropdown-confParam" class="col-sm-4 control-label">过滤参数</label>
-            <div class="dropdown col-sm-6 dropdown-confParam">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-confParam" data-toggle="dropdown">
+            <label for="dropdown-confParamNew" class="col-sm-4 control-label">过滤参数</label>
+            <div class="dropdown col-sm-3 dropdown-confParamNew">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-confParamNew" data-toggle="dropdown">
                     <span class="cur-value">是</span>
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu"></ul>
+            </div>
+            <div class="col-sm-4 animated" style="<% if(data.confParamNew < 2){ %>display: none;<% } %>">
+                <input type="text" class="form-control" id="input-confDomain" value="<%=data.confDomain%>" placeholder="自定义域名">
             </div>
         </div>
         <div class="form-group">
@@ -149,19 +152,15 @@
             </div>
         </div>
         <div class="form-group">
-            <label for="dropdown-originPolicy" class="col-sm-4 control-label">源站是否有缓存规则</label>
-            <div class="dropdown col-sm-6 dropdown-originPolicy">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-originPolicy" data-toggle="dropdown">
-                    <span class="cur-value">是</span>
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu"></ul>
-            </div>
-        </div>
-        <div class="form-group">
             <label for="input-customHostHeader" class="col-sm-4 control-label">自定义host头</label>
             <div class="col-sm-6">
                 <input type="text" class="form-control" id="input-customHostHeader" value="<%=data.customHostHeader%>">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="textarea-urlContent" class="col-sm-4 control-label">URL黑名单列表</label>
+            <div class="col-sm-6">
+                <textarea class="form-control" rows="3" id="textarea-urlContent"><%=data.urlContent%></textarea>
             </div>
         </div>
         <div class="form-group">

@@ -20,7 +20,6 @@
             <th class="text-center">域名所属region</th>
             <th class="text-center">回源host头类型</th>
             <th class="text-center">使用的协议</th>
-            <th class="text-center">源站是否有缓存规则</th>
             <th class="text-center">自定义host头</th>
             <th class="text-center">备注</th>
             <th class="text-center">操作</th>
@@ -37,7 +36,7 @@
                 <td class="text-center"><%=data[i].attributes["testUrl"]%></td>
                 <td class="text-center"><%=data[i].attributes["originTypeName"]%></td>
                 <td class="text-center"><%=data[i].attributes["originAddress"]%></td>
-                <td class="text-center"><%=data[i].attributes["confParamName"]%></td>
+                <td class="text-center"><%=data[i].attributes["confParamNewName"]%></td>
                 <td class="text-center"><%=data[i].attributes["confRangeName"]%></td>
                 <td class="text-center"><%=data[i].attributes["referNullableName"]%></td>
                 <td class="text-center"><%=data[i].attributes["referVisitControlName"]%></td>
@@ -48,7 +47,6 @@
                 <td class="text-center"><%=data[i].attributes["region"]%></td>
                 <td class="text-center"><%=data[i].attributes["hostTypeName"]%></td>
                 <td class="text-center"><%=data[i].attributes["protocolName"]%></td>
-                <td class="text-center"><%=data[i].attributes["hasOriginPolicyName"]%></td>
                 <td class="text-center"><%=data[i].attributes["customHostHeader"]%></td>
                 <td class="text-center"><%=data[i].attributes["description"]%></td>
                 <td class="text-center">

@@ -16,6 +16,13 @@
             全局默认缓存配置项
         <% } %>
     </td>
+    <td value="<%=data.hasOriginPolicy%>">
+        <% if(data.hasOriginPolicy == true){ %>
+            是
+        <% }else{ %>
+            否
+        <% } %>
+    </td>
     <td value="<%=data.policy%>"><%=data.policy%></td>
     <td value="<%=data.expireTime%>"><%=data.expireTime%></td>
     <td>

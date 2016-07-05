@@ -244,7 +244,7 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
                     if (this.start === 0 && i === 0) {
                         option.title = {
                             text: "Top100", 
-                            subtext: '按产品要求，数据按1024转换, 带宽单位最大到Tbps，流量单位最大到TB',
+                            subtext: '数据按1024转换, 带宽单位最大到Tbps，流量单位最大到TB',
                             x: 'center'
                         };
                     }

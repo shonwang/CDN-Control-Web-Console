@@ -21,7 +21,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     originType : this.model.get("originType"),
                     originAddress : this.model.get("originAddress"),
                     cdnFactory : this.model.get("cdnFactory"),
-                    confParam : this.model.get("confParam"),
+                    confParamNew : this.model.get("confParamNew"),
+                    confDomain : this.model.get("confDomain"),
+                    urlContent : this.model.get("urlContent"),
                     confRange : this.model.get("confRange"),
                     referNullable : this.model.get("referNullable"),
                     referVisitControl : this.model.get("referVisitControl"),
@@ -31,7 +33,6 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     region : this.model.get("region"),
                     hostType : this.model.get("hostType"),
                     protocol : this.model.get("protocol"),
-                    //hasOriginPolicy : this.model.get("hasOriginPolicy"),
                     customHostHeader : this.model.get("customHostHeader"),
                     wsUsed : this.model.get("wsUsed"),
                     ipVisitContent : this.model.get("ipVisitContent"),
@@ -50,7 +51,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     originType:1,
                     originAddress:"",
                     cdnFactory : 1,
-                    confParam:1,
+                    confParamNew:1,
+                    confDomain:"",
+                    urlContent:"",
                     confRange:1,
                     referNullable:1,
                     referVisitControl:0,
@@ -60,7 +63,6 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     region:"",
                     hostType:1,
                     protocol:1,
-                    //hasOriginPolicy:true,
                     customHostHeader:"",
                     wsUsed : 0,
                     ipVisitContent:"",
@@ -114,17 +116,28 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 }.bind(this));
             }
             //过滤参数
-            var confParamList = [
+            var confParamNewList = [
                 {name: "是", value: 1},
-                {name: "否", value: 0}
+                {name: "否", value: 0},
+                {name: "带?自定义域名", value: 2},
+                {name: "不带?自定义域名", value: 3}
             ];
-            Utility.initDropMenu(this.$el.find(".dropdown-confParam"), confParamList, function(value){
-                this.args.confParam = parseInt($.trim(value));
+            Utility.initDropMenu(this.$el.find(".dropdown-confParamNew"), confParamNewList, function(value){
+                this.args.confParamNew = parseInt($.trim(value));
+                if(this.args.confParamNew > 1){
+                    this.$el.find("#input-confDomain").parent().show().removeClass("fadeOutLeft").addClass("fadeInLeft");
+                }else{
+                    this.$el.find("#input-confDomain").parent().removeClass("fadeInLeft").addClass("fadeOutLeft");
+                    setTimeout(function(){
+                        this.$el.find("#input-confDomain").parent().hide();
+                    }.bind(this),500);
+                    this.$el.find("#input-confDomain").val("");
+                }
             }.bind(this));
             if(this.isEdit){
-                $.each(confParamList,function(k,v){
-                    if(v.value == this.model.get("confParam")){
-                        this.$el.find("#dropdown-confParam .cur-value").html(v.name);
+                $.each(confParamNewList,function(k,v){
+                    if(v.value == this.model.get("confParamNew")){
+                        this.$el.find("#dropdown-confParamNew .cur-value").html(v.name);
                     }
                 }.bind(this));
             }
@@ -252,21 +265,6 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     }
                 }.bind(this));
             }
-            //源站是否有缓存规则
-            // var originPolicyList = [
-            //     {name: "是", value: true},
-            //     {name: "否", value: false}
-            // ];
-            // Utility.initDropMenu(this.$el.find(".dropdown-originPolicy"), originPolicyList, function(value){
-            //     this.args.hasOriginPolicy = $.trim(value);
-            // }.bind(this));
-            // if(this.isEdit){
-            //     $.each(originPolicyList,function(k,v){
-            //         if(v.value == this.model.get("hasOriginPolicy")){
-            //             this.$el.find("#dropdown-originPolicy .cur-value").html(v.name);
-            //         }
-            //     }.bind(this));
-            // }
         },
 
         onClickAddCacheRule:function(){
@@ -356,6 +354,8 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             this.args.ipVisitContent = $.trim(this.$el.find("#textarea-ipVisitContent").val());
             this.args.region = $.trim(this.$el.find("#textarea-region").val());
             this.args.customHostHeader = $.trim(this.$el.find("#input-customHostHeader").val());
+            this.args.confDomain = $.trim(this.$el.find("#input-confDomain").val());
+            this.args.urlContent = $.trim(this.$el.find("#textarea-urlContent").val());
             this.args.description = $.trim(this.$el.find("#textarea-description").val());
 
             //收集缓存规则

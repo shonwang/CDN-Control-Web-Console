@@ -15,8 +15,10 @@ define("domainManage.model", ['require','exports', 'utility'], function(require,
             if(this.get("originType") === 2) this.set("originTypeName","源站域名");
             if(this.get("originType") === 3) this.set("originTypeName","OSS域名");
             //过滤参数
-            if(this.get("confParam") === 1) this.set("confParamName","是");
-            if(this.get("confParam") === 0) this.set("confParamName","否");
+            if(this.get("confParamNew") === 1) this.set("confParamNewName","是");
+            if(this.get("confParamNew") === 0) this.set("confParamNewName","否");
+            if(this.get("confParamNew") === 2) this.set("confParamNewName","带?自定义域名");
+            if(this.get("confParamNew") === 3) this.set("confParamNewName","不带?自定义域名");
             //range回源
             if(this.get("confRange") === 1) this.set("confRangeName","是");
             if(this.get("confRange") === 0) this.set("confRangeName","否");

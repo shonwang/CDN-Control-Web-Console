@@ -51,10 +51,10 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     originType:1,
                     originAddress:"",
                     cdnFactory : 1,
-                    confParamNew:1,
+                    confParamNew:0,
                     confDomain:"",
                     urlContent:"",
-                    confRange:1,
+                    confRange:0,
                     referNullable:1,
                     referVisitControl:0,
                     referVisitContent:"",
@@ -398,9 +398,14 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-type"), typeList, function(value){
                 this.type = value;
+                if(value == 9){
+                    this.$el.find(".dropdown-hasOriginPolicy .cur-value").html("是");
+                }else{
+                    this.$el.find(".dropdown-hasOriginPolicy .cur-value").html("否");
+                }
             }.bind(this));
 
-            //源站是否有缓存规则
+            //是否遵循源站
             var originPolicyList = [
                 {name: "是", value: true},
                 {name: "否", value: false}
@@ -411,11 +416,17 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
         },
 
         getArgs: function() {
+            var defalutHasOriginPolicy = false;
+
+            if(this.type && this.type == 9){
+                defalutHasOriginPolicy = true;
+            }
+
             return {
                 type : this.type ? this.type : this.$el.find("#dropdown-type").siblings().children().eq(0).attr('value'),
-                hasOriginPolicy : this.hasOriginPolicy ? this.hasOriginPolicy : this.$el.find("#dropdown-hasOriginPolicy").siblings().children().eq(0).attr('value'),
+                hasOriginPolicy : this.hasOriginPolicy ? this.hasOriginPolicy : defalutHasOriginPolicy,   //this.$el.find("#dropdown-hasOriginPolicy").siblings().children().eq(0).attr('value'),
                 policy : $.trim(this.$el.find("#textarea-policy").val()),
-                expireTime : parseInt($.trim(this.$el.find("#input-expireTime").val()))
+                expireTime : $.trim(this.$el.find("#input-expireTime").val()) == "" ? 0 : parseInt($.trim(this.$el.find("#input-expireTime").val()))
             }
         },
 

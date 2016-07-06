@@ -3,23 +3,10 @@
         <tr>
             <th class="text-center">加速域名</th>
             <th class="text-center">用户ID</th>
-            <th class="text-center">cname</th>
-            <th class="text-center">加速类型</th>
             <th class="text-center">审核状态</th>
-            <th class="text-center">测试地址</th>
-            <th class="text-center">回源类型</th>
             <th class="text-center">回源地址</th>
             <th class="text-center">过滤参数</th>
-            <th class="text-center">range回源</th>
-            <th class="text-center">refer可否为空</th>
-            <th class="text-center">refer防盗链开关及类型</th>
-            <th class="text-center">refer防盗链名单列表</th>
-            <th class="text-center">IP防盗链开关及类型</th>
-            <th class="text-center">IP防盗链名单列表</th>
-            <th class="text-center">泛域名标识</th>
-            <th class="text-center">域名所属region</th>
             <th class="text-center">回源host头类型</th>
-            <th class="text-center">使用的协议</th>
             <th class="text-center">自定义host头</th>
             <th class="text-center">备注</th>
             <th class="text-center">操作</th>
@@ -30,23 +17,10 @@
             <tr data-id="<%=data[i].attributes["id"]%>">
                 <td class="text-center"><%=data[i].attributes["domain"]%></td>
                 <td class="text-center"><%=data[i].attributes["userId"]%></td>
-                <td class="text-center"><%=data[i].attributes["cname"]%></td>
-                <td class="text-center"><%=data[i].attributes["typeName"]%></td>
                 <td class="text-center"><%=data[i].attributes["auditStatusName"]%></td>
-                <td class="text-center"><%=data[i].attributes["testUrl"]%></td>
-                <td class="text-center"><%=data[i].attributes["originTypeName"]%></td>
                 <td class="text-center"><%=data[i].attributes["originAddress"]%></td>
                 <td class="text-center"><%=data[i].attributes["confParamNewName"]%></td>
-                <td class="text-center"><%=data[i].attributes["confRangeName"]%></td>
-                <td class="text-center"><%=data[i].attributes["referNullableName"]%></td>
-                <td class="text-center"><%=data[i].attributes["referVisitControlName"]%></td>
-                <td class="text-center"><%=data[i].attributes["referVisitContent"]%></td>
-                <td class="text-center"><%=data[i].attributes["ipVisitControlName"]%></td>
-                <td class="text-center"><%=data[i].attributes["ipVisitContent"]%></td>
-                <td class="text-center"><%=data[i].attributes["wildcardName"]%></td>
-                <td class="text-center"><%=data[i].attributes["region"]%></td>
                 <td class="text-center"><%=data[i].attributes["hostTypeName"]%></td>
-                <td class="text-center"><%=data[i].attributes["protocolName"]%></td>
                 <td class="text-center"><%=data[i].attributes["customHostHeader"]%></td>
                 <td class="text-center"><%=data[i].attributes["description"]%></td>
                 <td class="text-center">

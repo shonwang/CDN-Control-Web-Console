@@ -306,7 +306,6 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 type     : 2,
                 onOKCallback:  function(){
                     var options = addCacheRuleView.getArgs();
-                    console.log(options);
                     if (!options) return;
                     this.addCacheRulePopup.$el.modal("hide");
                     if(this.isEdit){
@@ -424,7 +423,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
 
             return {
                 type : this.type ? this.type : this.$el.find("#dropdown-type").siblings().children().eq(0).attr('value'),
-                hasOriginPolicy : this.hasOriginPolicy ? this.hasOriginPolicy : defalutHasOriginPolicy,   //this.$el.find("#dropdown-hasOriginPolicy").siblings().children().eq(0).attr('value'),
+                hasOriginPolicy : this.hasOriginPolicy != undefined ? this.hasOriginPolicy : defalutHasOriginPolicy,   //this.$el.find("#dropdown-hasOriginPolicy").siblings().children().eq(0).attr('value'),
                 policy : $.trim(this.$el.find("#textarea-policy").val()),
                 expireTime : $.trim(this.$el.find("#input-expireTime").val()) == "" ? 0 : parseInt($.trim(this.$el.find("#input-expireTime").val()))
             }

@@ -272,7 +272,50 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
                 this.trigger("add.assocateDispGroups.error", response);
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+        getAllContinent: function(args){
+            var url = BASE_URL + "/rs/metaData/continent/list",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("get.continent.success", res);
+                else
+                    this.trigger("get.continent.error", res); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.continent.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        getCountryByContinent: function(args){
+            var url = BASE_URL + "/rs/metaData/continent/country/list",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("get.countryByContinent.success", res);
+                else
+                    this.trigger("get.countryByContinent.error", res); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.countryByContinent.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        getOperationByCountry: function(args){
+            var url = BASE_URL + "/rs/metaData/continent/country/operation/list",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("get.operationByCountry.success", res);
+                else
+                    this.trigger("get.operationByCountry.error", res); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.operationByCountry.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         }
+
     });
 
     return NodeManageCollection;

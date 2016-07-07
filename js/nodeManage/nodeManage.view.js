@@ -122,6 +122,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     "id"                 : this.model.get("id"),
                     "name"               : this.model.get("name"),
                     "chName"             : this.model.get("chName"),
+                    //"ChargingRegion"     : this.model.get("ChargingRegion"),
                     "operator"           : this.model.get("operator"),
                     "chargingType"       : this.model.get("chargingType"),
                     "minBandwidth"       : this.model.get("minBandwidth"),
@@ -142,6 +143,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     "name"               : "",
                     "chName"             : "",
                     "operator"           : "",
+                    //"ChargingRegion"     : "",
                     "chargingType"       : 1 ,
                     "minBandwidth"       : "",
                     "maxBandwidth"       : "",
@@ -167,7 +169,22 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.off("get.location.success");
             this.collection.off("get.location.error");
             this.collection.on("get.location.success", $.proxy(this.onGetLocation, this));
-            this.collection.on("get.location.error", $.proxy(this.onGetLocation, this));
+            this.collection.on("get.location.error", $.proxy(this.onGetError, this));
+
+            this.collection.off("get.continent.success");
+            this.collection.off("get.continent.error");
+            this.collection.on("get.continent.success", $.proxy(this.onGetAllContinent, this));
+            this.collection.on("get.continent.error", $.proxy(this.onGetError, this));
+
+            this.collection.off("get.countryByContinent.success");
+            this.collection.off("get.countryByContinent.error");
+            this.collection.on("get.countryByContinent.success", $.proxy(this.onGetCountryByContinent, this));
+            this.collection.on("get.countryByContinent.error", $.proxy(this.onGetError, this));
+
+            this.collection.off("get.operationByCountry.success");
+            this.collection.off("get.operationByCountry.error");
+            this.collection.on("get.operationByCountry.success", $.proxy(this.onGetOperatorSuccess, this));
+            this.collection.on("get.operationByCountry.error", $.proxy(this.onGetError, this));
 
             this.initDropList(options.list);
             this.initChargeDatePicker();
@@ -287,8 +304,56 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.$el.find(".dropdown-charging .cur-value").html(defaultValue.name)
             }
 
-            this.onGetOperatorSuccess(list);
+            this.collection.getAllContinent();
             //this.collection.getAllCity();
+        },
+
+        onGetAllContinent: function(list){
+            var nameList = [];
+            _.each(list.rows, function(el, inx, list){
+                nameList.push({name: el.name, value: el.id})
+            }.bind(this))
+            Utility.initDropMenu(this.$el.find(".dropdown-continent"), nameList, function(value){
+                this.collection.getCountryByContinent({id: value})
+            }.bind(this));
+
+            if (this.isEdit){
+                this.$el.find(".dropdown-continent .cur-value").html(this.model.get("continentName"));
+                this.collection.getCountryByContinent({id: this.model.get("continentId")})
+                this.$el.find("#dropdown-continent").prop("disabled", true)
+            } else {
+                this.$el.find(".dropdown-continent .cur-value").html(nameList[0].name);
+                this.collection.getCountryByContinent({id: nameList[0].value})
+            }
+        },
+
+        onGetCountryByContinent: function(res){
+            var nameList = [];
+            _.each(res.rows, function(el, index, list){
+                nameList.push({name: el.name, value:el.id})
+            });
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-country').get(0),
+                panelID: this.$el.find('#dropdown-country').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function(){},
+                data: nameList,
+                callback: function(data) {
+                    this.$el.find('#dropdown-country .cur-value').html(data.name);
+                    this.collection.getOperationByCountry({id: data.value})
+                }.bind(this)
+            });
+            if (this.isEdit){
+                this.$el.find(".dropdown-country .cur-value").html(this.model.get("countryName"));
+                this.collection.getOperationByCountry({id: this.model.get("countryId")})
+                this.$el.find("#dropdown-country").prop("disabled", true)
+            } else {
+                this.$el.find('#dropdown-country .cur-value').html(nameList[0].name);
+                this.collection.getOperationByCountry({id: nameList[0].value});
+            }
         },
 
         onGetAllCity: function(res){

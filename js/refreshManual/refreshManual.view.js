@@ -52,7 +52,7 @@ define("refreshManual.view", ['require','exports', 'template', 'modal.view', 'ut
             this.uploadOption = {
                 runtimes : 'html5,flash,silverlight,html4', //上传模式，依次退化;
                 url: BASE_URL + "/rs/device/batchAdd", 
-                browse_button: 'import-device-button', //触发对话框的DOM元素自身或者其ID
+                browse_button: 'import-file-button', //触发对话框的DOM元素自身或者其ID
                 flash_swf_url : 'resource/Moxie.swf', //Flash组件的相对路径
                 silverlight_xap_url : 'resource/Moxie.xap', //Silverlight组件的相对路径;
                 multipart: true,
@@ -90,7 +90,7 @@ define("refreshManual.view", ['require','exports', 'template', 'modal.view', 'ut
                 if (!up) return;
                 if (this.isError) this.isError = false;
                 if (up.files.length > 1) this.uploader.splice(0, 1);
-                this.$el.find("#import-device-file").val(up.files[0].name);
+                this.$el.find("#import-refresh-file").val(up.files[0].name);
                 this.$el.find(".progress-bar").css("width", "0%");
                 this.$el.find(".progress-bar").html("0%");
                 this.isSelectedFile = true;
@@ -111,9 +111,9 @@ define("refreshManual.view", ['require','exports', 'template', 'modal.view', 'ut
             this.uploader.bind("UploadComplete", function(up, obj, res){
                 this.isUploading = false;
                 this.uploader.disableBrowse(false);
-                this.$el.find("#import-device-button").removeAttr("disabled")
-                this.$el.find("#import-device-file").removeAttr("readonly")
-                this.$el.find("#import-device-file").val("");
+                this.$el.find("#import-file-button").removeAttr("disabled")
+                this.$el.find("#import-refresh-file").removeAttr("readonly")
+                this.$el.find("#import-refresh-file").val("");
                 if (this.isError) return;
                 alert("导入完成！")
                 this.options.uploadCompleteCallback && this.options.uploadCompleteCallback();
@@ -130,8 +130,8 @@ define("refreshManual.view", ['require','exports', 'template', 'modal.view', 'ut
             if (!result) return false;
             this.isUploading = true;
             this.$el.find(".progress-ctn").show();
-            this.$el.find("#import-device-button").attr("disabled", "disabled")
-            this.$el.find("#import-device-file").attr("readonly", "true")
+            this.$el.find("#import-file-button").attr("disabled", "disabled")
+            this.$el.find("#import-refresh-file").attr("readonly", "true")
             this.uploader.disableBrowse(true);
             this.uploader.start();
         },

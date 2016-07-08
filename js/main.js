@@ -59,6 +59,12 @@ requirejs.config({
         "ipManage.view"        : 'ipManage/ipManage.view',
         "ipManage.model"       : 'ipManage/ipManage.model',
 
+        "refreshManual.view"  : 'refreshManual/refreshManual.view',
+        "refreshManual.model" : 'refreshManual/refreshManual.model',
+
+        "customMaintenance.view"  : 'customMaintenance/customMaintenance.view',
+        "customMaintenance.model" : 'customMaintenance/customMaintenance.model',
+
         "businessManage.view"  : 'businessManage/businessManage.view',
         "businessManage.model" : 'businessManage/businessManage.model',
         "statisticsManage.view"  : 'statisticsManage/statisticsManage.view',

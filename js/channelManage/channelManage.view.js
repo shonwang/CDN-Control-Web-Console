@@ -54,7 +54,8 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
                 var ipObj = _.find(data, function(obj){
                     return obj.id === el.resolveIpType
                 }.bind(this))
-                el.resolveIpTypeName = ipObj.name;
+                if (ipObj)
+                    el.resolveIpTypeName = ipObj.name;
             }.bind(this))
 
             if (count === this.channelList.length) isCheckedAll = true

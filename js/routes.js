@@ -15,6 +15,8 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             "liveCurentSetup"     : "liveCurentSetup",
             "ipManage"            : "ipManage",
             "statisticsManage"    : "statisticsManage",
+            "refreshManual"       : "refreshManual",
+            "customMaintenance"   : "customMaintenance",
             "domainStatistics"    : "domainStatistics",
             "businessManage"      : "businessManage"
         },
@@ -71,10 +73,58 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                   this.domainStatisticsView.remove();
                   this.domainStatisticsView = null;
                   break;
+                case 'refreshManual':
+                  this.refreshManualView.remove();
+                  this.refreshManualView = null;
+                  break;
+                case 'customMaintenance':
+                  this.customMaintenanceView.remove();
+                  this.customMaintenanceView = null;
+                  break;
                 default:
             }
             if (callback)
                 callback.apply(this, args);
+        },
+
+        customMaintenance: function(){
+            this.navbarView.initLogin($.proxy(this.customMaintenanceCallback, this))
+        },
+
+        customMaintenanceCallback: function(){
+            require(['customMaintenance.view', 'customMaintenance.model'], function(CustomMaintenanceView, CustomMaintenanceModel){
+                this.curPage = 'customMaintenance';
+                this.navbarView.select(this.curPage);
+                if (!this.customMaintenanceModel)
+                    this.customMaintenanceModel = new CustomMaintenanceModel();
+                if (!this.customMaintenanceView ){
+                    var options = {collection: this.customMaintenanceModel};
+                    this.customMaintenanceView = new CustomMaintenanceView(options);
+                    this.customMaintenanceView.render($('.ksc-content'));
+                } else {
+                    this.customMaintenanceView.update();
+                }
+            }.bind(this));
+        },
+
+        refreshManual: function(){
+            this.navbarView.initLogin($.proxy(this.refreshManualCallback, this))
+        },
+
+        refreshManualCallback: function(){
+            require(['refreshManual.view', 'refreshManual.model'], function(RefreshManualView, RefreshManualModel){
+                this.curPage = 'refreshManual';
+                this.navbarView.select(this.curPage);
+                if (!this.refreshManualModel)
+                    this.refreshManualModel = new RefreshManualModel();
+                if (!this.refreshManualView ){
+                    var options = {collection: this.refreshManualModel};
+                    this.refreshManualView = new RefreshManualView(options);
+                    this.refreshManualView.render($('.ksc-content'));
+                } else {
+                    this.refreshManualView.update();
+                }
+            }.bind(this));
         },
 
         businessManage: function(){

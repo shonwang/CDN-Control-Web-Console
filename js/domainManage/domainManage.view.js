@@ -423,7 +423,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
 
             return {
                 type : this.type ? this.type : this.$el.find("#dropdown-type").siblings().children().eq(0).attr('value'),
-                hasOriginPolicy : this.hasOriginPolicy != undefined ? this.hasOriginPolicy : defalutHasOriginPolicy,   //this.$el.find("#dropdown-hasOriginPolicy").siblings().children().eq(0).attr('value'),
+                hasOriginPolicy : this.hasOriginPolicy != undefined ? this.hasOriginPolicy : defalutHasOriginPolicy,
                 policy : $.trim(this.$el.find("#textarea-policy").val()),
                 expireTime : $.trim(this.$el.find("#input-expireTime").val()) == "" ? 0 : parseInt($.trim(this.$el.find("#input-expireTime").val()))
             }
@@ -506,22 +506,26 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
 
         onDeleteDomainSuccess:function(res){
             alert("域名删除成功");
-            this.collection.getDomainList(this.getPageArgs); //请求域名列表接口
+            this.onClickQueryButton();
+            //this.collection.getDomainList(this.getPageArgs); //请求域名列表接口
         },
 
         onSendDomainSuccess:function(res){
             alert("域名下发成功");
-            this.collection.getDomainList(this.getPageArgs); //请求域名列表接口
+            this.onClickQueryButton();
+            //this.collection.getDomainList(this.getPageArgs); //请求域名列表接口
         },
 
         onAddDomainSuccess:function(res){
             alert("域名添加成功");
-            this.collection.getDomainList(this.getPageArgs); //请求域名列表接口
+            this.onClickQueryButton();
+            //this.collection.getDomainList(this.getPageArgs); //请求域名列表接口
         },
 
         oneditDomainSuccess:function(res){
             alert("域名修改成功");
-            this.collection.getDomainList(this.getPageArgs); //请求域名列表接口
+            this.onClickQueryButton();
+            //this.collection.getDomainList(this.getPageArgs); //请求域名列表接口
         },
 
         onClickCreate: function(){
@@ -646,7 +650,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
                 this.getPageArgs.count = value;
                 this.getPageArgs.page = 1;
-                this.collection.getDomainList(this.getPageArgs);
+                this.onClickQueryButton();
             }.bind(this));
         },
 

@@ -381,6 +381,10 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         domainManage: function(){
+            this.navbarView.initLogin($.proxy(this.domainManageCallback, this))
+        },
+
+        domainManageCallback: function(){
             require(['domainManage.view', 'domainManage.model'], function(DomainManageView, DomainManageModel){
                 this.curPage = 'domainManage';
                 this.navbarView.select(this.curPage);

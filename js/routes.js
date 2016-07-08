@@ -75,7 +75,8 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                   this.domainStatisticsView = null;
                   break;
                 case 'domainManage':
-                    this.domainManageView.hide();
+                  this.domainManageView.hide();
+                  break;
                 case 'refreshManual':
                   this.refreshManualView.remove();
                   this.refreshManualView = null;

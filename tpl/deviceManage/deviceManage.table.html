@@ -61,13 +61,13 @@
               </a>
               <% } %>
 
-              <% if (data[i].attributes.status == 8 && permission.EnableorPauseHost) { %>
+              <% if (data[i].attributes.status == 2) { %>
                 <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="open" data-status="1" data-name="<%=data[i].attributes['name']%>" title="开启">
                   <span class="glyphicon glyphicon-play-circle"></span>
                 </a>
               <% } %>
-              <% if (data[i].attributes.status == 1 && permission.EnableorPauseHost) { %>
-                <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="pause" data-status="8" data-name="<%=data[i].attributes['name']%>" title="暂停">
+              <% if (data[i].attributes.status == 1) { %>
+                <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="pause" data-status="2" data-name="<%=data[i].attributes['name']%>" title="暂停">
                   <span class="glyphicon glyphicon-pause"></span>
                 </a>
               <% } %>

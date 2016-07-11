@@ -491,6 +491,90 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
             }.bind(this);
 
             $.ajax(defaultParas);
+        },
+
+        getDeviceStatusOpen: function(args){
+            var url = BASE_URL + "/rs/device/prompt/open?deviceId="+args;
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
+            };
+
+            defaultParas.success = function(res){
+                if (res){
+                    this.trigger("get.deviceOpen.success",res);
+                } else {
+                    this.trigger("get.deviceOpen.error"); 
+                }
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.deviceOpen.error", response);
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
+        getDeviceStatusPause: function(args){
+            var url = BASE_URL + "/rs/device/prompt/pause?deviceId="+args;
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
+            };
+
+            defaultParas.success = function(res){
+                if (res){
+                    this.trigger("get.devicePause.success",res);
+                } else {
+                    this.trigger("get.devicePause.error"); 
+                }
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.devicePause.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
+        getDeviceStatusSubmit: function(args){
+            var url = BASE_URL + "/rs/device/status/update/confirm?deviceId="+args.deviceId+"&status="+args.status;
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
+            };
+
+            defaultParas.success = function(res){
+                if (res){
+                    this.trigger("get.deviceStatusSubmit.success",res);
+                } else {
+                    this.trigger("get.deviceStatusSubmit.error");
+                }
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.deviceStatusSubmit.error", response);
+            }.bind(this);
+
+            $.ajax(defaultParas);
         }
 
     });

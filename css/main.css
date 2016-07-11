@@ -978,3 +978,10 @@ td .table {
   display: inline;
   vertical-align: -webkit-baseline-middle;
 }
+
+.a_disabled{
+  cursor: not-allowed;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  opacity: .65;
+}

@@ -5,8 +5,7 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
                 type       = this.get("type"),
                 typeName   = this.get("typeName"),
                 createTime = this.get("createTime");
-            if (status === 3) this.set("statusName", '<span class="text-danger">已关闭</span>');
-            if (status === 2) this.set("statusName",'<span class="text-warning">挂起</span>');
+            if (status === 2) this.set("statusName",'<span class="text-warning">暂停中</span>');
             if (status === 1) this.set("statusName", '<span class="text-success">运行中</span>');
 
             if (!typeName && type == 12) this.set("typeName",'lvs');

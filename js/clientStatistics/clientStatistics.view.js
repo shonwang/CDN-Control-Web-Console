@@ -201,9 +201,9 @@ define("clientStatistics.view", ['require', 'exports', 'template', 'modal.view',
                         },
                         legend: {
                             data: damainNameArray,
-                            orient: "vertical",
-                            right: "right",
-                            top: "50px"
+                            bottom: "50px"
+                            //orient: "vertical",
+                            //top: "50px"
                         },
                         dataZoom: [
                             {
@@ -212,6 +212,7 @@ define("clientStatistics.view", ['require', 'exports', 'template', 'modal.view',
                                 start: 0,
                                 end: 100,
                                 xAxisIndex: [0],
+                                bottom: '25%',
                                 labelFormatter: function(value){
                                     return new Date(timeData[value]).format("MM/dd hh:mm")
                                 }
@@ -219,8 +220,8 @@ define("clientStatistics.view", ['require', 'exports', 'template', 'modal.view',
                         ],
                         grid: {
                             left: '3%',
-                            right: '20%',
-                            bottom: '15%',
+                            // right: '20%',
+                            bottom: '32%',
                             containLabel: true
                         },
                         xAxis: {
@@ -249,7 +250,7 @@ define("clientStatistics.view", ['require', 'exports', 'template', 'modal.view',
                         };
                     }
                     var randomId = Utility.randomStr(8)
-                    var tpl = '<div class="chart" style="width: 100%;height:400px;" id="' + randomId + '"></div>'
+                    var tpl = '<div class="chart" style="width: 100%;height:500px;" id="' + randomId + '"></div><hr>'
                     $(tpl).appendTo(this.$el.find(".charts-ctn"));
                     var chart = echarts.init(this.$el.find(".charts-ctn #" + randomId).get(0));
                     chart.setOption(option);

@@ -734,6 +734,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.query      = options.query;
             this.$el = $(_.template(template['tpl/deviceManage/deviceManage.html'])());
 
+            this.noticeInfoStr = '<div class="alert alert-info"><strong>数据加载中，请耐心等待 </strong></div>';
+
             this.collection.on("get.device.success", $.proxy(this.onDeviceListSuccess, this));
             this.collection.on("get.device.error", $.proxy(this.onGetError, this));
 
@@ -919,8 +921,130 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
                 this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
                 this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+
+                this.$el.find(".open").on("click", $.proxy(this.onClickDeviceOpen, this));
+                this.$el.find(".pause").on("click", $.proxy(this.onClickDevicePause, this));
             } else {
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+            }
+        },
+
+        commonDialog: function(){
+            if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
+            var options = {
+                title: "警告",
+                body : this.noticeInfoStr,
+                backdrop : 'static',
+                type     : 2,
+                cancelButtonText : "关闭",
+                onOKCallback:  function(){
+                    var options = {
+                        "deviceId" : this.clickDeviceId,
+                        "status" : this.clickStatus
+                    }
+                    if (!options) return;
+                    this.collection.getDeviceStatusSubmit(options);
+                    this.commonPopup.$el.modal('hide');
+                }.bind(this),
+                onCancelCallback: function(){
+                    this.commonPopup.$el.modal('hide');
+                }.bind(this)
+            }
+
+            this.commonPopup = new Modal(options);
+        },
+
+        onClickDeviceOpen: function(event){
+            var eventTarget = event.srcElement || event.target,deviceId,status,name;
+
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                deviceId = eventTarget.attr("id");
+                status = eventTarget.attr("data-status");
+                name = eventTarget.attr("data-name");
+            } else {
+                deviceId = $(eventTarget).attr("id");
+                status = $(eventTarget).attr("data-status");
+                name = $(eventTarget).attr("data-name");
+            }
+
+            this.clickDeviceId = deviceId;
+            this.clickStatus = status;
+            this.name = name;
+
+            this.collection.getDeviceStatusOpen(deviceId);
+
+            this.commonDialog();
+            this.commonPopup.$el.find('.close').hide();
+            this.commonPopup.$el.find('.commonPopup').hide();
+
+            this.collection.off("get.deviceOpen.success");
+            this.collection.on("get.deviceOpen.success", $.proxy(this.onDeviceOpenSuccess, this));
+        },
+
+        onClickDevicePause: function(event){
+            var eventTarget = event.srcElement || event.target,deviceId,status,name;
+
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                deviceId = eventTarget.attr("id");
+                status = eventTarget.attr("data-status");
+                name = eventTarget.attr("data-name");
+            } else {
+                deviceId = $(eventTarget).attr("id");
+                status = $(eventTarget).attr("data-status");
+                name = $(eventTarget).attr("data-name");
+            }
+
+            this.clickDeviceId = deviceId;
+            this.clickStatus = status;
+            this.name = name;
+
+            this.collection.getDeviceStatusPause(deviceId);
+
+            this.commonDialog();
+            this.commonPopup.$el.find('.close').hide();
+            this.commonPopup.$el.find('.commonPopup').hide();
+
+            this.collection.off("get.devicePause.success");
+            this.collection.on("get.devicePause.success", $.proxy(this.onDevicePauseSuccess, this));
+        },
+
+        onDeviceOpenSuccess: function(res){
+            var data = res;
+            var body = '';
+            if(data.length > 0){
+                data[0].title = '设备 '+this.name+'暂停前在下列调度关系中服务，点击确定，下列调度关系将恢复，点击取消，设备状态不会变更，是否确定？';
+
+                this.table_modal = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:data}));
+                this.table_modal.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:data}));
+
+                this.commonPopup.$el.find('.modal-body').html(this.table_modal);
+            }else{
+                body = '确定要开启服务吗？';
+                this.commonPopup.$el.find('.close').show();
+                this.commonPopup.$el.find('.commonPopup').show();
+                this.commonPopup.$el.find('h4').html('恢复设备');
+                this.commonPopup.$el.find('.modal-body strong').html(body);
+            }
+        },
+
+        onDevicePauseSuccess: function(res){
+            var data = res;
+            var body = '';
+            if(data.length > 0){
+                data[0].title = '设备 '+this.name+'在下列调度关系中服务，点击确定，该设备将不对下列调度关系服务，点击取消，设备状态不会改变，是否确定？';
+                
+                this.table_modal = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:data}));
+                this.table_modal.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:data}));
+
+                this.commonPopup.$el.find('.modal-body').html(this.table_modal);
+            }else{
+                body = '确定要暂停服务吗？';
+                this.commonPopup.$el.find('.close').show();
+                this.commonPopup.$el.find('.commonPopup').show();
+                this.commonPopup.$el.find('h4').html('暂停设备');
+                this.commonPopup.$el.find('.modal-body strong').html(body);
             }
         },
 
@@ -1129,8 +1253,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             var statusArray = [
                 {name: "全部", value: "All"},
                 {name: "运行中", value: 1},
-                {name: "挂起", value: 2},
-                {name: "已关闭", value: 3}
+                {name: "暂停中", value: 2}
             ],
             rootNode = this.$el.find(".dropdown-status");
             Utility.initDropMenu(rootNode, statusArray, function(value){

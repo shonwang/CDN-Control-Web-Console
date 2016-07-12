@@ -38,7 +38,7 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         onGetIpTypeSuccess: function(data){
-            var count = 0, isCheckedAll = false;
+            var count = 0, isCheckedAll = false, isDisabled = false;
             _.each(this.channelList, function(el, index, list){
                 if (el.associated === 0) el.isChecked = false;
                 if (el.associated === 1) {
@@ -59,8 +59,13 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
             }.bind(this))
 
             if (count === this.channelList.length) isCheckedAll = true
+            if (this.model.get("cdnFactory") !== "1") isDisabled = true
 
-            this.table = $(_.template(template['tpl/channelManage/channelManage.disp.table.html'])({data: this.channelList, isCheckedAll: isCheckedAll}));
+            this.table = $(_.template(template['tpl/channelManage/channelManage.disp.table.html'])({
+                data: this.channelList, 
+                isCheckedAll: isCheckedAll,
+                isDisabled: isDisabled
+            }));
             if (this.channelList.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
@@ -249,16 +254,22 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
                 onHiddenCallback: function(){}
             }
             this.channelInfoPopup = new Modal(options);
-            $('<button type="button" class="btn btn-warning">取消关联</button>').insertBefore(this.channelInfoPopup.$el.find(".btn-primary"));
-            this.channelInfoPopup.$el.find(".btn-warning").on("click", function(){
-                var options = chInfoView.getArgs();
-                if (!options) return;
-                this.collection.deleteDispGroupChannel(options)
-                this.channelInfoPopup.$el.modal("hide");
-            }.bind(this))
-            this.channelInfoPopup.$el.find(".btn-primary").html('<span class="glyphicon glyphicon-link"></span>关联');
-            if (!AUTH_OBJ.DomainAssociatetoGslbGroup)
+
+            if (model.get("cdnFactory") === "1") {
+                $('<button type="button" class="btn btn-warning">取消关联</button>').insertBefore(this.channelInfoPopup.$el.find(".btn-primary"));
+                this.channelInfoPopup.$el.find(".btn-warning").on("click", function(){
+                    var options = chInfoView.getArgs();
+                    if (!options) return;
+                    this.collection.deleteDispGroupChannel(options)
+                    this.channelInfoPopup.$el.modal("hide");
+                }.bind(this))
+                this.channelInfoPopup.$el.find(".btn-primary").html('<span class="glyphicon glyphicon-link"></span>关联');
+                if (!AUTH_OBJ.DomainAssociatetoGslbGroup)
+                    this.channelInfoPopup.$el.find(".btn-primary").remove();
+            } else {
                 this.channelInfoPopup.$el.find(".btn-primary").remove();
+            }
+
         },
 
         onClickItemEdit: function(event){

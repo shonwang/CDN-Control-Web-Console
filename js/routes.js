@@ -16,6 +16,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             "ipManage"            : "ipManage",
             "statisticsManage"    : "statisticsManage",
             "domainStatistics"    : "domainStatistics",
+            "clientStatistics"    : "clientStatistics",
             "businessManage"      : "businessManage"
         },
 
@@ -62,6 +63,10 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                   break;
                 case "businessManage":
                     this.businessManageView.hide();
+                  break;
+                case 'clientStatistics':
+                  this.clientStatisticsView.remove();
+                  this.clientStatisticsView = null;
                   break;
                 case 'statisticsManage':
                   this.statisticsManageView.remove();
@@ -325,6 +330,30 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                     this.channelManageView.render($('.ksc-content'));
                 } else {
                     this.channelManageView.update();
+                }
+            }.bind(this));
+        },
+
+        clientStatistics: function(){
+            this.navbarView.initLogin($.proxy(this.clientStatisticsCallback, this))
+        },
+
+        clientStatisticsCallback: function(){
+            //if (!AUTH_OBJ.KACustomerBandwidthStatistics) return;
+            require(['clientStatistics.view', 'clientStatistics.model'], function(ClientStatisticsView, ClientStatisticsModel){
+                this.curPage = 'clientStatistics';
+                this.navbarView.select(this.curPage);
+                if (!this.downloadClientStatisticsModel)
+                    this.downloadClientStatisticsModel = new ClientStatisticsModel();
+                if (!this.liveClientStatisticsModel)
+                    this.liveClientStatisticsModel = new ClientStatisticsModel();
+                if (!this.clientStatisticsView){
+                    var options = {
+                        collection: this.downloadClientStatisticsModel,
+                        liveCollection: this.liveClientStatisticsModel,
+                    };
+                    this.clientStatisticsView = new ClientStatisticsView(options);
+                    this.clientStatisticsView.render($('.ksc-content'));
                 }
             }.bind(this));
         },

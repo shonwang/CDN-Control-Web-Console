@@ -1,9 +1,9 @@
-window.DEBUG = 1;
+window.DEBUG = 1.1;
 
 if (window.DEBUG === 1)
     window.BASE_URL = "http://develop.gateway.center.cdn.ksyun.com";
 else if (window.DEBUG === 1.1)
-    window.BASE_URL = "http://192.168.158.213:9098";
+    window.BASE_URL = "http://local.center.ksyun.com";
 else if (window.DEBUG === 1.2)
     window.BASE_URL = "http://10.4.2.38:9098";
 else if (window.DEBUG === 2)
@@ -59,6 +59,8 @@ requirejs.config({
 
         "businessManage.view"  : 'businessManage/businessManage.view',
         "businessManage.model" : 'businessManage/businessManage.model',
+        "clientStatistics.view"  : 'clientStatistics/clientStatistics.view',
+        "clientStatistics.model" : 'clientStatistics/clientStatistics.model',
         "statisticsManage.view"  : 'statisticsManage/statisticsManage.view',
         "statisticsManage.model" : 'statisticsManage/statisticsManage.model',
         "domainStatistics.view"  : 'domainStatistics/domainStatistics.view',

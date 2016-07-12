@@ -8,7 +8,7 @@
         <th>业务类型</th>
         <th>客户名称</th>
         <th>状态</th>   
-        <th>开始服务时间</th>  
+<!--         <th>开始服务时间</th>   -->
         <th>关联调度组</th>    
       </tr>
     </thead>
@@ -25,12 +25,12 @@
                       <%=data[i].attributes["domain"]%>
                   <% } %>
               </td>
-              <td><%=data[i].attributes["accelerateDomain"]%></td>
+              <td><%=data[i].attributes["cname"]%></td>
               <td><%=data[i].attributes["cdnFactoryName"]%></td>
               <td><%=data[i].attributes["businessTypeName"]%></td>
               <td><%=data[i].attributes["clientName"]%></td>
               <td><%=data[i].attributes["statusName"]%></td>
-              <td><%=data[i].attributes["startTimeFormated"]%></td>
+<!--               <td><%=data[i].attributes["startTimeFormated"]%></td> -->
               <td><%=data[i].attributes["dispName"]%></td>
             </tr>
         <% } %>  

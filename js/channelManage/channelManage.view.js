@@ -251,10 +251,9 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
             this.channelInfoPopup = new Modal(options);
             $('<button type="button" class="btn btn-warning">取消关联</button>').insertBefore(this.channelInfoPopup.$el.find(".btn-primary"));
             this.channelInfoPopup.$el.find(".btn-warning").on("click", function(){
-                this.collection.addDispGroupChannel({
-                    channelId: model.get("id"),
-                    dispGroupIds: []
-                })
+                var options = chInfoView.getArgs();
+                if (!options) return;
+                this.collection.deleteDispGroupChannel(options)
                 this.channelInfoPopup.$el.modal("hide");
             }.bind(this))
             this.channelInfoPopup.$el.find(".btn-primary").html('<span class="glyphicon glyphicon-link"></span>关联');

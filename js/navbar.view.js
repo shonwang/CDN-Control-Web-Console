@@ -167,7 +167,7 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
             defaultParas.beforeSend = function(xhr){
                 if (isJson)
                     xhr.setRequestHeader("Accept","application/json, text/plain, */*");
-                xhr.setRequestHeader("systemKey","resourcemanager");
+                xhr.setRequestHeader("systemKey","rs-39");
             }
             
             defaultParas.success = function(res){

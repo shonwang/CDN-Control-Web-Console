@@ -85,7 +85,7 @@ define("channelManage.model", ['require','exports', 'utility'], function(require
         },
 
         deleteDispGroupChannel: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/add",
+            var url = BASE_URL + "/rs/channel/domainBandInfo",
             successCallback = function(res){
                 this.trigger("add.dispGroup.channel.success", res);
             }.bind(this),

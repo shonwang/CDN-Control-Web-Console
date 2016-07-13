@@ -14,7 +14,10 @@
               <td>
                   <div class="radio">
                       <label>
-                          <input type="radio" name="optionsRadios1" id="<%=data[i].id%>" <% if (data[i].isChecked) { %> checked="true" <% } %>><%=data[i]["dispDomain"]%>
+                          <input type="radio" name="optionsRadios1" id="<%=data[i].id%>" 
+                          <% if (data[i].isChecked) { %> checked="true" <% } %>
+                          <% if (isDisabled) { %> disabled="disabled" <% } %>>
+                          <%=data[i]["dispDomain"]%>
                       </label>
                   </div>
               </td>

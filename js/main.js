@@ -67,6 +67,8 @@ requirejs.config({
 
         "businessManage.view"  : 'businessManage/businessManage.view',
         "businessManage.model" : 'businessManage/businessManage.model',
+        "clientStatistics.view"  : 'clientStatistics/clientStatistics.view',
+        "clientStatistics.model" : 'clientStatistics/clientStatistics.model',
         "statisticsManage.view"  : 'statisticsManage/statisticsManage.view',
         "statisticsManage.model" : 'statisticsManage/statisticsManage.model',
         "domainStatistics.view"  : 'domainStatistics/domainStatistics.view',

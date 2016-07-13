@@ -761,6 +761,11 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 alert("操作成功！")
                 this.onClickQueryButton();
             }.bind(this));
+            this.collection.on("get.deviceStatusSubmit.success", function(){
+                alert('设置成功');
+                this.onClickQueryButton();
+            }.bind(this));
+            this.collection.on("get.deviceStatusSubmit.error", $.proxy(this.onGetError, this));
             this.collection.on("update.device.status.error", $.proxy(this.onGetError, this));
 
             this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));

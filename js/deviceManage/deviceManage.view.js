@@ -761,10 +761,21 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 alert("操作成功！")
                 this.onClickQueryButton();
             }.bind(this));
+            this.collection.on("get.deviceStatusSubmit.success", function(){
+                alert('设置成功');
+                this.onClickQueryButton();
+            }.bind(this));
+            this.collection.on("get.deviceStatusSubmit.error", $.proxy(this.onGetError, this));
             this.collection.on("update.device.status.error", $.proxy(this.onGetError, this));
 
             this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
             this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
+
+            this.collection.on("get.deviceOpen.success", $.proxy(this.onDeviceOpenSuccess, this));
+            this.collection.on("get.deviceOpen.error", $.proxy(this.onGetError, this));
+
+            this.collection.on("get.devicePause.success", $.proxy(this.onDevicePauseSuccess, this));
+            this.collection.on("get.devicePause.error", $.proxy(this.onGetError, this));
 
             if (AUTH_OBJ.CreateHost)
                 this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
@@ -977,9 +988,6 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.commonDialog();
             this.commonPopup.$el.find('.close').hide();
             this.commonPopup.$el.find('.commonPopup').hide();
-
-            this.collection.off("get.deviceOpen.success");
-            this.collection.on("get.deviceOpen.success", $.proxy(this.onDeviceOpenSuccess, this));
         },
 
         onClickDevicePause: function(event){
@@ -1006,8 +1014,6 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.commonPopup.$el.find('.close').hide();
             this.commonPopup.$el.find('.commonPopup').hide();
 
-            this.collection.off("get.devicePause.success");
-            this.collection.on("get.devicePause.success", $.proxy(this.onDevicePauseSuccess, this));
         },
 
         onDeviceOpenSuccess: function(res){

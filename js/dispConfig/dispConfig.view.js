@@ -13,7 +13,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".list-ctn").html(_.template(template['tpl/loading.html'])({}));
 
             this.startTime = new Date().valueOf() - 1000 * 60 * 60 * 24 * 7;
-            this.endTime = new Date().valueOf();
+            this.endTime = new Date().valueOf() + 1000 * 60 * 60;
             this.startTime = new Date(new Date(this.startTime).format("yyyy/MM/dd hh") + ":00:00").valueOf()
             this.endTime = new Date(new Date(this.endTime).format("yyyy/MM/dd hh") + ":00:00").valueOf()
 

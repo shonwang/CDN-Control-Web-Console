@@ -126,7 +126,7 @@
         defaultParas.data = JSON.stringify(data.queryData);
 
         defaultParas.beforeSend = function(xhr){
-            xhr.setRequestHeader("systemKey","rs-39");
+            xhr.setRequestHeader("systemKey","resourcemanager");
         }
         
         defaultParas.success = function(res){

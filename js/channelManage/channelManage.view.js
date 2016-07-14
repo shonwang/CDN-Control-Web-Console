@@ -112,10 +112,15 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
             // _.each(checkedList, function(el, index, list){
             //     channelIds.push(el.id)
             // }.bind(this))
-            var nodeId = this.$el.find("tbody input:checked").attr("id");
-            var options =  {
-                "dispGroupIds": [parseInt(nodeId)],//channelIds,
-                "channelId"   : this.model.get("id")
+            var nodeId = this.$el.find("tbody input:checked").attr("id"), options;
+            if (nodeId) {
+                options =  {
+                    "dispGroupIds": [parseInt(nodeId)],//channelIds,
+                    "channelId"   : this.model.get("id")
+                }
+            } else {
+                alert("没有选择任何调度组！")
+                options = false; 
             }
             return options
         },

@@ -246,7 +246,11 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 if (el.status === 4) el.statusName = "<span class='text-danger'>宕机</span>";
                 if (el.status === 6) el.statusName = "暂停且宕机";
             }.bind(this))
-            this.table = $(_.template(template['tpl/deviceManage/deviceManage.ip.table.html'])({data: this.ipList, permission: AUTH_OBJ}));
+            this.table = $(_.template(template['tpl/deviceManage/deviceManage.ip.table.html'])({
+                data: this.ipList, 
+                permission: AUTH_OBJ,
+                isCreate: false
+            }));
             this.$el.find(".ip-table-ctn").html(this.table[0]);
             this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
             this.table.find("tbody .ipOperation").on("click", $.proxy(this.onClickIpOperation, this));

@@ -569,7 +569,11 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 })
                 if (ipTypeArray[0]) el.typeName = ipTypeArray[0].name;
             }.bind(this))
-            this.table = $(_.template(template['tpl/deviceManage/deviceManage.ip.table.html'])({data: this.ipList, permission: AUTH_OBJ}));
+            this.table = $(_.template(template['tpl/deviceManage/deviceManage.ip.table.html'])({
+                data: this.ipList, 
+                permission: AUTH_OBJ, 
+                isCreate: true
+            }));
             this.$el.find(".ip-table-ctn").html(this.table[0]);
 
             this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));

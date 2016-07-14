@@ -4,7 +4,9 @@
         <th>#</th>
         <th>IP</th>
         <th>类型</th>
+        <% if(!isCreate){ %>
         <th>状态</th>
+        <% } %>
         <th>操作</th>
     </tr>
     </thead>
@@ -14,7 +16,9 @@
         <td><%=data[i]["id"]%></td>
         <td><%=data[i]["ip"]%></td>
         <td><%=data[i]["typeName"]%></td>
+        <% if(!isCreate){ %>
         <td><%=data[i]["statusName"]%></td>
+        <% } %>
         <td>
             <a href="javascript:void(0)" id="<%=data[i]['id']%>" data-ip="<%=data[i]['ip']%>" data-status="2" class="edit" title="编辑" style="display: none">
                 <span class="glyphicon glyphicon glyphicon-edit"></span>
@@ -24,6 +28,7 @@
                 <span class="glyphicon glyphicon-trash"></span>
             </a>
             <% } %>
+            <% if(!isCreate){ %>
             <% if(permission.EnableorPauseIPinManageHosts){ %>
             <% if(data[i]['status'] == '2' || data[i]['status'] == '6'){ %>
                 <a href="javascript:void(0)" id="<%=data[i]['id']%>" class="ipOperation" data-ip="<%=data[i]['ip']%>" data-status="1" title="开启">
@@ -40,6 +45,7 @@
                 <a href="javascript:void(0)">
                     <span class="glyphicon glyphicon-play-circle css-gray"></span>
                 </a>
+            <% } %>
             <% } %>
             <% } %>
         </td>

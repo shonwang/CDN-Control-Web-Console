@@ -74,6 +74,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                   break;
                 case 'domainManage':
                     this.domainManageView.hide();
+                  break;
                 default:
             }
             if (callback)

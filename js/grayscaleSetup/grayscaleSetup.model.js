@@ -1,11 +1,11 @@
-define("grayscaleManage.model", ['require','exports', 'utility'], function(require, exports, Utility) {
+define("grayscaleSetup.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
 
         }
     });
 
-    var GrayscaleManageCollection = Backbone.Collection.extend({
+    var GrayscaleSetupCollection = Backbone.Collection.extend({
         
         model: Model,
 
@@ -72,5 +72,5 @@ define("grayscaleManage.model", ['require','exports', 'utility'], function(requi
 
     });
 
-    return GrayscaleManageCollection;
+    return GrayscaleSetupCollection;
 });

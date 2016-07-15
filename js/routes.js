@@ -18,7 +18,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             "domainStatistics"    : "domainStatistics",
             "businessManage"      : "businessManage",
             "domainManage"        : "domainManage",
-            "grayscaleManage"     : "grayscaleManage"
+            "grayscaleSetup"     : "grayscaleSetup"
         },
 
         initialize: function(){
@@ -76,7 +76,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                 case 'domainManage':
                     this.domainManageView.hide();
                     break;
-                case 'grayscaleManage':
+                case 'grayscaleSetup':
                     this.grayscaleManageView.hide();
                     break;
                 default:
@@ -386,6 +386,10 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         domainManage: function(){
+            this.navbarView.initLogin($.proxy(this.domainManageCallback, this))
+        },
+
+        domainManageCallback: function(){
             require(['domainManage.view', 'domainManage.model'], function(DomainManageView, DomainManageModel){
                 this.curPage = 'domainManage';
                 this.navbarView.select(this.curPage);
@@ -401,18 +405,23 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             }.bind(this));
         },
 
-        grayscaleManage: function(){
-            require(['grayscaleManage.view', 'grayscaleManage.model'], function(GrayscaleManageView, GrayscaleManageModel){
-                this.curPage = 'grayscaleManage';
+        grayscaleSetup: function(){
+            this.navbarView.initLogin($.proxy(this.grayscaleSetupCallback, this))
+        },
+
+        grayscaleSetupCallback: function(){
+
+            require(['grayscaleSetup.view', 'grayscaleSetup.model'], function(GrayscaleSetupView, GrayscaleSetupModel){
+                this.curPage = 'grayscaleSetup';
                 this.navbarView.select(this.curPage);
-                if (!this.grayscaleManageModel)
-                    this.grayscaleManageModel = new GrayscaleManageModel();
-                if (!this.grayscaleManageView){
-                    var options = {collection: this.grayscaleManageModel};
-                    this.grayscaleManageView = new GrayscaleManageView(options);
-                    this.grayscaleManageView.render($('.ksc-content'));
+                if (!this.grayscaleSetupModel)
+                    this.grayscaleSetupModel = new GrayscaleSetupModel();
+                if (!this.grayscaleSetupView){
+                    var options = {collection: this.grayscaleSetupModel};
+                    this.grayscaleSetupView = new GrayscaleSetupView(options);
+                    this.grayscaleSetupView.render($('.ksc-content'));
                 } else {
-                    this.grayscaleManageView.update();
+                    this.grayscaleSetupView.update();
                 }
             }.bind(this));
         }

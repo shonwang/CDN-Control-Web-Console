@@ -1,63 +1,63 @@
-define("grayscaleManage.view", ['require', 'exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
-    var AddOrEditView = Backbone.View.extend({
-        events: {},
+    // var AddOrEditView = Backbone.View.extend({
+    //     events: {},
 
-        initialize: function(options) {
-            this.collection = options.collection;
-            this.model = options.model;
-            this.isEdit = options.isEdit;
+    //     initialize: function(options) {
+    //         this.collection = options.collection;
+    //         this.model = options.model;
+    //         this.isEdit = options.isEdit;
 
-            if(this.isEdit){
+    //         if(this.isEdit){
 
-            }else{
+    //         }else{
 
-            }
+    //         }
 
-        },
+    //     },
 
-        onGetError: function(error) {
-            if (error && error.message)
-                alert(error.message)
-            else
-                alert("网络阻塞，请刷新重试！")
-        },
+    //     onGetError: function(error) {
+    //         if (error && error.message)
+    //             alert(error.message)
+    //         else
+    //             alert("网络阻塞，请刷新重试！")
+    //     },
 
-        initDropMenu: function(){
-            //使用的协议
-            // var protocolList = [
-            //     {name: "http+flv", value: 1},
-            //     {name: "hls", value: 2},
-            //     {name: "rtmp", value: 3}
-            // ];
-            // Utility.initDropMenu(this.$el.find(".dropdown-protocol"), protocolList, function(value){
-            //     this.args.protocol = parseInt($.trim(value));
-            // }.bind(this));
-            // if(this.isEdit){
-            //     $.each(protocolList,function(k,v){
-            //         if(v.value == this.model.get("protocol")){
-            //             this.$el.find("#dropdown-protocol .cur-value").html(v.name);
-            //         }
-            //     }.bind(this));
-            // }
-        },
+    //     initDropMenu: function(){
+    //         //使用的协议
+    //         // var protocolList = [
+    //         //     {name: "http+flv", value: 1},
+    //         //     {name: "hls", value: 2},
+    //         //     {name: "rtmp", value: 3}
+    //         // ];
+    //         // Utility.initDropMenu(this.$el.find(".dropdown-protocol"), protocolList, function(value){
+    //         //     this.args.protocol = parseInt($.trim(value));
+    //         // }.bind(this));
+    //         // if(this.isEdit){
+    //         //     $.each(protocolList,function(k,v){
+    //         //         if(v.value == this.model.get("protocol")){
+    //         //             this.$el.find("#dropdown-protocol .cur-value").html(v.name);
+    //         //         }
+    //         //     }.bind(this));
+    //         // }
+    //     },
 
-        getArgs: function() {
+    //     getArgs: function() {
             
-        },
+    //     },
 
-        render: function(target) {
-            this.$el.appendTo(target);
-        }
-    });
+    //     render: function(target) {
+    //         this.$el.appendTo(target);
+    //     }
+    // });
 
-    var GrayscaleManageView = Backbone.View.extend({
+    var GrayscaleSetupView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/grayscaleManage/grayscaleManage.html'])());
-            // this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
             // this.initPageDropMenu();
 
@@ -216,5 +216,5 @@ define("grayscaleManage.view", ['require', 'exports', 'template', 'modal.view', 
         }
     });
 
-    return GrayscaleManageView;
+    return GrayscaleSetupView;
 });

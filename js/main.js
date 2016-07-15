@@ -69,8 +69,8 @@ requirejs.config({
         "domainManage.model" : "domainManage/domainManage.model",
         "domainManage.view" : "domainManage/domainManage.view",
 
-        "grayscaleManage.model" : "grayscaleManage/grayscaleManage.model",
-        "grayscaleManage.view" : "grayscaleManage/grayscaleManage.view"
+        "grayscaleSetup.model" : "grayscaleSetup/grayscaleSetup.model",
+        "grayscaleSetup.view" : "grayscaleSetup/grayscaleSetup.view"
     },
     urlArgs: new Date().valueOf()
 });

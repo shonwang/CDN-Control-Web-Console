@@ -1,55 +1,132 @@
 define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
-    // var AddOrEditView = Backbone.View.extend({
-    //     events: {},
+    var AddOrEditView = Backbone.View.extend({
+        events: {},
 
-    //     initialize: function(options) {
-    //         this.collection = options.collection;
-    //         this.model = options.model;
-    //         this.isEdit = options.isEdit;
+        initialize: function(options) {
+            this.collection = options.collection;
+            this.model = options.model;
+            this.isEdit = options.isEdit;
 
-    //         if(this.isEdit){
+            this.$el = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.add&edit.html'])());
 
-    //         }else{
+            if(this.isEdit){
 
-    //         }
+            }else{
 
-    //     },
+            }
 
-    //     onGetError: function(error) {
-    //         if (error && error.message)
-    //             alert(error.message)
-    //         else
-    //             alert("网络阻塞，请刷新重试！")
-    //     },
+            this.initTree();
+            this.initDropMenu();
+        },
 
-    //     initDropMenu: function(){
-    //         //使用的协议
-    //         // var protocolList = [
-    //         //     {name: "http+flv", value: 1},
-    //         //     {name: "hls", value: 2},
-    //         //     {name: "rtmp", value: 3}
-    //         // ];
-    //         // Utility.initDropMenu(this.$el.find(".dropdown-protocol"), protocolList, function(value){
-    //         //     this.args.protocol = parseInt($.trim(value));
-    //         // }.bind(this));
-    //         // if(this.isEdit){
-    //         //     $.each(protocolList,function(k,v){
-    //         //         if(v.value == this.model.get("protocol")){
-    //         //             this.$el.find("#dropdown-protocol .cur-value").html(v.name);
-    //         //         }
-    //         //     }.bind(this));
-    //         // }
-    //     },
+        onGetError: function(error) {
+            if (error && error.message)
+                alert(error.message)
+            else
+                alert("网络阻塞，请刷新重试！")
+        },
 
-    //     getArgs: function() {
+        initTree: function(res){
+            var setting = {
+                check: {
+                    enable: true
+                },
+                data: {
+                    simpleData: {
+                        enable: true
+                    }
+                },
+                callback: {
+                    onCheck: function(e,treeId,treeNode){
+                        this.getSelected();
+                        this.getChecked(e,treeId,treeNode);
+                    }.bind(this)
+                }
+            };
+
+            //var zNodes = res[this.nodeGroupId];
+
+            // _.each(zNodes,function(el,index,ls){
+            //     el.open = false;
+            //     el.highlight = false;
+            //     el.nodeIcon = false;
+            //     if(el.pId == -1){
+            //         el.open = true;
+            //         el.nodeIcon = true; //节点显示“文件夹”图标
+            //     }
+            //     if(el.deviceStatus != 1 && el.pId != -1){
+            //         el.highlight = true;
+            //     }
+            //     if(el.nodeStatus != 1 && el.pId == -1){
+            //         el.highlight = true;
+            //     }
+            // }.bind(this));
+
+            var zNodes =[
+                { id:1, pId:0, name:"节点组 1", open:true,checked:true},
+                { id:11, pId:1, name:"节点 1-1", checked:true},
+                { id:12, pId:1, name:"节点 1-2"},
+                { id:2, pId:0, name:"节点组 2", open:true},
+                { id:21, pId:2, name:"节点 2-1"},
+                { id:22, pId:2, name:"节点 2-2"},
+                { id:23, pId:2, name:"节点 2-3"}
+            ];
+
+            this.treeObj = $.fn.zTree.init(this.$el.find(".nodeList-ctn #tree"), setting, zNodes);
+            this.getSelected();
+        },
+
+        getSelected: function(){
+            // if (!this.treeObj) return;
+            // var matchFilter = function(node){
+            //     return node.checked === true && node.pId === null;
+            // };
+            // this.matchNodes = this.treeObj.getNodesByFilter(matchFilter);
+            // this.$el.find(".node-num").html(this.matchNodes.length);
+            // var matchDeviceFilter = function(node){
+            //     return node.checked === true && node.pId !== null;
+            // };
+            // this.matchDeviceNodes = this.treeObj.getNodesByFilter(matchDeviceFilter);
+            // this.$el.find(".device-num").html(this.matchDeviceNodes.length);
+            // _.each(this.nodeTreeLists[this.nodeGroupId], function(nodeGroupObj, k, l){
+            //     var node = this.treeObj.getNodeByParam("id", nodeGroupObj.id, null);
+            //     nodeGroupObj.checked = node.checked
+            // }.bind(this));
+
+        },
+
+        initFileList: function(fileList){
             
-    //     },
+        },
 
-    //     render: function(target) {
-    //         this.$el.appendTo(target);
-    //     }
-    // });
+        initDropMenu: function(){
+            var businessTypeList = [
+                {name: "cache2.0直播业务", value: 1},
+                {name: "cache2.0点播播业务", value: 2},
+                {name: "xxxxx", value: 3}
+            ];
+            Utility.initDropMenu(this.$el.find(".dropdown-businessType"), businessTypeList, function(value){
+                this.args.businessType = parseInt($.trim(value));
+            }.bind(this));
+            this.$el.find("#dropdown-businessType .cur-value").html(businessTypeList[0].name);
+            if(this.isEdit){
+                $.each(businessTypeList,function(k,v){
+                    if(v.value == this.model.get("businessType")){
+                        this.$el.find("#dropdown-businessType .cur-value").html(v.name);
+                    }
+                }.bind(this));
+            }
+        },
+
+        getArgs: function() {
+            
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target);
+        }
+    });
 
     var GrayscaleSetupView = Backbone.View.extend({
         events: {},
@@ -71,6 +148,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
 
             //for test 
             this.initTable();
+            this.$el.find(".create").on("click", $.proxy(this.onClickCreate, this))
         },
 
         enterKeyBindQuery:function(){
@@ -103,27 +181,27 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         onClickCreate: function(){
-            // if (this.addDomainPopup) $("#" + this.addDomainPopup.modalId).remove();
+            if (this.addPopup) $("#" + this.addPopup.modalId).remove();
 
-            // var addDomainView = new AddOrEditDomainManageView({
-            //     collection: this.collection,
-            //     isEdit: false
-            // });
-            // var options = {
-            //     title:"添加域名",
-            //     body : addDomainView,
-            //     backdrop : 'static',
-            //     type     : 2,
-            //     onOKCallback:  function(){
-            //         var options = addDomainView.getArgs();
-            //         if (!options) return;
-            //         this.collection.addDomain(options);
-            //         this.addDomainPopup.$el.modal("hide");
-            //     }.bind(this),
-            //     onHiddenCallback: function(){}.bind(this)
-            // }
-            // this.addDomainPopup = new Modal(options);
-            // window.addDomainPopup = this.addDomainPopup;
+            var addView = new AddOrEditView({
+                collection: this.collection,
+                isEdit: false
+            });
+            var options = {
+                title:"新建",
+                body : addView,
+                backdrop : 'static',
+                type     : 1,
+                onOKCallback:  function(){
+                    // var options = addView.getArgs();
+                    // if (!options) return;
+                    // this.collection.addDomain(options);
+                    // this.addPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){}.bind(this)
+            }
+            this.addPopup = new Modal(options);
+            //window.addPopup = this.addPopup;
         },
 
         onClickEdit:function(e){

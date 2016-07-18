@@ -462,8 +462,19 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             this.collection.on("add.domain.error", $.proxy(this.onGetError,this));
             this.collection.on("edit.domain.success", $.proxy(this.oneditDomainSuccess, this));
             this.collection.on("edit.domain.error", $.proxy(this.onGetError,this));
+            this.collection.on("sendAllOrigin.domain.success", $.proxy(this.onSendAllOriginSuccess, this));
+            this.collection.on("sendAllOrigin.domain.error", $.proxy(this.onGetError,this));
 
-            this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
+            if(AUTH_OBJ.DomainManagerAdd) 
+                this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
+            else
+                this.$el.find(".opt-ctn .create").remove();
+
+            if(AUTH_OBJ.DomainManagerSendAll)
+                this.$el.find(".opt-ctn .sendAll").on("click", $.proxy(this.onClickSendAll, this));
+            else
+                this.$el.find(".opt-ctn .sendAll").remove();
+
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
 
             this.enterKeyBindQuery();
@@ -499,33 +510,45 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
         onGetDomainListSuccess: function(){
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
-            this.$el.find(".table-ctn .edit").on("click", $.proxy(this.onClickEdit, this));
-            this.$el.find(".table-ctn .delete").on("click", $.proxy(this.onClickDelete, this));
-            this.$el.find(".table-ctn .send").on("click", $.proxy(this.onClickSend, this));
+            if(AUTH_OBJ.DomainManagerUpdate) 
+                this.$el.find(".table-ctn .edit").on("click", $.proxy(this.onClickEdit, this));
+            else
+                this.$el.find(".table-ctn .edit").remove();
+
+            if(AUTH_OBJ.DomainManagerDelete)
+                this.$el.find(".table-ctn .delete").on("click", $.proxy(this.onClickDelete, this));
+            else
+                this.$el.find(".table-ctn .delete").remove();
+
+            if(AUTH_OBJ.DomainManagerSend)
+                this.$el.find(".table-ctn .send").on("click", $.proxy(this.onClickSend, this));
+            else
+                this.$el.find(".table-ctn .send").remove();
+        },
+
+        onSendAllOriginSuccess:function(res){
+            alert("所有域名下发成功");
+            this.onClickQueryButton();
         },
 
         onDeleteDomainSuccess:function(res){
             alert("域名删除成功");
             this.onClickQueryButton();
-            //this.collection.getDomainList(this.getPageArgs); //请求域名列表接口
         },
 
         onSendDomainSuccess:function(res){
             alert("域名下发成功");
             this.onClickQueryButton();
-            //this.collection.getDomainList(this.getPageArgs); //请求域名列表接口
         },
 
         onAddDomainSuccess:function(res){
             alert("域名添加成功");
             this.onClickQueryButton();
-            //this.collection.getDomainList(this.getPageArgs); //请求域名列表接口
         },
 
         oneditDomainSuccess:function(res){
             alert("域名修改成功");
             this.onClickQueryButton();
-            //this.collection.getDomainList(this.getPageArgs); //请求域名列表接口
         },
 
         onClickCreate: function(){
@@ -550,6 +573,10 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             }
             this.addDomainPopup = new Modal(options);
             window.addDomainPopup = this.addDomainPopup;
+        },
+
+        onClickSendAll: function(){
+            this.collection.sendAllOrigin();
         },
 
         onClickEdit:function(e){

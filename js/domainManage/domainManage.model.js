@@ -89,6 +89,30 @@ define("domainManage.model", ['require','exports', 'utility'], function(require,
             $.ajax(defaultParas);
         },
 
+        sendAllOrigin: function(){
+            var url = BASE_URL + "/rs/origin/sendAllOrigin";
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
+            };
+
+            defaultParas.success = function(res){
+                this.trigger("sendAllOrigin.domain.success");
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("sendAllOrigin.domain.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
         addDomain: function(args){
             var url = BASE_URL + "/rs/origin/addOrigin";
             var defaultParas = {

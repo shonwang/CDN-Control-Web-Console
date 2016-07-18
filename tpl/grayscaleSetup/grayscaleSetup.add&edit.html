@@ -1,0 +1,24 @@
+<div>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label for="input-domain" class="col-sm-4 control-label">域名</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="input-domain" value="">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="dropdown-type" class="col-sm-4 control-label">业务类型</label>
+            <div class="dropdown col-sm-6 dropdown-type">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-type" data-toggle="dropdown">
+                    <span class="cur-value">请选择</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu"></ul>
+            </div>
+        </div>
+    </form>
+    <div class="node-ctn">
+        <ul id="tree" class="ztree"></ul>
+    </div>
+    <div class="table-ctn table-responsive nodeFiles"></div>
+</div>

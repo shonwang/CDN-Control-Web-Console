@@ -1,0 +1,34 @@
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th class="text-center">域名</th>
+            <th class="text-center">节点</th>
+            <th class="text-center">节点组</th>
+            <th class="text-center">业务类型</th>
+            <th class="text-center">创建时间</th>
+            <th class="text-center">操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!--% for(var i = 0; i < data.length; i++) { %-->
+            <tr data-id="">
+                <td class="text-center">域名<!--%=data[i].attributes["domain"]%--></td>
+                <td class="text-center">节点</td>
+                <td class="text-center">节点组</td>
+                <td class="text-center">业务类型</td>
+                <td class="text-center">创建时间</td>
+                <td class="text-center">
+                    <a href="javascript:void(0)" id="" class="edit" title="编辑">
+                        <span class="glyphicon glyphicon-edit"></span>
+                    </a>
+                    <a href="javascript:void(0)" id="" class="delete" title="删除">
+                      <span class="glyphicon glyphicon-trash"></span>
+                    </a>
+                    <a href="javascript:void(0)" id="" class="sync" title="同步">
+                        <span class="glyphicon glyphicon-refresh"></span>
+                    </a>
+                </td>
+            </tr>
+        <!--% } %-->
+    </tbody>
+</table>

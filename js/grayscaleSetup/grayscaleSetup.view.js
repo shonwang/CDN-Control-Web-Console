@@ -68,6 +68,9 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             // };
 
             //this.enterKeyBindQuery();
+
+            //for test 
+            this.initTable();
         },
 
         enterKeyBindQuery:function(){
@@ -89,6 +92,8 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         initTable: function(){
+            this.table = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.table.html'])());
+            this.$el.find(".table-ctn").html(this.table[0]);
             // if (this.collection.models.length !== 0){
             //     this.table = $(_.template(template['tpl/domainManage/domainManage.table.html'])({data:this.collection.models}));
             //     this.$el.find(".table-ctn").html(this.table[0]);

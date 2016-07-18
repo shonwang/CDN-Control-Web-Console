@@ -77,7 +77,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                     this.domainManageView.hide();
                     break;
                 case 'grayscaleSetup':
-                    this.grayscaleManageView.hide();
+                    this.grayscaleSetupView.hide();
                     break;
                 default:
             }

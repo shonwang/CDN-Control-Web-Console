@@ -172,22 +172,31 @@ define("clientStatistics.view", ['require', 'exports', 'template', 'modal.view',
             try{
                 for (var i = 0; i < res.length; i++){
                     var domainArray = res[i];
-                    var timeData = [], bandwidthData = [], damainNameArray = [], domainObj;
+                    var timeData = [], bandwidthData = [], damainNameArray = [], domainObj, tempCount = 0;
                     for (var k = 0; k < domainArray.length; k++){
-                        domainObj = JSON.parse(domainArray[k].calculateBandwidth.bandwidth)[0];
-                        damainNameArray.push(domainObj.domain);
+                        domainObj = JSON.parse(domainArray[k].calculateBandwidthResult.calculateBandwidth.bandwidth)[0];
+                        if (domainArray[k].clientName === "") domainArray[k].clientName = "未知用户: " + domainObj.domain
+                        damainNameArray.push(domainArray[k].clientName);
                         var data = [];
                         for (var m = 0; m < domainObj.data.length; m++){
                             data.push(domainObj.data[m].bandwidth);
-                            if (k === 0) timeData.push(domainObj.data[m].time * 1000)
+                            var tempTime = domainObj.data[m].time * 1000;
+                            if (domainObj.data.length > tempCount && timeData.length > 0) {
+                                timeData = [];
+                                tempCount = domainObj.data.length;
+                                timeData.push(tempTime)
+                            } else if (domainObj.data.length === tempCount || k === 0){
+                                timeData.push(tempTime)
+                            }
                         }
                         var seriesObj = {
-                            name:domainObj.domain,
+                            name:domainArray[k].clientName || "未知用户: " + domainObj.domain,
                             type:'line',
                             data:data
                         };
                         bandwidthData.push(seriesObj)
                     }
+
                     var option = {
                         tooltip: {
                             trigger: 'axis',
@@ -245,7 +254,7 @@ define("clientStatistics.view", ['require', 'exports', 'template', 'modal.view',
                     if (this.start === 0 && i === 0) {
                         option.title = {
                             text: "Top100", 
-                            subtext: '按产品要求，数据按1024转换, 带宽单位最大到Tbps，流量单位最大到TB',
+                            subtext: '数据按1024转换, 带宽单位最大到Tbps，流量单位最大到TB',
                             x: 'center'
                         };
                     }

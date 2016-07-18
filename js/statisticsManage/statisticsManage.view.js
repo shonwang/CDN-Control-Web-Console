@@ -208,7 +208,7 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
                 option = {
                     title: {
                         text: this.clientName,
-                        subtext: '按产品要求，数据按1024转换, 带宽单位最大到Tbps，流量单位最大到TB',
+                        subtext: '数据按1024转换, 带宽单位最大到Tbps，流量单位最大到TB',
                         x: 'center'
                     },
                     tooltip: {

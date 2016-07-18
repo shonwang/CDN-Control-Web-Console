@@ -56,7 +56,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
 
         initialize: function(options) {
             this.collection = options.collection;
-            this.$el = $(_.template(template['tpl/grayscaleManage/grayscaleManage.html'])());
+            this.$el = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.html'])());
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
             // this.initPageDropMenu();

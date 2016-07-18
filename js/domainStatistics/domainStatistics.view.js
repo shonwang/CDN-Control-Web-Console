@@ -212,6 +212,7 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
                                 start: 0,
                                 end: 100,
                                 xAxisIndex: [0],
+                                showDetail: false,
                                 labelFormatter: function(value){
                                     return new Date(timeData[value]).format("MM/dd hh:mm")
                                 }

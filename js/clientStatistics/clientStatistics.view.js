@@ -169,30 +169,32 @@ define("clientStatistics.view", ['require', 'exports', 'template', 'modal.view',
         initCharts: function(res){
             this.$el.find(".charts-ctn .alert-info").remove();
             this.$el.find(".charts-ctn .loader").remove();
-            try{
+            // try{
                 for (var i = 0; i < res.length; i++){
                     var domainArray = res[i];
-                    var timeData = [], bandwidthData = [], damainNameArray = [], domainObj, tempCount = 0;
+                    var timeData = [], bandwidthData = [], damainNameArray = [], domainObj, preDomainObj;
                     for (var k = 0; k < domainArray.length; k++){
                         domainObj = JSON.parse(domainArray[k].calculateBandwidthResult.calculateBandwidth.bandwidth)[0];
-                        if (domainArray[k].clientName === "") domainArray[k].clientName = "未知用户: " + domainObj.domain
+                        if (domainArray[k].clientName === "" && domainObj) domainArray[k].clientName = "未知用户: " + domainObj.domain;
                         damainNameArray.push(domainArray[k].clientName);
+
+                        if (k > 0) preDomainObj = JSON.parse(domainArray[k-1].calculateBandwidthResult.calculateBandwidth.bandwidth)[0];
+
                         var data = [];
-                        for (var m = 0; m < domainObj.data.length; m++){
-                            data.push(domainObj.data[m].bandwidth);
-                            var tempTime = domainObj.data[m].time * 1000;
-                            if (domainObj.data.length > tempCount && timeData.length > 0) {
-                                timeData = [];
-                                tempCount = domainObj.data.length;
-                                timeData.push(tempTime)
-                            } else if (domainObj.data.length === tempCount || k === 0){
-                                timeData.push(tempTime)
+
+                        if (domainObj){
+                            if (preDomainObj && domainObj.data.length >= timeData.length) timeData = [];
+                            for (var m = 0; m < domainObj.data.length; m++){
+                                data.push(domainObj.data[m].bandwidth);
+                                var tempTime = domainObj.data[m].time * 1000;
+                                if (preDomainObj && domainObj.data.length >= timeData.length) timeData.push(tempTime);
+                                if (!preDomainObj) timeData.push(tempTime);
                             }
-                        }
+                        } 
                         var seriesObj = {
-                            name:domainArray[k].clientName || "未知用户: " + domainObj.domain,
-                            type:'line',
-                            data:data
+                            name: domainArray[k].clientName || "未知用户: " + (domainObj ? domainObj.domain : ""),
+                            type: 'line',
+                            data: data
                         };
                         bandwidthData.push(seriesObj)
                     }
@@ -222,7 +224,8 @@ define("clientStatistics.view", ['require', 'exports', 'template', 'modal.view',
                                 end: 100,
                                 xAxisIndex: [0],
                                 bottom: '25%',
-                                labelFormatter: function(value){
+                                showDetail: false,
+                                labelFormatter: function(){
                                     return new Date(timeData[value]).format("MM/dd hh:mm")
                                 }
                             }
@@ -265,9 +268,9 @@ define("clientStatistics.view", ['require', 'exports', 'template', 'modal.view',
                     chart.setOption(option);
                     this.chartArray.push(chart)
                 }
-            } catch (e){
-                alert("数据中心返回数据的JSON格式有误！")
-            }
+            // } catch (e){
+            //     alert("数据中心返回数据的JSON格式有误！")
+            // }
             this.onResizeChart();
             this.isLoading = false;
         },

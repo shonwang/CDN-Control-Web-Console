@@ -427,8 +427,10 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
                 }
             }.bind(this);
 
-            defaultParas.error = function(response){
-                this.trigger("get.ipInfoPause.error", response.responseText);
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.ipInfoPause.error", response); 
             }.bind(this);
 
             $.ajax(defaultParas);
@@ -454,9 +456,10 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
                 }
             }.bind(this);
 
-            defaultParas.error = function(response){
-                this.trigger("get.ipInfoStart.error", response.responseText);
-
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.ipInfoStart.error", response); 
             }.bind(this);
 
             $.ajax(defaultParas);
@@ -485,8 +488,10 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
                 }
             }.bind(this);
 
-            defaultParas.error = function(response){
-                this.trigger("get.ipInfoSubmit.error", response.responseText);
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.ipInfoSubmit.error", response); 
             }.bind(this);
 
             $.ajax(defaultParas);

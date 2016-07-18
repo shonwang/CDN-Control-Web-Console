@@ -101,7 +101,6 @@ define("ipManage.model", ['require','exports'], function(require, exports) {
                     this.trigger("get.ipInfoPause.error"); 
                 }
             }.bind(this);
-
             defaultParas.error = function(response, msg){
                 if (response&&response.responseText)
                     response = JSON.parse(response.responseText)

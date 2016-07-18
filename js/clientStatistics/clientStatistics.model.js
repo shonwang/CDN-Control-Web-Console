@@ -11,7 +11,7 @@ define("clientStatistics.model", ['require','exports', 'utility'], function(requ
         initialize: function(){},
 
         getDomainBandInfo: function(args){
-            var url = BASE_URL + "/rs/channel/domainBandInfo",
+            var url = BASE_URL + "/rs/channel/nameBandInfo",
             successCallback = function(res){
                 if (res)
                     this.trigger("get.domainBand.success", res);

@@ -5,9 +5,10 @@ define("ipManage.model", ['require','exports'], function(require, exports) {
             if (status === "1") this.set("statusName", "<span class='text-success'>运行中</span>");
             if (status === "2") this.set("statusName", "<span class='text-warning'>暂停中</span>");
             if (status === "4") this.set("statusName", "<span class='text-danger'>宕机</span>");
-            if (status === "6") this.set("statusName", "暂停且宕机");
+            if (status === "6" || status === "12" || status === "14") this.set("statusName", "暂停且宕机");
             if (status === "8")this.set("statusName", "<span class='text-warning'>暂停中</span>");
             if (status === "10")this.set("statusName", "<span class='text-warning'>暂停中</span>");
+
         }
     });
 

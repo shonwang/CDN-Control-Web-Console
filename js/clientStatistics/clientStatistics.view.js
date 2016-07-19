@@ -175,8 +175,8 @@ define("clientStatistics.view", ['require', 'exports', 'template', 'modal.view',
                     var timeData = [], bandwidthData = [], damainNameArray = [], domainObj, preDomainObj;
                     for (var k = 0; k < domainArray.length; k++){
                         domainObj = JSON.parse(domainArray[k].calculateBandwidthResult.calculateBandwidth.bandwidth)[0];
-                        if (domainArray[k].clientName === "" && domainObj) domainArray[k].clientName = "未知用户: " + domainObj.domain;
-                        damainNameArray.push(domainArray[k].clientName);
+                        if (domainArray[k].clientName === "" && domainObj) domainArray[k].clientName = "未知用户";
+                        damainNameArray.push(domainArray[k].calculateBandwidthResult.calculateBandwidth.userId + "-" + domainArray[k].clientName);
 
                         if (k > 0) preDomainObj = JSON.parse(domainArray[k-1].calculateBandwidthResult.calculateBandwidth.bandwidth)[0];
 
@@ -192,7 +192,7 @@ define("clientStatistics.view", ['require', 'exports', 'template', 'modal.view',
                             }
                         } 
                         var seriesObj = {
-                            name: domainArray[k].clientName || "未知用户: " + (domainObj ? domainObj.domain : ""),
+                            name: domainArray[k].calculateBandwidthResult.calculateBandwidth.userId + "-" + domainArray[k].clientName,
                             type: 'line',
                             data: data
                         };

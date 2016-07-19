@@ -242,9 +242,9 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 })
                 if (ipTypeArray[0]) el.typeName = ipTypeArray[0].name;
                 if (el.status === 1) el.statusName = "<span class='text-success'>运行中</span>";
-                if (el.status === 2) el.statusName = "<span class='text-warning'>暂停中</span>";
+                if (el.status === 2 || el.status === 8 || el.status === 10) el.statusName = "<span class='text-warning'>暂停中</span>";
                 if (el.status === 4) el.statusName = "<span class='text-danger'>宕机</span>";
-                if (el.status === 6) el.statusName = "暂停且宕机";
+                if (el.status === 6 || el.status === 12 || el.status === 14) el.statusName = "暂停且宕机";
             }.bind(this))
             this.table = $(_.template(template['tpl/deviceManage/deviceManage.ip.table.html'])({data: this.ipList, permission: AUTH_OBJ}));
             this.$el.find(".ip-table-ctn").html(this.table[0]);

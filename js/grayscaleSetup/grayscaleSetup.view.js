@@ -7,6 +7,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             this.collection = options.collection;
             this.model = options.model;
             this.isEdit = options.isEdit;
+            this.businessTypeList = options.businessTypeList;
 
             this.$el = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.add&edit.html'])());
 
@@ -38,9 +39,8 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                     }
                 },
                 callback: {
-                    onCheck: function(e,treeId,treeNode){
+                    onCheck: function(){
                         this.getSelected();
-                        this.getChecked(e,treeId,treeNode);
                     }.bind(this)
                 }
             };
@@ -64,8 +64,8 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             // }.bind(this));
 
             var zNodes =[
-                { id:1, pId:0, name:"节点组 1", open:true,checked:true},
-                { id:11, pId:1, name:"节点 1-1", checked:true},
+                { id:1, pId:0, name:"节点组 1", open:true,checked:false},
+                { id:11, pId:1, name:"节点 1-1", checked:false},
                 { id:12, pId:1, name:"节点 1-2"},
                 { id:2, pId:0, name:"节点组 2", open:true},
                 { id:21, pId:2, name:"节点 2-1"},
@@ -78,6 +78,12 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         getSelected: function(){
+            var nodeIdArray = [];
+            var matchFilter = function(node){
+                return node;
+            };
+            this.nodeAllObj = this.treeObj.getNodesByFilter(matchFilter);
+            //console.log(this.nodeAllObj);
             // if (!this.treeObj) return;
             // var matchFilter = function(node){
             //     return node.checked === true && node.pId === null;
@@ -93,23 +99,26 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             //     var node = this.treeObj.getNodeByParam("id", nodeGroupObj.id, null);
             //     nodeGroupObj.checked = node.checked
             // }.bind(this));
-
+            _.each(this.nodeAllObj,function(obj, key, el) {
+                //console.log(obj);
+                if(obj.pId && obj.checked){
+                    nodeIdArray.push(obj.id);
+                }
+            });
+            //console.log(this.nodeAllObj);
+            this.initFileList();
         },
 
         initFileList: function(fileList){
-            
+            this.table = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.add&edit.nodeFile.html'])());
+            this.$el.find(".nodeFiles").html(this.table[0]);
         },
 
         initDropMenu: function(){
-            var businessTypeList = [
-                {name: "cache2.0直播业务", value: 1},
-                {name: "cache2.0点播播业务", value: 2},
-                {name: "xxxxx", value: 3}
-            ];
-            Utility.initDropMenu(this.$el.find(".dropdown-businessType"), businessTypeList, function(value){
+            Utility.initDropMenu(this.$el.find(".dropdown-businessType"), this.businessTypeList, function(value){
                 this.args.businessType = parseInt($.trim(value));
             }.bind(this));
-            this.$el.find("#dropdown-businessType .cur-value").html(businessTypeList[0].name);
+            this.$el.find("#dropdown-businessType .cur-value").html(this.businessTypeList[0].name);
             if(this.isEdit){
                 $.each(businessTypeList,function(k,v){
                     if(v.value == this.model.get("businessType")){
@@ -148,7 +157,15 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
 
             //for test 
             this.initTable();
-            this.$el.find(".create").on("click", $.proxy(this.onClickCreate, this))
+            //请求业务类型接口获取业务类型 for test
+            this.businessTypeList = [
+                {name: "cache2.0直播业务", value: 1},
+                {name: "cache2.0点播播业务", value: 2},
+                {name: "xxxxx", value: 3}
+            ];
+            this.initDropMenu(this.businessTypeList);
+
+            this.$el.find(".create").on("click", $.proxy(this.onClickCreate, this));
         },
 
         enterKeyBindQuery:function(){
@@ -157,6 +174,20 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                     this.onClickQueryButton();
                 }
             }.bind(this));
+        },
+
+        initDropMenu: function(businessTypeList){
+            Utility.initDropMenu(this.$el.find(".dropdown-businessType"), businessTypeList, function(value){
+                this.args.businessType = parseInt($.trim(value));
+            }.bind(this));
+            this.$el.find("#dropdown-businessType .cur-value").html(businessTypeList[0].name);
+            if(this.isEdit){
+                $.each(businessTypeList,function(k,v){
+                    if(v.value == this.model.get("businessType")){
+                        this.$el.find("#dropdown-businessType .cur-value").html(v.name);
+                    }
+                }.bind(this));
+            }
         },
 
         onClickQueryButton: function(){
@@ -185,7 +216,8 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
 
             var addView = new AddOrEditView({
                 collection: this.collection,
-                isEdit: false
+                isEdit: false,
+                businessTypeList: this.businessTypeList
             });
             var options = {
                 title:"新建",

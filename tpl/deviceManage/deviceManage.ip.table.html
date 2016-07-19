@@ -14,7 +14,14 @@
         <td><%=data[i]["id"]%></td>
         <td><%=data[i]["ip"]%></td>
         <td><%=data[i]["typeName"]%></td>
-        <td><%=data[i]["statusName"]%></td>
+        <td>
+            <%=data[i]["statusName"]%>
+            <% if(data[i]['status'] == '10'){ %>
+              <a href="javascript:void(0)" title="IP所属设备已暂停">
+                <span class="glyphicon glyphicon-exclamation-sign" style="color:red;"></span>
+              </a>
+            <% } %>
+        </td>
         <td>
             <a href="javascript:void(0)" id="<%=data[i]['id']%>" data-ip="<%=data[i]['ip']%>" data-status="2" class="edit" title="编辑" style="display: none">
                 <span class="glyphicon glyphicon glyphicon-edit"></span>
@@ -25,17 +32,21 @@
             </a>
             <% } %>
             <% if(permission.EnableorPauseIPinManageHosts){ %>
-            <% if(data[i]['status'] == '2' || data[i]['status'] == '6'){ %>
+            <% if(data[i]['status'] == '2' || data[i]['status'] == '6' || data[i]['status'] == '10'){ %>
                 <a href="javascript:void(0)" id="<%=data[i]['id']%>" class="ipOperation" data-ip="<%=data[i]['ip']%>" data-status="1" title="开启">
                     <span class="glyphicon glyphicon-play-circle"></span>
+                </a>
+            <% }else if(data[i]['status'] == '8'){ %>
+                <a href="javascript:void(0)" id="<%=data[i]['id']%>" class="a_disabled" data-ip="<%=data[i]['ip']%>" data-status="1" title="IP所属设备已暂停">
+                    <span class="glyphicon glyphicon-play-circle css-gray"></span>
                 </a>
             <% }else if(data[i]['status'] == '1'){ %>
                 <a href="javascript:void(0)" id="<%=data[i]['id']%>" class="ipOperation" data-ip="<%=data[i]['ip']%>" data-status="2" title="暂停">
                     <span class="glyphicon glyphicon-pause"></span>
-                 </a>
+                </a>
             <% }else{ %>
                 <a href="javascript:void(0)">
-                    <span class="glyphicon glyphicon-off css-gray"></span>
+                    <span class="glyphicon glyphicon-pause css-gray"></span>
                 </a>
                 <a href="javascript:void(0)">
                     <span class="glyphicon glyphicon-play-circle css-gray"></span>

@@ -177,7 +177,23 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.collection.on("get.channel.success", $.proxy(this.onGetChannelSuccess, this));
             this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
 
-            this.collection.getChannelList({groupId: this.model.get("id")});
+            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+
+            this.initNodeDropMenu();
+
+            this.backUpChannelList = [];
+
+            this.queryArgs = {
+                "domain"           : null,
+                "accelerateDomain" : null,
+                "businessType"     : null,
+                "clientName"       : null,
+                "status"           : null,
+                "page"             : 1,
+                "count"            : 5
+             }
+
+            this.collection.queryChannel(this.queryArgs);
         },
 
         onGetError: function(error){
@@ -187,33 +203,93 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 alert("网络阻塞，请刷新重试！")
         },
 
+        onClickQueryButton: function(){
+            this.isInitPaginator = false;
+            this.queryArgs.page = 1;
+            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.$el.find(".pagination").html("");
+            //this.queryArgs.chname = this.$el.find("#input-name").val() || null;
+            this.collection.queryChannel(this.queryArgs);
+        },
+
+        initPaginator: function(){
+            this.$el.find(".total-items span").html(this.total)
+            if (this.total <= this.queryArgs.count) return;
+            var total = Math.ceil(this.total/this.queryArgs.count);
+
+            this.$el.find(".pagination").jqPaginator({
+                totalPages: total,
+                visiblePages: 5,
+                currentPage: 1,
+                onPageChange: function (num, type) {
+                    if (type !== "init"){
+                        this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                        var args = _.extend(this.queryArgs);
+                        args.page = num;
+                        args.count = this.queryArgs.count;
+                        this.collection.queryChannel(args);
+                    }
+                }.bind(this)
+            });
+            this.isInitPaginator = true;
+        },
+
+        initNodeDropMenu: function(){
+            var pageNum = [
+                {name: "5条", value: 5},
+                {name: "10条", value: 10},
+                {name: "50条", value: 50},
+                {name: "100条", value: 100}
+            ]
+            Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
+                this.queryArgs.count = value;
+                this.queryArgs.page = 1;
+                this.onClickQueryButton();
+            }.bind(this));
+        },
+
         onGetChannelSuccess: function(res){
-            this.channelList = res;
-            var count = 0, isCheckedAll = false;
+            this.channelList = res.rows;
+            this.total = res.total;
+            var count = 0; this.isCheckedAll = false;
             _.each(this.channelList, function(el, index, list){
                 if (el.associated === 0) el.isChecked = false;
-                if (el.associated === 1) {
-                    el.isChecked = true;
-                    count = count + 1
-                }
+                if (el.associated === 1) el.isChecked = true;
+
+                var aChannel = _.find(this.backUpChannelList, function(obj){
+                    return el.id === obj.id
+                })
+                if (aChannel)
+                    el.isChecked = aChannel.isChecked;
+                else
+                    this.backUpChannelList.push(el)
+
                 if (el.status === 0) el.statusName = '<span class="text-danger">已停止</span>';
                 if (el.status === 1) el.statusName = '<span class="text-success">服务中</span>';
             }.bind(this))
+            _.each(this.channelList, function(el, index, list){
+                if (el.isChecked) count = count + 1
+            }.bind(this))
 
-            if (count === this.channelList.length) isCheckedAll = true
+            if (count === this.channelList.length) this.isCheckedAll = true;
+            this.initTable();
+        },
 
+        initTable: function(){
             this.table = $(_.template(template['tpl/dispGroup/dispGroup.channel.table.html'])({
                 data: this.channelList, 
-                isCheckedAll: isCheckedAll,
+                isCheckedAll: this.isCheckedAll,
                 type: 0//显示checkbox
             }));
-            if (res.length !== 0)
+            if (this.channelList.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+
+            if (!this.isInitPaginator) this.initPaginator();
         },
 
         onItemCheckedUpdated: function(event){
@@ -226,6 +302,11 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             }.bind(this));
 
             selectedObj.isChecked = eventTarget.checked
+
+            var aChannel = _.find(this.backUpChannelList, function(obj){
+                return selectedObj.id === obj.id
+            })
+            if (aChannel) aChannel.isChecked = selectedObj.isChecked;
 
             var checkedList = this.channelList.filter(function(object) {
                 return object.isChecked === true;
@@ -240,13 +321,17 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             _.each(this.channelList, function(el, index, list){
-                el.isChecked = eventTarget.checked
+                el.isChecked = eventTarget.checked;
+                var aChannel = _.find(this.backUpChannelList, function(obj){
+                    return el.id === obj.id
+                })
+                if (aChannel) aChannel.isChecked = el.isChecked;
             }.bind(this))
             this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
         },
 
         getArgs: function(){
-            var checkedList = this.channelList.filter(function(object) {
+            var checkedList = this.backUpChannelList.filter(function(object) {
                 return object.isChecked === true;
             })
             var channelIds = [];

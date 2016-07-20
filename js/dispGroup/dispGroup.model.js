@@ -136,6 +136,21 @@ define("dispGroup.model", ['require','exports', 'utility'], function(require, ex
             $.ajax(defaultParas);
         },
 
+        queryChannel: function(args){
+            var url = BASE_URL + "/rs/channel/query",
+            successCallback = function(res){
+                if (res){
+                    this.trigger("get.channel.success", res);
+                } else {
+                    this.trigger("get.channel.error", res); 
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.channel.error", response); 
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
         addDispGroup: function(args){
             var url = BASE_URL + "/rs/dispGroup/createGroup"
             var defaultParas = {

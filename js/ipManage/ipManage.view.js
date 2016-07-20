@@ -83,9 +83,11 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             }.bind(this));
 
             this.collection.on("get.ipInfoStart.error", function(err){
+                this.commonPopup.$el.modal('hide');
                 this.onGetError(err);
             }.bind(this));
             this.collection.on("get.ipInfoPause.error", function(err){
+                this.commonPopup.$el.modal('hide');
                 this.onGetError(err);
             }.bind(this));
         },

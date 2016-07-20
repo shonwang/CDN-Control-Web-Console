@@ -188,12 +188,19 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.collection.off("get.ipInfoPause.success");
             this.collection.on("get.ipInfoPause.success", $.proxy(this.onIpInfoPauseSuccess, this));
+            this.collection.off("get.ipInfoStart.error");
+            this.collection.on("get.ipInfoStart.error", function(err){
+                this.commonPopup.$el.modal('hide');
+                this.onGetError(err);
+            }.bind(this));
             this.collection.off("get.ipInfoPause.error");
-            this.collection.on("get.ipInfoPause.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.ipInfoPause.error", function(err){
+                this.commonPopup.$el.modal('hide');
+                this.onGetError(err);
+            }.bind(this));
 
             this.collection.off("get.ipInfoSubmit.success");
             this.collection.on("get.ipInfoSubmit.success", function(res){
-                alert(res);
                 this.showIpManagePopup();
                 this.collection.ipTypeList();
             }.bind(this));
@@ -772,10 +779,16 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
 
             this.collection.on("get.deviceOpen.success", $.proxy(this.onDeviceOpenSuccess, this));
-            this.collection.on("get.deviceOpen.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.deviceOpen.error", function(err){
+                this.commonPopup.$el.modal('hide');
+                this.onGetError(err);
+            }.bind(this));
 
             this.collection.on("get.devicePause.success", $.proxy(this.onDevicePauseSuccess, this));
-            this.collection.on("get.devicePause.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.devicePause.error", function(err){
+                this.commonPopup.$el.modal('hide');
+                this.onGetError(err);
+            }.bind(this));
 
             if (AUTH_OBJ.CreateHost)
                 this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));

@@ -18,7 +18,8 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             "domainStatistics"    : "domainStatistics",
             "businessManage"      : "businessManage",
             "domainManage"        : "domainManage",
-            "grayscaleSetup"     : "grayscaleSetup"
+            "grayscaleSetup"     : "grayscaleSetup",
+            "templateManage"      : "templateManage"
         },
 
         initialize: function(){
@@ -78,6 +79,9 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                     break;
                 case 'grayscaleSetup':
                     this.grayscaleSetupView.hide();
+                    break;
+                case 'templateManage':
+                    this.templateManageView.hide();
                     break;
                 default:
             }
@@ -422,6 +426,26 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                     this.grayscaleSetupView.render($('.ksc-content'));
                 } else {
                     this.grayscaleSetupView.update();
+                }
+            }.bind(this));
+        },
+
+        templateManage: function(){
+            this.navbarView.initLogin($.proxy(this.templateManageCallback, this))
+        },
+
+        templateManageCallback: function(){
+            require(['templateManage.view', 'templateManage.model'], function(TemplateManageView, TemplateManageModel){
+                this.curPage = 'templateManage';
+                this.navbarView.select(this.curPage);
+                if (!this.templateManageModel)
+                    this.templateManageModel = new TemplateManageModel();
+                if (!this.templateManageView){
+                    var options = {collection: this.templateManageModel};
+                    this.templateManageView = new TemplateManageView(options);
+                    this.templateManageView.render($('.ksc-content'));
+                } else {
+                    this.templateManageView.update();
                 }
             }.bind(this));
         }

@@ -70,7 +70,10 @@ requirejs.config({
         "domainManage.view" : "domainManage/domainManage.view",
 
         "grayscaleSetup.model" : "grayscaleSetup/grayscaleSetup.model",
-        "grayscaleSetup.view" : "grayscaleSetup/grayscaleSetup.view"
+        "grayscaleSetup.view" : "grayscaleSetup/grayscaleSetup.view",
+
+        "templateManage.model"   : 'templateManage/templateManage.model',
+        "templateManage.view"    : 'templateManage/templateManage.view'
     },
     urlArgs: new Date().valueOf()
 });

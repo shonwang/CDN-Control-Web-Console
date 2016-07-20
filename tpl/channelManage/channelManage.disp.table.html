@@ -10,6 +10,7 @@
     </thead>
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
+            <% if (data[i]["isDisplay"]) { %>
             <tr data-id="<%=data[i].id%>">
               <td>
                   <div class="radio">
@@ -28,6 +29,7 @@
               </td>
               <td><%=data[i]["statusName"]%></td>
             </tr>
+            <% } %>
         <% } %>  
     </tbody>
 </table>

@@ -720,6 +720,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 body : dgDetailView,
                 backdrop : 'static',
                 type     : 1,
+                height: 500,
                 onOKCallback:  function(){},
                 onHiddenCallback: function(){}
             }
@@ -910,6 +911,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 backdrop : 'static',
                 type     : 2,
                 width: 800,
+                height: 500,
                 onOKCallback:  function(){
                     var options = chInfoView.getArgs();
                     if (!options) return;

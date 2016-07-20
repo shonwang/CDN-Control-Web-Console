@@ -9,7 +9,7 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
             this.collection = options.collection;
             this.model      = options.model;
 
-            this.$el = $(_.template(template['tpl/dispGroup/dispGroup.channel.html'])({}));
+            this.$el = $(_.template(template['tpl/nodeManage/nodeManage.dispGroup.html'])({}));
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
             this.collection.off("channel.dispgroup.success");
@@ -23,6 +23,42 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
             this.collection.on("ip.type.error", $.proxy(this.onGetError, this));
 
             this.collection.getChannelDispgroup({channelid: this.model.get("id")});
+            this.initSearchTypeDropList();
+        },
+
+        initSearchTypeDropList: function(){
+            var searchArray = [
+                {name: "按名称", value: "1"},
+                {name: "按备注", value: "2"}
+            ],
+            rootNode = this.$el.find(".disp-filter-drop");
+            Utility.initDropMenu(rootNode, searchArray, function(value){
+                this.curSearchType = value;
+                this.onKeyupDispListFilter();
+            }.bind(this));
+            this.curSearchType = "1";
+        },
+
+        onKeyupDispListFilter: function() {
+            if (!this.channelList || this.channelList.length === 0) return;
+            var keyWord = this.$el.find("#disp-filter").val();
+                        
+            _.each(this.channelList, function(model, index, list) {
+                if (keyWord === ""){
+                    model.isDisplay = true;
+                } else if (this.curSearchType == "1"){
+                    if (model.dispDomain.indexOf(keyWord) > -1)
+                        model.isDisplay = true;
+                    else
+                        model.isDisplay = false;
+                } else if (this.curSearchType == "2"){
+                    if (model.remark.indexOf(keyWord) > -1)
+                        model.isDisplay = true;
+                    else
+                        model.isDisplay = false;
+                }
+            }.bind(this));
+            this.initTable();
         },
 
         onGetError: function(error){
@@ -38,7 +74,7 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         onGetIpTypeSuccess: function(data){
-            var count = 0, isCheckedAll = false, isDisabled = false;
+            var count = 0; this.isCheckedAll = false; this.isDisabled = false;
             _.each(this.channelList, function(el, index, list){
                 if (el.associated === 0) el.isChecked = false;
                 if (el.associated === 1) {
@@ -51,6 +87,8 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
                 if (el.priority == 2) el.priorityName = '质量优先';
                 if (el.priority == 3) el.priorityName = '兼顾成本与质量';
 
+                el.isDisplay = true;
+
                 var ipObj = _.find(data, function(obj){
                     return obj.id === el.resolveIpType
                 }.bind(this))
@@ -58,13 +96,20 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
                     el.resolveIpTypeName = ipObj.name;
             }.bind(this))
 
-            if (count === this.channelList.length) isCheckedAll = true
-            if (this.model.get("cdnFactory") !== "1") isDisabled = true
+            if (count === this.channelList.length) this.isCheckedAll = true
+            if (this.model.get("cdnFactory") !== "1") this.isDisabled = true
 
+            this.initTable();
+            this.$el.find("#disp-filter").val("")
+            this.$el.find("#disp-filter").off("keyup");
+            this.$el.find("#disp-filter").on("keyup", $.proxy(this.onKeyupDispListFilter, this));
+        },
+
+        initTable: function(){
             this.table = $(_.template(template['tpl/channelManage/channelManage.disp.table.html'])({
                 data: this.channelList, 
-                isCheckedAll: isCheckedAll,
-                isDisabled: isDisabled
+                isCheckedAll: this.isCheckedAll,
+                isDisabled: this.isDisabled
             }));
             if (this.channelList.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
@@ -250,6 +295,7 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
                 body : chInfoView,
                 backdrop : 'static',
                 type     : 2,
+                height: 500,
                 onOKCallback:  function(){
                     var options = chInfoView.getArgs();
                     if (!options) return;

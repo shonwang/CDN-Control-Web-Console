@@ -578,14 +578,16 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".opt-ctn .sending").show();
             this.initTable();
             //if (!this.isInitPaginator) this.initPaginator();
-            this.$el.find("#disp-config-filter").val("")
+            this.$el.find("#disp-config-filter").val("");
+            this.$el.find("#disp-config-filter").off("keyup");
             this.$el.find("#disp-config-filter").on("keyup", $.proxy(this.onKeyupDispConfigListFilter, this));
         },
 
         onHistoryConfigListSuccess: function(){
             this.initTable(true);
             //if (!this.isInitPaginator) this.initPaginator();
-            this.$el.find("#disp-config-filter").val("")
+            this.$el.find("#disp-config-filter").val("");
+            this.$el.find("#disp-config-filter").off("keyup");
             this.$el.find("#disp-config-filter").on("keyup", $.proxy(this.onKeyupDispConfigListFilter, this, true));
         },
 
@@ -593,6 +595,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.initTable(true, true);
             //if (!this.isInitPaginator) this.initPaginator();
             this.$el.find("#disp-config-filter").val("")
+            this.$el.find("#disp-config-filter").off("keyup");
             this.$el.find("#disp-config-filter").on("keyup", $.proxy(this.onKeyupDispConfigListFilter, this, true, true));
         },
 

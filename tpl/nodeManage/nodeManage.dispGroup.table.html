@@ -12,6 +12,7 @@
     </thead>
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
+            <% if (data[i]["isDisplay"]) { %>
             <tr data-id="<%=data[i].dispId%>">
               <td><input type="checkbox" id="<%=data[i].dispId%>" <% if (data[i].isChecked) { %> checked="true"  disabled="disabled"<% } %> ></td>
               <td><%=data[i]["dispDomain"]%></td>
@@ -23,6 +24,7 @@
               <td><%=data[i]["statusName"]%></td>
               <td><%=data[i]["isInseriveName"]%></td>
             </tr>
+            <% } %>
         <% } %>  
     </tbody>
 </table>

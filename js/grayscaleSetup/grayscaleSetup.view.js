@@ -137,6 +137,20 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         }
     });
 
+    var SyncProgressView = Backbone.View.extend({
+        events: {},
+
+        initialize: function(options) {
+            this.collection = options.collection;
+            this.model = options.model;
+
+            this.$el = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.syncProgress.html'])());
+        },
+        render: function(target) {
+            this.$el.appendTo(target);
+        }
+    });
+
     var GrayscaleSetupView = Backbone.View.extend({
         events: {},
 
@@ -203,6 +217,10 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         initTable: function(){
             this.table = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.table.html'])());
             this.$el.find(".table-ctn").html(this.table[0]);
+
+            this.$el.find(".edit").on("click", $.proxy(this.onClickEdit, this));
+            this.$el.find(".delete").on("click", $.proxy(this.onClickDelete, this));
+            this.$el.find(".sync").on("click", $.proxy(this.onClickSync, this));
             // if (this.collection.models.length !== 0){
             //     this.table = $(_.template(template['tpl/domainManage/domainManage.table.html'])({data:this.collection.models}));
             //     this.$el.find(".table-ctn").html(this.table[0]);
@@ -223,7 +241,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                 title:"新建",
                 body : addView,
                 backdrop : 'static',
-                type     : 1,
+                type     : 2,
                 onOKCallback:  function(){
                     // var options = addView.getArgs();
                     // if (!options) return;
@@ -273,6 +291,35 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             // window.editDomainPopup = this.editDomainPopup;
         },
 
+        onClickDelete: function(e){
+            var eTarget = e.srcElement || e.target,id;
+
+            if (eTarget.tagName == "SPAN") {
+                id = $(eTarget).parent().attr("id");
+            } else {
+                id = $(eTarget).attr("id");
+            }
+            var result = confirm("你确定要删除当前域名吗？")
+            if (!result) return;
+            //请求删除接口
+            //this.collection.deleteDomain(id);
+        },
+
+        onClickSync: function(e){
+            var eTarget = e.srcElement || e.target,id;
+
+            if (eTarget.tagName == "SPAN") {
+                id = $(eTarget).parent().attr("id");
+            } else {
+                id = $(eTarget).attr("id");
+            }
+            var result = confirm("你确定要同步当前域名吗？")
+            if (!result) return;
+            //请求同步接口
+            //this.collection.getSyncProgress(id);
+            this.getSyncProgressSuccess();
+        },
+
         initPaginator: function(){
             // this.$el.find(".total-items span").html(this.collection.total)
             // if (this.collection.total <= this.getPageArgs.count) return;
@@ -308,6 +355,28 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         //         this.onClickQueryButton();
         //     }.bind(this));
         // },
+
+        getSyncProgressSuccess: function(res){
+            if (this.syncProgressPopup) $("#" + this.syncProgressPopup.modalId).remove();
+
+            var syncProgressView = new SyncProgressView({
+                collection: this.collection
+            });
+            var options = {
+                title:"域名：",
+                body : syncProgressView,
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback:  function(){
+                    // var options = syncProgressView.getArgs();
+                    // if (!options) return;
+                    // this.collection.addDomain(options);
+                    // this.syncProgressPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){}.bind(this)
+            }
+            this.syncProgressPopup = new Modal(options);
+        },
 
         onGetError: function(error) {
             if (error && error.message)

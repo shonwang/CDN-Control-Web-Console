@@ -20,20 +20,20 @@
           <td><%=data[i].attributes.dispDomain%></td>
           <td>
             <%=data[i].attributes.statusName%>
-            <% if(data[i].attributes.status == '10'){ %>
+            <% if(data[i].attributes.status == '12'){ %>
               <a href="javascript:void(0)" title="IP所属设备已暂停">
                 <span class="glyphicon glyphicon-exclamation-sign" style="color:red;"></span>
               </a>
             <% } %>
           </td>
           <% if(permission.EnableorPauseIPinManageIPs){ %>
-          <% if(data[i].attributes.status == '2' || data[i].attributes.status == '6' || data[i].attributes.status == '10'){ %>
+          <% if(data[i].attributes.status == '2' || data[i].attributes.status == '6' || data[i].attributes.status == '10' || data[i].attributes.status == '14'){ %>
             <td>
               <a href="javascript:void(0)" id="<%=data[i].attributes.ipId%>" class='ipOperation' data-ip="<%=data[i].attributes.ip%>" data-status="1" title='开启'>
                 <span class="glyphicon glyphicon-play-circle"></span>
               </a>
             </td>
-          <% }else if(data[i].attributes.status == '8'){ %>
+          <% }else if(data[i].attributes.status == '8' || data[i].attributes.status == '12'){ %>
           <td>
               <a href="javascript:void(0)" id="<%=data[i].attributes.ipId%>" class="a_disabled" data-ip="<%=data[i].attributes.ip%>" data-status="1" title='IP所属设备已暂停'>
                 <span class="glyphicon glyphicon-play-circle css-gray"></span>

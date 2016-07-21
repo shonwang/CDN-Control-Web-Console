@@ -16,7 +16,7 @@
         <td><%=data[i]["typeName"]%></td>
         <td>
             <%=data[i]["statusName"]%>
-            <% if(data[i]['status'] == '10'){ %>
+            <% if(data[i]['status'] == '12'){ %>
               <a href="javascript:void(0)" title="IP所属设备已暂停">
                 <span class="glyphicon glyphicon-exclamation-sign" style="color:red;"></span>
               </a>
@@ -32,11 +32,11 @@
             </a>
             <% } %>
             <% if(permission.EnableorPauseIPinManageHosts){ %>
-            <% if(data[i]['status'] == '2' || data[i]['status'] == '6' || data[i]['status'] == '10'){ %>
+            <% if(data[i]['status'] == '2' || data[i]['status'] == '6' || data[i]['status'] == '10' || data[i]['status'] == '14'){ %>
                 <a href="javascript:void(0)" id="<%=data[i]['id']%>" class="ipOperation" data-ip="<%=data[i]['ip']%>" data-status="1" title="开启">
                     <span class="glyphicon glyphicon-play-circle"></span>
                 </a>
-            <% }else if(data[i]['status'] == '8'){ %>
+            <% }else if(data[i]['status'] == '8' || data[i]['status'] == '12'){ %>
                 <a href="javascript:void(0)" id="<%=data[i]['id']%>" class="a_disabled" data-ip="<%=data[i]['ip']%>" data-status="1" title="IP所属设备已暂停">
                     <span class="glyphicon glyphicon-play-circle css-gray"></span>
                 </a>

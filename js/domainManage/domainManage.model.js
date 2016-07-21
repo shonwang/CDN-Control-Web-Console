@@ -5,11 +5,11 @@ define("domainManage.model", ['require','exports', 'utility'], function(require,
             if(this.get("type") === 1) this.set("typeName","下载"); 
             if(this.get("type") === 2) this.set("typeName","直播"); 
             //审核状态
-            if(this.get("auditStatus") === 0) this.set("auditStatusName","审核中");
-            if(this.get("auditStatus") === -1) this.set("auditStatusName","删除");
-            if(this.get("auditStatus") === 1) this.set("auditStatusName","审核通过");
-            if(this.get("auditStatus") === 2) this.set("auditStatusName","审核驳回");
-            if(this.get("auditStatus") === 3) this.set("auditStatusName","暂停");
+            if(this.get("auditStatus") === 0) this.set("auditStatusName",'<span class="label label-info">审核中</span>');
+            if(this.get("auditStatus") === -1) this.set("auditStatusName",'<span class="label label-danger">删除</span>');
+            if(this.get("auditStatus") === 1) this.set("auditStatusName",'<span class="label label-success">审核通过</span>');
+            if(this.get("auditStatus") === 2) this.set("auditStatusName",'<span class="label label-default">审核驳回</span>');
+            if(this.get("auditStatus") === 3) this.set("auditStatusName",'<span class="label label-warning">暂停</span>');
             //回源类型
             if(this.get("originType") === 1) this.set("originTypeName","IP");
             if(this.get("originType") === 2) this.set("originTypeName","源站域名");

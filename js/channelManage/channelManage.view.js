@@ -81,8 +81,8 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
                     el.isChecked = true;
                     count = count + 1
                 }
-                if (el.status === 0) el.statusName = '<span class="text-danger">已停止</span>';
-                if (el.status === 1) el.statusName = '<span class="text-success">运行中</span>';
+                if (el.status === 0) el.statusName = '<span class="label label-danger">已停止</span>';
+                if (el.status === 1) el.statusName = '<span class="label label-success">运行中</span>';
                 if (el.priority == 1) el.priorityName = '成本优先';
                 if (el.priority == 2) el.priorityName = '质量优先';
                 if (el.priority == 3) el.priorityName = '兼顾成本与质量';

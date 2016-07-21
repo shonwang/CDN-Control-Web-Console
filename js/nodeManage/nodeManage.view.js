@@ -73,10 +73,10 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     count = count + 1
                 }
                 el.isDisplay = true;
-                if (el.status === 0) el.statusName = '<span class="text-danger">已停止</span>';
-                if (el.status === 1) el.statusName = '<span class="text-success">运行中</span>';
-                if (el.isInserive === 0) el.isInseriveName = '<span class="text-danger">未服务</span>';
-                if (el.isInserive === 1) el.isInseriveName = '<span class="text-success">服务中</span>';
+                if (el.status === 0) el.statusName = '<span class="label label-danger">已停止</span>';
+                if (el.status === 1) el.statusName = '<span class="label label-success">运行中</span>';
+                if (el.isInserive === 0) el.isInseriveName = '<span class="label label-danger">未服务</span>';
+                if (el.isInserive === 1) el.isInseriveName = '<span class="label label-success">服务中</span>';
                 if (el.priority == 1) el.priorityName = '成本优先';
                 if (el.priority == 2) el.priorityName = '质量优先';
                 if (el.priority == 3) el.priorityName = '兼顾成本与质量';
@@ -98,6 +98,13 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
 
             this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+            this.table.find("tbody .remark").tooltip({
+                animation  : false,
+                "placement": "top", 
+                "html"     : true,
+                "title"  : function(){return $(this).attr("remark")}, 
+                "trigger"  : "hover"
+            })
         },
 
         onItemCheckedUpdated: function(event){

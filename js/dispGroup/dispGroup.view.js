@@ -29,9 +29,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         onGetNodeSuccess: function(res){
             this.nodeList = res;
             _.each(this.nodeList, function(el, index, list){
-                if (el.status === 3) el.statusName =  '<span class="text-danger">已关闭</span>'
-                if (el.status === 2) el.statusName =  '<span class="text-warning">挂起</span>'
-                if (el.status === 1) el.statusName =  '<span class="text-success">运行中</span>'
+                if (el.status === 3) el.statusName =  '<span class="label label-danger">已关闭</span>'
+                if (el.status === 2) el.statusName =  '<span class="label label-warning">挂起</span>'
+                if (el.status === 1) el.statusName =  '<span class="label label-success">运行中</span>'
 
                 if (el.type === 3) el.typeName =  'lvs&cache'
                 if (el.type === 2) el.typeName =  'cache'
@@ -264,8 +264,8 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 else
                     this.backUpChannelList.push(el)
 
-                if (el.status === 0) el.statusName = '<span class="text-danger">已停止</span>';
-                if (el.status === 1) el.statusName = '<span class="text-success">服务中</span>';
+                if (el.status === 0) el.statusName = '<span class="label label-danger">已停止</span>';
+                if (el.status === 1) el.statusName = '<span class="label label-success">服务中</span>';
             }.bind(this))
             _.each(this.channelList, function(el, index, list){
                 if (el.isChecked) count = count + 1

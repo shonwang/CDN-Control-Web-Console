@@ -6,8 +6,8 @@ define("dispGroup.model", ['require','exports', 'utility'], function(require, ex
                 crossLevel = this.get("crossLevel"),
                 updateTime = this.get("updateTime");
 
-            if (status === 0) this.set("statusName",'<span class="text-danger">已关闭</span>');
-            if (status === 1) this.set("statusName", '<span class="text-success">运行中</span>');
+            if (status === 0) this.set("statusName",'<span class="label label-danger">已关闭</span>');
+            if (status === 1) this.set("statusName", '<span class="label label-success">运行中</span>');
 
             if (priority == 1) this.set("priorityName",'成本优先');
             if (priority == 2) this.set("priorityName",'质量优先');

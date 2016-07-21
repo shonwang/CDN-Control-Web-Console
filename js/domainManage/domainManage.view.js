@@ -571,6 +571,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 body : addDomainView,
                 backdrop : 'static',
                 type     : 2,
+                height   : 500,
                 onOKCallback:  function(){
                     var options = addDomainView.getArgs();
                     if (!options) return;
@@ -612,6 +613,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 body : editDomainView,
                 backdrop : 'static',
                 type     : 2,
+                height   : 500,
                 onOKCallback:  function(){
                     var options = editDomainView.getArgs();
                     if (!options) return;

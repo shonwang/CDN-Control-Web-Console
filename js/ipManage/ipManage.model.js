@@ -2,12 +2,12 @@ define("ipManage.model", ['require','exports', 'utility'], function(require, exp
     var Model = Backbone.Model.extend({
         initialize: function(){
             var status = this.get("status");
-            if (status === "1") this.set("statusName", "<span class='text-success'>运行中</span>");
-            if (status === "2") this.set("statusName", "<span class='text-warning'>暂停中</span>");
-            if (status === "4") this.set("statusName", "<span class='text-danger'>宕机</span>");
+            if (status === "1") this.set("statusName", "<span class='label label-success'>运行中</span>");
+            if (status === "2") this.set("statusName", "<span class='label label-warning'>暂停中</span>");
+            if (status === "4") this.set("statusName", "<span class='label label-danger'>宕机</span>");
             if (status === "6") this.set("statusName", "暂停且宕机");
-            if (status === "8")this.set("statusName", "<span class='text-warning'>暂停中</span>");
-            if (status === "10")this.set("statusName", "<span class='text-warning'>暂停中</span>");
+            if (status === "8")this.set("statusName", "<span class='label label-warning'>暂停中</span>");
+            if (status === "10")this.set("statusName", "<span class='label label-warning'>暂停中</span>");
 
             this.set("id", Utility.randomStr(8))
         }

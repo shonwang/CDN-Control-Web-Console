@@ -17,7 +17,6 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
 
             }
 
-            this.initTree();
             this.initDropMenu();
         },
 
@@ -29,52 +28,51 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         initTree: function(res){
-            var setting = {
-                check: {
-                    enable: true
-                },
-                data: {
-                    simpleData: {
-                        enable: true
+            if(this.isEdit){
+                var setting = {
+                    check: {
+                        enable: true,
+                        chkStyle: "radio",
+                        radioType: "all"
+                    },
+                    data: {
+                        simpleData: {
+                            enable: true
+                        }
+                    },
+                    callback: {
+                        onCheck: function(){
+                            this.getSelected();
+                        }.bind(this)
                     }
-                },
-                callback: {
-                    onCheck: function(){
-                        this.getSelected();
-                    }.bind(this)
-                }
-            };
+                };
+            }else{
 
-            //var zNodes = res[this.nodeGroupId];
+            }
+
+            // var zNodes = res[this.nodeGroupId];
 
             // _.each(zNodes,function(el,index,ls){
             //     el.open = false;
-            //     el.highlight = false;
-            //     el.nodeIcon = false;
+            //     el.nocheck = false;
             //     if(el.pId == -1){
             //         el.open = true;
-            //         el.nodeIcon = true; //节点显示“文件夹”图标
-            //     }
-            //     if(el.deviceStatus != 1 && el.pId != -1){
-            //         el.highlight = true;
-            //     }
-            //     if(el.nodeStatus != 1 && el.pId == -1){
-            //         el.highlight = true;
+            //         el.nocheck = true;
             //     }
             // }.bind(this));
 
             var zNodes =[
-                { id:1, pId:0, name:"节点组 1", open:true,checked:false},
-                { id:11, pId:1, name:"节点 1-1", checked:false},
+                { id:1, pId:0, name:"节点组 1", open:true, "nocheck":true},
+                { id:11, pId:1, name:"节点 1-1"},
                 { id:12, pId:1, name:"节点 1-2"},
-                { id:2, pId:0, name:"节点组 2", open:true},
+                { id:2, pId:0, name:"节点组 2", open:true, "nocheck":true},
                 { id:21, pId:2, name:"节点 2-1"},
                 { id:22, pId:2, name:"节点 2-2"},
                 { id:23, pId:2, name:"节点 2-3"}
             ];
 
             this.treeObj = $.fn.zTree.init(this.$el.find(".nodeList-ctn #tree"), setting, zNodes);
-            this.getSelected();
+            //this.getSelected();
         },
 
         getSelected: function(){
@@ -83,6 +81,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                 return node;
             };
             this.nodeAllObj = this.treeObj.getNodesByFilter(matchFilter);
+
             //console.log(this.nodeAllObj);
             // if (!this.treeObj) return;
             // var matchFilter = function(node){
@@ -102,10 +101,10 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             _.each(this.nodeAllObj,function(obj, key, el) {
                 //console.log(obj);
                 if(obj.pId && obj.checked){
-                    nodeIdArray.push(obj.id);
+                    console.log(obj.id);
+                    //请求节点对应配置文件接口
                 }
             });
-            //console.log(this.nodeAllObj);
             this.initFileList();
         },
 
@@ -115,16 +114,18 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         initDropMenu: function(){
+            console.log(this.businessTypeList);
             Utility.initDropMenu(this.$el.find(".dropdown-businessType"), this.businessTypeList, function(value){
                 this.args.businessType = parseInt($.trim(value));
             }.bind(this));
-            this.$el.find("#dropdown-businessType .cur-value").html(this.businessTypeList[0].name);
             if(this.isEdit){
-                $.each(businessTypeList,function(k,v){
-                    if(v.value == this.model.get("businessType")){
-                        this.$el.find("#dropdown-businessType .cur-value").html(v.name);
-                    }
-                }.bind(this));
+                // $.each(this.businessTypeList,function(k,v){
+                //     if(v.value == this.model.get("businessType")){
+                //         this.$el.find("#dropdown-businessType .cur-value").html(v.name);
+                //     }
+                // }.bind(this));
+            }else{
+                this.$el.find("#dropdown-businessType .cur-value").html(this.businessTypeList[0].name);
             }
         },
 
@@ -134,6 +135,9 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
 
         render: function(target) {
             this.$el.appendTo(target);
+            setTimeout(function(){
+                this.initTree();
+            }.bind(this),10);
         }
     });
 
@@ -266,28 +270,29 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
 
             // var model = this.collection.get(id);
 
-            // if(this.editDomainPopup) $("#" + this.editDomainPopup.modalId).remove();
+            if(this.editPopup) $("#" + this.editPopup.modalId).remove();
 
-            // var editDomainView = new AddOrEditDomainManageView({
-            //     collection: this.collection,
-            //     model: model,
-            //     isEdit: true
-            // });
+            var editView = new AddOrEditView({
+                collection: this.collection,
+                //model: model,
+                isEdit: true,
+                businessTypeList: this.businessTypeList
+            });
 
-            // var options = {
-            //     title:"编辑域名",
-            //     body : editDomainView,
-            //     backdrop : 'static',
-            //     type     : 2,
-            //     onOKCallback:  function(){
-            //         var options = editDomainView.getArgs();
-            //         if (!options) return;
-            //         this.collection.editDomain(options);
-            //         this.editDomainPopup.$el.modal("hide");
-            //     }.bind(this),
-            //     onHiddenCallback: function(){}.bind(this)
-            // }
-            // this.editDomainPopup = new Modal(options);
+            var options = {
+                title:"编辑",
+                body : editView,
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback:  function(){
+                    var options = editView.getArgs();
+                    if (!options) return;
+                    this.collection.edit(options);
+                    this.editPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){}.bind(this)
+            }
+            this.editPopup = new Modal(options);
             // window.editDomainPopup = this.editDomainPopup;
         },
 

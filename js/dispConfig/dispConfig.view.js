@@ -812,6 +812,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 body : selectNodeView,
                 backdrop : 'static',
                 type     : 2,
+                height   : 500,
                 onOKCallback:  function(){
                     var options = selectNodeView.getArgs();
                     if (!options) return;

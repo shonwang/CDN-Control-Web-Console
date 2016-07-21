@@ -249,7 +249,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         onGetChannelSuccess: function(res){
-            this.channelList = res.rows;
+            this.channelList = res.rows || [];
             this.total = res.total;
             var count = 0; this.isCheckedAll = false;
             _.each(this.channelList, function(el, index, list){
@@ -734,7 +734,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 }.bind(this))
                 el.set("resolveIpTypeName", ipObj.name)
             }.bind(this))
-            console.log(data)
+
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
         },
@@ -786,6 +786,13 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
             this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));
             this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+            this.table.find("tbody .remark").tooltip({
+                animation  : false,
+                "placement": "top", 
+                "html"     : true,
+                "title"  : function(){return $(this).attr("remark")}, 
+                "trigger"  : "hover"
+            })
         },
 
         onClickItemDetail: function(event){

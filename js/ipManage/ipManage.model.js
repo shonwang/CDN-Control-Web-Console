@@ -1,4 +1,4 @@
-define("ipManage.model", ['require','exports'], function(require, exports) {
+define("ipManage.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
             var status = this.get("status");
@@ -8,6 +8,8 @@ define("ipManage.model", ['require','exports'], function(require, exports) {
             if (status === "6") this.set("statusName", "暂停且宕机");
             if (status === "8")this.set("statusName", "<span class='text-warning'>暂停中</span>");
             if (status === "10")this.set("statusName", "<span class='text-warning'>暂停中</span>");
+
+            this.set("id", Utility.randomStr(8))
         }
     });
 

@@ -1,5 +1,21 @@
 define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
+    var DispInfoView = Backbone.View.extend({
+        events: {
+            //"click .search-btn":"onClickSearch"
+        },
+
+        initialize: function(options) {
+            this.collection = options.collection;
+            this.$el = $(_.template(template['tpl/ipManage/ipManage.queryDetail.html'])());
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target);
+        }
+    });
+
+
     var IPQueryDetailView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
@@ -139,6 +155,35 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.onStartQueryButton();
         },
 
+        onClickDispInfoItem: function(event){
+            if (this.dispInfoPopup) $("#" + this.dispInfoPopup.modalId).remove();
+
+            var eventTarget = event.srcElement || event.target,id;
+
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+
+            var model = this.collection.get(id);
+
+            var dispInfoView = new DispInfoView({
+                collection: this.collection
+            });
+            var options = {
+                title: model.get("ip") + "调度信息详情",
+                body : dispInfoView,
+                backdrop : 'static',
+                type     : 2,
+                height   : 500,
+                onOKCallback:  function(){},
+                onHiddenCallback: function(){}
+            }
+            this.dispInfoPopup = new Modal(options);
+        },
+
         onClickQueryButton: function(event){
             if (this.queryDetailPopup) $("#" + this.queryDetailPopup.modalId).remove();
 
@@ -192,6 +237,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.$el.find(".ipOperation").on("click", $.proxy(this.onClickIpOperation, this));
+            this.$el.find(".disp-info").on("click", $.proxy(this.onClickDispInfoItem, this));
         },
 
         initPaginator: function(){
@@ -296,7 +342,6 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 this.collection.off("get.ipInfoPause.success");
                 this.collection.on("get.ipInfoPause.success", $.proxy(this.onIpInfoPauseSuccess, this));
             }
-
         },
 
         commonDialog: function(){

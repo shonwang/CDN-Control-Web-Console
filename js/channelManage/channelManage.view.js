@@ -118,6 +118,13 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
 
             // this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
             // this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+            this.table.find("tbody .remark").tooltip({
+                animation  : false,
+                "placement": "top", 
+                "html"     : true,
+                "title"  : function(){return $(this).attr("remark")}, 
+                "trigger"  : "hover"
+            })
         },
 
         onItemCheckedUpdated: function(event){

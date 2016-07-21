@@ -26,36 +26,33 @@
               </a>
             <% } %>
           </td>
+          <td>
           <% if(permission.EnableorPauseIPinManageIPs){ %>
           <% if(data[i].attributes.status == '2' || data[i].attributes.status == '6' || data[i].attributes.status == '10'){ %>
-            <td>
               <a href="javascript:void(0)" id="<%=data[i].attributes.ipId%>" class='ipOperation' data-ip="<%=data[i].attributes.ip%>" data-status="1" title='开启'>
                 <span class="glyphicon glyphicon-play-circle"></span>
               </a>
-            </td>
           <% }else if(data[i].attributes.status == '8'){ %>
-          <td>
               <a href="javascript:void(0)" id="<%=data[i].attributes.ipId%>" class="a_disabled" data-ip="<%=data[i].attributes.ip%>" data-status="1" title='IP所属设备已暂停'>
                 <span class="glyphicon glyphicon-play-circle css-gray"></span>
               </a>
-            </td>
           <% }else if(data[i].attributes.status == '1'){ %>
-            <td>
               <a href="javascript:void(0)" id="<%=data[i].attributes.ipId%>" class="ipOperation" data-ip="<%=data[i].attributes.ip%>" data-status="2" title="暂停">
                 <span class="glyphicon glyphicon-pause"></span>
               </a>
-            </td>
           <% }else{ %>
-            <td>
               <a href="javascript:void(0)">
                 <span class="glyphicon glyphicon-off css-gray"></span>
               </a>
               <a href="javascript:void(0)">
                 <span class="glyphicon glyphicon-play-circle css-gray"></span>
               </a>
-            </td>
           <% } %>
           <% } %>
+          <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="disp-info" title="调度组信息">
+              <span class="glyphicon glyphicon-list-alt"></span>
+          </a>
+          </td>
         </tr>
     <% } %>  
 </tbody>

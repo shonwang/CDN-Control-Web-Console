@@ -156,6 +156,19 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
             this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
         },
 
+        getPrompt: function(isCancel){
+            var nodeId = this.$el.find("tbody input:checked").attr("id"), 
+                dispObj = _.find(this.channelList, function(object) {
+                return object.id === parseInt(nodeId);
+            });
+            var prompt = ""
+            if (isCancel)
+                prompt = "确定要将" + this.model.get("cname") + "关联到" + dispObj.dispDomain + "吗？";
+            else
+                prompt = "确定要将" + this.model.get("cname") + "取消关联" + dispObj.dispDomain + "吗？";
+            return prompt;
+        },
+
         getArgs: function(){
             // var checkedList = this.channelList.filter(function(object) {
             //     return object.isChecked === true;
@@ -279,6 +292,9 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
                 type     : 2,
                 height: 500,
                 onOKCallback:  function(){
+                    var prompt = chInfoView.getPrompt(false);
+                    var result = confirm(prompt)
+                    if (!result) return;
                     var options = chInfoView.getArgs();
                     if (!options) return;
                     chInfoView.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
@@ -301,6 +317,9 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
             if (model.get("cdnFactory") === "1") {
                 $('<button type="button" class="btn btn-danger" style="float:left">取消关联</button>').insertBefore(this.channelInfoPopup.$el.find(".btn-primary"));
                 this.channelInfoPopup.$el.find(".btn-danger").on("click", function(){
+                    var prompt = chInfoView.getPrompt(true);
+                    var result = confirm(prompt)
+                    if (!result) return;
                     var options = chInfoView.getArgs();
                     if (!options) return;
                     chInfoView.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));

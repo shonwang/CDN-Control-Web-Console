@@ -16,7 +16,7 @@
         <td><%=data[i]["typeName"]%></td>
         <td>
             <%=data[i]["statusName"]%>
-            <% if(data[i]['status'] == '12'){ %>
+            <% if(data[i]['status'] == '8' || data[i]['status'] == '10' || data[i]['status'] == '12' || data[i]['status'] == '14'){ %>
               <a href="javascript:void(0)" title="IP所属设备已暂停">
                 <span class="glyphicon glyphicon-exclamation-sign" style="color:red;"></span>
               </a>

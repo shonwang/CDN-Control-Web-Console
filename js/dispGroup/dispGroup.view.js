@@ -179,7 +179,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
 
-            this.initNodeDropMenu();
+            //this.initNodeDropMenu();
 
             this.backUpChannelList = [];
 
@@ -193,7 +193,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 "count"            : 5
              }
 
-            this.collection.queryChannel(this.queryArgs);
+            this.collection.getChannelList({groupId: this.model.get("id")});
         },
 
         onGetError: function(error){
@@ -209,7 +209,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
             //this.queryArgs.chname = this.$el.find("#input-name").val() || null;
-            this.collection.queryChannel(this.queryArgs);
+            this.collection.getChannelList({groupId: this.model.get("id")});
         },
 
         initPaginator: function(){
@@ -227,7 +227,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                         var args = _.extend(this.queryArgs);
                         args.page = num;
                         args.count = this.queryArgs.count;
-                        this.collection.queryChannel(args);
+                        this.collection.getChannelList(args);
                     }
                 }.bind(this)
             });
@@ -249,8 +249,8 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         onGetChannelSuccess: function(res){
-            this.channelList = res.rows || [];
-            this.total = res.total;
+            this.channelList = res || [];
+            //this.total = res.total;
             var count = 0; this.isCheckedAll = false;
             _.each(this.channelList, function(el, index, list){
                 if (el.associated === 0) el.isChecked = false;
@@ -289,7 +289,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
 
-            if (!this.isInitPaginator) this.initPaginator();
+            //if (!this.isInitPaginator) this.initPaginator();
         },
 
         onItemCheckedUpdated: function(event){

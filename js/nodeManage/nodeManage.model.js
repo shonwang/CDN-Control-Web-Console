@@ -263,10 +263,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
         addAssocateDispGroups: function(args, nodeId){
             var url = BASE_URL + "/rs/node/addAssocateDispGroups?nodeId=" + nodeId,
             successCallback = function(res){
-                if (res)
-                    this.trigger("add.assocateDispGroups.success", res);
-                else
-                    this.trigger("add.assocateDispGroups.error", res); 
+                this.trigger("add.assocateDispGroups.success", res);
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("add.assocateDispGroups.error", response);

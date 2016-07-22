@@ -20,6 +20,20 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             this.initDropMenu();
         },
 
+        arrIndexOf: function(arr,val){
+            for (var i = 0; i < arr.length; i++) {
+                if (_.isEqual(arr[i],val)) return i;
+            }
+            return -1;
+        },
+
+        arrRemove: function(arr,val){
+            var index = this.arrIndexOf(arr,val);
+            if (index > -1) {
+                arr.splice(index, 1);
+            }
+        },
+
         onGetError: function(error) {
             if (error && error.message)
                 alert(error.message)
@@ -42,12 +56,26 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                     },
                     callback: {
                         onCheck: function(){
-                            this.getSelected();
+                            this.getEditSelected();
                         }.bind(this)
                     }
                 };
             }else{
-
+                var setting = {
+                    check: {
+                        enable: true
+                    },
+                    data: {
+                        simpleData: {
+                            enable: true
+                        }
+                    },
+                    callback: {
+                        onCheck: function(){
+                            this.getAddSelected();
+                        }.bind(this)
+                    }
+                };
             }
 
             // var zNodes = res[this.nodeGroupId];
@@ -60,51 +88,101 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             //         el.nocheck = true;
             //     }
             // }.bind(this));
-
-            var zNodes =[
-                { id:1, pId:0, name:"节点组 1", open:true, "nocheck":true},
-                { id:11, pId:1, name:"节点 1-1"},
-                { id:12, pId:1, name:"节点 1-2"},
-                { id:2, pId:0, name:"节点组 2", open:true, "nocheck":true},
-                { id:21, pId:2, name:"节点 2-1"},
-                { id:22, pId:2, name:"节点 2-2"},
-                { id:23, pId:2, name:"节点 2-3"}
-            ];
+            if(this.isEdit){
+                //for edit test data
+                var zNodes =[
+                    { id:1, pId:0, name:"节点组 1", open:true, "nocheck":true},
+                    { id:11, pId:1, name:"节点 1-1"},
+                    { id:12, pId:1, name:"节点 1-2"},
+                    { id:2, pId:0, name:"节点组 2", open:true, "nocheck":true},
+                    { id:21, pId:2, name:"节点 2-1"},
+                    { id:22, pId:2, name:"节点 2-2"},
+                    { id:23, pId:2, name:"节点 2-3"}
+                ];
+            }else{
+                //for add test data
+                var zNodes =[
+                    { id:1, pId:0, name:"节点组 1", open:true},
+                    { id:11, pId:1, name:"节点 1-1"},
+                    { id:12, pId:1, name:"节点 1-2"},
+                    { id:2, pId:0, name:"节点组 2", open:true},
+                    { id:21, pId:2, name:"节点 2-1"},
+                    { id:22, pId:2, name:"节点 2-2"},
+                    { id:23, pId:2, name:"节点 2-3"}
+                ];
+                this.oldSelectedNode = [];
+            }
 
             this.treeObj = $.fn.zTree.init(this.$el.find(".nodeList-ctn #tree"), setting, zNodes);
-            //this.getSelected();
+            if(this.isEdit){
+                this.getEditSelected();
+            }
+
+            this.$el.find(".chk").on("focus",function(e){
+                var eTarget = e.srcElement || e.target,className;
+                className = $(eTarget).attr('class').split(" ")[2];
+                $(eTarget).removeClass(className).addClass(className+'_focus');
+            }.bind(this));
         },
 
-        getSelected: function(){
-            var nodeIdArray = [];
-            var matchFilter = function(node){
-                return node;
-            };
-            this.nodeAllObj = this.treeObj.getNodesByFilter(matchFilter);
+        getAddSelected: function(){
+            if (!this.treeObj) return;
 
-            //console.log(this.nodeAllObj);
-            // if (!this.treeObj) return;
-            // var matchFilter = function(node){
-            //     return node.checked === true && node.pId === null;
-            // };
-            // this.matchNodes = this.treeObj.getNodesByFilter(matchFilter);
-            // this.$el.find(".node-num").html(this.matchNodes.length);
-            // var matchDeviceFilter = function(node){
-            //     return node.checked === true && node.pId !== null;
-            // };
-            // this.matchDeviceNodes = this.treeObj.getNodesByFilter(matchDeviceFilter);
-            // this.$el.find(".device-num").html(this.matchDeviceNodes.length);
+            this.selectedNode = this.treeObj.getCheckedNodes(true);
+
+            if(this.oldSelectedNode.length > 0 && this.selectedNode.length > 0){
+                var oldFather = this.oldSelectedNode[0];
+                var fatherNum = 0;
+                var oldFatherChildren = [];
+                var newFather = null;
+
+                _.each(this.selectedNode,function(obj,key,list){
+                    if(obj.pId === null){
+                        fatherNum ++;
+                        if(fatherNum > 1){
+                            newFather = obj;
+                        }
+                    }
+                }.bind(this));
+                if(fatherNum > 1){
+                    oldFather.checked = false;
+                    _.each(this.selectedNode,function(obj,key,list){
+                        if(obj.pId && (obj.pId == oldFather.id) && (obj.checked == true)){
+                            obj.checked = false;
+                            oldFatherChildren.push(obj);
+                        }
+                    }.bind(this));
+                    _.each(oldFatherChildren,function(o,k,l){
+                        this.$el.find('#'+o.tId+'_check').removeClass('checkbox_true_full').addClass('checkbox_false_full');
+                        this.arrRemove(this.selectedNode,o);
+                        this.arrRemove(this.oldSelectedNode,o);
+                    }.bind(this));
+                    this.$el.find('#'+oldFather.tId+'_check').attr('class','button chk checkbox_false_part')
+                    this.arrRemove(this.selectedNode,oldFather);
+                    this.arrRemove(this.oldSelectedNode,oldFather);
+                    //console.log(this.oldSelectedNode,this.selectedNode);
+                    oldFather = newFather;
+                    //console.log(oldFather);
+                }
+            }
+
+            this.oldSelectedNode = this.selectedNode;
+        },
+
+        getEditSelected: function(){
+            if (!this.treeObj) return;
+            var matchFilter = function(node){
+                return node.checked === true && node.pId !== null;
+            };
+            this.allCheckedNode = this.treeObj.getNodesByFilter(matchFilter);
+
+            console.log(this.allCheckedNode);
+
             // _.each(this.nodeTreeLists[this.nodeGroupId], function(nodeGroupObj, k, l){
             //     var node = this.treeObj.getNodeByParam("id", nodeGroupObj.id, null);
             //     nodeGroupObj.checked = node.checked
             // }.bind(this));
-            _.each(this.nodeAllObj,function(obj, key, el) {
-                //console.log(obj);
-                if(obj.pId && obj.checked){
-                    console.log(obj.id);
-                    //请求节点对应配置文件接口
-                }
-            });
+
             this.initFileList();
         },
 
@@ -114,7 +192,6 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         initDropMenu: function(){
-            console.log(this.businessTypeList);
             Utility.initDropMenu(this.$el.find(".dropdown-businessType"), this.businessTypeList, function(value){
                 this.args.businessType = parseInt($.trim(value));
             }.bind(this));

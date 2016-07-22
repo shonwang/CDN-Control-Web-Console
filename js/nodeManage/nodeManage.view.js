@@ -380,7 +380,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             if (this.isEdit){
                 this.$el.find(".dropdown-continent .cur-value").html(this.model.get("continentName"));
                 this.collection.getCountryByContinent({id: this.model.get("continentId")})
-                this.$el.find("#dropdown-continent").prop("disabled", true)
+                //this.$el.find("#dropdown-continent").prop("disabled", true)
             } else {
                 this.$el.find(".dropdown-continent .cur-value").html(nameList[0].name);
                 this.collection.getCountryByContinent({id: nameList[0].value})
@@ -409,7 +409,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             if (this.isEdit){
                 this.$el.find(".dropdown-country .cur-value").html(this.model.get("countryName"));
                 this.collection.getOperationByCountry({id: this.model.get("countryId")})
-                this.$el.find("#dropdown-country").prop("disabled", true)
+                //this.$el.find("#dropdown-country").prop("disabled", true)
             } else {
                 this.$el.find('#dropdown-country .cur-value').html(nameList[0].name);
                 this.collection.getOperationByCountry({id: nameList[0].value});

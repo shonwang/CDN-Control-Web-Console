@@ -9,7 +9,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection = options.collection;
             this.model      = options.model;
 
-            this.$el = $(_.template(template['tpl/dispGroup/dispGroup.channel.html'])({}));
+            this.$el = $(_.template(template['tpl/nodeManage/nodeManage.dispGroup.html'])({}));
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
             this.collection.off("get.assocateDispGroups.success");
@@ -18,6 +18,42 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.on("get.assocateDispGroups.error", $.proxy(this.onGetError, this));
 
             this.collection.getAssocateDispGroups({nodeId: this.model.get("id")});
+            this.initSearchTypeDropList();
+        },
+
+        initSearchTypeDropList: function(){
+            var searchArray = [
+                {name: "按名称", value: "1"},
+                {name: "按备注", value: "2"}
+            ],
+            rootNode = this.$el.find(".disp-filter-drop");
+            Utility.initDropMenu(rootNode, searchArray, function(value){
+                this.curSearchType = value;
+                this.onKeyupDispListFilter();
+            }.bind(this));
+            this.curSearchType = "1";
+        },
+
+        onKeyupDispListFilter: function() {
+            if (!this.channelList || this.channelList.length === 0) return;
+            var keyWord = this.$el.find("#disp-filter").val();
+                        
+            _.each(this.channelList, function(model, index, list) {
+                if (keyWord === ""){
+                    model.isDisplay = true;
+                } else if (this.curSearchType == "1"){
+                    if (model.dispDomain.indexOf(keyWord) > -1)
+                        model.isDisplay = true;
+                    else
+                        model.isDisplay = false;
+                } else if (this.curSearchType == "2"){
+                    if (model.remark.indexOf(keyWord) > -1)
+                        model.isDisplay = true;
+                    else
+                        model.isDisplay = false;
+                }
+            }.bind(this));
+            this.initTable();
         },
 
         onGetError: function(error){
@@ -29,32 +65,46 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
 
         onGetDispConfigSuccess: function(res){
             this.channelList = res;
-            var count = 0, isCheckedAll = false;
+            var count = 0; this.isCheckedAll = false;
             _.each(this.channelList, function(el, index, list){
                 if (el.associated === 0) el.isChecked = false;
                 if (el.associated === 1) {
                     el.isChecked = true;
                     count = count + 1
                 }
-                if (el.status === 0) el.statusName = '<span class="text-danger">已停止</span>';
-                if (el.status === 1) el.statusName = '<span class="text-success">运行中</span>';
-                if (el.isInserive === 0) el.isInseriveName = '<span class="text-danger">未服务</span>';
-                if (el.isInserive === 1) el.isInseriveName = '<span class="text-success">服务中</span>';
+                el.isDisplay = true;
+                if (el.status === 0) el.statusName = '<span class="label label-danger">已停止</span>';
+                if (el.status === 1) el.statusName = '<span class="label label-success">运行中</span>';
+                if (el.isInserive === 0) el.isInseriveName = '<span class="label label-danger">未服务</span>';
+                if (el.isInserive === 1) el.isInseriveName = '<span class="label label-success">服务中</span>';
                 if (el.priority == 1) el.priorityName = '成本优先';
                 if (el.priority == 2) el.priorityName = '质量优先';
                 if (el.priority == 3) el.priorityName = '兼顾成本与质量';
             }.bind(this))
 
-            if (count === this.channelList.length) isCheckedAll = true
+            if (count === this.channelList.length) this.isCheckedAll = true
+            this.initTable();
+            this.$el.find("#disp-filter").val("")
+            this.$el.find("#disp-filter").off("keyup");
+            this.$el.find("#disp-filter").on("keyup", $.proxy(this.onKeyupDispListFilter, this));
+        },
 
-            this.table = $(_.template(template['tpl/nodeManage/nodeManage.dispGroup.table.html'])({data: this.channelList, isCheckedAll: isCheckedAll}));
-            if (res.length !== 0)
+        initTable: function(){
+            this.table = $(_.template(template['tpl/nodeManage/nodeManage.dispGroup.table.html'])({data: this.channelList, isCheckedAll: this.isCheckedAll}));
+            if (this.channelList.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+            this.table.find("tbody .remark").tooltip({
+                animation  : false,
+                "placement": "top", 
+                "html"     : true,
+                "title"  : function(){return $(this).attr("remark")}, 
+                "trigger"  : "hover"
+            })
         },
 
         onItemCheckedUpdated: function(event){
@@ -199,7 +249,11 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 minBandwidth = this.$el.find("#input-minbandwidth").val(),
                 unitPrice = this.$el.find("#input-unitprice").val(),
                 longitudeLatitude = this.$el.find('#input-longitude-latitude').val(),
+                outzabname = this.$el.find('#input-outzabname').val().replace(/\s+/g, ""),
+                //inzabname = this.$el.find("#input-inzabname").val().replace(/\s+/g, ""),
                 re = /^\d+$/,
+                outzabnameRe = /^[0-9A-Za-z\-\[\]\_]+$/,
+                letterRe = /[A-Za-z]+/,
                 reLocation = /^\d+(\.\d+)?----\d+(\.\d+)?$/;
             // if (!reLocation.test(longitudeLatitude)){
             //     alert("您需要填写正确的经纬度，否则该节点无法在地图中展示！");
@@ -245,6 +299,12 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 alert("成本权值不能小于0且大于长整型的最大值");
                 return; 
             }
+            if (!outzabnameRe.test(outzabname) || outzabname.indexOf("-") === -1 || 
+                outzabname.indexOf("_") === -1 || outzabname.indexOf("[") === -1 ||
+                outzabname.indexOf("]") === -1 || !letterRe.test(outzabname)){
+                alert("zabbix出口带宽英文、“-”、“_”、“[”、“]”为必填项，数字为可填项，即组合可包含数字，也可不包含数字");
+                return; 
+            }
             var args = {
                 "id"                 : this.model ? this.model.get("id") : 0,
                 "name"               : this.$el.find("#input-english").val().replace(/\s+/g, ""),
@@ -256,8 +316,8 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 "maxBandwidthThreshold" : this.$el.find("#input-threshold").val(),
                 "minBandwidthThreshold" : this.$el.find("#input-minthreshold").val(),
                 "unitPrice"          : this.$el.find("#input-unitprice").val(),
-                "inZabName"          : this.$el.find("#input-inzabname").val(),
-                "outZabName"         : this.$el.find("#input-outzabname").val(),
+                "inZabName"          : this.$el.find("#input-inzabname").val().replace(/\s+/g, ""),
+                "outZabName"         : this.$el.find("#input-outzabname").val().replace(/\s+/g, ""),
                 "remark"             : this.$el.find("#textarea-comment").val(),
                 "startChargingTime"  : this.args.startChargingTime,
                 "chargingType"       : this.args.chargingType
@@ -305,7 +365,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             }
 
             this.collection.getAllContinent();
-            //this.collection.getAllCity();
+            this.collection.getAllCity();
         },
 
         onGetAllContinent: function(list){
@@ -380,7 +440,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             });
             this.$el.find('#input-longitude-latitude').val("查找中...");
             this.$el.find('#dropdown-city').attr("disabled", "disabled");
-            //this.collection.getLocation({addr: "北京"})
+            this.collection.getLocation({addr: "北京"})
         },
 
         onGetLocation: function(res){
@@ -527,6 +587,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 body : addNodeView,
                 backdrop : 'static',
                 type     : 2,
+                height: 500,
                 onOKCallback:  function(){
                     var options = addNodeView.getArgs();
                     if (!options) return;
@@ -587,6 +648,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 backdrop : 'static',
                 type     : 2,
                 width: 800,
+                height: 500,
                 onOKCallback:  function(){
                     var options = dispGroupInfoView.getArgs();
                     if (!options) return;
@@ -634,6 +696,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 body : editNodeView,
                 backdrop : 'static',
                 type     : 2,
+                height: 500,
                 onOKCallback:  function(){
                     var options = editNodeView.getArgs();
                     if (!options) return;

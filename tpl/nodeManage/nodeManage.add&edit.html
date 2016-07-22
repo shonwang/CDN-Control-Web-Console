@@ -12,12 +12,12 @@
         </div>
     </div>
     <hr>
-    <div class="alert alert-dismissable alert-warning text-center">
+    <div class="alert alert-dismissable alert-info text-center">
         <button type="button" class="close" data-dismiss="alert">×</button>
-        <strong>计费区域生效后，不可在线上系统进行更改，请确保选择的计费区域正确</strong>
+        <strong>计费区域</strong>
     </div>
     <div class="form-group dropdown-continent">
-        <label for="dropdown-continent" class="col-sm-4 control-label">计费区域 大洲</label>
+        <label for="dropdown-continent" class="col-sm-4 control-label">大洲</label>
         <div class="dropdown col-sm-6">
             <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-continent" data-toggle="dropdown">
                 <span class="cur-value">加载中...</span>
@@ -27,8 +27,8 @@
         </div>
     </div>
     <div class="form-group">
-        <label for="input-longitude-latitude" class="col-sm-4 control-label">国家/地区</label>
-        <div class="dropdown col-sm-6 dropdown-country" style="z-index: 1">
+        <label for="dropdown-country" class="col-sm-4 control-label">国家/地区</label>
+        <div class="dropdown col-sm-6 dropdown-country">
             <button class="btn btn-default" type="button" id="dropdown-country">
                 <span class="cur-value">加载中...</span>
                 <span class="caret"></span>
@@ -46,16 +46,32 @@
         </div>
     </div>
     <hr>
-    <div class="form-group" style="display: none">
+    <div class="form-group">
+        <label for="dropdown-province" class="col-sm-4 control-label">省/州</label>
+        <div class="dropdown col-sm-2 dropdown-province">
+            <button class="btn btn-default" type="button" id="dropdown-province">
+                <span class="cur-value">北京</span>
+                <span class="caret"></span>
+            </button>
+        </div>
+        <label for="dropdown-region" class="col-sm-2 control-label">大区</label>
+        <div class="dropdown col-sm-3 dropdown-region">
+            <button class="btn btn-default" type="button" id="dropdown-region">
+                <span class="cur-value"> 华北</span>
+                <span class="caret"></span>
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
         <label for="dropdown-city" class="col-sm-4 control-label">城市</label>
-        <div class="dropdown col-sm-6 dropdown-city" style="z-index: 1">
+        <div class="dropdown col-sm-6 dropdown-city">
             <button class="btn btn-default" type="button" id="dropdown-city">
                 <span class="cur-value">北京</span>
                 <span class="caret"></span>
             </button>
         </div>
     </div>
-    <div class="form-group" style="display: none">
+    <div class="form-group">
         <label for="input-longitude-latitude" class="col-sm-4 control-label">经纬度</label>
         <div class="col-sm-6">
             <input type="text" class="form-control" id="input-longitude-latitude" value="" readonly="true">

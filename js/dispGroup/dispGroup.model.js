@@ -6,8 +6,8 @@ define("dispGroup.model", ['require','exports', 'utility'], function(require, ex
                 crossLevel = this.get("crossLevel"),
                 updateTime = this.get("updateTime");
 
-            if (status === 0) this.set("statusName",'<span class="text-danger">已关闭</span>');
-            if (status === 1) this.set("statusName", '<span class="text-success">运行中</span>');
+            if (status === 0) this.set("statusName",'<span class="label label-danger">已关闭</span>');
+            if (status === 1) this.set("statusName", '<span class="label label-success">运行中</span>');
 
             if (priority == 1) this.set("priorityName",'成本优先');
             if (priority == 2) this.set("priorityName",'质量优先');
@@ -134,6 +134,21 @@ define("dispGroup.model", ['require','exports', 'utility'], function(require, ex
             }.bind(this);
 
             $.ajax(defaultParas);
+        },
+
+        queryChannel: function(args){
+            var url = BASE_URL + "/rs/channel/query",
+            successCallback = function(res){
+                if (res){
+                    this.trigger("get.channel.success", res);
+                } else {
+                    this.trigger("get.channel.error", res); 
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.channel.error", response); 
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
         addDispGroup: function(args){

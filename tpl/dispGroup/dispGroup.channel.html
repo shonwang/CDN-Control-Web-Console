@@ -3,8 +3,44 @@
         <button type="button" class="close" data-dismiss="alert">×</button>
         <strong>提示：</strong>勾选表示关联，取消勾选表示取消关联
     </div>
+    <div class="opt-ctn">
+        <form class="form-inline">
+            <div class="form-group">
+                <label for="input-domain">域名</label>
+                <input type="text" class="form-control" id="input-domain">
+            </div>
+            <div class="form-group">
+                <label for="input-client">客户</label>
+                <input type="text" class="form-control" id="input-client">
+            </div>
+            <a href="javascript:void(0)" class="btn btn-success query"><span class="glyphicon glyphicon-search"></span>查询</a>
+        </form>
+    </div>
     <div class="table-ctn table-responsive"></div>
-    <div class="page-ctn text-center">
-        <div class="pagination"></div>
+    <div class="page-ctn row">
+        <div class="col-md-8" style="text-align:center">
+            <div class="pagination"></div>
+        </div>
+        <div class="col-md-4" style="text-align:center">
+            <form class="form-inline page-info">
+                <div class="form-group">
+                    <div class="form-control-static">每页显示</div>
+                </div>
+                <div class="form-group page-num">
+                    <div class="drop-ctn dropup">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">
+                            <span class="cur-value">5 条</span>
+                            <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu"></ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-control-static total-items">共<span class="text-primary">0</span>条记录</div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>

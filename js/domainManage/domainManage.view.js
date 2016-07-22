@@ -524,6 +524,14 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 this.$el.find(".table-ctn .send").on("click", $.proxy(this.onClickSend, this));
             else
                 this.$el.find(".table-ctn .send").remove();
+
+            this.table.find("tbody .description").tooltip({
+                animation  : false,
+                "placement": "top", 
+                "html"     : true,
+                "title"  : function(){return $(this).attr("remark")}, 
+                "trigger"  : "hover"
+            })
         },
 
         onSendAllOriginSuccess:function(res){
@@ -563,6 +571,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 body : addDomainView,
                 backdrop : 'static',
                 type     : 2,
+                height   : 500,
                 onOKCallback:  function(){
                     var options = addDomainView.getArgs();
                     if (!options) return;
@@ -604,6 +613,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 body : editDomainView,
                 backdrop : 'static',
                 type     : 2,
+                height   : 500,
                 onOKCallback:  function(){
                     var options = editDomainView.getArgs();
                     if (!options) return;

@@ -12,17 +12,19 @@
     </thead>
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
+            <% if (data[i]["isDisplay"]) { %>
             <tr data-id="<%=data[i].dispId%>">
               <td><input type="checkbox" id="<%=data[i].dispId%>" <% if (data[i].isChecked) { %> checked="true"  disabled="disabled"<% } %> ></td>
               <td><%=data[i]["dispDomain"]%></td>
               <td><%=data[i]["priorityName"]%></td>
               <td><%=data[i]["resovleIpName"]%></td>
               <td>
-                  <a href="javascript:void(0)" title='<%=data[i]["remark"] || "无"%>'>备注</a>
+                  <a href="javascript:void(0)" remark='<%=data[i]["remark"] || "无"%>' class="remark">备注</a>
               </td>
               <td><%=data[i]["statusName"]%></td>
               <td><%=data[i]["isInseriveName"]%></td>
             </tr>
+            <% } %>
         <% } %>  
     </tbody>
 </table>

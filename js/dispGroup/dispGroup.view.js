@@ -1001,7 +1001,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 title: model.get("dispDomain") + "调度组关联频道信息",
                 body : chInfoView,
                 backdrop : 'static',
-                type     : 2,
+                type     : 1,
                 width: 800,
                 height: 500,
                 onOKCallback:  function(){

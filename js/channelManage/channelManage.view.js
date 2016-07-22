@@ -193,11 +193,6 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
 
             this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
             this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
-            this.collection.on("add.dispGroup.channel.success", function(){
-                alert("操作成功！")
-                this.onClickQueryButton();
-            }.bind(this));
-            this.collection.on("add.dispGroup.channel.error", $.proxy(this.onGetError, this));
 
             if (AUTH_OBJ.QueryChannel){
                 this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
@@ -249,26 +244,6 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
             this.collection.queryChannel(this.queryArgs);
         },
 
-        onClickCreate: function(){
-            if (this.addNodePopup) $("#" + this.addNodePopup.modalId).remove();
-
-            var addNodeView = new AddOrEditNodeView({collection: this.collection});
-            var options = {
-                title:"添加节点",
-                body : addNodeView,
-                backdrop : 'static',
-                type     : 2,
-                onOKCallback:  function(){
-                    var options = addNodeView.getArgs();
-                    if (!options) return;
-                    this.collection.addNode(options)
-                    this.addNodePopup.$el.modal("hide");
-                }.bind(this),
-                onHiddenCallback: function(){}
-            }
-            this.addNodePopup = new Modal(options);
-        },
-
         initTable: function(){
             this.table = $(_.template(template['tpl/channelManage/channelManage.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
             if (this.collection.models.length !== 0)
@@ -306,20 +281,38 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
                 onOKCallback:  function(){
                     var options = chInfoView.getArgs();
                     if (!options) return;
+                    chInfoView.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                    this.collection.off("add.dispGroup.channel.success");
+                    this.collection.off("add.dispGroup.channel.error");
+                    this.collection.on("add.dispGroup.channel.success", function(){
+                        this.collection.getChannelDispgroup({channelid: model.get("id")});
+                        alert("操作成功！")
+                    }.bind(this));
+                    this.collection.on("add.dispGroup.channel.error", $.proxy(this.onGetError, this));
                     this.collection.addDispGroupChannel(options)
-                    this.channelInfoPopup.$el.modal("hide");
+                    //this.channelInfoPopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+                    this.onClickQueryButton();
+                }.bind(this)
             }
             this.channelInfoPopup = new Modal(options);
 
             if (model.get("cdnFactory") === "1") {
-                $('<button type="button" class="btn btn-warning">取消关联</button>').insertBefore(this.channelInfoPopup.$el.find(".btn-primary"));
-                this.channelInfoPopup.$el.find(".btn-warning").on("click", function(){
+                $('<button type="button" class="btn btn-danger" style="float:left">取消关联</button>').insertBefore(this.channelInfoPopup.$el.find(".btn-primary"));
+                this.channelInfoPopup.$el.find(".btn-danger").on("click", function(){
                     var options = chInfoView.getArgs();
                     if (!options) return;
+                    chInfoView.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                    this.collection.off("add.dispGroup.channel.success");
+                    this.collection.off("add.dispGroup.channel.error");
+                    this.collection.on("add.dispGroup.channel.success", function(){
+                        this.collection.getChannelDispgroup({channelid: model.get("id")});
+                        alert("操作成功！")
+                    }.bind(this));
+                    this.collection.on("add.dispGroup.channel.error", $.proxy(this.onGetError, this));
                     this.collection.deleteDispGroupChannel(options)
-                    this.channelInfoPopup.$el.modal("hide");
+                    //this.channelInfoPopup.$el.modal("hide");
                 }.bind(this))
                 this.channelInfoPopup.$el.find(".btn-primary").html('<span class="glyphicon glyphicon-link"></span>关联');
                 if (!AUTH_OBJ.DomainAssociatetoGslbGroup)

@@ -517,6 +517,11 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
 
+            this.collection.on("add.assocateDispGroups.success", function(){
+                alert("操作成功！")
+            }.bind(this));
+            this.collection.on("add.assocateDispGroups.error", $.proxy(this.onGetError, this));
+
             if (AUTH_OBJ.CreateNode)
                 this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
             else

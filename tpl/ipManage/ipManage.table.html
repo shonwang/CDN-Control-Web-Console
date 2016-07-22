@@ -20,7 +20,7 @@
           <td><%=data[i].attributes.dispDomain%></td>
           <td>
             <%=data[i].attributes.statusName%>
-            <% if(data[i].attributes.status == '12'){ %>
+            <% if(data[i].attributes.status == '8' || data[i].attributes.status == '10' || data[i].attributes.status == '12' || data[i].attributes.status == '14'){ %>
               <a href="javascript:void(0)" title="IP所属设备已暂停">
                 <span class="glyphicon glyphicon-exclamation-sign" style="color:red;"></span>
               </a>

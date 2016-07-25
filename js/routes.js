@@ -393,7 +393,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         clientStatisticsCallback: function(){
-            //if (!AUTH_OBJ.KACustomerBandwidthStatistics) return;
+            if (!AUTH_OBJ.KACustomersBandwidthStatistics) return;
             require(['clientStatistics.view', 'clientStatistics.model'], function(ClientStatisticsView, ClientStatisticsModel){
                 this.curPage = 'clientStatistics';
                 this.navbarView.select(this.curPage);
@@ -417,7 +417,7 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         domainStatisticsCallback: function(){
-            if (!AUTH_OBJ.KACustomerBandwidthStatistics) return;
+            if (!AUTH_OBJ.KADomainBandwidthStatistics) return;
             require(['domainStatistics.view', 'domainStatistics.model'], function(DomainStatisticsView, DomainStatisticsModel){
                 this.curPage = 'domainStatistics';
                 this.navbarView.select(this.curPage);

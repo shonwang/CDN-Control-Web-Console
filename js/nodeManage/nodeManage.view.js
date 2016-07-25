@@ -666,7 +666,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             }
             this.dispGroupPopup = new Modal(options);
             if (!AUTH_OBJ.NodeAssociatetoGslbGroup)
-                this.channelInfoPopup.$el.find(".btn-primary").remove();
+                this.dispGroupPopup.$el.find(".btn-primary").remove();
         },
 
         onClickItemNodeName: function(event){

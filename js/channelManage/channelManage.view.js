@@ -162,7 +162,7 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
                 return object.id === parseInt(nodeId);
             });
             var prompt = ""
-            if (isCancel)
+            if (!isCancel)
                 prompt = "确定要将" + this.model.get("cname") + "关联到" + dispObj.dispDomain + "吗？";
             else
                 prompt = "确定要将" + this.model.get("cname") + "取消关联" + dispObj.dispDomain + "吗？";

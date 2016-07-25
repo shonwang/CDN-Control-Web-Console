@@ -315,24 +315,26 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
             this.channelInfoPopup = new Modal(options);
 
             if (model.get("cdnFactory") === "1") {
-                $('<button type="button" class="btn btn-danger" style="float:left">取消关联</button>').insertBefore(this.channelInfoPopup.$el.find(".btn-primary"));
-                this.channelInfoPopup.$el.find(".btn-danger").on("click", function(){
-                    var prompt = chInfoView.getPrompt(true);
-                    var result = confirm(prompt)
-                    if (!result) return;
-                    var options = chInfoView.getArgs();
-                    if (!options) return;
-                    chInfoView.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                    this.collection.off("add.dispGroup.channel.success");
-                    this.collection.off("add.dispGroup.channel.error");
-                    this.collection.on("add.dispGroup.channel.success", function(){
-                        this.collection.getChannelDispgroup({channelid: model.get("id")});
-                        alert("操作成功！")
-                    }.bind(this));
-                    this.collection.on("add.dispGroup.channel.error", $.proxy(this.onGetError, this));
-                    this.collection.deleteDispGroupChannel(options)
-                    //this.channelInfoPopup.$el.modal("hide");
-                }.bind(this))
+                if (AUTH_OBJ.DomainDisassociatetoGslbGroup) {
+                    $('<button type="button" class="btn btn-danger" style="float:left">取消关联</button>').insertBefore(this.channelInfoPopup.$el.find(".btn-primary"));
+                    this.channelInfoPopup.$el.find(".btn-danger").on("click", function(){
+                        var prompt = chInfoView.getPrompt(true);
+                        var result = confirm(prompt)
+                        if (!result) return;
+                        var options = chInfoView.getArgs();
+                        if (!options) return;
+                        chInfoView.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                        this.collection.off("add.dispGroup.channel.success");
+                        this.collection.off("add.dispGroup.channel.error");
+                        this.collection.on("add.dispGroup.channel.success", function(){
+                            this.collection.getChannelDispgroup({channelid: model.get("id")});
+                            alert("操作成功！")
+                        }.bind(this));
+                        this.collection.on("add.dispGroup.channel.error", $.proxy(this.onGetError, this));
+                        this.collection.deleteDispGroupChannel(options)
+                        //this.channelInfoPopup.$el.modal("hide");
+                    }.bind(this))
+                }
                 this.channelInfoPopup.$el.find(".btn-primary").html('<span class="glyphicon glyphicon-link"></span>关联');
                 if (!AUTH_OBJ.DomainAssociatetoGslbGroup)
                     this.channelInfoPopup.$el.find(".btn-primary").remove();

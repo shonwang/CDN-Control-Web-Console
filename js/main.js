@@ -20,6 +20,9 @@ else if(window.DEBUG === 7)
     window.BASE_URL = "http://sh.center.cdn.ksyun.com";
 else if(window.DEBUG === 8)
     window.BASE_URL = "http://develop.gateway.center.cdn.ksyun.com";
+else if(window.DEBUG === 9)
+    window.BASE_URL = "http://wq.center.cdn.ksyun.com";
+
 
 requirejs.config({
     paths: {

@@ -409,11 +409,11 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             }.bind(this));
         },
 
-        grayscaleSetup: function(){
-            this.navbarView.initLogin($.proxy(this.grayscaleSetupCallback, this))
-        },
+        // grayscaleSetup: function(){
+        //     this.navbarView.initLogin($.proxy(this.grayscaleSetupCallback, this))
+        // },
 
-        grayscaleSetupCallback: function(){
+        grayscaleSetup: function(){
 
             require(['grayscaleSetup.view', 'grayscaleSetup.model'], function(GrayscaleSetupView, GrayscaleSetupModel){
                 this.curPage = 'grayscaleSetup';
@@ -430,11 +430,11 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             }.bind(this));
         },
 
-        templateManage: function(){
-            this.navbarView.initLogin($.proxy(this.templateManageCallback, this))
-        },
+        // templateManage: function(){
+        //     this.navbarView.initLogin($.proxy(this.templateManageCallback, this))
+        // },
 
-        templateManageCallback: function(){
+        templateManage: function(){
             require(['templateManage.view', 'templateManage.model'], function(TemplateManageView, TemplateManageModel){
                 this.curPage = 'templateManage';
                 this.navbarView.select(this.curPage);

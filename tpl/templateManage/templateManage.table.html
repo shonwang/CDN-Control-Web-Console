@@ -12,26 +12,28 @@
         </tr>
     </thead>
     <tbody>
-        <tr data-id="">
-            <td>
-                <a href="javascript:void(0)" id="" class="domain-name">
-                    jspull.yu361.com
-                  </a>
-            </td>
-            <td>直播2.0</td>
-            <td>上层</td>
-            <td>电信</td>
-            <td>IP回源</td>
-            <td>domain.conf</td>
-            <td>显示部分内容</td>
-            <td>
-                <a href="javascript:void(0)" id="" class="edit" title="编辑">
-                    <span class="glyphicon glyphicon-edit"></span>
-                </a>
-                <a href="javascript:void(0)" id="" class="delete" title="删除">
-                    <span class="glyphicon glyphicon-trash"></span>
-                </a>
-            </td>
-        </tr>
+        <% for(var i = 0; i < data.length; i++) { %>
+            <tr data-id="<%=data[i].attributes["id"]%>">
+                <td>
+                    <a href="javascript:void(0)" id="<%=data[i].attributes["id"]%>" class="domain-name">
+                        <%=data[i].attributes["domain"]%>
+                      </a>
+                </td>
+                <td><%=data[i].attributes["businessType"]%></td>
+                <td><%=data[i].attributes["layer"]%></td>
+                <td><%=data[i].attributes["operator"]%></td>
+                <td><%=data[i].attributes["originType"]%></td>
+                <td><%=data[i].attributes["fileType"]%></td>
+                <td><%=data[i].attributes["templateContent"]%></td>
+                <td>
+                    <a href="javascript:void(0)" id="<%=data[i].attributes["id"]%>" class="edit" title="编辑">
+                        <span class="glyphicon glyphicon-edit"></span>
+                    </a>
+                    <a href="javascript:void(0)" id="<%=data[i].attributes["id"]%>" class="delete" title="删除">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </a>
+                </td>
+            </tr>
+        <% } %>
     </tbody>
 </table>

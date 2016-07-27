@@ -978,3 +978,9 @@ td .table {
   display: inline;
   vertical-align: -webkit-baseline-middle;
 }
+
+.grayscaleSetup-node-list .select-container{
+    left: 178px;
+    top: 108px;
+    width: 300px;
+}

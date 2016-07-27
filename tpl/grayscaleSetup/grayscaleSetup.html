@@ -8,8 +8,16 @@
                 <input type="text" class="form-control" id="input-domain">
             </div>
             <div class="form-group">
-                <label for="input-node">节点</label>
-                <input type="text" class="form-control" id="input-node">
+                <label for="dropdown-node">节点</label>
+            </div>
+            <div class="form-group dropdown-node grayscaleSetup-node-list">
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-node" data-toggle="dropdown">
+                        <span class="cur-value">加载中...</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu long-dropdown-menu"></ul>
+                </div>
             </div>
             <div class="form-group">
                 <label for="dropdown-businessType">业务类型</label>
@@ -17,7 +25,7 @@
             <div class="form-group dropdown-businessType">
                 <div class="dropdown">
                     <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-businessType" data-toggle="dropdown">
-                        <span class="cur-value">请选择</span>
+                        <span class="cur-value">加载中...</span>
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu"></ul>

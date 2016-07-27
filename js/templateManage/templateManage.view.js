@@ -286,6 +286,7 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.collection.getAllCity(); //获取区域列表
             this.collection.getBusinessList(); //获取业务类型列表
             this.collection.getOperatorList(); //获取运营商列表
+            this.initFixDropMenu();
 
             this.collection.on("get.tplPageList.success", $.proxy(this.onGetTplPageListSuccess,this));
             this.collection.on("get.tplPageList.error", $.proxy(this.onGetError,this));
@@ -297,11 +298,22 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.collection.on("get.city.error", $.proxy(this.onGetError, this));
             this.collection.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
+            this.collection.on("add.tpl.success", function(){
+                alert("新建模版成功");
+                this.onClickQueryButton();
+            }.bind(this));
+            this.collection.on("add.tpl.error", $.proxy(this.onGetError, this));
+            this.collection.on("edit.tpl.success", function(){
+                alert("编辑模版成功");
+                this.onClickQueryButton();
+            }.bind(this));
+            this.collection.on("edit.tpl.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.editData.success", $.proxy(this.showEditPage, this));
+            this.collection.on("get.editData.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
 
-            this.onClickQueryButton();
             this.enterKeyBindQuery();
         },
         enterKeyBindQuery:function(){
@@ -380,7 +392,7 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
         initBisDropMenu: function(res){
             this.businessTypeList = res;
             var nameList = [{name: "全部", value: "All"}];
-            _.each(res.rows, function(el, index, list){
+            _.each(res, function(el, index, list){
                 nameList.push({name: el.name, value:el.id});
             });
             Utility.initDropMenu(this.$el.find(".dropdown-businessType"), nameList, function(value){
@@ -423,12 +435,10 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                 onOk: function(){},
                 data: cityArray,
                 callback: function(data) {
-                    console.log(data);
+                    //console.log(data);
                     this.$el.find('#dropdown-area .cur-value').html(data.name);
-                    this.nodeGroupNamePart2 = data.name;
                 }.bind(this)
             });
-            this.$el.find("#dropdown-area .cur-value").html(this.nodeGroupNamePart2)
         },
 
         onClickQueryButton: function(){
@@ -461,88 +471,53 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                     this.showMainList(".main-list",".create-edit-panel",".create-edit-ctn");
                 }.bind(this),
                 okCallback:  function(options){
-                    //this.collection.addConf(options);
+                    //this.collection.addTpl(options);
                 }.bind(this)
             });
             addView.render(this.$el.find(".create-edit-panel"));
 
             this.hideMainList(".main-list", ".create-edit-panel");
-            // if (!AUTH_OBJ.ApplyCreateConfig)
-            //     addView.$el.find(".ok-again").remove()
         },
 
-        // onClickCreate: function(){
-        //     if (this.selectAddTplTypePopup) $("#" + this.selectAddTplTypePopup.modalId).remove();
-
-        //     var selectAddTplTypeView = new SelectAddTplTypeView({
-        //         collection: this.collection,
-        //         model: this.model
-        //     });
-        //     var options = {
-        //         title:"新建",
-        //         body : selectAddTplTypeView,
-        //         backdrop : 'static',
-        //         type     : 2,
-        //         onOKCallback:  function(){
-        //             var options = selectAddTplTypeView.getArgs();
-        //             if (!options) return;
-        //             this.selectAddTplTypePopup.$el.modal("hide");
-        //             setTimeout(function(){
-        //                 this.createTpl(options);
-        //             }.bind(this),500);
-        //         }.bind(this),
-        //         onHiddenCallback: function(){}
-        //     }
-        //     this.selectAddTplTypePopup = new Modal(options);
-        // },
-
-        // createTpl: function(tplType){
-        //     if (this.addTplPopup) $("#" + this.addTplPopup.modalId).remove();
-
-        //     var addTplView = new AddOrEditTemplateView({
-        //         collection: this.collection,
-        //         model: this.model,
-        //         isEdit: false,
-        //         tplType: tplType
-        //     });
-        //     var options = {
-        //         title:"新建",
-        //         body : addTplView,
-        //         backdrop : 'static',
-        //         type     : 2,
-        //         onOKCallback:  function(){
-        //             // var options = addTplView.getArgs();
-        //             // if (!options) return;
-        //             // this.createTpl(options);
-        //             // this.addTplPopup.$el.modal("hide");
-        //         }.bind(this),
-        //         onHiddenCallback: function(){}
-        //     }
-        //     this.addTplPopup = new Modal(options);
-        // },
-
         onClickItemEdit: function(e){
-            if (this.editTplPopup) $("#" + this.editTplPopup.modalId).remove();
+            var eTarget = e.srcElement || e.target,id,fileType;
 
-            var editTplView = new AddOrEditTemplateView({
-                collection: this.collection,
-                model: this.model,
-                isEdit: true
-            });
-            var options = {
-                title:"编辑",
-                body : editTplView,
-                backdrop : 'static',
-                type     : 2,
-                onOKCallback:  function(){
-                    // var options = editTplView.getArgs();
-                    // if (!options) return;
-                    // this.createTpl(options);
-                    // this.editTplPopup.$el.modal("hide");
-                }.bind(this),
-                onHiddenCallback: function(){}
+            if (eTarget.tagName == "SPAN") {
+                id = $(eTarget).parent().attr("id");
+                fileType = $(eTarget).parent().attr("data-filetype");
+            } else {
+                id = $(eTarget).attr("id");
+                fileType = $(eTarget).attr("data-filetype");
             }
-            this.editTplPopup = new Modal(options);
+            this.collection.getEditData({id:id,fileType:fileType});
+        },
+
+        showEditPage: function(){
+            var editView = new AddOrEditView({
+                collection: this.collection, 
+                isEdit    : true,
+                operatorList: this.operatorList,
+                businessTypeList: this.businessTypeList,
+                fileTypeList: this.fileTypeList,
+                areaList: this.areaList,
+                originTypeList:[
+                    {name: "域名回源", value: 1},
+                    {name: "IP回源", value: 2}
+                ],
+                layerList:[
+                    {name: "上层", value: 1},
+                    {name: "下层", value: 2}
+                ],
+                cancelCallback: function(){
+                    this.showMainList(".main-list",".create-edit-panel",".create-edit-ctn");
+                }.bind(this),
+                okCallback:  function(options){
+                    //this.collection.editTpl(options);
+                }.bind(this)
+            });
+            editView.render(this.$el.find(".create-edit-panel"));
+
+            this.hideMainList(".main-list", ".create-edit-panel");
         },
 
         onClickItemDelete: function(e){

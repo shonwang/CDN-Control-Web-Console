@@ -539,7 +539,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             var result = confirm("你确定要同步当前域名吗？")
             if (!result) return;
 
-            this.collection.getSync({domain:domain});
+            this.collection.getSync({id:this.syncId});
         },
 
         onGetSyncSuccess: function(){

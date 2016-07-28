@@ -4,17 +4,15 @@
             <th>属性名</th>
             <th>属性编码</th>
             <th>属性值</th>
-            <th>属性类型</th>
             <th>操作</th>
         </tr>
     </thead>
     <tbody>
-        <!--% for(var i = 0; i < data.length; i++) { %-->
+        <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="">
-                <td>属性名</td>
-                <td>info</td>
-                <td>3</td>
-                <td>默认</td>
+                <td value="<%=data[i].name%>"><%=data[i].name%></td>
+                <td value="<%=data[i].code%>"><%=data[i].code%></td>
+                <td value="<%=data[i].value%>"><%=data[i].value%></td>
                 <td>
                     <a href="javascript:void(0)" id="" class="edit" title="编辑">
                         <span class="glyphicon glyphicon-edit"></span>
@@ -24,6 +22,6 @@
                     </a>
                 </td>
             </tr>
-        <!--% } %-->
+        <% } %>
     </tbody>
 </table>

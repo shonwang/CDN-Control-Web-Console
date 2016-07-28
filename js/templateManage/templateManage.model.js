@@ -157,14 +157,13 @@ define("templateManage.model", ['require','exports'], function(require, exports)
         },
 
         deleteTpl: function(args){
-            var url = BASE_URL + "/api/cdn/config/templates/"+args.id; 
+            var url = BASE_URL + "/api/cdn/config/templates/"+args.id+"?fileType="+args.fileType; 
             var defaultParas = {
                 type: "DELETE",
                 url: url,
                 async: true,
                 timeout: 30000
             };
-            defaultParas.data = {fileType:args.fileType};
 
             defaultParas.beforeSend = function(xhr){
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
@@ -196,7 +195,11 @@ define("templateManage.model", ['require','exports'], function(require, exports)
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
             }
             defaultParas.success = function(res){
-                this.trigger("check.tpl.success", res); 
+                if(res.status == "OK"){
+                    this.trigger("check.tpl.success", res); 
+                }else{
+                    this.trigger("check.tpl.error", res.message); 
+                }
             }.bind(this);
 
             defaultParas.error = function(response, msg){
@@ -279,6 +282,36 @@ define("templateManage.model", ['require','exports'], function(require, exports)
                 if (response&&response.responseText)
                     response = JSON.parse(response.responseText)
                 this.trigger("get.editData.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
+        getDefaultTplData: function(args){
+            var url = BASE_URL + "/api/cdn/config/default/templates"; 
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000
+            };
+            defaultParas.data = args;
+
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                if(res.status == "OK"){
+                    this.trigger("get.defaultTplData.success", res.result); 
+                }else{
+                    this.trigger("get.defaultTplData.error", res.message); 
+                }
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.defaultTplData.error", response); 
             }.bind(this);
 
             $.ajax(defaultParas);

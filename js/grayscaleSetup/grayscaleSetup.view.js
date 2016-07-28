@@ -543,6 +543,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         onGetSyncSuccess: function(){
+            //定时器
             this.collection.getSyncProgress({id:this.syncId});
         },
 

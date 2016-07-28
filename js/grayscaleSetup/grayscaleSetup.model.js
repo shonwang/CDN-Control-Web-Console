@@ -205,29 +205,6 @@ define("grayscaleSetup.model", ['require','exports', 'utility'], function(requir
             $.ajax(defaultParas);
         },
 
-        getSync: function(args){
-            var url = BASE_URL + "/seed/gray/domain/globalSync";
-            var defaultParas = {
-                type: "GET",
-                url: url,
-                async: true,
-                timeout: 30000
-            };
-            defaultParas.data = args;
-
-            defaultParas.success = function(res){
-                this.trigger("get.sync.success",res);
-            }.bind(this);
-
-            defaultParas.error = function(response, msg){
-                if (response&&response.responseText)
-                    response = JSON.parse(response.responseText)
-                this.trigger("get.sync.error", response); 
-            }.bind(this);
-
-            $.ajax(defaultParas);
-        },
-
         getSyncProgress: function(args){
             var url = BASE_URL + "/seed/gray/domain/globalSyncStatus";
             var defaultParas = {

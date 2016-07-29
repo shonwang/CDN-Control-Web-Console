@@ -15,13 +15,17 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                 this.args = {
                     name:this.data.name,
                     code:this.data.code,
-                    value:this.data.value
+                    value:this.data.value,
+                    propertyValueId:this.data.propertyValueId,
+                    propertyId: this.data.propertyId
                 }
             }else{
                 this.args = {
                     name:"",
                     code:"",
-                    value:""
+                    value:"",
+                    propertyValueId:"",
+                    propertyId:""
                 }
             }
 
@@ -41,7 +45,7 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
         onGetCheckTplSuccess: function(res){
             if(res.result){ //属性编码已存在
                 this.$el.find(".error-ctn").show().html('<div class="alert alert-danger text-center"><strong> 已存在 </strong></div>');
-                window.checkResult = null;
+                window.checkResult = 'hasExist';
             }else{
                 this.$el.find(".error-ctn").hide().html("");
                 window.checkResult = this.args;
@@ -76,27 +80,46 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.areaList = options.areaList;
             this.originTypeList = options.originTypeList;
             this.layerList = options.layerList;
+            this.data = options.data;
 
             if(this.isEdit){
-
+                this.args = {
+                    "domain"           : this.data.domain,
+                    "businessType"     : this.data.businessType,
+                    "layer"            : this.data.layer,
+                    "operator"         : this.data.operator,
+                    "originType"       : this.data.originType,
+                    "area"             : this.data.area,
+                    "fileType"         : this.data.fileType,
+                    "country"          : "CN",
+                    "templateContent"  : this.data.templateContent,
+                    "propertyAndValueList" : this.data.propertyAndValueList
+                }
             }else{
                 this.args = {
                     "domain"           : "",
                     "businessType"     : this.businessTypeList[0].id,
                     "layer"            : this.layerList[0].value,
-                    "operator"         : this.operatorList[0].id,
+                    "operator"         : this.operatorList[0].name,
                     "originType"       : this.originTypeList[0].value,
-                    "area"             : [],
-                    "fileType"         : this.fileTypeList[0].value
+                    "area"             : "默认",
+                    "fileType"         : this.fileTypeList[0].value,
+                    "country"          : "CN",
+                    "templateContent"  : "",
+                    "propertyAndValueList" : []
                 }
 
             }
-            this.$el = $(_.template(template['tpl/templateManage/templateManage.add&edit.html'])({}));
+            this.$el = $(_.template(template['tpl/templateManage/templateManage.add&edit.html'])({data:this.args}));
 
             this.collection.off("get.defaultTplData.success");
             this.collection.off("get.defaultTplData.error");
             this.collection.on("get.defaultTplData.success", $.proxy(this.onGetDefaultTplDataSuccess,this));
             this.collection.on("get.defaultTplData.error", $.proxy(this.onGetError,this));
+            this.collection.off("set.defaultTpl.success");
+            this.collection.off("set.defaultTpl.error");
+            this.collection.on("set.defaultTpl.success", $.proxy(this.onSetDefaultTplSuccess,this));
+            this.collection.on("set.defaultTpl.error", $.proxy(this.onGetError,this));
 
             this.$el.find(".ok-again").on("click", $.proxy(this.onClickOK, this));
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancel, this));
@@ -104,16 +127,17 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.$el.find(".setDefaultTpl").on("click", $.proxy(this.onClickSetDefaultTpl,this));
             this.$el.find(".showDefaultTpl").on("click", $.proxy(this.onClickShowDefaultTpl,this));
 
-            this.initTplDropdown();
+            if(this.isEdit){
+                if(this.args.propertyAndValueList.length > 0){
+                    this.$el.find(".showDefaultTpl").attr('disabled', 'disabled');
+                    this.renderAttrTable(this.args.propertyAndValueList);
+                }
+            }
             this.initAreaDropdown();
+            this.initTplDropdown();
         },
 
         initTplDropdown: function(){
-            //文件类型
-            Utility.initDropMenu(this.$el.find(".dropdown-filetype"), this.fileTypeList, function(value){
-                this.args.fileType = value;
-            }.bind(this));
-            this.$el.find("#dropdown-filetype .cur-value").text(this.fileTypeList[0].name);
             //运营商
             var operatorList = [];
             _.each(this.operatorList, function(el, index, list){
@@ -121,32 +145,112 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             });
             Utility.initDropMenu(this.$el.find(".dropdown-operator"), operatorList, function(value){
                 this.args.operator = value;
+                if(this.$el.find('.setDefaultTpl').hasClass('disabled')){
+                    this.$el.find('.setDefaultTpl').removeClass('disabled').html(设为默认模版);
+                }
             }.bind(this));
-            this.$el.find("#dropdown-operator .cur-value").text(operatorList[0].name);
+            if(this.isEdit){
+                $.each(operatorList,function(k,v){
+                    if(v.value == this.data.operator){
+                        this.$el.find("#dropdown-operator .cur-value").html(v.name);
+                    }
+                }.bind(this));
+            }else{
+                this.$el.find("#dropdown-operator .cur-value").text(operatorList[0].name);
+            }
             //业务类型
-            Utility.initDropMenu(this.$el.find(".dropdown-businessType"), this.businessTypeList, function(value){
+            var businessTypeList = [];
+            _.each(this.businessTypeList, function(el, index, list){
+                businessTypeList.push({name: el.name, value:el.id});
+            });
+            Utility.initDropMenu(this.$el.find(".dropdown-businessType"), businessTypeList, function(value){
                 this.args.businessType = value;
+                if(this.$el.find('.setDefaultTpl').hasClass('disabled')){
+                    this.$el.find('.setDefaultTpl').removeClass('disabled').html(设为默认模版);
+                }
             }.bind(this));
-            this.$el.find("#dropdown-businessType .cur-value").text(this.businessTypeList[0].name);
+            if(this.isEdit){
+                $.each(businessTypeList,function(k,v){
+                    if(v.value == this.data.businessType){
+                        this.$el.find("#dropdown-businessType .cur-value").html(v.name);
+                    }
+                }.bind(this));
+            }else{
+                this.$el.find("#dropdown-businessType .cur-value").text(this.businessTypeList[0].name);
+            }
             //回源方式
             Utility.initDropMenu(this.$el.find(".dropdown-originType"), this.originTypeList, function(value){
                 this.args.originType = value;
+                if(this.$el.find('.setDefaultTpl').hasClass('disabled')){
+                    this.$el.find('.setDefaultTpl').removeClass('disabled').html(设为默认模版);
+                }
             }.bind(this));
-            this.$el.find("#dropdown-originType .cur-value").text(this.originTypeList[0].name);
+            if(this.isEdit){
+                $.each(this.originTypeList,function(k,v){
+                    if(v.value == this.data.originType){
+                        this.$el.find("#dropdown-originType .cur-value").html(v.name);
+                    }
+                }.bind(this));
+            }else{
+                this.$el.find("#dropdown-originType .cur-value").text(this.originTypeList[0].name);
+            }
             //设备层级
             Utility.initDropMenu(this.$el.find(".dropdown-layer"), this.layerList, function(value){
                 this.args.layer = value;
+                if(this.$el.find('.setDefaultTpl').hasClass('disabled')){
+                    this.$el.find('.setDefaultTpl').removeClass('disabled').html(设为默认模版);
+                }
             }.bind(this));
-            this.$el.find("#dropdown-layer .cur-value").text(this.layerList[0].name);
+            if(this.isEdit){
+                $.each(this.layerList,function(k,v){
+                    if(v.value == this.data.layer){
+                        this.$el.find("#dropdown-layer .cur-value").html(v.name);
+                    }
+                }.bind(this));
+            }else{
+                this.$el.find("#dropdown-layer .cur-value").text(this.layerList[0].name);
+            }
+            //文件类型
+            Utility.initDropMenu(this.$el.find(".dropdown-fileType"), this.fileTypeList, function(value){
+                this.args.fileType = value;
+                if(this.$el.find('.setDefaultTpl').hasClass('disabled')){
+                    this.$el.find('.setDefaultTpl').removeClass('disabled').html(设为默认模版);
+                }
+            }.bind(this));
+            if(this.isEdit){
+                $.each(this.fileTypeList,function(k,v){
+                    if(v.value == this.data.fileType){
+                        this.$el.find("#dropdown-fileType .cur-value").html(v.name);
+                    }
+                }.bind(this));
+            }else{
+                this.$el.find("#dropdown-fileType .cur-value").text(this.fileTypeList[0].name);
+            }
         },
 
         initAreaDropdown: function(){
-            //this.args.area = this.areaList.join(",");
-            //console.log(this.areaList.join(","));
             var areaArray = [{name:"默认", value: "默认"}];
             _.each(this.areaList, function(el, index, list){
                 areaArray.push({name:el, value: el})
             }.bind(this));
+
+            if(this.isEdit){
+                if(this.data.area.split(",").length > 0){
+                    _.each(this.data.area.split(","),function(item,key,list){
+                        _.each(areaArray,function(obj,k,l){
+                            if(item == obj.value){
+                                obj.checked = true;
+                            }
+                        }.bind(this));
+                    }.bind(this));
+                    this.$el.find(".textarea-area").show();
+                    this.$el.find("#textarea-area").val(this.data.area);
+                }
+            }else{
+                areaArray[0].checked = true;
+                this.$el.find(".textarea-area").show();
+                this.$el.find("#textarea-area").val(areaArray[0].name);
+            }
 
             if (this.searchSelect) this.searchSelect.destroy();
             this.searchSelect = new SearchSelect({
@@ -155,6 +259,7 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                 isSingle: false,
                 openSearch: true,
                 selectWidth: 400,
+                scrollBarHeight:200,
                 isDataVisible: false,
                 onOk: function(data){
                     var temp = [];
@@ -168,6 +273,9 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                         this.$el.find(".textarea-area").hide();
                     }
                     this.$el.find("#textarea-area").val(this.args.area);
+                    if(this.$el.find('.setDefaultTpl').hasClass('disabled')){
+                        this.$el.find('.setDefaultTpl').removeClass('disabled').html(设为默认模版);
+                    }
                 }.bind(this),
                 data: areaArray,
                 callback: function(data) {
@@ -178,13 +286,28 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                         this.$el.find(".textarea-area").hide();
                     }
                     this.$el.find("#textarea-area").val(this.args.area);
+                    if(this.$el.find('.setDefaultTpl').hasClass('disabled')){
+                        this.$el.find('.setDefaultTpl').removeClass('disabled').html(设为默认模版);
+                    }
                 }.bind(this)
             });
-            //this.$el.find("#dropdown-domain .cur-value").html("选中域名个数：" + res.length + "/" + res.length);
         },
 
         onClickSetDefaultTpl: function(e){
             var eTarget = e.srcElement || e.target;
+            var data = {
+                fileType :this.args.fileType,
+                businessType :this.args.businessType,
+                originType :this.args.originType,
+                layer :this.args.layer,
+                operator:this.args.operator,
+                area:this.args.area
+            }
+            //调用设为默认模版接口
+            this.collection.setDefaultTpl(data);
+        },
+
+        onSetDefaultTplSuccess: function(res){
             $(eTarget).attr("disabled","disabled").html("已设为默认模版");
         },
 
@@ -214,7 +337,12 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                 this.tr = $(_.template(template['tpl/templateManage/templateManage.add&edit.table.tr.html'])({data:data}));
                 this.$el.find(".attr-table tbody").append(this.tr[0].outerHTML);
             }else{
-                this.table = $(_.template(template['tpl/templateManage/templateManage.add&edit.table.html'])({data:[data]}));
+                if($.isArray(data)){
+                    data = data;
+                }else{
+                    data = [data];
+                }
+                this.table = $(_.template(template['tpl/templateManage/templateManage.add&edit.table.html'])({data:data}));
                 this.$el.find(".attr-table").html(this.table[0]);
             }
             this.$el.find(".attr-table .delete").off("click");
@@ -246,13 +374,17 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                 data = {
                     name : $(eTarget).parent().parent().siblings().eq(0).attr('value'),
                     code : $(eTarget).parent().parent().siblings().eq(1).attr('value'),
-                    value : $(eTarget).parent().parent().siblings().eq(2).attr('value')
+                    value : $(eTarget).parent().parent().siblings().eq(2).attr('value'),
+                    propertyValueId : $(eTarget).parent().parent().parent().attr('propertyValueId'),
+                    propertyId : $(eTarget).parent().parent().parent().attr('propertyId')
                 }
             } else {
                 data = {
                     name : $(eTarget).parent().siblings().eq(0).attr('value'),
                     code : $(eTarget).parent().siblings().eq(1).attr('value'),
-                    value : $(eTarget).parent().siblings().eq(2).attr('value')
+                    value : $(eTarget).parent().siblings().eq(2).attr('value'),
+                    propertyValueId : $(eTarget).parent().parent().attr('propertyValueId'),
+                    propertyId : $(eTarget).parent().parent().attr('propertyId')
                 }
             }
             if (this.editAttrPopup) $("#" + this.editAttrPopup.modalId).remove();
@@ -264,7 +396,7 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                 data: data
             });
             var options = {
-                title:"新增属性",
+                title:"编辑属性",
                 body : editAttrView,
                 backdrop : 'static',
                 type     : 2,
@@ -277,10 +409,14 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                                 $(eTarget).parent().parent().siblings().eq(0).attr('value',window.checkResult.name).text(window.checkResult.name);
                                 $(eTarget).parent().parent().siblings().eq(1).attr('value',window.checkResult.code).text(window.checkResult.code);
                                 $(eTarget).parent().parent().siblings().eq(2).attr('value',window.checkResult.value).text(window.checkResult.value);
+                                $(eTarget).parent().parent().parent().attr('propertyValueId',window.checkResult.propertyValueId);
+                                $(eTarget).parent().parent().parent().attr('propertyId',window.checkResult.propertyId);
                             }else{
                                 $(eTarget).parent().siblings().eq(0).attr('value',window.checkResult.name).text(window.checkResult.name);
                                 $(eTarget).parent().siblings().eq(1).attr('value',window.checkResult.code).text(window.checkResult.code);
                                 $(eTarget).parent().siblings().eq(2).attr('value',window.checkResult.value).text(window.checkResult.value);
+                                $(eTarget).parent().parent().attr('propertyValueId',window.checkResult.propertyValueId);
+                                $(eTarget).parent().parent().attr('propertyId',window.checkResult.propertyId);
                             }
                             clearInterval(timer);
                         }else{
@@ -312,9 +448,11 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                     addAttrView.checkAttrCode();
                     var timer = setInterval(function(){
                         if(window.checkResult){
-                            this.addAttrPopup.$el.modal("hide");
-                            this.renderAttrTable(window.checkResult);
-                            this.$el.find(".showDefaultTpl").attr('disabled', 'disabled');
+                            if(window.checkResult != 'hasExist'){
+                                this.addAttrPopup.$el.modal("hide");
+                                this.renderAttrTable(window.checkResult);
+                                this.$el.find(".showDefaultTpl").attr('disabled', 'disabled');
+                            }
                             clearInterval(timer);
                         }else{
                             console.log('getting');
@@ -327,33 +465,15 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.addAttrPopup = new Modal(options);
         },
 
-        onClickEditAttr: function(){
-            if (this.editAttrPopup) $("#" + this.editAttrPopup.modalId).remove();
-
-            var editAttrView = new AddOrEditAttrView({
-                collection: this.collection,
-                isAttrEdit: true,
-                fileType: this.args.fileType
-            });
-            var options = {
-                title:"编辑属性",
-                body : editAttrView,
-                backdrop : 'static',
-                type     : 2,
-                onOKCallback:  function(){
-                    //var options = editAttrView.getArgs();
-                    //if (!options) return;
-                    //this.collection.addDomain(options);
-                    this.editAttrPopup.$el.modal("hide");
-                }.bind(this),
-                onHiddenCallback: function(){}.bind(this)
-            }
-            this.editAttrPopup = new Modal(options);
-        },
-
         onClickCancel: function(){
             if (this.timer) clearInterval(this.timer)
             this.options.cancelCallback&&this.options.cancelCallback();
+        },
+
+        onClickOK: function(){
+            var args = this.getArgs();
+            if (!args) return;
+            this.options.okCallback&&this.options.okCallback(args);
         },
 
         onGetError: function(error){
@@ -364,44 +484,24 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
         },
 
         getArgs: function(){
-            // var checkedList = this.channelList.filter(function(object) {
-            //     return object.isChecked === true;
-            // })
-            // var channelIds = [];
-            // _.each(checkedList, function(el, index, list){
-            //     channelIds.push(el.id)
-            // }.bind(this))
-            // var nodeId = this.$el.find("tbody input:checked").attr("id");
-            // var options =  {
-            //     "dispGroupIds": [parseInt(nodeId)],//channelIds,
-            //     "channelId"   : this.model.get("id")
-            // }
-            // return options
-        },
+            this.args.domain = $.trim(this.$el.find("#input-domain").val());
+            this.args.templateContent = $.trim(this.$el.find("#textarea-tplContent").val());
 
-        render: function(target) {
-            this.$el.appendTo(target);
-        }
-    });
+            var trLen = this.$el.find(".attr-table tbody").children().length;
+            if(trLen > 0){
+                for(var i = 0; i< trLen; i++){
+                    var json = {
+                        name : $.trim(this.$el.find(".attr-table tbody").children().eq(i).children().eq(0).attr("value")),
+                        code : $.trim(this.$el.find(".attr-table tbody").children().eq(i).children().eq(1).attr("value")),
+                        value : $.trim(this.$el.find(".attr-table tbody").children().eq(i).children().eq(2).attr("value")),
+                        propertyValueId : $.trim(this.$el.find(".attr-table tbody").children().eq(i).attr("propertyValueId")),
+                        propertyId : $.trim(this.$el.find(".attr-table tbody").children().eq(i).attr("propertyId"))
+                    }
+                    this.args.propertyAndValueList.push(json);
+                }
+            }
 
-    var ShowTplView = Backbone.View.extend({
-        events: {
-            //"click .search-btn":"onClickSearch"
-        },
-
-        initialize: function(options) {
-            this.collection = options.collection;
-            this.model      = options.model;
-
-            this.$el = $(_.template(template['tpl/templateManage/templateManage.view.html'])({}));
-
-        },
-
-        onGetError: function(error){
-            if (error&&error.message)
-                alert(error.message)
-            else
-                alert("网络阻塞，请刷新重试！")
+            return this.args;
         },
 
         render: function(target) {
@@ -447,11 +547,13 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.collection.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
             this.collection.on("add.tpl.success", function(){
+                this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn");
                 alert("新建成功");
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("add.tpl.error", $.proxy(this.onGetError, this));
             this.collection.on("edit.tpl.success", function(){
+                this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn");
                 alert("编辑成功");
                 this.onClickQueryButton();
             }.bind(this));
@@ -459,6 +561,7 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.collection.on("get.editData.success", $.proxy(this.showEditPage, this));
             this.collection.on("get.editData.error", $.proxy(this.onGetError, this));
             this.collection.on("delete.tpl.success", function(){
+                this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn");
                 alert("删除成功");
                 this.onClickQueryButton();
             }.bind(this));
@@ -619,11 +722,12 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                     {name: "上层", value: 1},
                     {name: "下层", value: 2}
                 ],
+                data:null,
                 cancelCallback: function(){
                     this.showMainList(".main-list",".create-edit-panel",".create-edit-ctn");
                 }.bind(this),
                 okCallback:  function(options){
-                    //this.collection.addTpl(options);
+                    this.collection.addTpl(options);
                 }.bind(this)
             });
             addView.render(this.$el.find(".create-edit-panel"));
@@ -644,7 +748,7 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.collection.getEditData({id:id,fileType:fileType});
         },
 
-        showEditPage: function(){
+        showEditPage: function(res){
             var editView = new AddOrEditView({
                 collection: this.collection, 
                 isEdit    : true,
@@ -660,11 +764,12 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                     {name: "上层", value: 1},
                     {name: "下层", value: 2}
                 ],
+                data:res,
                 cancelCallback: function(){
                     this.showMainList(".main-list",".create-edit-panel",".create-edit-ctn");
                 }.bind(this),
                 okCallback:  function(options){
-                    //this.collection.editTpl(options);
+                    this.collection.editTpl(options);
                 }.bind(this)
             });
             editView.render(this.$el.find(".create-edit-panel"));

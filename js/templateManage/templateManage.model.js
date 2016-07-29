@@ -275,7 +275,11 @@ define("templateManage.model", ['require','exports'], function(require, exports)
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
             }
             defaultParas.success = function(res){
-                this.trigger("get.editData.success", res); 
+                if(res.status == "OK"){
+                    this.trigger("get.editData.success", res.result); 
+                }else{
+                    this.trigger("get.editData.error", res.message); 
+                }
             }.bind(this);
 
             defaultParas.error = function(response, msg){
@@ -312,6 +316,36 @@ define("templateManage.model", ['require','exports'], function(require, exports)
                 if (response&&response.responseText)
                     response = JSON.parse(response.responseText)
                 this.trigger("get.defaultTplData.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
+        setDefaultTpl: function(args){
+            var url = BASE_URL + "/api/cdn/config/default/templates"; 
+            var defaultParas = {
+                type: "POST",
+                url: url,
+                async: true,
+                timeout: 30000
+            };
+            defaultParas.data = args;
+
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                if(res.status == "OK"){
+                    this.trigger("set.defaultTpl.success", res.result); 
+                }else{
+                    this.trigger("set.defaultTpl.error", res.message); 
+                }
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("set.defaultTpl.error", response); 
             }.bind(this);
 
             $.ajax(defaultParas);

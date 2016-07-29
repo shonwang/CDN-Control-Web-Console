@@ -10,7 +10,7 @@
             <div class="input-domain">
                 <label for="input-domain" class="col-sm-offset-1 col-sm-1 control-label control-label">加速域名</label>
                 <div class="col-sm-3">
-                    <input type="text" class="form-control" id="input-domain" value="">
+                    <input type="text" class="form-control" id="input-domain" value="<%=data.domain%>">
                 </div>
             </div>
         </div>
@@ -23,9 +23,9 @@
                 </button>
                 <ul class="dropdown-menu long-dropdown-menu"></ul>
             </div>
-            <label for="dropdown-filetype" class="col-sm-2 control-label">文件类型</label>
+            <label for="dropdown-fileType" class="col-sm-2 control-label">文件类型</label>
             <div class="dropdown col-sm-3 dropdown-fileType">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-filetype" data-toggle="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-fileType" data-toggle="dropdown">
                     <span class="cur-value">加载中...</span>
                     <span class="caret"></span>
                 </button>
@@ -91,7 +91,7 @@
         <div class="form-group">
             <div class="col-sm-1"></div>
             <div class="col-sm-10">
-                <textarea class="form-control" rows="6" id="textarea-tplContent" style="background: #FFF;"></textarea>
+                <textarea class="form-control" rows="6" id="textarea-tplContent" style="background: #FFF;" value="<%=data.templateContent%>"><%=data.templateContent%></textarea>
             </div>
         </div>
         <!-- <div class="form-group" style="margin-bottom:40px;">

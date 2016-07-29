@@ -9,7 +9,7 @@
     </thead>
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
-            <tr data-id="">
+            <tr propertyValueId="<%=data[i].propertyValueId%>" propertyId="<%=data[i].propertyId%>">
                 <td value="<%=data[i].name%>"><%=data[i].name%></td>
                 <td value="<%=data[i].code%>"><%=data[i].code%></td>
                 <td value="<%=data[i].value%>"><%=data[i].value%></td>

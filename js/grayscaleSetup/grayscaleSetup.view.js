@@ -544,7 +544,9 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
 
         onGetSyncSuccess: function(){
             //定时器
-            this.collection.getSyncProgress({id:this.syncId});
+            this.timer = setInterval(function(){
+                this.collection.getSyncProgress({id:this.syncId});
+            }.bind(this),1000);
         },
 
         onGetSyncProgressSuccess: function(res){
@@ -558,16 +560,15 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                 title:"域名："+res.domain,
                 body : syncProgressView,
                 backdrop : 'static',
-                type     : 2,
-                onOKCallback:  function(){
-                    // var options = syncProgressView.getArgs();
-                    // if (!options) return;
-                    // this.collection.addDomain(options);
-                    // this.syncProgressPopup.$el.modal("hide");
-                }.bind(this),
+                type     : 1,
+                onOKCallback:  function(){}.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
             this.syncProgressPopup = new Modal(options);
+            
+            if(res.progress == '100%'){
+                clearInterval(this.timer);
+            }
         },
 
         initPaginator: function(){

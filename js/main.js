@@ -11,7 +11,7 @@ else if (window.DEBUG === 2)
 else if (window.DEBUG === 3)
     window.BASE_URL = "http://center.cdn.ksyun.com";
 else if(window.DEBUG === 4)
-    window.BASE_URL = "http://test-cdn.center.cdn.ksyun.com";
+    window.BASE_URL = "http://devtest.center.cdn.ksyun.com";//test-cdn.center.cdn.ksyun.com";
 else if(window.DEBUG === 5)
     window.BASE_URL = "http://gray.center.cdn.ksyun.com";
 else if(window.DEBUG === 6)

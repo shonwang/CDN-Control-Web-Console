@@ -85,7 +85,7 @@ define("templateManage.model", ['require','exports'], function(require, exports)
         },
 
         getAllCity: function(args){
-            var url = "http://local.center.ksyun.com" + "/rs/query/getAllAddr?" + new Date().valueOf(); 
+            var url = BASE_URL + "/rs/query/getAllAddr?" + new Date().valueOf(); 
             var defaultParas = {
                 type: "GET",
                 url: url,
@@ -110,7 +110,7 @@ define("templateManage.model", ['require','exports'], function(require, exports)
         },
 
         getOperatorList: function(args){
-            var url = "http://local.center.ksyun.com" + "/rs/metaData/operatorList?" + new Date().valueOf(); 
+            var url = BASE_URL + "/rs/metaData/operatorList?" + new Date().valueOf(); 
             var defaultParas = {
                 type: "GET",
                 url: url,
@@ -135,7 +135,7 @@ define("templateManage.model", ['require','exports'], function(require, exports)
         },
 
         getBusinessList: function(){
-            var url = "http://local.center.ksyun.com" + "/seed/metaData/config/release/list";
+            var url = BASE_URL + "/seed/metaData/config/release/list";
             var defaultParas = {
                 type: "GET",
                 url: url,
@@ -327,9 +327,11 @@ define("templateManage.model", ['require','exports'], function(require, exports)
                 type: "POST",
                 url: url,
                 async: true,
-                timeout: 30000
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
             };
-            defaultParas.data = args;
+            defaultParas.data = JSON.stringify(args);
 
             defaultParas.beforeSend = function(xhr){
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");

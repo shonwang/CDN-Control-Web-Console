@@ -39,6 +39,14 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.args.name = $.trim(this.$el.find("#input-attrName").val());
             this.args.value = $.trim(this.$el.find("#input-val").val());
             this.args.code = $.trim(this.$el.find("#input-code").val());
+            if(this.args.name.length == 0){
+                alert('属性名称不能为空');
+                return;
+            }
+            if(this.args.code.length == 0){
+                alert('属性编码不能为空');
+                return;
+            }
             this.collection.checkTpl({fileType:this.fileType,code:this.args.code});
         },
 
@@ -84,6 +92,7 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
 
             if(this.isEdit){
                 this.args = {
+                    "id"               : this.data.id,
                     "domain"           : this.data.domain,
                     "businessType"     : this.data.businessType,
                     "layer"            : this.data.layer,
@@ -145,9 +154,9 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             });
             Utility.initDropMenu(this.$el.find(".dropdown-operator"), operatorList, function(value){
                 this.args.operator = value;
-                if(this.$el.find('.setDefaultTpl').hasClass('disabled')){
-                    this.$el.find('.setDefaultTpl').removeClass('disabled').html(设为默认模版);
-                }
+                // if(this.$el.find('.setDefaultTpl').hasClass('disabled')){
+                //     this.$el.find('.setDefaultTpl').removeClass('disabled').html(设为默认模版);
+                // }
             }.bind(this));
             if(this.isEdit){
                 $.each(operatorList,function(k,v){
@@ -165,9 +174,9 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             });
             Utility.initDropMenu(this.$el.find(".dropdown-businessType"), businessTypeList, function(value){
                 this.args.businessType = value;
-                if(this.$el.find('.setDefaultTpl').hasClass('disabled')){
-                    this.$el.find('.setDefaultTpl').removeClass('disabled').html(设为默认模版);
-                }
+                // if(this.$el.find('.setDefaultTpl').hasClass('disabled')){
+                //     this.$el.find('.setDefaultTpl').removeClass('disabled').html(设为默认模版);
+                // }
             }.bind(this));
             if(this.isEdit){
                 $.each(businessTypeList,function(k,v){
@@ -181,9 +190,9 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             //回源方式
             Utility.initDropMenu(this.$el.find(".dropdown-originType"), this.originTypeList, function(value){
                 this.args.originType = value;
-                if(this.$el.find('.setDefaultTpl').hasClass('disabled')){
-                    this.$el.find('.setDefaultTpl').removeClass('disabled').html(设为默认模版);
-                }
+                // if(this.$el.find('.setDefaultTpl').hasClass('disabled')){
+                //     this.$el.find('.setDefaultTpl').removeClass('disabled').html(设为默认模版);
+                // }
             }.bind(this));
             if(this.isEdit){
                 $.each(this.originTypeList,function(k,v){
@@ -197,9 +206,9 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             //设备层级
             Utility.initDropMenu(this.$el.find(".dropdown-layer"), this.layerList, function(value){
                 this.args.layer = value;
-                if(this.$el.find('.setDefaultTpl').hasClass('disabled')){
-                    this.$el.find('.setDefaultTpl').removeClass('disabled').html(设为默认模版);
-                }
+                // if(this.$el.find('.setDefaultTpl').hasClass('disabled')){
+                //     this.$el.find('.setDefaultTpl').removeClass('disabled').html(设为默认模版);
+                // }
             }.bind(this));
             if(this.isEdit){
                 $.each(this.layerList,function(k,v){
@@ -213,9 +222,9 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             //文件类型
             Utility.initDropMenu(this.$el.find(".dropdown-fileType"), this.fileTypeList, function(value){
                 this.args.fileType = value;
-                if(this.$el.find('.setDefaultTpl').hasClass('disabled')){
-                    this.$el.find('.setDefaultTpl').removeClass('disabled').html(设为默认模版);
-                }
+                // if(this.$el.find('.setDefaultTpl').hasClass('disabled')){
+                //     this.$el.find('.setDefaultTpl').removeClass('disabled').html(设为默认模版);
+                // }
             }.bind(this));
             if(this.isEdit){
                 $.each(this.fileTypeList,function(k,v){
@@ -251,7 +260,6 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                 this.$el.find(".textarea-area").show();
                 this.$el.find("#textarea-area").val(areaArray[0].name);
             }
-
             if (this.searchSelect) this.searchSelect.destroy();
             this.searchSelect = new SearchSelect({
                 containerID: this.$el.find('.dropdown-area').get(0),
@@ -294,21 +302,14 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
         },
 
         onClickSetDefaultTpl: function(e){
-            var eTarget = e.srcElement || e.target;
-            var data = {
-                fileType :this.args.fileType,
-                businessType :this.args.businessType,
-                originType :this.args.originType,
-                layer :this.args.layer,
-                operator:this.args.operator,
-                area:this.args.area
-            }
+            var args = this.getArgs();
+            if (!args) return;
             //调用设为默认模版接口
-            this.collection.setDefaultTpl(data);
+            this.collection.setDefaultTpl(args);
         },
 
         onSetDefaultTplSuccess: function(res){
-            $(eTarget).attr("disabled","disabled").html("已设为默认模版");
+            this.$el.find('.setDefaultTpl').attr("disabled","disabled").html("已设为默认模版");
         },
 
         onClickShowDefaultTpl: function(){
@@ -485,6 +486,15 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
 
         getArgs: function(){
             this.args.domain = $.trim(this.$el.find("#input-domain").val());
+            if(this.args.domain.length > 0){
+                if (!/\.com$|\.net$|\.org$|\.edu$|\.gov$|\.cn$/gi.test(this.queryArgs.domain)){
+                    alert('加速域名需以com、org、net、edu、gov、cn结尾');
+                    return;
+                }else if(this.queryArgs.domain.length > 100){
+                    alert("加速域名最大可输入100个字符");
+                    return;
+                }
+            }
             this.args.templateContent = $.trim(this.$el.find("#textarea-tplContent").val());
 
             var trLen = this.$el.find(".attr-table tbody").children().length;
@@ -515,6 +525,7 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
         initialize: function(options) {
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/templateManage/templateManage.html'])());
+            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
             this.initNodeDropMenu();
 
@@ -697,10 +708,20 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
         },
 
         onClickQueryButton: function(){
+            this.queryArgs.domain = $.trim(this.$el.find("#input-domain").val());
+            if (this.queryArgs.domain == ""){
+                this.queryArgs.domain = null;
+            }else{
+                if (!/\.com$|\.net$|\.org$|\.edu$|\.gov$|\.cn$/gi.test(this.queryArgs.domain)){
+                    alert('加速域名需以com、org、net、edu、gov、cn结尾');
+                    return;
+                }else if(this.queryArgs.domain.length > 100){
+                    alert("加速域名最大可输入100个字符");
+                    return;
+                }
+            }
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
-            this.queryArgs.domain = this.$el.find("#input-domain").val();
-            if (this.queryArgs.domain == "") this.queryArgs.domain = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
             this.collection.getTplPageList(this.queryArgs);

@@ -267,18 +267,34 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
 
         getArgs: function() {
             this.args.domain = $.trim(this.$el.find("#input-domain").val());
+            if(this.args.domain.length > 0){
+                if (!/\.com$|\.net$|\.org$|\.edu$|\.gov$|\.cn$/gi.test(this.queryArgs.domain)){
+                    alert('域名需以com、org、net、edu、gov、cn结尾');
+                    return;
+                }else if(this.queryArgs.domain.length > 100){
+                    alert("域名最大可输入100个字符");
+                    return;
+                }
+            }
 
             //获取配置文件相应参数
             var $confDom = this.$el.find('.nodeFiles tbody td a');
             var $textareaDom = this.$el.find('.nodeFiles textarea');
-            $confDom.each(function(i){
-                var json = {};
-                json.confFileId = $.trim($confDom.eq(i).text());
-                json.content = $.trim($textareaDom.eq(i).val());
-                this.args.confFile.push(json);
+            if($confDom.length > 0){
+                $confDom.each(function(i){
+                    var json = {};
+                    json.confFileId = $.trim($confDom.eq(i).text());
+                    json.content = $.trim($textareaDom.eq(i).val());
+                    this.args.confFile.push(json);
+                }.bind(this));
+            }
+            _.each(this.args.confFile,function(obj,k,l){
+                if(obj.content.length > 4000){
+                    alert("配置文件内容最多允许输入4000个字符");
+                    return;
+                }
             }.bind(this));
 
-            //console.log(this.args);
 
             return this.args;
         },
@@ -425,11 +441,20 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         onClickQueryButton: function(){
+            this.getPageArgs.domain = this.$el.find("#input-domain").val();
+            if (this.getPageArgs.domain == ""){
+                this.getPageArgs.domain = null;
+            }else{
+                if (!/\.com$|\.net$|\.org$|\.edu$|\.gov$|\.cn$/gi.test(this.getPageArgs.domain)){
+                    alert('域名需以com、org、net、edu、gov、cn结尾');
+                    return;
+                }else if(this.getPageArgs.domain.length > 100){
+                    alert("域名最大可输入100个字符");
+                    return;
+                }
+            }
             this.isInitPaginator = false;
             this.getPageArgs.page = 1;
-            this.getPageArgs.domain = this.$el.find("#input-domain").val();
-            if (this.getPageArgs.domain == "") this.getPageArgs.domain = null;
-            
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
             this.collection.getDomainPageList(this.getPageArgs);
@@ -546,7 +571,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             //定时器
             this.timer = setInterval(function(){
                 this.collection.getSyncProgress({id:this.syncId});
-            }.bind(this),1000);
+            }.bind(this),5000);
         },
 
         onGetSyncProgressSuccess: function(res){
@@ -566,7 +591,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             }
             this.syncProgressPopup = new Modal(options);
             
-            if(res.progress == '100%'){
+            if(res.percentage == '100'){
                 clearInterval(this.timer);
             }
         },

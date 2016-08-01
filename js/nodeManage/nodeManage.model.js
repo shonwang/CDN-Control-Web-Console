@@ -311,8 +311,35 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
                 this.trigger("get.operationByCountry.error", response);
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
-        }
+        },
 
+        getAllProvince: function(args){
+            var url = BASE_URL + "/rs/provCity/getAllProv",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("get.province.success", res);
+                else
+                    this.trigger("get.province.error", res); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.province.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        getAllCityAndBigArea: function(args){
+            var url = BASE_URL + "/rs/provCity/getAllCityAndBigArea",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("get.cityByProvince.success", res);
+                else
+                    this.trigger("get.cityByProvince.error", res); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.cityByProvince.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        }
     });
 
     return NodeManageCollection;

@@ -219,7 +219,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.off("get.location.success");
             this.collection.off("get.location.error");
             this.collection.on("get.location.success", $.proxy(this.onGetLocation, this));
-            this.collection.on("get.location.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.location.error", $.proxy(this.onGetLocation, this));
 
             this.collection.off("get.continent.success");
             this.collection.off("get.continent.error");
@@ -235,6 +235,16 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.off("get.operationByCountry.error");
             this.collection.on("get.operationByCountry.success", $.proxy(this.onGetOperatorSuccess, this));
             this.collection.on("get.operationByCountry.error", $.proxy(this.onGetError, this));
+
+            this.collection.off("get.province.success");
+            this.collection.off("get.province.error");
+            this.collection.on("get.province.success", $.proxy(this.onGetAllProvince, this));
+            this.collection.on("get.province.error", $.proxy(this.onGetError, this));
+
+            this.collection.off("get.cityByProvince.success");
+            this.collection.off("get.cityByProvince.error");
+            this.collection.on("get.cityByProvince.success", $.proxy(this.onGetAllCityAndBigArea, this));
+            this.collection.on("get.cityByProvince.error", $.proxy(this.onGetError, this));
 
             this.initDropList(options.list);
             this.initChargeDatePicker();
@@ -362,10 +372,13 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     return object.value === this.model.attributes.chargingType
                 }.bind(this));
                 this.$el.find(".dropdown-charging .cur-value").html(defaultValue.name)
+            } else {
+                this.$el.find(".dropdown-charging .cur-value").html(nameList[0].name)
             }
 
             this.collection.getAllContinent();
-            this.collection.getAllCity();
+            this.collection.getAllProvince();
+            //this.collection.getAllCity();
         },
 
         onGetAllContinent: function(list){
@@ -384,6 +397,72 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             } else {
                 this.$el.find(".dropdown-continent .cur-value").html(nameList[0].name);
                 this.collection.getCountryByContinent({id: nameList[0].value})
+            }
+        },
+
+        onGetAllProvince: function(list){
+            var nameList = [];
+            _.each(list, function(el, inx, list){
+                nameList.push({name: el.name, value: el.id})
+            }.bind(this))
+
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-province').get(0),
+                panelID: this.$el.find('#dropdown-province').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function(){},
+                data: nameList,
+                callback: function(data) {
+                    this.$el.find('#dropdown-province .cur-value').html(data.name);
+                    this.collection.getAllCityAndBigArea({provId: data.value})
+                }.bind(this)
+            });
+
+            if (this.isEdit){
+                // this.$el.find(".dropdown-country .cur-value").html(this.model.get("countryName"));
+                // this.collection.getOperationByCountry({id: this.model.get("countryId")})
+            } else {
+                this.$el.find("#dropdown-province .cur-value").html(nameList[0].name);
+                this.collection.getAllCityAndBigArea({provId: nameList[0].value})
+            }
+        },
+
+        onGetAllCityAndBigArea: function(res){
+            var area = res.cityProvArea.name,
+                list = res.list;
+
+            var cityArray = [];
+            _.each(list, function(el, index, list){
+                cityArray.push({name:el.name, value: el.id, isDisplay: true})
+            }.bind(this))
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-city').get(0),
+                panelID: this.$el.find('#dropdown-city').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: true,
+                onOk: function(){},
+                data: cityArray,
+                callback: function(data) {
+                    this.$el.find('#dropdown-city .cur-value').html(data.name);
+                    this.$el.find('#input-longitude-latitude').val("查找中...");
+                    this.$el.find('#dropdown-city').attr("disabled", "disabled");
+                    this.collection.getLocation({addr: data.name})
+                }.bind(this)
+            });
+            if (this.isEdit){
+                // this.$el.find(".dropdown-country .cur-value").html(this.model.get("countryName"));
+                // this.collection.getOperationByCountry({id: this.model.get("countryId")})
+            } else {
+                this.$el.find('#input-longitude-latitude').val("查找中...");
+                this.$el.find('#dropdown-city').attr("disabled", "disabled");
+                this.collection.getLocation({addr: cityArray[0].name});
+                this.$el.find('#dropdown-city .cur-value').html(cityArray[0].name);
+                this.$el.find('#dropdown-region .cur-value').html(area);   
             }
         },
 
@@ -592,7 +671,6 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 body : addNodeView,
                 backdrop : 'static',
                 type     : 2,
-                height: 500,
                 onOKCallback:  function(){
                     var options = addNodeView.getArgs();
                     if (!options) return;
@@ -703,7 +781,6 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 body : editNodeView,
                 backdrop : 'static',
                 type     : 2,
-                height: 500,
                 onOKCallback:  function(){
                     var options = editNodeView.getArgs();
                     if (!options) return;

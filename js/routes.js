@@ -286,11 +286,14 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                 this.navbarView.select(this.curPage);
                 if (!this.dispConfigModel)
                     this.dispConfigModel = new DispConfigModel();
+                if (!this.diffConfigModel)
+                    this.diffConfigModel = new DispConfigModel();
                 if (!this.dispGroupModel)
                     this.dispGroupModel = new DispGroupModel();
                 if (!this.dispConfigView ){
                     var options = {
                         collection: this.dispConfigModel,
+                        diffCollection: this.diffConfigModel,
                         dispGroupCollection: this.dispGroupModel
                     };
                     this.dispConfigView = new DispConfigView(options);

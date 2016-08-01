@@ -7,7 +7,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
         initialize: function(options) {
             this.options = options;
-            this.collection = options.collection;
+            this.diffCollection = options.diffCollection;
             this.groupId  = options.groupId;
 
             this.$el = $(_.template(template['tpl/dispConfig/dispConfig.diffBeforeSend.html'])({}));
@@ -16,7 +16,12 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".ok-again").on("click", $.proxy(this.onClickOK, this));
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancel, this));
 
-            this.collection.diffBeforeSend(options.sendData)
+            this.collection.off("send.diff.success");
+            this.collection.off("send.diff.error");
+            this.collection.on("send.diff.success", $.proxy(this.onGetRecordListSuccess, this));
+            this.collection.on("send.diff.error", $.proxy(this.onGetError, this));
+
+            this.diffCollection.diffBeforeSend(options.sendData)
         },
 
         onClickCancel: function(){
@@ -465,6 +470,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         initialize: function(options) {
             this.collection = options.collection;
             this.dispGroupCollection = options.dispGroupCollection;
+            this.diffCollection = options.diffCollection;
 
             this.$el = $(_.template(template['tpl/dispConfig/dispConfig.html'])({permission: AUTH_OBJ}));
 
@@ -698,6 +704,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         onClickSending: function(){
             var diffBeforeSendView = new DiffBeforeSend({
                 collection: this.collection, 
+                diffCollection: this.diffCollection,
                 groupId   : this.queryArgs.groupId,
                 sendData  : this.getSendData(),
                 cancelCallback: function(){

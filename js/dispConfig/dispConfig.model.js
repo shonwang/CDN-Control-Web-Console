@@ -286,6 +286,54 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
             $.ajax(defaultParas);
         },
 
+        diffBeforeSend: function(args){
+            var url = BASE_URL + "/rs/dispConf/pre/seeding/diff?groupId=" + args.groupId,
+            successCallback = function(res){
+                // this.reset();
+                // if (res){
+                //     _.each(res.rows, function(element, index, list){
+                //         var temp = {}, tempList = [];
+                //         _.each(element, function(el, key, ls){
+                //             if (key === "region"){
+                //                 _.each(el, function(el1, key1, ls1){
+                //                     temp[key + "." + key1] = el1
+                //                 }.bind(this))
+                //             }
+                //             if (key === "list"){
+                //                 var tempObj = {}
+                //                 _.each(el, function(el2, key2, ls2){
+                //                     _.each(el2, function(el3, key3, ls3){
+                //                         if (key3 === "type") tempObj.type = el3;
+                //                         _.each(el3, function(el4, key4, ls4){
+                //                             var tempKey = key3 + "." + key4
+                //                             tempObj[tempKey] = el4
+                //                             if (tempKey === "dispGroup.dispDomain" && !temp['dispGroup.dispDomain'])
+                //                                 temp['dispGroup.dispDomain'] = el4
+                //                             if (tempKey === "dispGroup.ttl" && !temp['dispGroup.ttl'])
+                //                                 temp['dispGroup.ttl'] = el4
+                //                         }.bind(this))
+                //                     }.bind(this))
+                //                     tempObj.isDisplay = true;
+                //                     tempList.push(new Model(tempObj))
+                //                 }.bind(this))
+                //                 temp.listFormated = tempList;
+                //             }
+                //         }.bind(this))
+                //         temp.isDisplay = true;
+                //         this.push(new Model(temp));
+                //     }.bind(this))
+                //     this.total = res.total;
+                //     this.trigger("get.diff.success");
+                // } else {
+                //     this.trigger("get.diff.error"); 
+                // }
+            }.bind(this),
+            errorCallback = function(response){
+                // this.trigger("get.diff.error", response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
         dispDns: function(args){
             var url = BASE_URL + "/rs/dispConf/dispDns?groupId=" + args.groupId
             var defaultParas = {

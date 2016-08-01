@@ -172,7 +172,6 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     "id"                 : this.model.get("id"),
                     "name"               : this.model.get("name"),
                     "chName"             : this.model.get("chName"),
-                    //"ChargingRegion"     : this.model.get("ChargingRegion"),
                     "operator"           : this.model.get("operator"),
                     "chargingType"       : this.model.get("chargingType"),
                     "minBandwidth"       : this.model.get("minBandwidth"),
@@ -193,7 +192,6 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     "name"               : "",
                     "chName"             : "",
                     "operator"           : "",
-                    //"ChargingRegion"     : "",
                     "chargingType"       : 1 ,
                     "minBandwidth"       : "",
                     "maxBandwidth"       : "",
@@ -265,10 +263,10 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 outzabnameRe = /^[0-9A-Za-z\-\[\]\_]+$/,
                 letterRe = /[A-Za-z]+/,
                 reLocation = /^\d+(\.\d+)?----\d+(\.\d+)?$/;
-            // if (!reLocation.test(longitudeLatitude)){
-            //     alert("您需要填写正确的经纬度，否则该节点无法在地图中展示！");
-            //     return
-            // }
+            if (!reLocation.test(longitudeLatitude)){
+                alert("需要填写正确的经纬度，否则该节点无法在地图中展示！比如：108.953098----34.2778");
+                return
+            }
             if (!enName || !chName){
                 alert("节点名称和英文名称都要填写！");
                 return;
@@ -330,7 +328,10 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 "outZabName"         : this.$el.find("#input-outzabname").val().replace(/\s+/g, ""),
                 "remark"             : this.$el.find("#textarea-comment").val(),
                 "startChargingTime"  : this.args.startChargingTime,
-                "chargingType"       : this.args.chargingType
+                "chargingType"       : this.args.chargingType,
+                "cityId"             : this.cityId,
+                "lon"                : this.$el.find('#input-longitude-latitude').val().split("----")[0],
+                "lat"                : this.$el.find('#input-longitude-latitude').val().split("----")[1]   
             }
             return args;
         },
@@ -422,8 +423,8 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             });
 
             if (this.isEdit){
-                // this.$el.find(".dropdown-country .cur-value").html(this.model.get("countryName"));
-                // this.collection.getOperationByCountry({id: this.model.get("countryId")})
+                this.$el.find(".dropdown-province .cur-value").html(this.model.get("provName") || nameList[0].name);
+                this.collection.getAllCityAndBigArea({provId: this.model.get("provId") || nameList[0].value})
             } else {
                 this.$el.find("#dropdown-province .cur-value").html(nameList[0].name);
                 this.collection.getAllCityAndBigArea({provId: nameList[0].value})
@@ -451,18 +452,25 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     this.$el.find('#dropdown-city .cur-value').html(data.name);
                     this.$el.find('#input-longitude-latitude').val("查找中...");
                     this.$el.find('#dropdown-city').attr("disabled", "disabled");
-                    this.collection.getLocation({addr: data.name})
+                    this.collection.getLocation({addr: data.name});
+                    this.cityId = data.value; 
                 }.bind(this)
             });
+
+            this.$el.find('#input-longitude-latitude').val("查找中...");
+            this.$el.find('#dropdown-region .cur-value').html(area);
             if (this.isEdit){
-                // this.$el.find(".dropdown-country .cur-value").html(this.model.get("countryName"));
-                // this.collection.getOperationByCountry({id: this.model.get("countryId")})
+                this.cityId = this.model.get("cityId") || cityArray[0].value;
+                this.$el.find('#dropdown-city .cur-value').html(this.model.get("cityName") || cityArray[0].name);
+                if (!this.model.get("lon") || !this.model.get("lat"))
+                    this.collection.getLocation({addr: this.model.get("cityName") || cityArray[0].name});
+                else 
+                    this.$el.find('#input-longitude-latitude').val(this.model.get("lon") + "----" + this.model.get("lat"));
             } else {
-                this.$el.find('#input-longitude-latitude').val("查找中...");
-                this.$el.find('#dropdown-city').attr("disabled", "disabled");
                 this.collection.getLocation({addr: cityArray[0].name});
+                this.$el.find('#dropdown-city').attr("disabled", "disabled");
                 this.$el.find('#dropdown-city .cur-value').html(cityArray[0].name);
-                this.$el.find('#dropdown-region .cur-value').html(area);   
+                this.cityId = cityArray[0].value; 
             }
         },
 

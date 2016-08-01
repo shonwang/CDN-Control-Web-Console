@@ -675,7 +675,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 groupId : this.queryArgs.groupId,
                 list    : tempArray
             }
-            this.collection.dispDns(args)
+            this.collection.diffBeforeSend(args)
 
             this.showDisablePopup("下发中，请耐心等待...")
         },

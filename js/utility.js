@@ -269,6 +269,59 @@ define("utility", ['require','exports'], function(require, exports) {
           }
         },
 
+        hideMainList: function(root, mainClass, otherClass){
+            async.series([
+                function(callback){
+                    root.find(mainClass).addClass("fadeOutLeft animated");
+                    callback()
+                }.bind(this),
+                function(callback){
+                    setTimeout(function(){
+                        root.find(mainClass).hide();
+                        root.find(otherClass).show();
+                        root.find(otherClass).addClass("fadeInLeft animated");
+                        callback()
+                    }.bind(this), 500)
+                }.bind(this),                
+                function(callback){
+                    setTimeout(function(){
+                        root.find(otherClass).removeClass("fadeInLeft animated");
+                        root.find(otherClass).removeClass("fadeOutLeft animated");
+                        root.find(mainClass).removeClass("fadeInLeft animated");
+                        root.find(mainClass).removeClass("fadeOutLeft animated");
+                        callback()
+                    }.bind(this), 500)
+                }.bind(this)]
+            );
+        },
+
+        showMainList: function(root, mainClass, otherClass, otherClass1){
+            async.series([
+                function(callback){
+                    root.find(otherClass).addClass("fadeOutLeft animated");
+                    callback()
+                }.bind(this),
+                function(callback){
+                    setTimeout(function(){
+                        root.find(otherClass).hide();
+                        root.find(otherClass + " " + otherClass1).remove();
+                        root.find(mainClass).show();
+                        root.find(mainClass).addClass("fadeInLeft animated")
+                        callback()
+                    }.bind(this), 500)
+                }.bind(this),                
+                function(callback){
+                    setTimeout(function(){
+                        root.find(otherClass).removeClass("fadeInLeft animated");
+                        root.find(otherClass).removeClass("fadeOutLeft animated");
+                        root.find(mainClass).removeClass("fadeInLeft animated");
+                        root.find(mainClass).removeClass("fadeOutLeft animated");
+                        callback()
+                    }.bind(this), 500)
+                }.bind(this)]
+            );
+        },
+
         postAjax: function(url, args, successCallback, errorCallback, timeout, dataType){
             var defaultParas = {
                 type: "POST",

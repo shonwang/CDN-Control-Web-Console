@@ -737,7 +737,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             diffBeforeSendView.render(this.$el.find(".diff-send-panel"));
 
             Utility.hideMainList(this.$el, ".main-list", ".diff-send-panel");
-            this.$el.find(".opt-panel").slideUp(200);
+            this.$el.find(".opt-panel").hide();
         },
 
         getSendData: function(){

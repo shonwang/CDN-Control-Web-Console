@@ -1,5 +1,46 @@
 define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
+    var DiffBeforeSend = Backbone.View.extend({
+        events: {
+            //"click .search-btn":"onClickSearch"
+        },
+
+        initialize: function(options) {
+            this.options = options;
+            this.collection = options.collection;
+            this.groupId  = options.groupId;
+
+            this.$el = $(_.template(template['tpl/dispConfig/dispConfig.diffBeforeSend.html'])({}));
+            this.$el.find(".diff-table-ctn").html(_.template(template['tpl/loading.html'])({}));
+
+            this.$el.find(".ok-again").on("click", $.proxy(this.onClickOK, this));
+            this.$el.find(".cancel").on("click", $.proxy(this.onClickCancel, this));
+
+            this.collection.diffBeforeSend(options.sendData)
+        },
+
+        onClickCancel: function(){
+            this.options.cancelCallback&&this.options.cancelCallback();
+        },
+
+        onClickOK: function(){
+            var result = confirm("你确定要下发DNSPod吗？");
+            if (!result) return
+            this.options.okCallback&&this.options.okCallback(args);
+        },
+
+        onGetError: function(error){
+            if (error&&error.message)
+                alert(error.message)
+            else
+                alert("网络阻塞，请刷新重试！")
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target)
+        }
+    });
+
     var HistoryView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
@@ -655,8 +696,25 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         onClickSending: function(){
-            var result = confirm("你确定要下发DNSPod吗？");
-            if (!result) return
+            var diffBeforeSendView = new DiffBeforeSend({
+                collection: this.collection, 
+                groupId   : this.queryArgs.groupId,
+                sendData  : this.getSendData(),
+                cancelCallback: function(){
+                    this.$el.find(".opt-panel").slideDown(200);
+                    Utility.showMainList(this.$el, ".main-list", ".diff-send-panel", ".diff-send-ctn");
+                }.bind(this),
+                okCallback:  function(options){
+                    this.collection.onSureSending();
+                }.bind(this)
+            });
+            diffBeforeSendView.render(this.$el.find(".diff-send-panel"));
+
+            Utility.hideMainList(this.$el, ".main-list", ".diff-send-panel");
+            this.$el.find(".opt-panel").slideUp(200);
+        },
+
+        getSendData: function(){
             var tempArray = [];
 
             _.each(this.collection.models, function(el, index, list){
@@ -675,8 +733,12 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 groupId : this.queryArgs.groupId,
                 list    : tempArray
             }
-            this.collection.diffBeforeSend(args)
+            return args;
+        },
 
+        onSureSending: function(){
+            var args = this.getSendData();
+            this.collection.dispDns(args)
             this.showDisablePopup("下发中，请耐心等待...")
         },
 

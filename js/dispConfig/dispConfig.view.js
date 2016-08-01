@@ -16,10 +16,10 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".ok-again").on("click", $.proxy(this.onClickOK, this));
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancel, this));
 
-            this.collection.off("send.diff.success");
-            this.collection.off("send.diff.error");
-            this.collection.on("send.diff.success", $.proxy(this.onGetRecordListSuccess, this));
-            this.collection.on("send.diff.error", $.proxy(this.onGetError, this));
+            this.diffCollection.off("send.diff.success");
+            this.diffCollection.off("send.diff.error");
+            this.diffCollection.on("send.diff.success", $.proxy(this.initTable, this));
+            this.diffCollection.on("send.diff.error", $.proxy(this.onGetError, this));
 
             this.diffCollection.diffBeforeSend(options.sendData)
         },
@@ -28,10 +28,27 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.options.cancelCallback&&this.options.cancelCallback();
         },
 
+        initTable: function(){
+            this.table = $(_.template(template['tpl/dispConfig/dispConfig.table.html'])({
+                data: this.diffCollection.models, 
+                isHistory: true,
+                isDiff: true,
+                permission: AUTH_OBJ
+            }));
+
+            if (this.diffCollection.models.length === 0){
+                    this.$el.find(".diff-table-ctn").html(_.template(template['tpl/empty-2.html'])({
+                        data:{message: "张彬仔细对比了一番，没有变化！"}
+                    }));
+            } else {
+                this.$el.find(".diff-table-ctn").html(this.table[0]);
+            }
+        },
+
         onClickOK: function(){
             var result = confirm("你确定要下发DNSPod吗？");
             if (!result) return
-            this.options.okCallback&&this.options.okCallback(args);
+            this.options.okCallback&&this.options.okCallback();
         },
 
         onGetError: function(error){
@@ -499,6 +516,8 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
             this.collection.on("dispDns.success", function(){
                 this.disablePopup.$el.modal('hide');
+                this.$el.find(".opt-panel").slideDown(200);
+                Utility.showMainList(this.$el, ".main-list", ".diff-send-panel", ".diff-send-ctn");
                 alert("下发成功！")
             }.bind(this));
             this.collection.on("dispDns.error", function(res){
@@ -712,7 +731,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                     Utility.showMainList(this.$el, ".main-list", ".diff-send-panel", ".diff-send-ctn");
                 }.bind(this),
                 okCallback:  function(options){
-                    this.collection.onSureSending();
+                    this.onSureSending();
                 }.bind(this)
             });
             diffBeforeSendView.render(this.$el.find(".diff-send-panel"));

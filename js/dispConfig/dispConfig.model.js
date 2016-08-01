@@ -323,7 +323,7 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
                         this.push(new Model(temp));
                     }.bind(this))
                     this.total = res.total;
-                    this.trigger("get.diff.success");
+                    this.trigger("send.diff.success");
                 } else {
                     this.trigger("send.diff.error"); 
                 }
@@ -331,7 +331,7 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
             errorCallback = function(response){
                 this.trigger("send.diff.error", response);
             }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
+            Utility.postAjax(url, args.list, successCallback, errorCallback);
         },
 
         dispDns: function(args){

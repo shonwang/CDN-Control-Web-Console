@@ -509,6 +509,9 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                     }
                     this.args.propertyAndValueList.push(json);
                 }
+            }else{
+                alert('属性不可以为空');
+                return;
             }
 
             return this.args;

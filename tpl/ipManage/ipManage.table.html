@@ -5,7 +5,6 @@
     <th>类型</th>    
     <th>设备</th> 
     <th>节点</th>
-    <th>调度组</th>
     <th>状态</th>  
     <th>操作</th> 
   </tr>
@@ -17,7 +16,6 @@
           <td><%=data[i].attributes.ipType%></td>
           <td><%=data[i].attributes.deviceName%></td>
           <td><%=data[i].attributes.nodeChName%></td>
-          <td><%=data[i].attributes.dispDomain%></td>
           <td>
             <%=data[i].attributes.statusName%>
             <% if(data[i].attributes.status == '8' || data[i].attributes.status == '10' || data[i].attributes.status == '12' || data[i].attributes.status == '14'){ %>

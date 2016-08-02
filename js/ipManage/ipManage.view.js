@@ -109,7 +109,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 "ipStatus": null, //状态
                 "deviceName": null, //设备名称
                 "nodeName": null,  //节点名称
-                "dispDomain": null,  //调度组名称
+                //"dispDomain": null,  //调度组名称
                 "page" : 1,
                 "count": 10,
             };
@@ -252,7 +252,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 this.anotherQuery.ip = this.$el.find("#input-ip").val();
                 this.anotherQuery.deviceName = this.$el.find("#input-device").val();
                 this.anotherQuery.nodeName = this.$el.find("#input-node").val();
-                this.anotherQuery.dispDomain = this.$el.find("#input-group").val();
+                //this.anotherQuery.dispDomain = this.$el.find("#input-group").val();
                 this.collection.queryIpInfoList(this.anotherQuery);
             }
         },

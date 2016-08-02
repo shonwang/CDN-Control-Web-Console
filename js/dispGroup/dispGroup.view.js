@@ -211,6 +211,14 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.collection.getChannelByDisp(this.queryArgs);
         },
 
+        enterKeyBindQuery: function(){
+            $(document).on('keydown', function(e){
+                if(e.keyCode == 13){
+                    this.onClickQueryButton();
+                }
+            }.bind(this));
+        },
+
         initPaginator: function(){
             this.$el.find(".total-items span").html(this.total)
             if (this.total <= this.queryArgs.count) return;
@@ -348,6 +356,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         render: function(target) {
             this.$el.appendTo(target);
+            this.enterKeyBindQuery();
         }
     });
 
@@ -684,16 +693,17 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.collection.on("get.InfoPrompt.success", $.proxy(this.onGetInfoPromptSuccess, this));
             this.collection.on("get.InfoPrompt.error", $.proxy(this.onGetError, this));
 
-            if (AUTH_OBJ.CreateGslbGroup) {
+            if (AUTH_OBJ.CreateGslbGroup)
                 this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
+            else
+                this.$el.find(".opt-ctn .create").remove();
+
+            if (AUTH_OBJ.QueryGslbGroup){
+                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
                 this.enterKeyBindQuery();
             } else {
-                this.$el.find(".opt-ctn .create").remove();
-            }
-            if (AUTH_OBJ.QueryGslbGroup)
-                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            else
                 this.$el.find(".opt-ctn .query").remove();
+            }
 
             this.queryArgs = {
                 "name"  : null,//调度组名称
@@ -764,7 +774,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.collection.addDispGroup(options)
                     this.addDispGroupPopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+                    if (AUTH_OBJ.QueryGslbGroup) this.enterKeyBindQuery();
+                }.bind(this)
             }
             this.addDispGroupPopup = new Modal(options);
             if (!AUTH_OBJ.ApplyCreateGslbGroup)
@@ -815,7 +827,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 type     : 1,
                 height: 500,
                 onOKCallback:  function(){},
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+                    if (AUTH_OBJ.QueryGslbGroup) this.enterKeyBindQuery();
+                }.bind(this)
             }
             this.dgDetailPopup = new Modal(options);
         },
@@ -880,6 +894,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     if (!options) return
                     this.collection.copyDispGroup(options);
                     this.copyDispGroupPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){
+                    if (AUTH_OBJ.QueryGslbGroup) this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.copyDispGroupPopup = new Modal(options);
@@ -919,6 +936,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                         this.collection.getInfoPrompt(prompt);
                     }.bind(this), 500)
                     this.editDispGroupPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){
+                    if (AUTH_OBJ.QueryGslbGroup) this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.editDispGroupPopup = new Modal(options);
@@ -1013,7 +1033,10 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.collection.addDispGroupChannel(options)
                     this.channelInfoPopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+                    $(document).off('keydown');
+                    if (AUTH_OBJ.QueryGslbGroup) this.enterKeyBindQuery();
+                }.bind(this)
             }
             this.channelInfoPopup = new Modal(options);
             this.channelInfoPopup.$el.find(".btn-primary").html('<span class="glyphicon glyphicon-link"></span>关联');
@@ -1144,7 +1167,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         update: function(){
             this.$el.show();
-            if (AUTH_OBJ.CreateGslbGroup) this.enterKeyBindQuery();
+            if (AUTH_OBJ.QueryGslbGroup) this.enterKeyBindQuery();
         },
 
         render: function(target) {

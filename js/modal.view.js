@@ -27,7 +27,7 @@ define("modal.view", ['require','exports', 'template', 'utility'],
             this.$el = $(_.template(template['tpl/modal.html'])());
             this.modalId = Utility.randomStr(24);
             this.$el.attr("id", this.modalId);
-
+            $(document).off('keydown');
             this.$el.find(".modal-title").html(this.options.title);
             if (typeof this.options.body === "string"){
                 this.$el.find(".modal-body").html(this.options.body);
@@ -54,7 +54,6 @@ define("modal.view", ['require','exports', 'template', 'utility'],
                 show: this.options.show
             }
             this.$el.modal(originOption);
-            $(document).off('keydown');
         },
 
         initSize: function(){

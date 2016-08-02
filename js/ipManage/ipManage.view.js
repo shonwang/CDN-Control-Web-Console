@@ -7,7 +7,32 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
 
         initialize: function(options) {
             this.collection = options.collection;
-            this.$el = $(_.template(template['tpl/ipManage/ipManage.queryDetail.html'])());
+            this.model = options.model;
+            this.$el = $(_.template(template['tpl/ipManage/ipManage.disp.html'])());
+            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+
+            this.collection.off("get.dispByIp.success");
+            this.collection.off("get.dispByIp.error");
+            this.collection.on("get.dispByIp.success", $.proxy(this.initTable, this));
+            this.collection.on("get.dispByIp.error", $.proxy(this.onGetError, this));
+            this.collection.getDispByIp({ip: this.model.get("ip")})
+        },
+
+        initTable: function(res){
+            this.table = $(_.template(template['tpl/ipManage/ipManage.disp.table.html'])({data: res}));
+            if (res.length !== 0)
+                this.$el.find(".table-ctn").html(this.table[0]);
+            else
+                this.$el.find(".table-ctn").html(_.template(template['tpl/empty-2.html'])({
+                        data:{message: "赵宪亮在胸前仔细摸索了一番，但是却没有找到数据！"}
+                    }));
+        },
+
+        onGetError: function(error){
+            if (error&&error.message)
+                alert(error.message)
+            else
+                alert("网络阻塞，请刷新重试！")
         },
 
         render: function(target) {
@@ -172,7 +197,8 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             var model = this.collection.get(id);
 
             var dispInfoView = new DispInfoView({
-                collection: this.collection
+                collection: this.collection,
+                model: model
             });
             var options = {
                 title: model.get("ip") + "调度信息详情",

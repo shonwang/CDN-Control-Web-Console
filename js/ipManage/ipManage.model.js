@@ -178,6 +178,20 @@ define("ipManage.model", ['require','exports', 'utility'], function(require, exp
             $.ajax(defaultParas);
         },
 
+        getDispByIp: function(args){
+            var url = BASE_URL + "/rs/ip/info/getIpDisgroupMes",
+            successCallback = function(res){
+                if (res){
+                    this.trigger("get.dispByIp.success", res);
+                } else {
+                    this.trigger("get.dispByIp.error", res); 
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.dispByIp.error", response); 
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        }
     });
 
     return IPManageCollection;

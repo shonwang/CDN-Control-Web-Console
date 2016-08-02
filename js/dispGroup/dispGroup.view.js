@@ -882,6 +882,8 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 }.bind(this)
             }
             this.copyDispGroupPopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyCopyGslbGroup)
+                 this.copyDispGroupPopup.$el.find(".btn-primary").remove();
         },
 
         onClickItemEdit: function(event){

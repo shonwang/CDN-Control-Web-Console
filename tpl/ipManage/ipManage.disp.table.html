@@ -9,7 +9,7 @@
     <% for(var i = 0; i < data.length; i++) { %>
         <tr>
           <td><%=data[i].disgroupName%></td>
-          <td style="white-space: normal;word-break: normal;"><%=data[i].regionNameList%></td>
+          <td style="white-space: normal;word-break: normal;"><%=data[i].regionNameList || "IP所在节点当前未提供服务"%></td>
         </tr>
     <% } %>  
 </tbody>

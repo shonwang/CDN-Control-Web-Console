@@ -172,10 +172,10 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.$el = $(_.template(template['tpl/dispGroup/dispGroup.channel.html'])({}));
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
-            this.collection.off("get.channel.success");
-            this.collection.off("get.channel.error");
-            this.collection.on("get.channel.success", $.proxy(this.onGetChannelSuccess, this));
-            this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+            this.collection.off("get.channelByDisp.success");
+            this.collection.off("get.channelByDisp.error");
+            this.collection.on("get.channelByDisp.success", $.proxy(this.onGetChannelSuccess, this));
+            this.collection.on("get.channelByDisp.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
 
@@ -184,16 +184,14 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.backUpChannelList = [];
 
             this.queryArgs = {
-                "domain"           : null,
-                "accelerateDomain" : null,
-                "businessType"     : null,
-                "clientName"       : null,
-                "status"           : null,
-                "page"             : 1,
-                "count"            : 5
+                "disgId"      : this.model.get("id"),
+                "domain"      : null,
+                "clientName"  : null,
+                "page"        : 1,
+                "count"       : 5
              }
 
-            this.collection.queryChannel(this.queryArgs);
+            this.collection.getChannelByDisp(this.queryArgs);
         },
 
         onGetError: function(error){
@@ -208,8 +206,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.queryArgs.page = 1;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
-            //this.queryArgs.chname = this.$el.find("#input-name").val() || null;
-            this.collection.queryChannel(this.queryArgs);
+            this.queryArgs.domain = this.$el.find("#input-domain").val() || null;
+            this.queryArgs.clientName = this.$el.find("#input-client").val() || null;
+            this.collection.getChannelByDisp(this.queryArgs);
         },
 
         initPaginator: function(){
@@ -227,7 +226,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                         var args = _.extend(this.queryArgs);
                         args.page = num;
                         args.count = this.queryArgs.count;
-                        this.collection.queryChannel(args);
+                        this.collection.getChannelByDisp(args);
                     }
                 }.bind(this)
             });
@@ -284,7 +283,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (this.channelList.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
-                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+                this.$el.find(".table-ctn").html(_.template(template['tpl/empty-2.html'])({
+                        data:{message: "赵宪亮在胸前仔细摸索了一番，但是却没有找到数据！"}
+                    }));
 
             this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
@@ -882,6 +883,8 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 }.bind(this)
             }
             this.copyDispGroupPopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyCopyGslbGroup)
+                 this.copyDispGroupPopup.$el.find(".btn-primary").remove();
         },
 
         onClickItemEdit: function(event){

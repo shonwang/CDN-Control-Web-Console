@@ -292,6 +292,17 @@ define("dispGroup.model", ['require','exports', 'utility'], function(require, ex
             $.ajax(defaultParas);
         },
 
+        getChannelByDisp: function(args){
+            var url = BASE_URL + "/rs/dispGroup/queryOrigin",
+            successCallback = function(res){
+                this.trigger("get.channelByDisp.success", res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.channelByDisp.error", response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
         copyDispGroupOld: function(args){
             var url = BASE_URL + "/rs/dispGroup/copy"
             var defaultParas = {

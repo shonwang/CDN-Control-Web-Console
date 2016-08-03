@@ -39,10 +39,12 @@
                                     <span class="label label-primary">
                                         <%=data[i].get("listFormated")[k].get("dispConfIpInfo.currNum")%>
                                     </span>
-                                    <% } %>  
+                                    <% } %>
+                                    <% if (data[i].get("listFormated")[k].get("dispConfIpInfo.pauseNum") > 0) { %>  
                                     <span class="label label-danger">
                                         <%=data[i].get("listFormated")[k].get("dispConfIpInfo.pauseNum")%>
                                     </span>
+                                    <% } %>
                                     <% if (!isHistory) { %>
                                     <% if (permission.EditNodeList) { %>
                                     <a href="javascript:void(0)" class="edit" id='<%=data[i].get("listFormated")[k].get("id")%>' region-id='<%=data[i].get("id")%>' title="编辑节点">

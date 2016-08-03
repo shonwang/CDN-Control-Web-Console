@@ -875,7 +875,7 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                         this.$el.find(mainClass).addClass("fadeInLeft animated")
                         callback()
                     }.bind(this), 500)
-                }.bind(this),                
+                }.bind(this),
                 function(callback){
                     setTimeout(function(){
                         this.$el.find(otherClass).removeClass("fadeInLeft animated");

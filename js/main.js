@@ -4,6 +4,8 @@ if (window.DEBUG === 1)
     window.BASE_URL = "http://develop.gateway.center.cdn.ksyun.com";
 else if (window.DEBUG === 1.1)
     window.BASE_URL = "http://local.center.ksyun.com";
+    //window.BASE_URL = "http://192.168.158.85:9098";  //翟磊
+    // window.BASE_URL = "http://192.168.118.134:9098";   //王卫
 else if (window.DEBUG === 1.2)
     window.BASE_URL = "http://10.4.2.38:9098";
 else if (window.DEBUG === 2)
@@ -78,7 +80,13 @@ requirejs.config({
         "domainStatistics.model" : 'domainStatistics/domainStatistics.model',
 
         "domainManage.model" : "domainManage/domainManage.model",
-        "domainManage.view" : "domainManage/domainManage.view"
+        "domainManage.view" : "domainManage/domainManage.view",
+
+        "grayscaleSetup.model" : "grayscaleSetup/grayscaleSetup.model",
+        "grayscaleSetup.view" : "grayscaleSetup/grayscaleSetup.view",
+
+        "templateManage.model"   : 'templateManage/templateManage.model',
+        "templateManage.view"    : 'templateManage/templateManage.view'
     },
     urlArgs: new Date().valueOf()
 });

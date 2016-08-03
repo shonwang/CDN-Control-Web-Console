@@ -1,0 +1,23 @@
+<div class="form-group">
+    <div class="col-sm-5" style="margin-left:30px; max-height:">
+        <table class="table table-striped table-hover table-condensed" style="border:1px solid #ccc;">
+            <tbody>
+                <% for(var i = 0; i < data.length; i++) { %>
+                    <tr data-id="<%=data[i].id%>">
+                        <td>
+                            <a href="javascript:void(0);" style="font-size: 12px;" data-id="<%=data[i].id%>"><%=data[i].name%></a>
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-sm-1">
+        <!-- <span class="glyphicon glyphicon-log-in" aria-hidden="true" style="font-size: 14px;"></span> -->
+    </div>
+    <div class="col-sm-5">
+        <% for(var i = 0; i < data.length; i++) { %>
+            <textarea class="form-control" rows="6" id="<%=data[i].id%>" style="display: none;"></textarea>
+        <% } %>
+    </div>
+</div>

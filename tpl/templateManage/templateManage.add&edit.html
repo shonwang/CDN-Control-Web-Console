@@ -1,0 +1,108 @@
+<div class="create-edit-ctn">
+    <form class="form-horizontal">
+        <div class="form-group">
+            <div class="col-sm-9" style="margin-right:30px;"></div>
+            <div class="col-sm-2">
+                <button type="button" class="btn btn-success setDefaultTpl" style="padding:6px 14px;">设为默认模版</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-domain">
+                <label for="input-domain" class="col-sm-offset-1 col-sm-1 control-label control-label">加速域名</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" id="input-domain" value="<%=data.domain%>">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="dropdown-businessType" class="col-sm-offset-1 col-sm-1 control-label">业务类型</label>
+            <div class="dropdown col-sm-4 dropdown-businessType">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-businessType" data-toggle="dropdown">
+                    <span class="cur-value">加载中...</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu long-dropdown-menu"></ul>
+            </div>
+            <label for="dropdown-fileType" class="col-sm-2 control-label">文件类型</label>
+            <div class="dropdown col-sm-3 dropdown-fileType">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-fileType" data-toggle="dropdown">
+                    <span class="cur-value">加载中...</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu long-dropdown-menu"></ul>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="dropdown-operator" class="col-sm-offset-1 col-sm-1 control-label" style="text-align: left;">运营商</label>
+            <div class="dropdown col-sm-4 dropdown-operator">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-operator" data-toggle="dropdown">
+                    <span class="cur-value">加载中...</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu long-dropdown-menu"></ul>
+            </div>
+            <label for="dropdown-originType" class="col-sm-2 control-label">回源方式</label>
+            <div class="dropdown col-sm-3 dropdown-originType">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-originType" data-toggle="dropdown">
+                    <span class="cur-value">加载中...</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu long-dropdown-menu"></ul>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="dropdown-area" class="col-sm-offset-1 col-sm-1 control-label" style="text-align: left;">区域</label>
+            <div class="dropdown col-sm-4 dropdown-area">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-area" data-toggle="dropdown">
+                    <span class="cur-value">请选择</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu"></ul>
+            </div>
+            <label for="dropdown-layer" class="col-sm-2 control-label">设备层级</label>
+            <div class="dropdown col-sm-3 dropdown-layer">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-layer" data-toggle="dropdown">
+                    <span class="cur-value">加载中...</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu long-dropdown-menu"></ul>
+            </div>
+        </div>
+        <div class="form-group textarea-area" style="display: none;">
+            <div class="col-sm-2" style="margin-right:10px;"></div>
+            <div class="col-sm-4">
+                <textarea class="form-control" rows="3" id="textarea-area" readonly="readonly" style="background:#FFF;"></textarea>
+            </div>
+        </div>
+        <div class="form-group" style="margin-top:20px;">
+            <div class="col-sm-1"></div>
+            <div class="col-sm-2">
+                <button type="button" class="btn btn-default showDefaultTpl" style="padding:6px 14px;">显示默认模版</button>
+            </div>
+            <div class="col-sm-6" style="margin-right:30px;"></div>
+            <div class="col-sm-2">
+                <button type="button" class="btn btn-default addAttr" style="padding:6px 28px;">新增属性</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1"></div>
+            <div class="col-sm-10 attr-table"></div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1"></div>
+            <div class="col-sm-10">
+                <textarea class="form-control" rows="6" id="textarea-tplContent" style="background: #FFF;" value="<%=data.templateContent%>"><%=data.templateContent%></textarea>
+            </div>
+        </div>
+        <!-- <div class="form-group" style="margin-bottom:40px;">
+            <div class="col-sm-2" style="margin-right:-5px;"></div>
+            <div class="col-sm-8 text-center">
+                <button type="button" class="btn btn-default" style="padding:6px 28px;">检测模版</button>
+            </div>
+        </div> -->
+    </form>
+    <div class="text-center opt-ctn">
+      <a href="javascript:void(0)" class="btn btn-primary ok-again" style="margin-right:30px;padding:6px 20px;">保存</a>
+      <a href="javascript:void(0)" class="btn btn-default cancel" style="padding:6px 20px;">取消</a>
+    </div>
+</div>

@@ -15,6 +15,7 @@
         this.checkList = {};
         this.isSingle = options.isSingle || false;
         this.defaultChecked = options.defaultChecked || false;
+        this.scrollBarHeight=options.scrollBarHeight || null;
         this.init();
 
     };
@@ -190,7 +191,14 @@
             if (_data && _data.length > 0) {
                 for (var i = 0, _len = _data.length; i < _len; i++) {
                     if ((_data[i]["isDisplay"] && this.isDataVisible) || !this.isDataVisible){
-                        var _html = this.createCheckBox(_data[i]["name"]);
+                        var _checked = _data[i]["checked"];
+                        if(_checked){
+                            this.checkList[_data[i]["value"]] = {
+                                name:  _data[i]["name"],
+                                value: _data[i]["value"]
+                            };                            
+                        }
+                        var _html = this.createCheckBox(_data[i]["name"],_checked);
                         arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
                         if (this.defaultChecked){
                             this.checkList[_data[i]["value"]] = {
@@ -203,7 +211,20 @@
                 oUl.innerHTML = arr.join('');
                 this.bindClick();
             }
+            this.setScroll(_data);
         },
+
+        setScroll:function(bool){
+            //设置是否下拉有滚动条
+            var oUl=this.selectValueLayer;
+            var scrollBarHeight=this.scrollBarHeight;
+            if(scrollBarHeight && bool){
+                oUl.style.height=scrollBarHeight+"px";
+                oUl.style.overflowY = 'scroll';
+                oUl.style.borderBottom="1px solid #ececec";
+            }		
+        },
+
         checkList: {
 
         },
@@ -363,14 +384,22 @@
             }
         },
 
-        createCheckBox: function(tit) {
+        createCheckBox: function(tit,checked) {
+            var _checked=checked || false;
             var _class = this.isSingle ? "isSingle" : "";
             var html = [];
             html.push('<label class="select-checkboxcon ' + _class + '">');
-            if (this.defaultChecked)
+            if (this.defaultChecked){
                 html.push('<input class="select-checkbox" type="checkbox" checked="true"/>');
-            else
-                html.push('<input class="select-checkbox" type="checkbox" />');
+            }
+            else{
+                if(_checked){
+                    html.push('<input class="select-checkbox" type="checkbox" checked="'+_checked+'"/>');
+                }
+                else{
+                     html.push('<input class="select-checkbox" type="checkbox"/>');
+                }
+            }
             html.push('<div class="select-checkbox-value">' + tit + '</div>');
             html.push('</label>');
             return html.join('');

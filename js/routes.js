@@ -20,7 +20,9 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             "domainStatistics"    : "domainStatistics",
             "domainManage"        : "domainManage",
             "clientStatistics"    : "clientStatistics",
-            "businessManage"      : "businessManage"
+            "businessManage"      : "businessManage",
+            "grayscaleSetup"     : "grayscaleSetup",
+            "templateManage"      : "templateManage"
         },
 
         initialize: function(){
@@ -90,6 +92,12 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                   this.customMaintenanceView.remove();
                   this.customMaintenanceView = null;
                   break;
+                case 'grayscaleSetup':
+                    this.grayscaleSetupView.hide();
+                    break;
+                case 'templateManage':
+                    this.templateManageView.hide();
+                    break;
                 default:
             }
             if (callback)
@@ -479,6 +487,47 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                     this.domainManageView.render($('.ksc-content'));
                 } else {
                     this.domainManageView.update();
+                }
+            }.bind(this));
+        },
+
+        grayscaleSetup: function(){
+            this.navbarView.initLogin($.proxy(this.grayscaleSetupCallback, this))
+        },
+
+        grayscaleSetupCallback: function(){
+
+            require(['grayscaleSetup.view', 'grayscaleSetup.model'], function(GrayscaleSetupView, GrayscaleSetupModel){
+                this.curPage = 'grayscaleSetup';
+                this.navbarView.select(this.curPage);
+                if (!this.grayscaleSetupModel)
+                    this.grayscaleSetupModel = new GrayscaleSetupModel();
+                if (!this.grayscaleSetupView){
+                    var options = {collection: this.grayscaleSetupModel};
+                    this.grayscaleSetupView = new GrayscaleSetupView(options);
+                    this.grayscaleSetupView.render($('.ksc-content'));
+                } else {
+                    this.grayscaleSetupView.update();
+                }
+            }.bind(this));
+        },
+
+        templateManage: function(){
+            this.navbarView.initLogin($.proxy(this.templateManageCallback, this))
+        },
+
+        templateManageCallback: function(){
+            require(['templateManage.view', 'templateManage.model'], function(TemplateManageView, TemplateManageModel){
+                this.curPage = 'templateManage';
+                this.navbarView.select(this.curPage);
+                if (!this.templateManageModel)
+                    this.templateManageModel = new TemplateManageModel();
+                if (!this.templateManageView){
+                    var options = {collection: this.templateManageModel};
+                    this.templateManageView = new TemplateManageView(options);
+                    this.templateManageView.render($('.ksc-content'));
+                } else {
+                    this.templateManageView.update();
                 }
             }.bind(this));
         }

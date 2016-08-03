@@ -985,3 +985,13 @@ td .table {
   box-shadow: none;
   opacity: .65;
 }
+.grayscaleSetup-node-list .select-container{
+    left: 178px;
+    top: 108px;
+    width: 300px;
+}
+
+.templateManage .select-container{
+    left:632px;
+    top:90px;
+}

@@ -365,7 +365,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             }
 
             this.collection.getAllContinent();
-            this.collection.getAllCity();
+            //this.collection.getAllCity();
         },
 
         onGetAllContinent: function(list){

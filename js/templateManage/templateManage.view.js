@@ -168,6 +168,14 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                 }else{
                     this.$el.find(".attr-table").html(_.template(template['tpl/empty-2.html'])({data:{message:"暂无属性数据"}}));
                 }
+
+                if(this.args.fileType == 3){ //lua 置灰运营商和区域
+                    this.$el.find('#dropdown-operator').attr("disabled","disabled").find('.cur-value').html('无');
+                    this.$el.find('#dropdown-area').attr("disabled","disabled");
+                }else{
+                    this.$el.find('#dropdown-operator').removeAttr('disabled');
+                    this.$el.find('#dropdown-area').removeAttr('disabled');
+                }
             }
             this.initAreaDropdown();
             this.initTplDropdown();
@@ -250,13 +258,14 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             Utility.initDropMenu(this.$el.find(".dropdown-fileType"), this.fileTypeList, function(value){
                 this.args.fileType = value;
                 if(value == 3){ //lua.conf
-                    this.$el.find('#dropdown-operator').attr("disabled","disabled");
+                    this.$el.find('#dropdown-operator').attr("disabled","disabled").find('.cur-value').html('无');
                     this.$el.find('#dropdown-area').attr("disabled","disabled");
                     this.$el.find('#textarea-area').hide();
                 }else{
-                    this.$el.find('#dropdown-operator').removeAttr('disabled');
+                    this.$el.find('#dropdown-operator').removeAttr('disabled').find('.cur-value').html(this.operatorList[0].name);
                     this.$el.find('#dropdown-area').removeAttr('disabled');
                     this.$el.find('#textarea-area').show();
+                    this.args.operator = this.operatorList[0].id;
                 }
             }.bind(this));
             if(this.isEdit){
@@ -868,7 +877,8 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                 title:"查看",
                 body : showTplView,
                 backdrop : 'static',
-                type     : 1,
+                width: 800,
+                type: 1,
                 onOKCallback:  function(){}.bind(this),
                 onHiddenCallback: function(){}
             }

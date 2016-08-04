@@ -79,7 +79,6 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
 
         initialize: function(options) {
             this.collection = options.collection;
-            console.log(this.collection.models);
 
             this.$el = $(_.template(template['tpl/templateManage/templateManage.view.html'])({data:this.collection.models}));
 

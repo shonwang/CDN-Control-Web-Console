@@ -526,7 +526,7 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                 }
             }
             this.args.templateContent = $.trim(this.$el.find("#textarea-tplContent").val());
-
+            this.args.propertyAndValueList = [];
             var trLen = this.$el.find(".attr-table tbody").children().length;
             if(trLen > 0){
                 for(var i = 0; i< trLen; i++){

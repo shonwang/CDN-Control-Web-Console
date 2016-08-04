@@ -72,6 +72,31 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
         }
     });
 
+    var ShowTplView = Backbone.View.extend({
+        events: {
+            //"click .search-btn":"onClickSearch"
+        },
+
+        initialize: function(options) {
+            this.collection = options.collection;
+            console.log(this.collection.models);
+
+            this.$el = $(_.template(template['tpl/templateManage/templateManage.view.html'])({data:this.collection.models}));
+
+        },
+
+        onGetError: function(error){
+            if (error&&error.message)
+                alert(error.message)
+            else
+                alert("网络阻塞，请刷新重试！")
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target);
+        }
+    });
+
     var AddOrEditView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
@@ -487,10 +512,10 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
         getArgs: function(){
             this.args.domain = $.trim(this.$el.find("#input-domain").val());
             if(this.args.domain.length > 0){
-                if (!/\.com$|\.net$|\.org$|\.edu$|\.gov$|\.cn$/gi.test(this.queryArgs.domain)){
+                if (!/\.com$|\.net$|\.org$|\.edu$|\.gov$|\.cn$/gi.test(this.args.domain)){
                     alert('加速域名需以com、org、net、edu、gov、cn结尾');
                     return;
-                }else if(this.queryArgs.domain.length > 100){
+                }else if(this.args.domain.length > 100){
                     alert("加速域名最大可输入100个字符");
                     return;
                 }
@@ -821,8 +846,7 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             if (this.showTemplatePopup) $("#" + this.showTemplatePopup.modalId).remove();
 
             var showTplView = new ShowTplView({
-                collection: this.collection,
-                model: this.model
+                collection: this.collection
             });
             var options = {
                 title:"查看",

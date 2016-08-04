@@ -164,6 +164,8 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                 if(this.args.propertyAndValueList.length > 0){
                     this.$el.find(".showDefaultTpl").attr('disabled', 'disabled');
                     this.renderAttrTable(this.args.propertyAndValueList);
+                }else{
+                    this.$el.find(".attr-table").html(_.template(template['tpl/empty-2.html'])({data:{message:"暂无属性数据"}}));
                 }
             }
             this.initAreaDropdown();
@@ -357,29 +359,32 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
 
         onGetDefaultTplDataSuccess: function(res){
             this.$el.find(".showDefaultTpl").attr('disabled', 'disabled').html("已显示默认模版");
-
             this.renderAttrTable(res.propertyAndValueList);
             this.$el.find("#textarea-tplContent").val(res.templateContent);
         },
 
         renderAttrTable: function(data){
-            var tableLen = this.$el.find(".attr-table").children().length;
-            if(tableLen){
-                this.tr = $(_.template(template['tpl/templateManage/templateManage.add&edit.table.tr.html'])({data:data}));
-                this.$el.find(".attr-table tbody").append(this.tr[0].outerHTML);
-            }else{
-                if($.isArray(data)){
-                    data = data;
+            if(($.isArray(data) && data.length > 0) || (!$.isArray(data) && data)){
+                var tableLen = this.$el.find(".attr-table").children().length;
+                if(tableLen){
+                    this.tr = $(_.template(template['tpl/templateManage/templateManage.add&edit.table.tr.html'])({data:data}));
+                    this.$el.find(".attr-table tbody").append(this.tr[0].outerHTML);
                 }else{
-                    data = [data];
+                    if($.isArray(data)){
+                        data = data;
+                    }else{
+                        data = [data];
+                    }
+                    this.table = $(_.template(template['tpl/templateManage/templateManage.add&edit.table.html'])({data:data}));
+                    this.$el.find(".attr-table").html(this.table[0]);
                 }
-                this.table = $(_.template(template['tpl/templateManage/templateManage.add&edit.table.html'])({data:data}));
-                this.$el.find(".attr-table").html(this.table[0]);
+                this.$el.find(".attr-table .delete").off("click");
+                this.$el.find(".attr-table .delete").on("click", $.proxy(this.onClickDelete, this));
+                this.$el.find(".attr-table .edit").off("click");
+                this.$el.find(".attr-table .edit").on("click", $.proxy(this.onClickEdit, this));
+            }else{
+                this.$el.find(".attr-table").html(_.template(template['tpl/empty-2.html'])({data:{message:"暂无属性数据"}}));
             }
-            this.$el.find(".attr-table .delete").off("click");
-            this.$el.find(".attr-table .delete").on("click", $.proxy(this.onClickDelete, this));
-            this.$el.find(".attr-table .edit").off("click");
-            this.$el.find(".attr-table .edit").on("click", $.proxy(this.onClickEdit, this));
         },
 
         onClickDelete: function(e){

@@ -277,7 +277,7 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             }.bind(this));
 
             if(this.isEdit){
-                if(this.data.area.split(",").length > 0){
+                if(this.data.area && this.data.area.split(",").length > 0){
                     _.each(this.data.area.split(","),function(item,key,list){
                         _.each(areaArray,function(obj,k,l){
                             if(item == obj.value){

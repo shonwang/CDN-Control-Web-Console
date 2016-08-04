@@ -79,8 +79,9 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
 
         initialize: function(options) {
             this.collection = options.collection;
+            this.model = options.model;
 
-            this.$el = $(_.template(template['tpl/templateManage/templateManage.view.html'])({data:this.collection.models}));
+            this.$el = $(_.template(template['tpl/templateManage/templateManage.view.html'])({data:this.model}));
 
         },
 
@@ -852,11 +853,16 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.collection.deleteTpl({id:id,fileType:fileType});
         },
 
-        onClickItemView: function(){
+        onClickItemView: function(e){
+            var eTarget = e.srcElement || e.target,id;
+            id = $(eTarget).attr('id');
+            var model = this.collection.get(id);
+
             if (this.showTemplatePopup) $("#" + this.showTemplatePopup.modalId).remove();
 
             var showTplView = new ShowTplView({
-                collection: this.collection
+                collection: this.collection,
+                model:model
             });
             var options = {
                 title:"查看",

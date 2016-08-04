@@ -246,9 +246,15 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             //文件类型
             Utility.initDropMenu(this.$el.find(".dropdown-fileType"), this.fileTypeList, function(value){
                 this.args.fileType = value;
-                // if(this.$el.find('.setDefaultTpl').hasClass('disabled')){
-                //     this.$el.find('.setDefaultTpl').removeClass('disabled').html(设为默认模版);
-                // }
+                if(value == 3){ //lua.conf
+                    this.$el.find('#dropdown-operator').attr("disabled","disabled");
+                    this.$el.find('#dropdown-area').attr("disabled","disabled");
+                    this.$el.find('#textarea-area').hide();
+                }else{
+                    this.$el.find('#dropdown-operator').removeAttr('disabled');
+                    this.$el.find('#dropdown-area').removeAttr('disabled');
+                    this.$el.find('#textarea-area').show();
+                }
             }.bind(this));
             if(this.isEdit){
                 $.each(this.fileTypeList,function(k,v){

@@ -349,9 +349,15 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     return object.value === this.model.attributes.operatorId
                 }.bind(this));
 
-                this.$el.find(".dropdown-operator .cur-value").html(defaultValue.name)
-                this.operatorId = defaultValue.value;
-                this.operatorName = defaultValue.name;
+                if (defaultValue){
+                    this.$el.find(".dropdown-operator .cur-value").html(defaultValue.name)
+                    this.operatorId = defaultValue.value;
+                    this.operatorName = defaultValue.name;
+                } else {
+                    this.$el.find(".dropdown-operator .cur-value").html(nameList[0].name);
+                    this.operatorId = nameList[0].value;
+                    this.operatorName = nameList[0].name;
+                }
             } else {
                 this.$el.find(".dropdown-operator .cur-value").html(nameList[0].name);
                 this.operatorId = nameList[0].value;
@@ -493,14 +499,14 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     this.collection.getOperationByCountry({id: data.value})
                 }.bind(this)
             });
-            if (this.isEdit){
-                this.$el.find(".dropdown-country .cur-value").html(this.model.get("countryName"));
-                this.collection.getOperationByCountry({id: this.model.get("countryId")})
-                //this.$el.find("#dropdown-country").prop("disabled", true)
-            } else {
+            // if (this.isEdit){
+            //     this.$el.find(".dropdown-country .cur-value").html(this.model.get("countryName"));
+            //     this.collection.getOperationByCountry({id: this.model.get("countryId")})
+            //     //this.$el.find("#dropdown-country").prop("disabled", true)
+            // } else {
                 this.$el.find('#dropdown-country .cur-value').html(nameList[0].name);
                 this.collection.getOperationByCountry({id: nameList[0].value});
-            }
+            // }
         },
 
         onGetAllCity: function(res){

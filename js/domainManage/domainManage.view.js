@@ -62,7 +62,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     wildcard:1,
                     region:"",
                     hostType:1,
-                    protocol:1,
+                    protocol:null,
                     customHostHeader:"",
                     wsUsed : 0,
                     ipVisitContent:"",
@@ -79,6 +79,12 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
 
             this.$el.find(".addCacheRule").on("click", $.proxy(this.onClickAddCacheRule,this));
             this.initDropMenu();
+            if(this.args.type == 1){//下载时，协议为空且置灰
+                this.$el.find('#dropdown-protocol').attr('disabled','disabled');
+                this.args.protocol = null;
+            }else{
+                this.$el.find('#dropdown-protocol').removeAttr('disabled');
+            }
 
         },
 
@@ -107,6 +113,13 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-type"), typeList, function(value){
                 this.args.type = parseInt($.trim(value));
+                if(this.args.type == 1){ //下载时，协议为空且置灰
+                    this.$el.find('#dropdown-protocol').attr('disabled','disabled');
+                    this.args.protocol = null;
+                }else{
+                    this.$el.find('#dropdown-protocol').removeAttr('disabled');
+                    this.args.protocol = 1;
+                }
             }.bind(this));
             if(this.isEdit){
                 $.each(typeList,function(k,v){
@@ -465,10 +478,10 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             this.collection.on("sendAllOrigin.domain.success", $.proxy(this.onSendAllOriginSuccess, this));
             this.collection.on("sendAllOrigin.domain.error", $.proxy(this.onGetError,this));
 
-            if(AUTH_OBJ.DomainManagerAdd) 
-                this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
-            else
-                this.$el.find(".opt-ctn .create").remove();
+            // if(AUTH_OBJ.DomainManagerAdd) 
+                 this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
+            // else
+            //     this.$el.find(".opt-ctn .create").remove();
 
             if(AUTH_OBJ.DomainManagerSendAll)
                 this.$el.find(".opt-ctn .sendAll").on("click", $.proxy(this.onClickSendAll, this));
@@ -510,10 +523,10 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
         onGetDomainListSuccess: function(){
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
-            if(AUTH_OBJ.DomainManagerUpdate) 
-                this.$el.find(".table-ctn .edit").on("click", $.proxy(this.onClickEdit, this));
-            else
-                this.$el.find(".table-ctn .edit").remove();
+            // if(AUTH_OBJ.DomainManagerUpdate) 
+                 this.$el.find(".table-ctn .edit").on("click", $.proxy(this.onClickEdit, this));
+            // else
+            //     this.$el.find(".table-ctn .edit").remove();
 
             if(AUTH_OBJ.DomainManagerDelete)
                 this.$el.find(".table-ctn .delete").on("click", $.proxy(this.onClickDelete, this));

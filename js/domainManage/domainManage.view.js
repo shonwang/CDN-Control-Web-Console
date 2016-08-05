@@ -81,6 +81,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             this.initDropMenu();
             if(this.args.type == 1){//下载时，协议为空且置灰
                 this.$el.find('#dropdown-protocol').attr('disabled','disabled');
+                this.$el.find("#dropdown-protocol .cur-value").html('无');
                 this.args.protocol = null;
             }else{
                 this.$el.find('#dropdown-protocol').removeAttr('disabled');
@@ -93,7 +94,6 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 this.table = $(_.template(template['tpl/domainManage/domainManage.add&edit.table.html'])({data:res}));
                 this.$el.find(".table-ctn").html(this.table[0]);
             }
-            //this.args.policys = res;
             this.$el.find(".table-ctn .delete").off("click");
             this.$el.find(".table-ctn .delete").on("click", $.proxy(this.onClickDelete, this));
         },
@@ -115,9 +115,11 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 this.args.type = parseInt($.trim(value));
                 if(this.args.type == 1){ //下载时，协议为空且置灰
                     this.$el.find('#dropdown-protocol').attr('disabled','disabled');
+                    this.$el.find("#dropdown-protocol .cur-value").html('无');
                     this.args.protocol = null;
                 }else{
                     this.$el.find('#dropdown-protocol').removeAttr('disabled');
+                    this.$el.find("#dropdown-protocol .cur-value").html('http+flv');
                     this.args.protocol = 1;
                 }
             }.bind(this));
@@ -277,6 +279,10 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                         this.$el.find("#dropdown-protocol .cur-value").html(v.name);
                     }
                 }.bind(this));
+            }else{
+                if(this.args.type != 1){
+                    this.$el.find("#dropdown-protocol .cur-value").html(protocolList[0].name);
+                }
             }
         },
 
@@ -478,10 +484,10 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             this.collection.on("sendAllOrigin.domain.success", $.proxy(this.onSendAllOriginSuccess, this));
             this.collection.on("sendAllOrigin.domain.error", $.proxy(this.onGetError,this));
 
-            // if(AUTH_OBJ.DomainManagerAdd) 
-                 this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
-            // else
-            //     this.$el.find(".opt-ctn .create").remove();
+            if(AUTH_OBJ.DomainManagerAdd) 
+                this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
+            else
+                this.$el.find(".opt-ctn .create").remove();
 
             if(AUTH_OBJ.DomainManagerSendAll)
                 this.$el.find(".opt-ctn .sendAll").on("click", $.proxy(this.onClickSendAll, this));
@@ -523,10 +529,10 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
         onGetDomainListSuccess: function(){
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
-            // if(AUTH_OBJ.DomainManagerUpdate) 
-                 this.$el.find(".table-ctn .edit").on("click", $.proxy(this.onClickEdit, this));
-            // else
-            //     this.$el.find(".table-ctn .edit").remove();
+            if(AUTH_OBJ.DomainManagerUpdate) 
+                this.$el.find(".table-ctn .edit").on("click", $.proxy(this.onClickEdit, this));
+            else
+                this.$el.find(".table-ctn .edit").remove();
 
             if(AUTH_OBJ.DomainManagerDelete)
                 this.$el.find(".table-ctn .delete").on("click", $.proxy(this.onClickDelete, this));

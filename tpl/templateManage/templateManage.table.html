@@ -24,7 +24,9 @@
                 <td><%=data[i].attributes["operator"]%></td>
                 <td><%=data[i].attributes["originTypeName"]%></td>
                 <td><%=data[i].attributes["fileTypeName"]%></td>
-                <td><%=data[i].attributes["templateContent"]%></td>
+                <td>
+                    <div style="max-width:300px;overflow-x:hidden;white-space:nowrap;text-overflow:ellipsis; "><%=data[i].attributes["templateContent"]%></div>
+                </td>
                 <td>
                     <a href="javascript:void(0)" id="<%=data[i].attributes["id"]%>" data-fileType="<%=data[i].attributes["fileType"]%>" class="edit" title="编辑">
                         <span class="glyphicon glyphicon-edit"></span>

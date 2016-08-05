@@ -62,7 +62,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     wildcard:1,
                     region:"",
                     hostType:1,
-                    protocol:1,
+                    protocol:null,
                     customHostHeader:"",
                     wsUsed : 0,
                     ipVisitContent:"",
@@ -79,6 +79,13 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
 
             this.$el.find(".addCacheRule").on("click", $.proxy(this.onClickAddCacheRule,this));
             this.initDropMenu();
+            if(this.args.type == 1){//下载时，协议为空且置灰
+                this.$el.find('#dropdown-protocol').attr('disabled','disabled');
+                this.$el.find("#dropdown-protocol .cur-value").html('无');
+                this.args.protocol = null;
+            }else{
+                this.$el.find('#dropdown-protocol').removeAttr('disabled');
+            }
 
         },
 
@@ -87,7 +94,6 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 this.table = $(_.template(template['tpl/domainManage/domainManage.add&edit.table.html'])({data:res}));
                 this.$el.find(".table-ctn").html(this.table[0]);
             }
-            //this.args.policys = res;
             this.$el.find(".table-ctn .delete").off("click");
             this.$el.find(".table-ctn .delete").on("click", $.proxy(this.onClickDelete, this));
         },
@@ -107,6 +113,15 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-type"), typeList, function(value){
                 this.args.type = parseInt($.trim(value));
+                if(this.args.type == 1){ //下载时，协议为空且置灰
+                    this.$el.find('#dropdown-protocol').attr('disabled','disabled');
+                    this.$el.find("#dropdown-protocol .cur-value").html('无');
+                    this.args.protocol = null;
+                }else{
+                    this.$el.find('#dropdown-protocol').removeAttr('disabled');
+                    this.$el.find("#dropdown-protocol .cur-value").html('http+flv');
+                    this.args.protocol = 1;
+                }
             }.bind(this));
             if(this.isEdit){
                 $.each(typeList,function(k,v){
@@ -264,6 +279,10 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                         this.$el.find("#dropdown-protocol .cur-value").html(v.name);
                     }
                 }.bind(this));
+            }else{
+                if(this.args.type != 1){
+                    this.$el.find("#dropdown-protocol .cur-value").html(protocolList[0].name);
+                }
             }
         },
 

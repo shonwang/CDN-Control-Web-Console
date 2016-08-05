@@ -487,7 +487,8 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                 title:"新建",
                 body : addView,
                 backdrop : 'static',
-                type     : 2,
+                width : 800,
+                type : 2,
                 onOKCallback:  function(){
                     var options = addView.getArgs();
                     if (!options) return;
@@ -517,6 +518,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                 collection: this.collection,
                 model: model,
                 isEdit: true,
+                width : 800,
                 businessTypeList: this.businessTypeList
             });
 

@@ -34,7 +34,7 @@
                     <a href="javascript:void(0)" id="<%=data[i].attributes["id"]%>" class="delete" title="删除">
                       <span class="glyphicon glyphicon-trash"></span>
                     </a>
-                    <% if(data[i].attributes["type"] === 1 ){ %>
+                    <% if(data[i].attributes["type"] === 1 || (data[i].attributes["type"] === 2 && data[i].attributes["protocol"] && data[i].attributes["protocol"] === 2)){ %>
                         <a href="javascript:void(0)" id="<%=data[i].attributes["id"]%>" class="send" title="下发">
                             <span class="glyphicon glyphicon-send"></span>
                         </a>

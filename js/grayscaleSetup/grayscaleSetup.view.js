@@ -58,9 +58,9 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         initTree: function(res){
             //console.log(res);
             var zNodes = res;
-            var nodeId = this.model.get("nodeId");
 
             if(this.isEdit){
+                var nodeId = this.model.get("nodeId");
                 var setting = {
                     check: {
                         enable: true,

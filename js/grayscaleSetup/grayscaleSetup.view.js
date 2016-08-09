@@ -311,7 +311,6 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         initialize: function(options) {
             this.collection = options.collection;
             this.data = options.data;
-            console.log(this.data);
 
             this.$el = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.syncProgress.html'])({data:this.data.nodeGroup}));
         },
@@ -554,15 +553,19 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         onClickSync: function(e){
-            var eTarget = e.srcElement || e.target,domain;
+            var eTarget = e.srcElement || e.target;
             this.syncId = "";
+            this.syncDomain = "";
+            this.syncBisTypeId = "";
 
             if (eTarget.tagName == "SPAN") {
                 this.syncId = $(eTarget).parent().attr("id");
-                domain = $(eTarget).parent().attr("data-domain");
+                this.syncDomain = $(eTarget).parent().attr("data-domain");
+                this.syncBisTypeId = $(eTarget).parent().attr("data-bisTypeId");
             } else {
                 this.syncId = $(eTarget).attr("id");
-                domain = $(eTarget).attr("data-domain");
+                this.syncDomain = $(eTarget).attr("data-domain");
+                this.syncBisTypeId = $(eTarget).attr("data-bisTypeId");
             }
             var result = confirm("你确定要同步当前域名吗？")
             if (!result) return;
@@ -573,7 +576,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         onGetSyncSuccess: function(){
             //定时器
             this.timer = setInterval(function(){
-                this.collection.getSyncProgress({id:this.syncId});
+                this.collection.getSyncProgress({domain:this.syncDomain,bisTypeId:this.syncBisTypeId});
             }.bind(this),5000);
         },
 

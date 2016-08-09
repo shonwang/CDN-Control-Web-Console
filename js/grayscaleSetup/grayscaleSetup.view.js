@@ -283,7 +283,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             if($confDom.length > 0){
                 $confDom.each(function(i){
                     var json = {};
-                    json.confFileId = $.trim($confDom.eq(i).text());
+                    json.confFileId = $.trim($textareaDom.eq(i).attr('id'));
                     json.content = $.trim($textareaDom.eq(i).val());
                     this.args.confFile.push(json);
                 }.bind(this));

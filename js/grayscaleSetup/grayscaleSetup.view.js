@@ -11,6 +11,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
 
             if(this.isEdit){
                 this.args = {
+                    id : this.model.get("id"),
                     domain : this.model.get("domain"),
                     bisTypeId : this.model.get("bisTypeId"),
                     nodeId : [this.model.get("nodeId")],

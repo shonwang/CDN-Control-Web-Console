@@ -1,7 +1,8 @@
 define("grayscaleSetup.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-
+            var createTime = this.get("createTime");
+            if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
         }
     });
 

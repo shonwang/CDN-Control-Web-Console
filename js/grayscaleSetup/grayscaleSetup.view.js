@@ -312,6 +312,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             this.collection = options.collection;
             this.syncDomain = options.syncDomain;
             this.syncBisTypeId = options.syncBisTypeId;
+            this.parent = options.parent;
             this.collection.off("get.syncProgress.success");
             this.collection.off("get.syncProgress.error");
             this.collection.on("get.syncProgress.success",$.proxy(this.onSyncProgressSuccess,this));
@@ -326,7 +327,10 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         onSyncProgressSuccess:function(res){
             this.table = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.syncProgressTable.html'])({data:res}));
             this.$el.find(".table-ctn").html(this.table[0]);
-
+            if(res.status != 0){
+                this.parent.syncProgressPopup.$el.find(".modal-footer .btn-default").show();
+                this.parent.syncProgressPopup.$el.find(".modal-header .close").show();                
+            }
             if(res.status == 2 || res.percentage == '100'){
                 this.timer && clearTimeout(this.timer);
                 return false;
@@ -630,7 +634,8 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             var syncProgressView = new SyncProgressView({
                 collection: this.collection,
                 syncDomain:this.syncDomain,
-                syncBisTypeId:this.syncBisTypeId
+                syncBisTypeId:this.syncBisTypeId,
+                parent:this
             });
             var options = {
                 title:"域名："+this.syncDomain,
@@ -645,6 +650,9 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                 }.bind(this)
             }
             this.syncProgressPopup = new Modal(options);
+            this.syncProgressPopup.$el.find(".modal-footer .btn-default").hide();
+            this.syncProgressPopup.$el.find(".modal-header .close").hide();
+            
 
         },
 

@@ -310,10 +310,56 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
 
         initialize: function(options) {
             this.collection = options.collection;
-            this.data = options.data;
+            this.syncDomain = options.syncDomain;
+            this.syncBisTypeId = options.syncBisTypeId;
+            this.collection.off("get.syncProgress.success");
+            this.collection.off("get.syncProgress.error");
+            this.collection.on("get.syncProgress.success",$.proxy(this.onSyncProgressSuccess,this));
+            this.collection.on("get.syncProgress.error",$.proxy(this.onSyncProgressError,this));
+            this.collection.getSyncProgress({domain:this.syncDomain,bisTypeId:this.syncBisTypeId});
 
-            this.$el = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.syncProgress.html'])({data:this.data.nodeGroup}));
+            //this.$el = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.syncProgress.html'])({data:this.data.nodeGroup}));
+            this.$el = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.syncProgress.html'])());
+            this.$el.find(".table-ctn").html($(_.template(template['tpl/loading.html'])()));
         },
+
+        onSyncProgressSuccess:function(res){
+            this.table = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.syncProgressTable.html'])({data:res}));
+            this.$el.find(".table-ctn").html(this.table[0]);
+
+            if(res.status == 2 || res.percentage == '100'){
+                this.timer && clearTimeout(this.timer);
+                return false;
+            }
+            this.timer = setTimeout(function(){
+                this.collection.getSyncProgress({domain:this.syncDomain,bisTypeId:this.syncBisTypeId});
+            }.bind(this),5000);
+        },
+
+        onSyncProgressError:function(error){
+                /*
+            if (error && error.message){
+                alert(error.message)
+            }
+            else{
+                alert("网络阻塞，请刷新重试！")
+            }
+                */
+            var _message = error && error.message || "网络阻塞，请刷新重试！";
+            var data = {
+                status:2,
+                message:_message,
+                bError:true,
+                nodeGroup:[]
+            };
+            this.onSyncProgressSuccess(data);
+            this.timer && clearTimeout(this.timer);        
+        },
+
+        clearTimer:function(){
+            this.timer && clearTimeout(this.timer);
+        },
+
         render: function(target) {
             this.$el.appendTo(target);
         }
@@ -361,8 +407,8 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("delete.grayDomain.error", $.proxy(this.onGetError, this));
-            this.collection.on("get.syncProgress.success", $.proxy(this.onGetSyncProgressSuccess, this));
-            this.collection.on("get.syncProgress.error", $.proxy(this.onGetError, this));
+            //this.collection.on("get.syncProgress.success", $.proxy(this.onGetSyncProgressSuccess, this));
+            //this.collection.on("get.syncProgress.error", $.proxy(this.onGetError, this));
             this.collection.on("get.sync.success", $.proxy(this.onGetSyncSuccess, this));
             this.collection.on("get.sync.error", $.proxy(this.onGetError, this));
 
@@ -575,9 +621,31 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
 
         onGetSyncSuccess: function(){
             //定时器
-            this.timer = setInterval(function(){
-                this.collection.getSyncProgress({domain:this.syncDomain,bisTypeId:this.syncBisTypeId});
-            }.bind(this),5000);
+            //this.timer = setInterval(function(){
+            //  this.collection.getSyncProgress({domain:this.syncDomain,bisTypeId:this.syncBisTypeId});
+            //}.bind(this),5000);
+
+            if (this.syncProgressPopup) $("#" + this.syncProgressPopup.modalId).remove();
+
+            var syncProgressView = new SyncProgressView({
+                collection: this.collection,
+                syncDomain:this.syncDomain,
+                syncBisTypeId:this.syncBisTypeId
+            });
+            var options = {
+                title:"域名："+this.syncDomain,
+                body : syncProgressView,
+                backdrop : 'static',
+                type     : 1,
+                onOKCallback:  function(){
+                    syncProgressView.clearTimer();
+                }.bind(this),
+                onHiddenCallback: function(){
+                    syncProgressView.clearTimer();
+                }.bind(this)
+            }
+            this.syncProgressPopup = new Modal(options);
+
         },
 
         onGetSyncProgressSuccess: function(res){

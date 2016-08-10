@@ -643,6 +643,8 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
+            
+            this.timer && clearInterval(this.timer);
         },
 
         hide: function() {

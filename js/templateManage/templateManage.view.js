@@ -763,7 +763,7 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             if (this.queryArgs.domain == ""){
                 this.queryArgs.domain = null;
             }else{
-                if (!/\.com$|\.net$|\.org$|\.edu$|\.gov$|\.cn$/gi.test(this.queryArgs.domain)){
+                if (!/\.com$|\.net$|\.org$|\.edu$|\.gov$|\.cn$|^default$/gi.test(this.queryArgs.domain)){
                     alert('加速域名需以com、org、net、edu、gov、cn结尾');
                     return;
                 }else if(this.queryArgs.domain.length > 100){

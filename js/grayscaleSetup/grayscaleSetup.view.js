@@ -327,6 +327,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         onSyncProgressSuccess:function(res){
             this.table = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.syncProgressTable.html'])({data:res}));
             this.$el.find(".table-ctn").html(this.table[0]);
+            this.status = res.status || null;
             if(res.status != 0){
                 this.parent.syncProgressPopup.$el.find(".modal-footer .btn-default").show();
                 this.parent.syncProgressPopup.$el.find(".modal-header .close").show();                
@@ -338,6 +339,10 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             this.timer = setTimeout(function(){
                 this.collection.getSyncProgress({domain:this.syncDomain,bisTypeId:this.syncBisTypeId});
             }.bind(this),5000);
+        },
+
+        getStatus:function(){
+            return this.status;
         },
 
         onSyncProgressError:function(error){
@@ -647,6 +652,10 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                 }.bind(this),
                 onHiddenCallback: function(){
                     syncProgressView.clearTimer();
+                    var status = syncProgressView.getStatus();
+                    if(status == 1){
+                        this.onClickQueryButton();
+                    }
                 }.bind(this)
             }
             this.syncProgressPopup = new Modal(options);

@@ -986,7 +986,13 @@ td .table {
 }
 
 .templateManage .select-container{
+/*
     left:632px;
     top:90px;
+*/
+left:0;
+}
+.templateManage .dropdown-area {
+	position:relative;
 }
 .grayscaleSetup-tips {width:90%;margin:0px auto 10px;}

@@ -61,8 +61,8 @@
             <% if (permission.CurrentConfigurations) { %> 
             <li id="liveCurentSetup"><a href="index.html#/liveCurentSetup"><i class="glyphicon glyphicon-wrench"></i>当前配置</a></li>
             <% } %>
-            <li id="grayscaleSetup"><a href="index.html#/grayscaleSetup"><i class="glyphicon glyphicon-dashboard"></i>灰度配置</a></li>
-            <li id="templateManage"><a href="index.html#/templateManage"><i class="glyphicon glyphicon-align-justify"></i>模版管理</a></li>
+            <li id="grayscaleSetup" style="display:none"><a href="index.html#/grayscaleSetup"><i class="glyphicon glyphicon-dashboard"></i>灰度配置</a></li>
+            <li id="templateManage" style="display:none"><a href="index.html#/templateManage"><i class="glyphicon glyphicon-align-justify"></i>模版管理</a></li>
         </ul>
     </li>
     <% } %>
@@ -81,7 +81,7 @@
         </ul>
     </li>
     <% } %>
-    <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-refresh"></i>刷新自助</a>
+    <li style="display:none"><a href="javascript:void(0)"><i class="glyphicon glyphicon-refresh"></i>刷新自助</a>
         <ul class="submenu">
             <li id="refreshManual"><a href="index.html#/refreshManual"><i class="glyphicon glyphicon-hand-up"></i>手动刷新</a></li>
             <li id="customMaintenance"><a href="index.html#/customMaintenance"><i class="glyphicon glyphicon-th"></i>自助运维</a></li>

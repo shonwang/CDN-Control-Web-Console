@@ -387,7 +387,20 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 }
                 this.args.policys.push(json);
             }
+            if(!this.args.domain || this.args.domain == ""){
+                alert("请填写加速域名");
+                return false;
+            }
 
+            if(!this.args.userId || this.args.userId == ""){
+                alert("请填写用户ID");
+                return false;
+            }
+
+            if(!this.args.cname || this.args.cname == ""){
+                alert("请填写cname");
+                return false;
+            }
             return this.args;
         },
 

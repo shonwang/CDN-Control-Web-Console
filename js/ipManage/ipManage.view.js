@@ -204,7 +204,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 title: model.get("ip") + "调度信息详情",
                 body : dispInfoView,
                 backdrop : 'static',
-                type     : 2,
+                type     : 1,
                 height   : 500,
                 onOKCallback:  function(){},
                 onHiddenCallback: function(){}

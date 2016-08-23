@@ -869,9 +869,28 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             } else {
                 id = $(eventTarget).attr("id");
             }
-            var result = confirm("你确定要关闭节点吗？")
+            var result = confirm("你确定要暂停节点吗？")
             if (!result) return
-            this.collection.updateNodeStatus({ids:[parseInt(id)], status:3})
+            //this.collection.updateNodeStatus({ids:[parseInt(id)], status:3})
+            require(["dispSuggesttion.view", "dispSuggesttion.model"], $.proxy(this.onRequireDispSuggesttionModule, this))
+        },
+
+        onRequireDispSuggesttionModule: function(DispSuggesttionViews, DispSuggesttionModel){
+            if (!this.dispSuggesttionModel)
+                this.dispSuggesttionModel = new DispSuggesttionModel();
+            this.hide();
+            var options = {
+                collection: this.dispSuggesttionModel,
+                backCallback: $.proxy(this.backFromDispSuggesttion, this)
+            };
+            this.dispSuggesttionView = new DispSuggesttionViews.DispSuggesttionView(options);
+            this.dispSuggesttionView.render($('.ksc-content'));
+        },
+
+        backFromDispSuggesttion: function(){
+            this.dispSuggesttionView.remove();
+            this.dispSuggesttionView = null;
+            this.update();
         },
 
         onClickMultiStop : function(event){
@@ -927,9 +946,9 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         initNodeDropMenu: function(){
             var statusArray = [
                 {name: "全部", value: "All"},
-                {name: "运行中", value: 1},
+                {name: "运行", value: 1},
                 {name: "挂起", value: 2},
-                {name: "已关闭", value: 3}
+                {name: "暂停", value: 3}
             ],
             rootNode = this.$el.find(".dropdown-status");
             Utility.initDropMenu(rootNode, statusArray, function(value){
@@ -1012,6 +1031,10 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         hide: function(){
+            if (this.dispSuggesttionView){
+                this.dispSuggesttionView.remove();
+                this.dispSuggesttionView = null;
+            }
             this.$el.hide();
             $(document).off('keydown');
         },

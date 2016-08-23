@@ -287,199 +287,6 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             if (rootNode) this.rootNode = rootNode;
         }
     });
-
-    var SelectNodeView = Backbone.View.extend({
-        events: {
-            //"click .search-btn":"onClickSearch"
-        },
-
-        initialize: function(options) {
-            this.collection = options.collection;
-            this.model = options.model;
-            this.regionId = options.regionId;
-            this.groupId  = options.groupId;
-            this.isEdit   = options.isEdit
-            this.$el = $(_.template(template['tpl/dispConfig/dispConfig.selectNode.html'])({}));
-            this.$el.find(".node-list").html(_.template(template['tpl/loading.html'])({}));
-            this.nodeList = [];
-
-            this.collection.off("get.regionNode.success");
-            this.collection.off("get.regionNode.error");
-            this.collection.off("get.allDnsRecord.success");
-            this.collection.off("get.regionOtherNode.error");
-
-            this.collection.on("get.regionNode.success", $.proxy(this.onGetNodeListSuccess, this));
-            this.collection.on("get.regionNode.error", $.proxy(this.onGetError, this));
-            this.collection.on("get.regionOtherNode.success", $.proxy(this.onGetOtherNodeSuccess, this));
-            this.collection.on("get.regionOtherNode.error", $.proxy(this.onGetError, this));
-
-            if (AUTH_OBJ.ShowMoreNode)
-                this.$el.find(".more").on("click", $.proxy(this.onClickMoreButton, this));
-            else
-                this.$el.find(".more").remove();
-
-            this.args = {
-                regionId: this.regionId,
-                groupId : this.isEdit ? this.model.get("dispGroup.id") : this.groupId
-            }
-
-            this.collection.getRegionNodeList(this.args);
-
-            this.$el.find("#node-list-filter").on("keyup", $.proxy(this.onKeyupNodeListFilter, this));
-        },
-
-        onKeyupNodeListFilter: function() {
-            if (!this.nodeList || this.nodeList.length === 0) return;
-            var keyWord = this.$el.find("#node-list-filter").val();
-            _.each(this.nodeList, function(el, index, ls) {
-                if (keyWord === ""){
-                    el.isDisplay = true;
-                } else {
-                    var nodeString = "(" + el["node.minBandwidth"] + "/" + el["node.maxBandwidth"] + ")L" + el["cover.crossLevel"]
-                    if (el["node.chName"].indexOf(keyWord) > -1 || nodeString.indexOf(keyWord) > -1)
-                        el.isDisplay = true;
-                    else
-                        el.isDisplay = false;
-                }
-            });
-            this.initList();
-        },
-
-        onClickMoreButton: function(){
-            this.$el.find(".more").hide();
-            this.$el.find(".node-list").html(_.template(template['tpl/loading.html'])());
-            this.collection.getRegionOtherNodeList(this.args)
-        },
-
-        onGetOtherNodeSuccess: function(res){
-            _.each(res.rows, function(element, index, list){
-                var temp = {};
-                _.each(element, function(el, key, ls){
-                    _.each(el, function(el1, key1, ls1){
-                        temp[key + "." + key1] = el1
-                    }.bind(this))
-                }.bind(this))
-                temp.isDisplay = true;
-                temp.isChecked = false;
-                if (temp["node.id"] === this.model.get("node.id")) temp.isChecked = true;
-                this.nodeList.push(temp);
-            }.bind(this))
-
-            if (this.nodeList.length === 0){
-                this.$el.find("#node-list-filter").hide();
-                this.$el.find(".node-list").html(_.template(template['tpl/empty.html'])());
-                return;
-            } else {
-                this.$el.find("#node-list-filter").show()
-            }
-
-            this.initList();
-        },
-
-        onGetNodeListSuccess: function(res){
-            if (res.rows.length === 0){
-                this.$el.find("#node-list-filter").hide();
-                this.$el.find(".node-list").html(_.template(template['tpl/empty.html'])());
-                return;
-            } else {
-                this.$el.find("#node-list-filter").show();
-            }
-            _.each(res.rows, function(element, index, list){
-                var temp = {};
-                _.each(element, function(el, key, ls){
-                    _.each(el, function(el1, key1, ls1){
-                        temp[key + "." + key1] = el1
-                    }.bind(this))
-                }.bind(this))
-                temp.isDisplay = true;
-                temp.isChecked = false;
-                if (temp["node.id"] === this.model.get("node.id")) temp.isChecked = true;
-                this.nodeList.push(temp);
-            }.bind(this))
-
-            this.nodeList[this.nodeList.length - 1].line = true
-                
-            this.initList();
-        },
-
-        onItemCheckedUpdated: function(event){
-            var eventTarget = event.srcElement || event.target;
-            if (eventTarget.tagName !== "INPUT") return;
-            var id = $(eventTarget).attr("id");
-
-            var selectedObj = _.find(this.nodeList, function(object){
-                return object["node.id"] === parseInt(id)
-            }.bind(this));
-            if (this.isEdit){
-                var oldCheckObj = _.find(this.nodeList, function(object){
-                    return object["isChecked"] === true;
-                }.bind(this));
-                if (oldCheckObj) oldCheckObj.isChecked = false;
-            }
-            selectedObj.isChecked = eventTarget.checked;
-            this.curCheckedId = selectedObj["node.id"];
-        },
-
-        initList: function(){
-            if (this.isEdit){
-                this.list = $(_.template(template['tpl/dispConfig/dispConfig.selectNode.list.html'])({
-                    data: this.nodeList, 
-                    nodeId: this.curCheckedId || this.model.get("node.id")
-                }));
-            } else {
-                this.list = $(_.template(template['tpl/dispConfig/dispConfig.selectNode.checklist.html'])({
-                    data: this.nodeList, 
-                    nodeId: this.model.get("node.id")
-                }));
-            }
-            this.$el.find(".node-list").html(this.list[0]);
-            this.list.find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
-        },
-
-        getArgs: function(){
-            //var checkedNodes = this.$el.find(".node-list input:checked"), checkedNodeIds = [];
-            var checkedNodes = _.filter(this.nodeList, function(object) {
-                return object["isChecked"] === true
-            }), checkedNodeIds = [];
-            if (checkedNodes.length === 0) {
-                alert("至少选择一个再点确定！")
-                return false;
-            }
-            for (var i = 0; i < checkedNodes.length; i++){
-                //var tempId = parseInt($(checkedNodes[i]).attr("id"));
-                var tempId = checkedNodes[i]["node.id"];
-                checkedNodeIds.push(tempId)
-            }
-            var selectedNodes = [];
-            for (var k = 0; k < checkedNodeIds.length; k++){
-                var aSelectedNodeArray = _.filter(this.nodeList ,function(obj) {
-                    return obj["node.id"] === checkedNodeIds[k];
-                })
-                var aSelectedNode = aSelectedNodeArray[0];
-                var nodeChName       = aSelectedNode["node.chName"],
-                    nodeMinBandwidth = aSelectedNode["node.minBandwidth"],
-                    nodeMaxBandwidth = aSelectedNode["node.maxBandwidth"],
-                    crossLevel       = aSelectedNode["cover.crossLevel"];
-                var nodeString = nodeChName + "(" + nodeMinBandwidth + "/" + nodeMaxBandwidth + ")L" + crossLevel;
-                aSelectedNode.nodeString = nodeString;
-                aSelectedNode.id = aSelectedNode["node.id"];
-                selectedNodes.push(aSelectedNode)
-            }
-            return selectedNodes
-        },
-
-        onGetError: function(error){
-            this.$el.find("#node-list-filter").hide();
-            if (error&&error.message)
-                alert(error.message)
-            else
-                alert("网络阻塞，请刷新重试！")
-        },
-
-        render: function(target) {
-            this.$el.appendTo(target);
-        }
-    });
     
     var DispConfigView = Backbone.View.extend({
         events: {},
@@ -886,49 +693,50 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             var model = this.collection.get(id), list = model.get("listFormated");
 
             if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
+            require(["dispSuggesttion.view"], function(DispSuggesttionViews){
+                var selectNodeView = new DispSuggesttionViews.SelectNodeView({
+                    collection: this.collection, 
+                    model     : model,
+                    groupId   : this.queryArgs.groupId,
+                    regionId  : id,
+                    isEdit    : false
+                });
 
-            var selectNodeView = new SelectNodeView({
-                collection: this.collection, 
-                model     : model,
-                groupId   : this.queryArgs.groupId,
-                regionId  : id,
-                isEdit    : false
-            });
-
-            var options = {
-                title:"选择节点",
-                body : selectNodeView,
-                backdrop : 'static',
-                type     : 2,
-                height   : 500,
-                onOKCallback:  function(){
-                    var options = selectNodeView.getArgs();
-                    if (!options) return;
-                    for (var k = 0; k < options.length; k++){
-                        options[k]['dispGroup.id'] = this.queryArgs.groupId;
-                        for (var i = 0; i < list.length; i++){
-                            if (list[i]["id"] === parseInt(options[k]["node.id"])) options.splice(k, 1);
-                            if (options.length === 0) {
-                                alert("你选择的节点已经添加过了！")
-                                this.selectNodePopup.$el.modal("hide");
-                                return;
+                var options = {
+                    title:"选择节点",
+                    body : selectNodeView,
+                    backdrop : 'static',
+                    type     : 2,
+                    height   : 500,
+                    onOKCallback:  function(){
+                        var options = selectNodeView.getArgs();
+                        if (!options) return;
+                        for (var k = 0; k < options.length; k++){
+                            options[k]['dispGroup.id'] = this.queryArgs.groupId;
+                            for (var i = 0; i < list.length; i++){
+                                if (list[i]["id"] === parseInt(options[k]["node.id"])) options.splice(k, 1);
+                                if (options.length === 0) {
+                                    alert("你选择的节点已经添加过了！")
+                                    this.selectNodePopup.$el.modal("hide");
+                                    return;
+                                }
                             }
                         }
-                    }
-                    for(var m = 0; m < options.length; m++){
-                        model.get("listFormated").push(new this.collection.model(options[m]))
-                    }
-                    this.collection.trigger("get.dispConfig.success")
-                    this.selectNodePopup.$el.modal("hide");
-                }.bind(this),
-                onHiddenCallback: function(){
-                    if (AUTH_OBJ.QueryGslbConfig) this.enterKeyBindQuery();
-                }.bind(this)
-            }
-            this.selectNodePopup = new Modal(options);
+                        for(var m = 0; m < options.length; m++){
+                            model.get("listFormated").push(new this.collection.model(options[m]))
+                        }
+                        this.collection.trigger("get.dispConfig.success")
+                        this.selectNodePopup.$el.modal("hide");
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        if (AUTH_OBJ.QueryGslbConfig) this.enterKeyBindQuery();
+                    }.bind(this)
+                }
+                this.selectNodePopup = new Modal(options);
 
-            if (!AUTH_OBJ.ApplyAddNodeList)
-                this.selectNodePopup.$el.find(".btn-primary").remove();
+                if (!AUTH_OBJ.ApplyAddNodeList)
+                    this.selectNodePopup.$el.find(".btn-primary").remove();
+            }.bind(this))
         },
 
         onClickItemEdit: function(event){
@@ -949,46 +757,48 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
             if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
 
-            var selectNodeView = new SelectNodeView({
-                collection: this.collection, 
-                model     : selectedNode[0],
-                regionId  : regionId,
-                isEdit    : true
-            });
+            require(["dispSuggesttion.view"], function(DispSuggesttionViews){
+                var selectNodeView = new DispSuggesttionViews.SelectNodeView({
+                    collection: this.collection, 
+                    model     : selectedNode[0],
+                    regionId  : regionId,
+                    isEdit    : true
+                });
 
-            var options = {
-                title:"选择节点",
-                body : selectNodeView,
-                backdrop : 'static',
-                type     : 2,
-                onOKCallback:  function(){
-                    var options = selectNodeView.getArgs();
-                    if (!options) return;
-                    var result = confirm("你确定要修改节点吗？")
-                    if (!result) return;
-                    for (var i = 0; i < list.length; i++){
-                        if (list[i]["id"] === parseInt(options[0]["node.id"])){
-                            this.selectNodePopup.$el.modal("hide");
-                            return;
+                var options = {
+                    title:"选择节点",
+                    body : selectNodeView,
+                    backdrop : 'static',
+                    type     : 2,
+                    onOKCallback:  function(){
+                        var options = selectNodeView.getArgs();
+                        if (!options) return;
+                        var result = confirm("你确定要修改节点吗？")
+                        if (!result) return;
+                        for (var i = 0; i < list.length; i++){
+                            if (list[i]["id"] === parseInt(options[0]["node.id"])){
+                                this.selectNodePopup.$el.modal("hide");
+                                return;
+                            }
+                            if (list[i]["id"] === parseInt(id)){
+                                list[i].attributes =  _.extend(selectedNode[0].attributes, options[0]);
+                                list[i].set("isUpdated", true);
+                                break;
+                            }
                         }
-                        if (list[i]["id"] === parseInt(id)){
-                            list[i].attributes =  _.extend(selectedNode[0].attributes, options[0]);
-                            list[i].set("isUpdated", true);
-                            break;
-                        }
-                    }
-                    model.set("listFormated", list);
-                    this.collection.trigger("get.dispConfig.success")
-                    this.selectNodePopup.$el.modal("hide");
-                }.bind(this),
-                onHiddenCallback: function(){
-                    if (AUTH_OBJ.QueryGslbConfig) this.enterKeyBindQuery();
-                }.bind(this)
-            }
-            this.selectNodePopup = new Modal(options);
+                        model.set("listFormated", list);
+                        this.collection.trigger("get.dispConfig.success")
+                        this.selectNodePopup.$el.modal("hide");
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        if (AUTH_OBJ.QueryGslbConfig) this.enterKeyBindQuery();
+                    }.bind(this)
+                }
+                this.selectNodePopup = new Modal(options);
 
-            if (!AUTH_OBJ.ApplyAddNodeList)
-                this.selectNodePopup.$el.find(".btn-primary").remove();
+                if (!AUTH_OBJ.ApplyAddNodeList)
+                    this.selectNodePopup.$el.find(".btn-primary").remove();
+            }.bind(this))
         },
 
         onClickItemDelete: function(event){

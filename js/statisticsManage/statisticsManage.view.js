@@ -159,7 +159,7 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
         onGetAllCustomer: function(res){
             var nameList = [];
             _.each(res, function(el, index, list){
-                nameList.push({name: el.userid + "-" +el.clientName, value:el.userid})
+                nameList.push({name: el.userid + "-" + (el.clientName || "未知用户"), value:el.userid})
             });
 
             var searchSelect = new SearchSelect({
@@ -177,7 +177,7 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
                     this.$el.find("#dropdown-customer .cur-value").html(this.clientName)
                 }.bind(this)
             });
-            this.$el.find("#dropdown-customer .cur-value").html(res[0].userid + "-" +res[0].clientName)
+            this.$el.find("#dropdown-customer .cur-value").html(res[0].userid + "-" + (res[0].clientName || "未知用户"))
             this.collection.getDomain({userid: res[0].userid, type: this.type});
             this.clientName = res[0].userid + "-" +res[0].clientName;
             this.userId = res[0].userid;

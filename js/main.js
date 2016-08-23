@@ -49,6 +49,9 @@ requirejs.config({
         "dispConfig.view"      : "dispConfig/dispConfig.view",
         "dispConfig.model"     : "dispConfig/dispConfig.model",
 
+        "dispSuggesttion.view" : "dispSuggesttion/dispSuggesttion.view",
+        "dispSuggesttion.model": "dispSuggesttion/dispSuggesttion.model",
+
         "coverRegion.view"     : 'coverRegion/coverRegion.view',
         "coverRegion.model"    : 'coverRegion/coverRegion.model',
 
@@ -72,10 +75,13 @@ requirejs.config({
 
         "businessManage.view"  : 'businessManage/businessManage.view',
         "businessManage.model" : 'businessManage/businessManage.model',
+
         "clientStatistics.view"  : 'clientStatistics/clientStatistics.view',
         "clientStatistics.model" : 'clientStatistics/clientStatistics.model',
+
         "statisticsManage.view"  : 'statisticsManage/statisticsManage.view',
         "statisticsManage.model" : 'statisticsManage/statisticsManage.model',
+
         "domainStatistics.view"  : 'domainStatistics/domainStatistics.view',
         "domainStatistics.model" : 'domainStatistics/domainStatistics.model',
 

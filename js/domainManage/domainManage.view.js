@@ -732,7 +732,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name:"网宿",value:"2"}
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-cdn-factory"), factoryList, function(value){
-                this.getPageArgs.factory = value;
+                this.getPageArgs.factory = value || null;
             }.bind(this));
 
 
@@ -742,7 +742,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name:"直播",value:"2"}
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-speed-type"), typeList, function(value){
-                this.getPageArgs.type = value;
+                this.getPageArgs.type = value || null;
             }.bind(this));
 
 
@@ -753,7 +753,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name:"rtmp",value:"3"}
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-use-protocol"), protocolList, function(value){
-                this.getPageArgs.protocol = value;
+                this.getPageArgs.protocol = value || null;
             }.bind(this));
 
         },

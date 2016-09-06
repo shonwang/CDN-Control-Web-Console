@@ -387,7 +387,20 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 }
                 this.args.policys.push(json);
             }
+            if(!this.args.domain || this.args.domain == ""){
+                alert("请填写加速域名");
+                return false;
+            }
 
+            if(!this.args.userId || this.args.userId == ""){
+                alert("请填写用户ID");
+                return false;
+            }
+
+            if(!this.args.cname || this.args.cname == ""){
+                alert("请填写cname");
+                return false;
+            }
             return this.args;
         },
 
@@ -465,6 +478,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
 
             this.getPageArgs = {
                 domain: "",
+                factory:"",
+                type:"",
+                protocol:"",
                 page: 1,
                 count: 10
             };
@@ -708,6 +724,38 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 this.getPageArgs.page = 1;
                 this.onClickQueryButton();
             }.bind(this));
+
+
+            var factoryList = [
+                {name:"全部",value:""},
+                {name:"自建",value:"1"},
+                {name:"网宿",value:"2"}
+            ];
+            Utility.initDropMenu(this.$el.find(".dropdown-cdn-factory"), factoryList, function(value){
+                this.getPageArgs.factory = value || null;
+            }.bind(this));
+
+
+            var typeList = [
+                {name:"全部",value:""},
+                {name:"下载",value:"1"},
+                {name:"直播",value:"2"}
+            ];
+            Utility.initDropMenu(this.$el.find(".dropdown-speed-type"), typeList, function(value){
+                this.getPageArgs.type = value || null;
+            }.bind(this));
+
+
+            var protocolList = [
+                {name:"全部",value:""},
+                {name:"http+flv",value:"1"},
+                {name:"hls",value:"2"},
+                {name:"rtmp",value:"3"}
+            ];
+            Utility.initDropMenu(this.$el.find(".dropdown-use-protocol"), protocolList, function(value){
+                this.getPageArgs.protocol = value || null;
+            }.bind(this));
+
         },
 
         onGetError: function(error) {

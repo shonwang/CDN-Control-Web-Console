@@ -668,21 +668,24 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.operatorList = res.rows;
             var nameList = [{name: "全部", value: "All"}];
             _.each(res.rows, function(el, index, list){
-                nameList.push({name: el.name, value:el.id})
+                nameList.push({name: el.name, value:el.name})
             });
             Utility.initDropMenu(this.$el.find(".dropdown-operator"), nameList, function(value){
-                if (value !== "All")
-                    this.queryArgs.operator = parseInt(value)
-                else
+                if (value !== "All"){
+                    //this.queryArgs.operator = parseInt(value)
+                    this.queryArgs.operator = value;
+                }
+                else{
                     this.queryArgs.operator = null;
+                }
             }.bind(this));
         },
 
         initFixDropMenu: function(){
             var originTypeList = [
                 {name: "全部", value: "All"},
-                {name: "域名回源", value: 1},
-                {name: "IP回源", value: 2}
+                {name: "IP回源", value: 1},
+                {name: "域名回源", value: 2}
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-originType"), originTypeList, function(value){
                 if (value !== "All")
@@ -760,7 +763,7 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             if (this.queryArgs.domain == ""){
                 this.queryArgs.domain = null;
             }else{
-                if (!/\.com$|\.net$|\.org$|\.edu$|\.gov$|\.cn$/gi.test(this.queryArgs.domain)){
+                if (!/\.com$|\.net$|\.org$|\.edu$|\.gov$|\.cn$|^default$/gi.test(this.queryArgs.domain)){
                     alert('加速域名需以com、org、net、edu、gov、cn结尾');
                     return;
                 }else if(this.queryArgs.domain.length > 100){
@@ -784,8 +787,8 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                 fileTypeList: this.fileTypeList,
                 areaList: this.areaList,
                 originTypeList:[
-                    {name: "域名回源", value: 1},
-                    {name: "IP回源", value: 2}
+                    {name: "IP回源", value: 1},
+                    {name: "域名回源", value: 2}
                 ],
                 layerList:[
                     {name: "上层", value: 1},
@@ -826,8 +829,8 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                 fileTypeList: this.fileTypeList,
                 areaList: this.areaList,
                 originTypeList:[
-                    {name: "域名回源", value: 1},
-                    {name: "IP回源", value: 2}
+                    {name: "IP回源", value: 1},
+                    {name: "域名回源", value: 2}
                 ],
                 layerList:[
                     {name: "上层", value: 1},

@@ -1,7 +1,8 @@
 define("grayscaleSetup.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-
+            var createTime = this.get("createTime");
+            if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
         }
     });
 
@@ -239,11 +240,12 @@ define("grayscaleSetup.model", ['require','exports', 'utility'], function(requir
             defaultParas.data = args;
 
             defaultParas.success = function(res){
-                if(res == 200){
+                //if(res == 200){
                     this.trigger("get.sync.success",res);
-                }else{
+                //}
+                /*else{
                     this.trigger("get.sync.error", res.message); 
-                }
+                }*/
             }.bind(this);
 
             defaultParas.error = function(response, msg){

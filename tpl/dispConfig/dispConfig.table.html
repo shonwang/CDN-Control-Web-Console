@@ -34,7 +34,11 @@
                                 <td style="width:400px"><%=data[i].get("listFormated")[k].get("nodeString")%></td>
                                 <td>
                                     <% if (!isHistory) { %>
-                                    <input type="number" class="weight" id='<%=data[i].get("listFormated")[k].get("id")%>' region-id='<%=data[i].get("id")%>' max='<%=data[i].get("listFormated")[k].get("dispConfIpInfo.maxNum")%>' min="0" value='<%=data[i].get("listFormated")[k].get("dispConfIpInfo.currNum")%>'>
+                                    <input type="number" class="weight" 
+                                    id='<%=data[i].get("listFormated")[k].get("id")%>' 
+                                    region-id='<%=data[i].get("id")%>' 
+                                    max='<%=data[i].get("listFormated")[k].get("dispConfIpInfo.maxNum")%>' 
+                                    min="1" value='<%=data[i].get("listFormated")[k].get("dispConfIpInfo.currNum")%>'>
                                     <% } else { %>
                                     <span class="label label-primary">
                                         <%=data[i].get("listFormated")[k].get("dispConfIpInfo.currNum")%>
@@ -47,12 +51,16 @@
                                     <% } %>
                                     <% if (!isHistory) { %>
                                     <% if (permission.EditNodeList) { %>
-                                    <a href="javascript:void(0)" class="edit" id='<%=data[i].get("listFormated")[k].get("id")%>' region-id='<%=data[i].get("id")%>' title="编辑节点">
+                                    <a href="javascript:void(0)" class="edit" 
+                                    id='<%=data[i].get("listFormated")[k].get("id")%>' 
+                                    region-id='<%=data[i].get("id")%>' title="编辑节点">
                                         <span class="glyphicon glyphicon-edit"></span>
                                     </a>
                                     <% } %>
                                     <% if (permission.DeleteNodeList) { %>
-                                    <a href="javascript:void(0)" class="delete" id='<%=data[i].get("listFormated")[k].get("id")%>' region-id='<%=data[i].get("id")%>'  title="删除">
+                                    <a href="javascript:void(0)" class="delete" 
+                                    id='<%=data[i].get("listFormated")[k].get("id")%>' 
+                                    region-id='<%=data[i].get("id")%>'  title="删除">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </a>
                                     <% } %>

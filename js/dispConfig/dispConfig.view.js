@@ -620,6 +620,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.table.find("tbody .nodes .delete").on("click", $.proxy(this.onClickItemDelete, this));
             this.table.find("tbody .nodes .weight").on("keyup", $.proxy(this.onKeyupItemWeightInput, this));
             this.table.find("tbody .nodes .weight").on("blur", $.proxy(this.onBlurItemWeightInput, this));
+            this.table.find("tbody .nodes .weight").on("click", $.proxy(this.onClickItemWeightInput, this));//火狐浏览器的数字控件不会自动聚焦，需要强制获取焦点
             this.table.find("tbody .add").on("click", $.proxy(this.onClickItemAdd, this));
             this.table.find("tbody .adjust").on("click", $.proxy(this.onClickItemAdjust, this));
         },
@@ -649,6 +650,11 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 return obj["id"] === parseInt(id);
             })
             selectedNode[0].set("dispConfIpInfo.currNum", parseInt(value))
+        },
+
+        onClickItemWeightInput: function(event){
+            var eventTarget = event.srcElement || event.target;
+            $(eventTarget).focus();
         },
 
         onClickItemAdjust: function(event){
@@ -714,7 +720,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                         for (var k = 0; k < options.length; k++){
                             options[k]['dispGroup.id'] = this.queryArgs.groupId;
                             for (var i = 0; i < list.length; i++){
-                                if (list[i]["id"] === parseInt(options[k]["node.id"])) options.splice(k, 1);
+                                if (list[i].get("id") === parseInt(options[k]["node.id"])) options.splice(k, 1);
                                 if (options.length === 0) {
                                     alert("你选择的节点已经添加过了！")
                                     this.selectNodePopup.$el.modal("hide");
@@ -752,7 +758,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             var model = this.collection.get(regionId),
                 list = model.get("listFormated");
             var selectedNode = _.filter(list ,function(obj) {
-                return obj["id"] === parseInt(id);
+                return obj.get("id") === parseInt(id);
             })
 
             if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
@@ -776,13 +782,19 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                         var result = confirm("你确定要修改节点吗？")
                         if (!result) return;
                         for (var i = 0; i < list.length; i++){
-                            if (list[i]["id"] === parseInt(options[0]["node.id"])){
+                            if (list[i].get("id") === parseInt(options[0]["node.id"])){
                                 this.selectNodePopup.$el.modal("hide");
                                 return;
                             }
-                            if (list[i]["id"] === parseInt(id)){
-                                list[i].attributes =  _.extend(selectedNode[0].attributes, options[0]);
-                                list[i].set("isUpdated", true);
+                        }
+                        for (var k = 0; k < list.length; k++){
+                            if (list[k].get("id") === parseInt(id)){
+                                // list[k].attributes =  _.extend(selectedNode[0].attributes, options[0]);
+                                var changeEl = list[k];
+                                _.each(options[0], function(el, key, list){
+                                    changeEl.set(key, el)
+                                }.bind(this))
+                                list[k].set("isUpdated", true);
                                 break;
                             }
                         }

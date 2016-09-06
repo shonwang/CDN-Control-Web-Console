@@ -191,37 +191,6 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
             $.ajax(defaultParas);
         },
 
-        getRegionNodeList: function(args){
-            var url = BASE_URL + "/rs/dispConf/regionNodeList";
-            var defaultParas = {
-                type: "GET",
-                url: url,
-                async: true,
-                timeout: 30000,
-            };
-            defaultParas.data = args;
-            defaultParas.data.t = new Date().valueOf();
-
-            defaultParas.beforeSend = function(xhr){
-                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
-            }
-            defaultParas.success = function(res){
-                if (res){
-                    this.trigger("get.regionNode.success", res);
-                } else {
-                    this.trigger("get.regionNode.error", res); 
-                }
-            }.bind(this);
-
-            defaultParas.error = function(response, msg){
-                if (response&&response.responseText)
-                    response = JSON.parse(response.responseText)
-                this.trigger("get.regionNode.error", response); 
-            }.bind(this);
-
-            $.ajax(defaultParas);
-        },
-
         getRegionAdvice: function(args){
             var url = BASE_URL + "/rs/dispConf/disp/regionAdvice";
             var defaultParas = {
@@ -255,35 +224,34 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
             $.ajax(defaultParas);
         },
 
-        getRegionOtherNodeList: function(args){
-            var url = BASE_URL + "/rs/dispConf/regionOtherNodeList";
-            var defaultParas = {
-                type: "GET",
-                url: url,
-                async: true,
-                timeout: 30000,
-            };
-            defaultParas.data = args;
-            defaultParas.data.t = new Date().valueOf();
+        getRegionNodeList: function(args){
+            var url = BASE_URL + "/rs/dispConf/regionNodeList",
+            successCallback = function(res){
+                if (res){
+                    this.trigger("get.regionNode.success", res);
+                } else {
+                    this.trigger("get.regionNode.error", res); 
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.regionNode.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
 
-            defaultParas.beforeSend = function(xhr){
-                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
-            }
-            defaultParas.success = function(res){
+        getRegionOtherNodeList: function(args){
+            var url = BASE_URL + "/rs/dispConf/regionOtherNodeList",
+            successCallback = function(res){
                 if (res){
                     this.trigger("get.regionOtherNode.success", res);
                 } else {
                     this.trigger("get.regionOtherNode.error", res); 
                 }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.regionOtherNode.error", response);
             }.bind(this);
-
-            defaultParas.error = function(response, msg){
-                if (response&&response.responseText)
-                    response = JSON.parse(response.responseText)
-                this.trigger("get.regionOtherNode.error", response); 
-            }.bind(this);
-
-            $.ajax(defaultParas);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
         diffBeforeSend: function(args){

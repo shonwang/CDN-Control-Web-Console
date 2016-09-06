@@ -820,9 +820,27 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 id = $(eventTarget).attr("id");
             }
             var model = this.collection.get(id);
-            var result = confirm("你确定要删除节点" + model.attributes.name + "吗");
-            if (!result) return;
-            this.collection.deleteNode({id:parseInt(id)})
+
+            if (this.confirmDelete) $("#" + this.confirmDelete.modalId).remove();
+
+            var opt = {
+                message: "你确定要删除节点<span class='text-danger'>" + model.attributes.name + "</span>吗？删除后将不可恢复, 请谨慎操作！",
+                type: "alert-info"
+            }
+            var options = {
+                title:"提示",
+                body : _.template(template['tpl/alert.message.html'])({data: opt}),
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback:  function(){
+                    this.confirmDelete.$el.modal("hide");
+                    var result = confirm("你真的确定要删除节点" + model.attributes.name + "吗？");
+                    if (!result) return;
+                    this.collection.deleteNode({id:parseInt(id)})
+                }.bind(this),
+                onHiddenCallback: function(){}.bind(this)
+            }
+            this.confirmDelete = new Modal(options);
         },
 
         onClickItemPlay: function(event){
@@ -872,15 +890,18 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             var result = confirm("你确定要暂停节点吗？")
             if (!result) return
             //this.collection.updateNodeStatus({ids:[parseInt(id)], status:3})
-            require(["dispSuggesttion.view", "dispSuggesttion.model"], $.proxy(this.onRequireDispSuggesttionModule, this))
+            require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel){
+                this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, id)
+            }.bind(this))
         },
 
-        onRequireDispSuggesttionModule: function(DispSuggesttionViews, DispSuggesttionModel){
-            if (!this.dispSuggesttionModel)
-                this.dispSuggesttionModel = new DispSuggesttionModel();
+        onRequireDispSuggesttionModule: function(DispSuggesttionViews, DispSuggesttionModel, nodeId){//
+            if (!this.dispSuggesttionFailModel)
+                this.dispSuggesttionFailModel = new DispSuggesttionModel();
             this.hide();
             var options = {
-                collection: this.dispSuggesttionModel,
+                nodeId: nodeId,
+                collection: this.dispSuggesttionFailModel,
                 backCallback: $.proxy(this.backFromDispSuggesttion, this)
             };
             this.dispSuggesttionView = new DispSuggesttionViews.DispSuggesttionView(options);
@@ -890,6 +911,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         backFromDispSuggesttion: function(){
             this.dispSuggesttionView.remove();
             this.dispSuggesttionView = null;
+            this.dispSuggesttionFailModel = null;
             this.update();
         },
 
@@ -1034,6 +1056,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             if (this.dispSuggesttionView){
                 this.dispSuggesttionView.remove();
                 this.dispSuggesttionView = null;
+                this.dispSuggesttionFailModel = null;
             }
             this.$el.hide();
             $(document).off('keydown');

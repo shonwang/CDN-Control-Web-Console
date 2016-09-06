@@ -967,39 +967,38 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         onGetInfoPromptSuccess: function(res) {
             this.editDispGroupPopup.$el.modal("hide");
-            //if (this.PromptPopup) $("#" + this.PromptPopup.modalId).remove();
 
             var data = res;
             var args = this.editGroupArgs;
-            if (data.length === 0) {
-                require(["dispSuggesttion.view", "dispSuggesttion.model"], $.proxy(this.onRequireDispSuggesttionModule, this))
-                // data[0].title = '取消关联的节点当前覆盖区域信息如下：';
+            if (data.length !== 0) {
+                //require(["dispSuggesttion.view", "dispSuggesttion.model"], $.proxy(this.onRequireDispSuggesttionModule, this))
+                data[0].title = '取消关联的节点当前覆盖区域信息如下：';
+                if (this.PromptPopup) $("#" + this.PromptPopup.modalId).remove();
+                var promptView = new PromptInfoView({
+                    collection: this.collection,
+                    data: data,
+                    model: this.clickInfo
+                });
 
-                // var promptView = new PromptInfoView({
-                //     collection: this.collection,
-                //     data: data,
-                //     model: this.clickInfo
-                // });
+                var options = {
+                    title: "提示",
+                    body: promptView,
+                    backdrop: 'static',
+                    type: 2,
+                    cancelButtonText: '取消',
+                    onOKCallback: function() {
+                        if (!args) return;
+                        this.collection.updateDispGroup(args);
+                        this.PromptPopup.$el.modal("hide");
+                    }.bind(this),
+                    onCancelCallback: function(argument) {
+                        setTimeout(function(){
+                            this.editDispGroupPopup.$el.modal("show");
+                        }.bind(this), 500)
+                    }.bind(this)
+                }
 
-                // var options = {
-                //     title: "提示",
-                //     body: promptView,
-                //     backdrop: 'static',
-                //     type: 2,
-                //     cancelButtonText: '取消',
-                //     onOKCallback: function() {
-                //         if (!args) return;
-                //         this.collection.updateDispGroup(args);
-                //         this.PromptPopup.$el.modal("hide");
-                //     }.bind(this),
-                //     onCancelCallback: function(argument) {
-                //         setTimeout(function(){
-                //             this.editDispGroupPopup.$el.modal("show");
-                //         }.bind(this), 500)
-                //     }.bind(this)
-                // }
-
-                // this.PromptPopup = new Modal(options);
+                this.PromptPopup = new Modal(options);
             } else {
                 var result = confirm("是否确定本次编辑？");
                 if (result)

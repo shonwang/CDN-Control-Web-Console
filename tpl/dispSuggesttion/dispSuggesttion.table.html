@@ -1,11 +1,16 @@
-<table class="table table-hover disp-table">
+<table class="table disp-table">
     <thead> 
       <tr>
+        <% if (!isFailed) { %>
         <th><input type="checkbox" id="inlineCheckbox7"></th>
+        <% } %>
         <th>调度组名称</th>
         <th>区域</th>
         <th>节点</th>
         <th>TTL</th>
+        <% if (isFailed) { %>
+        <th>失败原因</th>
+        <% } %>
         <th>操作</th>   
       </tr>
     </thead>
@@ -13,7 +18,9 @@
         <% for(var i = 0; i < data.length; i++) { %>
             <% if (data[i].get("isDisplay")) { %>
             <tr data-id="<%=data[i].attributes.id%>">
+              <% if (!isFailed) { %>
               <td><input type="checkbox" id="<%=data[i].id%>"></td>
+              <% } %>
               <td><%=data[i].get("dispGroup.dispDomain")%></td>
               <td><%=data[i].get("region.name")%>(<%=data[i].get("region.maxBandWidth").toFixed(2)%>)</td>
               <td class="nodes">
@@ -22,27 +29,65 @@
                           <% for(var k = 0; k < data[i].get("listFormated").length; k++) { %>
                               <% if(data[i].get("listFormated")[k].get("node.chName") && data[i].get("listFormated")[k].get("isDisplay")) { %>
                               <tr data-id='<%=data[i].get("listFormated")[k].get("id")%>' 
-                                <% if(data[i].get("listFormated")[k].get("isUpdated")) { %> 
-                                    class="warning" 
-                                <% } else if (data[i].get("listFormated")[k].get("type") === 1) { %>
-                                    class="success"
-                                <% } else if (data[i].get("listFormated")[k].get("type") === -1) { %>
+                                <% if (data[i].get("listFormated")[k].get("type") === 1 && isFailed) { %>
                                     class="danger"
+                                <% } else if (data[i].get("listFormated")[k].get("type") === 1 && !isFailed) { %>
+                                    class="warning"
                                 <% } %> >
-                                <td style="width:400px"><%=data[i].get("listFormated")[k].get("nodeString")%></td>
+                                <td style="width:400px">
+                                    <% if (data[i].get("listFormated")[k].get("nodeChangeType") === 1) { %>
+                                      <span class="label label-info">u</span>
+                                      <a href="javascript:void(0)" class="node-string text-primary" 
+                                      id='<%=data[i].get("listFormated")[k].get("id")%>' 
+                                      region-id='<%=data[i].get("id")%>'>
+                                          <%=data[i].get("listFormated")[k].get("nodeString")%>
+                                      </a>
+                                    <% } else if (data[i].get("listFormated")[k].get("nodeChangeType") === 2) { %>
+                                      <strong class="label label-danger">+</strong>
+                                      <a href="javascript:void(0)" class="node-string text-danger" 
+                                      id='<%=data[i].get("listFormated")[k].get("id")%>' 
+                                      region-id='<%=data[i].get("id")%>'>
+                                          <%=data[i].get("listFormated")[k].get("nodeString")%>
+                                      </a>
+                                    <% } else { %>
+                                    <a href="javascript:void(0)" class="node-string text-muted"
+                                    id='<%=data[i].get("listFormated")[k].get("id")%>' 
+                                    region-id='<%=data[i].get("id")%>'>
+                                        <%=data[i].get("listFormated")[k].get("nodeString")%>
+                                    </a>
+                                    <% } %>
+                                </td>
                                 <td>
-                                    <input type="number" class="weight" id='<%=data[i].get("listFormated")[k].get("id")%>' region-id='<%=data[i].get("id")%>' max='<%=data[i].get("listFormated")[k].get("dispConfIpInfo.maxNum")%>' min="0" value='<%=data[i].get("listFormated")[k].get("dispConfIpInfo.currNum")%>'>
+                                    <% if (data[i].get("listFormated")[k].get("type") !== 0) { %>
+                                    <input type="number" class="weight" 
+                                      id='<%=data[i].get("listFormated")[k].get("id")%>' 
+                                      region-id='<%=data[i].get("id")%>' 
+                                      max='<%=data[i].get("listFormated")[k].get("dispConfIpInfo.maxNum")%>' 
+                                      min="1" 
+                                      value='<%=data[i].get("listFormated")[k].get("dispConfIpInfo.currNum")%>'>
+                                    <% } else { %>
+                                    <span class="label label-primary">
+                                        <%=data[i].get("listFormated")[k].get("dispConfIpInfo.currNum")%>
+                                    </span>
+                                    <% } %>
+                                    <% if (data[i].get("listFormated")[k].get("dispConfIpInfo.adviceChangeNum")) { %> 
+                                    <span class="label label-default">
+                                        <%=data[i].get("listFormated")[k].get("dispConfIpInfo.adviceChangeNum")%>
+                                    </span>
+                                    <% } %>
                                     <% if (data[i].get("listFormated")[k].get("dispConfIpInfo.pauseNum") > 0) { %>  
                                     <span class="label label-danger">
                                         <%=data[i].get("listFormated")[k].get("dispConfIpInfo.pauseNum")%>
                                     </span>
                                     <% } %>
+                                    <% if (data[i].get("listFormated")[k].get("type") !== 0) { %>
                                     <a href="javascript:void(0)" class="edit" id='<%=data[i].get("listFormated")[k].get("id")%>' region-id='<%=data[i].get("id")%>' title="编辑节点">
                                         <span class="glyphicon glyphicon-edit"></span>
                                     </a>
                                     <a href="javascript:void(0)" class="delete" id='<%=data[i].get("listFormated")[k].get("id")%>' region-id='<%=data[i].get("id")%>'  title="删除">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </a>
+                                    <% } %>
                                 </td>
                               </tr>
                               <% } %> 
@@ -51,13 +96,18 @@
                   </table>
               </td>
               <td><%=data[i].get("dispGroup.ttl")%></td>
+              <% if (isFailed) { %>
+              <td><%=data[i].get("region.failedReason")%></td>
+              <% } %>
               <td>
                   <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="add">
                       <span class="glyphicon glyphicon-plus"></span>添加节点
                   </a>
-<!--                   <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="adjust">
-                      <span class="glyphicon glyphicon-cog"></span>调整
-                  </a> -->
+                  <% if (isFailed) { %>
+                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="skip text-danger">
+                      <span class="glyphicon glyphicon-share-alt"></span>强制跳过
+                  </a>
+                  <% } %>
               </td>
             </tr>
             <% } %>

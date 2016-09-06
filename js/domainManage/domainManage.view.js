@@ -45,7 +45,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     userId:"",
                     cname:"",
                     type:1,
-                    auditStatus:null,
+                    auditStatus:1,
                     testUrl:"",
                     description:"",
                     originType:1,
@@ -130,6 +130,24 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     }
                 }.bind(this));
             }
+
+            //审核状态
+            var auditStatusList = [
+                {name: "审核通过", value: 1},
+                {name: "审核中", value: 0}
+            ];
+            Utility.initDropMenu(this.$el.find(".dropdown-auditStatus"), auditStatusList, function(value){
+                this.args.auditStatus = parseInt(value);
+            }.bind(this));
+            if(this.isEdit){
+                $.each(auditStatusList,function(k,v){
+                    if(v.value == this.model.get("auditStatus")){
+                        this.$el.find("#dropdown-auditStatus .cur-value").html(v.name);
+                    }
+                }.bind(this));
+            }
+
+
             //过滤参数
             var confParamNewList = [
                 {name: "是", value: 1},

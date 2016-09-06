@@ -97,7 +97,9 @@
               </td>
               <td><%=data[i].get("dispGroup.ttl")%></td>
               <% if (isFailed) { %>
-              <td><%=data[i].get("region.failedReason")%></td>
+              <td>
+                  <a href="javascript:void(0)" class="description" remark='<%=data[i].get("region.failedReason") || "无"%>'>详情</a>
+              </td>
               <% } %>
               <td>
                   <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="add">

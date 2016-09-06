@@ -978,6 +978,14 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             this.table.find("tbody .add").on("click", $.proxy(this.onClickItemAdd, this));
             this.table.find("tbody .skip").on("click", $.proxy(this.onClickItemSkip, this));
 
+            this.table.find("tbody .description").popover({
+                animation  : false,
+                "placement": "top", 
+                "html"     : true,
+                "content"  : function(){return $(this).attr("remark")}, 
+                "trigger"  : "hover"
+            })
+
             // this.table.find("tbody tr").find("input[type='checkbox']").on("click", $.proxy(this.onItemCheckedUpdated, this));
             // this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
         },

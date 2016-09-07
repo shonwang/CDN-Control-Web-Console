@@ -132,6 +132,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             }
 
             //审核状态
+            /*
             var auditStatusList = [
                 {name: "审核通过", value: 1},
                 {name: "审核中", value: 0}
@@ -146,7 +147,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     }
                 }.bind(this));
             }
-
+            */
 
             //过滤参数
             var confParamNewList = [

@@ -1,18 +1,12 @@
 define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
-    var QueryMultiView = Backbone.View.extend({
-        events: {
-            //"click .search-btn":"onClickSearch"
-        },
+    var PauseNodeView = Backbone.View.extend({
+        events: {},
 
         initialize: function(options) {
             this.collection = options.collection;
-            this.$el = $(_.template(template['tpl/dispSuggesttion/dispSuggesttion.queryMulti.html'])());
-        },
-
-        getArgs: function(){
-            var queryKey = this.$el.find("#textarea-content").val();
-            return queryKey;
+            this.pauseNodes = options.pauseNodes;
+            this.$el = $(_.template(template['tpl/dispSuggesttion/dispSuggesttion.pauseNode.table.html'])({data: this.pauseNodes}));
         },
 
         render: function(target) {
@@ -21,9 +15,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
     });
 
     var ChartView = Backbone.View.extend({
-        events: {
-            //"click .search-btn":"onClickSearch"
-        },
+        events: {},
 
         initialize: function(options) {
             this.collection = options.collection;
@@ -32,40 +24,64 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             this.$el = $(_.template(template['tpl/dispSuggesttion/dispSuggesttion.chart.html'])());
             this.$el.find(".charts-ctn").html(_.template(template['tpl/loading.html'])({}));
 
+            this.collection.off("get.nodeBandWidth.success");
+            this.collection.off("get.nodeBandWidth.error");
+            this.collection.on("get.nodeBandWidth.success", $.proxy(this.initChart, this));
+            this.collection.on("get.nodeBandWidth.error", $.proxy(this.onGetError, this));
+
+            
             setTimeout(function(){
-                this.initChart();
-            }.bind(this), 1000)
+                this.collection.getNodeBandWidth({nodeId: this.selectNode["node.id"], t: new Date().valueOf()})//this.selectNode["node.id"]});
+            }.bind(this), 500)
         },
 
-        initChart: function(){
-            var base = +new Date(1968, 9, 3);
-            var oneDay = 24 * 3600 * 1000;
-            var date = [];
+        initChart: function(res){
+            // var base = +new Date(1968, 9, 3);
+            // var oneDay = 24 * 3600 * 1000;
+            // var date = [];
 
-            var data = [Math.random() * 300];
+            // var data = [Math.random() * 300];
 
-            for (var i = 1; i < 20000; i++) {
-                var now = new Date(base += oneDay);
-                date.push([now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'));
-                data.push(Math.round((Math.random() - 0.5) * 20 + data[i - 1]));
-            }
+            // for (var i = 1; i < 20000; i++) {
+            //     var now = new Date(base += oneDay);
+            //     date.push([now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'));
+            //     data.push(Math.round((Math.random() - 0.5) * 20 + data[i - 1]));
+            // }
+            var nodeChName       = this.selectNode["node.chName"],
+                nodeMaxBWLastNight = this.selectNode["node.maxBWLastNight"],
+                nodeCurrBW = this.selectNode["node.currBW"],
+                nodeMaxBandwidth = this.selectNode["node.maxBandwidth"],
+                crossLevel       = this.selectNode["cover.crossLevel"];
+            var nodeString = nodeChName + "(" + nodeMaxBWLastNight + "/" + nodeCurrBW + "/" + nodeMaxBandwidth + ")L" + crossLevel;
 
             var option = {
                 tooltip: {
-                    trigger: 'axis'
+                    trigger: 'axis',
+                    formatter: function (params) {
+                        var str = "";
+                        str = params[0].value//Utility.handlerToB1024(params[0].value)
+                        return new Date(params[0].name).format("yyyy/MM/dd hh:mm") + '<br/>'
+                            + params[0].seriesName + ' : ' + str;
+                    },
                 },
                 title: {
                     left: 'center',
-                    text: this.selectNode["node.chName"],
+                    text: nodeString,
                 },
                 legend: {
-                    top: 'bottom',
-                    data:['意向']
+                    x: 'left',
+                    data:['带宽']
                 },
                 xAxis: {
                     type: 'category',
                     boundaryGap: false,
-                    data: date
+                    splitLine:{show:false},
+                    data: res.time,
+                    axisLabel: {
+                        formatter: function(value){
+                            return new Date(value).format("MM/dd hh:mm")
+                        }
+                    }
                 },
                 yAxis: {
                     type: 'value',
@@ -81,10 +97,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                     start: 0,
                     end: 100,
                     xAxisIndex: [0],
-                    showDetail: false,
-                    labelFormatter: function(value){
-                        return new Date(timeData[value]).format("MM/dd hh:mm")
-                    }
+                    showDetail: false
                 }],
                 grid: {
                     bottom: '15%',
@@ -92,28 +105,28 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 },
                 series: [
                     {
-                        name:'模拟数据',
+                        name:'带宽',
                         type:'line',
                         smooth:true,
                         symbol: 'none',
                         sampling: 'average',
                         itemStyle: {
                             normal: {
-                                color: 'rgb(255, 70, 131)'
+                                color: "#289af4"//'rgb(255, 70, 131)'
                             }
                         },
                         areaStyle: {
                             normal: {
                                 color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
                                     offset: 0,
-                                    color: 'rgb(255, 158, 68)'
+                                    color: "#289af4"//'rgb(255, 158, 68)'
                                 }, {
                                     offset: 1,
-                                    color: 'rgb(255, 70, 131)'
+                                    color: "#fff", //'rgb(255, 70, 131)'
                                 }])
                             }
                         },
-                        data: data
+                        data: res.bw
                     }
                 ]
             };
@@ -122,15 +135,20 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             this.chart.setOption(option);
         },
 
+        onGetError: function(error){
+            if (error&&error.message)
+                alert(error.message)
+            else
+                alert("网络阻塞，请刷新重试！")
+        },
+
         render: function(target) {
             this.$el.appendTo(target);
         }
     });
 
     var SelectNodeView = Backbone.View.extend({
-        events: {
-            //"click .search-btn":"onClickSearch"
-        },
+        events: {},
 
         initialize: function(options) {
             this.collection = options.collection;
@@ -176,7 +194,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 if (keyWord === ""){
                     el.isDisplay = true;
                 } else {
-                    var nodeString = "(" + el["node.minBandwidth"] + "/" + el["node.maxBandwidth"] + ")L" + el["cover.crossLevel"]
+                    var nodeString = "(" + el["node.maxBWLastNight"] + "/" + el["node.currBW"] + "/" + el["node.maxBandwidth"] + ")L" + el["cover.crossLevel"]
                     if (el["node.chName"].indexOf(keyWord) > -1 || nodeString.indexOf(keyWord) > -1)
                         el.isDisplay = true;
                     else
@@ -329,10 +347,11 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 })
                 var aSelectedNode = aSelectedNodeArray[0];
                 var nodeChName       = aSelectedNode["node.chName"],
-                    nodeMinBandwidth = aSelectedNode["node.minBandwidth"],
+                    nodeMaxBWLastNight = aSelectedNode["node.maxBWLastNight"],
+                    nodeCurrBW = aSelectedNode["node.currBW"],
                     nodeMaxBandwidth = aSelectedNode["node.maxBandwidth"],
                     crossLevel       = aSelectedNode["cover.crossLevel"];
-                var nodeString = nodeChName + "(" + nodeMinBandwidth + "/" + nodeMaxBandwidth + ")L" + crossLevel;
+                var nodeString = nodeChName + "(" + nodeMaxBWLastNight + "/" + nodeCurrBW + "/" + nodeMaxBandwidth + ")L" + crossLevel;
                 aSelectedNode.nodeString = nodeString;
                 aSelectedNode.id = aSelectedNode["node.id"];
                 selectedNodes.push(aSelectedNode)
@@ -363,16 +382,19 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             this.backCallback = options.backCallback;
 
             this.$el = $(_.template(template['tpl/dispSuggesttion/dispSuggesttion.html'])({}));
-            //this.$el.find(".node-table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
-            this.collection.on("get.dispConfig.success", $.proxy(this.onDispConfigListSuccess, this));
-            this.collection.on("get.dispConfig.error", $.proxy(this.onGetError, this));
+            this.$el.find(".node-table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.$el.find(".fail-table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.$el.find(".success-table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            
+            this.collection.on("get.disconfAdvice.success", $.proxy(this.onDispConfigListSuccess, this));
+            this.collection.on("get.disconfAdvice.error", $.proxy(this.onGetError, this));
 
-            this.collection.on("dispDns.success", function(){
+            this.collection.on("advice.dispDns.success", function(){
                 this.disablePopup.$el.modal('hide');
                 alert("下发成功！")
             }.bind(this));
-            this.collection.on("dispDns.error", function(res){
+            this.collection.on("advice.dispDns.error", function(res){
                 this.disablePopup.$el.modal('hide');
                 this.onGetError(res)
             }.bind(this));
@@ -380,32 +402,16 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".opt-ctn .back").on("click", $.proxy(this.onClickBack, this));
             this.$el.find(".opt-ctn .giveup").on("click", $.proxy(this.onClickBack, this));
             this.$el.find(".opt-ctn .sending").on("click", $.proxy(this.onClickSending, this));
-            
-            // this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            // this.$el.find(".opt-ctn .query-multi").on("click", $.proxy(this.onClickQueryMultiButton, this));
-            // this.enterKeyBindQuery();
-
             this.$el.find(".opt-ctn .show-node-change").on("click", $.proxy(this.onClickShowRemark, this));
             this.$el.find(".opt-ctn .hide-node-change").on("click", $.proxy(this.onClickHideRemark, this));
 
-            this.initNodeChangeTable();
-            this.onDispConfigListSuccess();
-
-            if (this.nodeId) this.collection.getDisconfAdvice({nodeId: this.nodeId})
+            if (this.nodeId) this.collection.getDisconfAdvice({nodeId: this.nodeId, t: new Date().valueOf()})
         },
 
         onClickBack: function(){
             var result = confirm("是否确定放弃此次操作？");
             if (!result) return;
             this.backCallback && this.backCallback();
-        },
-
-        enterKeyBindQuery:function(){
-            $(document).on('keydown', function(e){
-                if(e.keyCode == 13){
-                    this.onClickQueryButton();
-                }
-            }.bind(this));
         },
 
         onClickShowRemark: function(){
@@ -427,258 +433,8 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 alert("网络阻塞，请刷新重试！")
         },
 
-        onDispConfigListSuccess: function(){
-            var tempData = {
-                "failedAdvice": [{
-                    "region": {
-                        "id": 1,
-                        "name": "全网默认111",
-                        "operaterId": -1,
-                        "sortKey": 0,
-                        "maxBandWidth": 10.0,
-                        "failedReason": "你太帅"
-                    },
-                    "list": [
-                    {
-                        "config": {
-                            "id": 158,
-                            "nodeId": 160,
-                            "regionLineId": 1,
-                            "dispGroupId": 83,
-                            "bandwidth": 100.0,
-                            "type": 1
-                        },
-                        "dispGroup": {
-                            "id": 83,
-                            "dispDomain": "xlf-test-0802-copywrong6",
-                            "crossLevel": 0,
-                            "priority": 3,
-                            "resolveIpType": 104,
-                            "ttl": 398,
-                            "status": 1,
-                            "version": 42,
-                            "updateTime": 1472527656000,
-                            "remark": "testtetstset"
-                        },
-                        "node": {
-                            "id": 160,
-                            "name": "xlf-test-node-0802-1",
-                            "chName": "xlf-test-node-0802-1",
-                            "minBandwidth": 1000.0,
-                            "maxBandwidth": 1000.0,
-                            "maxBandwidthThreshold": 1000.0,
-                            "minBandwidthThreshold": 1000.0,
-                            "unitPrice": 11.00,
-                            "chargingType": 1,
-                            "status": 1,
-                            "createTime": 1470144573000,
-                            "inZabName": "test",
-                            "outZabName": "-test_[]",
-                            "remark": "",
-                            "operatorId": 15,
-                            "startChargingTime": 1470144483000,
-                            "lon": "113.42206",
-                            "lat": "22.545178",
-                            "cityId": 855
-                        },
-                        "cover": {
-                            "id": 1473043360653,
-                            "nodeId": 160,
-                            "regionLineId": 1,
-                            "crossLevel": 9,
-                            "remark": null
-                        },
-                        "dispConfIpInfo": {
-                            "maxNum": 6,
-                            "currNum": 2,
-                            "pauseNum": 0
-                        },
-                        "type": 0
-                    }, 
-                    {
-                        "config": {
-                            "id": 159,
-                            "nodeId": 161,
-                            "regionLineId": 1,
-                            "dispGroupId": 83,
-                            "bandwidth": 100.0,
-                            "type": 1
-                        },
-                        "dispGroup": {
-                            "id": 83,
-                            "dispDomain": "xlf-test-0802-copywrong5",
-                            "crossLevel": 0,
-                            "priority": 3,
-                            "resolveIpType": 104,
-                            "ttl": 398,
-                            "status": 1,
-                            "version": 42,
-                            "updateTime": 1472527656000,
-                            "remark": "testtetstset"
-                        },
-                        "node": {
-                            "id": 161,
-                            "name": "xlf-test-node-0802-2",
-                            "chName": "xlf-test-node-0802-3",
-                            "minBandwidth": 10000.0,
-                            "maxBandwidth": 10000.0,
-                            "maxBandwidthThreshold": 1000.0,
-                            "minBandwidthThreshold": 1000.0,
-                            "unitPrice": 1111.00,
-                            "chargingType": 1,
-                            "status": 1,
-                            "createTime": 1470210152000,
-                            "inZabName": "-test_[]",
-                            "outZabName": "-test_[]",
-                            "remark": "",
-                            "operatorId": 7,
-                            "startChargingTime": 1471881600000,
-                            "lon": "108.953098",
-                            "lat": "34.2778",
-                            "cityId": 871
-                        },
-                        "cover": {
-                            "id": 1473043360653,
-                            "nodeId": 161,
-                            "regionLineId": 1,
-                            "crossLevel": 9,
-                            "remark": null
-                        },
-                        "dispConfIpInfo": {
-                            "maxNum": 6,
-                            "currNum": 5,
-                            "pauseNum": 0,
-                            "adviceChangeNum": "-5",
-                        },
-                        "type": 1,
-                        "nodeChangeType": 2
-                    }]
-                }],
-                "successAdvice": [{
-                    "region": {
-                        "id": 2,
-                        "name": "全网默认",
-                        "operaterId": -1,
-                        "sortKey": 0,
-                        "maxBandWidth": 10.0,
-                        "failedReason": "你太帅"
-                    },
-                    "list": [{
-                        "config": {
-                            "id": 158,
-                            "nodeId": 160,
-                            "regionLineId": 1,
-                            "dispGroupId": 83,
-                            "bandwidth": 100.0,
-                            "type": 1
-                        },
-                        "dispGroup": {
-                            "id": 83,
-                            "dispDomain": "xlf-test-0802-fghdvdgf5",
-                            "crossLevel": 0,
-                            "priority": 3,
-                            "resolveIpType": 104,
-                            "ttl": 398,
-                            "status": 1,
-                            "version": 42,
-                            "updateTime": 1472527656000,
-                            "remark": "testtetstset"
-                        },
-                        "node": {
-                            "id": 163,
-                            "name": "xlf-test-node-0802-1",
-                            "chName": "xlf-test-node-0802-1",
-                            "minBandwidth": 1000.0,
-                            "maxBandwidth": 1000.0,
-                            "maxBandwidthThreshold": 1000.0,
-                            "minBandwidthThreshold": 1000.0,
-                            "unitPrice": 11.00,
-                            "chargingType": 1,
-                            "status": 1,
-                            "createTime": 1470144573000,
-                            "inZabName": "test",
-                            "outZabName": "-test_[]",
-                            "remark": "",
-                            "operatorId": 15,
-                            "startChargingTime": 1470144483000,
-                            "lon": "113.42206",
-                            "lat": "22.545178",
-                            "cityId": 855
-                        },
-                        "cover": {
-                            "id": 1473043360653,
-                            "nodeId": 160,
-                            "regionLineId": 1,
-                            "crossLevel": 9,
-                            "remark": null
-                        },
-                        "dispConfIpInfo": {
-                            "maxNum": 6,
-                            "currNum": 2,
-                            "pauseNum": 0
-                        },
-                        "type": 0
-                    }, {
-                        "config": {
-                            "id": 159,
-                            "nodeId": 161,
-                            "regionLineId": 1,
-                            "dispGroupId": 83,
-                            "bandwidth": 100.0,
-                            "type": 1
-                        },
-                        "dispGroup": {
-                            "id": 83,
-                            "dispDomain": "xlf-testsdfsdfcgfhfg9",
-                            "crossLevel": 0,
-                            "priority": 3,
-                            "resolveIpType": 104,
-                            "ttl": 398,
-                            "status": 1,
-                            "version": 42,
-                            "updateTime": 1472527656000,
-                            "remark": "testtetstset"
-                        },
-                        "node": {
-                            "id": 164,
-                            "name": "xlf-test-node-0802-2",
-                            "chName": "xlf-test-node-0802-3",
-                            "minBandwidth": 10000.0,
-                            "maxBandwidth": 10000.0,
-                            "maxBandwidthThreshold": 1000.0,
-                            "minBandwidthThreshold": 1000.0,
-                            "unitPrice": 1111.00,
-                            "chargingType": 1,
-                            "status": 1,
-                            "createTime": 1470210152000,
-                            "inZabName": "-test_[]",
-                            "outZabName": "-test_[]",
-                            "remark": "",
-                            "operatorId": 7,
-                            "startChargingTime": 1471881600000,
-                            "lon": "108.953098",
-                            "lat": "34.2778",
-                            "cityId": 871
-                        },
-                        "cover": {
-                            "id": 1473043360653,
-                            "nodeId": 161,
-                            "regionLineId": 1,
-                            "crossLevel": 9,
-                            "remark": null
-                        },
-                        "dispConfIpInfo": {
-                            "maxNum": 6,
-                            "currNum": 5,
-                            "pauseNum": 1,
-                            "adviceChangeNum": "-5",
-                        },
-                        "type": 1,
-                        "nodeChangeType": 1
-                    }]
-                }]
-            }
-            _.each(tempData.failedAdvice, function(element, index, list){
+        onDispConfigListSuccess: function(res){
+            _.each(res.failedAdvice, function(element, index, list){
                 var temp = {}, tempList = [];
                 _.each(element, function(el, key, ls){
                     if (key === "region"){
@@ -714,8 +470,8 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 temp.isSkip = false;
                 this.collection.push(new this.collection.model(temp));
             }.bind(this))
-            this.failedNum = tempData.failedAdvice.length;
-            _.each(tempData.successAdvice, function(element, index, list){
+            this.failedNum = res.failedAdvice.length;
+            _.each(res.successAdvice, function(element, index, list){
                 var temp = {}, tempList = [];
                 _.each(element, function(el, key, ls){
                     if (key === "region"){
@@ -751,7 +507,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 temp.isSkip = false;
                 this.collection.push(new this.collection.model(temp));
             }.bind(this))
-            this.successNum = tempData.successAdvice.length;
+            this.successNum = res.successAdvice.length;
 
             this.$el.find(".opt-ctn .sending").show();
 
@@ -762,23 +518,14 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find("#disp-config-filter").val("");
             this.$el.find("#disp-config-filter").off("keyup");
             this.$el.find("#disp-config-filter").on("keyup", $.proxy(this.onKeyupDispConfigListFilter, this));
+
+            this.initNodeChangeTable(res.nodeChangeList);
+            this.cc = res.cc;
+            this.requestId = res.requestId;
         },
 
-        initNodeChangeTable: function(){
-            var data = [{
-                nodeId: 1,
-                nodeName: "节点名称",
-                bandwidthBefore: "10G",//变更前带宽
-                bandwidthAfter: "100G",//变更后带宽
-                bandwidthFlag: true,// true:升高 false:下降
-                changeBeforeRate: "75%",//变更前利用率
-                changeAfterRate: "10%",//变更后利用率
-                changeRateFlag: false//true:升高 false:下降
-            }]
-
-            this.nodeTable = $(_.template(template['tpl/dispSuggesttion/dispSuggesttion.node.table.html'])({
-                data: data
-            }));
+        initNodeChangeTable: function(data){
+            this.nodeTable = $(_.template(template['tpl/dispSuggesttion/dispSuggesttion.node.table.html'])({data: data}));
 
             if (data === 0)
                 this.$el.find(".node-table-ctn").html(_.template(template['tpl/empty.html'])());
@@ -844,40 +591,6 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             this.initSuccessTable();
         },
 
-        onClickQueryButton: function(){
-            this.$el.find(".fail-table-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.queryArgs = {
-                page : 1,
-                count: 999999,
-                groupId: this.$el.find("#input-disp-group").val()
-            }
-            this.collection.getDispConfigList(this.queryArgs);
-        },
-
-        onClickQueryMultiButton: function(event){
-            if (this.queryDetailPopup) $("#" + this.queryDetailPopup.modalId).remove();
-
-            var detailView = new QueryMultiView({
-                collection: this.collection
-            });
-            var options = {
-                title: "查询调度组",
-                body : detailView,
-                backdrop : 'static',
-                type     : 2,
-                onOKCallback:  function(){
-                    var options = detailView.getArgs();
-                    // this.queryArgs.ips = options;
-                    // this.isMultiIPSearch = true;
-                    // this.currentPage = 1;
-                    // this.onStartQueryButton();
-                    this.queryDetailPopup.$el.modal("hide");
-                }.bind(this),
-                onHiddenCallback: function(){this.enterKeyBindQuery();}.bind(this)
-            }
-            this.queryDetailPopup = new Modal(options);
-        },
-
         onClickSending: function(){
             var failedAndNotSkipList = this.collection.filter(function(obj){
                 return obj.get("isFailed") && !obj.get("isSkip")
@@ -898,43 +611,80 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 if (el === 0) ipZeroRegionName.push(key);
             }.bind(this))
 
-            if (ipZeroRegionName.length > 0)
+            if (ipZeroRegionName.length > 0) {
                 alert("调度失败的<span class='text-danger'>" + ipZeroRegionName.join(",")+ "</span>区域当前没有服务节点，请设置服务节点后进行下发!")
-            else
-                this.onSureSending()
+            } else {
+                this.pauseNodes = [];
+                for (var i = 0; i < this.collection.models.length; i++) {
+                    var currentNode = _.find(this.collection.models[i].get("listFormated"), function(obj){
+                        return obj.get("node.id") === this.nodeId;
+                    }.bind(this))
+                    if (currentNode) {
+                        var pauseNode = {
+                            dispGroupName: this.collection.models[i].get("dispGroup.dispDomain"),
+                            regionName: this.collection.models[i].get("region.name"),
+                            nodeString: currentNode.get("nodeString"),
+                            ipNum: currentNode.get("dispConfIpInfo.currNum")
+                        };
+                        this.pauseNodes.push(pauseNode)
+                    }
+                }
+                if (this.pauseNodes.length > 0) {
+                    if (this.pauseNodePopup) $("#" + this.pauseNodePopup.modalId).remove();
+
+                    var aPauseNodeView = new PauseNodeView({
+                        collection: this.collection, 
+                        pauseNodes : this.pauseNodes
+                    });
+
+                    var options = {
+                        title:"提示",
+                        body : aPauseNodeView,
+                        backdrop : 'static',
+                        type     : 1,
+                        onHiddenCallback: function(){}.bind(this)
+                    }
+                    this.pauseNodePopup = new Modal(options);
+                } else {
+                    this.onSureSending()
+                }
+            }
         },
 
         getSendData: function(){
             var failedAndCheckedList = this.collection.filter(function(obj){
-                return (obj.get("isFailed") && !obj.get("isSkip")) || obj.get("isChecked")
+                return obj.get("isFailed") || obj.get("isChecked")
+            }.bind(this));
+
+            var groupList = [];
+
+            _.each(failedAndCheckedList, function(el, index, list){
+                var groupObj = {
+                    groupId : el.get("dispGroup.id"),
+                    forcePass: el.get("isSkip") ? 1 : 0
+                }, tempArray = [];
+                _.each(el.get("listFormated"), function(el1, index1, list1){
+                    if (el1.get("type") === 1) {
+                        var tempObj =  {
+                          "dgroupId" : el1.get("dispGroup.id"),
+                          "nodeId"   : el1.get("node.id"),
+                          "regionId" : el.get("region.id"),
+                          "ttl"      : el.get("dispGroup.ttl"),
+                          "ipNum"    : el1.get("dispConfIpInfo.currNum"),
+                        };
+                        tempArray.push(tempObj)
+                    }
+                }.bind(this))
+                groupObj.list = tempArray;
+                groupList.push(groupObj)
             }.bind(this))
 
-            console.log(failedAndCheckedList)
-
-            // var tempArray = [];
-
-            // _.each(this.collection.models, function(el, index, list){
-            //     _.each(el.get("listFormated"), function(el1, index1, list1){
-            //         var tempObj =  {
-            //           "dgroupId" : el1.get("dispGroup.id") || this.queryArgs.groupId,
-            //           "nodeId"   : el1.get("node.id"),
-            //           "regionId" : el.get("region.id"),
-            //           "ttl"      : el.get("dispGroup.ttl"),
-            //           "ipNum"    : el1.get("dispConfIpInfo.currNum"),
-            //         };
-            //         tempArray.push(tempObj)
-            //     }.bind(this))
-            // }.bind(this))
-            // var args = {
-            //     groupId : this.queryArgs.groupId,
-            //     list    : tempArray
-            // }
-            // return args;
+            return groupList;
         },
 
         onSureSending: function(){
             var args = this.getSendData();
-            //this.collection.dispDns(args)
+            this.collection.adviceDispDns(args, this.nodeId, this.requestId, this.cc)
             this.showDisablePopup("下发中，请耐心等待...")
         },
 
@@ -959,13 +709,10 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 isFailed: true
             }));
 
-            if (this.failedArray.length === 0){
-                this.$el.find(".fail-table-ctn").html(_.template(template['tpl/empty.html'])());
-                this.$el.find(".opt-ctn .sending").hide();
-            } else {
+            if (this.failedArray.length === 0) 
+                this.$el.find(".fail-panel").hide();
+            else 
                 this.$el.find(".fail-table-ctn").html(this.table[0]);
-                this.$el.find(".opt-ctn .sending").show(); 
-            }
 
             this.nodesEl = this.table.find("tbody .nodes .edit")
             this.nodesEl.on("click", $.proxy(this.onClickItemEdit, this));
@@ -1268,7 +1015,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                     this.collection.trigger("get.dispConfig.success")
                     this.selectNodePopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){this.enterKeyBindQuery();}.bind(this)
+                onHiddenCallback: function(){}.bind(this)
             }
             this.selectNodePopup = new Modal(options);
         },

@@ -7,16 +7,20 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
                 this.set("id", this.get("node.id"));
             var configTypeName   = this.get("config.type"),
                 nodeChName       = this.get("node.chName"),
-                nodeMinBandwidth = this.get("node.minBandwidth"),
+                nodeMaxBWLastNight = this.get("node.maxBWLastNight"),
+                nodeCurrBW = this.get("node.currBW"),
                 nodeMaxBandwidth = this.get("node.maxBandwidth"),
                 crossLevel       = this.get("cover.crossLevel");
+                maxBandWidth = (this.get("region.maxBandWidth")/60/1000/1000/1000).toFixed(2);
+
+            this.set("region.maxBandWidth", maxBandWidth)
 
             if (configTypeName === 2) this.set("config.typeName",'CName');
             if (configTypeName === 1) this.set("config.typeName", 'A记录');
             if (configTypeName === 0) this.set("config.typeName", '0');
 
             if (nodeChName){
-                var nodeString = nodeChName + "(" + nodeMinBandwidth + "/" + nodeMaxBandwidth + ")L" + crossLevel
+                var nodeString = nodeChName + "(" + nodeMaxBWLastNight + "/" + nodeCurrBW + "/" + nodeMaxBandwidth + ")L" + crossLevel
                 this.set("nodeString", nodeString);
             }
             this.set("isChecked", false);

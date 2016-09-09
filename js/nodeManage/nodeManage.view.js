@@ -610,6 +610,9 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
 
+            this.collection.on("operate.node.success", $.proxy(this.onOperateNodeSuccess, this));
+            this.collection.on("operate.node.error", $.proxy(this.onGetError, this));
+
             this.collection.on("add.assocateDispGroups.success", function(){
                 alert("操作成功！")
             }.bind(this));
@@ -851,7 +854,8 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             } else {
                 id = $(eventTarget).attr("id");
             }
-            this.collection.updateNodeStatus({ids:[parseInt(id)], status:1})
+            //this.collection.updateNodeStatus({ids:[parseInt(id)], status:1})
+            this.collection.operateNode({nodeId: id, operator: 1, t: new Date().valueOf()})
         },
 
         onClickMultiPlay: function(event){
@@ -889,10 +893,21 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             }
             var result = confirm("你确定要暂停节点吗？")
             if (!result) return
-            //this.collection.updateNodeStatus({ids:[parseInt(id)], status:3})
-            require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel){
-                this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, id)
-            }.bind(this))
+            this.collection.operateNode({nodeId: id, operator: -1, t: new Date().valueOf()})
+            // require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel){
+            //     this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, id)
+            // }.bind(this))        
+        },
+
+        onOperateNodeSuccess: function(res){
+            if (res.msg == "1"){
+                alert("操作成功！")
+                this.onClickQueryButton();
+            } else if (res.msg == "-1"){
+                require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel){
+                    this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, id)
+                }.bind(this))
+            }
         },
 
         onRequireDispSuggesttionModule: function(DispSuggesttionViews, DispSuggesttionModel, nodeId){//

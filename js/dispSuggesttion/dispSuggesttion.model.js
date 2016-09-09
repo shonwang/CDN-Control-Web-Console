@@ -10,8 +10,10 @@ define("dispSuggesttion.model", ['require','exports', 'utility'], function(requi
                 nodeMaxBWLastNight = this.get("node.maxBWLastNight"),
                 nodeCurrBW = this.get("node.currBW"),
                 nodeMaxBandwidth = this.get("node.maxBandwidth"),
-                crossLevel       = this.get("cover.crossLevel");
+                crossLevel       = this.get("cover.crossLevel"),
+                maxBandWidth = (this.get("region.maxBandWidth")/60/1000/1000/1000).toFixed(2);
 
+            this.set("region.maxBandWidth", maxBandWidth)
             if (configTypeName === 2) this.set("config.typeName",'CName');
             if (configTypeName === 1) this.set("config.typeName", 'A记录');
             if (configTypeName === 0) this.set("config.typeName", '0');
@@ -124,8 +126,8 @@ define("dispSuggesttion.model", ['require','exports', 'utility'], function(requi
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        adviceDispDns: function(args){
-            var url = BASE_URL + "/rs/advice/adviceDispDns",
+        adviceDispDns: function(args, nodeId, requestId, cc){
+            var url = BASE_URL + "/rs/advice/adviceDispDns?nodeId=" + nodeId + "&requestId=" + requestId + "&cc=" + cc,
             successCallback = function(res){
                 this.trigger("advice.dispDns.success"); 
             }.bind(this),

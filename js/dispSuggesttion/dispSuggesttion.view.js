@@ -31,7 +31,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
 
             
             setTimeout(function(){
-                this.collection.getNodeBandWidth({nodeId: 62, t: new Date().valueOf()})//this.selectNode["node.id"]});
+                this.collection.getNodeBandWidth({nodeId: this.selectNode["node.id"], t: new Date().valueOf()})//this.selectNode["node.id"]});
             }.bind(this), 500)
         },
 
@@ -390,11 +390,11 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             this.collection.on("get.disconfAdvice.success", $.proxy(this.onDispConfigListSuccess, this));
             this.collection.on("get.disconfAdvice.error", $.proxy(this.onGetError, this));
 
-            this.collection.on("dispDns.success", function(){
+            this.collection.on("advice.dispDns.success", function(){
                 this.disablePopup.$el.modal('hide');
                 alert("下发成功！")
             }.bind(this));
-            this.collection.on("dispDns.error", function(res){
+            this.collection.on("advice.dispDns.error", function(res){
                 this.disablePopup.$el.modal('hide');
                 this.onGetError(res)
             }.bind(this));
@@ -434,257 +434,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onDispConfigListSuccess: function(res){
-            var tempData = {
-                "failedAdvice": [{
-                    "region": {
-                        "id": 1,
-                        "name": "全网默认111",
-                        "operaterId": -1,
-                        "sortKey": 0,
-                        "maxBandWidth": 10.0,
-                        "failedReason": "你太帅"
-                    },
-                    "list": [
-                    {
-                        "config": {
-                            "id": 158,
-                            "nodeId": 160,
-                            "regionLineId": 1,
-                            "dispGroupId": 83,
-                            "bandwidth": 100.0,
-                            "type": 1
-                        },
-                        "dispGroup": {
-                            "id": 83,
-                            "dispDomain": "xlf-test-0802-copywrong6",
-                            "crossLevel": 0,
-                            "priority": 3,
-                            "resolveIpType": 104,
-                            "ttl": 398,
-                            "status": 1,
-                            "version": 42,
-                            "updateTime": 1472527656000,
-                            "remark": "testtetstset"
-                        },
-                        "node": {
-                            "id": 160,
-                            "name": "xlf-test-node-0802-1",
-                            "chName": "xlf-test-node-0802-1",
-                            "minBandwidth": 1000.0,
-                            "maxBandwidth": 1000.0,
-                            "maxBandwidthThreshold": 1000.0,
-                            "minBandwidthThreshold": 1000.0,
-                            "unitPrice": 11.00,
-                            "chargingType": 1,
-                            "status": 1,
-                            "createTime": 1470144573000,
-                            "inZabName": "test",
-                            "outZabName": "-test_[]",
-                            "remark": "",
-                            "operatorId": 15,
-                            "startChargingTime": 1470144483000,
-                            "lon": "113.42206",
-                            "lat": "22.545178",
-                            "cityId": 855
-                        },
-                        "cover": {
-                            "id": 1473043360653,
-                            "nodeId": 160,
-                            "regionLineId": 1,
-                            "crossLevel": 9,
-                            "remark": null
-                        },
-                        "dispConfIpInfo": {
-                            "maxNum": 6,
-                            "currNum": 2,
-                            "pauseNum": 0
-                        },
-                        "type": 0
-                    }, 
-                    {
-                        "config": {
-                            "id": 159,
-                            "nodeId": 161,
-                            "regionLineId": 1,
-                            "dispGroupId": 83,
-                            "bandwidth": 100.0,
-                            "type": 1
-                        },
-                        "dispGroup": {
-                            "id": 83,
-                            "dispDomain": "xlf-test-0802-copywrong5",
-                            "crossLevel": 0,
-                            "priority": 3,
-                            "resolveIpType": 104,
-                            "ttl": 398,
-                            "status": 1,
-                            "version": 42,
-                            "updateTime": 1472527656000,
-                            "remark": "testtetstset"
-                        },
-                        "node": {
-                            "id": 161,
-                            "name": "xlf-test-node-0802-2",
-                            "chName": "xlf-test-node-0802-3",
-                            "minBandwidth": 10000.0,
-                            "maxBandwidth": 10000.0,
-                            "maxBandwidthThreshold": 1000.0,
-                            "minBandwidthThreshold": 1000.0,
-                            "unitPrice": 1111.00,
-                            "chargingType": 1,
-                            "status": 1,
-                            "createTime": 1470210152000,
-                            "inZabName": "-test_[]",
-                            "outZabName": "-test_[]",
-                            "remark": "",
-                            "operatorId": 7,
-                            "startChargingTime": 1471881600000,
-                            "lon": "108.953098",
-                            "lat": "34.2778",
-                            "cityId": 871
-                        },
-                        "cover": {
-                            "id": 1473043360653,
-                            "nodeId": 161,
-                            "regionLineId": 1,
-                            "crossLevel": 9,
-                            "remark": null
-                        },
-                        "dispConfIpInfo": {
-                            "maxNum": 6,
-                            "currNum": 5,
-                            "pauseNum": 0,
-                            "adviceChangeNum": "-5",
-                        },
-                        "type": 1,
-                        "nodeChangeType": 2
-                    }]
-                }],
-                "successAdvice": [{
-                    "region": {
-                        "id": 2,
-                        "name": "全网默认",
-                        "operaterId": -1,
-                        "sortKey": 0,
-                        "maxBandWidth": 10.0,
-                        "failedReason": "你太帅"
-                    },
-                    "list": [{
-                        "config": {
-                            "id": 158,
-                            "nodeId": 160,
-                            "regionLineId": 1,
-                            "dispGroupId": 83,
-                            "bandwidth": 100.0,
-                            "type": 1
-                        },
-                        "dispGroup": {
-                            "id": 83,
-                            "dispDomain": "xlf-test-0802-fghdvdgf5",
-                            "crossLevel": 0,
-                            "priority": 3,
-                            "resolveIpType": 104,
-                            "ttl": 398,
-                            "status": 1,
-                            "version": 42,
-                            "updateTime": 1472527656000,
-                            "remark": "testtetstset"
-                        },
-                        "node": {
-                            "id": 163,
-                            "name": "xlf-test-node-0802-1",
-                            "chName": "xlf-test-node-0802-1",
-                            "minBandwidth": 1000.0,
-                            "maxBandwidth": 1000.0,
-                            "maxBandwidthThreshold": 1000.0,
-                            "minBandwidthThreshold": 1000.0,
-                            "unitPrice": 11.00,
-                            "chargingType": 1,
-                            "status": 1,
-                            "createTime": 1470144573000,
-                            "inZabName": "test",
-                            "outZabName": "-test_[]",
-                            "remark": "",
-                            "operatorId": 15,
-                            "startChargingTime": 1470144483000,
-                            "lon": "113.42206",
-                            "lat": "22.545178",
-                            "cityId": 855
-                        },
-                        "cover": {
-                            "id": 1473043360653,
-                            "nodeId": 160,
-                            "regionLineId": 1,
-                            "crossLevel": 9,
-                            "remark": null
-                        },
-                        "dispConfIpInfo": {
-                            "maxNum": 6,
-                            "currNum": 2,
-                            "pauseNum": 0
-                        },
-                        "type": 0
-                    }, {
-                        "config": {
-                            "id": 159,
-                            "nodeId": 161,
-                            "regionLineId": 1,
-                            "dispGroupId": 83,
-                            "bandwidth": 100.0,
-                            "type": 1
-                        },
-                        "dispGroup": {
-                            "id": 83,
-                            "dispDomain": "xlf-testsdfsdfcgfhfg9",
-                            "crossLevel": 0,
-                            "priority": 3,
-                            "resolveIpType": 104,
-                            "ttl": 398,
-                            "status": 1,
-                            "version": 42,
-                            "updateTime": 1472527656000,
-                            "remark": "testtetstset"
-                        },
-                        "node": {
-                            "id": 164,
-                            "name": "xlf-test-node-0802-2",
-                            "chName": "xlf-test-node-0802-3",
-                            "minBandwidth": 10000.0,
-                            "maxBandwidth": 10000.0,
-                            "maxBandwidthThreshold": 1000.0,
-                            "minBandwidthThreshold": 1000.0,
-                            "unitPrice": 1111.00,
-                            "chargingType": 1,
-                            "status": 1,
-                            "createTime": 1470210152000,
-                            "inZabName": "-test_[]",
-                            "outZabName": "-test_[]",
-                            "remark": "",
-                            "operatorId": 7,
-                            "startChargingTime": 1471881600000,
-                            "lon": "108.953098",
-                            "lat": "34.2778",
-                            "cityId": 871
-                        },
-                        "cover": {
-                            "id": 1473043360653,
-                            "nodeId": 161,
-                            "regionLineId": 1,
-                            "crossLevel": 9,
-                            "remark": null
-                        },
-                        "dispConfIpInfo": {
-                            "maxNum": 6,
-                            "currNum": 5,
-                            "pauseNum": 1,
-                            "adviceChangeNum": "-5",
-                        },
-                        "type": 1,
-                        "nodeChangeType": 1
-                    }]
-                }]
-            }
-            _.each(tempData.failedAdvice, function(element, index, list){
+            _.each(res.failedAdvice, function(element, index, list){
                 var temp = {}, tempList = [];
                 _.each(element, function(el, key, ls){
                     if (key === "region"){
@@ -720,8 +470,8 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 temp.isSkip = false;
                 this.collection.push(new this.collection.model(temp));
             }.bind(this))
-            this.failedNum = tempData.failedAdvice.length;
-            _.each(tempData.successAdvice, function(element, index, list){
+            this.failedNum = res.failedAdvice.length;
+            _.each(res.successAdvice, function(element, index, list){
                 var temp = {}, tempList = [];
                 _.each(element, function(el, key, ls){
                     if (key === "region"){
@@ -757,7 +507,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 temp.isSkip = false;
                 this.collection.push(new this.collection.model(temp));
             }.bind(this))
-            this.successNum = tempData.successAdvice.length;
+            this.successNum = res.successAdvice.length;
 
             this.$el.find(".opt-ctn .sending").show();
 
@@ -770,14 +520,12 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find("#disp-config-filter").on("keyup", $.proxy(this.onKeyupDispConfigListFilter, this));
 
             this.initNodeChangeTable(res.nodeChangeList);
-
-            console.log(res)
+            this.cc = res.cc;
+            this.requestId = res.requestId;
         },
 
         initNodeChangeTable: function(data){
-            this.nodeTable = $(_.template(template['tpl/dispSuggesttion/dispSuggesttion.node.table.html'])({
-                data: data
-            }));
+            this.nodeTable = $(_.template(template['tpl/dispSuggesttion/dispSuggesttion.node.table.html'])({data: data}));
 
             if (data === 0)
                 this.$el.find(".node-table-ctn").html(_.template(template['tpl/empty.html'])());
@@ -936,7 +684,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
 
         onSureSending: function(){
             var args = this.getSendData();
-            //this.collection.adviceDispDns(args)
+            this.collection.adviceDispDns(args, this.nodeId, this.requestId, this.cc)
             this.showDisablePopup("下发中，请耐心等待...")
         },
 

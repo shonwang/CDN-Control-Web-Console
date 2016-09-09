@@ -893,6 +893,8 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             }
             var result = confirm("你确定要暂停节点吗？")
             if (!result) return
+
+            this.currentPauseNodeId = id;
             this.collection.operateNode({nodeId: id, operator: -1, t: new Date().valueOf()})
             // require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel){
             //     this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, id)
@@ -905,7 +907,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.onClickQueryButton();
             } else if (res.msg == "-1"){
                 require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel){
-                    this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, id)
+                    this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, this.currentPauseNodeId)
                 }.bind(this))
             }
         },

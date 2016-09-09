@@ -985,7 +985,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 {name: "全部", value: "All"},
                 {name: "运行", value: 1},
                 {name: "挂起", value: 2},
-                {name: "暂停", value: 3}
+                {name: "暂停", value: 4}
             ],
             rootNode = this.$el.find(".dropdown-status");
             Utility.initDropMenu(rootNode, statusArray, function(value){

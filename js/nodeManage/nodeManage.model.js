@@ -246,6 +246,20 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             $.ajax(defaultParas);
         },
 
+        operateNode: function(args){
+            var url = BASE_URL + "/rs/node/operateNode",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("operate.node.success", res);
+                else
+                    this.trigger("operate.node.error", res); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("operate.node.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
         getAssocateDispGroups: function(args){
             var url = BASE_URL + "/rs/node/getAssocateDispGroups",
             successCallback = function(res){

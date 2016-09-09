@@ -7,7 +7,8 @@ define("dispSuggesttion.model", ['require','exports', 'utility'], function(requi
                 this.set("id", this.get("node.id"));
             var configTypeName   = this.get("config.type"),
                 nodeChName       = this.get("node.chName"),
-                nodeMinBandwidth = this.get("node.minBandwidth"),
+                nodeMaxBWLastNight = this.get("node.maxBWLastNight"),
+                nodeCurrBW = this.get("node.currBW"),
                 nodeMaxBandwidth = this.get("node.maxBandwidth"),
                 crossLevel       = this.get("cover.crossLevel");
 
@@ -16,7 +17,7 @@ define("dispSuggesttion.model", ['require','exports', 'utility'], function(requi
             if (configTypeName === 0) this.set("config.typeName", '0');
 
             if (nodeChName){
-                var nodeString = nodeChName + "(" + nodeMinBandwidth + "/" + nodeMaxBandwidth + ")L" + crossLevel
+                var nodeString = nodeChName + "(" + nodeMaxBWLastNight + "/" + nodeCurrBW + "/" + nodeMaxBandwidth + ")L" + crossLevel
                 this.set("nodeString", nodeString);
             }
             this.set("isChecked", false);
@@ -123,37 +124,30 @@ define("dispSuggesttion.model", ['require','exports', 'utility'], function(requi
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        dispDns: function(args){
-            var url = BASE_URL + "/rs/dispConf/dispDns?groupId=" + args.groupId
-            var defaultParas = {
-                type: "POST",
-                url: url,
-                async: true,
-                timeout: 6000000,
-                contentType: "application/json",
-                processData: false
-            };
-            defaultParas.data = JSON.stringify(args.list);
-            defaultParas.beforeSend = function(xhr){
-                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
-            }
-            defaultParas.success = function(){
-                this.trigger("dispDns.success"); 
+        adviceDispDns: function(args){
+            var url = BASE_URL + "/rs/advice/adviceDispDns",
+            successCallback = function(res){
+                this.trigger("advice.dispDns.success"); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("advice.dispDns.error", response); 
             }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
 
-            defaultParas.error = function(response, msg){
-                try{
-                    if (response&&response.responseText)
-                        response = JSON.parse(response.responseText)
-                } catch(e){}
-                this.trigger("dispDns.error", response); 
+        getNodeBandWidth: function(args){
+            var url = BASE_URL + "/rs/node/bandWidth",//?nodeId=XXX
+            successCallback = function(res){
+                this.trigger("get.nodeBandWidth.success", res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.nodeBandWidth.error", response);
             }.bind(this);
-
-            $.ajax(defaultParas);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
         getDisconfAdvice: function(args){
-            var url = BASE_URL + "/rs/node/getDisconfAdvice",//?nodeId=XXX
+            var url = BASE_URL + "/rs/advice/getDisconfAdvice",//?nodeId=XXX
             successCallback = function(res){
                 this.trigger("get.disconfAdvice.success", res);
             }.bind(this),

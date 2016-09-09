@@ -7,7 +7,8 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
                 this.set("id", this.get("node.id"));
             var configTypeName   = this.get("config.type"),
                 nodeChName       = this.get("node.chName"),
-                nodeMinBandwidth = this.get("node.minBandwidth"),
+                nodeMaxBWLastNight = this.get("node.maxBWLastNight"),
+                nodeCurrBW = this.get("node.currBW"),
                 nodeMaxBandwidth = this.get("node.maxBandwidth"),
                 crossLevel       = this.get("cover.crossLevel");
 
@@ -16,7 +17,7 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
             if (configTypeName === 0) this.set("config.typeName", '0');
 
             if (nodeChName){
-                var nodeString = nodeChName + "(" + nodeMinBandwidth + "/" + nodeMaxBandwidth + ")L" + crossLevel
+                var nodeString = nodeChName + "(" + nodeMaxBWLastNight + "/" + nodeCurrBW + "/" + nodeMaxBandwidth + ")L" + crossLevel
                 this.set("nodeString", nodeString);
             }
             this.set("isChecked", false);

@@ -12,13 +12,13 @@
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].nodeId%>">
               <td><%=data[i].nodeName%></td>
-              <td><%=data[i].bandwidthBefore%></td>
+              <td><%=data[i].bandwidthBefore%>G</td>
               <td>
                   <% if (data[i].bandwidthAfter) { %> 
-                  <span class="text-danger"><%=data[i].bandwidthAfter%></span>
+                  <span class="text-danger"><%=data[i].bandwidthAfter%>G</span>
                   <span class="text-danger glyphicon glyphicon-arrow-up"></span>
                   <% } else { %>
-                  <span class="text-success"><%=data[i].bandwidthAfter%></span>
+                  <span class="text-success"><%=data[i].bandwidthAfter%>G</span>
                   <span class="text-success glyphicon glyphicon-arrow-down"></span>
                   <% } %>
               </td>

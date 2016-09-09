@@ -377,15 +377,18 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
         events: {},
 
         initialize: function(options) {
-            this.nodeId = 7;//options.nodeId;
+            this.nodeId = options.nodeId;
             this.collection = options.collection;
             this.backCallback = options.backCallback;
 
             this.$el = $(_.template(template['tpl/dispSuggesttion/dispSuggesttion.html'])({}));
-            //this.$el.find(".node-table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
-            this.collection.on("get.dispConfig.success", $.proxy(this.onDispConfigListSuccess, this));
-            this.collection.on("get.dispConfig.error", $.proxy(this.onGetError, this));
+            this.$el.find(".node-table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.$el.find(".fail-table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.$el.find(".success-table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            
+            this.collection.on("get.disconfAdvice.success", $.proxy(this.onDispConfigListSuccess, this));
+            this.collection.on("get.disconfAdvice.error", $.proxy(this.onGetError, this));
 
             this.collection.on("dispDns.success", function(){
                 this.disablePopup.$el.modal('hide');
@@ -401,9 +404,6 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".opt-ctn .sending").on("click", $.proxy(this.onClickSending, this));
             this.$el.find(".opt-ctn .show-node-change").on("click", $.proxy(this.onClickShowRemark, this));
             this.$el.find(".opt-ctn .hide-node-change").on("click", $.proxy(this.onClickHideRemark, this));
-
-            this.initNodeChangeTable();
-            this.onDispConfigListSuccess();
 
             if (this.nodeId) this.collection.getDisconfAdvice({nodeId: this.nodeId, t: new Date().valueOf()})
         },
@@ -433,7 +433,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 alert("网络阻塞，请刷新重试！")
         },
 
-        onDispConfigListSuccess: function(){
+        onDispConfigListSuccess: function(res){
             var tempData = {
                 "failedAdvice": [{
                     "region": {
@@ -768,20 +768,13 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find("#disp-config-filter").val("");
             this.$el.find("#disp-config-filter").off("keyup");
             this.$el.find("#disp-config-filter").on("keyup", $.proxy(this.onKeyupDispConfigListFilter, this));
+
+            this.initNodeChangeTable(res.nodeChangeList);
+
+            console.log(res)
         },
 
-        initNodeChangeTable: function(){
-            var data = [{
-                nodeId: 1,
-                nodeName: "节点名称",
-                bandwidthBefore: "10G",//变更前带宽
-                bandwidthAfter: "100G",//变更后带宽
-                bandwidthFlag: true,// true:升高 false:下降
-                changeBeforeRate: "75%",//变更前利用率
-                changeAfterRate: "10%",//变更后利用率
-                changeRateFlag: false//true:升高 false:下降
-            }]
-
+        initNodeChangeTable: function(data){
             this.nodeTable = $(_.template(template['tpl/dispSuggesttion/dispSuggesttion.node.table.html'])({
                 data: data
             }));

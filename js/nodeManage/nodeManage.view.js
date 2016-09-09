@@ -892,10 +892,10 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             }
             var result = confirm("你确定要暂停节点吗？")
             if (!result) return
-            this.collection.operateNode({nodeId: id, operator: -1})
-            // require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel){
-            //     this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, id)
-            // }.bind(this))        
+            //this.collection.operateNode({nodeId: id, operator: -1})
+            require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel){
+                this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, id)
+            }.bind(this))        
         },
 
         onOperateNodeSuccess: function(res){

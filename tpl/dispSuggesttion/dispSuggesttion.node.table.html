@@ -14,7 +14,7 @@
               <td><%=data[i].nodeName%></td>
               <td><%=data[i].bandwidthBefore%>G</td>
               <td>
-                  <% if (data[i].bandwidthAfter) { %> 
+                  <% if (data[i].bandwidthFlag) { %> 
                   <span class="text-danger"><%=data[i].bandwidthAfter%>G</span>
                   <span class="text-danger glyphicon glyphicon-arrow-up"></span>
                   <% } else { %>

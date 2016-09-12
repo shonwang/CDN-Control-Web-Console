@@ -434,80 +434,86 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onDispConfigListSuccess: function(res){
-            _.each(res.failedAdvice, function(element, index, list){
-                var temp = {}, tempList = [];
-                _.each(element, function(el, key, ls){
-                    if (key === "region"){
-                        _.each(el, function(el1, key1, ls1){
-                            temp[key + "." + key1] = el1
-                        }.bind(this))
-                    }
-                    if (key === "list"){
-                        var tempObj = {}
-                        _.each(el, function(el2, key2, ls2){
-                            _.each(el2, function(el3, key3, ls3){
-                                if (key3 === "type") tempObj.type = el3;
-                                if (key3 === "nodeChangeType") tempObj.nodeChangeType = el3;
-                                _.each(el3, function(el4, key4, ls4){
-                                    var tempKey = key3 + "." + key4
-                                    tempObj[tempKey] = el4
-                                    if (tempKey === "dispGroup.dispDomain" && !temp['dispGroup.dispDomain'])
-                                        temp['dispGroup.dispDomain'] = el4
-                                    if (tempKey === "dispGroup.id" && !temp['dispGroup.id'])
-                                        temp['dispGroup.id'] = el4
-                                    if (tempKey === "dispGroup.ttl" && !temp['dispGroup.ttl'])
-                                        temp['dispGroup.ttl'] = el4
-                                }.bind(this))
+            if (res) {
+                _.each(res.failedAdvice, function(element, index, list){
+                    var temp = {}, tempList = [];
+                    _.each(element, function(el, key, ls){
+                        if (key === "region"){
+                            _.each(el, function(el1, key1, ls1){
+                                temp[key + "." + key1] = el1
                             }.bind(this))
-                            tempObj.isDisplay = true;
-                            tempList.push(new this.collection.model(tempObj))
-                        }.bind(this))
-                        temp.listFormated = tempList;
-                    }
-                }.bind(this))
-                temp.isDisplay = true;
-                temp.isFailed = true;
-                temp.isSkip = false;
-                this.collection.push(new this.collection.model(temp));
-            }.bind(this))
-            this.failedNum = res.failedAdvice.length;
-            _.each(res.successAdvice, function(element, index, list){
-                var temp = {}, tempList = [];
-                _.each(element, function(el, key, ls){
-                    if (key === "region"){
-                        _.each(el, function(el1, key1, ls1){
-                            temp[key + "." + key1] = el1
-                        }.bind(this))
-                    }
-                    if (key === "list"){
-                        var tempObj = {}
-                        _.each(el, function(el2, key2, ls2){
-                            _.each(el2, function(el3, key3, ls3){
-                                if (key3 === "type") tempObj.type = el3;
-                                if (key3 === "nodeChangeType") tempObj.nodeChangeType = el3;
-                                _.each(el3, function(el4, key4, ls4){
-                                    var tempKey = key3 + "." + key4
-                                    tempObj[tempKey] = el4
-                                    if (tempKey === "dispGroup.dispDomain" && !temp['dispGroup.dispDomain'])
-                                        temp['dispGroup.dispDomain'] = el4
-                                    if (tempKey === "dispGroup.id" && !temp['dispGroup.id'])
-                                        temp['dispGroup.id'] = el4
-                                    if (tempKey === "dispGroup.ttl" && !temp['dispGroup.ttl'])
-                                        temp['dispGroup.ttl'] = el4
+                        }
+                        if (key === "list"){
+                            var tempObj = {}
+                            _.each(el, function(el2, key2, ls2){
+                                _.each(el2, function(el3, key3, ls3){
+                                    if (key3 === "type") tempObj.type = el3;
+                                    if (key3 === "nodeChangeType") tempObj.nodeChangeType = el3;
+                                    _.each(el3, function(el4, key4, ls4){
+                                        var tempKey = key3 + "." + key4
+                                        tempObj[tempKey] = el4
+                                        if (tempKey === "dispGroup.dispDomain" && !temp['dispGroup.dispDomain'])
+                                            temp['dispGroup.dispDomain'] = el4
+                                        if (tempKey === "dispGroup.id" && !temp['dispGroup.id'])
+                                            temp['dispGroup.id'] = el4
+                                        if (tempKey === "dispGroup.ttl" && !temp['dispGroup.ttl'])
+                                            temp['dispGroup.ttl'] = el4
+                                    }.bind(this))
                                 }.bind(this))
+                                tempObj.isDisplay = true;
+                                tempList.push(new this.collection.model(tempObj))
                             }.bind(this))
-                            tempObj.isDisplay = true;
-                            tempList.push(new this.collection.model(tempObj))
-                        }.bind(this))
-                        temp.listFormated = tempList;
-                    }
+                            temp.listFormated = tempList;
+                        }
+                    }.bind(this))
+                    temp.isDisplay = true;
+                    temp.isFailed = true;
+                    temp.isSkip = false;
+                    this.collection.push(new this.collection.model(temp));
                 }.bind(this))
-                temp.isDisplay = true;
-                temp.isFailed = false;
-                temp.isSkip = false;
-                this.collection.push(new this.collection.model(temp));
-            }.bind(this))
-            this.successNum = res.successAdvice.length;
+                this.failedNum = res.failedAdvice.length;
+                _.each(res.successAdvice, function(element, index, list){
+                    var temp = {}, tempList = [];
+                    _.each(element, function(el, key, ls){
+                        if (key === "region"){
+                            _.each(el, function(el1, key1, ls1){
+                                temp[key + "." + key1] = el1
+                            }.bind(this))
+                        }
+                        if (key === "list"){
+                            var tempObj = {}
+                            _.each(el, function(el2, key2, ls2){
+                                _.each(el2, function(el3, key3, ls3){
+                                    if (key3 === "type") tempObj.type = el3;
+                                    if (key3 === "nodeChangeType") tempObj.nodeChangeType = el3;
+                                    _.each(el3, function(el4, key4, ls4){
+                                        var tempKey = key3 + "." + key4
+                                        tempObj[tempKey] = el4
+                                        if (tempKey === "dispGroup.dispDomain" && !temp['dispGroup.dispDomain'])
+                                            temp['dispGroup.dispDomain'] = el4
+                                        if (tempKey === "dispGroup.id" && !temp['dispGroup.id'])
+                                            temp['dispGroup.id'] = el4
+                                        if (tempKey === "dispGroup.ttl" && !temp['dispGroup.ttl'])
+                                            temp['dispGroup.ttl'] = el4
+                                    }.bind(this))
+                                }.bind(this))
+                                tempObj.isDisplay = true;
+                                tempList.push(new this.collection.model(tempObj))
+                            }.bind(this))
+                            temp.listFormated = tempList;
+                        }
+                    }.bind(this))
+                    temp.isDisplay = true;
+                    temp.isFailed = false;
+                    temp.isSkip = false;
+                    this.collection.push(new this.collection.model(temp));
+                }.bind(this))
+                this.successNum = res.successAdvice.length;
+
+                this.initNodeChangeTable(res.nodeChangeList);
+                this.cc = res.cc;
+                this.requestId = res.requestId;
+            }
 
             this.$el.find(".opt-ctn .sending").show();
 
@@ -518,10 +524,6 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find("#disp-config-filter").val("");
             this.$el.find("#disp-config-filter").off("keyup");
             this.$el.find("#disp-config-filter").on("keyup", $.proxy(this.onKeyupDispConfigListFilter, this));
-
-            this.initNodeChangeTable(res.nodeChangeList);
-            this.cc = res.cc;
-            this.requestId = res.requestId;
         },
 
         initNodeChangeTable: function(data){
@@ -947,7 +949,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                         options[m].type = 1;
                         model.get("listFormated").push(new this.collection.model(options[m]))
                     }
-                    this.collection.trigger("get.dispConfig.success")
+                    this.collection.trigger("get.disconfAdvice.success")
                     this.selectNodePopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
@@ -1012,7 +1014,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                         }
                     }
                     model.set("listFormated", list);
-                    this.collection.trigger("get.dispConfig.success")
+                    this.collection.trigger("get.disconfAdvice.success")
                     this.selectNodePopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
@@ -1048,7 +1050,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 }
             }
             this.collection.get(regionId).set("listFormated", list);
-            this.collection.trigger("get.dispConfig.success")
+            this.collection.trigger("get.disconfAdvice.success")
         },
 
         remove: function(){

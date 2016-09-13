@@ -17,9 +17,9 @@
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
             <% if (data[i].get("isDisplay")) { %>
-            <tr data-id="<%=data[i].attributes.id%>">
+            <tr data-id='<%=data[i].get("id")%>'>
               <% if (!isFailed) { %>
-              <td><input type="checkbox" id="<%=data[i].id%>"></td>
+              <td><input type="checkbox" id='<%=data[i].get("id")%>'></td>
               <% } %>
               <td><%=data[i].get("dispGroup.dispDomain")%></td>
               <td><%=data[i].get("region.name")%>(<%=data[i].get("region.maxBandWidth")%>)</td>
@@ -39,20 +39,20 @@
                                       <span class="label label-info">u</span>
                                       <a href="javascript:void(0)" class="node-string text-primary" 
                                       id='<%=data[i].get("listFormated")[k].get("id")%>' 
-                                      region-id='<%=data[i].get("id")%>'>
+                                      group-region-id='<%=data[i].get("id")%>'>
                                           <%=data[i].get("listFormated")[k].get("nodeString")%>
                                       </a>
                                     <% } else if (data[i].get("listFormated")[k].get("nodeChangeType") === 2) { %>
                                       <strong class="label label-danger">+</strong>
                                       <a href="javascript:void(0)" class="node-string text-danger" 
                                       id='<%=data[i].get("listFormated")[k].get("id")%>' 
-                                      region-id='<%=data[i].get("id")%>'>
+                                      group-region-id='<%=data[i].get("id")%>'>
                                           <%=data[i].get("listFormated")[k].get("nodeString")%>
                                       </a>
                                     <% } else { %>
                                     <a href="javascript:void(0)" class="node-string text-muted"
                                     id='<%=data[i].get("listFormated")[k].get("id")%>' 
-                                    region-id='<%=data[i].get("id")%>'>
+                                    group-region-id='<%=data[i].get("id")%>'>
                                         <%=data[i].get("listFormated")[k].get("nodeString")%>
                                     </a>
                                     <% } %>
@@ -61,7 +61,7 @@
                                     <% if (data[i].get("listFormated")[k].get("type") !== 0) { %>
                                     <input type="number" class="weight" 
                                       id='<%=data[i].get("listFormated")[k].get("id")%>' 
-                                      region-id='<%=data[i].get("id")%>' 
+                                      group-region-id='<%=data[i].get("id")%>' 
                                       max='<%=data[i].get("listFormated")[k].get("dispConfIpInfo.maxNum")%>' 
                                       min="1" 
                                       value='<%=data[i].get("listFormated")[k].get("dispConfIpInfo.currNum")%>'>
@@ -81,10 +81,10 @@
                                     </span>
                                     <% } %>
                                     <% if (data[i].get("listFormated")[k].get("type") !== 0) { %>
-                                    <a href="javascript:void(0)" class="edit" id='<%=data[i].get("listFormated")[k].get("id")%>' region-id='<%=data[i].get("id")%>' title="编辑节点">
+                                    <a href="javascript:void(0)" class="edit" id='<%=data[i].get("listFormated")[k].get("id")%>' group-region-id='<%=data[i].get("id")%>' title="编辑节点">
                                         <span class="glyphicon glyphicon-edit"></span>
                                     </a>
-                                    <a href="javascript:void(0)" class="delete" id='<%=data[i].get("listFormated")[k].get("id")%>' region-id='<%=data[i].get("id")%>'  title="删除">
+                                    <a href="javascript:void(0)" class="delete" id='<%=data[i].get("listFormated")[k].get("id")%>' group-region-id='<%=data[i].get("id")%>'  title="删除">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </a>
                                     <% } %>

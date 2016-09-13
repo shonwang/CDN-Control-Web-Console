@@ -438,6 +438,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 _.each(res.failedAdvice, function(element, index, list){
                     var temp = {}, tempList = [];
                     _.each(element, function(el, key, ls){
+                        if (key === "gr") temp.id = el;
                         if (key === "region"){
                             _.each(el, function(el1, key1, ls1){
                                 temp[key + "." + key1] = el1
@@ -475,6 +476,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 _.each(res.successAdvice, function(element, index, list){
                     var temp = {}, tempList = [];
                     _.each(element, function(el, key, ls){
+                        if (key === "gr") temp.id = el;
                         if (key === "region"){
                             _.each(el, function(el1, key1, ls1){
                                 temp[key + "." + key1] = el1
@@ -524,6 +526,8 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find("#disp-config-filter").val("");
             this.$el.find("#disp-config-filter").off("keyup");
             this.$el.find("#disp-config-filter").on("keyup", $.proxy(this.onKeyupDispConfigListFilter, this));
+
+            console.log(this.collection.models)
         },
 
         initNodeChangeTable: function(data){
@@ -827,11 +831,11 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onClickNodeString: function(event){
-            var eventTarget = event.srcElement || event.target, id, regionId, value;
+            var eventTarget = event.srcElement || event.target, id, grId, value;
             value    = $(eventTarget).val();
             id       = $(eventTarget).attr("id");
-            regionId = $(eventTarget).attr("region-id");
-            var model = this.collection.get(regionId),
+            grId = $(eventTarget).attr("group-region-id");
+            var model = this.collection.get(grId),
                 list = model.get("listFormated");
             var selectedNode = _.filter(list ,function(obj) {
                 return obj["id"] === parseInt(id);
@@ -870,11 +874,11 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onBlurItemWeightInput: function(event){
-            var eventTarget = event.srcElement || event.target, id, regionId, value;
+            var eventTarget = event.srcElement || event.target, id, grId, value;
             value    = $(eventTarget).val();
             id       = $(eventTarget).attr("id");
-            regionId = $(eventTarget).attr("region-id");
-            var model = this.collection.get(regionId),
+            grId = $(eventTarget).attr("group-region-id");
+            var model = this.collection.get(grId),
                 list = model.get("listFormated");
             var selectedNode = _.filter(list ,function(obj) {
                 return obj.get("id") === parseInt(id);
@@ -919,7 +923,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 collection: this.collection, 
                 model     : model,
                 groupId   : model.get('dispGroup.id'),
-                regionId  : id,
+                regionId  : model.get("region.id"),
                 isEdit    : false,
                 isShowChart: true
             });
@@ -958,16 +962,16 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onClickItemEdit: function(event){
-            var eventTarget = event.srcElement || event.target, id, regionId;
+            var eventTarget = event.srcElement || event.target, id, grId;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();
-                id       = eventTarget.attr("id");
-                regionId = eventTarget.attr("region-id");
+                id   = eventTarget.attr("id");
+                grId = eventTarget.attr("group-region-id");
             } else {
-                id       = $(eventTarget).attr("id");
-                regionId = $(eventTarget).attr("region-id");
+                id   = $(eventTarget).attr("id");
+                grId = $(eventTarget).attr("group-region-id");
             }
-            var model = this.collection.get(regionId),
+            var model = this.collection.get(grId),
                 list = model.get("listFormated");
             var selectedNode = _.filter(list ,function(obj) {
                 return obj.get("id") === parseInt(id);
@@ -978,7 +982,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             var selectNodeView = new SelectNodeView({
                 collection: this.collection, 
                 model     : selectedNode[0],
-                regionId  : regionId,
+                regionId  : model.get("region.id"),
                 isEdit    : true,
                 isShowChart: true
             });
@@ -988,6 +992,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 body : selectNodeView,
                 backdrop : 'static',
                 type     : 2,
+                height   : 500,
                 onOKCallback:  function(){
                     var options = selectNodeView.getArgs();
                     if (!options) return;
@@ -1023,16 +1028,16 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onClickItemDelete: function(event){
-            var eventTarget = event.srcElement || event.target, id, regionId;
+            var eventTarget = event.srcElement || event.target, id, grId;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();
                 id       = eventTarget.attr("id");
-                regionId = eventTarget.attr("region-id");
+                grId = eventTarget.attr("group-region-id");
             } else {
                 id       = $(eventTarget).attr("id");
-                regionId = $(eventTarget).attr("region-id");
+                grId = $(eventTarget).attr("group-region-id");
             }
-            var model = this.collection.get(regionId),
+            var model = this.collection.get(grId),
                 list = model.get("listFormated");
             var selectedNode = _.filter(list ,function(obj) {
                 return obj["id"] === parseInt(id);
@@ -1049,7 +1054,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                     break;
                 }
             }
-            this.collection.get(regionId).set("listFormated", list);
+            this.collection.get(grId).set("listFormated", list);
             this.collection.trigger("get.disconfAdvice.success")
         },
 

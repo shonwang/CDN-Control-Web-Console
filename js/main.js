@@ -33,6 +33,7 @@ requirejs.config({
         "template"             : 'template',
         "modal.view"           : "modal.view",
         "navbar.view"          : "navbar.view",
+        "subNavbar.view"       : "subNavbar.view",
         
         "channelManage.view"   : "channelManage/channelManage.view",
         "channelManage.model"  : "channelManage/channelManage.model",
@@ -92,7 +93,14 @@ requirejs.config({
         "grayscaleSetup.view" : "grayscaleSetup/grayscaleSetup.view",
 
         "templateManage.model"   : 'templateManage/templateManage.model',
-        "templateManage.view"    : 'templateManage/templateManage.view'
+        "templateManage.view"    : 'templateManage/templateManage.view',
+
+        "customerSetup.model"   : 'customerSetup/customerSetup.model',
+        "customerSetup.view"    : 'customerSetup/customerSetup.view',
+        "customerSetup.controller": 'customerSetup/customerSetup.controller',
+
+        "domainList.model"   : 'customerSetup/domainList/domainList.model',
+        "domainList.view"    : 'customerSetup/domainList/domainList.view'
     },
     urlArgs: new Date().valueOf()
 });

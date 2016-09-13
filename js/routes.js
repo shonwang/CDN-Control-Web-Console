@@ -1,5 +1,5 @@
-define("routes", ['require','exports', 'utility','navbar.view'], 
-    function(require, exports, Utility, NavbarView) {
+define("routes", ['require', 'exports', 'utility', 'navbar.view', 'customerSetup.controller'], 
+    function(require, exports, Utility, NavbarView, CustomerSetupController) {
 
     var Workspace = Backbone.Router.extend({
 
@@ -21,8 +21,12 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             "domainManage"        : "domainManage",
             "clientStatistics"    : "clientStatistics",
             "businessManage"      : "businessManage",
-            "grayscaleSetup"     : "grayscaleSetup",
-            "templateManage"      : "templateManage"
+            "grayscaleSetup"      : "grayscaleSetup",
+            "templateManage"      : "templateManage",
+            "customerSetup"       : "customerSetup",
+            "domainList/:query"   : "domainList",
+
+            "domainList/:query/domainSetup/:query2": "domainSetup"
         },
 
         initialize: function(){
@@ -98,12 +102,35 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                 case 'templateManage':
                     this.templateManageView.hide();
                     break;
+                case 'customerSetup':
+                    this.customerSetupView.hide();
+                    break;
+                case 'domainList':
+                    this.domainListView.hide();
+                    this.subNavbar.hide();
+                    break;
+                case 'domainSetup':
+                    this.domainSetupView.hide();
+                    this.thirdNavbar.hide();
+                    break;
                 default:
             }
             if (callback)
                 callback.apply(this, args);
         },
 
+        domainSetup: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.domainSetupCallback, this, query, query2))
+        },
+
+        domainList: function(query){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.domainListCallback, this, query))
+        },
+
+        customerSetup: function(){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.customerSetupCallback, this))
+        },
+        
         customMaintenance: function(){
             this.navbarView.initLogin($.proxy(this.customMaintenanceCallback, this))
         },

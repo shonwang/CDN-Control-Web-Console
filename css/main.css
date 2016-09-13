@@ -371,6 +371,19 @@ td .table {
   background-color: #222;
 }
 
+.sub-sidebar{
+   margin-left: -15px;
+}
+
+.sub-sidebar .jquery-accordion-menu {
+  max-width: 150px;
+  background-color: #fff;
+}
+
+.sub-content{
+  padding: 0 0 0 165px;
+}
+
 .jquery-accordion-menu .glyphicon {
   margin-right: 0px;
 }

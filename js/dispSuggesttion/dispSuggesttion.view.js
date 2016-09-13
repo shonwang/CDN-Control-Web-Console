@@ -603,11 +603,11 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 var regionName = regionObj.get('region.name')
                 regionsIpNumSum[regionName] = 0;
                 _.each(regionObj.get('listFormated'), function(el, key, ls){
-                    regionsIpNumSum[regionName] = regionsIpNumSum[regionName] + el.get("dispConfIpInfo.currNum");
+                    if (el.get('type') !== 0)
+                        regionsIpNumSum[regionName] = regionsIpNumSum[regionName] + el.get("dispConfIpInfo.currNum");
                 }.bind(this))
             }.bind(this))
 
-            console.log(regionsIpNumSum)
             var ipZeroRegionName = [];
             _.each(regionsIpNumSum, function(el, key, ls){
                 if (el === 0) ipZeroRegionName.push(key);

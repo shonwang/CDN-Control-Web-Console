@@ -64,8 +64,7 @@ define("domainList.view", ['require','exports', 'template', 'modal.view', 'utili
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-            this.table.find("tbody .disp").on("click", $.proxy(this.onClickItemNodeName, this));
+            this.table.find("tbody .manage").on("click", $.proxy(this.onClickItemNodeName, this));
         },
 
         onClickItemNodeName: function(event){
@@ -77,75 +76,11 @@ define("domainList.view", ['require','exports', 'template', 'modal.view', 'utili
                 id = $(eventTarget).attr("id");
             }
 
-            var model = this.collection.get(id);
+            var model = this.collection.get(id), args = JSON.stringify({
+                clientName: model.get("clientName")
+            })
 
-            if (this.channelInfoPopup) $("#" + this.channelInfoPopup.modalId).remove();
-
-            var chInfoView = new ChannelInfoView({
-                collection: this.collection, 
-                model     : model
-            });
-            var options = {
-                title: model.get("domain") + "频道关联调度组信息",
-                body : chInfoView,
-                backdrop : 'static',
-                type     : 2,
-                height: 500,
-                onOKCallback:  function(){
-                    var prompt = chInfoView.getPrompt(false);
-                    var result = confirm(prompt)
-                    if (!result) return;
-                    var options = chInfoView.getArgs();
-                    if (!options) return;
-                    chInfoView.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                    this.collection.off("add.dispGroup.channel.success");
-                    this.collection.off("add.dispGroup.channel.error");
-                    this.collection.on("add.dispGroup.channel.success", function(){
-                        this.collection.getChannelDispgroup({channelid: model.get("id")});
-                        alert("操作成功！")
-                    }.bind(this));
-                    this.collection.on("add.dispGroup.channel.error", $.proxy(this.onGetError, this));
-                    this.collection.addDispGroupChannel(options)
-                    //this.channelInfoPopup.$el.modal("hide");
-                }.bind(this),
-                onHiddenCallback: function(){
-                    this.onClickQueryButton();
-                }.bind(this)
-            }
-            this.channelInfoPopup = new Modal(options);
-
-            if (model.get("cdnFactory") === "1") {
-                if (AUTH_OBJ.DomainDisassociatetoGslbGroup){
-                    $('<button type="button" class="btn btn-danger" style="float:left">取消关联</button>').insertBefore(this.channelInfoPopup.$el.find(".btn-primary"));
-                    this.channelInfoPopup.$el.find(".btn-danger").on("click", function(){
-                        var prompt = chInfoView.getPrompt(true);
-                        var result = confirm(prompt)
-                        if (!result) return;
-                        var options = chInfoView.getArgs();
-                        if (!options) return;
-                        chInfoView.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                        this.collection.off("add.dispGroup.channel.success");
-                        this.collection.off("add.dispGroup.channel.error");
-                        this.collection.on("add.dispGroup.channel.success", function(){
-                            this.collection.getChannelDispgroup({channelid: model.get("id")});
-                            alert("操作成功！")
-                        }.bind(this));
-                        this.collection.on("add.dispGroup.channel.error", $.proxy(this.onGetError, this));
-                        this.collection.deleteDispGroupChannel(options)
-                        //this.channelInfoPopup.$el.modal("hide");
-                    }.bind(this))
-                }
-
-                this.channelInfoPopup.$el.find(".btn-primary").html('<span class="glyphicon glyphicon-link"></span>关联');
-                if (!AUTH_OBJ.DomainAssociatetoGslbGroup)
-                    this.channelInfoPopup.$el.find(".btn-primary").remove();
-            } else {
-                this.channelInfoPopup.$el.find(".btn-primary").remove();
-            }
-        },
-
-        onClickItemEdit: function(event){
-            this.onClickItemNodeName(event);
+            window.location.hash = '#/domainList/' + args;
         },
 
         initPaginator: function(){

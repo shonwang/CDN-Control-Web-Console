@@ -902,13 +902,16 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         onOperateNodeSuccess: function(res){
-            if (res.msg == "1"){
+            if (res.msg == "1" && res.status === 200){
                 alert("操作成功！")
                 this.onClickQueryButton();
-            } else if (res.msg == "-1"){
+            } else if (res.msg == "-1" && res.status === 200){
                 require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel){
                     this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, this.currentPauseNodeId)
                 }.bind(this))
+            } else {
+                alert("操作失败！")
+                this.onClickQueryButton();
             }
         },
 

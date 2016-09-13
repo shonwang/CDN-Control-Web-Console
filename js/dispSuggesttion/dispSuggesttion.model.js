@@ -2,7 +2,7 @@ define("dispSuggesttion.model", ['require','exports', 'utility'], function(requi
     var Model = Backbone.Model.extend({
         initialize: function(){
             if(this.get("region.id"))
-                this.set("id", this.get("region.id"));
+                this.set("id", Utility.randomStr(16));
             else
                 this.set("id", this.get("node.id"));
             var configTypeName   = this.get("config.type"),

@@ -392,7 +392,8 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
 
             this.collection.on("advice.dispDns.success", function(){
                 this.disablePopup.$el.modal('hide');
-                alert("下发成功！")
+                alert("下发成功！");
+                this.backCallback && this.backCallback();
             }.bind(this));
             this.collection.on("advice.dispDns.error", function(res){
                 this.disablePopup.$el.modal('hide');
@@ -438,6 +439,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 _.each(res.failedAdvice, function(element, index, list){
                     var temp = {}, tempList = [];
                     _.each(element, function(el, key, ls){
+                        if (key === "gr") temp.id = el;
                         if (key === "region"){
                             _.each(el, function(el1, key1, ls1){
                                 temp[key + "." + key1] = el1
@@ -475,6 +477,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 _.each(res.successAdvice, function(element, index, list){
                     var temp = {}, tempList = [];
                     _.each(element, function(el, key, ls){
+                        if (key === "gr") temp.id = el;
                         if (key === "region"){
                             _.each(el, function(el1, key1, ls1){
                                 temp[key + "." + key1] = el1
@@ -600,17 +603,18 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
 
             var regionsIpNumSum = {};
             _.each(failedAndNotSkipList, function(regionObj, index, list){
-                var regionName = regionObj.get('region.name')
-                regionsIpNumSum[regionName] = 0;
+                var regionName = regionObj.get('region.name'), grId = regionObj.get("id");
+                regionsIpNumSum[grId] = 0;
                 _.each(regionObj.get('listFormated'), function(el, key, ls){
                     if (el.get('type') !== 0)
-                        regionsIpNumSum[regionName] = regionsIpNumSum[regionName] + el.get("dispConfIpInfo.currNum");
+                        regionsIpNumSum[grId] = regionsIpNumSum[grId] + el.get("dispConfIpInfo.currNum");
                 }.bind(this))
             }.bind(this))
 
             var ipZeroRegionName = [];
             _.each(regionsIpNumSum, function(el, key, ls){
-                if (el === 0) ipZeroRegionName.push(key);
+                if (el === 0)
+                    ipZeroRegionName.push(this.collection.get(key).get("region.name"));
             }.bind(this))
 
             if (ipZeroRegionName.length > 0) {
@@ -619,7 +623,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 this.pauseNodes = [];
                 for (var i = 0; i < this.collection.models.length; i++) {
                     var currentNode = _.find(this.collection.models[i].get("listFormated"), function(obj){
-                        return obj.get("node.id") === this.nodeId;
+                        return obj.get("node.id") === parseInt(this.nodeId);
                     }.bind(this))
                     if (currentNode) {
                         var pauseNode = {
@@ -827,14 +831,14 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onClickNodeString: function(event){
-            var eventTarget = event.srcElement || event.target, id, regionId, value;
+            var eventTarget = event.srcElement || event.target, id, grId, value;
             value    = $(eventTarget).val();
             id       = $(eventTarget).attr("id");
-            regionId = $(eventTarget).attr("region-id");
-            var model = this.collection.get(regionId),
+            grId = $(eventTarget).attr("group-region-id");
+            var model = this.collection.get(grId),
                 list = model.get("listFormated");
             var selectedNode = _.filter(list ,function(obj) {
-                return obj["id"] === parseInt(id);
+                return obj.get("id") === id;
             })
             if (this.chartPopup) $("#" + this.chartPopup.modalId).remove();
 
@@ -870,15 +874,16 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onBlurItemWeightInput: function(event){
-            var eventTarget = event.srcElement || event.target, id, regionId, value;
+            var eventTarget = event.srcElement || event.target, id, grId, value;
             value    = $(eventTarget).val();
             id       = $(eventTarget).attr("id");
-            regionId = $(eventTarget).attr("region-id");
-            var model = this.collection.get(regionId),
+            grId = $(eventTarget).attr("group-region-id");
+            var model = this.collection.get(grId),
                 list = model.get("listFormated");
             var selectedNode = _.filter(list ,function(obj) {
-                return obj.get("id") === parseInt(id);
+                return obj.get("id") === id;
             })
+
             selectedNode[0].set("dispConfIpInfo.currNum", parseInt(value))
         },
 
@@ -919,7 +924,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 collection: this.collection, 
                 model     : model,
                 groupId   : model.get('dispGroup.id'),
-                regionId  : id,
+                regionId  : model.get("region.id"),
                 isEdit    : false,
                 isShowChart: true
             });
@@ -936,7 +941,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                     for (var k = 0; k < options.length; k++){
                         options[k]['dispGroup.id'] = model.get('dispGroup.id');
                         for (var i = 0; i < list.length; i++){
-                            if (list[i].get("id") === parseInt(options[k]["node.id"])) options.splice(k, 1);
+                            if (list[i].get("node.id") === parseInt(options[k]["node.id"])) options.splice(k, 1);
                             if (options.length === 0) {
                                 alert("你选择的节点已经添加过了！")
                                 this.selectNodePopup.$el.modal("hide");
@@ -958,19 +963,19 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onClickItemEdit: function(event){
-            var eventTarget = event.srcElement || event.target, id, regionId;
+            var eventTarget = event.srcElement || event.target, id, grId;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();
-                id       = eventTarget.attr("id");
-                regionId = eventTarget.attr("region-id");
+                id   = eventTarget.attr("id");
+                grId = eventTarget.attr("group-region-id");
             } else {
-                id       = $(eventTarget).attr("id");
-                regionId = $(eventTarget).attr("region-id");
+                id   = $(eventTarget).attr("id");
+                grId = $(eventTarget).attr("group-region-id");
             }
-            var model = this.collection.get(regionId),
+            var model = this.collection.get(grId),
                 list = model.get("listFormated");
             var selectedNode = _.filter(list ,function(obj) {
-                return obj.get("id") === parseInt(id);
+                return obj.get("id") === id;
             })
 
             if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
@@ -978,7 +983,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             var selectNodeView = new SelectNodeView({
                 collection: this.collection, 
                 model     : selectedNode[0],
-                regionId  : regionId,
+                regionId  : model.get("region.id"),
                 isEdit    : true,
                 isShowChart: true
             });
@@ -988,20 +993,21 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 body : selectNodeView,
                 backdrop : 'static',
                 type     : 2,
+                height   : 500,
                 onOKCallback:  function(){
                     var options = selectNodeView.getArgs();
                     if (!options) return;
                     var result = confirm("你确定要修改节点吗？")
                     if (!result) return;
                     for (var i = 0; i < list.length; i++){
-                        if (list[i].get("id") === parseInt(options[0]["node.id"])){
+                        if (list[i].get("node.id") === parseInt(options[0]["node.id"])){
                             alert("你选择的节点已经添加过了！")
                             this.selectNodePopup.$el.modal("hide");
                             return;
                         }
                     }
                     for (var k = 0; k < list.length; k++){
-                        if (list[k].get("id") === parseInt(id)){
+                        if (list[k].get("id") === id){
                             options[0]["dispConfIpInfo.adviceChangeNum"] = options[0]["dispConfIpInfo.currNum"] - selectedNode[0].get("dispConfIpInfo.currNum");
                             if (options[0]["dispConfIpInfo.adviceChangeNum"] > 0) 
                                 options[0]["dispConfIpInfo.adviceChangeNum"] = "+" + options[0]["dispConfIpInfo.adviceChangeNum"];
@@ -1023,33 +1029,30 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onClickItemDelete: function(event){
-            var eventTarget = event.srcElement || event.target, id, regionId;
+            var eventTarget = event.srcElement || event.target, id, grId;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();
                 id       = eventTarget.attr("id");
-                regionId = eventTarget.attr("region-id");
+                grId = eventTarget.attr("group-region-id");
             } else {
                 id       = $(eventTarget).attr("id");
-                regionId = $(eventTarget).attr("region-id");
+                grId = $(eventTarget).attr("group-region-id");
             }
-            var model = this.collection.get(regionId),
+            var model = this.collection.get(grId),
                 list = model.get("listFormated");
             var selectedNode = _.filter(list ,function(obj) {
-                return obj["id"] === parseInt(id);
+                return obj.get("id") === id;
             })
 
             var result = confirm("你确定要删除节点 " + selectedNode[0].get("node.chName") + " 吗？")
             if (!result) return;
-            _.filter(list ,function(obj) {
-                return obj["id"] === parseInt(id);
-            })
             for (var i = 0; i < list.length; i++){
-                if (list[i]["id"] === parseInt(id)){
+                if (list[i].get("id") === id){
                     list.splice(i, 1);
                     break;
                 }
             }
-            this.collection.get(regionId).set("listFormated", list);
+            this.collection.get(grId).set("listFormated", list);
             this.collection.trigger("get.disconfAdvice.success")
         },
 

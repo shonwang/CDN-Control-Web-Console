@@ -1,10 +1,8 @@
 define("dispSuggesttion.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-            if(this.get("region.id"))
-                this.set("id", Utility.randomStr(16));
-            else
-                this.set("id", this.get("node.id"));
+            if(!this.get("region.id"))
+                this.set("id", Utility.randomStr(8));
             var configTypeName   = this.get("config.type"),
                 nodeChName       = this.get("node.chName"),
                 nodeMaxBWLastNight = this.get("node.maxBWLastNight"),

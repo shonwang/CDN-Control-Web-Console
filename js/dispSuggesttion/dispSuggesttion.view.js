@@ -527,8 +527,6 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find("#disp-config-filter").val("");
             this.$el.find("#disp-config-filter").off("keyup");
             this.$el.find("#disp-config-filter").on("keyup", $.proxy(this.onKeyupDispConfigListFilter, this));
-
-            console.log(this.collection.models)
         },
 
         initNodeChangeTable: function(data){
@@ -605,17 +603,18 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
 
             var regionsIpNumSum = {};
             _.each(failedAndNotSkipList, function(regionObj, index, list){
-                var regionName = regionObj.get('region.name')
-                regionsIpNumSum[regionName] = 0;
+                var regionName = regionObj.get('region.name'), grId = regionObj.get("id");
+                regionsIpNumSum[grId] = 0;
                 _.each(regionObj.get('listFormated'), function(el, key, ls){
                     if (el.get('type') !== 0)
-                        regionsIpNumSum[regionName] = regionsIpNumSum[regionName] + el.get("dispConfIpInfo.currNum");
+                        regionsIpNumSum[grId] = regionsIpNumSum[grId] + el.get("dispConfIpInfo.currNum");
                 }.bind(this))
             }.bind(this))
 
             var ipZeroRegionName = [];
             _.each(regionsIpNumSum, function(el, key, ls){
-                if (el === 0) ipZeroRegionName.push(key);
+                if (el === 0)
+                    ipZeroRegionName.push(this.collection.get(key).get("region.name"));
             }.bind(this))
 
             if (ipZeroRegionName.length > 0) {
@@ -624,7 +623,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 this.pauseNodes = [];
                 for (var i = 0; i < this.collection.models.length; i++) {
                     var currentNode = _.find(this.collection.models[i].get("listFormated"), function(obj){
-                        return obj.get("node.id") === this.nodeId;
+                        return obj.get("node.id") === parseInt(this.nodeId);
                     }.bind(this))
                     if (currentNode) {
                         var pauseNode = {
@@ -839,7 +838,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             var model = this.collection.get(grId),
                 list = model.get("listFormated");
             var selectedNode = _.filter(list ,function(obj) {
-                return obj["id"] === parseInt(id);
+                return obj.get("id") === id;
             })
             if (this.chartPopup) $("#" + this.chartPopup.modalId).remove();
 
@@ -882,8 +881,9 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             var model = this.collection.get(grId),
                 list = model.get("listFormated");
             var selectedNode = _.filter(list ,function(obj) {
-                return obj.get("id") === parseInt(id);
+                return obj.get("id") === id;
             })
+
             selectedNode[0].set("dispConfIpInfo.currNum", parseInt(value))
         },
 
@@ -941,7 +941,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                     for (var k = 0; k < options.length; k++){
                         options[k]['dispGroup.id'] = model.get('dispGroup.id');
                         for (var i = 0; i < list.length; i++){
-                            if (list[i].get("id") === parseInt(options[k]["node.id"])) options.splice(k, 1);
+                            if (list[i].get("node.id") === parseInt(options[k]["node.id"])) options.splice(k, 1);
                             if (options.length === 0) {
                                 alert("你选择的节点已经添加过了！")
                                 this.selectNodePopup.$el.modal("hide");
@@ -975,7 +975,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             var model = this.collection.get(grId),
                 list = model.get("listFormated");
             var selectedNode = _.filter(list ,function(obj) {
-                return obj.get("id") === parseInt(id);
+                return obj.get("id") === id;
             })
 
             if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
@@ -1000,14 +1000,14 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                     var result = confirm("你确定要修改节点吗？")
                     if (!result) return;
                     for (var i = 0; i < list.length; i++){
-                        if (list[i].get("id") === parseInt(options[0]["node.id"])){
+                        if (list[i].get("node.id") === parseInt(options[0]["node.id"])){
                             alert("你选择的节点已经添加过了！")
                             this.selectNodePopup.$el.modal("hide");
                             return;
                         }
                     }
                     for (var k = 0; k < list.length; k++){
-                        if (list[k].get("id") === parseInt(id)){
+                        if (list[k].get("id") === id){
                             options[0]["dispConfIpInfo.adviceChangeNum"] = options[0]["dispConfIpInfo.currNum"] - selectedNode[0].get("dispConfIpInfo.currNum");
                             if (options[0]["dispConfIpInfo.adviceChangeNum"] > 0) 
                                 options[0]["dispConfIpInfo.adviceChangeNum"] = "+" + options[0]["dispConfIpInfo.adviceChangeNum"];
@@ -1041,16 +1041,13 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             var model = this.collection.get(grId),
                 list = model.get("listFormated");
             var selectedNode = _.filter(list ,function(obj) {
-                return obj["id"] === parseInt(id);
+                return obj.get("id") === id;
             })
 
             var result = confirm("你确定要删除节点 " + selectedNode[0].get("node.chName") + " 吗？")
             if (!result) return;
-            _.filter(list ,function(obj) {
-                return obj["id"] === parseInt(id);
-            })
             for (var i = 0; i < list.length; i++){
-                if (list[i]["id"] === parseInt(id)){
+                if (list[i].get("id") === id){
                     list.splice(i, 1);
                     break;
                 }

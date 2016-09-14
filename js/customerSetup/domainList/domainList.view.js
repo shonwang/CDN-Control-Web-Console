@@ -5,6 +5,7 @@ define("domainList.view", ['require','exports', 'template', 'modal.view', 'utili
 
         initialize: function(options) {
             this.collection = options.collection;
+            this.options = options;
             this.$el = $(_.template(template['tpl/customerSetup/customerSetup.html'])());
 
             this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));

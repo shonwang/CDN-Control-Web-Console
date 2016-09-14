@@ -392,7 +392,8 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
 
             this.collection.on("advice.dispDns.success", function(){
                 this.disablePopup.$el.modal('hide');
-                alert("下发成功！")
+                alert("下发成功！");
+                this.backCallback && this.backCallback();
             }.bind(this));
             this.collection.on("advice.dispDns.error", function(res){
                 this.disablePopup.$el.modal('hide');

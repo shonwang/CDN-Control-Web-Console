@@ -69,19 +69,14 @@ define("domainList.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         onClickItemNodeName: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
+            var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
-            }
 
             var model = this.collection.get(id), args = JSON.stringify({
-                clientName: model.get("clientName")
+                domain: model.get("domain")
             })
-
-            window.location.hash = '#/domainList/' + args;
+            var clientName = JSON.parse(this.options.query)
+            window.location.hash = '#/domainList/' + clientName + "/domainSetup/" + args;
         },
 
         initPaginator: function(){

@@ -68,13 +68,8 @@ define("customerSetup.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         onClickItemNodeName: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
+            var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
-            }
 
             var model = this.collection.get(id), args = JSON.stringify({
                 clientName: model.get("clientName")

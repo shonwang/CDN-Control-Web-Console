@@ -26,7 +26,8 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'customerSetup
             "customerSetup"       : "customerSetup",
             "domainList/:query"   : "domainList",
 
-            "domainList/:query/domainSetup/:query2": "domainSetup"
+            "domainList/:query/domainSetup/:query2": "domainSetup",
+            "domainList/:query/cacheRule/:query2": "cacheRule"
         },
 
         initialize: function(){
@@ -113,10 +114,18 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'customerSetup
                     this.domainSetupView.hide();
                     this.thirdNavbar.hide();
                     break;
+                case 'cacheRule':
+                    this.cacheRuleView.hide();
+                    this.thirdNavbar.hide();
+                    break;
                 default:
             }
             if (callback)
                 callback.apply(this, args);
+        },
+
+        cacheRule: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.cacheRuleCallback, this, query, query2))
         },
 
         domainSetup: function(query, query2){

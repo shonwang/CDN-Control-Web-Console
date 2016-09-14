@@ -25,18 +25,24 @@ define("customerSetup.controller", ['require','exports'],
                         }]
                     },{
                         id: '',
-                        name: '源站配置',
+                        name: '缓存优化',
                         hash: 'javascript:void(0)',
                         children: [{
                             id: '',
-                            name: '回源配置',
-                            hash: 'index.html#/domainList/' + query + /domainSetup/ + query2,
+                            name: '缓存规则',
+                            hash: 'index.html#/domainList/' + query + /cacheRule/ + query2,
                             active: true,
                             children: []
                         },{
                             id: '',
-                            name: '回源Host',
-                            hash: 'index.html#/domainList/' + query + /domainSetup/ + query2,
+                            name: '去问号缓存',
+                            hash: 'index.html#/domainList/' + query + /delMarkCache/ + query2,
+                            active: false,
+                            children: []
+                        },{
+                            id: '',
+                            name: '设置 Cache Key',
+                            hash: 'index.html#/domainList/' + query + /cacheKeySetup/ + query2,
                             active: false,
                             children: []
                         }]

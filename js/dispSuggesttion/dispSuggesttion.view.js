@@ -621,14 +621,17 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 alert("调度失败的<span class='text-danger'>" + ipZeroRegionName.join(",")+ "</span>区域当前没有服务节点，请设置服务节点后进行下发!")
             } else {
                 this.pauseNodes = [];
-                for (var i = 0; i < this.collection.models.length; i++) {
-                    var currentNode = _.find(this.collection.models[i].get("listFormated"), function(obj){
-                        return obj.get("node.id") === parseInt(this.nodeId);
+                var failedSkipCheckedList = this.collection.filter(function(obj){
+                    return (obj.get("isFailed") && !obj.get("isSkip")) || obj.get("isChecked")
+                }.bind(this))
+                for (var i = 0; i < failedSkipCheckedList.length; i++) {
+                    var currentNode = _.find(failedSkipCheckedList[i].get("listFormated"), function(obj){
+                        return obj.get("node.id") === parseInt(this.nodeId) && obj.get("dispConfIpInfo.currNum") !== 0;
                     }.bind(this))
                     if (currentNode) {
                         var pauseNode = {
-                            dispGroupName: this.collection.models[i].get("dispGroup.dispDomain"),
-                            regionName: this.collection.models[i].get("region.name"),
+                            dispGroupName: failedSkipCheckedList[i].get("dispGroup.dispDomain"),
+                            regionName: failedSkipCheckedList[i].get("region.name"),
                             nodeString: currentNode.get("nodeString"),
                             ipNum: currentNode.get("dispConfIpInfo.currNum")
                         };

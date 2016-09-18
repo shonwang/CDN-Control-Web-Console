@@ -75,8 +75,9 @@ define("domainList.view", ['require','exports', 'template', 'modal.view', 'utili
             var model = this.collection.get(id), args = JSON.stringify({
                 domain: model.get("domain")
             })
-            var clientName = JSON.parse(this.options.query)
-            window.location.hash = '#/domainList/' + clientName + "/domainSetup/" + args;
+            //var clientName = JSON.parse(this.options.query)
+            console.log(this.options.query)
+            window.location.hash = '#/domainList/' + this.options.query + "/domainSetup/" + args;
         },
 
         initPaginator: function(){

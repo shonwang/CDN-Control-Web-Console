@@ -2,63 +2,40 @@ define("customerSetup.controller", ['require','exports'],
     function(require, exports) {
 
     var CustomerSetupController = Backbone.Router.extend({
-        domainSetupCallback: function(query, query2) {
-            require(['domainList.view', 'domainList.model', 'subNavbar.view'], function(DomainSetupView, DomainSetupModel, SubNavbar){
-                this.curPage = 'domainSetup';
-                if (!this.thirdNavbar){
-                    var menu = [{
-                        id: '',
-                        name: '域名设置',
-                        hash: 'javascript:void(0)',
-                        children: [{
-                            id: 'domainSetup',
-                            name: '域名基础设置',
-                            hash: 'index.html#/domainList/' + query + /domainSetup/ + query2,
-                            active: true,
-                            children: []
-                        },{
-                            id: 'cnameSetup',
-                            name: 'CNAME设置',
-                            hash: 'index.html#/domainList/' + query + /cnameSetup/ + query2,
-                            active: false,
-                            children: []
-                        }]
-                    },{
-                        id: '',
-                        name: '缓存优化',
-                        hash: 'javascript:void(0)',
-                        children: [{
-                            id: '',
-                            name: '缓存规则',
-                            hash: 'index.html#/domainList/' + query + /cacheRule/ + query2,
-                            active: true,
-                            children: []
-                        },{
-                            id: '',
-                            name: '去问号缓存',
-                            hash: 'index.html#/domainList/' + query + /delMarkCache/ + query2,
-                            active: false,
-                            children: []
-                        },{
-                            id: '',
-                            name: '设置 Cache Key',
-                            hash: 'index.html#/domainList/' + query + /cacheKeySetup/ + query2,
-                            active: false,
-                            children: []
-                        }]
-                    }], menuOptions = {
-                        backHash: 'index.html#/domainList/' + query,
-                        menuList: menu
-                    }
-                    this.thirdNavbar = new SubNavbar(menuOptions);
+        cacheRuleCallback: function(query, query2) {
+            require(['cacheRule.view', 'cacheRule.model'], function(CacheRuleView, CacheRuleModel){
+                this.curPage = 'cacheRule';
+                this.setUpThirdNavbar(query, query2);
+
+                if (!this.cacheRuleModel)
+                    this.cacheRuleModel = new CacheRuleModel();
+                if (!this.cacheRuleView ){
+                    var options = {
+                        collection: this.cacheRuleModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.cacheRuleView = new CacheRuleView(options);
+                    this.cacheRuleView.render(this.thirdNavbar.$el.find('.sub-content'));
+                } else {
                     this.thirdNavbar.select(this.curPage);
+                    this.cacheRuleView.update(query);
                 }
+            }.bind(this));
+        },
+
+        domainSetupCallback: function(query, query2) {
+            require(['domainList.view', 'domainList.model'], function(DomainSetupView, DomainSetupModel){
+                this.curPage = 'domainSetup';
+                this.setUpThirdNavbar(query, query2);
+
                 if (!this.domainSetupModel)
                     this.domainSetupModel = new DomainSetupModel();
                 if (!this.domainSetupView ){
                     var options = {
                         collection: this.domainSetupModel,
-                        query     : query
+                        query     : query,
+                        query2    : query2
                     };
                     this.domainSetupView = new DomainSetupView(options);
                     this.domainSetupView.render(this.thirdNavbar.$el.find('.sub-content'));

@@ -100,7 +100,10 @@ requirejs.config({
         "customerSetup.controller": 'customerSetup/customerSetup.controller',
 
         "domainList.model"   : 'customerSetup/domainList/domainList.model',
-        "domainList.view"    : 'customerSetup/domainList/domainList.view'
+        "domainList.view"    : 'customerSetup/domainList/domainList.view',
+        "matchCondition.view": 'customerSetup/domainList/matchCondition.view',
+        "cacheRule.model"   : 'customerSetup/domainList/cacheRule/cacheRule.model',
+        "cacheRule.view"    : 'customerSetup/domainList/cacheRule/cacheRule.view',
     },
     urlArgs: new Date().valueOf()
 });

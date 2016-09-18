@@ -1,5 +1,5 @@
-define("routes", ['require', 'exports', 'utility', 'navbar.view', 'customerSetup.controller'], 
-    function(require, exports, Utility, NavbarView, CustomerSetupController) {
+define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.view', 'customerSetup.controller'], 
+    function(require, exports, Utility, NavbarView, SubNavbar, CustomerSetupController) {
 
     var Workspace = Backbone.Router.extend({
 
@@ -34,6 +34,59 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'customerSetup
             Utility.dateFormat();
             this.navbarView = new NavbarView();
             this.curPage = "";
+        },
+
+        setUpThirdNavbar: function(query, query2){
+            if (!this.thirdNavbar){
+                var menu = [{
+                    id: '',
+                    name: '域名设置',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'domainSetup',
+                        name: '域名基础设置',
+                        hash: 'index.html#/domainList/' + query + /domainSetup/ + query2,
+                        active: true,
+                        children: []
+                    },{
+                        id: 'cnameSetup',
+                        name: 'CNAME设置',
+                        hash: 'index.html#/domainList/' + query + /cnameSetup/ + query2,
+                        active: false,
+                        children: []
+                    }]
+                },{
+                    id: '',
+                    name: '缓存优化',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'cacheRule',
+                        name: '缓存规则',
+                        hash: 'index.html#/domainList/' + query + /cacheRule/ + query2,
+                        active: true,
+                        children: []
+                    },{
+                        id: 'delMarkCache',
+                        name: '去问号缓存',
+                        hash: 'index.html#/domainList/' + query + /delMarkCache/ + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'cacheKeySetup',
+                        name: '设置 Cache Key',
+                        hash: 'index.html#/domainList/' + query + /cacheKeySetup/ + query2,
+                        active: false,
+                        children: []
+                    }]
+                }], menuOptions = {
+                    backHash: 'index.html#/domainList/' + query,
+                    menuList: menu
+                }
+                this.thirdNavbar = new SubNavbar(menuOptions);
+                this.thirdNavbar.select(this.curPage);
+            } else {
+                this.thirdNavbar.update();
+            }
         },
 
         execute: function(callback, args) {

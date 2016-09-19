@@ -27,7 +27,12 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             "domainList/:query"   : "domainList",
 
             "domainList/:query/domainSetup/:query2": "domainSetup",
-            "domainList/:query/cacheRule/:query2": "cacheRule"
+            "domainList/:query/cnameSetup/:query2": "cnameSetup",
+            "domainList/:query/cacheRule/:query2": "cacheRule",
+            "domainList/:query/delMarkCache/:query2": "delMarkCache",
+            "domainList/:query/cacheKeySetup/:query2": "cacheKeySetup",
+            "domainList/:query/backOriginSetup/:query2": "backOriginSetup",
+            "domainList/:query/following302/:query2": "following302",
         },
 
         initialize: function(){
@@ -53,6 +58,28 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                         name: 'CNAME设置',
                         hash: 'index.html#/domainList/' + query + /cnameSetup/ + query2,
                         active: false,
+                        children: []
+                    }]
+                },{
+                    id: '',
+                    name: '源站配置',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'backOriginSetup',
+                        name: '回源配置',
+                        hash: 'index.html#/domainList/' + query + /backOriginSetup/ + query2,
+                        active: true,
+                        children: []
+                    }]
+                },{
+                    id: '',
+                    name: 'HTTP协议优化',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'following302',
+                        name: 'Following 302',
+                        hash: 'index.html#/domainList/' + query + /following302/ + query2,
+                        active: true,
                         children: []
                     }]
                 },{
@@ -171,10 +198,50 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                     this.cacheRuleView.hide();
                     this.thirdNavbar.hide();
                     break;
+                case 'delMarkCache':
+                    this.delMarkCacheView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'cacheKeySetup':
+                    this.cacheKeySetupView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'cnameSetup':
+                    this.cnameSetupView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'backOriginSetup':
+                    this.backOriginSetupView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'following302':
+                    this.following302View.hide();
+                    this.thirdNavbar.hide();
+                    break;
                 default:
             }
             if (callback)
                 callback.apply(this, args);
+        },
+
+        following302: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.following302Callback, this, query, query2))
+        },
+
+        backOriginSetup: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.backOriginSetupCallback, this, query, query2))
+        },
+
+        cnameSetup: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.cnameSetupCallback, this, query, query2))
+        },
+
+        cacheKeySetup: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.cacheKeySetupCallback, this, query, query2))
+        },
+
+        delMarkCache: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.delMarkCacheCallback, this, query, query2))
         },
 
         cacheRule: function(query, query2){

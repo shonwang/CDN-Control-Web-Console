@@ -28,82 +28,99 @@ else if(window.DEBUG === 9)
 
 requirejs.config({
     paths: {
-        "routes"               : 'routes',
-        "utility"              : 'utility',
-        "template"             : 'template',
-        "modal.view"           : "modal.view",
-        "navbar.view"          : "navbar.view",
-        "subNavbar.view"       : "subNavbar.view",
+        "routes": 'routes',
+        "utility": 'utility',
+        "template": 'template',
+        "modal.view": "modal.view",
+        "navbar.view": "navbar.view",
+        "subNavbar.view": "subNavbar.view",
         
-        "channelManage.view"   : "channelManage/channelManage.view",
-        "channelManage.model"  : "channelManage/channelManage.model",
+        "channelManage.view": "channelManage/channelManage.view",
+        "channelManage.model": "channelManage/channelManage.model",
 
-        "deviceManage.view"    : 'deviceManage/deviceManage.view',
-        "deviceManage.model"   : 'deviceManage/deviceManage.model',
+        "deviceManage.view": 'deviceManage/deviceManage.view',
+        "deviceManage.model": 'deviceManage/deviceManage.model',
 
-        "nodeManage.view"      : 'nodeManage/nodeManage.view',
-        "nodeManage.model"     : 'nodeManage/nodeManage.model',
+        "nodeManage.view": 'nodeManage/nodeManage.view',
+        "nodeManage.model": 'nodeManage/nodeManage.model',
 
-        "dispGroup.view"       : "dispGroup/dispGroup.view",
-        "dispGroup.model"      : "dispGroup/dispGroup.model",
+        "dispGroup.view": "dispGroup/dispGroup.view",
+        "dispGroup.model": "dispGroup/dispGroup.model",
 
-        "dispConfig.view"      : "dispConfig/dispConfig.view",
-        "dispConfig.model"     : "dispConfig/dispConfig.model",
+        "dispConfig.view": "dispConfig/dispConfig.view",
+        "dispConfig.model": "dispConfig/dispConfig.model",
 
-        "dispSuggesttion.view" : "dispSuggesttion/dispSuggesttion.view",
+        "dispSuggesttion.view": "dispSuggesttion/dispSuggesttion.view",
         "dispSuggesttion.model": "dispSuggesttion/dispSuggesttion.model",
 
-        "coverRegion.view"     : 'coverRegion/coverRegion.view',
-        "coverRegion.model"    : 'coverRegion/coverRegion.model',
+        "coverRegion.view": 'coverRegion/coverRegion.view',
+        "coverRegion.model": 'coverRegion/coverRegion.model',
 
-        "coverManage.view"     : 'coverManage/coverManage.view',
-        "coverManage.model"    : 'coverManage/coverManage.model',
+        "coverManage.view": 'coverManage/coverManage.view',
+        "coverManage.model": 'coverManage/coverManage.model',
 
-        "liveAllSetup.view"    : 'liveAllSetup/liveAllSetup.view',
-        "liveAllSetup.model"   : 'liveAllSetup/liveAllSetup.model',
+        "liveAllSetup.view": 'liveAllSetup/liveAllSetup.view',
+        "liveAllSetup.model": 'liveAllSetup/liveAllSetup.model',
 
-        "liveCurentSetup.view" : 'liveCurentSetup/liveCurentSetup.view',
+        "liveCurentSetup.view": 'liveCurentSetup/liveCurentSetup.view',
         "liveCurentSetup.model": 'liveCurentSetup/liveCurentSetup.model',
 
-        "ipManage.view"        : 'ipManage/ipManage.view',
-        "ipManage.model"       : 'ipManage/ipManage.model',
+        "ipManage.view": 'ipManage/ipManage.view',
+        "ipManage.model": 'ipManage/ipManage.model',
 
-        "refreshManual.view"  : 'refreshManual/refreshManual.view',
-        "refreshManual.model" : 'refreshManual/refreshManual.model',
+        "refreshManual.view": 'refreshManual/refreshManual.view',
+        "refreshManual.model": 'refreshManual/refreshManual.model',
 
-        "customMaintenance.view"  : 'customMaintenance/customMaintenance.view',
-        "customMaintenance.model" : 'customMaintenance/customMaintenance.model',
+        "customMaintenance.view": 'customMaintenance/customMaintenance.view',
+        "customMaintenance.model": 'customMaintenance/customMaintenance.model',
 
-        "businessManage.view"  : 'businessManage/businessManage.view',
-        "businessManage.model" : 'businessManage/businessManage.model',
+        "businessManage.view": 'businessManage/businessManage.view',
+        "businessManage.model": 'businessManage/businessManage.model',
 
-        "clientStatistics.view"  : 'clientStatistics/clientStatistics.view',
-        "clientStatistics.model" : 'clientStatistics/clientStatistics.model',
+        "clientStatistics.view": 'clientStatistics/clientStatistics.view',
+        "clientStatistics.model": 'clientStatistics/clientStatistics.model',
 
-        "statisticsManage.view"  : 'statisticsManage/statisticsManage.view',
-        "statisticsManage.model" : 'statisticsManage/statisticsManage.model',
+        "statisticsManage.view": 'statisticsManage/statisticsManage.view',
+        "statisticsManage.model": 'statisticsManage/statisticsManage.model',
 
-        "domainStatistics.view"  : 'domainStatistics/domainStatistics.view',
-        "domainStatistics.model" : 'domainStatistics/domainStatistics.model',
+        "domainStatistics.view": 'domainStatistics/domainStatistics.view',
+        "domainStatistics.model": 'domainStatistics/domainStatistics.model',
 
-        "domainManage.model" : "domainManage/domainManage.model",
-        "domainManage.view" : "domainManage/domainManage.view",
+        "domainManage.model": "domainManage/domainManage.model",
+        "domainManage.view": "domainManage/domainManage.view",
 
-        "grayscaleSetup.model" : "grayscaleSetup/grayscaleSetup.model",
-        "grayscaleSetup.view" : "grayscaleSetup/grayscaleSetup.view",
+        "grayscaleSetup.model": "grayscaleSetup/grayscaleSetup.model",
+        "grayscaleSetup.view": "grayscaleSetup/grayscaleSetup.view",
 
-        "templateManage.model"   : 'templateManage/templateManage.model',
-        "templateManage.view"    : 'templateManage/templateManage.view',
+        "templateManage.model": 'templateManage/templateManage.model',
+        "templateManage.view": 'templateManage/templateManage.view',
 
-        "customerSetup.model"   : 'customerSetup/customerSetup.model',
-        "customerSetup.view"    : 'customerSetup/customerSetup.view',
+        "customerSetup.model": 'customerSetup/customerSetup.model',
+        "customerSetup.view": 'customerSetup/customerSetup.view',
         "customerSetup.controller": 'customerSetup/customerSetup.controller',
 
-        "domainList.model"   : 'customerSetup/domainList/domainList.model',
-        "domainList.view"    : 'customerSetup/domainList/domainList.view',
+        "domainList.model": 'customerSetup/domainList/domainList.model',
+        "domainList.view": 'customerSetup/domainList/domainList.view',
+
         "matchCondition.view": 'customerSetup/domainList/matchCondition.view',
-        "cacheRule.model"   : 'customerSetup/domainList/cacheRule/cacheRule.model',
-        "cacheRule.view"    : 'customerSetup/domainList/cacheRule/cacheRule.view',
+
+        "cnameSetup.model": 'customerSetup/domainList/cnameSetup/cnameSetup.model',
+        "cnameSetup.view": 'customerSetup/domainList/cnameSetup/cnameSetup.view',
+
+        "backOriginSetup.model": 'customerSetup/domainList/backOriginSetup/backOriginSetup.model',
+        "backOriginSetup.view": 'customerSetup/domainList/backOriginSetup/backOriginSetup.view',
+
+        "following302.model": 'customerSetup/domainList/following302/following302.model',
+        "following302.view": 'customerSetup/domainList/following302/following302.view',
+
+        "cacheRule.model": 'customerSetup/domainList/cacheRule/cacheRule.model',
+        "cacheRule.view": 'customerSetup/domainList/cacheRule/cacheRule.view',
+
+        "delMarkCache.model": 'customerSetup/domainList/delMarkCache/delMarkCache.model',
+        "delMarkCache.view": 'customerSetup/domainList/delMarkCache/delMarkCache.view',
+
+        "cacheKeySetup.model": 'customerSetup/domainList/cacheKeySetup/cacheKeySetup.model',
+        "cacheKeySetup.view": 'customerSetup/domainList/cacheKeySetup/cacheKeySetup.view',
     },
     urlArgs: new Date().valueOf()
 });

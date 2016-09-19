@@ -253,6 +253,68 @@ td .table {
 
 }
 
+.togglebutton, 
+.togglebutton label, 
+.togglebutton input, 
+.togglebutton .toggle {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.togglebutton {
+    vertical-align: middle;
+}
+
+.togglebutton label {
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.togglebutton label input[type=checkbox] {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.togglebutton label input[type=checkbox]:checked+.toggle, .togglebutton-default label input[type=checkbox]:checked+.toggle {
+    background-color: #5090f7;
+}
+
+.togglebutton label .toggle, .togglebutton label input[type="checkbox][disabled"]+.toggle {
+    content: "";
+    display: inline-block;
+    width: 30px;
+    height: 15px;
+    background-color: rgba(80,80,80,.7);
+    border-radius: 15px;
+    margin-right: 10px;
+    transition: background .3s ease;
+    vertical-align: middle;
+}
+
+.togglebutton label input[type=checkbox]:checked+.toggle:after, .togglebutton-default label input[type=checkbox]:checked+.toggle:after {
+    background-color: #fff;
+}
+
+.togglebutton label input[type=checkbox]:checked+.toggle:after {
+    left: 15px;
+}
+
+.togglebutton label .toggle:after {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: #f1f1f1;
+    border-radius: 20px;
+    position: relative;
+    box-shadow: 0 1px 3px 1px rgba(0,0,0,.4);
+    left: -5px;
+    top: -2px;
+    transition: left .3s ease,background .3s ease,box-shadow .1s ease;
+}
+
 .nav-navbar > li:nth-child(1) {
   width: 200px;
 }

@@ -2,6 +2,119 @@ define("customerSetup.controller", ['require','exports'],
     function(require, exports) {
 
     var CustomerSetupController = Backbone.Router.extend({
+
+        following302Callback: function(query, query2) {
+            require(['following302.view', 'following302.model'], function(Following302View, Following302Model){
+                this.curPage = 'following302';
+                this.setUpThirdNavbar(query, query2);
+
+                if (!this.following302Model)
+                    this.following302Model = new Following302Model();
+                if (!this.following302View ){
+                    var options = {
+                        collection: this.following302Model,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.following302View = new Following302View(options);
+                    this.following302View.render(this.thirdNavbar.$el.find('.sub-content'));
+                } else {
+                    this.thirdNavbar.select(this.curPage);
+                    this.following302View.update(query);
+                }
+            }.bind(this));
+        },
+
+
+        backOriginSetupCallback: function(query, query2) {
+            require(['backOriginSetup.view', 'backOriginSetup.model'], function(BackOriginSetupView, BackOriginSetupModel){
+                this.curPage = 'backOriginSetup';
+                this.setUpThirdNavbar(query, query2);
+
+                if (!this.backOriginSetupModel)
+                    this.backOriginSetupModel = new BackOriginSetupModel();
+                if (!this.backOriginSetupView ){
+                    var options = {
+                        collection: this.backOriginSetupModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.backOriginSetupView = new BackOriginSetupView(options);
+                    this.backOriginSetupView.render(this.thirdNavbar.$el.find('.sub-content'));
+                } else {
+                    this.thirdNavbar.select(this.curPage);
+                    this.backOriginSetupView.update(query);
+                }
+            }.bind(this));
+        },
+
+        cnameSetupCallback: function(query, query2) {
+            require(['cnameSetup.view', 'cnameSetup.model'], function(CnameSetupView, CnameSetupModel){
+                this.curPage = 'cnameSetup';
+                this.setUpThirdNavbar(query, query2);
+
+                if (!this.cnameSetupModel)
+                    this.cnameSetupModel = new CnameSetupModel();
+                if (!this.cnameSetupView ){
+                    var options = {
+                        collection: this.cnameSetupModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.cnameSetupView = new CnameSetupView(options);
+                    this.cnameSetupView.render(this.thirdNavbar.$el.find('.sub-content'));
+                } else {
+                    this.thirdNavbar.select(this.curPage);
+                    this.cnameSetupView.update(query);
+                }
+            }.bind(this));
+        },
+
+        cacheKeySetupCallback: function(query, query2) {
+            require(['cacheKeySetup.view', 'cacheKeySetup.model'], function(CacheKeySetupView, CacheKeySetupModel){
+                this.curPage = 'cacheKeySetup';
+                this.setUpThirdNavbar(query, query2);
+
+                if (!this.cacheKeySetupModel)
+                    this.cacheKeySetupModel = new CacheKeySetupModel();
+                if (!this.cacheKeySetupView ){
+                    var options = {
+                        collection: this.cacheKeySetupModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.cacheKeySetupView = new CacheKeySetupView(options);
+                    this.cacheKeySetupView.render(this.thirdNavbar.$el.find('.sub-content'));
+                } else {
+                    this.thirdNavbar.select(this.curPage);
+                    this.cacheKeySetupView.update(query);
+                }
+            }.bind(this));
+        },
+
+        delMarkCacheCallback: function(query, query2) {
+            require(['delMarkCache.view', 'delMarkCache.model'], function(DelMarkCacheView, DelMarkCacheModel){
+                this.curPage = 'delMarkCache';
+                this.setUpThirdNavbar(query, query2);
+
+                if (!this.delMarkCacheModel)
+                    this.delMarkCacheModel = new DelMarkCacheModel();
+                if (!this.delMarkCacheView ){
+                    var options = {
+                        collection: this.delMarkCacheModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.delMarkCacheView = new DelMarkCacheView(options);
+                    this.delMarkCacheView.render(this.thirdNavbar.$el.find('.sub-content'));
+                } else {
+                    this.thirdNavbar.select(this.curPage);
+                    this.delMarkCacheView.update(query);
+                }
+            }.bind(this));
+        },
+
+
         cacheRuleCallback: function(query, query2) {
             require(['cacheRule.view', 'cacheRule.model'], function(CacheRuleView, CacheRuleModel){
                 this.curPage = 'cacheRule';

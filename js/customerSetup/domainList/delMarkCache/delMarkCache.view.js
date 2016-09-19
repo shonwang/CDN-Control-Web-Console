@@ -1,4 +1,4 @@
-define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+define("delMarkCache.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
     var AddEditRoleView = Backbone.View.extend({
         events: {},
@@ -6,7 +6,7 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
         initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
-            this.$el = $(_.template(template['tpl/customerSetup/domainList/cacheRule/cacheRule.add.html'])());
+            this.$el = $(_.template(template['tpl/customerSetup/domainList/delMarkCache/delMarkCache.add.html'])());
 
             require(['matchCondition.view'], function(MatchConditionView){
                 var  matchConditionArray = [
@@ -75,13 +75,13 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
     });
 
 
-    var CacheRuleView = Backbone.View.extend({
+    var DelMarkCacheView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
             this.collection = options.collection;
             this.options = options;
-            this.$el = $(_.template(template['tpl/customerSetup/domainList/cacheRule/cacheRule.html'])());
+            this.$el = $(_.template(template['tpl/customerSetup/domainList/delMarkCache/delMarkCache.html'])());
             var clientInfo = JSON.parse(options.query), 
                 domainInfo = JSON.parse(options.query2),
                 userInfo = {
@@ -137,7 +137,7 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/customerSetup/domainList/cacheRule/cacheRule.table.html'])({
+            this.table = $(_.template(template['tpl/customerSetup/domainList/delMarkCache/delMarkCache.table.html'])({
                 data: this.collection.models
             }));
             if (this.collection.models.length !== 0)
@@ -248,5 +248,5 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
         }
     });
 
-    return CacheRuleView;
+    return DelMarkCacheView;
 });

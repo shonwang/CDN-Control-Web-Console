@@ -33,6 +33,8 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             "domainList/:query/cacheKeySetup/:query2": "cacheKeySetup",
             "domainList/:query/backOriginSetup/:query2": "backOriginSetup",
             "domainList/:query/following302/:query2": "following302",
+            "domainList/:query/dragPlay/:query2": "dragPlay",
+            "domainList/:query/clientLimitSpeed/:query2": "clientLimitSpeed",
         },
 
         initialize: function(){
@@ -103,6 +105,28 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                         name: '设置 Cache Key',
                         hash: 'index.html#/domainList/' + query + /cacheKeySetup/ + query2,
                         active: false,
+                        children: []
+                    }]
+                },{
+                    id: '',
+                    name: '点播优化',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'dragPlay',
+                        name: '拖拽播放',
+                        hash: 'index.html#/domainList/' + query + /dragPlay/ + query2,
+                        active: true,
+                        children: []
+                    }]
+                },{
+                    id: '',
+                    name: '限速',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'clientLimitSpeed',
+                        name: '客户端限速',
+                        hash: 'index.html#/domainList/' + query + /clientLimitSpeed/ + query2,
+                        active: true,
                         children: []
                     }]
                 }], menuOptions = {
@@ -218,10 +242,26 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                     this.following302View.hide();
                     this.thirdNavbar.hide();
                     break;
+                case 'dragPlay':
+                    this.dragPlayView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'clientLimitSpeed':
+                    this.clientLimitSpeedView.hide();
+                    this.thirdNavbar.hide();
+                    break;
                 default:
             }
             if (callback)
                 callback.apply(this, args);
+        },
+
+        clientLimitSpeed: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.clientLimitSpeedCallback, this, query, query2))
+        },
+
+        dragPlay: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.dragPlayCallback, this, query, query2))
         },
 
         following302: function(query, query2){

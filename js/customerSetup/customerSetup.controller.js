@@ -3,6 +3,50 @@ define("customerSetup.controller", ['require','exports'],
 
     var CustomerSetupController = Backbone.Router.extend({
 
+        clientLimitSpeedCallback: function(query, query2) {
+            require(['clientLimitSpeed.view', 'clientLimitSpeed.model'], function(ClientLimitSpeedView, ClientLimitSpeedModel){
+                this.curPage = 'clientLimitSpeed';
+                this.setUpThirdNavbar(query, query2);
+
+                if (!this.clientLimitSpeedModel)
+                    this.clientLimitSpeedModel = new ClientLimitSpeedModel();
+                if (!this.clientLimitSpeedView ){
+                    var options = {
+                        collection: this.clientLimitSpeedModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.clientLimitSpeedView = new ClientLimitSpeedView(options);
+                    this.clientLimitSpeedView.render(this.thirdNavbar.$el.find('.sub-content'));
+                } else {
+                    this.thirdNavbar.select(this.curPage);
+                    this.clientLimitSpeedView.update(query, query2);
+                }
+            }.bind(this));
+        },
+
+        dragPlayCallback: function(query, query2) {
+            require(['dragPlay.view', 'dragPlay.model'], function(DragPlayView, DragPlayModel){
+                this.curPage = 'dragPlay';
+                this.setUpThirdNavbar(query, query2);
+
+                if (!this.dragPlayModel)
+                    this.dragPlayModel = new DragPlayModel();
+                if (!this.dragPlayView ){
+                    var options = {
+                        collection: this.dragPlayModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.dragPlayView = new DragPlayView(options);
+                    this.dragPlayView.render(this.thirdNavbar.$el.find('.sub-content'));
+                } else {
+                    this.thirdNavbar.select(this.curPage);
+                    this.dragPlayView.update(query, query2);
+                }
+            }.bind(this));
+        },
+
         following302Callback: function(query, query2) {
             require(['following302.view', 'following302.model'], function(Following302View, Following302Model){
                 this.curPage = 'following302';
@@ -20,7 +64,7 @@ define("customerSetup.controller", ['require','exports'],
                     this.following302View.render(this.thirdNavbar.$el.find('.sub-content'));
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.following302View.update(query);
+                    this.following302View.update(query, query2);
                 }
             }.bind(this));
         },
@@ -43,7 +87,7 @@ define("customerSetup.controller", ['require','exports'],
                     this.backOriginSetupView.render(this.thirdNavbar.$el.find('.sub-content'));
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.backOriginSetupView.update(query);
+                    this.backOriginSetupView.update(query, query2);
                 }
             }.bind(this));
         },
@@ -65,7 +109,7 @@ define("customerSetup.controller", ['require','exports'],
                     this.cnameSetupView.render(this.thirdNavbar.$el.find('.sub-content'));
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.cnameSetupView.update(query);
+                    this.cnameSetupView.update(query, query2);
                 }
             }.bind(this));
         },
@@ -87,7 +131,7 @@ define("customerSetup.controller", ['require','exports'],
                     this.cacheKeySetupView.render(this.thirdNavbar.$el.find('.sub-content'));
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.cacheKeySetupView.update(query);
+                    this.cacheKeySetupView.update(query, query2);
                 }
             }.bind(this));
         },
@@ -109,7 +153,7 @@ define("customerSetup.controller", ['require','exports'],
                     this.delMarkCacheView.render(this.thirdNavbar.$el.find('.sub-content'));
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.delMarkCacheView.update(query);
+                    this.delMarkCacheView.update(query, query2);
                 }
             }.bind(this));
         },
@@ -132,7 +176,7 @@ define("customerSetup.controller", ['require','exports'],
                     this.cacheRuleView.render(this.thirdNavbar.$el.find('.sub-content'));
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.cacheRuleView.update(query);
+                    this.cacheRuleView.update(query, query2);
                 }
             }.bind(this));
         },
@@ -155,7 +199,7 @@ define("customerSetup.controller", ['require','exports'],
                 } else {
                     this.thirdNavbar.update();
                     this.thirdNavbar.select(this.curPage);
-                    this.domainSetupView.update(query);
+                    this.domainSetupView.update(query, query2);
                 }
             }.bind(this));
         },

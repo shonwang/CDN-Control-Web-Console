@@ -121,6 +121,12 @@ requirejs.config({
 
         "cacheKeySetup.model": 'customerSetup/domainList/cacheKeySetup/cacheKeySetup.model',
         "cacheKeySetup.view": 'customerSetup/domainList/cacheKeySetup/cacheKeySetup.view',
+
+        "dragPlay.model": 'customerSetup/domainList/dragPlay/dragPlay.model',
+        "dragPlay.view": 'customerSetup/domainList/dragPlay/dragPlay.view',
+
+        "clientLimitSpeed.model": 'customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.model',
+        "clientLimitSpeed.view": 'customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.view',
     },
     urlArgs: new Date().valueOf()
 });

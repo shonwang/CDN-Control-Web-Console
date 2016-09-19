@@ -611,7 +611,10 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
 
             this.collection.on("operate.node.success", $.proxy(this.onOperateNodeSuccess, this));
-            this.collection.on("operate.node.error", $.proxy(this.onGetError, this));
+            this.collection.on("operate.node.error", function(res){
+                this.disablePopup.$el.modal('hide');
+                this.onGetError(res)
+            }.bind(this));
 
             this.collection.on("add.assocateDispGroups.success", function(){
                 alert("操作成功！")
@@ -896,12 +899,14 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
 
             this.currentPauseNodeId = id;
             this.collection.operateNode({nodeId: id, operator: -1, t: new Date().valueOf()})
+            this.showDisablePopup("服务端正在努力暂停中，你可以先去上个厕所...")
             // require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel){
             //     this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, id)
             // }.bind(this))        
         },
 
         onOperateNodeSuccess: function(res){
+            this.disablePopup.$el.modal('hide');
             if (res.msg == "1" && res.status === 200){
                 alert("操作成功！")
                 this.onClickQueryButton();
@@ -1070,6 +1075,18 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
                 this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
             }
+        },
+
+        showDisablePopup: function(msg) {
+            if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
+            var options = {
+                title    : "警告",
+                body     : '<div class="alert alert-danger"><strong>' + msg +'</strong></div>',
+                backdrop : 'static',
+                type     : 0,
+            }
+            this.disablePopup = new Modal(options);
+            this.disablePopup.$el.find(".close").remove();
         },
 
         hide: function(){

@@ -64,9 +64,13 @@
               <% } %>
               -->
 
-              <% if (data[i].attributes.status == 2 && permission.EnableorPauseHost) { %>
+              <% if ((data[i].attributes.status == 2 || data[i].attributes.status == 6) && permission.EnableorPauseHost) { %>
                 <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="open" data-status="1" data-name="<%=data[i].attributes['name']%>" title="开启">
                   <span class="glyphicon glyphicon-play-circle"></span>
+                </a>
+              <% } else if (data[i].attributes.status == 4 && permission.EnableorPauseHost){%>
+                <a href="javascript:void(0)" class="a_disabled" title='设备所在节点已暂停'>
+                  <span class="glyphicon glyphicon-play-circle css-gray"></span>
                 </a>
               <% } %>
               <% if (data[i].attributes.status == 1 && permission.EnableorPauseHost) { %>

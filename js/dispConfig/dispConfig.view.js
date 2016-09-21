@@ -623,6 +623,36 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.table.find("tbody .nodes .weight").on("click", $.proxy(this.onClickItemWeightInput, this));//火狐浏览器的数字控件不会自动聚焦，需要强制获取焦点
             this.table.find("tbody .add").on("click", $.proxy(this.onClickItemAdd, this));
             this.table.find("tbody .adjust").on("click", $.proxy(this.onClickItemAdjust, this));
+            this.table.find("tbody .nodes .node-string").on("click", $.proxy(this.onClickNodeString, this));
+        },
+
+        onClickNodeString: function(event){
+            var eventTarget = event.srcElement || event.target, id, regionId;
+            id       = $(eventTarget).attr("id");
+            regionId = $(eventTarget).attr("region-id");
+            var model = this.collection.get(regionId),
+                list = model.get("listFormated");
+            var selectedNode = _.filter(list ,function(obj) {
+                return obj.get("id") === parseInt(id);
+            })
+            if (this.chartPopup) $("#" + this.chartPopup.modalId).remove();
+                require(["dispSuggesttion.view"], function(DispSuggesttionViews){
+                var aChartView = new DispSuggesttionViews.ChartView({
+                    collection: this.collection, 
+                    selectedNode : selectedNode[0].attributes
+                });
+
+                var options = {
+                    title:"节点带宽数据展示",
+                    body : aChartView,
+                    backdrop : 'static',
+                    type     : 1,
+                    height   : 500,
+                    width    : 800,
+                    onHiddenCallback: function(){}.bind(this)
+                }
+                this.chartPopup = new Modal(options);
+            }.bind(this))
         },
 
         onKeyupItemWeightInput: function(event){

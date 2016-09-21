@@ -438,12 +438,12 @@ td .table {
 }
 
 .sub-sidebar .jquery-accordion-menu {
-  max-width: 150px;
+  max-width: 200px;
   background-color: #fff;
 }
 
 .sub-content{
-  padding: 0 0 0 165px;
+  padding: 0 0 0 215px;
 }
 
 .jquery-accordion-menu .glyphicon {

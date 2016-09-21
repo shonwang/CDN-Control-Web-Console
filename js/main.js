@@ -127,6 +127,24 @@ requirejs.config({
 
         "clientLimitSpeed.model": 'customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.model',
         "clientLimitSpeed.view": 'customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.view',
+
+        "httpHeaderOpt.model": 'customerSetup/domainList/httpHeaderOpt/httpHeaderOpt.model',
+        "httpHeaderOpt.view": 'customerSetup/domainList/httpHeaderOpt/httpHeaderOpt.view',
+
+        "httpHeaderCtr.model": 'customerSetup/domainList/httpHeaderCtr/httpHeaderCtr.model',
+        "httpHeaderCtr.view": 'customerSetup/domainList/httpHeaderCtr/httpHeaderCtr.view',
+
+        "requestArgsModify.model": 'customerSetup/domainList/requestArgsModify/requestArgsModify.model',
+        "requestArgsModify.view": 'customerSetup/domainList/requestArgsModify/requestArgsModify.view',
+
+        "ipBlackWhiteList.model": 'customerSetup/domainList/ipBlackWhiteList/ipBlackWhiteList.model',
+        "ipBlackWhiteList.view": 'customerSetup/domainList/ipBlackWhiteList/ipBlackWhiteList.view',
+
+        "refererAntiLeech.model": 'customerSetup/domainList/refererAntiLeech/refererAntiLeech.model',
+        "refererAntiLeech.view": 'customerSetup/domainList/refererAntiLeech/refererAntiLeech.view',    
+
+        "timestamp.model": 'customerSetup/domainList/timestamp/timestamp.model',
+        "timestamp.view": 'customerSetup/domainList/timestamp/timestamp.view',     
     },
     urlArgs: new Date().valueOf()
 });

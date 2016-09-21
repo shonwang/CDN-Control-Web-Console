@@ -12,7 +12,7 @@
                 </div>
             </div>
             <div class="col-sm-2 byte-limit">
-                <input class="form-control" type="text" id="byte-limit">
+                <input class="form-control" type="number" id="byte-limit" min="0">
             </div>
             <div class="col-sm-2 byte-limit byte-limit-unit">
                 <div class="dropdown">
@@ -27,7 +27,7 @@
         <div class="form-group">
             <label for="set-limit" class="col-sm-4 control-label">设置限速</label>
             <div class="col-sm-4 set-limit">
-                <input class="form-control" type="text" id="set-limit">
+                <input class="form-control" type="number" id="set-limit" min="0">
             </div>
             <label for="set-limit" class="col-sm-2 control-label">KB/S</label>
         </div>
@@ -38,6 +38,5 @@
             </div>
         </div>
     </div>
-    <hr>
     <div class="table-ctn table-responsive"></div>
 </div>

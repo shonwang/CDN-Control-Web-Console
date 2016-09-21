@@ -1,28 +1,12 @@
-define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
-    var TimeLimitAddEditView = Backbone.View.extend({
+    var AddEditRefererAntiLeechView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
-            this.$el = $(_.template(template['tpl/customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.addTimeLimit.html'])());
-        },
-
-
-        render: function(target) {
-            this.$el.appendTo(target);
-        }
-    });
-
-
-    var AddEditLimitView = Backbone.View.extend({
-        events: {},
-
-        initialize: function(options) {
-            this.options = options;
-            this.collection = options.collection;
-            this.$el = $(_.template(template['tpl/customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.add.html'])());
+            this.$el = $(_.template(template['tpl/customerSetup/domainList/refererAntiLeech/refererAntiLeech.add.html'])());
 
             require(['matchCondition.view'], function(MatchConditionView){
                 var  matchConditionArray = [
@@ -39,73 +23,38 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
                 this.matchConditionView.render(this.$el.find(".match-condition-ctn"));
             }.bind(this))
 
-            this.$el.find(".byte-limit").hide();
-            this.initUnitDropdown();
-
-            this.$el.find(".byte-limit-toggle .togglebutton input").on("click", $.proxy(this.onClickByteLimitToggle, this));
-            this.$el.find(".add-time-limit").on("click", $.proxy(this.onClickAddTimeLimit, this));
-
-            var data = [{
-                start: new Date().format("hh:mm:ss"),
-                end: new Date().format("hh:mm:ss"),
-                limitSpeed: "40kb/s"
-            }]
-            this.$el.find(".table-ctn").html(_.template(template['tpl/customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.timeLimitTable.html'])({
-                data: data
-            }))
+            this.initTypeDropdown();
+            this.isWhiteList = true;
+            if (this.isWhiteList)
+                this.$el.find(".black-list").hide();
+            else
+                this.$el.find(".white-list").hide();
         },
 
-        onClickAddTimeLimit: function(){
-            this.rootNode.modal("hide");
-
-            if (this.addTimeLimitPopup) $("#" + this.addTimeLimitPopup.modalId).remove();
-
-            var myTimeLimitAddEditView = new TimeLimitAddEditView({collection: this.collection});
-
-            var options = {
-                title:"添加时间限速",
-                body : myTimeLimitAddEditView,
-                backdrop : 'static',
-                type     : 2,
-                onOkCallback: function(){}.bind(this),
-                onHiddenCallback: function(){
-                    this.rootNode.modal('show')
-                }.bind(this)
-            }
-            setTimeout(function(){
-                this.addTimeLimitPopup = new Modal(options);
-            }.bind(this), 500)
-
-        },
-
-        initUnitDropdown: function(){
-            var  unitArray = [
-                {name: "KB", value: 1},
-                {name: "MB", value: 2}
+        initTypeDropdown: function(){
+            var  timeArray = [
+                {name: "白名单", value: 1},
+                {name: "黑名单", value: 2}
             ],
-            rootNode = this.$el.find(".byte-limit-unit");
-            Utility.initDropMenu(rootNode, unitArray, function(value){
-
+            rootNode = this.$el.find(".referer-type");
+            Utility.initDropMenu(rootNode, timeArray, function(value){
+                if (parseInt(value) === 1){
+                    this.$el.find(".black-list").hide();
+                    this.$el.find(".white-list").show();
+                } else if(parseInt(value) === 2){
+                    this.$el.find(".black-list").show();
+                    this.$el.find(".white-list").hide();
+                }
             }.bind(this));
 
-            var defaultValue = _.find(unitArray, function(object){
-                return object.value === 1;
+            var defaultValue = _.find(timeArray, function(object){
+                return object.value === 3;
             }.bind(this));
 
             if (defaultValue)
-                this.$el.find("#dropdown-byte-limit-unit .cur-value").html(defaultValue.name);
+                this.$el.find("#dropdown-referer-type .cur-value").html(defaultValue.name);
             else
-                this.$el.find("#dropdown-byte-limit-unit .cur-value").html(unitArray[0].name);
-        },
-
-        onClickByteLimitToggle: function(){
-            var eventTarget = event.srcElement || event.target;
-            if (eventTarget.tagName !== "INPUT") return;
-            if (eventTarget.checked){
-                this.$el.find(".byte-limit").show();
-            } else {
-                this.$el.find(".byte-limit").hide();
-            }
+                this.$el.find("#dropdown-referer-type .cur-value").html(timeArray[0].name);
         },
 
         onSure: function(){
@@ -113,19 +62,19 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
             console.log(notCacheTime)
         },
 
-        render: function(target, rootNode) {
+        render: function(target) {
             this.$el.appendTo(target);
-            this.rootNode = rootNode;
         }
     });
 
-    var ClientLimitSpeedView = Backbone.View.extend({
+
+    var RefererAntiLeechView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
             this.collection = options.collection;
             this.options = options;
-            this.$el = $(_.template(template['tpl/customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.html'])());
+            this.$el = $(_.template(template['tpl/customerSetup/domainList/refererAntiLeech/refererAntiLeech.html'])());
             var clientInfo = JSON.parse(options.query), 
                 domainInfo = JSON.parse(options.query2),
                 userInfo = {
@@ -181,7 +130,7 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.table.html'])({
+            this.table = $(_.template(template['tpl/customerSetup/domainList/refererAntiLeech/refererAntiLeech.table.html'])({
                 data: this.collection.models
             }));
             if (this.collection.models.length !== 0)
@@ -197,11 +146,11 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
         onClickAddRole: function(event){
             if (this.addRolePopup) $("#" + this.addRolePopup.modalId).remove();
 
-            var myAddEditLimitView = new AddEditLimitView({collection: this.collection});
+            var myAddEditRefererAntiLeechView = new AddEditRefererAntiLeechView({collection: this.collection});
 
             var options = {
                 title:"缓存规则",
-                body : myAddEditLimitView,
+                body : myAddEditRefererAntiLeechView,
                 backdrop : 'static',
                 type     : 2,
                 onOkCallback: function(){}.bind(this),
@@ -292,5 +241,5 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
         }
     });
 
-    return ClientLimitSpeedView;
+    return RefererAntiLeechView;
 });

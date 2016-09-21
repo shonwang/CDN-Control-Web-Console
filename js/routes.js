@@ -35,6 +35,12 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             "domainList/:query/following302/:query2": "following302",
             "domainList/:query/dragPlay/:query2": "dragPlay",
             "domainList/:query/clientLimitSpeed/:query2": "clientLimitSpeed",
+            "domainList/:query/httpHeaderOpt/:query2": "httpHeaderOpt",
+            "domainList/:query/httpHeaderCtr/:query2": "httpHeaderCtr",
+            "domainList/:query/requestArgsModify/:query2": "requestArgsModify",
+            "domainList/:query/ipBlackWhiteList/:query2": "ipBlackWhiteList",
+            "domainList/:query/refererAntiLeech/:query2": "refererAntiLeech",
+            "domainList/:query/timestamp/:query2": "timestamp",
         },
 
         initialize: function(){
@@ -70,7 +76,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                         id: 'backOriginSetup',
                         name: '回源配置',
                         hash: 'index.html#/domainList/' + query + /backOriginSetup/ + query2,
-                        active: true,
+                        active: false,
                         children: []
                     }]
                 },{
@@ -81,7 +87,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                         id: 'following302',
                         name: 'Following 302',
                         hash: 'index.html#/domainList/' + query + /following302/ + query2,
-                        active: true,
+                        active: false,
                         children: []
                     }]
                 },{
@@ -92,7 +98,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                         id: 'cacheRule',
                         name: '缓存规则',
                         hash: 'index.html#/domainList/' + query + /cacheRule/ + query2,
-                        active: true,
+                        active: false,
                         children: []
                     },{
                         id: 'delMarkCache',
@@ -115,7 +121,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                         id: 'dragPlay',
                         name: '拖拽播放',
                         hash: 'index.html#/domainList/' + query + /dragPlay/ + query2,
-                        active: true,
+                        active: false,
                         children: []
                     }]
                 },{
@@ -126,9 +132,60 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                         id: 'clientLimitSpeed',
                         name: '客户端限速',
                         hash: 'index.html#/domainList/' + query + /clientLimitSpeed/ + query2,
-                        active: true,
+                        active: false,
                         children: []
                     }]
+                },{
+                    id: '',
+                    name: 'HTTP头控制',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'httpHeaderOpt',
+                        name: 'HTTP头的增删改查',
+                        hash: 'index.html#/domainList/' + query + /httpHeaderOpt/ + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'httpHeaderCtr',
+                        name: '常用HTTP头控制功能',
+                        hash: 'index.html#/domainList/' + query + /httpHeaderCtr/ + query2,
+                        active: false,
+                        children: []
+                    }]
+                },{
+                    id: '',
+                    name: 'URL控制',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'requestArgsModify',
+                        name: '请求参数的改写',
+                        hash: 'index.html#/domainList/' + query + /requestArgsModify/ + query2,
+                        active: false,
+                        children: []
+                    }]
+                },{
+                    id: '',
+                    name: '访问控制',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'ipBlackWhiteList',
+                        name: 'IP黑白名单',
+                        hash: 'index.html#/domainList/' + query + /ipBlackWhiteList/ + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'refererAntiLeech',
+                        name: 'Referer防盗链',
+                        hash: 'index.html#/domainList/' + query + /refererAntiLeech/ + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'timestamp',
+                        name: '时间戳+共享秘钥防盗链',
+                        hash: 'index.html#/domainList/' + query + /timestamp/ + query2,
+                        active: false,
+                        children: []
+                    },]
                 }], menuOptions = {
                     backHash: 'index.html#/domainList/' + query,
                     menuList: menu
@@ -250,10 +307,57 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                     this.clientLimitSpeedView.hide();
                     this.thirdNavbar.hide();
                     break;
+                case 'httpHeaderOpt':
+                    this.httpHeaderOptView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'httpHeaderCtr':
+                    this.httpHeaderCtrView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'requestArgsModify':
+                    this.requestArgsModifyView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'ipBlackWhiteList':
+                    this.ipBlackWhiteListView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'refererAntiLeech':
+                    this.refererAntiLeechView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'timestamp':
+                    this.timestampView.hide();
+                    this.thirdNavbar.hide();
                 default:
             }
             if (callback)
                 callback.apply(this, args);
+        },
+
+        timestamp: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.timestampCallback, this, query, query2))
+        },
+
+        refererAntiLeech: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.refererAntiLeechCallback, this, query, query2))
+        },
+
+        ipBlackWhiteList: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.ipBlackWhiteListCallback, this, query, query2))
+        },
+
+        requestArgsModify: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.requestArgsModifyCallback, this, query, query2))
+        },
+
+        httpHeaderCtr: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.httpHeaderCtrCallback, this, query, query2))
+        },
+
+        httpHeaderOpt: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.httpHeaderOptCallback, this, query, query2))
         },
 
         clientLimitSpeed: function(query, query2){

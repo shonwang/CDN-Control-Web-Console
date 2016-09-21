@@ -3,6 +3,140 @@ define("customerSetup.controller", ['require','exports'],
 
     var CustomerSetupController = Backbone.Router.extend({
 
+        timestampCallback: function(query, query2) {
+            require(['timestamp.view', 'timestamp.model'], function(TimestampView, TimestampModel){
+                this.curPage = 'timestamp';
+                this.setUpThirdNavbar(query, query2);
+
+                if (!this.timestampModel)
+                    this.timestampModel = new TimestampModel();
+                if (!this.timestampView ){
+                    var options = {
+                        collection: this.timestampModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.timestampView = new TimestampView(options);
+                    this.timestampView.render(this.thirdNavbar.$el.find('.sub-content'));
+                } else {
+                    this.thirdNavbar.select(this.curPage);
+                    this.timestampView.update(query, query2);
+                }
+            }.bind(this));
+        },
+
+        refererAntiLeechCallback: function(query, query2) {
+            require(['refererAntiLeech.view', 'refererAntiLeech.model'], function(RefererAntiLeechView, RefererAntiLeechModel){
+                this.curPage = 'refererAntiLeech';
+                this.setUpThirdNavbar(query, query2);
+
+                if (!this.refererAntiLeechModel)
+                    this.refererAntiLeechModel = new RefererAntiLeechModel();
+                if (!this.refererAntiLeechView ){
+                    var options = {
+                        collection: this.refererAntiLeechModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.refererAntiLeechView = new RefererAntiLeechView(options);
+                    this.refererAntiLeechView.render(this.thirdNavbar.$el.find('.sub-content'));
+                } else {
+                    this.thirdNavbar.select(this.curPage);
+                    this.refererAntiLeechView.update(query, query2);
+                }
+            }.bind(this));
+        },
+
+        ipBlackWhiteListCallback: function(query, query2) {
+            require(['ipBlackWhiteList.view', 'ipBlackWhiteList.model'], function(IpBlackWhiteListView, IpBlackWhiteListModel){
+                this.curPage = 'ipBlackWhiteList';
+                this.setUpThirdNavbar(query, query2);
+
+                if (!this.ipBlackWhiteListModel)
+                    this.ipBlackWhiteListModel = new IpBlackWhiteListModel();
+                if (!this.ipBlackWhiteListView ){
+                    var options = {
+                        collection: this.ipBlackWhiteListModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.ipBlackWhiteListView = new IpBlackWhiteListView(options);
+                    this.ipBlackWhiteListView.render(this.thirdNavbar.$el.find('.sub-content'));
+                } else {
+                    this.thirdNavbar.select(this.curPage);
+                    this.ipBlackWhiteListView.update(query, query2);
+                }
+            }.bind(this));
+        },
+
+        requestArgsModifyCallback: function(query, query2) {
+            require(['requestArgsModify.view', 'requestArgsModify.model'], function(RequestArgsModifyView, RequestArgsModifyModel){
+                this.curPage = 'requestArgsModify';
+                this.setUpThirdNavbar(query, query2);
+
+                if (!this.requestArgsModifyModel)
+                    this.requestArgsModifyModel = new RequestArgsModifyModel();
+                if (!this.requestArgsModifyView ){
+                    var options = {
+                        collection: this.requestArgsModifyModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.requestArgsModifyView = new RequestArgsModifyView(options);
+                    this.requestArgsModifyView.render(this.thirdNavbar.$el.find('.sub-content'));
+                } else {
+                    this.thirdNavbar.select(this.curPage);
+                    this.requestArgsModifyView.update(query, query2);
+                }
+            }.bind(this));
+        },
+
+        httpHeaderCtrCallback: function(query, query2) {
+            require(['httpHeaderCtr.view', 'httpHeaderCtr.model'], function(HttpHeaderCtrView, HttpHeaderCtrModel){
+                this.curPage = 'httpHeaderCtr';
+                this.setUpThirdNavbar(query, query2);
+
+                if (!this.httpHeaderCtrModel)
+                    this.httpHeaderCtrModel = new HttpHeaderCtrModel();
+                if (!this.httpHeaderCtrView ){
+                    var options = {
+                        collection: this.httpHeaderCtrModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.httpHeaderCtrView = new HttpHeaderCtrView(options);
+                    this.httpHeaderCtrView.render(this.thirdNavbar.$el.find('.sub-content'));
+                } else {
+                    this.thirdNavbar.select(this.curPage);
+                    this.httpHeaderCtrView.update(query, query2);
+                }
+            }.bind(this));
+        },
+
+
+        httpHeaderOptCallback: function(query, query2) {
+            require(['httpHeaderOpt.view', 'httpHeaderOpt.model'], function(HttpHeaderOptView, HttpHeaderOptModel){
+                this.curPage = 'httpHeaderOpt';
+                this.setUpThirdNavbar(query, query2);
+
+                if (!this.httpHeaderOptModel)
+                    this.httpHeaderOptModel = new HttpHeaderOptModel();
+                if (!this.httpHeaderOptView ){
+                    var options = {
+                        collection: this.httpHeaderOptModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.httpHeaderOptView = new HttpHeaderOptView(options);
+                    this.httpHeaderOptView.render(this.thirdNavbar.$el.find('.sub-content'));
+                } else {
+                    this.thirdNavbar.select(this.curPage);
+                    this.httpHeaderOptView.update(query, query2);
+                }
+            }.bind(this));
+        },
+
+
         clientLimitSpeedCallback: function(query, query2) {
             require(['clientLimitSpeed.view', 'clientLimitSpeed.model'], function(ClientLimitSpeedView, ClientLimitSpeedModel){
                 this.curPage = 'clientLimitSpeed';

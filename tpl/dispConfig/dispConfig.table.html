@@ -31,7 +31,13 @@
                                 <% } else if (data[i].get("listFormated")[k].get("type") === -1) { %>
                                     class="danger"
                                 <% } %> >
-                                <td style="width:400px"><%=data[i].get("listFormated")[k].get("nodeString")%></td>
+                                <td style="width:400px">
+                                    <a href="javascript:void(0)" class="node-string text-primary" 
+                                      id='<%=data[i].get("listFormated")[k].get("id")%>' 
+                                      region-id='<%=data[i].get("id")%>'>
+                                          <%=data[i].get("listFormated")[k].get("nodeString")%>
+                                    </a>
+                                </td>
                                 <td>
                                     <% if (!isHistory) { %>
                                     <input type="number" class="weight" 

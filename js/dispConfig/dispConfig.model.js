@@ -442,7 +442,18 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
                 this.trigger("get.diff.error", response);
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
-        }
+        },
+
+        getNodeBandWidth: function(args){
+            var url = BASE_URL + "/rs/node/bandWidth",//?nodeId=XXX
+            successCallback = function(res){
+                this.trigger("get.nodeBandWidth.success", res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.nodeBandWidth.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
     });
 
     return DispConfigCollection;

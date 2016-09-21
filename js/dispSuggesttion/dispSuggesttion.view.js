@@ -836,8 +836,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onClickNodeString: function(event){
-            var eventTarget = event.srcElement || event.target, id, grId, value;
-            value    = $(eventTarget).val();
+            var eventTarget = event.srcElement || event.target, id, grId;
             id       = $(eventTarget).attr("id");
             grId = $(eventTarget).attr("group-region-id");
             var model = this.collection.get(grId),
@@ -1087,5 +1086,6 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
     });
 
     exports.SelectNodeView = SelectNodeView;
-    exports.DispSuggesttionView = DispSuggesttionView
+    exports.ChartView = ChartView;
+    exports.DispSuggesttionView = DispSuggesttionView;
 });

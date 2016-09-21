@@ -69,7 +69,7 @@ define("dispSuggesttion.model", ['require','exports', 'utility'], function(requi
             errorCallback = function(response){
                 this.trigger("advice.dispDns.error", response); 
             }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
+            Utility.postAjax(url, args, successCallback, errorCallback, 1000 * 60 * 5);
         },
 
         getNodeBandWidth: function(args){

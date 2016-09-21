@@ -31,7 +31,9 @@
                 data[i].attributes.status == '10' || 
                 data[i].attributes.status == '14'|| 
                 data[i].attributes.status == '18' || 
-                data[i].attributes.status == '22' || data[i].attributes.status == '26'){ %>
+                data[i].attributes.status == '22' || 
+                data[i].attributes.status == '26' || 
+                data[i].attributes.status == '30'){ %>
               <a href="javascript:void(0)" id="<%=data[i].attributes.ipId%>" class='ipOperation' data-ip="<%=data[i].attributes.ip%>" data-status="1" title='开启'>
                 <span class="glyphicon glyphicon-play-circle"></span>
               </a>
@@ -39,7 +41,7 @@
               <a href="javascript:void(0)" id="<%=data[i].attributes.ipId%>" class="a_disabled" data-ip="<%=data[i].attributes.ip%>" data-status="1" title='IP所属设备已暂停'>
                 <span class="glyphicon glyphicon-play-circle css-gray"></span>
               </a>
-          <% }else if(data[i].attributes.status == '16' || data[i].attributes.status == '20'){ %>
+          <% }else if(data[i].attributes.status == '16' || data[i].attributes.status == '24'){ %>
               <a href="javascript:void(0)" id="<%=data[i].attributes.ipId%>" class="a_disabled" data-ip="<%=data[i].attributes.ip%>" data-status="1" title='IP所属节点已暂停'>
                 <span class="glyphicon glyphicon-play-circle css-gray"></span>
               </a>

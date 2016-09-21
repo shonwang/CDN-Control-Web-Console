@@ -258,7 +258,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             errorCallback = function(response){
                 this.trigger("operate.node.error", response);
             }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
+            Utility.getAjax(url, args, successCallback, errorCallback, 1000 * 60 * 5);
         },
 
         getAssocateDispGroups: function(args){

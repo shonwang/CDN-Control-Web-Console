@@ -2,7 +2,7 @@
     <thead> 
       <tr>
         <% if (!isFailed) { %>
-        <th><input type="checkbox" id="inlineCheckbox7"></th>
+        <th><input type="checkbox" id="inlineCheckbox7" checked="true"></th>
         <% } %>
         <th>调度组名称<span class="glyphicon glyphicon-question-sign" title="下发DNS时只下发已勾选的线路，未勾选的线路不下发DNS"></span></th>
         <th>区域</th>
@@ -19,7 +19,7 @@
             <% if (data[i].get("isDisplay")) { %>
             <tr data-id='<%=data[i].get("id")%>'>
               <% if (!isFailed) { %>
-              <td><input type="checkbox" id='<%=data[i].get("id")%>'></td>
+              <td><input type="checkbox" id='<%=data[i].get("id")%>' checked="true"></td>
               <% } %>
               <td><%=data[i].get("dispGroup.dispDomain")%></td>
               <td><%=data[i].get("region.name")%>(<%=data[i].get("region.maxBandWidth")%>)</td>

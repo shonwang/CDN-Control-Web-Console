@@ -36,9 +36,13 @@
                 <% } %>
               <% } %>
               <td>
+                  <% if (permission.ClickConfig) { %>
                   <a href="javascript:void(0)" id='<%=data[i].get("id")%>' histroy-id='<%=data[i].get("confFileHisId")%>' node-group-id='<%=data[i].get("nodeGroupId")%>' class="file-name">
                       <%=data[i].get("fileName") %>
                   </a>
+                  <% } else {%>
+                      <%=data[i].get("fileName") %>
+                  <% } %>
               </td>
               <td><% if (data[i].get("partition") === 1) { %><span class="glyphicon glyphicon-th"></span><% } %></td>
               <td><%=data[i].get("currVersion") || data[i].get("version")%></td>
@@ -47,12 +51,16 @@
               <% if (dataTpye === 1 || dataTpye === 3) { %>
               <td>
                   <% if (dataTpye === 1) { %>
+                  <% if (permission.EditConfig) { %>
                   <a href="javascript:void(0)" id='<%=data[i].get("id")%>' histroy-id='<%=data[i].get("confFileHisId")%>' node-group-id='<%=data[i].get("nodeGroupId")%>' class="edit" title="编辑">
                       <span class="glyphicon glyphicon-edit"></span>
                   </a>
+                  <% } %>
+                  <% if (permission.ConfigHistory) { %>
                   <a href="javascript:void(0)" id='<%=data[i].get("id")%>' histroy-id='<%=data[i].get("confFileHisId")%>' node-group-id='<%=data[i].get("nodeGroupId")%>' class="history" title="历史记录">
                       <span class="glyphicon glyphicon-time"></span>
                   </a>
+                  <% } %>
                   <% } %> 
                   <% if (dataTpye === 3 && currentHisId !== data[i].get("confFileHisId")) { %>
                   <a class="btn btn-primary btn-sm used" href="javascript:void(0)" histroy-id='<%=data[i].get("confFileHisId")%>' node-group-id='<%=data[i].get("nodeGroupId")%>' id='<%=data[i].get("id")%>'>

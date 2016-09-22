@@ -1,52 +1,19 @@
 <ul class="list-unstyled daily">
+    <% for(var i = 0; i < dateArray.length; i++) { %>
     <li>
         <i class="circle glyphicon glyphicon-record"></i>
         <div class="dailycont">
             <i class="arrowl glyphicon glyphicon-triangle-left"></i>
-            <span class="h4">2016.04</span>
+            <span class="h4"><%=dateArray[i]%></span>
             <ul class="list-unstyled">
-                <li class="card flipInX animated-1s">
-                    <div>2016/04/16 15:23</div>
-                    <div>下发人: 张彬</div>
+                <% for(var k = 0; k < dateObj[dateArray[i]].length; k++) { %>
+                <li class="card flipInX animated-1s" id='<%=dateObj[dateArray[i]][k].id%>'>
+                    <div><%=dateObj[dateArray[i]][k].timeFormated%></div>
+                    <div>下发人: <%=dateObj[dateArray[i]][k].userName%></div>
                 </li>
-                <li class="card flipInX animated-1s">
-                    <div>2016/04/16 15:23</div>
-                    <div>下发人: 张彬</div>
-                </li>
-                <li class="card flipInX animated-1s">
-                    <div>2016/04/16 15:23</div>
-                    <div>下发人: 张彬</div>
-                </li>
-                <li class="card flipInX animated-1s">
-                    <div>2016/04/16 15:23</div>
-                    <div>下发人: 张彬</div>
-                </li>
+                <% } %>
             </ul>
         </div>
     </li>
-    <li>
-        <i class="circle glyphicon glyphicon-record"></i>
-        <div class="dailycont">
-            <i class="arrowl glyphicon glyphicon-triangle-left"></i>
-            <span class="h4">2016.03</span>
-            <ul class="list-unstyled">
-                <li class="card flipInX animated-1s">
-                    <div>2016/03/16 15:23</div>
-                    <div>下发人: 张佩</div>
-                </li>
-                <li class="card flipInX animated-1s">
-                    <div>2016/03/16 15:23</div>
-                    <div>下发人: 张佩</div>
-                </li>
-                <li class="card flipInX animated-1s">
-                    <div>2016/03/16 15:23</div>
-                    <div>下发人: 张佩</div>
-                </li>
-                <li class="card flipInX animated-1s">
-                    <div>2016/03/16 15:23</div>
-                    <div>下发人: 张佩</div>
-                </li>
-            </ul>
-        </div>
-    </li>
+    <% } %>
 </ul>

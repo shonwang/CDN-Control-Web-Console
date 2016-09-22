@@ -1,5 +1,46 @@
 define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
+    var DispInfoView = Backbone.View.extend({
+        events: {
+            //"click .search-btn":"onClickSearch"
+        },
+
+        initialize: function(options) {
+            this.collection = options.collection;
+            this.model = options.model;
+            this.$el = $(_.template(template['tpl/ipManage/ipManage.disp.html'])());
+            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+
+            this.collection.off("get.dispByIp.success");
+            this.collection.off("get.dispByIp.error");
+            this.collection.on("get.dispByIp.success", $.proxy(this.initTable, this));
+            this.collection.on("get.dispByIp.error", $.proxy(this.onGetError, this));
+            this.collection.getDispByIp({ip: this.model.get("ip")})
+        },
+
+        initTable: function(res){
+            this.table = $(_.template(template['tpl/ipManage/ipManage.disp.table.html'])({data: res}));
+            if (res.length !== 0)
+                this.$el.find(".table-ctn").html(this.table[0]);
+            else
+                this.$el.find(".table-ctn").html(_.template(template['tpl/empty-2.html'])({
+                        data:{message: "赵宪亮在胸前仔细摸索了一番，但是却没有找到数据！"}
+                    }));
+        },
+
+        onGetError: function(error){
+            if (error&&error.message)
+                alert(error.message)
+            else
+                alert("网络阻塞，请刷新重试！")
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target);
+        }
+    });
+
+
     var IPQueryDetailView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
@@ -40,8 +81,18 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.deviceCollection.on("ip.type.success", $.proxy(this.onGetIpTypeList, this));
             this.deviceCollection.on("ip.type.error", $.proxy(this.onGetError, this));
 
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.$el.find(".opt-ctn .query-single").on("click", $.proxy(this.onClickQuerySingleButton, this));
+            if (AUTH_OBJ.QueryIPList)
+                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+            else
+                this.$el.find(".opt-ctn .query").remove();
+
+            if (AUTH_OBJ.QueryIP){
+                this.$el.find(".opt-ctn .query-single").on("click", $.proxy(this.onClickQuerySingleButton, this));
+                $(document).on('keydown', $.proxy(this.onEnterQuery, this));
+            } else {
+                this.$el.find(".opt-ctn .query-single").remove();
+            }
+
             this.isMultiIPSearch = true;
             this.isQuering = false;
             this.queryArgs = {
@@ -58,7 +109,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 "ipStatus": null, //状态
                 "deviceName": null, //设备名称
                 "nodeName": null,  //节点名称
-                "dispDomain": null,  //调度组名称
+                //"dispDomain": null,  //调度组名称
                 "page" : 1,
                 "count": 10,
             };
@@ -73,12 +124,13 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             }.bind(this));
 
             this.collection.on("get.ipInfoStart.error", function(err){
+                this.commonPopup.$el.modal('hide');
                 this.onGetError(err);
             }.bind(this));
             this.collection.on("get.ipInfoPause.error", function(err){
+                this.commonPopup.$el.modal('hide');
                 this.onGetError(err);
             }.bind(this));
-            $(document).on('keydown', $.proxy(this.onEnterQuery, this));
         },
 
         onEnterQuery: function(e){
@@ -130,6 +182,36 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.onStartQueryButton();
         },
 
+        onClickDispInfoItem: function(event){
+            if (this.dispInfoPopup) $("#" + this.dispInfoPopup.modalId).remove();
+
+            var eventTarget = event.srcElement || event.target,id;
+
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+
+            var model = this.collection.get(id);
+
+            var dispInfoView = new DispInfoView({
+                collection: this.collection,
+                model: model
+            });
+            var options = {
+                title: model.get("ip") + "调度信息详情",
+                body : dispInfoView,
+                backdrop : 'static',
+                type     : 1,
+                height   : 500,
+                onOKCallback:  function(){},
+                onHiddenCallback: function(){}
+            }
+            this.dispInfoPopup = new Modal(options);
+        },
+
         onClickQueryButton: function(event){
             if (this.queryDetailPopup) $("#" + this.queryDetailPopup.modalId).remove();
 
@@ -170,19 +252,20 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 this.anotherQuery.ip = this.$el.find("#input-ip").val();
                 this.anotherQuery.deviceName = this.$el.find("#input-device").val();
                 this.anotherQuery.nodeName = this.$el.find("#input-node").val();
-                this.anotherQuery.dispDomain = this.$el.find("#input-group").val();
+                //this.anotherQuery.dispDomain = this.$el.find("#input-group").val();
                 this.collection.queryIpInfoList(this.anotherQuery);
             }
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/ipManage/ipManage.table.html'])({data: this.collection.models}));
+            this.table = $(_.template(template['tpl/ipManage/ipManage.table.html'])({data: this.collection.models, permission : AUTH_OBJ}));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.$el.find(".ipOperation").on("click", $.proxy(this.onClickIpOperation, this));
+            this.$el.find(".disp-info").on("click", $.proxy(this.onClickDispInfoItem, this));
         },
 
         initPaginator: function(){
@@ -287,7 +370,6 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 this.collection.off("get.ipInfoPause.success");
                 this.collection.on("get.ipInfoPause.success", $.proxy(this.onIpInfoPauseSuccess, this));
             }
-
         },
 
         commonDialog: function(){
@@ -354,7 +436,8 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         remove: function(){
-            $(document).off('keydown', $.proxy(this.onEnterQuery, this));
+            if (AUTH_OBJ.QueryIP)
+                $(document).off('keydown', $.proxy(this.onEnterQuery, this));
             if (this.queryDetailPopup) $("#" + this.queryDetailPopup.modalId).remove();
             this.queryDetailPopup = null;
             this.collection.off();
@@ -362,13 +445,15 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         hide: function(){
-            $(document).off('keydown', $.proxy(this.onEnterQuery, this));
+            if (AUTH_OBJ.QueryIP)
+                $(document).off('keydown', $.proxy(this.onEnterQuery, this));
             this.$el.hide();
         },
 
         update: function(){
             this.$el.show();
-            $(document).on('keydown', $.proxy(this.onEnterQuery, this));
+            if (AUTH_OBJ.QueryIP)
+                $(document).on('keydown', $.proxy(this.onEnterQuery, this));
         },
 
         render: function(target) {

@@ -46,8 +46,8 @@
                       <input type="password" class="form-control" id="inputPassword3" placeholder="密码">
                     </div>
                   </div>
-                  <div class="form-group">
-<!--                     <label for="checkcode" class="col-sm-2 control-label">验证码</label> -->
+<!--                   <div class="form-group">
+                    <label for="checkcode" class="col-sm-2 control-label">验证码</label>
                     <div class="col-xs-4 col-sm-4">
                       <input type="text" class="form-control" id="checkcode" placeholder="验证码">
                     </div>
@@ -57,7 +57,7 @@
                     <div class="col-xs-4 col-sm-4">
                       <button type="button" class="btn btn-default">换一个</button>
                     </div>
-                  </div>
+                  </div> -->
                   <div class="form-group">
                     <div class="col-sm-12">
                         <div class="alert-denger text-danger" role="alert" style="display: none">
@@ -85,40 +85,51 @@
 <script type="text/javascript" src="libs/particles.min.js"></script>
 <script type="text/javascript" src="libs/app.js"></script>
 <script type="text/javascript">
-    window.DEBUG = 1;
+    window.DEBUG = 1.1;
 
     if (window.DEBUG === 1)
-        window.BASE_URL = "http://120.92.232.203:9098";
+        window.BASE_URL = "http://develop.gateway.center.cdn.ksyun.com";
+    else if (window.DEBUG === 1.1)
+        window.BASE_URL = "http://local.center.ksyun.com";
+    else if (window.DEBUG === 1.2)
+        window.BASE_URL = "http://10.4.2.38:9098";
     else if (window.DEBUG === 2)
         window.BASE_URL = "http://test.center.cdn.ksyun.com";
     else if (window.DEBUG === 3)
         window.BASE_URL = "http://center.cdn.ksyun.com";
     else if(window.DEBUG === 4)
-        window.BASE_URL = "http://test-cdn.center.cdn.ksyun.com";
+        window.BASE_URL = "http://devtest.center.cdn.ksyun.com";//test-cdn.center.cdn.ksyun.com";
     else if(window.DEBUG === 5)
         window.BASE_URL = "http://gray.center.cdn.ksyun.com";
     else if(window.DEBUG === 6)
         window.BASE_URL = "http://develop.center.cdn.ksyun.com";
     else if(window.DEBUG === 7)
         window.BASE_URL = "http://sh.center.cdn.ksyun.com";
+    else if(window.DEBUG === 8)
+        window.BASE_URL = "http://develop.gateway.center.cdn.ksyun.com";
+    else if(window.DEBUG === 9)
+        window.BASE_URL = "http://wq.center.cdn.ksyun.com";
+    
 
     var onClickChange = function(argument) {
         var url = BASE_URL + "/rs/login/validation/code?" + new Date().valueOf()
         $(".codeimage").attr("src", url)
     }
-    onClickChange();
+    //onClickChange();
     var sendRequest = function (data) {
         var defaultParas = {
             type: data.type,
             url: data.url,
             async: true,
-            timeout: 60000
+            timeout: 60000,
+            contentType: "application/json",
+            processData: false
         };
 
-        defaultParas.data = data.queryData;
+        defaultParas.data = JSON.stringify(data.queryData);
 
         defaultParas.beforeSend = function(xhr){
-            //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            xhr.setRequestHeader("systemKey","resourcemanager");
         }
         
         defaultParas.success = function(res){
@@ -140,23 +151,25 @@
         $(".alert-denger").hide();
     });
 
-    $("#checkcode").on("focus", function(argument) {
-        $(".alert-denger").hide();
-    });
+    // $("#checkcode").on("focus", function(argument) {
+    //     $(".alert-denger").hide();
+    // });
 
     $(".btn-default").on("click", onClickChange)
 
     var onLogin = function(argument) {
         var username = $("#inputEmail3").val(),
-            password = $('#inputPassword3').val(),
-            checkcode = $("#checkcode").val();
+            password = $('#inputPassword3').val();
+            //checkcode = $("#checkcode").val();
         $(".alert-denger").hide();
-        if (!username || !password || !checkcode) $(".alert-denger").show();
+        //if (!username || !password || !checkcode) $(".alert-denger").show();
+        if (!username || !password) $(".alert-denger").show();
 
         var data = {
-            url            : BASE_URL + "/rs/login/doLogin?",
-            type           : "GET",
-            queryData      : {name : username, passwd : password, code : checkcode},
+            url            : BASE_URL + "/gateway/auth/do/auth",
+            type           : "POST",
+            //queryData      : {name : username, passwd : password, code : checkcode},
+            queryData      : {userName : username, password : password},
             successCallBack: function(res){
                 location.href = "index.html"
             },

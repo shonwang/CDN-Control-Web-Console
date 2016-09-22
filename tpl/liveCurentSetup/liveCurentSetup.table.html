@@ -6,7 +6,8 @@
         <th>文件路径</th>
         <th>版本</th>
         <th>创建时间</th>
-        <th>IPS</th>
+        <th>成功率</th>
+        <th>设备</th>
         <th>脚本内容</th>
         <th>操作</th>   
       </tr>
@@ -28,17 +29,32 @@
               <td><%=data[i].get("currVersion")%></td>
               <td><%=data[i].get("createTimeFormated")%></td>
               <% if ((i === 0) || (i > 0 && data[i].get("logId") !== data[i-1].get("logId"))) { %>
-              <td rowspan='<%=data[i].get("allRowspan") %>'>
-                  <a href="javascript:void(0)" id='<%=data[i].get("id")%>' class="btn btn-primary btn-sm detail">
-                    IPS查看
-                  </a>
+              <td rowspan='<%=data[i].get("allRowspan") %>' style="min-width: 100px;">
+                <div class="row" style="margin-right:-58px;">
+                  <div class="col-xs-2 col-sm-2 col-md-2 temp"></div>
+                  <div class="col-xs-4 col-sm-4 col-md-4 text-center"><%=data[i].get("percentage")%></div>
+                    <div class="col-xs-4 col-sm-4 col-md-4 text-center">
+                      <a class="refresh" href="javascript:void(0)" id='<%=data[i].get("id")%>' logId='<%=data[i].get("logId")%>'>刷新</a>
+                    </div>
+                    <div  class="col-xs-2 col-sm-2 col-md-2"></div>
+                </div>
               </td>
               <td rowspan='<%=data[i].get("allRowspan") %>'>
+                  <% if (permission.ViewIPConfigDetails) { %>
+                  <a href="javascript:void(0)" id='<%=data[i].get("id")%>' class="btn btn-primary btn-sm detail">
+                    设备查看
+                  </a>
+                  <% } %>
+              </td>
+              <td rowspan='<%=data[i].get("allRowspan") %>'>
+                  <% if (permission.ViewScript) { %>
                   <a href="javascript:void(0)" id='<%=data[i].get("id")%>' class="btn btn-primary btn-sm shell">
                     脚本查看
                   </a>
+                  <% } %>
               </td>
               <td rowspan='<%=data[i].get("allRowspan") %>'>
+                  <% if (permission.UseConfigs) { %>
                   <% if (data[i].get("isUsed") !== 1) { %>
                   <a href="javascript:void(0)" id='<%=data[i].get("id")%>' class="btn btn-primary btn-sm use">
                       点击使用
@@ -47,6 +63,7 @@
                   <a href="javascript:void(0)" id='<%=data[i].get("id")%>' class="btn btn-success btn-sm use" disabled="disabled">
                       已经使用
                   </a>
+                  <% } %>
                   <% } %>
               </td>
               <% } %>

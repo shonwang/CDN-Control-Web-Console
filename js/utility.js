@@ -199,6 +199,28 @@ define("utility", ['require','exports'], function(require, exports) {
             });
         },
 
+        isFileName: function(fileName){
+            //var re = /^[^\\\/:\*\?"<>|\s\0]+$/
+            var re=/^[a-z0-9A-Z]+$/;
+            return re.test(fileName)
+        },
+
+        isDir: function(dirName){
+            if (dirName == "") return false;
+            var strRegex = /^\/[^\\:\*\?"<>|\s\0]*\/$/,
+                result   = strRegex.test(dirName);
+            if (result){
+                var dirNames = dirName.split("/");
+                for(var i = 0; i < dirNames.length; i++){
+                    if (dirNames[i] === "" && i !== 0 && i !== dirNames.length -1) 
+                        return false
+                }
+                return true;
+            } else {
+                return false;
+            }
+        },
+
         isDomain: function(str_url){
             if (str_url == "" || str_url.indexOf("_")  > -1) return false;
             if (str_url.substr(0, 4) !== "http") str_url = "http://" + str_url;
@@ -206,9 +228,24 @@ define("utility", ['require','exports'], function(require, exports) {
             return strRegex.test(str_url)
         },
 
+        isHostHeader:function(str_url){
+            var reg=/^([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
+            return reg.test(str_url);
+        },
+
+        isURL: function(str_url){
+            var strRegex = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/
+            return strRegex.test(str_url)
+        },
+
         isIP: function(str_ip){
             var re =  /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/;
             return re.test(str_ip)
+        },
+
+        isNumber:function(val){
+            var reg=/^\d+$/g;
+            return reg.test(val);
         },
 
         randomStr: function ( max ){
@@ -232,7 +269,60 @@ define("utility", ['require','exports'], function(require, exports) {
           }
         },
 
-        postAjax: function(url, args, successCallback, errorCallback, timeout){
+        hideMainList: function(root, mainClass, otherClass){
+            async.series([
+                function(callback){
+                    root.find(mainClass).addClass("fadeOutLeft animated");
+                    callback()
+                }.bind(this),
+                function(callback){
+                    setTimeout(function(){
+                        root.find(mainClass).hide();
+                        root.find(otherClass).show();
+                        root.find(otherClass).addClass("fadeInLeft animated");
+                        callback()
+                    }.bind(this), 500)
+                }.bind(this),                
+                function(callback){
+                    setTimeout(function(){
+                        root.find(otherClass).removeClass("fadeInLeft animated");
+                        root.find(otherClass).removeClass("fadeOutLeft animated");
+                        root.find(mainClass).removeClass("fadeInLeft animated");
+                        root.find(mainClass).removeClass("fadeOutLeft animated");
+                        callback()
+                    }.bind(this), 500)
+                }.bind(this)]
+            );
+        },
+
+        showMainList: function(root, mainClass, otherClass, otherClass1){
+            async.series([
+                function(callback){
+                    root.find(otherClass).addClass("fadeOutLeft animated");
+                    callback()
+                }.bind(this),
+                function(callback){
+                    setTimeout(function(){
+                        root.find(otherClass).hide();
+                        root.find(otherClass + " " + otherClass1).remove();
+                        root.find(mainClass).show();
+                        root.find(mainClass).addClass("fadeInLeft animated")
+                        callback()
+                    }.bind(this), 500)
+                }.bind(this),                
+                function(callback){
+                    setTimeout(function(){
+                        root.find(otherClass).removeClass("fadeInLeft animated");
+                        root.find(otherClass).removeClass("fadeOutLeft animated");
+                        root.find(mainClass).removeClass("fadeInLeft animated");
+                        root.find(mainClass).removeClass("fadeOutLeft animated");
+                        callback()
+                    }.bind(this), 500)
+                }.bind(this)]
+            );
+        },
+
+        postAjax: function(url, args, successCallback, errorCallback, timeout, dataType){
             var defaultParas = {
                 type: "POST",
                 url: url,
@@ -242,6 +332,8 @@ define("utility", ['require','exports'], function(require, exports) {
                 processData: false
             };
             defaultParas.data = JSON.stringify(args);
+
+            if (dataType) defaultParas.dataType = dataType;
 
             defaultParas.beforeSend = function(xhr){
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");

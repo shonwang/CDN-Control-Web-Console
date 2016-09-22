@@ -952,10 +952,46 @@ td .table {
 
 .node-ctn .node-item{
     display: inline-block;
-    margin-right: 5px;
-    margin-bottom: 5px;
+    margin-right: 20px;
+    margin-bottom: 10px;
+    margin-top:10px;
+}
+
+.node-ctn .node-item span{
+  padding:7px;
 }
 
 .node-device-ctn{
     margin-top: 10px;
+}
+
+@media (max-width: 1400px){
+  .temp{
+    display: none;
+  }
+
+.horizontal-slip{
+  overflow: scroll;
+}
+
+.domainManage-sec{
+  display: inline;
+  vertical-align: -webkit-baseline-middle;
+}
+
+.a_disabled{
+  cursor: not-allowed;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  opacity: .65;
+}
+.grayscaleSetup-node-list .select-container{
+    left: 178px;
+    top: 108px;
+    width: 300px;
+}
+
+.templateManage .select-container{
+    left:632px;
+    top:90px;
 }

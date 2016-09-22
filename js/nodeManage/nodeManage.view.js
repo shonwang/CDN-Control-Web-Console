@@ -1,5 +1,162 @@
 define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
+    var DispGroupInfoView = Backbone.View.extend({
+        events: {
+            //"click .search-btn":"onClickSearch"
+        },
+
+        initialize: function(options) {
+            this.collection = options.collection;
+            this.model      = options.model;
+
+            this.$el = $(_.template(template['tpl/nodeManage/nodeManage.dispGroup.html'])({}));
+            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+
+            this.collection.off("get.assocateDispGroups.success");
+            this.collection.off("get.assocateDispGroups.error");
+            this.collection.on("get.assocateDispGroups.success", $.proxy(this.onGetDispConfigSuccess, this));
+            this.collection.on("get.assocateDispGroups.error", $.proxy(this.onGetError, this));
+
+            this.collection.getAssocateDispGroups({nodeId: this.model.get("id")});
+            this.initSearchTypeDropList();
+        },
+
+        initSearchTypeDropList: function(){
+            var searchArray = [
+                {name: "按名称", value: "1"},
+                {name: "按备注", value: "2"}
+            ],
+            rootNode = this.$el.find(".disp-filter-drop");
+            Utility.initDropMenu(rootNode, searchArray, function(value){
+                this.curSearchType = value;
+                this.onKeyupDispListFilter();
+            }.bind(this));
+            this.curSearchType = "1";
+        },
+
+        onKeyupDispListFilter: function() {
+            if (!this.channelList || this.channelList.length === 0) return;
+            var keyWord = this.$el.find("#disp-filter").val();
+                        
+            _.each(this.channelList, function(model, index, list) {
+                if (keyWord === ""){
+                    model.isDisplay = true;
+                } else if (this.curSearchType == "1"){
+                    if (model.dispDomain.indexOf(keyWord) > -1)
+                        model.isDisplay = true;
+                    else
+                        model.isDisplay = false;
+                } else if (this.curSearchType == "2"){
+                    if (model.remark.indexOf(keyWord) > -1)
+                        model.isDisplay = true;
+                    else
+                        model.isDisplay = false;
+                }
+            }.bind(this));
+            this.initTable();
+        },
+
+        onGetError: function(error){
+            if (error&&error.message)
+                alert(error.message)
+            else
+                alert("网络阻塞，请刷新重试！")
+        },
+
+        onGetDispConfigSuccess: function(res){
+            this.channelList = res;
+            var count = 0; this.isCheckedAll = false;
+            _.each(this.channelList, function(el, index, list){
+                if (el.associated === 0) el.isChecked = false;
+                if (el.associated === 1) {
+                    el.isChecked = true;
+                    count = count + 1
+                }
+                el.isDisplay = true;
+                if (el.status === 0) el.statusName = '<span class="label label-danger">已停止</span>';
+                if (el.status === 1) el.statusName = '<span class="label label-success">运行中</span>';
+                if (el.isInserive === 0) el.isInseriveName = '<span class="label label-danger">未服务</span>';
+                if (el.isInserive === 1) el.isInseriveName = '<span class="label label-success">服务中</span>';
+                if (el.priority == 1) el.priorityName = '成本优先';
+                if (el.priority == 2) el.priorityName = '质量优先';
+                if (el.priority == 3) el.priorityName = '兼顾成本与质量';
+            }.bind(this))
+
+            if (count === this.channelList.length) this.isCheckedAll = true
+            this.initTable();
+            this.$el.find("#disp-filter").val("")
+            this.$el.find("#disp-filter").off("keyup");
+            this.$el.find("#disp-filter").on("keyup", $.proxy(this.onKeyupDispListFilter, this));
+        },
+
+        initTable: function(){
+            this.table = $(_.template(template['tpl/nodeManage/nodeManage.dispGroup.table.html'])({data: this.channelList, isCheckedAll: this.isCheckedAll}));
+            if (this.channelList.length !== 0)
+                this.$el.find(".table-ctn").html(this.table[0]);
+            else
+                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+
+            this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
+            this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+            this.table.find("tbody .remark").tooltip({
+                animation  : false,
+                "placement": "top", 
+                "html"     : true,
+                "title"  : function(){return $(this).attr("remark")}, 
+                "trigger"  : "hover"
+            })
+        },
+
+        onItemCheckedUpdated: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            var id = $(eventTarget).attr("id");
+
+            var selectedObj = _.find(this.channelList, function(object){
+                return object.dispId === parseInt(id)
+            }.bind(this));
+
+            selectedObj.isChecked = eventTarget.checked
+
+            var checkedList = this.channelList.filter(function(object) {
+                return object.isChecked === true;
+            })
+            if (checkedList.length === this.channelList.length)
+                this.table.find("thead input").get(0).checked = true;
+            if (checkedList.length !== this.channelList.length)
+                this.table.find("thead input").get(0).checked = false;
+        },
+
+        onAllCheckedUpdated: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            this.table.find("tbody tr").find("input").each(function(index, node){
+                if (!$(node).prop("disabled")){
+                    $(node).prop("checked", eventTarget.checked);
+                    this.channelList[index].isChecked = eventTarget.checked
+                }
+            }.bind(this))
+        },
+
+        getArgs: function(){
+            var checkedList = this.channelList.filter(function(object) {
+                return object.isChecked === true;
+            })
+            if (checkedList.length === 0) return false;
+            _.each(checkedList, function(el, inx, list){
+                el.associated = el.isChecked ? 1 : 0;
+                delete el.priorityName
+                delete el.statusName
+                delete el.isInseriveName
+            }.bind(this))
+            return checkedList
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target);
+        }
+    });
+
     var AddOrEditNodeView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
@@ -62,6 +219,31 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.on("get.location.success", $.proxy(this.onGetLocation, this));
             this.collection.on("get.location.error", $.proxy(this.onGetLocation, this));
 
+            this.collection.off("get.continent.success");
+            this.collection.off("get.continent.error");
+            this.collection.on("get.continent.success", $.proxy(this.onGetAllContinent, this));
+            this.collection.on("get.continent.error", $.proxy(this.onGetError, this));
+
+            this.collection.off("get.countryByContinent.success");
+            this.collection.off("get.countryByContinent.error");
+            this.collection.on("get.countryByContinent.success", $.proxy(this.onGetCountryByContinent, this));
+            this.collection.on("get.countryByContinent.error", $.proxy(this.onGetError, this));
+
+            this.collection.off("get.operationByCountry.success");
+            this.collection.off("get.operationByCountry.error");
+            this.collection.on("get.operationByCountry.success", $.proxy(this.onGetOperatorSuccess, this));
+            this.collection.on("get.operationByCountry.error", $.proxy(this.onGetError, this));
+
+            this.collection.off("get.province.success");
+            this.collection.off("get.province.error");
+            this.collection.on("get.province.success", $.proxy(this.onGetAllProvince, this));
+            this.collection.on("get.province.error", $.proxy(this.onGetError, this));
+
+            this.collection.off("get.cityByProvince.success");
+            this.collection.off("get.cityByProvince.error");
+            this.collection.on("get.cityByProvince.success", $.proxy(this.onGetAllCityAndBigArea, this));
+            this.collection.on("get.cityByProvince.error", $.proxy(this.onGetError, this));
+
             this.initDropList(options.list);
             this.initChargeDatePicker();
         },
@@ -75,12 +257,16 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 minBandwidth = this.$el.find("#input-minbandwidth").val(),
                 unitPrice = this.$el.find("#input-unitprice").val(),
                 longitudeLatitude = this.$el.find('#input-longitude-latitude').val(),
+                outzabname = this.$el.find('#input-outzabname').val().replace(/\s+/g, ""),
+                //inzabname = this.$el.find("#input-inzabname").val().replace(/\s+/g, ""),
                 re = /^\d+$/,
+                outzabnameRe = /^[0-9A-Za-z\-\[\]\_]+$/,
+                letterRe = /[A-Za-z]+/,
                 reLocation = /^\d+(\.\d+)?----\d+(\.\d+)?$/;
-            // if (!reLocation.test(longitudeLatitude)){
-            //     alert("您需要填写正确的经纬度，否则该节点无法在地图中展示！");
-            //     return
-            // }
+            if (!reLocation.test(longitudeLatitude)){
+                alert("需要填写正确的经纬度，否则该节点无法在地图中展示！比如：108.953098----34.2778");
+                return
+            }
             if (!enName || !chName){
                 alert("节点名称和英文名称都要填写！");
                 return;
@@ -121,6 +307,12 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 alert("成本权值不能小于0且大于长整型的最大值");
                 return; 
             }
+            if (!outzabnameRe.test(outzabname) || outzabname.indexOf("-") === -1 || 
+                outzabname.indexOf("_") === -1 || outzabname.indexOf("[") === -1 ||
+                outzabname.indexOf("]") === -1 || !letterRe.test(outzabname)){
+                alert("zabbix出口带宽英文、“-”、“_”、“[”、“]”为必填项，数字为可填项，即组合可包含数字，也可不包含数字");
+                return; 
+            }
             var args = {
                 "id"                 : this.model ? this.model.get("id") : 0,
                 "name"               : this.$el.find("#input-english").val().replace(/\s+/g, ""),
@@ -132,11 +324,14 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 "maxBandwidthThreshold" : this.$el.find("#input-threshold").val(),
                 "minBandwidthThreshold" : this.$el.find("#input-minthreshold").val(),
                 "unitPrice"          : this.$el.find("#input-unitprice").val(),
-                "inZabName"          : this.$el.find("#input-inzabname").val(),
-                "outZabName"         : this.$el.find("#input-outzabname").val(),
+                "inZabName"          : this.$el.find("#input-inzabname").val().replace(/\s+/g, ""),
+                "outZabName"         : this.$el.find("#input-outzabname").val().replace(/\s+/g, ""),
                 "remark"             : this.$el.find("#textarea-comment").val(),
                 "startChargingTime"  : this.args.startChargingTime,
-                "chargingType"       : this.args.chargingType
+                "chargingType"       : this.args.chargingType,
+                "cityId"             : this.cityId,
+                "lon"                : this.$el.find('#input-longitude-latitude').val().split("----")[0],
+                "lat"                : this.$el.find('#input-longitude-latitude').val().split("----")[1]   
             }
             return args;
         },
@@ -154,9 +349,15 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     return object.value === this.model.attributes.operatorId
                 }.bind(this));
 
-                this.$el.find(".dropdown-operator .cur-value").html(defaultValue.name)
-                this.operatorId = defaultValue.value;
-                this.operatorName = defaultValue.name;
+                if (defaultValue){
+                    this.$el.find(".dropdown-operator .cur-value").html(defaultValue.name)
+                    this.operatorId = defaultValue.value;
+                    this.operatorName = defaultValue.name;
+                } else {
+                    this.$el.find(".dropdown-operator .cur-value").html(nameList[0].name);
+                    this.operatorId = nameList[0].value;
+                    this.operatorName = nameList[0].name;
+                }
             } else {
                 this.$el.find(".dropdown-operator .cur-value").html(nameList[0].name);
                 this.operatorId = nameList[0].value;
@@ -178,10 +379,134 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     return object.value === this.model.attributes.chargingType
                 }.bind(this));
                 this.$el.find(".dropdown-charging .cur-value").html(defaultValue.name)
+            } else {
+                this.$el.find(".dropdown-charging .cur-value").html(nameList[0].name)
             }
 
-            this.onGetOperatorSuccess(list);
+            this.collection.getAllContinent();
+            this.collection.getAllProvince();
             //this.collection.getAllCity();
+        },
+
+        onGetAllContinent: function(list){
+            var nameList = [];
+            _.each(list.rows, function(el, inx, list){
+                nameList.push({name: el.name, value: el.id})
+            }.bind(this))
+            Utility.initDropMenu(this.$el.find(".dropdown-continent"), nameList, function(value){
+                this.collection.getCountryByContinent({id: value})
+            }.bind(this));
+
+            if (this.isEdit){
+                this.$el.find(".dropdown-continent .cur-value").html(this.model.get("continentName"));
+                this.collection.getCountryByContinent({id: this.model.get("continentId")})
+                //this.$el.find("#dropdown-continent").prop("disabled", true)
+            } else {
+                this.$el.find(".dropdown-continent .cur-value").html(nameList[0].name);
+                this.collection.getCountryByContinent({id: nameList[0].value})
+            }
+        },
+
+        onGetAllProvince: function(list){
+            var nameList = [];
+            _.each(list, function(el, inx, list){
+                nameList.push({name: el.name, value: el.id})
+            }.bind(this))
+
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-province').get(0),
+                panelID: this.$el.find('#dropdown-province').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function(){},
+                data: nameList,
+                callback: function(data) {
+                    this.$el.find('#dropdown-province .cur-value').html(data.name);
+                    this.collection.getAllCityAndBigArea({provId: data.value})
+                }.bind(this)
+            });
+
+            if (this.isEdit){
+                this.$el.find(".dropdown-province .cur-value").html(this.model.get("provName") || nameList[0].name);
+                this.collection.getAllCityAndBigArea({provId: this.model.get("provId") || nameList[0].value})
+            } else {
+                this.$el.find("#dropdown-province .cur-value").html(nameList[0].name);
+                this.collection.getAllCityAndBigArea({provId: nameList[0].value})
+            }
+        },
+
+        onGetAllCityAndBigArea: function(res){
+            var area = res.cityProvArea.name,
+                list = res.list;
+
+            var cityArray = [];
+            _.each(list, function(el, index, list){
+                cityArray.push({name:el.name, value: el.id, isDisplay: true})
+            }.bind(this))
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-city').get(0),
+                panelID: this.$el.find('#dropdown-city').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: true,
+                onOk: function(){},
+                data: cityArray,
+                callback: function(data) {
+                    this.$el.find('#dropdown-city .cur-value').html(data.name);
+                    this.$el.find('#input-longitude-latitude').val("查找中...");
+                    this.$el.find('#dropdown-city').attr("disabled", "disabled");
+                    this.collection.getLocation({addr: data.name});
+                    this.cityId = data.value; 
+                }.bind(this)
+            });
+
+            this.$el.find('#input-longitude-latitude').val("查找中...");
+            this.$el.find('#dropdown-region .cur-value').html(area);
+            if (this.isEdit){
+                this.cityId = this.model.get("cityId") || cityArray[0].value;
+                this.$el.find('#dropdown-city .cur-value').html(this.model.get("cityName") || cityArray[0].name);
+                if (!this.model.get("lon") || !this.model.get("lat"))
+                    this.collection.getLocation({addr: this.model.get("cityName") || cityArray[0].name});
+                else 
+                    this.$el.find('#input-longitude-latitude').val(this.model.get("lon") + "----" + this.model.get("lat"));
+            } else {
+                this.collection.getLocation({addr: cityArray[0].name});
+                this.$el.find('#dropdown-city').attr("disabled", "disabled");
+                this.$el.find('#dropdown-city .cur-value').html(cityArray[0].name);
+                this.cityId = cityArray[0].value; 
+            }
+        },
+
+        onGetCountryByContinent: function(res){
+            var nameList = [];
+            _.each(res.rows, function(el, index, list){
+                nameList.push({name: el.name, value:el.id})
+            });
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-country').get(0),
+                panelID: this.$el.find('#dropdown-country').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function(){},
+                data: nameList,
+                callback: function(data) {
+                    this.$el.find('#dropdown-country .cur-value').html(data.name);
+                    this.collection.getOperationByCountry({id: data.value})
+                }.bind(this)
+            });
+            // if (this.isEdit){
+            //     this.$el.find(".dropdown-country .cur-value").html(this.model.get("countryName"));
+            //     this.collection.getOperationByCountry({id: this.model.get("countryId")})
+            //     //this.$el.find("#dropdown-country").prop("disabled", true)
+            // } else {
+                this.$el.find('#dropdown-country .cur-value').html(nameList[0].name);
+                this.collection.getOperationByCountry({id: nameList[0].value});
+            // }
         },
 
         onGetAllCity: function(res){
@@ -208,7 +533,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             });
             this.$el.find('#input-longitude-latitude').val("查找中...");
             this.$el.find('#dropdown-city').attr("disabled", "disabled");
-            //this.collection.getLocation({addr: "北京"})
+            this.collection.getLocation({addr: "北京"})
         },
 
         onGetLocation: function(res){
@@ -251,7 +576,6 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         }
     });
 
-
     var NodeManageView = Backbone.View.extend({
         events: {},
 
@@ -286,13 +610,27 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
 
-            this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.$el.find(".opt-ctn .multi-play").on("click", $.proxy(this.onClickMultiPlay, this));
+            this.collection.on("add.assocateDispGroups.success", function(){
+                alert("操作成功！")
+            }.bind(this));
+            this.collection.on("add.assocateDispGroups.error", $.proxy(this.onGetError, this));
+
+            if (AUTH_OBJ.CreateNode)
+                this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
+            else
+                this.$el.find(".opt-ctn .create").remove();
+            if (AUTH_OBJ.QueryNode){
+                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+                this.enterKeyBindQuery();
+            } else {
+                this.$el.find(".opt-ctn .query").remove();
+            }
+            if (AUTH_OBJ.EnableorPauseNode)
+                this.$el.find(".opt-ctn .multi-play").on("click", $.proxy(this.onClickMultiPlay, this));
+            else
+                this.$el.find(".opt-ctn .multi-play").remove();
             this.$el.find(".opt-ctn .multi-stop").on("click", $.proxy(this.onClickMultiStop, this));
             this.$el.find(".opt-ctn .multi-delete").on("click", $.proxy(this.onClickMultiDelete, this));
-
-            this.enterKeyBindQuery();
 
             this.queryArgs = {
                 "page"    : 1,
@@ -354,10 +692,11 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     this.addNodePopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){
-                    this.enterKeyBindQuery();
+                    if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.addNodePopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyCreateNode) this.addNodePopup.$el.find(".modal-footer .btn-primary").remove();
         },
 
         initTable: function(){
@@ -365,7 +704,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
             this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
 
-            this.table = $(_.template(template['tpl/nodeManage/nodeManage.table.html'])({data: this.collection.models}));
+            this.table = $(_.template(template['tpl/nodeManage/nodeManage.table.html'])({data: this.collection.models, permission:AUTH_OBJ}));
             if (this.collection.models.length !== 0){
                 this.$el.find(".table-ctn").html(this.table[0]);
                 this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
@@ -374,12 +713,52 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
                 this.table.find("tbody .hangup").on("click", $.proxy(this.onClickItemHangup, this));
                 this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));
+                this.table.find("tbody .disp-info").on("click", $.proxy(this.onClickDispGroupInfo, this));
 
                 this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
                 this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
             } else {
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
             }
+        },
+
+        onClickDispGroupInfo: function(event){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+            var model = this.collection.get(id);
+
+            if (this.dispGroupPopup) $("#" + this.dispGroupPopup.modalId).remove();
+
+            var dispGroupInfoView = new DispGroupInfoView({
+                collection: this.collection, 
+                model     : model,
+                isEdit    : true
+            });
+            var options = {
+                title: model.get("chName") + "关联调度组信息",
+                body : dispGroupInfoView,
+                backdrop : 'static',
+                type     : 2,
+                width: 800,
+                height: 500,
+                onOKCallback:  function(){
+                    var options = dispGroupInfoView.getArgs();
+                    if (!options) return;
+                    this.collection.addAssocateDispGroups(options, model.get("id"))
+                    this.dispGroupPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){
+                    this.enterKeyBindQuery();
+                }.bind(this)
+            }
+            this.dispGroupPopup = new Modal(options);
+            if (!AUTH_OBJ.NodeAssociatetoGslbGroup)
+                this.dispGroupPopup.$el.find(".btn-primary").remove();
         },
 
         onClickItemNodeName: function(event){
@@ -412,7 +791,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 list      : this.operatorList
             });
             var options = {
-                title:"编辑设备",
+                title:"编辑节点",
                 body : editNodeView,
                 backdrop : 'static',
                 type     : 2,
@@ -424,10 +803,12 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     this.editNodePopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){
-                    this.enterKeyBindQuery();
+                    if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.editNodePopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyEditNode)
+                this.editNodePopup.$el.find(".modal-footer .btn-primary").remove();
         },
 
         onClickItemDelete: function(event){
@@ -637,7 +1018,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
 
         update: function(){
             this.$el.show();
-            this.enterKeyBindQuery();
+            if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
         },
 
         render: function(target) {

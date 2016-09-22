@@ -74,7 +74,9 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.add&edit.html'])({data: this.args}));
 
-            this.$el.find(".ok-again").on("click", $.proxy(this.onClickOK, this));
+            if (AUTH_OBJ.ApplyCreateConfig || AUTH_OBJ.ApplyEditConfig)
+                this.$el.find(".ok-again").on("click", $.proxy(this.onClickOK, this));
+
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancel, this));
             this.$el.find(".lock-name").on("click", $.proxy(this.onClickLockName, this));
             this.$el.find(".edit-name").on("click", $.proxy(this.onClickEditName, this));
@@ -436,7 +438,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.table = $(_.template(template['tpl/liveAllSetup/liveAllSetup.table.html'])({
                 data: this.historyList, 
                 dataTpye: 3, 
-                currentHisId: this.model.get("confFileHisId")
+                currentHisId: this.model.get("confFileHisId"),
+                permission: AUTH_OBJ
             }));
             if (this.historyList.length !== 0){
                 this.$el.find(".table-ctn").html(this.table[0]);
@@ -515,22 +518,28 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
         initialize: function(options) {
             this.options    = options;
-            this.collection = options.collection
+            this.collection = options.collection;
+            this.nodeTreeLists = options.nodeTreeLists;
+            this.nodeGroupId = options.nodeGroupId;
+
             this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.confirm.selectDevice.html'])());
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
             this.$el.find(".checkAll").on("click", $.proxy(this.onClickCheckAll, this));
             this.$el.find(".cancelAll").on("click", $.proxy(this.onClickCancelCheckAll, this));
             this.$el.find("#node-list-filter").on("keyup", $.proxy(this.onKeyupSearch, this));
+
+            this.initTree(this.nodeTreeLists);
+
             // this.collection.off("get.allDevice.success");
             // this.collection.off("get.allDevice.error");
             // this.collection.on("get.allDevice.success", $.proxy(this.onGetAllDeviceSuccess, this));
             // this.collection.on("get.allDevice.error", $.proxy(this.onGetError, this));
-            this.collection.off("get.nodeTreeData.success");
-            this.collection.off("get.nodeTreeData.error");
-            this.collection.on("get.nodeTreeData.success",$.proxy(this.onGetNodeTreeDataSuccess,this));
-            this.collection.on("get.nodeTreeData.error",$.proxy(this.onGetError,this));
-            //this.initTree();
+            
+            // this.collection.off("get.nodeTreeData.success");
+            // this.collection.off("get.nodeTreeData.error");
+            // this.collection.on("get.nodeTreeData.success",$.proxy(this.onGetNodeTreeDataSuccess,this));
+            // this.collection.on("get.nodeTreeData.error",$.proxy(this.onGetError,this));
         },
 
         onGetError: function(error){
@@ -538,10 +547,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 alert(error.message)
             else
                 alert("出错了")
-        },
-
-        onGetNodeTreeDataSuccess:function(res){
-            this.initTree(res);
         },
 
         initTree: function(res){
@@ -555,29 +560,34 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     }
                 },
                 callback: {
-                    onCheck: function(){
+                    onCheck: function(e,treeId,treeNode){
                         this.getSelected();
+                        this.getChecked(e,treeId,treeNode);
                     }.bind(this)
                 }
             };
 
-            var zNodes = res;
+            var zNodes = res[this.nodeGroupId];
 
             _.each(zNodes,function(el,index,ls){
-                el.checked = false;
                 el.open = false;
                 el.highlight = false;
+                el.nodeIcon = false;
                 if(el.pId == -1){
                     el.open = true;
+                    el.nodeIcon = true; //节点显示“文件夹”图标
                 }
                 if(el.deviceStatus != 1 && el.pId != -1){
+                    el.highlight = true;
+                }
+                if(el.nodeStatus != 1 && el.pId == -1){
                     el.highlight = true;
                 }
             }.bind(this));
 
             // var zNodes =[
-            //     { id:1, pId:0, name:"随意勾选 1", open:true},
-            //     { id:11, pId:1, name:"随意勾选 1-1", highlight: true},
+            //     { id:1, pId:0, name:"随意勾选 1", open:true,checked:true},
+            //     { id:11, pId:1, name:"随意勾选 1-1", highlight: true,checked:true},
             //     { id:12, pId:1, name:"随意勾选 1-2"},
             //     { id:2, pId:0, name:"随意勾选 2", open:true},
             //     { id:21, pId:2, name:"随意勾选 2-1"},
@@ -604,6 +614,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.treeObj.showNodes(matchNodes);
 
             _.each(matchNodes, function(el, index, ls){
+                if (el.isParent&&el.children.length > 0) this.treeObj.showNodes(el.children);
                 var parentNode = el.getParentNode();
                 if (parentNode&&parentNode.isHidden) this.treeObj.showNode(parentNode)
             }.bind(this))
@@ -613,12 +624,14 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             if (!this.treeObj) return;
             this.treeObj.checkAllNodes(true);
             this.getSelected();
+            this.getChecked();
         },
 
         onClickCancelCheckAll: function(event){
             if (!this.treeObj) return;
             this.treeObj.checkAllNodes(false);
             this.getSelected();
+            this.getChecked();
         },
 
         getSelected: function(){
@@ -633,14 +646,22 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             };
             this.matchDeviceNodes = this.treeObj.getNodesByFilter(matchDeviceFilter);
             this.$el.find(".device-num").html(this.matchDeviceNodes.length);
+
+        },
+
+        getChecked: function(e,treeId,treeNode){
+            _.each(this.nodeTreeLists[this.nodeGroupId], function(nodeGroupObj, k, l){
+                var node = this.treeObj.getNodeByParam("id", nodeGroupObj.id, null);
+                nodeGroupObj.checked = node.checked
+            }.bind(this));
         },
 
         getArgs: function(){
             var selectedObj = {
                 nodes: this.matchNodes,
-                devices: this.matchDeviceNodes
+                devices: this.matchDeviceNodes,
+                nodeTreeLists: this.nodeTreeLists
             }
-            console.log(selectedObj);
             return selectedObj;
         },
 
@@ -666,10 +687,17 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.selectedModels = options.selectedModels;
             this.nodeGroupList  = options.nodeGroupList;
             this.buisnessType   = options.buisnessType;
-            this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.confirm.html'])({data: options.nodeGroupList}));
+            this.$el = $(_.template(template['tpl/liveAllSetup/liveAllSetup.confirm.html'])({
+                data: options.nodeGroupList, 
+                permission: AUTH_OBJ
+            }));
             this.initTable();
 
-            this.$el.find(".ok-again").on("click", $.proxy(this.onClickOK, this));
+            if (AUTH_OBJ.ApplyAddConfigs)
+                this.$el.find(".ok-again").on("click", $.proxy(this.onClickOK, this));
+            else
+                this.$el.find(".ok-again").remove();
+
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancel, this));
             this.$el.find("#isShellCmd").on("click", $.proxy(this.onClickShellCmdInput, this))
 
@@ -686,11 +714,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("check.version.success", $.proxy(this.onCheckVersionSuccess, this));
             this.collection.on("check.version.error", $.proxy(this.onGetError, this));
 
-            this.collection.off("get.ip.success");
-            this.collection.off("get.ip.error");
-            this.collection.on("get.ip.success", $.proxy(this.onGetIpGroupSuccess, this));
-            this.collection.on("get.ip.error", $.proxy(this.onGetError, this));
-
             this.collection.off("get.nodeTreeData.success");
             this.collection.off("get.nodeTreeData.error");
             this.collection.on("get.nodeTreeData.success",$.proxy(this.onGetNodeTreeDataSuccess,this));
@@ -700,6 +723,53 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             // this.collection.on("get.fileGroup.success", $.proxy(this.onGetFileGroupSuccess, this));
             // this.collection.on("get.fileGroup.error", $.proxy(this.onGetError, this));
             //this.collection.getFileGroupList();
+        },
+
+        onGetNodeTreeDataSuccess:function(res){
+            this.nodeTreeLists = res;  //返回所有节点组节点以及设备
+
+            _.each(this.nodeTreeLists, function(el, inx, ls){
+                _.each(el, function(elSub, inxSub, lsSub){
+                    if (elSub.pId !== -1){
+                        elSub.id = elSub.pId + "-" + elSub.id
+                    }
+                }.bind(this))
+            }.bind(this))
+
+            var nodeGroupIdList = Object.keys(this.nodeTreeLists);
+            _.each(nodeGroupIdList, function(itemNodeGroupDevices, key, list){
+                var aNode = "",deviceId = [],nodeId = "",deviceName = [],nodeDeviceJson = {};
+                _.each(this.nodeTreeLists[itemNodeGroupDevices], function(deviceObj, objKey, l){
+                    this.nodeTreeLists[itemNodeGroupDevices][objKey].checked = true;
+                    if(deviceObj.pId === -1){
+                        aNode += '<li class="node-item" data-nodeid="'+deviceObj.id+'"><span class="label label-primary">'+ deviceObj.name + '</span></li>';
+                        var arr = [];
+                        arr.push(deviceObj);
+                        this.nodeDeviceArray[key].nodes = arr;
+
+                        nodeId = deviceObj.id;
+                        nodeDeviceJson[deviceObj.id] = {
+                            deviceId : [],
+                            deviceName : []
+                        };
+                    }else{
+                        var ar = [];
+                        ar.push(deviceObj);
+                        this.nodeDeviceArray[key].devices = ar;
+
+                        nodeDeviceJson[nodeId].deviceId.push(deviceObj.deviceId);
+                        nodeDeviceJson[nodeId].deviceName.push(deviceObj.name);
+                    }
+                }.bind(this));
+
+                this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn").append(aNode);
+
+                _.each(Object.keys(nodeDeviceJson),function(v,k,l){
+                    this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn li[data-nodeid="+v+"]").attr("data-deviceId",nodeDeviceJson[v].deviceId.join(","));
+                    this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn li[data-nodeid="+v+"]").attr("data-deviceName",nodeDeviceJson[v].deviceName.join(","));
+                }.bind(this));
+                
+            }.bind(this));
         },
 
         onClickShellCmdInput: function(event){
@@ -727,13 +797,13 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     return obj.id === parseInt(id)
                 }.bind(this));
 
-            this.collection.getNodeTreeData({nodeGroupId:id});
-
             if (this.addDevicePopup) $("#" + this.addDevicePopup.modalId).remove();
 
             var addDeviceView = new SelectDeviceView({
                 collection: this.collection,
-                currentNodeDevice: currentNodeDevice
+                currentNodeDevice: currentNodeDevice,
+                nodeTreeLists: this.nodeTreeLists,
+                nodeGroupId : id
             });
             var options = {
                 title:"添加节点设备",
@@ -745,24 +815,30 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     if (!resultObj) return;
                     currentNodeDevice.nodes = resultObj.nodes;
                     currentNodeDevice.devices = resultObj.devices;
+                    this.nodeTreeLists = resultObj.nodeTreeLists;
                     nodeCtn.find("li").remove();
-                    if(currentNodeDevice.devices.length > 0){
                         _.each(currentNodeDevice.nodes, function(el, index, ls){
-                            var deviceIdsList = [];
+                            var deviceIdsList = [],nodeId = "",deviceName = [];
                             _.each(currentNodeDevice.devices, function(ele, j, dls){
                                 if(el.id == ele.pId){
                                     deviceIdsList.push(ele.deviceId);
+                                    deviceName.push(ele.name);
+                                }
+                                if(el.pId == -1){
+                                    nodeId = el.id;
                                 }
                             }.bind(this));
-                            var aNode = $('<li class="node-item" data-deviceId="'+deviceIdsList.join(',')+'"><span class="label label-primary">'+ el.name + '</span></li>');
-                            aNode.appendTo(nodeCtn)
+                            var aNode = $('<li class="node-item" data-nodeid="'+nodeId+'" data-deviceId="'+deviceIdsList.join(',')+'" data-deviceName="'+deviceName.join(',')+'"><span class="label label-primary">'+ el.name + '</span></li>');
+                            aNode.appendTo(nodeCtn);
                         }.bind(this))
+
                         this.addDevicePopup.$el.modal("hide");
-                    }
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
             this.addDevicePopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyAddNodeListandHostList)
+                this.addDevicePopup.$el.find(".modal-footer .btn-primary").remove();
         },
 
 
@@ -794,13 +870,12 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             //     }
             // }
 
-            // for (var i = 0; i < this.nodeDeviceArray.length; k++){
-            //     if (!this.nodeDeviceArray[i].nodes || this.nodeDeviceArray[i].nodes.length === 0){
-            //         alert(this.nodeDeviceArray[i].name + "还没有选择任何节点和设备")
-            //         return;
-            //     }
-            // }
-
+            for (var i = 0; i < this.nodeDeviceArray.length; i++){
+                if (!this.nodeDeviceArray[i].nodes || this.nodeDeviceArray[i].nodes.length === 0){
+                    alert(this.nodeDeviceArray[i].name + "还没有选择任何节点设备")
+                    return;
+                }
+            }
             var forCheckList = [];
             _.each(this.selectedModels, function(file, key, list){
                 forCheckList.push({
@@ -809,7 +884,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     fileName: file.get("fileName")
                 })
             })
-
             this.collection.checkLastVersion(forCheckList);
         },
 
@@ -834,16 +908,31 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                         fileIds.push(file.attributes.confFileHisId);
                 })
                 var devicelistDom = this.$el.find("#panel-"+obj.id+" .node-item");
-                var devicelist = [];
+                var devicelist = [],deviceName = [];
                 devicelistDom.each(function(i){
                     devicelist.push(devicelistDom.eq(i).attr('data-deviceid'));
+                    deviceName.push(devicelistDom.eq(i).attr('data-deviceName'));
                 }.bind(this));
+
+                var arr = [];
+
+                for(var i =0; i< devicelist.length; i++){
+                    if(devicelist[i] && devicelist[i] != ""){
+                        for(var j=0; j<devicelist[i].split(",").length;j++){
+                            arr.push({
+                                id : devicelist[i].split(",")[j],
+                                deviceName : deviceName[i].split(",")[j]
+                            });
+                        }
+                    }
+                }
+
                 nodeGroupLs.push({
                     "nodeGroupId": obj.id,
                     "confFileHisIds": fileIds.join(","),
-                    "ips": this.$el.find("#ip-" + obj.id).val()
-                    //"deviceIds":devicelist.join(",")
+                    "device": arr
                 })
+
             }.bind(this))
 
             var options = {
@@ -856,7 +945,11 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/liveAllSetup/liveAllSetup.table.html'])({data: this.selectedModels, dataTpye: 2}));
+            this.table = $(_.template(template['tpl/liveAllSetup/liveAllSetup.table.html'])({
+                data: this.selectedModels, 
+                dataTpye: 2,
+                permission: AUTH_OBJ
+            }));
             this.$el.find(".table-ctn").html(this.table[0]);
             this.table.find("tbody .file-name").on("click", $.proxy(this.onClickItemFileName, this));
             this.table.find("input").hide();
@@ -864,16 +957,20 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
             var idArray = []
             _.each(this.nodeGroupList, function(el, key, ls){
-                idArray.push(el.id)
+                idArray.push(el.id);
             }.bind(this))
-            this.collection.getIpGroupList(idArray);
+
+            this.collection.getNodeTreeData(idArray);
 
             this.nodeDeviceArray = [];
             _.each(this.nodeGroupList, function(el, key, ls){
                 this.nodeDeviceArray.push({id: el.id, name: el.name})
             }.bind(this))
 
-            this.$el.find(".edit-name").on("click", $.proxy(this.onClickSelectDevice, this))
+            if (AUTH_OBJ.AddNodeListandHostList)
+                this.$el.find(".edit-name").on("click", $.proxy(this.onClickSelectDevice, this))
+            else
+                this.$el.find(".edit-name").remove();
         },
 
         onClickItemFileName: function(event){
@@ -896,18 +993,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 width: 800
             }
             this.viewShellPopup = new Modal(options);
-        },
-
-        onGetIpGroupSuccess: function(res){
-            this.ipList = res
-
-            _.each(this.ipList, function(nodeGroupIps, key, ls){
-                var ipArray = []
-                _.each(nodeGroupIps, function(ipObj, upKey, list){
-                    ipArray.push(ipObj.ip);
-                }.bind(this))
-                this.$el.find("#ip-" + key).val(ipArray.join(","))
-            }.bind(this))
         },
 
         onGetFileGroupSuccess: function(res){
@@ -958,8 +1043,15 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.collection.getBusinessType();
 
-            this.$el.find(".ok").on("click", $.proxy(this.onClickConfirm, this))
-            this.$el.find(".create").on("click", $.proxy(this.onClickCreate, this))
+            if (AUTH_OBJ.AddConfigs)
+                this.$el.find(".ok").on("click", $.proxy(this.onClickConfirm, this))
+            else
+                this.$el.find(".ok").remove();
+
+            if (AUTH_OBJ.CreateConfig)
+                this.$el.find(".create").on("click", $.proxy(this.onClickCreate, this))
+            else
+                this.$el.find(".create").remove();
         },
 
         onGetBusinessTpye: function(res){
@@ -1000,6 +1092,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             addFileView.render(this.$el.find(".create-edit-panel"));
 
             this.hideMainList(".main-list", ".create-edit-panel")
+            if (!AUTH_OBJ.ApplyCreateConfig)
+                addFileView.$el.find(".ok-again").remove()
         },
 
         hideMainList: function(mainClass, otherClass){
@@ -1119,7 +1213,11 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/liveAllSetup/liveAllSetup.table.html'])({data: this.collection.models, dataTpye: 1}));
+            this.table = $(_.template(template['tpl/liveAllSetup/liveAllSetup.table.html'])({
+                data: this.collection.models, 
+                dataTpye: 1,
+                permission: AUTH_OBJ
+            }));
             if (this.collection.models.length !== 0){
                 this.$el.find(".list .table-ctn").html(this.table[0]);
                 this.table.find("tbody .file-name").on("click", $.proxy(this.onClickItemFileName, this));
@@ -1243,6 +1341,9 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 addFileView.render(this.$el.find(".create-edit-panel"));
 
                 this.hideMainList(".main-list", ".create-edit-panel")
+
+                if (!AUTH_OBJ.ApplyEditConfig)
+                    addFileView.$el.find(".ok-again").remove()
             }.bind(this));
             this.collection.on("lock.file.error", $.proxy(this.onGetError, this));
 

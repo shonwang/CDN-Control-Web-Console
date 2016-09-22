@@ -1,9 +1,11 @@
-window.DEBUG = 1;
+window.DEBUG = 1.1;
 
 if (window.DEBUG === 1)
-    window.BASE_URL = "http://120.92.232.203:9098";
+    window.BASE_URL = "http://develop.gateway.center.cdn.ksyun.com";
 else if (window.DEBUG === 1.1)
-    window.BASE_URL = "http://192.168.158.213:9098";
+    window.BASE_URL = "http://local.center.ksyun.com";
+    //window.BASE_URL = "http://192.168.158.85:9098";  //翟磊
+    // window.BASE_URL = "http://192.168.118.134:9098";   //王卫
 else if (window.DEBUG === 1.2)
     window.BASE_URL = "http://10.4.2.38:9098";
 else if (window.DEBUG === 2)
@@ -11,13 +13,18 @@ else if (window.DEBUG === 2)
 else if (window.DEBUG === 3)
     window.BASE_URL = "http://center.cdn.ksyun.com";
 else if(window.DEBUG === 4)
-    window.BASE_URL = "http://test-cdn.center.cdn.ksyun.com";
+    window.BASE_URL = "http://devtest.center.cdn.ksyun.com";//test-cdn.center.cdn.ksyun.com";
 else if(window.DEBUG === 5)
     window.BASE_URL = "http://gray.center.cdn.ksyun.com";
 else if(window.DEBUG === 6)
     window.BASE_URL = "http://develop.center.cdn.ksyun.com";
 else if(window.DEBUG === 7)
     window.BASE_URL = "http://sh.center.cdn.ksyun.com";
+else if(window.DEBUG === 8)
+    window.BASE_URL = "http://develop.gateway.center.cdn.ksyun.com";
+else if(window.DEBUG === 9)
+    window.BASE_URL = "http://wq.center.cdn.ksyun.com";
+
 
 requirejs.config({
     paths: {
@@ -57,12 +64,29 @@ requirejs.config({
         "ipManage.view"        : 'ipManage/ipManage.view',
         "ipManage.model"       : 'ipManage/ipManage.model',
 
+        "refreshManual.view"  : 'refreshManual/refreshManual.view',
+        "refreshManual.model" : 'refreshManual/refreshManual.model',
+
+        "customMaintenance.view"  : 'customMaintenance/customMaintenance.view',
+        "customMaintenance.model" : 'customMaintenance/customMaintenance.model',
+
         "businessManage.view"  : 'businessManage/businessManage.view',
         "businessManage.model" : 'businessManage/businessManage.model',
+        "clientStatistics.view"  : 'clientStatistics/clientStatistics.view',
+        "clientStatistics.model" : 'clientStatistics/clientStatistics.model',
         "statisticsManage.view"  : 'statisticsManage/statisticsManage.view',
         "statisticsManage.model" : 'statisticsManage/statisticsManage.model',
         "domainStatistics.view"  : 'domainStatistics/domainStatistics.view',
-        "domainStatistics.model" : 'domainStatistics/domainStatistics.model'
+        "domainStatistics.model" : 'domainStatistics/domainStatistics.model',
+
+        "domainManage.model" : "domainManage/domainManage.model",
+        "domainManage.view" : "domainManage/domainManage.view",
+
+        "grayscaleSetup.model" : "grayscaleSetup/grayscaleSetup.model",
+        "grayscaleSetup.view" : "grayscaleSetup/grayscaleSetup.view",
+
+        "templateManage.model"   : 'templateManage/templateManage.model',
+        "templateManage.view"    : 'templateManage/templateManage.view'
     },
     urlArgs: new Date().valueOf()
 });

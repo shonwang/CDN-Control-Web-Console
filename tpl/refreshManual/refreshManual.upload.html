@@ -1,0 +1,36 @@
+<form class="form-horizontal">
+    <div class="form-group">
+      <label class="col-sm-2 control-label" for="import-refresh-file">上传文件</label>
+      <div class="col-sm-7">
+          <input type="text" class="form-control" id="import-refresh-file" placeholder="上传文件">
+      </div>
+      <div class="col-sm-2">
+          <button type="button" class="btn btn-success" id="import-file-button"><span class="glyphicon glyphicon-folder-open"></span>浏览</button>
+      </div>
+    </div>
+    <div class="form-group progress-ctn">
+      <div class="col-sm-12">
+          <div class="progress" style="margin-bottom: 0;">
+            <div class="progress-bar progress-bar-striped" style="width: 0%;">
+              0%
+            </div>
+          </div>
+      </div>
+    </div>
+    <div class="form-group dropdown-type">
+        <label for="dropdown-type" class="col-sm-2 control-label">业务类型</label>
+        <div class="dropdown col-sm-8">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-type" data-toggle="dropdown">
+                <span class="cur-value">加载中...</span>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu"></ul>
+        </div>
+    </div>
+    <hr>
+    <div class="form-group">
+        <div class="col-sm-12 text-center">
+            <a href="javascript:void(0)" class="btn btn-primary commit">提交</a>
+        </div>
+    </div>
+</form>

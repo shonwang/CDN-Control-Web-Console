@@ -13,7 +13,11 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
 
             this.threeTimeNode = this.$el.find(".three-time");
             this.threeTimeNode.find(".btn-default").on("click",  $.proxy(this.onClickSpecificTime, this));
-            this.$el.find(".query").on("click",  $.proxy(this.onClickApplyButton, this));
+
+            if (AUTH_OBJ.QueryKADomainBandwidth)
+                this.$el.find(".query").on("click",  $.proxy(this.onClickApplyButton, this));
+            else
+                this.$el.find(".query").remove();
 
             this.collection.on("get.domainBand.success", $.proxy(this.initCharts, this));
             this.collection.on("get.domainBand.error", $.proxy(this.onGetError, this));
@@ -208,6 +212,7 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
                                 start: 0,
                                 end: 100,
                                 xAxisIndex: [0],
+                                showDetail: false,
                                 labelFormatter: function(value){
                                     return new Date(timeData[value]).format("MM/dd hh:mm")
                                 }
@@ -240,7 +245,7 @@ define("domainStatistics.view", ['require', 'exports', 'template', 'modal.view',
                     if (this.start === 0 && i === 0) {
                         option.title = {
                             text: "Top100", 
-                            subtext: '按产品要求，数据按1024转换, 带宽单位最大到Tbps，流量单位最大到TB',
+                            subtext: '数据按1024转换, 带宽单位最大到Tbps，流量单位最大到TB',
                             x: 'center'
                         };
                     }

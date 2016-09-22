@@ -15,14 +15,19 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             "liveCurentSetup"     : "liveCurentSetup",
             "ipManage"            : "ipManage",
             "statisticsManage"    : "statisticsManage",
+            "refreshManual"       : "refreshManual",
+            "customMaintenance"   : "customMaintenance",
             "domainStatistics"    : "domainStatistics",
-            "businessManage"      : "businessManage"
+            "domainManage"        : "domainManage",
+            "clientStatistics"    : "clientStatistics",
+            "businessManage"      : "businessManage",
+            "grayscaleSetup"     : "grayscaleSetup",
+            "templateManage"      : "templateManage"
         },
 
         initialize: function(){
             Utility.dateFormat();
             this.navbarView = new NavbarView();
-            this.navbarView.render($('.jquery-accordion-menu'));
             this.curPage = "";
         },
 
@@ -64,6 +69,10 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                 case "businessManage":
                     this.businessManageView.hide();
                   break;
+                case 'clientStatistics':
+                  this.clientStatisticsView.remove();
+                  this.clientStatisticsView = null;
+                  break;
                 case 'statisticsManage':
                   this.statisticsManageView.remove();
                   this.statisticsManageView = null;
@@ -72,13 +81,75 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                   this.domainStatisticsView.remove();
                   this.domainStatisticsView = null;
                   break;
+                case 'domainManage':
+                  this.domainManageView.hide();
+                  break;
+                case 'refreshManual':
+                  this.refreshManualView.remove();
+                  this.refreshManualView = null;
+                  break;
+                case 'customMaintenance':
+                  this.customMaintenanceView.remove();
+                  this.customMaintenanceView = null;
+                  break;
+                case 'grayscaleSetup':
+                    this.grayscaleSetupView.hide();
+                    break;
+                case 'templateManage':
+                    this.templateManageView.hide();
+                    break;
                 default:
             }
             if (callback)
                 callback.apply(this, args);
         },
 
+        customMaintenance: function(){
+            this.navbarView.initLogin($.proxy(this.customMaintenanceCallback, this))
+        },
+
+        customMaintenanceCallback: function(){
+            require(['customMaintenance.view', 'customMaintenance.model'], function(CustomMaintenanceView, CustomMaintenanceModel){
+                this.curPage = 'customMaintenance';
+                this.navbarView.select(this.curPage);
+                if (!this.customMaintenanceModel)
+                    this.customMaintenanceModel = new CustomMaintenanceModel();
+                if (!this.customMaintenanceView ){
+                    var options = {collection: this.customMaintenanceModel};
+                    this.customMaintenanceView = new CustomMaintenanceView(options);
+                    this.customMaintenanceView.render($('.ksc-content'));
+                } else {
+                    this.customMaintenanceView.update();
+                }
+            }.bind(this));
+        },
+
+        refreshManual: function(){
+            this.navbarView.initLogin($.proxy(this.refreshManualCallback, this))
+        },
+
+        refreshManualCallback: function(){
+            require(['refreshManual.view', 'refreshManual.model'], function(RefreshManualView, RefreshManualModel){
+                this.curPage = 'refreshManual';
+                this.navbarView.select(this.curPage);
+                if (!this.refreshManualModel)
+                    this.refreshManualModel = new RefreshManualModel();
+                if (!this.refreshManualView ){
+                    var options = {collection: this.refreshManualModel};
+                    this.refreshManualView = new RefreshManualView(options);
+                    this.refreshManualView.render($('.ksc-content'));
+                } else {
+                    this.refreshManualView.update();
+                }
+            }.bind(this));
+        },
+
         businessManage: function(){
+            this.navbarView.initLogin($.proxy(this.businessManageCallback, this))
+        },
+
+        businessManageCallback: function(){
+            if (!AUTH_OBJ.ManageNodeGroups) return;
             require(['businessManage.view', 'businessManage.model', 'nodeManage.model'], function(BusinessManageView, BusinessManageModel, NodeManageModel){
                 this.curPage = 'businessManage';
                 this.navbarView.select(this.curPage);
@@ -100,6 +171,11 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         ipManage: function(){
+            this.navbarView.initLogin($.proxy(this.ipManageCallback, this))
+        },
+
+        ipManageCallback: function(){
+            if (!AUTH_OBJ.ManageIPs) return;
             require(['ipManage.view', 'ipManage.model', 'deviceManage.model'], function(IPManageView, IPManageModel, DeviceManageModel){
                 this.curPage = 'ipManage';
                 this.navbarView.select(this.curPage);
@@ -119,6 +195,11 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         liveCurentSetup: function(){
+            this.navbarView.initLogin($.proxy(this.liveCurentSetupCallback, this))
+        },
+
+        liveCurentSetupCallback: function(){
+            if (!AUTH_OBJ.CurrentConfigurations) return;
             require(['liveCurentSetup.view', 'liveCurentSetup.model'], function(LiveCurentSetupView, LiveCurentSetupModel){
                 this.curPage = 'liveCurentSetup';
                 this.navbarView.select(this.curPage);
@@ -135,6 +216,11 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         liveAllSetup: function(){
+            this.navbarView.initLogin($.proxy(this.liveAllSetupCallback, this))
+        },
+
+        liveAllSetupCallback: function(){
+            if (!AUTH_OBJ.ManageConfigs) return;
             require(['liveAllSetup.view', 'liveAllSetup.model'], function(LiveAllSetupView, LiveAllSetupModel){
                 this.curPage = 'liveAllSetup';
                 this.navbarView.select(this.curPage);
@@ -150,7 +236,12 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             }.bind(this));
         },
 
-        coverManage: function() {
+        coverManage: function(){
+            this.navbarView.initLogin($.proxy(this.coverManageCallback, this))
+        },
+
+        coverManageCallback: function() {
+            if (!AUTH_OBJ.ManageCoverrelateds) return;
             require(['coverManage.view', 'coverManage.model', 'nodeManage.model'], function(CoverManageView, CoverManageModel, NodeManageModel){
                 this.curPage = 'coverManage';
                 this.navbarView.select(this.curPage);
@@ -171,7 +262,12 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             }.bind(this));
         },
 
-        coverRegion: function() {
+        coverRegion: function(){
+            this.navbarView.initLogin($.proxy(this.coverRegionCallback, this))
+        },
+
+        coverRegionCallback: function() {
+            if (!AUTH_OBJ.Coverrelateds) return;
             require(['coverRegion.view', 'coverRegion.model'], function(CoverRegionView, CoverRegionModel){
                     this.curPage = 'coverRegion';
                     this.navbarView.select(this.curPage);
@@ -187,17 +283,25 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                 }.bind(this));
         },
 
-        dispConfig: function() {
+        dispConfig: function(){
+            this.navbarView.initLogin($.proxy(this.dispConfigCallback, this))
+        },
+
+        dispConfigCallback: function() {
+            if (!AUTH_OBJ.GslbConfig) return;
             require(['dispConfig.view', 'dispConfig.model', 'dispGroup.model'], function(DispConfigView, DispConfigModel, DispGroupModel){
                 this.curPage = 'dispConfig';
                 this.navbarView.select(this.curPage);
                 if (!this.dispConfigModel)
                     this.dispConfigModel = new DispConfigModel();
+                if (!this.diffConfigModel)
+                    this.diffConfigModel = new DispConfigModel();
                 if (!this.dispGroupModel)
                     this.dispGroupModel = new DispGroupModel();
                 if (!this.dispConfigView ){
                     var options = {
                         collection: this.dispConfigModel,
+                        diffCollection: this.diffConfigModel,
                         dispGroupCollection: this.dispGroupModel
                     };
                     this.dispConfigView = new DispConfigView(options);
@@ -208,7 +312,12 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             }.bind(this));
         },
 
-        dispGroup: function() {
+        dispGroup: function(){
+            this.navbarView.initLogin($.proxy(this.dispGroupCallback, this))
+        },
+
+        dispGroupCallback: function() {
+            if (!AUTH_OBJ.ManageGslbGroups) return;
             require(['dispGroup.view', 'dispGroup.model'], function(DispGroupView, DispGroupModel){
                 this.curPage = 'dispGroup';
                 this.navbarView.select(this.curPage);
@@ -224,7 +333,12 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             }.bind(this));
         },
 
-        nodeManage: function() {
+        nodeManage: function(){
+            this.navbarView.initLogin($.proxy(this.nodeManageCallback, this))
+        },
+
+        nodeManageCallback: function() {
+            if (!AUTH_OBJ.ManageNodes) return;
             require(['nodeManage.view', 'nodeManage.model'], function(NodeManageView, NodeManageModel){
                 this.curPage = 'nodeManage';
                 this.navbarView.select(this.curPage);
@@ -240,7 +354,12 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             }.bind(this));
         },
 
-        deviceManage: function(query) {
+        deviceManage: function(query){
+            this.navbarView.initLogin($.proxy(this.deviceManageCallback, this, query))
+        },
+
+        deviceManageCallback: function(query) {
+            if (!AUTH_OBJ.ManageHosts) return;
             require(['deviceManage.view', 'deviceManage.model'], function(DeviceManageView, DeviceManageModel){
                 this.curPage = 'deviceManage';
                 this.navbarView.select(this.curPage);
@@ -260,6 +379,11 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         channelManage: function(){
+            this.navbarView.initLogin($.proxy(this.channelManageCallback, this))
+        },
+
+        channelManageCallback: function(){
+            if (!AUTH_OBJ.ManageChannels) return;
             require(['channelManage.view', 'channelManage.model'], function(ChannelManageView, ChannelManageModel){
                 this.curPage = 'channelManage';
                 this.navbarView.select(this.curPage);
@@ -275,7 +399,36 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             }.bind(this));
         },
 
+        clientStatistics: function(){
+            this.navbarView.initLogin($.proxy(this.clientStatisticsCallback, this))
+        },
+
+        clientStatisticsCallback: function(){
+            if (!AUTH_OBJ.KACustomersBandwidthStatistics) return;
+            require(['clientStatistics.view', 'clientStatistics.model'], function(ClientStatisticsView, ClientStatisticsModel){
+                this.curPage = 'clientStatistics';
+                this.navbarView.select(this.curPage);
+                if (!this.downloadClientStatisticsModel)
+                    this.downloadClientStatisticsModel = new ClientStatisticsModel();
+                if (!this.liveClientStatisticsModel)
+                    this.liveClientStatisticsModel = new ClientStatisticsModel();
+                if (!this.clientStatisticsView){
+                    var options = {
+                        collection: this.downloadClientStatisticsModel,
+                        liveCollection: this.liveClientStatisticsModel,
+                    };
+                    this.clientStatisticsView = new ClientStatisticsView(options);
+                    this.clientStatisticsView.render($('.ksc-content'));
+                }
+            }.bind(this));
+        },
+
         domainStatistics: function(){
+            this.navbarView.initLogin($.proxy(this.domainStatisticsCallback, this))
+        },
+
+        domainStatisticsCallback: function(){
+            if (!AUTH_OBJ.KADomainBandwidthStatistics) return;
             require(['domainStatistics.view', 'domainStatistics.model'], function(DomainStatisticsView, DomainStatisticsModel){
                 this.curPage = 'domainStatistics';
                 this.navbarView.select(this.curPage);
@@ -295,6 +448,11 @@ define("routes", ['require','exports', 'utility','navbar.view'],
         },
 
         statisticsManage: function(){
+            this.navbarView.initLogin($.proxy(this.statisticsManageCallback, this))
+        },
+
+        statisticsManageCallback: function(){
+            if (!AUTH_OBJ.CustomerBandwidthStatistics) return;
             require(['statisticsManage.view', 'statisticsManage.model'], function(StatisticsManageView, StatisticsManageModel){
                 this.curPage = 'statisticsManage';
                 this.navbarView.select(this.curPage);
@@ -309,6 +467,67 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                     };
                     this.statisticsManageView = new StatisticsManageView(options);
                     this.statisticsManageView.render($('.ksc-content'));
+                }
+            }.bind(this));
+        },
+
+        domainManage: function(){
+            this.navbarView.initLogin($.proxy(this.domainManageCallback, this))
+        },
+
+        domainManageCallback: function(){
+            require(['domainManage.view', 'domainManage.model'], function(DomainManageView, DomainManageModel){
+                this.curPage = 'domainManage';
+                this.navbarView.select(this.curPage);
+                if (!this.domainManageModel)
+                    this.domainManageModel = new DomainManageModel();
+                if (!this.domainManageView){
+                    var options = {collection: this.domainManageModel};
+                    this.domainManageView = new DomainManageView(options);
+                    this.domainManageView.render($('.ksc-content'));
+                } else {
+                    this.domainManageView.update();
+                }
+            }.bind(this));
+        },
+
+        grayscaleSetup: function(){
+            this.navbarView.initLogin($.proxy(this.grayscaleSetupCallback, this))
+        },
+
+        grayscaleSetupCallback: function(){
+
+            require(['grayscaleSetup.view', 'grayscaleSetup.model'], function(GrayscaleSetupView, GrayscaleSetupModel){
+                this.curPage = 'grayscaleSetup';
+                this.navbarView.select(this.curPage);
+                if (!this.grayscaleSetupModel)
+                    this.grayscaleSetupModel = new GrayscaleSetupModel();
+                if (!this.grayscaleSetupView){
+                    var options = {collection: this.grayscaleSetupModel};
+                    this.grayscaleSetupView = new GrayscaleSetupView(options);
+                    this.grayscaleSetupView.render($('.ksc-content'));
+                } else {
+                    this.grayscaleSetupView.update();
+                }
+            }.bind(this));
+        },
+
+        templateManage: function(){
+            this.navbarView.initLogin($.proxy(this.templateManageCallback, this))
+        },
+
+        templateManageCallback: function(){
+            require(['templateManage.view', 'templateManage.model'], function(TemplateManageView, TemplateManageModel){
+                this.curPage = 'templateManage';
+                this.navbarView.select(this.curPage);
+                if (!this.templateManageModel)
+                    this.templateManageModel = new TemplateManageModel();
+                if (!this.templateManageView){
+                    var options = {collection: this.templateManageModel};
+                    this.templateManageView = new TemplateManageView(options);
+                    this.templateManageView.render($('.ksc-content'));
+                } else {
+                    this.templateManageView.update();
                 }
             }.bind(this));
         }

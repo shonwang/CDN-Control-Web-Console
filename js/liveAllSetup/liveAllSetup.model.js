@@ -204,7 +204,8 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
             $.ajax(defaultParas);
         },
 
-        getIpGroupList: function(args){
+        getDeviceGroupList: function(args){
+            //var url = BASE_URL + "/seed/config/release/nodeGroup/deviceList"
             var url = BASE_URL + "/seed/config/release/nodeGroup/ipList"
             var defaultParas = {
                 type: "POST",
@@ -221,15 +222,15 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
             }
             defaultParas.success = function(res){
                 if (res)
-                    this.trigger("get.ip.success", res); 
+                    this.trigger("get.device.success", res); 
                 else
-                    this.trigger("get.ip.error", res);
+                    this.trigger("get.device.error", res);
             }.bind(this);
 
             defaultParas.error = function(response, msg){
                 if (response&&response.responseText)
                     response = JSON.parse(response.responseText)
-                this.trigger("get.ip.error", response); 
+                this.trigger("get.device.error", response); 
             }.bind(this);
 
             $.ajax(defaultParas);
@@ -266,15 +267,19 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
         },
 
         getNodeTreeData: function(args){
-            var url = BASE_URL + "/seed/config/release/nodeGroup/getNodeTreeData";
+            var para = [];
+            for(var i =0; i<args.length;i++){
+                para.push("nodeGroupId="+args[i]);
+            }
+            var url = BASE_URL + "/seed/config/release/nodeGroup/getNodeTreeData?"+para.join("&");
             var defaultParas = {
                 type: "GET",
                 url: url,
                 async: true,
                 timeout: 30000
             };
-            defaultParas.data = args;
-            defaultParas.data.t = new Date().valueOf();
+            //defaultParas.data = args;
+            //defaultParas.data.t = new Date().valueOf();
 
             defaultParas.beforeSend = function(xhr){
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");

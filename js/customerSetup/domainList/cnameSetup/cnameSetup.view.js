@@ -11,7 +11,8 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
                 domainInfo = JSON.parse(options.query2),
                 userInfo = {
                     clientName: clientInfo.clientName,
-                    domain: domainInfo.domain
+                    domain: domainInfo.domain,
+                    uid: clientInfo.uid
                 }
             this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
                 data: userInfo,
@@ -19,11 +20,28 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
-            //this.$el.find(".setup-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveButton, this))
 
-            // this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
-            // this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+        },
 
+        checkDomainName:function(){
+            //检查域名
+            var domainName = this.$el.find("#cname-set").val();
+            if(domainName == ""){
+                alert("域名不能为空");
+                return false;
+            }
+            var result = Utility.isDomain(domainName);
+            if(!result){
+                alert("域名填写错误");
+                return false;
+            }
+            return true;
+        },
+
+        onClickSaveButton: function(){
+            var result = this.checkDomainName();
+            if (!result) return
         },
 
         onGetError: function(error){
@@ -37,12 +55,18 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.hide();
         },
 
-        update: function(){
-            this.$el.show();
+        update: function(query){
+            this.options.query = query;
+            this.collection.off();
+            this.collection.reset();
+            this.$el.remove();
+            this.initialize(this.options);
+            this.render(this.target);
         },
 
-        render: function(target) {
-            this.$el.appendTo(target)
+        render: function(target){
+            this.$el.appendTo(target);
+            this.target = target;
         }
     });
 

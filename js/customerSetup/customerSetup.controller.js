@@ -316,7 +316,7 @@ define("customerSetup.controller", ['require','exports'],
         },
 
         domainSetupCallback: function(query, query2) {
-            require(['domainList.view', 'domainList.model'], function(DomainSetupView, DomainSetupModel){
+            require(['domainSetup.view', 'domainSetup.model'], function(DomainSetupView, DomainSetupModel){
                 this.curPage = 'domainSetup';
                 this.setUpThirdNavbar(query, query2);
 

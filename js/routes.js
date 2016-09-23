@@ -167,13 +167,15 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                     id: '',
                     name: '访问控制',
                     hash: 'javascript:void(0)',
-                    children: [{
-                        id: 'ipBlackWhiteList',
-                        name: 'IP黑白名单',
-                        hash: 'index.html#/domainList/' + query + /ipBlackWhiteList/ + query2,
-                        active: false,
-                        children: []
-                    },{
+                    children: [
+                    // {
+                    //     id: 'ipBlackWhiteList',
+                    //     name: 'IP黑白名单',
+                    //     hash: 'index.html#/domainList/' + query + /ipBlackWhiteList/ + query2,
+                    //     active: false,
+                    //     children: []
+                    // },
+                    {
                         id: 'refererAntiLeech',
                         name: 'Referer防盗链',
                         hash: 'index.html#/domainList/' + query + /refererAntiLeech/ + query2,

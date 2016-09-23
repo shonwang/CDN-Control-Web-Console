@@ -23,12 +23,20 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
                 this.matchConditionView.render(this.$el.find(".match-condition-ctn"));
             }.bind(this))
 
-            this.initTypeDropdown();
-            this.isWhiteList = true;
-            if (this.isWhiteList)
+            this.defaultParam = {
+                refererType: 1
+            };
+            if (this.defaultParam.refererType === 1)
                 this.$el.find(".black-list").hide();
-            else
+            else if (this.defaultParam.refererType === 2)
                 this.$el.find(".white-list").hide();
+
+            this.initTypeDropdown();
+
+            this.$el.find("#white-domain").on("blur", $.proxy(this.onBlurDomainInput, this));
+            this.$el.find("#white-url").on("blur", $.proxy(this.onBlurUrlInput, this));
+            this.$el.find("#black-domain").on("blur", $.proxy(this.onBlurDomainInput, this));
+            this.$el.find("#black-url").on("blur", $.proxy(this.onBlurUrlInput, this));
         },
 
         initTypeDropdown: function(){
@@ -45,10 +53,11 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
                     this.$el.find(".black-list").show();
                     this.$el.find(".white-list").hide();
                 }
+                this.defaultParam.refererType = parseInt(value);
             }.bind(this));
 
             var defaultValue = _.find(timeArray, function(object){
-                return object.value === 3;
+                return object.value === this.defaultParam.refererType;
             }.bind(this));
 
             if (defaultValue)
@@ -57,9 +66,82 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
                 this.$el.find("#dropdown-referer-type .cur-value").html(timeArray[0].name);
         },
 
+        onBlurDomainInput: function(event){
+            var eventTarget = event.srcElement || event.target,
+                value = eventTarget.value, domains = [], error;
+
+            if (value === "") return false; 
+            if (value.indexOf(",") > -1){
+                domains = value.split(",");
+                for (var i = 0; i < domains.length; i++){
+                    if (!Utility.isAntileechDomain(domains[i])){
+                        error = {message: "第" + (i + 1) + "个域名输错了！"};
+                        alert(error.message)
+                        return false;
+                    }
+                }
+            } else if (!Utility.isAntileechDomain(value)){
+                error = {message: "请输入正确的域名！"};
+                alert(error.message)
+                return false;
+            } else {
+                this.$el.find(".error-ctn").html("");
+            }
+            return true;
+        },
+
+        onBlurUrlInput: function(event){
+            var eventTarget = event.srcElement || event.target,
+                value = eventTarget.value, domains = [], error;
+
+            if (value === "") return false;    
+            if (value.indexOf(",") > -1){
+                domains = value.split(",");
+                for (var i = 0; i < domains.length; i++){
+                    if (!Utility.isURL(domains[i])){
+                        error = {message: "第" + (i + 1) + "个URL输错了！"};
+                        alert(error.message)
+                        return false;
+                    }
+                }
+            } else if (!Utility.isURL(value)){
+                error = {message: "请输入正确的URL！"};
+                alert(error.message)
+                return false;
+            } else {
+                this.$el.find(".error-ctn").html("");
+            }
+            return true;
+        },
+
+        checkEverything: function(){
+            var whiteDomain = this.$el.find("#white-domain").val(),
+                whiteUrl    = this.$el.find("#white-url").val(),
+                balckDomain = this.$el.find("#black-domain").val(),
+                blackUrl    = this.$el.find("#black-url").val();
+
+            if (this.defaultParam.refererType === 1 && (whiteDomain === "" || whiteUrl === "")){
+                alert("请输入合法域名、URL！")
+                return false;
+            }
+            else if (this.defaultParam.refererType === 2 && (balckDomain === "" || blackUrl === "")){
+                alert("请输入非法域名、URL！")
+                return false;
+            }
+            var result = true;
+            if (this.defaultParam.refererType === 1){
+                result = this.onBlurDomainInput({target: this.$el.find("#white-domain").get(0)});
+                result = this.onBlurUrlInput({target: this.$el.find("#white-url").get(0)});
+            } else if (this.defaultParam.refererType === 2) {
+                result = this.onBlurDomainInput({target: this.$el.find("#black-domain").get(0)});
+                result = this.onBlurUrlInput({target: this.$el.find("#black-url").get(0)})
+            }
+            return result;
+        },
+
         onSure: function(){
-            var notCacheTime = this.$el.find(".yes-cache select").get(0).value;
-            console.log(notCacheTime)
+            var result = this.checkEverything();
+            if (result) alert("没错"); 
         },
 
         render: function(target) {
@@ -149,11 +231,13 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
             var myAddEditRefererAntiLeechView = new AddEditRefererAntiLeechView({collection: this.collection});
 
             var options = {
-                title:"缓存规则",
+                title:"referer防盗链",
                 body : myAddEditRefererAntiLeechView,
                 backdrop : 'static',
                 type     : 2,
-                onOkCallback: function(){}.bind(this),
+                onOKCallback: function(){
+                    myAddEditRefererAntiLeechView.onSure();
+                }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
             this.addRolePopup = new Modal(options);

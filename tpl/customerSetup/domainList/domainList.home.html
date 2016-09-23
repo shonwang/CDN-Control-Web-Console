@@ -1,0 +1,73 @@
+<div class="domain-list">
+	<div class="main-list">
+		<div class="main-error-ctn">
+			<div class="ks-alert ks-alert-danger ks-alert-dismissible text-center">
+			  tips
+			</div>
+		</div>
+		<div class="c-relative">
+			<div class="c-path">
+				<h3>客户配置管理<small>/域名列表</small></h3>
+			</div>
+		</div>
+		<div class="costomSetup-layer1 bg-white boxSizing">
+			<div class="opt-ctn"></div>
+			<div class="padding10">
+				<div class="ks-btns">
+					<a href="javascript:void(0);">
+						<button class="ks-btn ks-btn-primary add-domain"><i class="icon icon-add-16 marginRight10"></i>新增域名</button>
+					</a>
+				</div>
+				<div class="cdn-operate-right">
+					<div class="ks-form-search">
+						<input type="text" class="ks-form-text" id="cdn-search-text" placeholder="输入关键字">
+						<i class="icon icon-search-20" id="cdn-search-btn"></i>
+					</div>
+					<i class="icon icon-refresh-20 log-download-refresh"></i>
+					<i class="icon icon-export-old-20 cdn-export"></i>
+				</div>
+			</div>
+			<table class="ks-table">
+				<thead>
+					<tr>
+						<th>域名</th>
+						<th>CNAME</th>
+						<th>
+							<div class="dropdown-menu-table-select" id="cdnType-dropdown">					
+								<span class="cur-caret">业务类型(全部)</span>
+								<div class="ks-ctrl-collapse" data-toggle="dropdown">
+									<div class="ks-ctrl-collapse-down"></div>
+								</div>
+								<ul class="ks-dropdown-menu" role="menu" aria-labelledby="url-dropdown">
+									<li><a href="javascript:void(0);">关闭</a></li>
+									<li><a href="javascript:void(0);">开启</a></li>
+								</ul>
+							</div>
+						</th>
+						<th>
+							<div class="dropdown-menu-table-select" id="cdnStatus-dropdown">					
+								<span class="cur-caret">状态(全部)</span>
+								<div class="ks-ctrl-collapse" data-toggle="dropdown">
+									<div class="ks-ctrl-collapse-down"></div>
+								</div>
+								<ul class="ks-dropdown-menu" role="menu" aria-labelledby="url-dropdown">
+									<li><a href="javascript:void(0);">关闭</a></li>
+									<li><a href="javascript:void(0);">开启</a></li>
+								</ul>
+							</div>
+						</th>
+						<th>CDN厂商</th>
+						<th>创建时间</th>
+						<th>最后修改时间</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+			<div class="text-center">
+				<div class="pagination"></div>
+			</div>
+		</div>
+	</div>
+	<div class="new-domain"></div>
+</div>

@@ -23,7 +23,17 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
 
             // this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
             // this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+            //this.$el.find(".add-args .togglebutton input").on("click", $.proxy(this.onClickAddToggle, this));
+        },
 
+        onClickAddToggle: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            if (eventTarget.checked){
+                this.defaultParam.addParam = 2;
+            } else {
+                this.defaultParam.addParam = 1;
+            }
         },
 
         onGetError: function(error){

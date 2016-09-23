@@ -315,7 +315,7 @@ td .table {
     transition: left .3s ease,background .3s ease,box-shadow .1s ease;
 }
 
-.nav-navbar > li:nth-child(1) {
+.ctrl-nav-container .nav-navbar>li:nth-child(1){
   width: 200px;
 }
 

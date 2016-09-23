@@ -151,13 +151,16 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.hideOrShowSetup();
         },
 
-        onBlurSecretKeyInput: function(){
+        onBlurSecretKeyInput: function(event){
             var eventTarget = event.srcElement || event.target,
                 value = $(eventTarget).val(),
                 re = /^[a-zA-Z0-9]+$/
-            if (value === "") return;
-            if (!re.test(value) || value.length < 6 || value.length > 32)
+            if (value === "") return false;
+            if (!re.test(value) || value.length < 6 || value.length > 32){
                 alert("KEY只能由大小写字母，数字组成，长度6到32位")
+                return false
+            }
+            return true;
         },
 
         //标准配置====================================================
@@ -229,7 +232,6 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             this.defaultParam.spliceMd5 = parseInt($(eventTarget).val())
-            console.log(this.defaultParam.spliceMd5)
         },
 
         updateAdvancedKeyTable: function(){
@@ -297,10 +299,20 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 alert("你选择了高级设置截取MD5值，需要填写正确的取值范围！");
                 return;
             }
+            var result = true;
+            if (this.defaultParam.isBaseSetup === 1){
+                var basePrimaryKey = this.$el.find(".base-setup #secret-key-primary").get(0)
+                result = this.onBlurSecretKeyInput({target: basePrimaryKey})
+            } else if (this.defaultParam.isBaseSetup === 2){
+                var advancedPrimaryKey = this.$el.find(".advanced-setup #secret-key-primary").get(0)
+                result = this.onBlurSecretKeyInput({target: advancedPrimaryKey})
+            }
+            return result;
         },
 
         onSure: function(){
-            this.checkBalabala();
+            var result = this.checkBalabala();
+            if (result) alert("very good")
         },
 
         render: function(target) {
@@ -390,7 +402,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             var myAddEditTimestampView = new AddEditTimestampView({collection: this.collection});
 
             var options = {
-                title:"缓存规则",
+                title:"时间戳+共享秘钥防盗链新增配置",
                 body : myAddEditTimestampView,
                 backdrop : 'static',
                 type     : 2,

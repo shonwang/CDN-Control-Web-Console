@@ -72,7 +72,8 @@ define("customerSetup.view", ['require','exports', 'template', 'modal.view', 'ut
                 id = $(eventTarget).attr("id");
 
             var model = this.collection.get(id), args = JSON.stringify({
-                clientName: model.get("clientName")
+                clientName: model.get("clientName"),
+                uid: 123456
             })
 
             window.location.hash = '#/domainList/' + args;

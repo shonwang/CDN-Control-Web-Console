@@ -5,7 +5,11 @@
     <% } %>
     <div class="form-group" style="margin:0 10px 0 10px;">
         <label>客户</label>
-        <p class="form-control-static"><%=data.clientName%></p>
+        <p class="form-control-static"><%=data.clientName || "无"%></p>
+    </div>
+    <div class="form-group" style="margin:0 10px 0 10px;">
+        <label>UID</label>
+        <p class="form-control-static"><%=data.uid || "无"%></p>
     </div>
     <div class="form-group">
         <label>域名</label>

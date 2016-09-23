@@ -228,6 +228,11 @@ define("utility", ['require','exports'], function(require, exports) {
             return strRegex.test(str_url)
         },
 
+        isAntileechDomain: function(url) {
+            var reg = /^(([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)|\*{1}\.)+[a-zA-Z]{2,20}$/;
+            return reg.test(url);
+        },
+
         isHostHeader:function(str_url){
             var reg=/^([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
             return reg.test(str_url);

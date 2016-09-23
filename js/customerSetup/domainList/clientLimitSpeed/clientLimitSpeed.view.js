@@ -9,6 +9,40 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
             this.$el = $(_.template(template['tpl/customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.addTimeLimit.html'])());
         },
 
+        onSure: function(){
+            var startHour = parseInt(this.$el.find("#start-hour").val() || "0"),
+                startMinutes = parseInt(this.$el.find("#start-minutes").val() || "0"),
+                startSecond = parseInt(this.$el.find("#start-second").val() || "0"),
+                endHour = parseInt(this.$el.find("#end-hour").val() || "0"),
+                endMinutes = parseInt(this.$el.find("#end-minutes").val() || "0"),
+                endSecond = parseInt(this.$el.find("#end-second").val() || "0");
+
+            if (startHour > 23 || endHour > 23) {
+                alert("小时不能大于23！")
+                return false;
+            }
+            if (startMinutes > 59 || endMinutes > 59 || endMinutes > 59 || endSecond > 59) {
+                alert("分钟、秒不能大于59！")
+                return false;
+            }
+
+            var startTimeStr = startHour + ":" + startMinutes + ":" + startSecond,
+                endTimeStr = endHour + ":" + endMinutes + ":" + endSecond;
+
+            var startTime = new Date("2016/01/01 " + startTimeStr).format("hhmmss"),
+                endTime   = new Date("2016/01/01 " + endTimeStr).format("hhmmss")
+            if (parseInt(endTime) <= parseInt(startTime)) {
+                alert("结束时间不能小于等于开始时间！")
+                return false;
+            }
+            var limitTimeObj = {
+                id: new Date().valueOf(),
+                start: new Date("2016/01/01 " + startTimeStr).format("hh:mm:ss"),
+                end: new Date("2016/01/01 " + endTimeStr).format("hh:mm:ss"),
+                limitSpeed: this.$el.find("#set-limit").val()
+            }
+            return limitTimeObj;
+        },
 
         render: function(target) {
             this.$el.appendTo(target);
@@ -39,20 +73,58 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
                 this.matchConditionView.render(this.$el.find(".match-condition-ctn"));
             }.bind(this))
 
-            this.$el.find(".byte-limit").hide();
-            this.initUnitDropdown();
+            this.defaultParam = {
+                byteNotLimit: 1,
+                byteNotLimitUnit: 1, 
+                limitSpeed: "延期啦",
+                timeLimitList: [{
+                    id: 1,
+                    start: new Date().format("hh:mm:ss"),
+                    end: new Date().format("hh:mm:ss"),
+                    limitSpeed: 40
+                }]
+            }
 
             this.$el.find(".byte-limit-toggle .togglebutton input").on("click", $.proxy(this.onClickByteLimitToggle, this));
             this.$el.find(".add-time-limit").on("click", $.proxy(this.onClickAddTimeLimit, this));
 
-            var data = [{
-                start: new Date().format("hh:mm:ss"),
-                end: new Date().format("hh:mm:ss"),
-                limitSpeed: "40kb/s"
-            }]
-            this.$el.find(".table-ctn").html(_.template(template['tpl/customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.timeLimitTable.html'])({
-                data: data
+            this.initSetup();
+
+        },
+
+        initSetup: function(){
+            this.initUnitDropdown();
+            if (this.defaultParam.byteNotLimit === 1){
+                this.$el.find(".byte-limit-toggle .togglebutton input").get(0).checked = false;
+                this.$el.find(".byte-limit").hide();
+            } else if (this.defaultParam.byteNotLimit === 2){
+                this.$el.find(".byte-limit-toggle .togglebutton input").get(0).checked = true;
+                this.$el.find(".byte-limit").show();
+            }
+            this.$el.find("#set-limit").val(this.defaultParam.limitSpeed);
+            this.updateTimeLimitTable();
+        },
+
+        updateTimeLimitTable: function(){
+            this.$el.find(".table-ctn").find(".table").remove()
+            this.timeLimitTable = $(_.template(template['tpl/customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.timeLimitTable.html'])({
+                data: this.defaultParam.timeLimitList
             }))
+
+            this.timeLimitTable.find(".delete").on("click", $.proxy(this.onClickTimeLimitTableItemDelete, this));
+            this.$el.find(".table-ctn").html(this.timeLimitTable.get(0));
+        },
+
+        onClickTimeLimitTableItemDelete: function(event){
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+
+            var filterArray = _.filter(this.defaultParam.timeLimitList, function(obj){
+                return obj.id !== parseInt(id)
+            }.bind(this))
+
+            this.defaultParam.timeLimitList = filterArray;
+            this.updateTimeLimitTable();
         },
 
         onClickAddTimeLimit: function(){
@@ -67,7 +139,16 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
                 body : myTimeLimitAddEditView,
                 backdrop : 'static',
                 type     : 2,
-                onOkCallback: function(){}.bind(this),
+                onOKCallback: function(){
+                    var aTimeLimit = myTimeLimitAddEditView.onSure();
+                    if (!aTimeLimit) return;
+                    this.defaultParam.timeLimitList.push(aTimeLimit);
+                    this.updateTimeLimitTable();
+                    this.addTimeLimitPopup.$el.modal("hide");
+                    setTimeout(function(){
+                        this.rootNode.modal("show")
+                    }.bind(this), 500)
+                }.bind(this),
                 onHiddenCallback: function(){
                     this.rootNode.modal('show')
                 }.bind(this)
@@ -85,11 +166,11 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
             ],
             rootNode = this.$el.find(".byte-limit-unit");
             Utility.initDropMenu(rootNode, unitArray, function(value){
-
+                this.defaultParam.byteNotLimitUnit = parseInt(value)
             }.bind(this));
 
             var defaultValue = _.find(unitArray, function(object){
-                return object.value === 1;
+                return object.value === this.defaultParam.byteNotLimitUnit;
             }.bind(this));
 
             if (defaultValue)
@@ -109,8 +190,6 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
         },
 
         onSure: function(){
-            var notCacheTime = this.$el.find(".yes-cache select").get(0).value;
-            console.log(notCacheTime)
         },
 
         render: function(target, rootNode) {

@@ -71,7 +71,19 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             }
 
             this.$el = $(_.template(template['tpl/domainManage/domainManage.add&edit.html'])({data:this.args}));
+            //如果点击编辑表单按钮，则将表单字段设置为不可编辑
+            if(options.isEdit){
+                var inputName = this.$el.find("#input-name");
+                var inputUserId = this.$el.find("#input-userId");
+                var cname = this.$el.find("#input-cname");
+                var dropdownType = this.$el.find("dropdown-type");
+                var dropdownProtocol = this.$el.find("#dropdown-protocol");
+                inputName.attr('readonly',true);
+                inputUserId.attr('readonly',true);
+                cname.attr('readonly',true);
+                dropdownType.attr('disabled','disabled');
 
+             }
             this.collection.off("get.cacheRuleList.success");
             this.collection.on("get.cacheRuleList.success", $.proxy(this.onGetCacheRuleListSuccess, this));
             this.collection.off("get.cacheRuleList.error");
@@ -670,6 +682,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 height   : 500,
                 onOKCallback:  function(){
                     var options = editDomainView.getArgs();
+                    console.log(options);
                     if (!options) return;
                     this.collection.editDomain(options);
                     this.editDomainPopup.$el.modal("hide");

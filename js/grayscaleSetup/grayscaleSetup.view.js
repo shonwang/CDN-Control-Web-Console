@@ -254,6 +254,8 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         initDropMenu: function(){
             Utility.initDropMenu(this.$el.find(".dropdown-businessType"), this.businessTypeList, function(value){
                 this.args.bisTypeId = parseInt($.trim(value));
+
+                this.collection.getNodeGroupTree({bisTypeId:this.args.bisTypeId});
             }.bind(this));
             if(this.isEdit){
                 $.each(this.businessTypeList,function(k,v){

@@ -57,7 +57,6 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         initTree: function(res){
-            //console.log(res);
             var zNodes = res;
 
             if(this.isEdit){
@@ -254,6 +253,8 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         initDropMenu: function(){
             Utility.initDropMenu(this.$el.find(".dropdown-businessType"), this.businessTypeList, function(value){
                 this.args.bisTypeId = parseInt($.trim(value));
+                console.log(this.args.bisTypeId);
+                this.collection.getNodeGroupTree({bisTypeId:this.args.bisTypeId});
             }.bind(this));
             if(this.isEdit){
                 $.each(this.businessTypeList,function(k,v){
@@ -479,7 +480,6 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             Utility.initDropMenu(this.$el.find(".dropdown-businessType"), businessTypeList, function(value){
                 this.getPageArgs.bisTypeId = parseInt($.trim(value));
             }.bind(this));
-
             this.getPageArgs.bisTypeId = parseInt(businessTypeList[0].value);
             this.collection.getDomainPageList(this.getPageArgs); //请求table列表
 
@@ -529,6 +529,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         onClickCreate: function(){
+            this.getPageArgs.bisTypeId = 10;
             this.collection.getNodeGroupTree({bisTypeId:this.getPageArgs.bisTypeId});
 
             if (this.addPopup) $("#" + this.addPopup.modalId).remove();

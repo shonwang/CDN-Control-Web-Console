@@ -11,6 +11,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
 
             if(this.isEdit){
                 this.args = {
+                    id : this.model.get("id"),
                     domain : this.model.get("domain"),
                     bisTypeId : this.model.get("bisTypeId"),
                     nodeId : [this.model.get("nodeId")],
@@ -253,6 +254,8 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         initDropMenu: function(){
             Utility.initDropMenu(this.$el.find(".dropdown-businessType"), this.businessTypeList, function(value){
                 this.args.bisTypeId = parseInt($.trim(value));
+
+                this.collection.getNodeGroupTree({bisTypeId:this.args.bisTypeId});
             }.bind(this));
             if(this.isEdit){
                 $.each(this.businessTypeList,function(k,v){
@@ -283,7 +286,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             if($confDom.length > 0){
                 $confDom.each(function(i){
                     var json = {};
-                    json.confFileId = $.trim($confDom.eq(i).text());
+                    json.confFileId = $.trim($textareaDom.eq(i).attr('id'));
                     json.content = $.trim($textareaDom.eq(i).val());
                     this.args.confFile.push(json);
                 }.bind(this));
@@ -310,7 +313,6 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         initialize: function(options) {
             this.collection = options.collection;
             this.data = options.data;
-            console.log(this.data);
 
             this.$el = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.syncProgress.html'])({data:this.data.nodeGroup}));
         },
@@ -553,15 +555,19 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         onClickSync: function(e){
-            var eTarget = e.srcElement || e.target,domain;
+            var eTarget = e.srcElement || e.target;
             this.syncId = "";
+            this.syncDomain = "";
+            this.syncBisTypeId = "";
 
             if (eTarget.tagName == "SPAN") {
                 this.syncId = $(eTarget).parent().attr("id");
-                domain = $(eTarget).parent().attr("data-domain");
+                this.syncDomain = $(eTarget).parent().attr("data-domain");
+                this.syncBisTypeId = $(eTarget).parent().attr("data-bisTypeId");
             } else {
                 this.syncId = $(eTarget).attr("id");
-                domain = $(eTarget).attr("data-domain");
+                this.syncDomain = $(eTarget).attr("data-domain");
+                this.syncBisTypeId = $(eTarget).attr("data-bisTypeId");
             }
             var result = confirm("你确定要同步当前域名吗？")
             if (!result) return;
@@ -572,7 +578,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         onGetSyncSuccess: function(){
             //定时器
             this.timer = setInterval(function(){
-                this.collection.getSyncProgress({id:this.syncId});
+                this.collection.getSyncProgress({domain:this.syncDomain,bisTypeId:this.syncBisTypeId});
             }.bind(this),5000);
         },
 

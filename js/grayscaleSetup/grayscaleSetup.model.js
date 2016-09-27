@@ -1,7 +1,8 @@
 define("grayscaleSetup.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-
+            var createTime = this.get("createTime");
+            if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
         }
     });
 
@@ -257,6 +258,7 @@ define("grayscaleSetup.model", ['require','exports', 'utility'], function(requir
 
         getNodeGroupTree: function(args){
             var url = BASE_URL + "/seed/gray/domain/getNodeGroupTreeData";
+            /*var url = "http://192.168.158.85:9098/seed/gray/domain/getNodeGroupTreeData";*/
             var defaultParas = {
                 type: "GET",
                 url: url,

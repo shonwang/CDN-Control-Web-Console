@@ -61,23 +61,32 @@
             <% if (permission.CurrentConfigurations) { %> 
             <li id="liveCurentSetup"><a href="index.html#/liveCurentSetup"><i class="glyphicon glyphicon-wrench"></i>当前配置</a></li>
             <% } %>
-           <!--  <% if (permission.GrayConfig) { %> --> 
+            <% if (permission.GrayConfig) { %> 
             <li id="grayscaleSetup"><a href="index.html#/grayscaleSetup"><i class="glyphicon glyphicon-dashboard"></i>灰度配置</a></li>
-            <!-- <% } %> -->
+            <% } %>
             <li id="templateManage" style="display:none"><a href="index.html#/templateManage"><i class="glyphicon glyphicon-align-justify"></i>模版管理</a></li>
         </ul>
     </li>
     <% } %>
     <% if (permission.DataStatistics) { %>
-    <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-object-align-bottom"></i>数据统计</a>
+    <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-stats"></i>数据统计</a>
         <ul class="submenu">
             <% if (permission.CustomerBandwidthStatistics) { %>
-            <li id="statisticsManage"><a href="index.html#/statisticsManage"><i class="glyphicon glyphicon-thumbs-up"></i>客户带宽统计</a></li>
+            <li id="statisticsManage"><a href="index.html#/statisticsManage"><i class="glyphicon glyphicon-user"></i>客户带宽统计</a></li>
             <% } %>
-            <% if (permission.KACustomerBandwidthStatistics) { %>
-            <li id="domainStatistics"><a href="index.html#/domainStatistics"><i class="glyphicon glyphicon-list"></i>KA客户带宽统计</a></li>
+            <% if (permission.KADomainBandwidthStatistics) { %>
+            <li id="domainStatistics"><a href="index.html#/domainStatistics"><i class="glyphicon glyphicon-object-align-bottom"></i>KA客户带宽统计(域名)</a></li>
+            <% } %>
+            <% if (permission.KACustomersBandwidthStatistics) { %>
+            <li id="clientStatistics"><a href="index.html#/clientStatistics"><i class="glyphicon glyphicon-object-align-bottom"></i>KA客户带宽统计(客户)</a></li>
             <% } %>
         </ul>
     </li>
     <% } %>
+    <li style="display:none"><a href="javascript:void(0)"><i class="glyphicon glyphicon-refresh"></i>刷新自助</a>
+        <ul class="submenu">
+            <li id="refreshManual"><a href="index.html#/refreshManual"><i class="glyphicon glyphicon-hand-up"></i>手动刷新</a></li>
+            <li id="customMaintenance"><a href="index.html#/customMaintenance"><i class="glyphicon glyphicon-th"></i>自助运维</a></li>
+        </ul>
+    </li>
 </ul>

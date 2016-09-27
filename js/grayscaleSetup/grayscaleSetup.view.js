@@ -341,7 +341,6 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                 this.collection.getSyncProgress({domain:this.syncDomain,bisTypeId:this.syncBisTypeId});
             }.bind(this),5000);
         },
-<<<<<<< HEAD
 
         getStatus:function(){
             return this.status;
@@ -367,33 +366,6 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             this.timer && clearTimeout(this.timer);        
         },
 
-=======
-
-        getStatus:function(){
-            return this.status;
-        },
-
-        onSyncProgressError:function(error){
-                /*
-            if (error && error.message){
-                alert(error.message)
-            }
-            else{
-                alert("网络阻塞，请刷新重试！")
-            }
-                */
-            var _message = error && error.message || "网络阻塞，请刷新重试！";
-            var data = {
-                status:2,
-                message:_message,
-                bError:true,
-                nodeGroup:[]
-            };
-            this.onSyncProgressSuccess(data);
-            this.timer && clearTimeout(this.timer);        
-        },
-
->>>>>>> Grayscale_forPermission
         clearTimer:function(){
             this.timer && clearTimeout(this.timer);
         },

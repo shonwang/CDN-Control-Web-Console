@@ -41,6 +41,9 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             "domainList/:query/ipBlackWhiteList/:query2": "ipBlackWhiteList",
             "domainList/:query/refererAntiLeech/:query2": "refererAntiLeech",
             "domainList/:query/timestamp/:query2": "timestamp",
+            "domainList/:query/openNgxLog/:query2": "openNgxLog",
+
+            "setupChannelManage" : "setupChannelManage"
         },
 
         initialize: function(){
@@ -188,6 +191,17 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                         active: false,
                         children: []
                     },]
+                },{
+                    id: '',
+                    name: '日志服务',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'openNgxLog',
+                        name: '开启Nginx计费日志',
+                        hash: 'index.html#/domainList/' + query + /openNgxLog/ + query2,
+                        active: false,
+                        children: []
+                    }]
                 }], menuOptions = {
                     backHash: 'index.html#/domainList/' + query,
                     menuList: menu
@@ -203,6 +217,10 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             switch(this.curPage){
                 case 'channelManage':
                   this.channelManageView.hide();
+                  break;
+                case 'setupChannelManage':
+                  this.setupChannelManageView.remove();
+                  this.setupChannelManageView = null;
                   break;
                 case 'deviceManage':
                   this.deviceManageView.remove();
@@ -332,10 +350,18 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                 case 'timestamp':
                     this.timestampView.hide();
                     this.thirdNavbar.hide();
+                    break
+                case 'openNgxLog':
+                    this.openNgxLogView.hide();
+                    this.thirdNavbar.hide();
                 default:
             }
             if (callback)
                 callback.apply(this, args);
+        },
+
+        openNgxLog: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.openNgxLogCallback, this, query, query2))
         },
 
         timestamp: function(query, query2){
@@ -404,6 +430,28 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
 
         customerSetup: function(){
             this.navbarView.initLogin($.proxy(CustomerSetupController.customerSetupCallback, this))
+        },
+
+        setupChannelManage: function(){
+            this.navbarView.initLogin($.proxy(this.setupChannelManageCallback, this))
+        },
+
+        setupChannelManageCallback: function(){
+            require(['setupChannelManage.view', 'setupChannelManage.model'], function(SetupChannelManageView, SetupChannelManageModel){
+                this.curPage = 'setupChannelManage';
+                this.navbarView.select(this.curPage);
+                if (!this.setupChannelManageModel)
+                    this.setupChannelManageModel = new SetupChannelManageModel();
+                if (!this.setupChannelManageView ){
+                    var options = {
+                        collection: this.setupChannelManageModel
+                    };
+                    this.setupChannelManageView = new SetupChannelManageView(options);
+                    this.setupChannelManageView.render($('.ksc-content'));
+                } else {
+                    this.setupChannelManageView.update(query);
+                }
+            }.bind(this));
         },
         
         customMaintenance: function(){

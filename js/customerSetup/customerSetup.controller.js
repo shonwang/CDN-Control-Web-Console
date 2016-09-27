@@ -3,6 +3,28 @@ define("customerSetup.controller", ['require','exports'],
 
     var CustomerSetupController = Backbone.Router.extend({
 
+        openNgxLogCallback: function(query, query2) {
+            require(['openNgxLog.view', 'openNgxLog.model'], function(OpenNgxLogView, OpenNgxLogModel){
+                this.curPage = 'openNgxLog';
+                this.setUpThirdNavbar(query, query2);
+
+                if (!this.openNgxLogModel)
+                    this.openNgxLogModel = new OpenNgxLogModel();
+                if (!this.openNgxLogView ){
+                    var options = {
+                        collection: this.openNgxLogModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.openNgxLogView = new OpenNgxLogView(options);
+                    this.openNgxLogView.render(this.thirdNavbar.$el.find('.sub-content'));
+                } else {
+                    this.thirdNavbar.select(this.curPage);
+                    this.openNgxLogView.update(query, query2);
+                }
+            }.bind(this));
+        },
+
         timestampCallback: function(query, query2) {
             require(['timestamp.view', 'timestamp.model'], function(TimestampView, TimestampModel){
                 this.curPage = 'timestamp';

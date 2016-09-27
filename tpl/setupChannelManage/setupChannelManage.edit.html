@@ -1,0 +1,156 @@
+<div class="setup-channel-manage-edit">
+    <h3>配置下发<small>/编辑频道</small></h3>
+    <div class="well">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label for="input-domain" class="col-sm-3 control-label">加速域名</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="input-domain" value="<%=data.chName%>" readonly="true">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="input-type" class="col-sm-3 control-label">业务类型</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="input-type" value="<%=data.name%>" readonly="true">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="input-protocol" class="col-sm-3 control-label">使用协议</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="input-protocol" value="<%=data.name%>" readonly="true">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="input-application" class="col-sm-3 control-label">应用</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="input-application" value="<%=data.name%>" readonly="true">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="input-topology" class="col-sm-3 control-label">拓扑关系</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="input-topology" value="<%=data.name%>" readonly="true">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="text-comment" class="col-sm-3 control-label">备注</label>
+                <div class="col-sm-6">
+                    <textarea class="form-control" rows="2" id="text-comment"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">配置单</label>
+                <div class="col-sm-6">
+                    <a href="javascript:void(0)" class="btn btn-success view-setup-list">查看</a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="use-customized" class="col-sm-3 control-label">定制化配置</label>
+                <div class="col-sm-6 use-customized">
+                    <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                        <label>
+                            <input type="checkbox"><span class="toggle"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group customized-comment">
+                <label for="customized-comment" class="col-sm-3 control-label">定制化备注信息</label>
+                <div class="col-sm-6">
+                    <textarea class="form-control" rows="2" id="customized-comment"></textarea>
+                </div>
+            </div>
+        </form>
+        <hr>
+        <div class="row">
+            <div class="col-md-6 automatic">
+                <div class="h4">自动生成的配置文件</div>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">上层配置</div>
+                    <div class="panel-body">
+                        <div class="panel-group" id="upper-layer">
+                            <div class="panel panel-default">
+                                <div class="panel-heading" id="headingOne">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#upper-layer" href="#upper-layer-one">Item #1</a>
+                                    </h4>
+                                </div>
+                                <div id="upper-layer-one" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                                </div>
+                            </div>
+                          </div>
+                          <div class="panel panel-default">
+                              <div class="panel-heading" id="headingTwo">
+                                  <h4 class="panel-title">
+                                      <a class="collapsed" data-toggle="collapse" data-parent="#upper-layer" href="#upper-layer-two">Item #2</a>
+                                  </h4>
+                              </div>
+                            <div id="upper-layer-two" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">下层配置</div>
+                    <div class="panel-body">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 customized">
+                <div class="h4">定制化的配置文件</div>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">上层配置</div>
+                    <div class="panel-body">
+                        <div class="panel-group" id="customized-upper-layer">
+                            <div class="panel panel-default">
+                                <div class="panel-heading" id="headingOne">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#customized-upper-layer" href="#customized-upper-layer-one">Item #1</a>
+                                    </h4>
+                                </div>
+                                <div id="customized-upper-layer-one" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <textarea class="form-control" rows="10" id="customized-file-one">
+                                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                                    </textarea>
+                                </div>
+                            </div>
+                          </div>
+                          <div class="panel panel-default">
+                              <div class="panel-heading" id="headingTwo">
+                                  <h4 class="panel-title">
+                                      <a class="collapsed" data-toggle="collapse" data-parent="#customized-upper-layer" href="#customized-upper-layer-two">Item #2</a>
+                                  </h4>
+                              </div>
+                            <div id="customized-upper-layer-two" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                <textarea class="form-control" rows="10" id="customized-file-two">
+                                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                                </textarea>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">下层配置</div>
+                    <div class="panel-body">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="text-center opt-ctn">
+            <a href="javascript:void(0)" class="btn btn-primary save">保存</a>
+            <a href="javascript:void(0)" class="btn btn-default cancel">放弃</a>
+        </div>
+    </div>
+</div>
+

@@ -44,7 +44,7 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
                 this.regionCtn.find("#cdn-regions-error").show();
                 return false;
             }
-            this.args.Regions = region.join(",");
+            //this.args.Regions = region.join(",");
             return true;
         },
 
@@ -95,6 +95,28 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
             if(!this.checkRegion()){
                 return false;
             }
+            this.launchSendPopup();
+        },
+
+        launchSendPopup: function(){
+            require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
+                var mySaveThenSendView = new SaveThenSendView({
+                    collection: this.collection, 
+                });
+                var options = {
+                    title: "发布",
+                    body : mySaveThenSendView,
+                    backdrop : 'static',
+                    type     : 2,
+                    onOKCallback:  function(){
+                        this.sendPopup.$el.modal("hide");
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();
+                    }.bind(this)
+                }
+                this.sendPopup = new Modal(options);
+            }.bind(this))
         },
 
         hide: function(){

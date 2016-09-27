@@ -1044,6 +1044,7 @@ td .table {
   .temp{
     display: none;
   }
+}
 
 .horizontal-slip{
   overflow: scroll;
@@ -1069,4 +1070,9 @@ td .table {
 .templateManage .select-container{
     left:632px;
     top:90px;
+}
+
+.setup-channel-manage-edit .panel-collapse .panel-body{
+    height: 245px;
+    overflow: auto;
 }

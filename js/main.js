@@ -149,6 +149,15 @@ requirejs.config({
 
         "timestamp.model": 'customerSetup/domainList/timestamp/timestamp.model',
         "timestamp.view": 'customerSetup/domainList/timestamp/timestamp.view',     
+
+        "openNgxLog.model": 'customerSetup/domainList/openNgxLog/openNgxLog.model',
+        "openNgxLog.view": 'customerSetup/domainList/openNgxLog/openNgxLog.view',
+
+        "saveThenSend.model": 'customerSetup/domainList/saveThenSend/saveThenSend.model',
+        "saveThenSend.view": 'customerSetup/domainList/saveThenSend/saveThenSend.view',
+
+        "setupChannelManage.model": "setupChannelManage/setupChannelManage.model",
+        "setupChannelManage.view": "setupChannelManage/setupChannelManage.view",
     },
     urlArgs: new Date().valueOf()
 });

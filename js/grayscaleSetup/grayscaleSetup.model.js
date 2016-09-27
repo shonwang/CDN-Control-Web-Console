@@ -241,7 +241,16 @@ define("grayscaleSetup.model", ['require','exports', 'utility'], function(requir
             defaultParas.data = args;
 
             defaultParas.success = function(res){
-                this.trigger("get.sync.success",res);
+
+                //if(res == 200){
+                    this.trigger("get.sync.success",res);
+                //}
+                /*else{
+                    this.trigger("get.sync.error", res.message); 
+                }*/
+
+                //this.trigger("get.sync.success",res);
+
             }.bind(this);
 
             defaultParas.error = function(response, msg){

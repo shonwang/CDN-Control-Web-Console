@@ -57,7 +57,6 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         initTree: function(res){
-            //console.log(res);
             var zNodes = res;
 
             if(this.isEdit){
@@ -254,7 +253,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         initDropMenu: function(){
             Utility.initDropMenu(this.$el.find(".dropdown-businessType"), this.businessTypeList, function(value){
                 this.args.bisTypeId = parseInt($.trim(value));
-
+                console.log(this.args.bisTypeId);
                 this.collection.getNodeGroupTree({bisTypeId:this.args.bisTypeId});
             }.bind(this));
             if(this.isEdit){
@@ -342,6 +341,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                 this.collection.getSyncProgress({domain:this.syncDomain,bisTypeId:this.syncBisTypeId});
             }.bind(this),5000);
         },
+<<<<<<< HEAD
 
         getStatus:function(){
             return this.status;
@@ -367,6 +367,33 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             this.timer && clearTimeout(this.timer);        
         },
 
+=======
+
+        getStatus:function(){
+            return this.status;
+        },
+
+        onSyncProgressError:function(error){
+                /*
+            if (error && error.message){
+                alert(error.message)
+            }
+            else{
+                alert("网络阻塞，请刷新重试！")
+            }
+                */
+            var _message = error && error.message || "网络阻塞，请刷新重试！";
+            var data = {
+                status:2,
+                message:_message,
+                bError:true,
+                nodeGroup:[]
+            };
+            this.onSyncProgressSuccess(data);
+            this.timer && clearTimeout(this.timer);        
+        },
+
+>>>>>>> Grayscale_forPermission
         clearTimer:function(){
             this.timer && clearTimeout(this.timer);
         },
@@ -481,7 +508,6 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             Utility.initDropMenu(this.$el.find(".dropdown-businessType"), businessTypeList, function(value){
                 this.getPageArgs.bisTypeId = parseInt($.trim(value));
             }.bind(this));
-
             this.getPageArgs.bisTypeId = parseInt(businessTypeList[0].value);
             this.collection.getDomainPageList(this.getPageArgs); //请求table列表
 
@@ -531,6 +557,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         onClickCreate: function(){
+            this.getPageArgs.bisTypeId = 10;
             this.collection.getNodeGroupTree({bisTypeId:this.getPageArgs.bisTypeId});
 
             if (this.addPopup) $("#" + this.addPopup.modalId).remove();

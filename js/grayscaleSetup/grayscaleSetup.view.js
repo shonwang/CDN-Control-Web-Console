@@ -57,7 +57,6 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         initTree: function(res){
-            //console.log(res);
             var zNodes = res;
 
             if(this.isEdit){
@@ -254,7 +253,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         initDropMenu: function(){
             Utility.initDropMenu(this.$el.find(".dropdown-businessType"), this.businessTypeList, function(value){
                 this.args.bisTypeId = parseInt($.trim(value));
-
+                console.log(this.args.bisTypeId);
                 this.collection.getNodeGroupTree({bisTypeId:this.args.bisTypeId});
             }.bind(this));
             if(this.isEdit){
@@ -312,10 +311,65 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
 
         initialize: function(options) {
             this.collection = options.collection;
-            this.data = options.data;
+            this.syncDomain = options.syncDomain;
+            this.syncBisTypeId = options.syncBisTypeId;
+            this.parent = options.parent;
+            this.collection.off("get.syncProgress.success");
+            this.collection.off("get.syncProgress.error");
+            this.collection.on("get.syncProgress.success",$.proxy(this.onSyncProgressSuccess,this));
+            this.collection.on("get.syncProgress.error",$.proxy(this.onSyncProgressError,this));
+            this.collection.getSyncProgress({domain:this.syncDomain,bisTypeId:this.syncBisTypeId});
 
-            this.$el = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.syncProgress.html'])({data:this.data.nodeGroup}));
+            //this.$el = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.syncProgress.html'])({data:this.data.nodeGroup}));
+            this.$el = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.syncProgress.html'])());
+            this.$el.find(".table-ctn").html($(_.template(template['tpl/loading.html'])()));
         },
+
+        onSyncProgressSuccess:function(res){
+            this.table = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.syncProgressTable.html'])({data:res}));
+            this.$el.find(".table-ctn").html(this.table[0]);
+            this.status = res.status || null;
+            if(res.status != 0){
+                this.parent.syncProgressPopup.$el.find(".modal-footer .btn-default").show();
+                this.parent.syncProgressPopup.$el.find(".modal-header .close").show();                
+            }
+            if(res.status == 2 || res.percentage == '100'){
+                this.timer && clearTimeout(this.timer);
+                return false;
+            }
+            this.timer = setTimeout(function(){
+                this.collection.getSyncProgress({domain:this.syncDomain,bisTypeId:this.syncBisTypeId});
+            }.bind(this),5000);
+        },
+
+        getStatus:function(){
+            return this.status;
+        },
+
+        onSyncProgressError:function(error){
+                /*
+            if (error && error.message){
+                alert(error.message)
+            }
+            else{
+                alert("网络阻塞，请刷新重试！")
+            }
+                */
+            var _message = error && error.message || "网络阻塞，请刷新重试！";
+            var data = {
+                status:2,
+                message:_message,
+                bError:true,
+                nodeGroup:[]
+            };
+            this.onSyncProgressSuccess(data);
+            this.timer && clearTimeout(this.timer);        
+        },
+
+        clearTimer:function(){
+            this.timer && clearTimeout(this.timer);
+        },
+
         render: function(target) {
             this.$el.appendTo(target);
         }
@@ -363,8 +417,8 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("delete.grayDomain.error", $.proxy(this.onGetError, this));
-            this.collection.on("get.syncProgress.success", $.proxy(this.onGetSyncProgressSuccess, this));
-            this.collection.on("get.syncProgress.error", $.proxy(this.onGetError, this));
+            //this.collection.on("get.syncProgress.success", $.proxy(this.onGetSyncProgressSuccess, this));
+            //this.collection.on("get.syncProgress.error", $.proxy(this.onGetError, this));
             this.collection.on("get.sync.success", $.proxy(this.onGetSyncSuccess, this));
             this.collection.on("get.sync.error", $.proxy(this.onGetError, this));
 
@@ -426,7 +480,6 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             Utility.initDropMenu(this.$el.find(".dropdown-businessType"), businessTypeList, function(value){
                 this.getPageArgs.bisTypeId = parseInt($.trim(value));
             }.bind(this));
-
             this.getPageArgs.bisTypeId = parseInt(businessTypeList[0].value);
             this.collection.getDomainPageList(this.getPageArgs); //请求table列表
 
@@ -476,6 +529,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         onClickCreate: function(){
+            this.getPageArgs.bisTypeId = 10;
             this.collection.getNodeGroupTree({bisTypeId:this.getPageArgs.bisTypeId});
 
             if (this.addPopup) $("#" + this.addPopup.modalId).remove();
@@ -577,9 +631,39 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
 
         onGetSyncSuccess: function(){
             //定时器
-            this.timer = setInterval(function(){
-                this.collection.getSyncProgress({domain:this.syncDomain,bisTypeId:this.syncBisTypeId});
-            }.bind(this),5000);
+            //this.timer = setInterval(function(){
+            //  this.collection.getSyncProgress({domain:this.syncDomain,bisTypeId:this.syncBisTypeId});
+            //}.bind(this),5000);
+
+            if (this.syncProgressPopup) $("#" + this.syncProgressPopup.modalId).remove();
+
+            var syncProgressView = new SyncProgressView({
+                collection: this.collection,
+                syncDomain:this.syncDomain,
+                syncBisTypeId:this.syncBisTypeId,
+                parent:this
+            });
+            var options = {
+                title:"域名："+this.syncDomain,
+                body : syncProgressView,
+                backdrop : 'static',
+                type     : 1,
+                onOKCallback:  function(){
+                    syncProgressView.clearTimer();
+                }.bind(this),
+                onHiddenCallback: function(){
+                    syncProgressView.clearTimer();
+                    var status = syncProgressView.getStatus();
+                    if(status == 1){
+                        this.onClickQueryButton();
+                    }
+                }.bind(this)
+            }
+            this.syncProgressPopup = new Modal(options);
+            this.syncProgressPopup.$el.find(".modal-footer .btn-default").hide();
+            this.syncProgressPopup.$el.find(".modal-header .close").hide();
+            
+
         },
 
         onGetSyncProgressSuccess: function(res){
@@ -645,6 +729,8 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
+            
+            this.timer && clearInterval(this.timer);
         },
 
         hide: function() {

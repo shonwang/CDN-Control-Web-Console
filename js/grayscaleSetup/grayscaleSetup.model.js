@@ -257,8 +257,8 @@ define("grayscaleSetup.model", ['require','exports', 'utility'], function(requir
         },
 
         getNodeGroupTree: function(args){
-            var url = BASE_URL + "/seed/gray/domain/getNodeGroupTreeData";
-            /*var url = "http://192.168.158.85:9098/seed/gray/domain/getNodeGroupTreeData";*/
+            //var url = BASE_URL + "/seed/gray/domain/getNodeGroupTreeData";
+            var url = "http://192.168.158.85:9098/seed/gray/domain/getNodeGroupTreeData";
             var defaultParas = {
                 type: "GET",
                 url: url,

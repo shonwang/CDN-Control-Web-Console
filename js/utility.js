@@ -228,6 +228,11 @@ define("utility", ['require','exports'], function(require, exports) {
             return strRegex.test(str_url)
         },
 
+        isAntileechDomain: function(url) {
+            var reg = /^(([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)|\*{1}\.)+[a-zA-Z]{2,20}$/;
+            return reg.test(url);
+        },
+
         isHostHeader:function(str_url){
             var reg=/^([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
             return reg.test(str_url);
@@ -320,6 +325,25 @@ define("utility", ['require','exports'], function(require, exports) {
                     }.bind(this), 500)
                 }.bind(this)]
             );
+        },
+
+        adjustElement: function(array, index, isUp){
+            if (index === 0 && isUp) {
+                alert("已经是第一个了！");
+                return array;
+            } else if (index === array.length - 1 && !isUp) {
+                alert("已经是最后一个了！")
+                return array;
+            }
+            var adjustIndex, endArray, selectedArray = array.splice(index, 1);
+            if (isUp)
+                adjustIndex = index - 1;
+            else
+                adjustIndex = index + 1; 
+            endArray = array.splice(adjustIndex, array.length - adjustIndex);
+            array = array.concat(selectedArray, endArray);
+
+            return array;
         },
 
         postAjax: function(url, args, successCallback, errorCallback, timeout, dataType){

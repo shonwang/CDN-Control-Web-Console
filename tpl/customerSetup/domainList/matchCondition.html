@@ -1,0 +1,55 @@
+<form class="form-horizontal">
+    <div class="alert alert-danger text-center">
+        <strong></strong>
+    </div>
+    <div class="form-group">
+        <label for="match-type" class="col-sm-2 control-label">匹配类型</label>
+        <div class="col-sm-8 match-type">
+            <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-match-type" data-toggle="dropdown">
+                    <span class="cur-value">加载中...</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu"></ul>
+            </div>
+        </div>
+    </div>
+    <div class="form-group file-type" style="display:none">
+        <label for="file-type" class="col-sm-2 control-label">文件类型</label>
+        <div class="col-sm-8 file-type-ctn">
+            <div class="panel panel-default">
+                <div class="panel-body" style="max-height:180px;overflow: auto;">
+                    <div class="opt-ctn">
+                        <a href="javascript:void(0)" class="btn btn-sm btn-primary checkAll">全选</a>
+                        <a href="javascript:void(0)" class="btn btn-sm btn-default cancelAll">全不选</a>
+                    </div>
+                    <ul id="tree" class="ztree"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group file-type" style="display:none">
+        <label for="file-type" class="col-sm-2 control-label">自定义文件类型</label>
+        <div class="col-sm-8">
+            <textarea class="form-control" rows="3" id="textarea-file-type"></textarea>
+        </div>
+    </div>
+    <div class="form-group uri" style="display:none">
+        <label for="uri" class="col-sm-2 control-label">指定URI</label>
+        <div class="col-sm-8">
+            <textarea class="form-control" rows="3" id="textarea-uri"></textarea>
+        </div>
+    </div>
+    <div class="form-group dir" style="display:none">
+        <label for="dir" class="col-sm-2 control-label">指定目录</label>
+        <div class="col-sm-8">
+            <textarea class="form-control" rows="3" id="textarea-dir"></textarea>
+        </div>
+    </div>
+    <div class="form-group re" style="display:none">
+        <label for="re" class="col-sm-2 control-label">正则匹配</label>
+        <div class="col-sm-8">
+            <textarea class="form-control" rows="3" id="textarea-re"></textarea>
+        </div>
+    </div>
+</form>

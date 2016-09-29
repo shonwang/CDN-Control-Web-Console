@@ -1,0 +1,16 @@
+<% for(var i=0;i<data.length;i++){ %>
+	<tr class="<%if(i%2==1){%>active<%}%>">
+		<td><a href="javascript:void(0);"><%=data[i].DomainName%></a></td>
+		<td><a href="javascript:void(0);"><%=data[i].Cname%></a></td>
+		<td><%=data[i].CdnTypeName%></td>
+		<td class="ks-td-status-closed"><%=data[i].DomainStatusName%></td>
+		<td><%=data[i].CdnTypeName%></td>
+		<td><%=data[i].ModifiedTime%></td>
+		<td><%=data[i].ModifiedTime%></td>
+		<td>
+			<%if(data[i].CdnType == 'download'){%>
+				<a href="javascript:void(0)" id="<%=data[i].DomainId%>" class="manage">管理</a>
+			<%}%>
+		</td>
+	</tr>
+<% } %>

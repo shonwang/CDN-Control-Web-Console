@@ -50,7 +50,7 @@
     </li>
     <% } %>
     <% if (permission.ManageServiceConfigs) { %>
-    <li><a href="javascript:void(0)"><i class="fa fa-home"></i><i class="glyphicon glyphicon-cloud-download"></i>配置拉取</a>
+    <li><a href="javascript:void(0)"><i class="fa fa-home"></i><i class="glyphicon glyphicon-cloud-upload"></i>配置拉取</a>
         <ul class="submenu">
             <% if (permission.ManageNodeGroups) { %> 
             <li id="businessManage"><a href="index.html#/businessManage"><i class="icon icon-rds-16"></i>业务管理</a></li>
@@ -66,6 +66,11 @@
         </ul>
     </li>
     <% } %>
+    <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-circle-arrow-down"></i>配置下发</a>
+        <ul class="submenu">
+            <li id="setupChannelManage"><a href="index.html#/setupChannelManage"><i class="icon icon-monit-20"></i>频道管理</a></li>
+        </ul>
+    </li>
     <% if (permission.DataStatistics) { %>
     <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-stats"></i>数据统计</a>
         <ul class="submenu">
@@ -81,6 +86,11 @@
         </ul>
     </li>
     <% } %>
+    <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-credit-card"></i>客户频道管理</a>
+        <ul class="submenu">
+            <li id="customerSetup"><a href="index.html#/customerSetup"><i class="glyphicon glyphicon-user"></i>客户配置</a></li>
+        </ul>
+    </li>
     <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-refresh"></i>刷新自助</a>
         <ul class="submenu">
             <li id="refreshManual"><a href="index.html#/refreshManual"><i class="glyphicon glyphicon-hand-up"></i>手动刷新</a></li>

@@ -1,5 +1,5 @@
-define("routes", ['require','exports', 'utility','navbar.view'], 
-    function(require, exports, Utility, NavbarView) {
+define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.view', 'customerSetup.controller'], 
+    function(require, exports, Utility, NavbarView, SubNavbar, CustomerSetupController) {
 
     var Workspace = Backbone.Router.extend({
 
@@ -21,8 +21,29 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             "domainManage"        : "domainManage",
             "clientStatistics"    : "clientStatistics",
             "businessManage"      : "businessManage",
-            "grayscaleSetup"     : "grayscaleSetup",
-            "templateManage"      : "templateManage"
+            "grayscaleSetup"      : "grayscaleSetup",
+            "templateManage"      : "templateManage",
+            "customerSetup"       : "customerSetup",
+            "domainList/:query"   : "domainList",
+
+            "domainList/:query/domainSetup/:query2": "domainSetup",
+            "domainList/:query/cnameSetup/:query2": "cnameSetup",
+            "domainList/:query/cacheRule/:query2": "cacheRule",
+            "domainList/:query/delMarkCache/:query2": "delMarkCache",
+            "domainList/:query/cacheKeySetup/:query2": "cacheKeySetup",
+            "domainList/:query/backOriginSetup/:query2": "backOriginSetup",
+            "domainList/:query/following302/:query2": "following302",
+            "domainList/:query/dragPlay/:query2": "dragPlay",
+            "domainList/:query/clientLimitSpeed/:query2": "clientLimitSpeed",
+            "domainList/:query/httpHeaderOpt/:query2": "httpHeaderOpt",
+            "domainList/:query/httpHeaderCtr/:query2": "httpHeaderCtr",
+            "domainList/:query/requestArgsModify/:query2": "requestArgsModify",
+            "domainList/:query/ipBlackWhiteList/:query2": "ipBlackWhiteList",
+            "domainList/:query/refererAntiLeech/:query2": "refererAntiLeech",
+            "domainList/:query/timestamp/:query2": "timestamp",
+            "domainList/:query/openNgxLog/:query2": "openNgxLog",
+
+            "setupChannelManage" : "setupChannelManage"
         },
 
         initialize: function(){
@@ -31,10 +52,175 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             this.curPage = "";
         },
 
+        setUpThirdNavbar: function(query, query2){
+            if (!this.thirdNavbar){
+                var menu = [{
+                    id: '',
+                    name: '域名设置',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'domainSetup',
+                        name: '域名基础设置',
+                        hash: 'index.html#/domainList/' + query + /domainSetup/ + query2,
+                        active: true,
+                        children: []
+                    },{
+                        id: 'cnameSetup',
+                        name: 'CNAME设置',
+                        hash: 'index.html#/domainList/' + query + /cnameSetup/ + query2,
+                        active: false,
+                        children: []
+                    }]
+                },{
+                    id: '',
+                    name: '源站配置',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'backOriginSetup',
+                        name: '回源配置',
+                        hash: 'index.html#/domainList/' + query + /backOriginSetup/ + query2,
+                        active: false,
+                        children: []
+                    }]
+                },{
+                    id: '',
+                    name: 'HTTP协议优化',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'following302',
+                        name: 'Following 302',
+                        hash: 'index.html#/domainList/' + query + /following302/ + query2,
+                        active: false,
+                        children: []
+                    }]
+                },{
+                    id: '',
+                    name: '缓存优化',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'cacheRule',
+                        name: '缓存规则',
+                        hash: 'index.html#/domainList/' + query + /cacheRule/ + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'delMarkCache',
+                        name: '去问号缓存',
+                        hash: 'index.html#/domainList/' + query + /delMarkCache/ + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'cacheKeySetup',
+                        name: '设置 Cache Key',
+                        hash: 'index.html#/domainList/' + query + /cacheKeySetup/ + query2,
+                        active: false,
+                        children: []
+                    }]
+                },{
+                    id: '',
+                    name: '点播优化',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'dragPlay',
+                        name: '拖拽播放',
+                        hash: 'index.html#/domainList/' + query + /dragPlay/ + query2,
+                        active: false,
+                        children: []
+                    }]
+                },{
+                    id: '',
+                    name: '限速',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'clientLimitSpeed',
+                        name: '客户端限速',
+                        hash: 'index.html#/domainList/' + query + /clientLimitSpeed/ + query2,
+                        active: false,
+                        children: []
+                    }]
+                },{
+                    id: '',
+                    name: 'HTTP头控制',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'httpHeaderOpt',
+                        name: 'HTTP头的增删改查',
+                        hash: 'index.html#/domainList/' + query + /httpHeaderOpt/ + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'httpHeaderCtr',
+                        name: '常用HTTP头控制功能',
+                        hash: 'index.html#/domainList/' + query + /httpHeaderCtr/ + query2,
+                        active: false,
+                        children: []
+                    }]
+                },{
+                    id: '',
+                    name: 'URL控制',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'requestArgsModify',
+                        name: '请求参数的改写',
+                        hash: 'index.html#/domainList/' + query + /requestArgsModify/ + query2,
+                        active: false,
+                        children: []
+                    }]
+                },{
+                    id: '',
+                    name: '访问控制',
+                    hash: 'javascript:void(0)',
+                    children: [
+                    // {
+                    //     id: 'ipBlackWhiteList',
+                    //     name: 'IP黑白名单',
+                    //     hash: 'index.html#/domainList/' + query + /ipBlackWhiteList/ + query2,
+                    //     active: false,
+                    //     children: []
+                    // },
+                    {
+                        id: 'refererAntiLeech',
+                        name: 'Referer防盗链',
+                        hash: 'index.html#/domainList/' + query + /refererAntiLeech/ + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'timestamp',
+                        name: '时间戳+共享秘钥防盗链',
+                        hash: 'index.html#/domainList/' + query + /timestamp/ + query2,
+                        active: false,
+                        children: []
+                    },]
+                },{
+                    id: '',
+                    name: '日志服务',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'openNgxLog',
+                        name: '开启Nginx计费日志',
+                        hash: 'index.html#/domainList/' + query + /openNgxLog/ + query2,
+                        active: false,
+                        children: []
+                    }]
+                }], menuOptions = {
+                    backHash: 'index.html#/domainList/' + query,
+                    menuList: menu
+                }
+                this.thirdNavbar = new SubNavbar(menuOptions);
+                this.thirdNavbar.select(this.curPage);
+            } else {
+                this.thirdNavbar.update();
+            }
+        },
+
         execute: function(callback, args) {
             switch(this.curPage){
                 case 'channelManage':
                   this.channelManageView.hide();
+                  break;
+                case 'setupChannelManage':
+                  this.setupChannelManageView.remove();
+                  this.setupChannelManageView = null;
                   break;
                 case 'deviceManage':
                   this.deviceManageView.remove();
@@ -98,12 +284,176 @@ define("routes", ['require','exports', 'utility','navbar.view'],
                 case 'templateManage':
                     this.templateManageView.hide();
                     break;
+                case 'customerSetup':
+                    this.customerSetupView.hide();
+                    break;
+                case 'domainList':
+                    this.domainListView.hide();
+                    this.subNavbar.hide();
+                    break;
+                case 'domainSetup':
+                    this.domainSetupView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'cacheRule':
+                    this.cacheRuleView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'delMarkCache':
+                    this.delMarkCacheView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'cacheKeySetup':
+                    this.cacheKeySetupView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'cnameSetup':
+                    this.cnameSetupView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'backOriginSetup':
+                    this.backOriginSetupView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'following302':
+                    this.following302View.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'dragPlay':
+                    this.dragPlayView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'clientLimitSpeed':
+                    this.clientLimitSpeedView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'httpHeaderOpt':
+                    this.httpHeaderOptView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'httpHeaderCtr':
+                    this.httpHeaderCtrView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'requestArgsModify':
+                    this.requestArgsModifyView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'ipBlackWhiteList':
+                    this.ipBlackWhiteListView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'refererAntiLeech':
+                    this.refererAntiLeechView.hide();
+                    this.thirdNavbar.hide();
+                    break;
+                case 'timestamp':
+                    this.timestampView.hide();
+                    this.thirdNavbar.hide();
+                    break
+                case 'openNgxLog':
+                    this.openNgxLogView.hide();
+                    this.thirdNavbar.hide();
                 default:
             }
             if (callback)
                 callback.apply(this, args);
         },
 
+        openNgxLog: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.openNgxLogCallback, this, query, query2))
+        },
+
+        timestamp: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.timestampCallback, this, query, query2))
+        },
+
+        refererAntiLeech: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.refererAntiLeechCallback, this, query, query2))
+        },
+
+        ipBlackWhiteList: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.ipBlackWhiteListCallback, this, query, query2))
+        },
+
+        requestArgsModify: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.requestArgsModifyCallback, this, query, query2))
+        },
+
+        httpHeaderCtr: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.httpHeaderCtrCallback, this, query, query2))
+        },
+
+        httpHeaderOpt: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.httpHeaderOptCallback, this, query, query2))
+        },
+
+        clientLimitSpeed: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.clientLimitSpeedCallback, this, query, query2))
+        },
+
+        dragPlay: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.dragPlayCallback, this, query, query2))
+        },
+
+        following302: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.following302Callback, this, query, query2))
+        },
+
+        backOriginSetup: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.backOriginSetupCallback, this, query, query2))
+        },
+
+        cnameSetup: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.cnameSetupCallback, this, query, query2))
+        },
+
+        cacheKeySetup: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.cacheKeySetupCallback, this, query, query2))
+        },
+
+        delMarkCache: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.delMarkCacheCallback, this, query, query2))
+        },
+
+        cacheRule: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.cacheRuleCallback, this, query, query2))
+        },
+
+        domainSetup: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.domainSetupCallback, this, query, query2))
+        },
+
+        domainList: function(query){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.domainListCallback, this, query))
+        },
+
+        customerSetup: function(){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.customerSetupCallback, this))
+        },
+
+        setupChannelManage: function(){
+            this.navbarView.initLogin($.proxy(this.setupChannelManageCallback, this))
+        },
+
+        setupChannelManageCallback: function(){
+            require(['setupChannelManage.view', 'setupChannelManage.model'], function(SetupChannelManageView, SetupChannelManageModel){
+                this.curPage = 'setupChannelManage';
+                this.navbarView.select(this.curPage);
+                if (!this.setupChannelManageModel)
+                    this.setupChannelManageModel = new SetupChannelManageModel();
+                if (!this.setupChannelManageView ){
+                    var options = {
+                        collection: this.setupChannelManageModel
+                    };
+                    this.setupChannelManageView = new SetupChannelManageView(options);
+                    this.setupChannelManageView.render($('.ksc-content'));
+                } else {
+                    this.setupChannelManageView.update(query);
+                }
+            }.bind(this));
+        },
+        
         customMaintenance: function(){
             this.navbarView.initLogin($.proxy(this.customMaintenanceCallback, this))
         },

@@ -214,7 +214,6 @@ border-bottom-right-radius:10px;
 display:inline-block;
 }
 .hot-url dl dd span {padding-left:0px;}
-.charts-ctn {min-width:350px;height:150px;margin-top:10px;}
 .main-layer3 {clear:both;margin-top:10px;min-width:1088px;padding:10px 10px 20px;box-sizing:border-box;background:#fff;}
 .main-layer3 .tab-body {min-height:320px;padding:10px;display:none;border:1px solid #ccc;background:#fcfcfc;}
 .main-layer3 .tab-body.active {display:block;}

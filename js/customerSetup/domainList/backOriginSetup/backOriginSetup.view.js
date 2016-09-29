@@ -143,7 +143,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){
                 this.defaultParam.isUseAdvance = 2;
-                this.$el.find(".customized-comment").show();
+                this.$el.find(".advanced").show();
                 this.$el.find(".base").hide();
             } else {
                 this.defaultParam.isUseAdvance = 1;

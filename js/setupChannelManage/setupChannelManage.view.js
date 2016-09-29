@@ -31,7 +31,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         },
 
         onClickItemDetail: function(event){
-            
+
         },
 
         onClickCancelButton: function(){
@@ -50,7 +50,6 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         }
     });
 
-
     var SpecialLayerManageView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
@@ -64,6 +63,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.specialLayer.html'])({data: {}}));
 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
+            this.$el.find(".add-role").on("click", $.proxy(this.onClickAddRoleButton, this));
 
             this.initSetup()
         },
@@ -79,6 +79,23 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
+        },
+
+        onClickAddRoleButton: function(){
+            require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel){
+                var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
+                var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
+                    collection: myAddEditLayerStrategyModel,
+                    onSaveCallback: function(){}.bind(this),
+                    onCancelCallback: function(){
+                        myAddEditLayerStrategyView.$el.remove();
+                        this.$el.find(".special-layer").show();
+                    }.bind(this)
+                })
+
+                this.$el.find(".special-layer").hide();
+                myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
+            }.bind(this))
         },
 
         onClickCancelButton: function(){

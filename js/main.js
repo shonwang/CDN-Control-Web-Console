@@ -158,6 +158,8 @@ requirejs.config({
 
         "setupChannelManage.model": "setupChannelManage/setupChannelManage.model",
         "setupChannelManage.view": "setupChannelManage/setupChannelManage.view",
+        "addEditLayerStrategy.model": "setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.model",
+        "addEditLayerStrategy.view": "setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.view",
     },
     urlArgs: new Date().valueOf()
 });

@@ -76,7 +76,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 var inputName = this.$el.find("#input-name");
                 var inputUserId = this.$el.find("#input-userId");
                 var cname = this.$el.find("#input-cname");
-                var dropdownType = this.$el.find("dropdown-type");
+                var dropdownType = this.$el.find("#dropdown-type");
                 var dropdownProtocol = this.$el.find("#dropdown-protocol");
                 inputName.attr('readonly',true);
                 inputUserId.attr('readonly',true);

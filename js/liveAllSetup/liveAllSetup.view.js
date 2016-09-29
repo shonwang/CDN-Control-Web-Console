@@ -1160,7 +1160,9 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     temp = el.get("nodeGroupId");
                 }
             }.bind(this))
-
+            if(nodeGroupList.length <= 0){
+                return false;
+            }
             var options = {
                 collection    : this.collection,
                 selectedModels: checkedList,

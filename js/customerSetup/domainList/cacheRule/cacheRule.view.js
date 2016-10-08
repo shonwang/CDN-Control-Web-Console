@@ -23,45 +23,81 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.matchConditionView.render(this.$el.find(".match-condition-ctn"));
             }.bind(this))
 
+            this.defaultParam = {
+                cacheTimeType: 1,
+                cacheTime: 60 * 60 * 24 * 30,
+                cacheOriginTime: 60 * 60 * 24 * 30
+            };
+
+            this.initSetup();
+        },
+
+        initSetup: function(){
+            if (this.defaultParam.cacheTimeType === 1){
+                this.$el.find("#cacheTimeRadios1").get(0).checked = true;
+            } else if (this.defaultParam.cacheTimeType === 2) {
+                this.$el.find("#cacheTimeRadios2").get(0).checked = true;
+            } else if (this.defaultParam.cacheTimeType === 3){
+                this.$el.find("#cacheTimeRadios3").get(0).checked = true;
+            }
             this.initTimeDropdown();
         },
 
         initTimeDropdown: function(){
             var  timeArray = [
-                {name: "秒", value: 1},
-                {name: "分", value: 2},
-                {name: "时", value: 3},
-                {name: "天", value: 4},
-                {name: "月", value: 5},
-                {name: "年", value: 6},
-            ],
-            rootNode = this.$el.find(".yes-cache");
+                {"value": 1, "name": "秒"},
+                {"value": 60, "name": "分"},
+                {"value": 60 * 60, "name": "时"},
+                {"value": 60 * 60 * 24, "name": "天"},
+                {"value": 60 * 60 * 24 * 30, "name": "月"},
+                {"value": 60 * 60 * 24 * 30 * 12, "name": "年"},
+            ];
+            
+            var input = this.defaultParam.cacheTime,
+                rootNode = this.$el.find(".yes-cache");
+                curEl = this.$el.find("#dropdown-yes-cache .cur-value"),
+                curInputEl = this.$el.find("#yes-cache-time");
+
             Utility.initDropMenu(rootNode, timeArray, function(value){
-
+                this.defaultParam.cacheTime = parseInt(curInputEl.val()) * parseInt(value);
             }.bind(this));
 
-            var defaultValue = _.find(timeArray, function(object){
-                return object.value === 3;
-            }.bind(this));
+            this.timeFormatWithUnit(input, curEl, curInputEl);
 
-            if (defaultValue)
-                this.$el.find("#dropdown-yes-cache .cur-value").html(defaultValue.name);
-            else
-                this.$el.find("#dropdown-yes-cache .cur-value").html(timeArray[0].name);
+            //若源站无缓存时间，则缓存
+            var inputNum = this.defaultParam.cacheOriginTime,
+                rootOtherNode = this.$el.find(".origin-cache")
+                curEl2 = this.$el.find("#dropdown-origin-cache .cur-value"),
+                curInputEl2 = this.$el.find("#origin-cache-time");
 
-            var rootOtherNode = this.$el.find(".origin-cache");
             Utility.initDropMenu(rootOtherNode, timeArray, function(value){
-
+                this.defaultParam.cacheOriginTime = parseInt(curInputEl2.val()) * parseInt(value);
             }.bind(this));
 
-            var defaultOtherValue = _.find(timeArray, function(object){
-                return object.value === 3;
-            }.bind(this));
+            this.timeFormatWithUnit(inputNum, curEl2, curInputEl2);
+        },
 
-            if (defaultOtherValue)
-                this.$el.find("#dropdown-origin-cache .cur-value").html(defaultOtherValue.name);
-            else
-                this.$el.find("#dropdown-origin-cache .cur-value").html(timeArray[0].name);
+        timeFormatWithUnit: function(input, curEl, curInputEl) {
+            var num = parseInt(input);
+            if (input >= 60 && input < 60 * 60) {
+                num = parseInt(input / 60)
+                curEl.html('分');
+            } else if (input >= 60 * 60 && input < 60 * 60 * 24) {
+                num = parseInt(input / 60 / 60);
+                curEl.html('时');
+            } else if (input >= 60 * 60 * 24 && input < 60 * 60 * 24 * 30) {
+                num = parseInt(input / 60 / 60 / 24);
+                curEl.html('天');
+            } else if (input >= 60 * 60 * 24 * 30 && input < 60 * 60 * 24 * 30 * 12) {
+                num = parseInt(input / 60 / 60 / 24 / 30);
+                curEl.html('月');
+            } else if (input >= 60 * 60 * 24 * 30 * 12){
+                num = parseInt(input / 60 / 60 / 24 / 30 / 12);
+                curEl.html('年');
+            } else {
+                curEl.html('月');
+            }
+            curInputEl.val(num)
         },
 
         onSure: function(){

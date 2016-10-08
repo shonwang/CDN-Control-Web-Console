@@ -39,15 +39,19 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
             this.collection.getOperatorList();
 
-            this.collection.on("get.node.success", $.proxy(this.onGetLocalNode, this));
-            this.collection.on("get.node.error", $.proxy(this.onGetError, this));
-            this.collection.getNodeList({
-                chname:null,
-                count:99999,
-                operator:null,
-                page:1,
-                status:null
-            })
+            if (!this.options.localNodes && !this.options.upperNodes){
+                this.collection.on("get.node.success", $.proxy(this.onGetLocalNode, this));
+                this.collection.on("get.node.error", $.proxy(this.onGetError, this));
+                this.collection.getNodeList({
+                    chname:null,
+                    count:99999,
+                    operator:null,
+                    page:1,
+                    status:null
+                })
+            } else {
+                this.onGetLocalNode(this.options.localNodes)
+            }
         },
 
         onClickCancelBtn: function(){
@@ -63,11 +67,15 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
 
         onGetLocalNode: function(res){
             this.$el.find('.local .add-node').show();
-            var nodesArray = [];
+            var nodesArray = [], data = res;
             this.selectedLocalNodeList = [];
 
-            _.each(res.rows, function(el, index, list){
+            if (res&&res.rows) data = res.rows
+
+            _.each(data, function(el, index, list){
                 _.each(this.defaultParam.local, function(defaultLocalId, inx, ls){
+                    if (el.nodeId) el.id = el.nodeId;
+                    if (el.nodeName) el.chName = el.nodeName;
                     if (defaultLocalId === el.id) {
                         el.checked = true;
                         this.selectedLocalNodeList.push({nodeId: el.id, nodeName: el.chName})
@@ -113,6 +121,8 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 nodesArray.push({name:el.chName, value: el.id, checked: el.checked})
             }.bind(this))
 
+            this.initUpperTable()
+
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.upper .add-node-ctn').get(0),
                 panelID: this.$el.find('.upper .add-node').get(0),
@@ -131,7 +141,6 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 data: nodesArray,
                 callback: function(data){}.bind(this)
             });
-            this.initUpperTable()
         },
 
         onClickLocalTypeRadio: function(event){
@@ -237,7 +246,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             }
 
             for (var i = 0; i < this.selectedLocalNodeList.length; i++){
-                if (this.selectedLocalNodeList[i].nodeId === parseInt(id)){
+                if (parseInt(this.selectedLocalNodeList[i].nodeId) === parseInt(id)){
                     this.selectedLocalNodeList.splice(i, 1);
                     this.initLocalTable();
                     return;
@@ -255,7 +264,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             }
 
             for (var i = 0; i < this.selectedUpperNodeList.length; i++){
-                if (this.selectedUpperNodeList[i].nodeId === parseInt(id)){
+                if (parseInt(this.selectedUpperNodeList[i].nodeId) === parseInt(id)){
                     this.selectedUpperNodeList.splice(i, 1);
                     this.initUpperTable();
                     return;

@@ -43,7 +43,9 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             "domainList/:query/timestamp/:query2": "timestamp",
             "domainList/:query/openNgxLog/:query2": "openNgxLog",
 
-            "setupChannelManage" : "setupChannelManage"
+            "setupChannelManage" : "setupChannelManage",
+            "setupAppManage" : "setupAppManage",
+            "setupTopoManage" : "setupTopoManage",
         },
 
         initialize: function(){
@@ -222,6 +224,14 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                   this.setupChannelManageView.remove();
                   this.setupChannelManageView = null;
                   break;
+                case 'setupAppManage':
+                  this.setupAppManageView.remove();
+                  this.setupAppManageView = null;
+                  break;
+                case 'setupTopoManage':
+                  this.setupTopoManageView.remove();
+                  this.setupTopoManageView = null;
+                  break;
                 case 'deviceManage':
                   this.deviceManageView.remove();
                   this.deviceManageView = null;
@@ -360,76 +370,48 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                 callback.apply(this, args);
         },
 
-        openNgxLog: function(query, query2){
-            this.navbarView.initLogin($.proxy(CustomerSetupController.openNgxLogCallback, this, query, query2))
+        setupTopoManage: function(){
+            this.navbarView.initLogin($.proxy(this.setupTopoManageCallback, this))
         },
 
-        timestamp: function(query, query2){
-            this.navbarView.initLogin($.proxy(CustomerSetupController.timestampCallback, this, query, query2))
+        setupTopoManageCallback: function(){
+            require(['setupTopoManage.view', 'setupTopoManage.model'], function(SetupTopoManageView, SetupTopoManageModel){
+                this.curPage = 'setupTopoManage';
+                this.navbarView.select(this.curPage);
+                if (!this.setupTopoManageModel)
+                    this.setupTopoManageModel = new SetupTopoManageModel();
+                if (!this.setupTopoManageView ){
+                    var options = {
+                        collection: this.setupTopoManageModel
+                    };
+                    this.setupTopoManageView = new SetupTopoManageView(options);
+                    this.setupTopoManageView.render($('.ksc-content'));
+                } else {
+                    this.setupTopoManageView.update();
+                }
+            }.bind(this));
         },
 
-        refererAntiLeech: function(query, query2){
-            this.navbarView.initLogin($.proxy(CustomerSetupController.refererAntiLeechCallback, this, query, query2))
+        setupAppManage: function(){
+            this.navbarView.initLogin($.proxy(this.setupAppManageCallback, this))
         },
 
-        ipBlackWhiteList: function(query, query2){
-            this.navbarView.initLogin($.proxy(CustomerSetupController.ipBlackWhiteListCallback, this, query, query2))
-        },
-
-        requestArgsModify: function(query, query2){
-            this.navbarView.initLogin($.proxy(CustomerSetupController.requestArgsModifyCallback, this, query, query2))
-        },
-
-        httpHeaderCtr: function(query, query2){
-            this.navbarView.initLogin($.proxy(CustomerSetupController.httpHeaderCtrCallback, this, query, query2))
-        },
-
-        httpHeaderOpt: function(query, query2){
-            this.navbarView.initLogin($.proxy(CustomerSetupController.httpHeaderOptCallback, this, query, query2))
-        },
-
-        clientLimitSpeed: function(query, query2){
-            this.navbarView.initLogin($.proxy(CustomerSetupController.clientLimitSpeedCallback, this, query, query2))
-        },
-
-        dragPlay: function(query, query2){
-            this.navbarView.initLogin($.proxy(CustomerSetupController.dragPlayCallback, this, query, query2))
-        },
-
-        following302: function(query, query2){
-            this.navbarView.initLogin($.proxy(CustomerSetupController.following302Callback, this, query, query2))
-        },
-
-        backOriginSetup: function(query, query2){
-            this.navbarView.initLogin($.proxy(CustomerSetupController.backOriginSetupCallback, this, query, query2))
-        },
-
-        cnameSetup: function(query, query2){
-            this.navbarView.initLogin($.proxy(CustomerSetupController.cnameSetupCallback, this, query, query2))
-        },
-
-        cacheKeySetup: function(query, query2){
-            this.navbarView.initLogin($.proxy(CustomerSetupController.cacheKeySetupCallback, this, query, query2))
-        },
-
-        delMarkCache: function(query, query2){
-            this.navbarView.initLogin($.proxy(CustomerSetupController.delMarkCacheCallback, this, query, query2))
-        },
-
-        cacheRule: function(query, query2){
-            this.navbarView.initLogin($.proxy(CustomerSetupController.cacheRuleCallback, this, query, query2))
-        },
-
-        domainSetup: function(query, query2){
-            this.navbarView.initLogin($.proxy(CustomerSetupController.domainSetupCallback, this, query, query2))
-        },
-
-        domainList: function(query){
-            this.navbarView.initLogin($.proxy(CustomerSetupController.domainListCallback, this, query))
-        },
-
-        customerSetup: function(){
-            this.navbarView.initLogin($.proxy(CustomerSetupController.customerSetupCallback, this))
+        setupAppManageCallback: function(){
+            require(['setupAppManage.view', 'setupAppManage.model'], function(SetupAppManageView, SetupAppManageModel){
+                this.curPage = 'setupAppManage';
+                this.navbarView.select(this.curPage);
+                if (!this.setupAppManageModel)
+                    this.setupAppManageModel = new SetupAppManageModel();
+                if (!this.setupAppManageView ){
+                    var options = {
+                        collection: this.setupAppManageModel
+                    };
+                    this.setupAppManageView = new SetupAppManageView(options);
+                    this.setupAppManageView.render($('.ksc-content'));
+                } else {
+                    this.setupAppManageView.update();
+                }
+            }.bind(this));
         },
 
         setupChannelManage: function(){
@@ -449,7 +431,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                     this.setupChannelManageView = new SetupChannelManageView(options);
                     this.setupChannelManageView.render($('.ksc-content'));
                 } else {
-                    this.setupChannelManageView.update(query);
+                    this.setupChannelManageView.update();
                 }
             }.bind(this));
         },
@@ -880,6 +862,78 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                     this.templateManageView.update();
                 }
             }.bind(this));
+        },
+
+        openNgxLog: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.openNgxLogCallback, this, query, query2))
+        },
+
+        timestamp: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.timestampCallback, this, query, query2))
+        },
+
+        refererAntiLeech: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.refererAntiLeechCallback, this, query, query2))
+        },
+
+        ipBlackWhiteList: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.ipBlackWhiteListCallback, this, query, query2))
+        },
+
+        requestArgsModify: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.requestArgsModifyCallback, this, query, query2))
+        },
+
+        httpHeaderCtr: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.httpHeaderCtrCallback, this, query, query2))
+        },
+
+        httpHeaderOpt: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.httpHeaderOptCallback, this, query, query2))
+        },
+
+        clientLimitSpeed: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.clientLimitSpeedCallback, this, query, query2))
+        },
+
+        dragPlay: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.dragPlayCallback, this, query, query2))
+        },
+
+        following302: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.following302Callback, this, query, query2))
+        },
+
+        backOriginSetup: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.backOriginSetupCallback, this, query, query2))
+        },
+
+        cnameSetup: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.cnameSetupCallback, this, query, query2))
+        },
+
+        cacheKeySetup: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.cacheKeySetupCallback, this, query, query2))
+        },
+
+        delMarkCache: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.delMarkCacheCallback, this, query, query2))
+        },
+
+        cacheRule: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.cacheRuleCallback, this, query, query2))
+        },
+
+        domainSetup: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.domainSetupCallback, this, query, query2))
+        },
+
+        domainList: function(query){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.domainListCallback, this, query))
+        },
+
+        customerSetup: function(){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.customerSetupCallback, this))
         }
     });
     exports.Workspace = new Workspace();

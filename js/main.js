@@ -160,6 +160,10 @@ requirejs.config({
         "setupChannelManage.view": "setupChannelManage/setupChannelManage.view",
         "addEditLayerStrategy.model": "setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.model",
         "addEditLayerStrategy.view": "setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.view",
+        "setupAppManage.model": "setupAppManage/setupAppManage.model",
+        "setupAppManage.view": "setupAppManage/setupAppManage.view",
+        "setupTopoManage.model": "setupTopoManage/setupTopoManage.model",
+        "setupTopoManage.view": "setupTopoManage/setupTopoManage.view",
     },
     urlArgs: new Date().valueOf()
 });

@@ -63,7 +63,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.specialLayer.html'])({data: {}}));
 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-            this.$el.find(".add-role").on("click", $.proxy(this.onClickAddRoleButton, this));
+            this.$el.find(".add-role").on("click", $.proxy(this.onClickAddRuleButton, this));
 
             this.initSetup()
         },
@@ -81,7 +81,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
         },
 
-        onClickAddRoleButton: function(){
+        onClickAddRuleButton: function(){
             require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel){
                 var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                 var myAddEditLayerStrategyView = new AddEditLayerStrategyView({

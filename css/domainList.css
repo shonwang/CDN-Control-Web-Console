@@ -451,7 +451,7 @@ display:inline-block;
 /* 修改提示的关闭按钮的颜色 */
 .main-tips-ctn .ks-alert .close {color:#fff;}
 
-.spinner {min-width:32px;height:32px;background:url(../images/loading_32x32_ksyun.gif) 0 0 no-repeat;padding-left:37px;line-height:32px;display:inline-block;}
+.domain-spinner {min-width:32px;height:32px;background:url(../images/loading_32x32_ksyun.gif) 0 0 no-repeat;padding-left:37px;line-height:32px;display:inline-block;}
 .ks-table td.text-center {text-align:center;}
 
 /* 日志下载 */

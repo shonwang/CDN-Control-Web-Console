@@ -156,7 +156,8 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
             else{
                 this.tbodyList = $(_.template(template['tpl/customerSetup/domainList/domainList.table.tbody.html'])({data:_data}));
                 this.$el.find(".ks-table tbody").html(this.tbodyList);
-                this.$el.find(".ks-table tbody .manage").on("click", $.proxy(this.onClickItemManage, this)); 
+                this.$el.find(".ks-table tbody .manage").on("click", $.proxy(this.onClickItemManage, this));
+                this.$el.find(".ks-table tbody .setup-bill").on("click", $.proxy(this.onClickViewSetupBillBtn, this));  
             }
 
             this.tbodyList.find("");
@@ -165,6 +166,23 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
                 this.$el.find(".pagination").html('');
                 this.initPaginator();
             }
+        },
+
+        onClickViewSetupBillBtn: function(){
+            require(['setupBill.view', 'setupBill.model'], function(SetupBillView, SetupBillModel){
+                var mySetupBillModel = new SetupBillModel();
+                var mySetupBillView = new SetupBillView({
+                    collection: mySetupBillModel,
+                    onSaveCallback: function(){}.bind(this),
+                    onCancelCallback: function(){
+                        mySetupBillView.$el.remove();
+                        this.$el.find(".main-list").show();
+                    }.bind(this)
+                })
+
+                this.$el.find(".main-list").hide();
+                mySetupBillView.render(this.$el.find(".bill-panel"));
+            }.bind(this))
         },
 
         onClickItemManage: function(event){

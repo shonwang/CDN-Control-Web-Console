@@ -72,7 +72,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
 
             this.$el = $(_.template(template['tpl/domainManage/domainManage.add&edit.html'])({data:this.args}));
             //如果点击编辑表单按钮，则将表单字段设置为不可编辑
-            if(options.isEdit){
+            if(this.isEdit){
                 var inputName = this.$el.find("#input-name");
                 var inputUserId = this.$el.find("#input-userId");
                 var cname = this.$el.find("#input-cname");
@@ -82,8 +82,33 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 inputUserId.attr('readonly',true);
                 cname.attr('readonly',true);
                 dropdownType.attr('disabled','disabled');
-
-             }
+                //触发开关按钮
+                this.$el.find("[name='my-checkbox']").bootstrapSwitch();
+                this.configurationFiletype = {
+                    origdomain:true,
+                    domain:true,
+                    lua:true
+                };
+                var self = this;
+                this.$el.find('.configurationFiletype').on('switchChange.bootstrapSwitch',function(event,state){
+                    var target = event.target;
+                   switch(target.className){
+                      case 'origdomain':
+                        self.configurationFiletype.origdomain = state;
+                        console.log(self.configurationFiletype);
+                        break;
+                      case 'domain':
+                        self.configurationFiletype.domain = state;
+                        console.log(self.configurationFiletype);
+                        break;
+                      case 'lua':
+                        self.configurationFiletype.lua = state;
+                        console.log(self.configurationFiletype);
+                        break;
+                    }
+                })
+                console.log(this.configurationFiletype);
+            }
             this.collection.off("get.cacheRuleList.success");
             this.collection.on("get.cacheRuleList.success", $.proxy(this.onGetCacheRuleListSuccess, this));
             this.collection.off("get.cacheRuleList.error");
@@ -585,12 +610,14 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 this.$el.find(".table-ctn .delete").on("click", $.proxy(this.onClickDelete, this));
             else
                 this.$el.find(".table-ctn .delete").remove();
-
             if(AUTH_OBJ.DomainManagerSend)
                 this.$el.find(".table-ctn .send").on("click", $.proxy(this.onClickSend, this));
             else
                 this.$el.find(".table-ctn .send").remove();
 
+            /*应该加上权限的判断*/
+            this.$el.find(".table-ctn .deleteConfiguration").on("click", $.proxy(this.onClickDeleteConfiguration, this));
+        
             this.table.find("tbody .description").tooltip({
                 animation  : false,
                 "placement": "top", 
@@ -706,7 +733,12 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             //请求删除接口
             this.collection.deleteDomain(id);
         },
+        onClickDeleteConfiguration:function(e){
+            var result = confirm("是否确定一键删除域名的所有配置？");
+            if(!result) return;
+            //请求一键删除域名的所有配置接口
 
+        },
         onClickSend:function(e){
             var eTarget = e.srcElement || e.target,id;
 

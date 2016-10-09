@@ -186,12 +186,27 @@
                 <a href="javascript:void(0)" class="btn btn-default btn-raised addCacheRule">添加缓存规则</a>
             </div>
         </div>
+         <% if (data.id != 0) { %>
         <div class="form-group">
             <label class="col-sm-4 control-label">选择生成的配置文件类型</label>
-            <div class="col-sm-6">
+            <div class="col-sm-6 configurationFiletype">
                 <!-- <a href="javascript:void(0)" class="btn btn-default btn-raised addCacheRule">添加缓存规则</a> -->
+                <div class="origdomain.conf conf">
+                    <span class="marginRight10 spanWidth130">origdomain.conf</span>
+                    <input type="checkbox" name="my-checkbox" data-size="small" value="origdomain.conf" class='origdomain' checked>
+                </div>
+                <div class="domain.conf conf">
+                    <span class="marginRight10 spanWidth130">domain.conf</span>
+                    <input type="checkbox" name="my-checkbox" data-size="small" value="domain.conf" class='domain' checked>
+                </div>
+                <div class="lua.conf conf">
+                    <span class="marginRight10 spanWidth130">lua.conf</span>
+                    <input type="checkbox" name="my-checkbox" data-size="small" value="lua.conf" class='lua' checked>
+                </div>
+                
             </div>
         </div>
+        <% } %>
     </form>
     <div class="table-ctn table-responsive long-dropdown-menu"></div>
 </div>

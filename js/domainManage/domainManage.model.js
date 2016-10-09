@@ -68,7 +68,6 @@ define("domainManage.model", ['require','exports', 'utility'], function(require,
             defaultParas.data = JSON.stringify(args);
 
             defaultParas.success = function(res){
-                console.log(this);
                 this.reset();
                 if (res){
                     _.each(res.rows, function(element, index, list){

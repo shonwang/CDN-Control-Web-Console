@@ -36,6 +36,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     customHostHeader : this.model.get("customHostHeader"),
                     wsUsed : this.model.get("wsUsed"),
                     ipVisitContent : this.model.get("ipVisitContent"),
+                    configRole:this.model.get('configRole'),
                     policys:[]
                 }
             }else{
@@ -83,13 +84,26 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 cname.attr('readonly',true);
                 dropdownType.attr('disabled','disabled');
                 //触发开关按钮
-                this.$el.find("[name='my-checkbox']").bootstrapSwitch();
-                this.configurationFiletype = {
-                    origdomain:true,
-                    domain:true,
-                    lua:true
-                };
+                this.$el.find("[name='my-checkbox']").bootstrapSwitch('state',false);
                 var self = this;
+                //1.生成domain,2.生成originDomain,3.生成lua.conf
+                if(this.args.configRole != null){
+                    var configRole = this.args.configRole.split(',');
+                    configRole.forEach(function(item,index){
+                        if(item == '1'){
+                           self.$el.find(".domain").bootstrapSwitch('state',true);
+                        }else if(item == '2'){
+                            self.$el.find(".origdomain").bootstrapSwitch('state',true)
+                        }else if(item == '3'){
+                            self.$el.find('.lua').bootstrapSwitch('state',true);
+                        }
+                    })
+                }
+                this.configurationFiletype = {
+                    domain:false,
+                    origdomain:false,
+                    lua:false
+                };
                 this.$el.find('.configurationFiletype').on('switchChange.bootstrapSwitch',function(event,state){
                     var target = event.target;
                    switch(target.className){
@@ -107,7 +121,6 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                         break;
                     }
                 })
-                console.log(this.configurationFiletype);
             }
             this.collection.off("get.cacheRuleList.success");
             this.collection.on("get.cacheRuleList.success", $.proxy(this.onGetCacheRuleListSuccess, this));
@@ -431,6 +444,32 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             this.args.confDomain = $.trim(this.$el.find("#input-confDomain").val());
             this.args.urlContent = $.trim(this.$el.find("#textarea-urlContent").val());
             this.args.description = $.trim(this.$el.find("#textarea-description").val());
+            //开关的值处理函数
+            var configRoleType = '';
+            for(var key in this.configurationFiletype){
+                if(key == 'domain' && this.configurationFiletype.domain){
+                     if(configRoleType != ''){
+                      configRoleType = configRoleType + ',' +1;
+                    }else{
+                        configRoleType = 1;
+                    }
+                }else if(key == 'origdomain' && this.configurationFiletype.origdomain){
+                    console.log('originDomain');
+                    if(configRoleType != ''){
+                      configRoleType = configRoleType + ',' +2;
+                    }else{
+                        configRoleType = 2;
+                    }
+                }else if(key == 'lua' && this.configurationFiletype.lua){
+                    console.log('lua.conf');
+                    if(configRoleType != ''){
+                        configRoleType = configRoleType+ ',' +3;
+                    }else{
+                        configRoleType = 3;
+                    }
+                }
+            }
+            this.args.configRole = configRoleType;
 
             //收集缓存规则
             var trLen = this.$el.find(".table-ctn tbody").children().length;

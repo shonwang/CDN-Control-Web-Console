@@ -187,7 +187,29 @@ define("domainManage.model", ['require','exports', 'utility'], function(require,
 
             $.ajax(defaultParas);
         },
+        deleteConfiguration:function(args){
+            var url = BASE_URL + "/seed/conf/file/cache/delete?domains="+args;
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
+            };
 
+            defaultParas.success = function(res){
+                this.trigger("delete.configuration.success");
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("delete.configuration.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
         sendDomain: function(args){
             var url = BASE_URL + "/rs/origin/sendOrigin?originId="+args;
             var defaultParas = {

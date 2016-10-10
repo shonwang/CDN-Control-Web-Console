@@ -33,6 +33,10 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             this.collection.on("get.nodeGroupTree.error", $.proxy(this.onGetError, this));
 
             this.initDropMenu();
+
+            this.TypeList = this.$el.find('dropdown-menu li');
+
+
         },
 
         arrIndexOf: function(arr,val){
@@ -256,12 +260,15 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                 console.log(this.args.bisTypeId);
                 this.collection.getNodeGroupTree({bisTypeId:this.args.bisTypeId});
             }.bind(this));
+
             if(this.isEdit){
                 $.each(this.businessTypeList,function(k,v){
                     if(v.value == this.model.get("bisTypeId")){
                         this.$el.find("#dropdown-businessType .cur-value").html(v.name);
+    
                     }
                 }.bind(this));
+
             }else{
                 this.$el.find("#dropdown-businessType .cur-value").html(this.businessTypeList[0].name);
             }
@@ -379,6 +386,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         events: {},
 
         initialize: function(options) {
+            
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.html'])());
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
@@ -481,6 +489,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                 this.getPageArgs.bisTypeId = parseInt($.trim(value));
             }.bind(this));
             this.getPageArgs.bisTypeId = parseInt(businessTypeList[0].value);
+            console.log(this.getPageArgs);
             this.collection.getDomainPageList(this.getPageArgs); //请求table列表
 
             if(this.isEdit){

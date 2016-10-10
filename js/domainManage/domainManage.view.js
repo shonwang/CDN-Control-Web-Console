@@ -781,7 +781,6 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             var eTarget = e.srcElement || e.target,id;
 
             if(eTarget.tagName == "SPAN") {
-                console.log($(eTarget).parent().attr("domain"));
                 domains = $(eTarget).parent().attr("domain");
             }else {
                 domains = $(eTarget).attr("domain");

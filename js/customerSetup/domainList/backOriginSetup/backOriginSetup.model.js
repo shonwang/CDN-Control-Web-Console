@@ -9,40 +9,33 @@ define("backOriginSetup.model", ['require','exports', 'utility'], function(requi
 
         initialize: function(){},
 
-        queryChannel: function(args){
-            var url = BASE_URL + "/rs/channel/query",
-            successCallback = function(res){
-                this.reset();
-                if (res){
-                    _.each(res.rows, function(element, index, list){
-                        this.push(new Model(element));
-                    }.bind(this))
-                    this.total = res.total;
-                    this.trigger("get.channel.success");
+        setBackSourceConfig: function(args){
+            var url = BASE_URL + "/channelManager/domain/setBackSourceConfig";
+            var url = "http://192.168.158.91:8090/channelManager/domain/setBackSourceConfig";
+            Utility.postAjax(url, args, function(res){
+                if(res == 1){
+                    this.trigger("set.backSourceConfig.success");
                 } else {
-                    this.trigger("get.channel.error"); 
-                } 
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("get.channel.error", response); 
-            }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
+                    this.trigger("set.backSourceConfig.error");
+                }
+            }.bind(this),function(res){
+                this.trigger("set.backSourceConfig.error", res);
+            }.bind(this));
         },
 
-        getChannelDispgroup: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/get",
-            successCallback = function(res){
-                if (res){
-                    this.trigger("channel.dispgroup.success", res);
+        setHostHeaderConfig: function(args){
+            var url = BASE_URL + "/channelManager/domain/setHostHeaderConfig";
+            var url = "http://192.168.158.91:8090/channelManager/domain/setHostHeaderConfig";
+            Utility.getAjax(url, args, function(res){
+                if(res == 1){
+                    this.trigger("set.hostConfig.success");
                 } else {
-                    this.trigger("channel.dispgroup.error", res); 
+                    this.trigger("set.hostConfig.error");
                 }
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("channel.dispgroup.error", response); 
-            }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
-        }
+            }.bind(this),function(res){
+                this.trigger("set.hostConfig.error", res);
+            }.bind(this));
+        },
     });
 
     return BackOriginSetupCollection;

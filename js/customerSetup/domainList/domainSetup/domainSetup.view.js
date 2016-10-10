@@ -132,8 +132,9 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
             this.$el.hide();
         },
 
-        update: function(query){
+        update: function(query, query2){
             this.options.query = query;
+            this.options.query2 = query2;
             this.collection.off();
             this.collection.reset();
             this.$el.remove();

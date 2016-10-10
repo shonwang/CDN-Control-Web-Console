@@ -6,30 +6,61 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
         initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
+            this.isEdit = options.isEdit;
+            this.model = options.model;
             this.$el = $(_.template(template['tpl/customerSetup/domainList/cacheRule/cacheRule.add.html'])());
-
-            require(['matchCondition.view'], function(MatchConditionView){
-                var  matchConditionArray = [
-                    {name: "全部文件", value: 1},
-                    {name: "文件类型", value: 2},
-                    {name: "指定URI", value: 3},
-                    {name: "指定目录", value: 4},
-                    {name: "正则匹配", value: 5},
-                ], matchConditionOption = {
-                    defaultCondition : 4,
-                    matchConditionArray: matchConditionArray
-                }
-                this.matchConditionView = new MatchConditionView(matchConditionOption);
-                this.matchConditionView.render(this.$el.find(".match-condition-ctn"));
-            }.bind(this))
 
             this.defaultParam = {
                 cacheTimeType: 1,
                 cacheTime: 60 * 60 * 24 * 30,
-                cacheOriginTime: 60 * 60 * 24 * 30
-            };
+                cacheOriginTime: 60 * 60 * 24 * 30,
+                type: 9,
+                policy: ""
+            };            
+            // {
+            //     "id":146,
+            //     "kscdnOriginId":114,
+            //     "createTime":1443509402000,
+            //     "updateTime":1443509402000,
+            //     "type":2,
+            //     "policy":"http://test02.dongxz.ksyun.8686c.com/test.html",
+            //     "expireTime":31104000,
+            //     "userId":73400332,
+            //     "sort":3000,
+            //     "hasOriginPolicy":null,
+            //     "ignoreNocache":0
+            // }
+            if (this.isEdit){
+                this.defaultParam.cacheTime = this.model.get("expireTime");
+                this.defaultParam.cacheOriginTime = this.model.get("expireTime");
+                if (this.model.get("expireTime") === 0 && this.model.get("hasOriginPolicy") === 0)
+                    this.defaultParam.cacheTimeType = 1;
+                if (this.model.get("expireTime") !== 0 && this.model.get("hasOriginPolicy") === 0)
+                    this.defaultParam.cacheTimeType = 2;
+                if (this.model.get("expireTime") !== 0 && this.model.get("hasOriginPolicy") === 1)
+                    this.defaultParam.cacheTimeType = 3;
+                this.defaultParam.type = this.model.get("type");
+                this.defaultParam.policy = this.model.get("policy");
+            }
 
-            this.initSetup();
+            require(['matchCondition.view'], function(MatchConditionView){
+                //0文件后缀，1目录，2具体url,3正则预留,4url包含指定参数9全局默认缓存配置项
+                var  matchConditionArray = [
+                    {name: "全部文件", value: 9},
+                    {name: "文件类型", value: 0},
+                    {name: "指定URI", value: 2},
+                    {name: "指定目录", value: 1},
+                    {name: "正则匹配", value: 3},
+                ], matchConditionOption = {
+                    defaultCondition : this.defaultParam.type,
+                    defaultPolicy: this.defaultParam.policy,
+                    matchConditionArray: matchConditionArray
+                }
+                this.matchConditionView = new MatchConditionView(matchConditionOption);
+                this.matchConditionView.render(this.$el.find(".match-condition-ctn"));
+
+                this.initSetup();
+            }.bind(this))
         },
 
         initSetup: function(){
@@ -101,8 +132,8 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         onSure: function(){
-            var notCacheTime = this.$el.find(".yes-cache select").get(0).value;
-            console.log(notCacheTime)
+            var matchConditionParam = this.matchConditionView.getMatchConditionParam();
+            console.log(matchConditionParam)
         },
 
         render: function(target) {
@@ -122,16 +153,18 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
                 domainInfo = JSON.parse(options.query2),
                 userInfo = {
                     clientName: clientInfo.clientName,
-                    domain: domainInfo.domain
+                    domain: domainInfo.domain,
+                    uid: clientInfo.uid
                 }
+            this.domainInfo = domainInfo;
             this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
                 data: userInfo,
                 notShowBtn: false
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
-            this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
-            this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.policy.success", $.proxy(this.onChannelListSuccess, this));
+            this.collection.on("get.policy.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".add").on("click", $.proxy(this.onClickAddRole, this))
 
@@ -157,22 +190,30 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         onChannelListSuccess: function(){
             this.initTable();
-            if (!this.isInitPaginator) this.initPaginator();
         },
 
         onClickQueryButton: function(){
-            this.isInitPaginator = false;
-            this.queryArgs.page = 1;
-            this.queryArgs.domain = this.$el.find("#input-domain").val();
-            this.queryArgs.clientName = this.$el.find("#input-client").val();
-            if (this.queryArgs.domain == "") this.queryArgs.domain = null;
-            if (this.queryArgs.clientName == "") this.queryArgs.clientName = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.$el.find(".pagination").html("");
-            this.collection.queryChannel(this.queryArgs);
+
+            this.collection.getPolicyList({originId:4570});
+            //this.collection.getPolicyList({originId: this.domainInfo.id});
         },
 
         initTable: function(){
+            var allFileArray = this.collection.filter(function(obj){
+                return obj.get('type') === 9;
+            }.bind(this));
+
+            var specifiedUrlArray = this.collection.filter(function(obj){
+                return obj.get('type') === 2;
+            }.bind(this));
+
+            var otherArray = this.collection.filter(function(obj){
+                return obj.get('type') !== 2 && obj.get('type') !== 9;
+            }.bind(this));
+
+            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
+
             this.table = $(_.template(template['tpl/customerSetup/domainList/cacheRule/cacheRule.table.html'])({
                 data: this.collection.models
             }));
@@ -181,9 +222,37 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.table.find("tbody .manage").on("click", $.proxy(this.onClickItemNodeName, this));
+            this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
             this.table.find("tbody .up").on("click", $.proxy(this.onClickItemUp, this));
             this.table.find("tbody .down").on("click", $.proxy(this.onClickItemDown, this));
+            this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+        },
+
+        onClickItemEdit: function(event){
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+
+            var model = this.collection.get(id);
+            if (this.addRolePopup) $("#" + this.addRolePopup.modalId).remove();
+
+            var myAddEditRoleView = new AddEditRoleView({
+                collection: this.collection,
+                model: model,
+                isEdit: true
+            });
+
+            var options = {
+                title:"缓存规则",
+                body : myAddEditRoleView,
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback: function(){
+                    myAddEditRoleView.onSure();
+                }.bind(this),
+                onHiddenCallback: function(){}.bind(this)
+            }
+            this.addRolePopup = new Modal(options);
+
         },
 
         onClickAddRole: function(event){
@@ -196,10 +265,26 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
                 body : myAddEditRoleView,
                 backdrop : 'static',
                 type     : 2,
-                onOkCallback: function(){}.bind(this),
+                onOKCallback: function(){
+                    myAddEditRoleView.onSure();
+                }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
             this.addRolePopup = new Modal(options);
+        },
+
+        onClickItemDelete: function(event){
+            var result = confirm("你确定要删除吗？");
+            if (!result) return;
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+            for (var i = 0; i < this.collection.models.length; i++){
+                if (this.collection.models[i].get("id") === parseInt(id)){
+                    this.collection.models.splice(i, 1);
+                    this.collection.trigger("get.policy.success")
+                    return;
+                }
+            }
         },
 
         onClickItemUp: function(event){
@@ -211,13 +296,28 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
                 id = $(eventTarget).attr("id");
             }
             var model = this.collection.get(id), modelIndex;
-            this.collection.each(function(el, index, list){
+
+            var allFileArray = this.collection.filter(function(obj){
+                return obj.get('type') === 9;
+            }.bind(this));
+
+            var specifiedUrlArray = this.collection.filter(function(obj){
+                return obj.get('type') === 2;
+            }.bind(this));
+
+            var otherArray = this.collection.filter(function(obj){
+                return obj.get('type') !== 2 && obj.get('type') !== 9;
+            }.bind(this));
+
+            _.each(otherArray, function(el, index, list){
                 if (el.get("id") === parseInt(id)) modelIndex = index; 
             }.bind(this))
 
-            this.collection.models = Utility.adjustElement(this.collection.models, modelIndex, true)
+            otherArray = Utility.adjustElement(otherArray, modelIndex, true)
 
-            this.collection.trigger("get.channel.success")
+            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
+
+            this.collection.trigger("get.policy.success")
         },
 
         onClickItemDown: function(event){
@@ -229,58 +329,47 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
                 id = $(eventTarget).attr("id");
             }
             var model = this.collection.get(id), modelIndex;
-            this.collection.each(function(el, index, list){
+
+            var allFileArray = this.collection.filter(function(obj){
+                return obj.get('type') === 9;
+            }.bind(this));
+
+            var specifiedUrlArray = this.collection.filter(function(obj){
+                return obj.get('type') === 2;
+            }.bind(this));
+
+            var otherArray = this.collection.filter(function(obj){
+                return obj.get('type') !== 2 && obj.get('type') !== 9;
+            }.bind(this));
+
+            _.each(otherArray, function(el, index, list){
                 if (el.get("id") === parseInt(id)) modelIndex = index; 
             }.bind(this))
 
-            this.collection.models = Utility.adjustElement(this.collection.models, modelIndex, false)
+            otherArray = Utility.adjustElement(otherArray, modelIndex, false)
 
-            this.collection.trigger("get.channel.success")
-        },
+            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
-        onClickItemNodeName: function(event){
-            var eventTarget = event.srcElement || event.target,
-                id = $(eventTarget).attr("id");
-
-            var model = this.collection.get(id), args = JSON.stringify({
-                domain: model.get("domain")
-            })
-            //var clientName = JSON.parse(this.options.query)
-            window.location.hash = '#/domainList/' + clientName + "/domainSetup/" + args;
-        },
-
-        initPaginator: function(){
-            this.$el.find(".total-items span").html(this.collection.total)
-            if (this.collection.total <= this.queryArgs.count) return;
-            var total = Math.ceil(this.collection.total/this.queryArgs.count);
-
-            this.$el.find(".pagination").jqPaginator({
-                totalPages: total,
-                visiblePages: 10,
-                currentPage: 1,
-                onPageChange: function (num, type) {
-                    if (type !== "init"){
-                        this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                        var args = _.extend(this.queryArgs);
-                        args.page = num;
-                        args.count = this.queryArgs.count;
-                        this.collection.queryChannel(args);
-                    }
-                }.bind(this)
-            });
-            this.isInitPaginator = true;
+            this.collection.trigger("get.policy.success")
         },
 
         hide: function(){
             this.$el.hide();
         },
 
-        update: function(){
-            this.$el.show();
+        update: function(query, query2){
+            this.options.query = query;
+            this.options.query2 = query2;
+            this.collection.off();
+            this.collection.reset();
+            this.$el.remove();
+            this.initialize(this.options);
+            this.render(this.target);
         },
 
-        render: function(target) {
-            this.$el.appendTo(target)
+        render: function(target){
+            this.$el.appendTo(target);
+            this.target = target;
         }
     });
 

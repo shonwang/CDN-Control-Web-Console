@@ -67,7 +67,7 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
             var result = this.checkDomainName();
             if (!result) return
             var postParam = {
-                cnameId: this.domainInfo.id,
+                originId: this.domainInfo.id,
                 cname: this.$el.find("#cname-set").val().trim(),
             };
             this.collection.modifyDomainCname(postParam);
@@ -84,8 +84,9 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.hide();
         },
 
-        update: function(query){
+        update: function(query, query2){
             this.options.query = query;
+            this.options.query2 = query2;
             this.collection.off();
             this.collection.reset();
             this.$el.remove();

@@ -628,7 +628,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 }.bind(this))
                 for (var i = 0; i < failedSkipCheckedList.length; i++) {
                     var currentNode = _.find(failedSkipCheckedList[i].get("listFormated"), function(obj){
-                        return obj.get("node.id") === parseInt(this.nodeId) && obj.get("dispConfIpInfo.currNum") !== 0;
+                        return obj.get("node.id") === parseInt(this.nodeId) && obj.get("dispConfIpInfo.currNum") !== 0 && obj.get("type") === 1;
                     }.bind(this))
                     if (currentNode) {
                         var pauseNode = {

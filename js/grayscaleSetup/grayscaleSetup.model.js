@@ -66,7 +66,7 @@ define("grayscaleSetup.model", ['require','exports', 'utility'], function(requir
                 "status"  : null//节点状态
             };
             defaultParas.data = JSON.stringify(defaultParas.data);
-
+        
             defaultParas.beforeSend = function(xhr){
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
             }
@@ -183,7 +183,36 @@ define("grayscaleSetup.model", ['require','exports', 'utility'], function(requir
 
             $.ajax(defaultParas);
         },
+        //获取配置文件内容接口
+        getConfContent:function(args){
+            var url = BASE_URL + "/seed/conf/file/generalconfcontent";
+            var defaultParas = {
+                type:'POST',
+                url:url,
+                async:true,
+                contentType: "application/json",
+                processData: false,
+                timeout:30000
+            };
 
+            defaultParas.data = {
+                 domain       : args.domain,
+                 nodeGroupName: args.nodeGroupName,
+                 confFileIds  : args.confFileIds
+            };
+            defaultParas.data = JSON.stringify(defaultParas.data);
+            defaultParas.success = function(res){
+                this.trigger("get.confContent.success",res);
+            }.bind(this);
+
+            defaultParas.error = function(response,msg){
+                if(response && response.responseText){
+                    response = JSON.parse(response.responseText);
+                }
+                this.trigger("get.confContent.error",response);
+            }.bind(this);
+            $.ajax(defaultParas);
+        },
         deleteGrayDomain: function(args){
             var url = BASE_URL + "/seed/gray/domain/delete";
             var defaultParas = {

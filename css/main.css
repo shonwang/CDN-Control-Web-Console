@@ -1078,9 +1078,11 @@ td .table {
 	position:relative;
 }
 
+
 .grayscaleSetup-tips {width:90%;margin:0px auto 10px;}
 
 .setup-channel-manage-edit .panel-collapse .panel-body{
     height: 245px;
     overflow: auto;
 }
+

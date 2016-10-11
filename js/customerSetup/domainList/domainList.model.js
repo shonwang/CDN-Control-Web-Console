@@ -41,8 +41,7 @@ define("domainList.model", ['require','exports','utility'], function(require, ex
         initialize: function(){},
 
         queryDomain: function(args){
-            var url = BASE_URL + "domainlist/domains/get";
-            var url = "http://192.168.158.91:8090/channelManager/domain/getDomainBasicList";
+            var url = BASE_URL + "/channelManager/domain/getDomainBasicList";
 
             Utility.postAjax(url, args, function(res){
                 this.reset();
@@ -61,8 +60,7 @@ define("domainList.model", ['require','exports','utility'], function(require, ex
         },
   
         submitDomain: function(args){
-            var url = BASE_URL + "domainbase/add";
-            var url = "http://192.168.158.91:8090/channelManager/domain/addDomainBasic";
+            var url = BASE_URL + "/channelManager/domain/addDomainBasic";
             Utility.postAjax(url, args, function(res){
                 if(res == 1){
                     this.trigger("submit.domain.success");

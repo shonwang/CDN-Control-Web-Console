@@ -10,8 +10,7 @@ define("domainSetup.model", ['require','exports', 'utility'], function(require, 
         initialize: function(){},
 
         modifyDomainBasic: function(args){
-            var url = BASE_URL + "domainbase/add";
-            var url = "http://192.168.158.91:8090/channelManager/domain/modifyDomainBasic";
+            var url = BASE_URL + "/channelManager/domain/modifyDomainBasic";
             Utility.postAjax(url, args, function(res){
                 if(res == 1){
                     this.trigger("modify.domain.success");

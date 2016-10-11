@@ -5,13 +5,14 @@ define("cacheRule.model", ['require','exports', 'utility'], function(require, ex
             var type = this.get('type');
             if (type === 0) this.set("typeName", "文件类型");
             if (type === 1) this.set("typeName", "指定目录");
-            if (type === 2) this.set("typeName", "具体url");
+            if (type === 2) this.set("typeName", "指定URL");
             if (type === 3) this.set("typeName", "正则匹配");
             if (type === 4) this.set("typeName", "url包含指定参数");
             if (type === 9) this.set("typeName", "全部文件");
 
             var hasOriginPolicy = this.get('hasOriginPolicy'),
                 expireTime = this.get('expireTime'), summary = '';
+
             if (expireTime === 0 && hasOriginPolicy === 0) summary = "缓存时间：不缓存";
             if (expireTime !== 0 && hasOriginPolicy === 0) summary = "缓存时间：" + Utility.timeFormat(expireTime);
             if (expireTime !== 0 && hasOriginPolicy === 1) summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + Utility.timeFormat(expireTime);
@@ -25,29 +26,22 @@ define("cacheRule.model", ['require','exports', 'utility'], function(require, ex
 
         initialize: function(){},
 
-        queryChannel: function(args){
-            var url = BASE_URL + "/rs/channel/query",
+        setPolicy: function(args){
+            var url = BASE_URL + "/channelManager/cache/setPolicy",
             successCallback = function(res){
-                this.reset();
-                if (res){
-                    _.each(res.rows, function(element, index, list){
-                        this.push(new Model(element));
-                    }.bind(this))
-                    this.total = res.total;
-                    this.trigger("get.channel.success");
-                } else {
-                    this.trigger("get.channel.error"); 
-                } 
+                if (res)
+                    this.trigger("set.policy.success", res)
+                else
+                    this.trigger("set.policy.error", res)
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("get.channel.error", response); 
+                this.trigger("set.policy.error", response)
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
         getPolicyList: function(args){
-            var url = BASE_URL + "/channelManager/cache/getPolicyList";
-            var url = "http://192.168.158.91:8090/channelManager/cache/getPolicyList";
+            var url = BASE_URL + "/channelManager/cache/getPolicyList",
             successCallback = function(res){
                 this.reset();
                 if (res){

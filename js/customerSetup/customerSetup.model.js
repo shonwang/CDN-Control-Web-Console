@@ -17,8 +17,7 @@ define("customerSetup.model", ['require','exports', 'utility'], function(require
         initialize: function(){},
 
         queryChannel: function(args){
-            var url = BASE_URL + "/rs/channel/query",
-                url = "http://192.168.158.91:8090/channelManager/user/getUserList",
+            var url = BASE_URL + "/channelManager/user/getUserList",
             successCallback = function(res){
                 this.reset();
                 if (res){

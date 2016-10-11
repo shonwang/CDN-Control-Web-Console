@@ -5,8 +5,12 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
 
         initialize: function(options) {
             this.options = options;
+            this.collection = options.collection;
             this.$el = $(_.template(template['tpl/customerSetup/domainList/matchCondition.html'])({}));
             this.initDropdown();
+
+            this.collection.on("get.fileType.success", $.proxy(this.onGetFileType, this))
+            this.collection.on("get.fileType.error", $.proxy(this.onGetError, this))
         },
 
         initDropdown: function(){
@@ -27,13 +31,25 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
             this.hideAllOptions();
         },
 
+        onGetError: function(error){
+            if (error&&error.message)
+                alert(error.message)
+            else
+                alert("网络阻塞，请刷新重试！")
+        },
+
+        onGetFileType: function(data){
+            this.allFileType = data;
+            this.initFileType()
+        },
+
         initMatchCondition: function(value){
             this.hideAllOptions();
             switch(parseInt(value)){
                 case 9:
                     break;
                 case 0:
-                    this.initFileType();
+                    this.collection.getFileType();
                     break;
                 case 2:
                     this.initUri();
@@ -76,7 +92,8 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
                 case 9:
                     break;
                 case 0:
-                    //this.initFileType();
+                    policy = this.getFileTypePolicy();
+                    if (!policy) return;
                     break;
                 case 2:
                     policy = urlValue;
@@ -169,17 +186,36 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
                 }
             };
 
-            var zNodes =[
-                { id:1, pId:0, name:"随意勾选 1", open:true, checked:true},
-                { id:11, pId:1, name:"随意勾选 1-1", checked:true},
-                { id:12, pId:1, name:"随意勾选 1-2"},
-                { id:2, pId:0, name:"随意勾选 2", open:true},
-                { id:21, pId:2, name:"随意勾选 2-1"},
-                { id:22, pId:2, name:"随意勾选 2-2"},
-                { id:23, pId:2, name:"随意勾选 2-3"}
-            ];
+            // var zNodes =[
+            //     { id:1, pId:0, name:"随意勾选 1", open:true, checked:true},
+            //     { id:11, pId:1, name:"随意勾选 1-1", checked:true},
+            //     { id:12, pId:1, name:"随意勾选 1-2"},
+            //     { id:2, pId:0, name:"随意勾选 2", open:true},
+            //     { id:21, pId:2, name:"随意勾选 2-1"},
+            //     { id:22, pId:2, name:"随意勾选 2-2"},
+            //     { id:23, pId:2, name:"随意勾选 2-3"}
+            // ];
+            var policyArray = [], allFileTypeArray = []; this.customFileType = [];
+            if (this.options.defaultPolicy) policyArray = this.options.defaultPolicy.split(";");
 
-            this.treeObj = $.fn.zTree.init(this.$el.find("#tree"), setting, zNodes);
+            _.each(this.allFileType, function(el, index, ls){
+                if (el.pId === null) el.open = true;
+                allFileTypeArray.push(el.name)
+            }.bind(this))
+
+            _.each(policyArray, function(el, index, ls){
+                if (_.indexOf(allFileTypeArray, el) !== -1) {
+                    _.each(this.allFileType, function(el1, index1, ls1){
+                        if (el1.name === el) el1.checked = true;
+                    }.bind(this))
+                }
+                if (_.indexOf(allFileTypeArray, el) === -1) 
+                    this.customFileType.push(el)
+            }.bind(this))
+
+            this.$el.find("#textarea-file-type").val(this.customFileType.join(";"))
+
+            this.treeObj = $.fn.zTree.init(this.$el.find("#tree"), setting, this.allFileType);
             this.getTreeSelected(); 
             this.$el.find(".checkAll").on("click", $.proxy(this.onClickCheckAll, this));
             this.$el.find(".cancelAll").on("click", $.proxy(this.onClickCancelCheckAll, this));
@@ -195,14 +231,32 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
             var matchDeviceFilter = function(node){
                 return node.checked === true && node.pId !== null;
             };
-            this.matchDeviceNodes = this.treeObj.getNodesByFilter(matchDeviceFilter);
+            this.matchFileTypeNodes = this.treeObj.getNodesByFilter(matchDeviceFilter);
         },
 
         getTreeChecked: function(e, treeId, treeNode){
-            // _.each(this.nodeTreeLists[this.nodeGroupId], function(nodeGroupObj, k, l){
-            //     var node = this.treeObj.getNodeByParam("id", nodeGroupObj.id, null);
-            //     nodeGroupObj.checked = node.checked
-            // }.bind(this));
+            _.each(this.allFileType, function(el, k, l){
+                var node = this.treeObj.getNodeByParam("id", el.id, null);
+                el.checked = node.checked
+            }.bind(this));
+        },
+
+        getFileTypePolicy: function(){
+            var customFileType = this.$el.find("#textarea-file-type").val();
+            if (this.matchFileTypeNodes.length === 0 &&
+                customFileType === ""){
+                alert("文件类型不能为空");
+                return false
+            }
+            var fileTypeArray = [];
+            _.each(this.matchFileTypeNodes, function(el, index, ls){
+                fileTypeArray.push(el.name)
+            }.bind(this))
+
+            var fileTypePolicy = fileTypeArray.join(";");
+            if (customFileType) fileTypePolicy = fileTypePolicy + ";" + customFileType;
+
+            return fileTypePolicy
         },
 
         onClickCheckAll: function(event){

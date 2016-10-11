@@ -17,33 +17,23 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
                 type: 9,
                 policy: ""
             };            
-            // {
-            //     "id":146,
-            //     "kscdnOriginId":114,
-            //     "createTime":1443509402000,
-            //     "updateTime":1443509402000,
-            //     "type":2,
-            //     "policy":"http://test02.dongxz.ksyun.8686c.com/test.html",
-            //     "expireTime":31104000,
-            //     "userId":73400332,
-            //     "sort":3000,
-            //     "hasOriginPolicy":null,
-            //     "ignoreNocache":0
-            // }
+
             if (this.isEdit){
-                this.defaultParam.cacheTime = this.model.get("expireTime");
-                this.defaultParam.cacheOriginTime = this.model.get("expireTime");
                 if (this.model.get("expireTime") === 0 && this.model.get("hasOriginPolicy") === 0)
                     this.defaultParam.cacheTimeType = 1;
-                if (this.model.get("expireTime") !== 0 && this.model.get("hasOriginPolicy") === 0)
+                if (this.model.get("expireTime") !== 0 && this.model.get("hasOriginPolicy") === 0){
                     this.defaultParam.cacheTimeType = 2;
-                if (this.model.get("expireTime") !== 0 && this.model.get("hasOriginPolicy") === 1)
+                    this.defaultParam.cacheTime = this.model.get("expireTime");
+                }
+                if (this.model.get("expireTime") !== 0 && this.model.get("hasOriginPolicy") === 1){
                     this.defaultParam.cacheTimeType = 3;
+                    this.defaultParam.cacheOriginTime = this.model.get("expireTime");
+                }
                 this.defaultParam.type = this.model.get("type");
                 this.defaultParam.policy = this.model.get("policy");
             }
 
-            require(['matchCondition.view'], function(MatchConditionView){
+            require(['matchCondition.view', 'matchCondition.model'], function(MatchConditionView, MatchConditionModel){
                 //0文件后缀，1目录，2具体url,3正则预留,4url包含指定参数9全局默认缓存配置项
                 var  matchConditionArray = [
                     {name: "全部文件", value: 9},
@@ -52,6 +42,7 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
                     {name: "指定目录", value: 1},
                     {name: "正则匹配", value: 3},
                 ], matchConditionOption = {
+                    collection: new MatchConditionModel(),
                     defaultCondition : this.defaultParam.type,
                     defaultPolicy: this.defaultParam.policy,
                     matchConditionArray: matchConditionArray
@@ -93,6 +84,14 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.defaultParam.cacheTime = parseInt(curInputEl.val()) * parseInt(value);
             }.bind(this));
 
+            curInputEl.on("click", function(){curInputEl.focus()}.bind(this))
+            curInputEl.on("blur", function(){
+                var unit = _.find(timeArray, function(obj){
+                    return obj.name === curEl.html();
+                }.bind(this));
+                this.defaultParam.cacheTime = unit.value * parseInt(curInputEl.val());
+            }.bind(this))
+
             this.timeFormatWithUnit(input, curEl, curInputEl);
 
             //若源站无缓存时间，则缓存
@@ -105,35 +104,70 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.defaultParam.cacheOriginTime = parseInt(curInputEl2.val()) * parseInt(value);
             }.bind(this));
 
+            curInputEl2.on("click", function(){curInputEl2.focus()}.bind(this))
+            curInputEl2.on("blur", function(){
+                var unit = _.find(timeArray, function(obj){
+                    return obj.name === curEl2.html();
+                }.bind(this));
+                this.defaultParam.cacheOriginTime = unit.value * parseInt(curInputEl2.val());
+            }.bind(this))
+
             this.timeFormatWithUnit(inputNum, curEl2, curInputEl2);
         },
 
         timeFormatWithUnit: function(input, curEl, curInputEl) {
             var num = parseInt(input);
             if (input >= 60 && input < 60 * 60) {
-                num = parseInt(input / 60)
+                num = Math.ceil(input / 60)
                 curEl.html('分');
             } else if (input >= 60 * 60 && input < 60 * 60 * 24) {
-                num = parseInt(input / 60 / 60);
+                num = Math.ceil(input / 60 / 60);
                 curEl.html('时');
             } else if (input >= 60 * 60 * 24 && input < 60 * 60 * 24 * 30) {
-                num = parseInt(input / 60 / 60 / 24);
+                num = Math.ceil(input / 60 / 60 / 24);
                 curEl.html('天');
             } else if (input >= 60 * 60 * 24 * 30 && input < 60 * 60 * 24 * 30 * 12) {
-                num = parseInt(input / 60 / 60 / 24 / 30);
+                num = Math.ceil(input / 60 / 60 / 24 / 30);
                 curEl.html('月');
             } else if (input >= 60 * 60 * 24 * 30 * 12){
-                num = parseInt(input / 60 / 60 / 24 / 30 / 12);
+                num = Math.ceil(input / 60 / 60 / 24 / 30 / 12);
                 curEl.html('年');
             } else {
-                curEl.html('月');
+                curEl.html('秒');
             }
             curInputEl.val(num)
         },
 
         onSure: function(){
-            var matchConditionParam = this.matchConditionView.getMatchConditionParam();
-            console.log(matchConditionParam)
+            var matchConditionParam = this.matchConditionView.getMatchConditionParam(),
+                hasOriginPolicy, expireTime, summary,
+                cacheTimeType = parseInt(this.$el.find("[name='cacheTimeRadios']:checked").val());
+
+            if (!matchConditionParam) return false;
+
+            if (cacheTimeType === 1) {
+                expireTime = 0,
+                hasOriginPolicy = 0
+                summary = "缓存时间：不缓存";
+            } else if (cacheTimeType === 2){
+                hasOriginPolicy = 0
+                expireTime = this.defaultParam.cacheTime,
+                summary = "缓存时间：" + Utility.timeFormat(expireTime);
+            } else if(cacheTimeType === 3){
+                expireTime = this.defaultParam.cacheOriginTime,
+                hasOriginPolicy = 1
+                summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + Utility.timeFormat(expireTime);
+            }
+
+            var postParam = {
+                "id": this.isEdit ? this.model.get("id") : new Date().valueOf(),
+                "type": matchConditionParam.type,
+                "policy": matchConditionParam.policy,
+                "expireTime": expireTime,
+                "hasOriginPolicy": hasOriginPolicy,
+                "summary": summary
+            }
+            return postParam
         },
 
         render: function(target) {
@@ -157,6 +191,7 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
                     uid: clientInfo.uid
                 }
             this.domainInfo = domainInfo;
+            this.clientInfo = clientInfo;
             this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
                 data: userInfo,
                 notShowBtn: false
@@ -167,18 +202,53 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.collection.on("get.policy.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".add").on("click", $.proxy(this.onClickAddRole, this))
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this))
 
-            this.queryArgs = {
-                "domain"           : null,
-                "accelerateDomain" : null,
-                "businessType"     : null,
-                "clientName"       : null,
-                "status"           : null,
-                "page"             : 1,
-                "count"            : 10
-             }
+            this.onClickQueryButton();
 
-             this.onClickQueryButton();
+            this.collection.on("set.policy.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.policy.error", $.proxy(this.onGetError, this));
+        },
+
+        launchSendPopup: function(){
+            require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
+                var mySaveThenSendView = new SaveThenSendView({
+                    collection: this.collection, 
+                });
+                var options = {
+                    title: "发布",
+                    body : mySaveThenSendView,
+                    backdrop : 'static',
+                    type     : 2,
+                    onOKCallback:  function(){
+                        this.sendPopup.$el.modal("hide");
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();
+                    }.bind(this)
+                }
+                this.sendPopup = new Modal(options);
+            }.bind(this))
+        },
+
+        onClickSaveBtn: function(){
+            var list = [];
+            this.collection.each(function(obj){
+                list.push({
+                    "type": obj.get('type'),
+                    "policy": obj.get('policy'),
+                    "expireTime": obj.get('expireTime'),
+                    "hasOriginPolicy": obj.get('hasOriginPolicy'),
+                })
+            }.bind(this))
+
+            var postParam = {
+                "originId": this.domainInfo.id,
+                "userId": this.clientInfo.uid,
+                "list": list
+            }
+
+            this.collection.setPolicy(postParam)
         },
 
         onGetError: function(error){
@@ -194,9 +264,7 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         onClickQueryButton: function(){
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-
-            this.collection.getPolicyList({originId:4570});
-            //this.collection.getPolicyList({originId: this.domainInfo.id});
+            this.collection.getPolicyList({originId: this.domainInfo.id});
         },
 
         initTable: function(){
@@ -232,7 +300,9 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
 
-            var model = this.collection.get(id);
+            var model = this.collection.find(function(obj){
+                return obj.get("id") === parseInt(id)
+            }.bind(this));
             if (this.addRolePopup) $("#" + this.addRolePopup.modalId).remove();
 
             var myAddEditRoleView = new AddEditRoleView({
@@ -247,12 +317,17 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
                 backdrop : 'static',
                 type     : 2,
                 onOKCallback: function(){
-                    myAddEditRoleView.onSure();
+                    var postParam = myAddEditRoleView.onSure();
+                    if (!postParam) return;
+                    _.each(postParam, function(value, key, ls){
+                        this.collection.get(id).set(key, value);
+                    }.bind(this))
+                    this.collection.trigger("get.policy.success");
+                    this.addRolePopup.$el.modal('hide');
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
             this.addRolePopup = new Modal(options);
-
         },
 
         onClickAddRole: function(event){
@@ -266,7 +341,28 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
                 backdrop : 'static',
                 type     : 2,
                 onOKCallback: function(){
-                    myAddEditRoleView.onSure();
+                    var postParam = myAddEditRoleView.onSure();
+                    if (!postParam) return;
+                    var model = new this.collection.model(postParam);
+                    var allFileArray = this.collection.filter(function(obj){
+                        return obj.get('type') === 9;
+                    }.bind(this));
+
+                    var specifiedUrlArray = this.collection.filter(function(obj){
+                        return obj.get('type') === 2;
+                    }.bind(this));
+
+                    var otherArray = this.collection.filter(function(obj){
+                        return obj.get('type') !== 2 && obj.get('type') !== 9;
+                    }.bind(this));
+
+                    if (postParam.type === 9) allFileArray.push(model)
+                    if (postParam.type === 2) specifiedUrlArray.push(model)
+                    if (postParam.type !== 9 && postParam.type !== 2) otherArray.push(model)
+  
+                    this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
+                    this.collection.trigger("get.policy.success");
+                    this.addRolePopup.$el.modal('hide');
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }

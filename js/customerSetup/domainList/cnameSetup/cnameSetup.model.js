@@ -10,8 +10,7 @@ define("cnameSetup.model", ['require','exports', 'utility'], function(require, e
         initialize: function(){},
 
         modifyDomainCname: function(args){
-            var url = BASE_URL + "domainbase/add";
-            var url = "http://192.168.158.91:8090/channelManager/domain/modifyDomainCname";
+            var url = BASE_URL + "/channelManager/domain/modifyDomainCname";
             Utility.postAjax(url, args, function(res){
                 if(res == 1){
                     this.trigger("modify.cname.success");

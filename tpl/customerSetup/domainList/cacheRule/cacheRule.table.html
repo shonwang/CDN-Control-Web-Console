@@ -10,7 +10,7 @@
     </thead>
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
-            <tr data-id="<%=data[i].get('id')%>" <% if (data[i].get('type') === 2 || data[i].get('type') === 9) { %>class="success" <% } %>>
+            <tr data-id="<%=data[i].get('id')%>" <% if (data[i].get('type') === 2 || data[i].get('type') === 9) { %>class="info" <% } %>>
               <td><%=data[i].get("typeName")%></td>
               <td><%=data[i].get("policy")%></td>
               <td><%=data[i].get("summary")%></td>

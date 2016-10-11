@@ -8,7 +8,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             this.model = options.model;
             this.isEdit = options.isEdit;
             this.businessTypeList = options.businessTypeList;
-
+            //console.log(this.businessTypeList);
             if(this.isEdit){
                 this.args = {
                     id : this.model.get("id"),
@@ -280,6 +280,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         initDropMenu: function(){
+            console.log('进入下载菜单函数');
             Utility.initDropMenu(this.$el.find(".dropdown-businessType"), this.businessTypeList, function(value){
                 this.args.bisTypeId = parseInt($.trim(value));
                 console.log(this.args.bisTypeId);
@@ -511,7 +512,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             }.bind(this));
             this.getPageArgs.bisTypeId = parseInt(businessTypeList[0].value);
             this.collection.getDomainPageList(this.getPageArgs); //请求table列表
-
+         
             if(this.isEdit){
                 $.each(businessTypeList,function(k,v){
                     if(v.value == this.model.get("businessType")){
@@ -525,6 +526,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         onClickQueryButton: function(){
+            console.log(this.getPageArgs);
             this.getPageArgs.domain = this.$el.find("#input-domain").val();
             if (this.getPageArgs.domain == ""){
                 this.getPageArgs.domain = null;
@@ -559,8 +561,9 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         onClickCreate: function(){
-            this.getPageArgs.bisTypeId = 10;
-            this.collection.getNodeGroupTree({bisTypeId:this.getPageArgs.bisTypeId});
+            //this.getPageArgs.bisTypeId = 10;
+            console.log(this.getPageArgs.bisTypeId);
+            this.collection.getNodeGroupTree({bisTypeId:10});
 
             if (this.addPopup) $("#" + this.addPopup.modalId).remove();
 

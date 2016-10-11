@@ -50,14 +50,14 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
 
         checkDomainName:function(){
             //检查域名
-            var domainName = this.$el.find("#cname-set").val();
+            var domainName = this.$el.find("#cname-set").val().trim();
             if(domainName == ""){
-                alert("域名不能为空");
+                alert("不能为空");
                 return false;
             }
             var result = Utility.isDomain(domainName);
             if(!result){
-                alert("域名填写错误");
+                alert("填写错误");
                 return false;
             }
             return true;

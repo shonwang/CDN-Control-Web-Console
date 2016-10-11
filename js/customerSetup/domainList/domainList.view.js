@@ -20,16 +20,16 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
 
             this.collection.on("query.domain.success",$.proxy(this.queryDomainSuccess,this));
             this.collection.on("query.domain.error",$.proxy(this.queryDomainError,this));
+
             this.$el.find("#cdn-search-btn").bind('click',$.proxy(this.onClickSearchBtn,this));
             this.$el.find(".add-domain").bind('click',$.proxy(this.onClickAddDomain,this));
+
             this.showLoading();
             this.args = {
-                PageSize:5,//每页N条数据
-                PageNumber:1,
-                DomainName:'',
-                DomainStatus:'',
-                CdnType:'',
-                FuzzyMatch:'on'//域名过滤是否使用模糊匹配，取值为on：开启，off：关闭，默认为on                
+                pageSize: 10,//每页N条数据
+                currentPage: 1,
+                userId:'',
+                domain:''         
             };
             this.toQueryDomain();
             this.setDropDownMenu();
@@ -57,104 +57,37 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
             this.$el.find(".main-list").show();
         },
 
-        onAddedDomain: function(){},
+        onAddedDomain: function(){
+            this.onCancelAddDomain();
+            this.onClickSearchBtn();
+        },
 
         onClickSearchBtn:function(){
             var value = this.$el.find("#cdn-search-text").val().trim();
-            this.args.DomainName = value || '';
+            this.args.domain = value || '';
             this.isInitPaginator = false;
-            this.args.PageNumber = 1;
+            this.args.currentPage = 1;
             this.toQueryDomain();
         },
 
         toQueryDomain:function(){
             var args = this.args;
             this.showLoading();
-            //this.collection.queryDomain(args);
-            this.queryDomainSuccess();
+            this.collection.queryDomain(args);
         },
 
         showLoading:function(){
             this.$el.find(".pagination").html("");
-            this.$el.find(".ks-table tbody").html('<tr><td  colspan="6" class="text-center"><div class="spinner">正在加载...</div></td></tr>');
+            this.$el.find(".ks-table tbody").html('<tr><td  colspan="6" class="text-center"><div class="domain-spinner">正在加载...</div></td></tr>');
         },    
 
         queryDomainSuccess:function(data){
-            data = {
-                "data": {
-                    "PageNumber": 1.0,
-                    "PageSize": 5.0,
-                    "TotalCount": 11.0,
-                    "Domains": [
-                        {
-                            "Description": "",
-                            "DomainId": "2D09RBX",
-                            "DomainName": "www.nsw88.com",
-                            "CdnType": "download",
-                            "CdnSubType": "live",
-                            "DomainStatus": "online",
-                            "Cname": "www.nsw88.com.download.ks-cdn.com",
-                            "CreatedTime": "2016-09-23T10:34+0800",
-                            "IcpRegistration": "粤ICP备09123656号-9",
-                            "ModifiedTime": new Date().format("yyyy/MM/dd hh:mm")
-                        }, {
-                            "Description": "",
-                            "DomainId": "2D09RC0",
-                            "DomainName": "www.bjjfsd.com",
-                            "CdnType": "download",
-                            "CdnSubType": "live",
-                            "DomainStatus": "online",
-                            "Cname": "www.bjjfsd.com.download.ks-cdn.com",
-                            "CreatedTime": "2016-09-23T10:33+0800",
-                            "IcpRegistration": "京ICP备12041088号-1",
-                            "ModifiedTime": new Date().format("yyyy/MM/dd hh:mm")
-                        }
-                    ]
-                }
-            };
+            this.total = this.collection.total || 0;        
 
-            this.total = data.data && data.data.TotalCount || 0;
-            var _data = data.data && data.data.Domains || [];
-            _.each(_data, function(el, index, list){
-                var cdnType   = el["CdnType"];
-                if(cdnType == 'download'){
-                    el["CdnTypeName"]="下载加速";
-                }
-                else if(cdnType == 'live'){
-                    el["CdnTypeName"]="直播加速";
-                }
-                //状态
-                var domainStatus = el["DomainStatus"];
-                if(domainStatus == "online"){
-                    el["DomainStatusName"]='<span class="text-primary">正常运行</span>';
-                }
-                else if(domainStatus == "offline"){
-                    el["DomainStatusName"]='<span class="text-danger">已停止</span>';
-                }
-                else if(domainStatus == "configuring"){
-                    el["DomainStatusName"]='<span class="text-warning">配置中</span>';
-                }
-                else if(domainStatus == "configure_failed"){
-                    el["DomainStatusName"]='<span class="text-danger">配置失败</span>';
-                }
-                else if(domainStatus == "icp_checking"){
-                    el["DomainStatusName"]='<span class="text-warning">审核中</span>';
-                }
-                else if(domainStatus == "icp_check_failed"){
-                    el["DomainStatusName"]='<span class="text-danger">审核失败</span>';
-                }
-                if (el.ModifiedTime){
-                    //el.ModifiedTime = el.ModifiedTime.formatGMT("yyyy/MM/dd hh:mm");
-                }
-                el.id = el.DomainId;
-                this.collection.push(new this.collection.model(el))
-            }.bind(this))            
-
-            if(_data.length == 0){
+            if (this.collection.models.length == 0) {
                 this.setNoData("未查到符合条件的数据，请重新查询");
-            }
-            else{
-                this.tbodyList = $(_.template(template['tpl/customerSetup/domainList/domainList.table.tbody.html'])({data:_data}));
+            } else {
+                this.tbodyList = $(_.template(template['tpl/customerSetup/domainList/domainList.table.tbody.html'])({data:this.collection.models}));
                 this.$el.find(".ks-table tbody").html(this.tbodyList);
                 this.$el.find(".ks-table tbody .manage").on("click", $.proxy(this.onClickItemManage, this));
                 this.$el.find(".ks-table tbody .setup-bill").on("click", $.proxy(this.onClickViewSetupBillBtn, this));  
@@ -191,9 +124,10 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
 
             var model = this.collection.get(id), args = JSON.stringify({
                 clientName: this.userInfo.clientName,
-                uid: 123456
+                uid: this.userInfo.uid
             }), args2 = JSON.stringify({
-                domain: model.get("DomainName")
+                id: model.get("id"),
+                domain: model.get("domain")
             })
 
             window.location.hash = '#/domainList/' + args + "/domainSetup/" + args2
@@ -268,16 +202,16 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
 
         initPaginator: function(){
             var totalCount =this.total;
-            if (totalCount < this.args.PageSize){ return};
-            var total = Math.ceil(totalCount/this.args.PageSize);
+            if (totalCount < this.args.pageSize){ return};
+            var total = Math.ceil(totalCount/this.args.pageSize);
 
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
-                visiblePages: 5,
+                visiblePages: 10,
                 currentPage: 1,
                 onPageChange: function (num, type) {
                     if (type !== "init"){
-                        this.args.PageNumber = num;
+                        this.args.currentPage = num;
                         this.toQueryDomain();
                     }
                 }.bind(this)

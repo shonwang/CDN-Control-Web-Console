@@ -14,6 +14,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                     domain: domainInfo.domain,
                     uid: clientInfo.uid
                 }
+            this.domainInfo = domainInfo;
             this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
                 data: this.userInfo,
                 notShowBtn: true
@@ -35,12 +36,15 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 mobilePrimary: "",
                 mobileBackup: "",
                 originStrategy: 1,
-                ipNum: 0
+                ipNum: 1
             }
 
             this.initOriginSetup();
             this.$el.find(".use-advance .togglebutton input").on("click", $.proxy(this.onClickIsUseAdvanceBtn, this));
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
+
+            this.collection.on("set.backSourceConfig.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.backSourceConfig.error", $.proxy(this.onGetError, this));
 
             this.initModifyHost();
         },
@@ -50,27 +54,27 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 this.$el.find(".use-advance .togglebutton input").get(0).checked = false;
                 this.$el.find(".advanced").hide();
                 this.$el.find(".base").show();
-                this.$el.find(".base #textarea-origin-type").html(this.defaultParam.originBaseDomain);
+                this.$el.find(".base #textarea-origin-type").val(this.defaultParam.originBaseDomain);
             } else if (this.defaultParam.isUseAdvance === 2) {
                 this.$el.find(".use-advance .togglebutton input").get(0).checked = true;
                 this.$el.find(".advanced").show();
                 this.$el.find(".base").hide();
-                this.$el.find(".default #primary").html(this.defaultParam.defaultPrimary);
-                this.$el.find(".default #secondary").html(this.defaultParam.defaultBackup);
-                this.$el.find(".unicom #primary").html(this.defaultParam.unicomPrimary);
-                this.$el.find(".unicom #secondary").html(this.defaultParam.unicomBackup);
-                this.$el.find(".telecom #primary").html(this.defaultParam.telecomPrimary);
-                this.$el.find(".telecom #secondary").html(this.defaultParam.telecomBackup);
-                this.$el.find(".mobile #primary").html(this.defaultParam.mobilePrimary);
-                this.$el.find(".mobile #secondary").html(this.defaultParam.mobileBackup);
+                this.$el.find(".default #primary").val(this.defaultParam.defaultPrimary);
+                this.$el.find(".default #secondary").val(this.defaultParam.defaultBackup);
+                this.$el.find(".unicom #primary").val(this.defaultParam.unicomPrimary);
+                this.$el.find(".unicom #secondary").val(this.defaultParam.unicomBackup);
+                this.$el.find(".telecom #primary").val(this.defaultParam.telecomPrimary);
+                this.$el.find(".telecom #secondary").val(this.defaultParam.telecomBackup);
+                this.$el.find(".mobile #primary").val(this.defaultParam.mobilePrimary);
+                this.$el.find(".mobile #secondary").val(this.defaultParam.mobileBackup);
                 if (this.defaultParam.originStrategy === 1){
                     this.$el.find(".poll .togglebutton input").get(0).checked = true;
                     this.$el.find(".quality .togglebutton input").get(0).checked = false;
                 } else if (this.defaultParam.originStrategy === 2){
                     this.$el.find(".poll .togglebutton input").get(0).checked = false;
                     this.$el.find(".quality .togglebutton input").get(0).checked = true;
-                    this.$el.find("#ip-num").html(this.defaultParam.ipNum);
                 }
+                this.$el.find("#ip-num").val(this.defaultParam.ipNum);
             }
             this.initOriginTypeDropdown();
             this.$el.find(".base #textarea-origin-type").on("blur", $.proxy(this.onBlurTextarea, this))
@@ -80,8 +84,8 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
 
         initOriginTypeDropdown: function(){
             var  baseArray = [
-                {name: "域名回源", value: 1},
-                {name: "IP回源", value: 2},
+                {name: "域名回源", value: 2},
+                {name: "IP回源", value: 1},
                 {name: "KS3回源", value: 3}
             ],
             rootNode = this.$el.find(".base .origin-type");
@@ -99,8 +103,8 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 this.$el.find(".base #dropdown-origin-type .cur-value").html(baseArray[0].name);
 
             var advancedArray = [
-                {name: "域名回源", value: 1},
-                {name: "IP回源", value: 2}
+                {name: "域名回源", value: 2},
+                {name: "IP回源", value: 1}
             ];
 
             var rootOtherNode = this.$el.find(".advanced .origin-type");
@@ -145,6 +149,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 this.defaultParam.isUseAdvance = 2;
                 this.$el.find(".advanced").show();
                 this.$el.find(".base").hide();
+                this.$el.find("#ip-num").val(this.defaultParam.ipNum);
             } else {
                 this.defaultParam.isUseAdvance = 1;
                 this.$el.find(".advanced").hide();
@@ -169,19 +174,67 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                     return;
                 }
                 var ipNum = this.$el.find("#ip-num").val();
-                if (this.defaultParam.originStrategy === 2 && parseInt(ipNum) > 10){
-                    alert("IP数量上限为10个")
+                if (this.defaultParam.originStrategy === 2 && parseInt(ipNum) > 10 && parseInt(ipNum) < 1){
+                    alert("IP数量取值1-10")
                     return;
                 }
             }
-            alert("very good!")
+
+            var postParam = {
+                "originId": this.domainInfo.id,
+                "domain" : this.domainInfo.domain,
+                "backsourceFlag": this.defaultParam.isUseAdvance === 1 ? 0 : 1, //配置高级回源策略的开启或关闭,0:关闭 1:开启
+                "originType": this.defaultParam.isUseAdvance === 1 ? this.defaultParam.originBaseType : this.defaultParam.originAdvanceType,
+                "originAddress": this.$el.find(".base #textarea-origin-type").val(),
+                "backsourcePolicy": this.defaultParam.originStrategy,
+                "backsourceBestcount": this.defaultParam.ipNum,
+                "advanceConfigList":[{
+                    "originLine": 1, //1:default默认源； 2:un联通源; 3:ct电信源; 4:cm移动源
+                    "originAddress": this.$el.find(".default #primary").val(),
+                    "addressBackup": this.$el.find(".default #secondary").val()
+                },{
+                    "originLine": 2,
+                    "originAddress": this.$el.find(".unicom #primary").val(),
+                    "addressBackup": this.$el.find(".unicom #secondary").val() 
+                },{
+                    "originLine": 3,
+                    "originAddress": this.$el.find(".telecom #primary").val(),
+                    "addressBackup": this.$el.find(".telecom #secondary").val() 
+                },{
+                    "originLine": 4,
+                    "originAddress": this.$el.find(".mobile #primary").val(),
+                    "addressBackup": this.$el.find(".mobile #secondary").val() 
+                }]
+            }
+            this.collection.setBackSourceConfig(postParam)
+        },
+
+        launchSendPopup: function(){
+            require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
+                var mySaveThenSendView = new SaveThenSendView({
+                    collection: this.collection, 
+                });
+                var options = {
+                    title: "发布",
+                    body : mySaveThenSendView,
+                    backdrop : 'static',
+                    type     : 2,
+                    onOKCallback:  function(){
+                        this.sendPopup.$el.modal("hide");
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();
+                    }.bind(this)
+                }
+                this.sendPopup = new Modal(options);
+            }.bind(this))
         },
 
         checkBaseOrigin: function(value, type){
             var originAddress = value || this.$el.find(".base #textarea-origin-type").val();
             var originType = type || this.defaultParam.originBaseType;
             var domainName = this.userInfo.domain;
-            if(originType == 2){
+            if(originType == 1){
                 //验证IP
                 if(!originAddress){
                     //不能为空
@@ -201,7 +254,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                         return false;
                     }
                 }
-            } else if(originType == 1){
+            } else if(originType == 2){
                 //验证域名
                 if(!originAddress){
                     //不能为空
@@ -254,10 +307,30 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
         initModifyHost: function(){
             this.hideModifyHostOptions();
             this.isModifyHost = false;
+            this.defaultParamModifyHost = {
+                domainType: 3,
+                customHostHeader: ""
+            }
             this.initModifyHostSetup();
             this.initModifyHostDropdown();
 
             this.$el.find(".modify-host .togglebutton input").on("click", $.proxy(this.onClickIsModifyHostBtn, this));
+            this.$el.find(".host-save").on("click", $.proxy(this.onClickHostSaveBtn, this));
+
+            this.collection.on("set.hostConfig.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.hostConfig.error", $.proxy(this.onGetError, this));
+        },
+
+        onClickHostSaveBtn: function(){
+            if (this.defaultParamModifyHost.domainType !== 3) return;
+            var value = this.$el.find("#textarea-host-domain").val();
+            var result = this.checkBaseOrigin(value, 2)
+            if (!result) return;
+            var postParam = {
+                "originId": this.domainInfo.id,
+                "customHostHeader": value
+            };
+            this.collection.setHostHeaderConfig(postParam)
         },
 
         initModifyHostSetup: function(){
@@ -266,6 +339,12 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             } else {
                 this.$el.find(".origin-domain").hide();
             }
+            if (this.defaultParamModifyHost.domainType !== 3)
+                this.$el.find("#textarea-host-domain").attr("readonly", "true")
+            else
+                this.$el.find("#textarea-host-domain").removeAttr("readonly")
+
+            this.$el.find("#textarea-host-domain").val(this.defaultParamModifyHost.customHostHeader)
         },
 
         hideModifyHostOptions: function(){
@@ -280,11 +359,12 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             ],
             rootNode = this.$el.find(".origin-domain");
             Utility.initDropMenu(rootNode, domainTypeArray, function(value){
-
+                this.defaultParamModifyHost.domainType = parseInt(value);
+                this.initModifyHostSetup();
             }.bind(this));
 
             var defaultValue = _.find(domainTypeArray, function(object){
-                return object.value === 3;
+                return object.value === this.defaultParamModifyHost.domainType;
             }.bind(this));
 
             if (defaultValue)
@@ -316,8 +396,9 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             this.$el.hide();
         },
 
-        update: function(query){
+        update: function(query, query2){
             this.options.query = query;
+            this.options.query2 = query2;
             this.collection.off();
             this.collection.reset();
             this.$el.remove();

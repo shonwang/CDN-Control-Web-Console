@@ -64,19 +64,19 @@ define("utility", ['require','exports'], function(require, exports) {
         timeFormat: function(input) {
             var input = input || 0, num = parseInt(input);
             if (input >= 60 && input < 60 * 60) {
-                num = parseInt(input / 60)
+                num = Math.ceil(input / 60)
                 return num + '分';
             } else if (input >= 60 * 60 && input < 60 * 60 * 24) {
-                num = parseInt(input / 60 / 60);
+                num = Math.ceil(input / 60 / 60);
                 return num + '时';
             } else if (input >= 60 * 60 * 24 && input < 60 * 60 * 24 * 30) {
-                num = parseInt(input / 60 / 60 / 24);
+                num = Math.ceil(input / 60 / 60 / 24);
                 return num + '天';
             } else if (input >= 60 * 60 * 24 * 30 && input < 60 * 60 * 24 * 30 * 12) {
-                num = parseInt(input / 60 / 60 / 24 / 30);
+                num = Math.ceil(input / 60 / 60 / 24 / 30);
                 return num + '月';
             } else if (input >= 60 * 60 * 24 * 30 * 12){
-                num = parseInt(input / 60 / 60 / 24 / 30 / 12);
+                num = Math.ceil(input / 60 / 60 / 24 / 30 / 12);
                 return num + '年';
             } else {
                 return num + '秒';

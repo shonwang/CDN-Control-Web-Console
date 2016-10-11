@@ -14,6 +14,7 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
                     domain: domainInfo.domain,
                     uid: clientInfo.uid
                 }
+            this.domainInfo = domainInfo;
             this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
                 data: userInfo,
                 notShowBtn: true
@@ -22,6 +23,29 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
 
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveButton, this))
 
+            this.collection.on("modify.cname.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("modify.cname.error", $.proxy(this.onGetError, this));
+        },
+
+        launchSendPopup: function(){
+            require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
+                var mySaveThenSendView = new SaveThenSendView({
+                    collection: this.collection, 
+                });
+                var options = {
+                    title: "发布",
+                    body : mySaveThenSendView,
+                    backdrop : 'static',
+                    type     : 2,
+                    onOKCallback:  function(){
+                        this.sendPopup.$el.modal("hide");
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();
+                    }.bind(this)
+                }
+                this.sendPopup = new Modal(options);
+            }.bind(this))
         },
 
         checkDomainName:function(){
@@ -42,6 +66,11 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
         onClickSaveButton: function(){
             var result = this.checkDomainName();
             if (!result) return
+            var postParam = {
+                originId: this.domainInfo.id,
+                cname: this.$el.find("#cname-set").val().trim(),
+            };
+            this.collection.modifyDomainCname(postParam);
         },
 
         onGetError: function(error){
@@ -55,8 +84,9 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.hide();
         },
 
-        update: function(query){
+        update: function(query, query2){
             this.options.query = query;
+            this.options.query2 = query2;
             this.collection.off();
             this.collection.reset();
             this.$el.remove();

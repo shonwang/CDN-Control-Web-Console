@@ -531,7 +531,7 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
 
             };
            this.setDropdownMenu();
-            //#/customsetup
+
             this.$el.find("#add-domain-btnSubmit").on("click",$.proxy(this.onSubmit,this));
             this.$el.find("#add-domain-btnCancle").on("click",$.proxy(this.onCancel,this));
 
@@ -551,6 +551,23 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
             //Utility.getRegion(this.setRegionData.bind(this));
 
             this.$el.find("#text-domainName").on("focus",$.proxy(this.onDomainNameFocus,this));
+
+            this.collection.off("submit.domain.success");
+            this.collection.off("submit.domain.error");
+            this.collection.on("submit.domain.success", $.proxy(this.onSubmitSuccess, this))
+            this.collection.on("submit.domain.error", $.proxy(this.onGetError, this))
+        },
+
+        onSubmitSuccess: function(){
+            alert("操作成功！")
+            this.options.okCallback && this.options.okCallback();
+        },
+
+        onGetError: function(error){
+            if (error&&error.message)
+                alert(error.message)
+            else
+                alert("网络阻塞，请刷新重试！")
         },
 
         onDomainNameFocus:function(){
@@ -565,8 +582,30 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
             var args = this.args;
             result.Regions = args.Regions;
             result.CdnType = args.CdnType;
-            this.collection.submitDomain(result);
-            //提交
+            var protocols = {
+                "HTTP": 0,
+                "HTTPS": 4,
+                "HLS": 2,
+                "HTTP+FLV": 1,
+                "RTMP": 3
+            }, originTypes = {
+                "ipaddr": 1,
+                "domain": 2,
+                "KS3": 3,
+                "ksvideo": 3
+            };
+            var postParam = {
+                  "domain": result.DomainName,
+                  "userId": this.options.userInfo.uid,
+                  "type": result.CdnType === "download" ? 1 : 2,
+                  "protocol": protocols[result.CdnProtocol],
+                  "backSourceProtocol": protocols[result.OriginProtocol],
+                  "region":result.Regions,
+                  "originType": originTypes[result.OriginType],
+                  "originAddress": result.Origin,
+                  "originPort": result.OriginPort
+            }
+            this.collection.submitDomain(postParam);
         },
 
         onCancel:function(){

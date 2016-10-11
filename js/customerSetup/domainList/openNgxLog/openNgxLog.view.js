@@ -11,19 +11,73 @@ define("openNgxLog.view", ['require','exports', 'template', 'modal.view', 'utili
                 domainInfo = JSON.parse(options.query2),
                 userInfo = {
                     clientName: clientInfo.clientName,
-                    domain: domainInfo.domain
+                    domain: domainInfo.domain,
+                    uid: clientInfo.uid
                 }
+            this.domainInfo = domainInfo;
             this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
                 data: userInfo,
                 notShowBtn: true
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
-            //this.$el.find(".setup-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.defaultParam = {
+                chargingOpen: 0 //0:关闭 1:开启
+            }
 
-            // this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
-            // this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+            this.initSetup();
 
+            this.$el.find(".charging-open .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
+
+            this.collection.on("set.chargingOpen.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.chargingOpen.error", $.proxy(this.onGetError, this));
+        },
+
+        initSetup: function(){
+            if (this.defaultParam.chargingOpen === 0)
+                this.$el.find(".charging-open .togglebutton input").get(0).checked = false;
+            else
+                this.$el.find(".charging-open .togglebutton input").get(0).checked = true;
+        },
+
+        launchSendPopup: function(){
+            require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
+                var mySaveThenSendView = new SaveThenSendView({
+                    collection: this.collection, 
+                });
+                var options = {
+                    title: "发布",
+                    body : mySaveThenSendView,
+                    backdrop : 'static',
+                    type     : 2,
+                    onOKCallback:  function(){
+                        this.sendPopup.$el.modal("hide");
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();
+                    }.bind(this)
+                }
+                this.sendPopup = new Modal(options);
+            }.bind(this))
+        },
+
+        onClickSaveBtn: function(){
+            var postParam =  {
+                "originId": this.domainInfo.id,
+                "chargingOpen": this.defaultParam.chargingOpen
+            }
+            this.collection.setChargingOpen(postParam)
+        },
+
+        onClickToggle: function(){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            if (eventTarget.checked){
+                this.defaultParam.chargingOpen = 1;
+            } else {
+                this.defaultParam.chargingOpen = 0;
+            }
         },
 
         onGetError: function(error){
@@ -37,13 +91,20 @@ define("openNgxLog.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.hide();
         },
 
-        update: function(){
-            this.$el.show();
+        update: function(query, query2){
+            this.options.query = query;
+            this.options.query2 = query2;
+            this.collection.off();
+            this.collection.reset();
+            this.$el.remove();
+            this.initialize(this.options);
+            this.render(this.target);
         },
 
-        render: function(target) {
-            this.$el.appendTo(target)
-        }
+        render: function(target){
+            this.$el.appendTo(target);
+            this.target = target;
+        }  
     });
 
     return OpenNgxLogView;

@@ -10,13 +10,15 @@
     </thead>
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
-            <tr data-id="<%=data[i].get('id')%>">
-              <td><%=data[i].attributes["cname"]%></td>
-              <td><%=data[i].attributes["domain"]%></td>
-              <td><%=data[i].attributes["cdnFactoryName"]%></td>
+            <tr data-id="<%=data[i].get('id')%>" <% if (data[i].get('type') === 2 || data[i].get('type') === 9) { %>class="info" <% } %>>
+              <td><%=data[i].get("typeName")%></td>
+              <td><%=data[i].get("policy")%></td>
+              <td><%=data[i].get("summary")%></td>
               <td>
+                  <% if (data[i].get('type') !== 2 && data[i].get('type') !== 9) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="up"><span class="glyphicon glyphicon-arrow-up"></span></a>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="down"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                  <% } %>
               </td>
               <td>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit">修改</a>

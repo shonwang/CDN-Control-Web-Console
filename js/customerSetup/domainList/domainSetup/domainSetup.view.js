@@ -14,6 +14,7 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
                     domain: domainInfo.domain,
                     uid: clientInfo.uid
                 }
+            this.domainInfo = domainInfo;
             this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
                 data: userInfo,
                 notShowBtn: true
@@ -21,6 +22,9 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
             this.optHeader.appendTo(this.$el.find(".opt-ctn"));
 
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveButton, this))
+
+            this.collection.on("modify.domain.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("modify.domain.error", $.proxy(this.onGetError, this));
 
             var regions = {
                 hasData: true,
@@ -95,7 +99,12 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
             if(!this.checkRegion()){
                 return false;
             }
-            this.launchSendPopup();
+            var postParam =  {
+                "originId": this.domainInfo.id,
+                "originPort": this.$el.find("#server-port").val(),
+                "region": this.getRegion().join(",")
+            }
+            this.collection.modifyDomainBasic(postParam);
         },
 
         launchSendPopup: function(){
@@ -123,8 +132,9 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
             this.$el.hide();
         },
 
-        update: function(query){
+        update: function(query, query2){
             this.options.query = query;
+            this.options.query2 = query2;
             this.collection.off();
             this.collection.reset();
             this.$el.remove();

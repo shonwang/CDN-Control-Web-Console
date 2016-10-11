@@ -175,7 +175,6 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
         }
     });
 
-
     var CacheRuleView = Backbone.View.extend({
         events: {},
 

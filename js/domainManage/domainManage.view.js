@@ -586,6 +586,8 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             this.collection.on("get.domainList.error", $.proxy(this.onGetError,this));
             this.collection.on("delete.domain.success", $.proxy(this.onDeleteDomainSuccess, this));
             this.collection.on("delete.domain.error", $.proxy(this.onGetError,this));
+            this.collection.on("delete.configuration.success", $.proxy(this.onDeleteConfigurationSuccess, this));
+            this.collection.on("delete.configuration.err", $.proxy(this.onDeleteConfigurationError, this));
             this.collection.on("send.domain.success", $.proxy(this.onSendDomainSuccess, this));
             this.collection.on("send.domain.error", $.proxy(this.onGetError,this));
             this.collection.on("add.domain.success", $.proxy(this.onAddDomainSuccess, this));
@@ -675,7 +677,10 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             alert("域名删除成功");
             this.onClickQueryButton();
         },
-
+        onDeleteConfigurationSuccess:function(res){
+            alert("一键删除域名的所有配置成功");
+            this.onClickQueryButton();
+        },
         onSendDomainSuccess:function(res){
             alert("域名下发成功");
             this.onClickQueryButton();
@@ -773,9 +778,17 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             this.collection.deleteDomain(id);
         },
         onClickDeleteConfiguration:function(e){
+            var eTarget = e.srcElement || e.target,id;
+
+            if(eTarget.tagName == "SPAN") {
+                domains = $(eTarget).parent().attr("domain");
+            }else {
+                domains = $(eTarget).attr("domain");
+            }
             var result = confirm("是否确定一键删除域名的所有配置？");
             if(!result) return;
             //请求一键删除域名的所有配置接口
+            this.collection.deleteConfiguration(domains);
 
         },
         onClickSend:function(e){

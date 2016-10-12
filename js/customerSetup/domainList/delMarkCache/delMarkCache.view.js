@@ -85,6 +85,7 @@ define("delMarkCache.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.appendTo(target);
         }
     });
+    
     var DelMarkCacheView = Backbone.View.extend({
         events: {},
 

@@ -29,16 +29,19 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
             var startTimeStr = startHour + ":" + startMinutes + ":" + startSecond,
                 endTimeStr = endHour + ":" + endMinutes + ":" + endSecond;
 
-            var startTime = new Date("2016/01/01 " + startTimeStr).format("hhmmss"),
-                endTime   = new Date("2016/01/01 " + endTimeStr).format("hhmmss")
+            var nowDate = new Date().format("yyyy/MM/dd");
+
+            var startTime = new Date(nowDate + " " + startTimeStr).format("hhmmss"),
+                endTime   = new Date(nowDate + " " + endTimeStr).format("hhmmss")
             if (parseInt(endTime) <= parseInt(startTime)) {
                 alert("结束时间不能小于等于开始时间！")
                 return false;
             }
+
             var limitTimeObj = {
                 id: new Date().valueOf(),
-                start: new Date("2016/01/01 " + startTimeStr).format("hh:mm:ss"),
-                end: new Date("2016/01/01 " + endTimeStr).format("hh:mm:ss"),
+                start: new Date(nowDate + " " + startTimeStr).format("hh:mm:ss"),
+                end: new Date(nowDate + " " + endTimeStr).format("hh:mm:ss"),
                 limitSpeed: this.$el.find("#set-limit").val()
             }
             return limitTimeObj;
@@ -49,47 +52,64 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
         }
     });
 
-
     var AddEditLimitView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
+            this.isEdit = options.isEdit;
+            this.model = options.model;
             this.$el = $(_.template(template['tpl/customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.add.html'])());
-
-            require(['matchCondition.view'], function(MatchConditionView){
-                var  matchConditionArray = [
-                    {name: "全部文件", value: 1},
-                    {name: "文件类型", value: 2},
-                    {name: "指定URI", value: 3},
-                    {name: "指定目录", value: 4},
-                    {name: "正则匹配", value: 5},
-                ], matchConditionOption = {
-                    defaultCondition : 4,
-                    matchConditionArray: matchConditionArray
-                }
-                this.matchConditionView = new MatchConditionView(matchConditionOption);
-                this.matchConditionView.render(this.$el.find(".match-condition-ctn"));
-            }.bind(this))
 
             this.defaultParam = {
                 byteNotLimit: 1,
                 byteNotLimitUnit: 1, 
-                limitSpeed: "延期啦",
-                timeLimitList: [{
-                    id: 1,
-                    start: new Date().format("hh:mm:ss"),
-                    end: new Date().format("hh:mm:ss"),
-                    limitSpeed: 40
-                }]
+                limitSpeed: 0,
+                preUnlimit: 0,
+                timeLimitList: [],
+                type: 0,
+                policy: ""
             }
+
+            if (this.isEdit){
+                this.defaultParam.type = this.model.get("matchingType");
+                this.defaultParam.policy = this.model.get("matchingValue");
+                this.defaultParam.byteNotLimit = this.model.get("preUnlimit") === 0 ? 1 : 2;
+                this.defaultParam.byteNotLimitUnit = this.model.get("preUnlimit") >= 1024 ? 2 : 1;
+                this.defaultParam.preUnlimit = this.model.get("preUnlimit");
+                this.defaultParam.limitSpeed = this.model.get("speedLimit");
+                _.each(this.model.get("timeLimit"), function(el, index, ls){
+                    this.defaultParam.timeLimitList.push({
+                        id: el.id,
+                        start: new Date(el.startTime).format("hh:mm:ss"),
+                        end: new Date(el.endTime).format("hh:mm:ss"),
+                        limitSpeed: el.speedLimit
+                    })
+                }.bind(this))
+            }
+
+            require(['matchCondition.view', 'matchCondition.model'], function(MatchConditionView, MatchConditionModel){
+                var  matchConditionArray = [
+                    {name: "全部文件", value: 9},
+                    {name: "文件类型", value: 0},
+                    {name: "指定URI", value: 2},
+                    {name: "指定目录", value: 1},
+                    {name: "正则匹配", value: 3},
+                ], matchConditionOption = {
+                    collection: new MatchConditionModel(),
+                    defaultCondition : this.defaultParam.type,
+                    defaultPolicy: this.defaultParam.policy,
+                    matchConditionArray: matchConditionArray
+                }
+                this.matchConditionView = new MatchConditionView(matchConditionOption);
+                this.matchConditionView.render(this.$el.find(".match-condition-ctn"));
+
+                this.initSetup();
+            }.bind(this))
 
             this.$el.find(".byte-limit-toggle .togglebutton input").on("click", $.proxy(this.onClickByteLimitToggle, this));
             this.$el.find(".add-time-limit").on("click", $.proxy(this.onClickAddTimeLimit, this));
-
-            this.initSetup();
-
         },
 
         initSetup: function(){
@@ -100,6 +120,11 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
             } else if (this.defaultParam.byteNotLimit === 2){
                 this.$el.find(".byte-limit-toggle .togglebutton input").get(0).checked = true;
                 this.$el.find(".byte-limit").show();
+            }
+            if (this.defaultParam.byteNotLimitUnit === 1){
+                this.$el.find("#byte-limit").val(this.defaultParam.preUnlimit);
+            } else {
+                this.$el.find("#byte-limit").val(this.defaultParam.preUnlimit / 1024);
             }
             this.$el.find("#set-limit").val(this.defaultParam.limitSpeed);
             this.updateTimeLimitTable();
@@ -184,12 +209,53 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){
                 this.$el.find(".byte-limit").show();
+                this.defaultParam.byteNotLimit = 2;
             } else {
                 this.$el.find(".byte-limit").hide();
+                this.defaultParam.byteNotLimit = 1;
             }
         },
 
         onSure: function(){
+            var matchConditionParam = this.matchConditionView.getMatchConditionParam();
+            if (!matchConditionParam) return false;
+
+            var preUnlimit = this.$el.find("#byte-limit").val();
+
+            if (this.defaultParam.byteNotLimitUnit === 2)
+                preUnlimit = preUnlimit * 1024
+            if (this.defaultParam.byteNotLimit === 1) preUnlimit = 0;
+
+            speedLimit = this.$el.find("#set-limit").val(), 
+            summary = '', timeLimit = [], nowDate = new Date().format("yyyy/MM/dd");
+
+            if (preUnlimit === 0) summary = "指定不限速字节数：关闭。限速字节数：" + speedLimit + "kb/s<br>";
+            if (preUnlimit !== 0) summary = "指定不限速字节数：" + preUnlimit + "kb。限速字节数：" + speedLimit + "kb/s<br>";
+
+            _.each(this.defaultParam.timeLimitList, function(el, index, ls){
+                var startTime = el.start,
+                    endTime = el.end,
+                    speedLimit2 = el.limitSpeed + "kb/s<br>"
+                var timeStr = "限速时间段：" + startTime + "至" + endTime + "，限速字节数：" + speedLimit2;
+                summary = summary + timeStr;
+                timeLimit.push({
+                    "id": el.id,
+                    "startTime" : new Date(nowDate + " " + el.start).valueOf(),
+                    "endTime" : new Date(nowDate + " " + el.end).valueOf(),
+                    "speedLimit": el.limitSpeed
+                })
+            })
+
+            var postParam = {
+                "id": this.isEdit ? this.model.get("id") : new Date().valueOf(),
+                "matchingType": matchConditionParam.type,
+                "matchingValue": matchConditionParam.policy,
+                "preUnlimit": preUnlimit,
+                "speedLimit": speedLimit,
+                "timeLimit": timeLimit,
+                "summary": summary
+            }
+            return postParam
         },
 
         render: function(target, rootNode) {
@@ -209,30 +275,66 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
                 domainInfo = JSON.parse(options.query2),
                 userInfo = {
                     clientName: clientInfo.clientName,
-                    domain: domainInfo.domain
+                    domain: domainInfo.domain,
+                    uid: clientInfo.uid
                 }
+            this.domainInfo = domainInfo;
             this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
                 data: userInfo,
                 notShowBtn: false
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
-            this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
-            this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.speed.success", $.proxy(this.onChannelListSuccess, this));
+            this.collection.on("get.speed.error", $.proxy(this.onGetError, this));
 
-            this.$el.find(".add").on("click", $.proxy(this.onClickAddRole, this))
+            this.$el.find(".add").on("click", $.proxy(this.onClickAddRule, this))
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
 
-            this.queryArgs = {
-                "domain"           : null,
-                "accelerateDomain" : null,
-                "businessType"     : null,
-                "clientName"       : null,
-                "status"           : null,
-                "page"             : 1,
-                "count"            : 10
-             }
+            this.onClickQueryButton();
+            this.collection.on("set.speed.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.speed.error", $.proxy(this.onGetError, this));
+        },
 
-             this.onClickQueryButton();
+        launchSendPopup: function(){
+            require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
+                var mySaveThenSendView = new SaveThenSendView({
+                    collection: this.collection, 
+                });
+                var options = {
+                    title: "发布",
+                    body : mySaveThenSendView,
+                    backdrop : 'static',
+                    type     : 2,
+                    onOKCallback:  function(){
+                        this.sendPopup.$el.modal("hide");
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();
+                    }.bind(this)
+                }
+                this.sendPopup = new Modal(options);
+            }.bind(this))
+        },
+
+        onClickSaveBtn: function(){
+            var list = [];
+            this.collection.each(function(obj){
+                list.push({
+                    "matchingType": obj.get('matchingType'),
+                    "matchingValue": obj.get('matchingValue'),
+                    "preUnlimit": obj.get('preUnlimit'),
+                    "speedLimit": obj.get('speedLimit'),
+                    "timeLimit": obj.get('timeLimit'),
+                })
+            }.bind(this))
+
+            var postParam = {
+                "originId": this.domainInfo.id,
+                "list": list
+            }
+
+            this.collection.setClientSpeed(postParam)
         },
 
         onGetError: function(error){
@@ -244,22 +346,28 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
 
         onChannelListSuccess: function(){
             this.initTable();
-            if (!this.isInitPaginator) this.initPaginator();
         },
 
         onClickQueryButton: function(){
-            this.isInitPaginator = false;
-            this.queryArgs.page = 1;
-            this.queryArgs.domain = this.$el.find("#input-domain").val();
-            this.queryArgs.clientName = this.$el.find("#input-client").val();
-            if (this.queryArgs.domain == "") this.queryArgs.domain = null;
-            if (this.queryArgs.clientName == "") this.queryArgs.clientName = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.$el.find(".pagination").html("");
-            this.collection.queryChannel(this.queryArgs);
+            this.collection.getClientSpeed({originId:this.domainInfo.id});
         },
 
         initTable: function(){
+            var allFileArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 9;
+            }.bind(this));
+
+            var specifiedUrlArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 2;
+            }.bind(this));
+
+            var otherArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
+            }.bind(this));
+
+            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
+
             this.table = $(_.template(template['tpl/customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.table.html'])({
                 data: this.collection.models
             }));
@@ -268,25 +376,98 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.table.find("tbody .manage").on("click", $.proxy(this.onClickItemNodeName, this));
+            this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
             this.table.find("tbody .up").on("click", $.proxy(this.onClickItemUp, this));
             this.table.find("tbody .down").on("click", $.proxy(this.onClickItemDown, this));
+            this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
         },
 
-        onClickAddRole: function(event){
+        onClickItemEdit: function(event){
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+
+            var model = this.collection.find(function(obj){
+                return obj.get("id") === parseInt(id)
+            }.bind(this));
+            if (this.addRolePopup) $("#" + this.addRolePopup.modalId).remove();
+
+            var myAddEditLimitView = new AddEditLimitView({
+                collection: this.collection,
+                model: model,
+                isEdit: true
+            });
+
+            var options = {
+                title:"客户端限速",
+                body : myAddEditLimitView,
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback: function(){
+                    var postParam = myAddEditLimitView.onSure();
+                    if (!postParam) return;
+                    _.each(postParam, function(value, key, ls){
+                        model.set(key, value);
+                    }.bind(this))
+                    this.collection.trigger("get.speed.success");
+                    this.addRolePopup.$el.modal('hide');
+                }.bind(this),
+                onHiddenCallback: function(){}.bind(this)
+            }
+            this.addRolePopup = new Modal(options);
+        },
+
+        onClickAddRule: function(event){
             if (this.addRolePopup) $("#" + this.addRolePopup.modalId).remove();
 
             var myAddEditLimitView = new AddEditLimitView({collection: this.collection});
 
             var options = {
-                title:"缓存规则",
+                title:"客户端限速",
                 body : myAddEditLimitView,
                 backdrop : 'static',
                 type     : 2,
-                onOkCallback: function(){}.bind(this),
+                onOKCallback: function(){
+                    var postParam = myAddEditLimitView.onSure();
+                    if (!postParam) return;
+                    console.log(postParam)
+                    var model = new this.collection.model(postParam);
+                    var allFileArray = this.collection.filter(function(obj){
+                        return obj.get('matchingType') === 9;
+                    }.bind(this));
+
+                    var specifiedUrlArray = this.collection.filter(function(obj){
+                        return obj.get('matchingType') === 2;
+                    }.bind(this));
+
+                    var otherArray = this.collection.filter(function(obj){
+                        return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
+                    }.bind(this));
+
+                    if (postParam.type === 9) allFileArray.push(model)
+                    if (postParam.type === 2) specifiedUrlArray.push(model)
+                    if (postParam.type !== 9 && postParam.type !== 2) otherArray.push(model)
+  
+                    this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
+                    this.collection.trigger("get.speed.success");
+                    this.addRolePopup.$el.modal('hide');
+                }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
             this.addRolePopup = new Modal(options);
+        },
+
+        onClickItemDelete: function(event){
+            var result = confirm("你确定要删除吗？");
+            if (!result) return;
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+            for (var i = 0; i < this.collection.models.length; i++){
+                if (this.collection.models[i].get("id") === parseInt(id)){
+                    this.collection.models.splice(i, 1);
+                    this.collection.trigger("get.speed.success")
+                    return;
+                }
+            }
         },
 
         onClickItemUp: function(event){
@@ -298,13 +479,28 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
                 id = $(eventTarget).attr("id");
             }
             var model = this.collection.get(id), modelIndex;
-            this.collection.each(function(el, index, list){
+
+            var allFileArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 9;
+            }.bind(this));
+
+            var specifiedUrlArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 2;
+            }.bind(this));
+
+            var otherArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
+            }.bind(this));
+
+            _.each(otherArray, function(el, index, list){
                 if (el.get("id") === parseInt(id)) modelIndex = index; 
             }.bind(this))
 
-            this.collection.models = Utility.adjustElement(this.collection.models, modelIndex, true)
+            otherArray = Utility.adjustElement(otherArray, modelIndex, true)
 
-            this.collection.trigger("get.channel.success")
+            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
+
+            this.collection.trigger("get.speed.success")
         },
 
         onClickItemDown: function(event){
@@ -316,58 +512,47 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
                 id = $(eventTarget).attr("id");
             }
             var model = this.collection.get(id), modelIndex;
-            this.collection.each(function(el, index, list){
+
+            var allFileArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 9;
+            }.bind(this));
+
+            var specifiedUrlArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 2;
+            }.bind(this));
+
+            var otherArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
+            }.bind(this));
+
+            _.each(otherArray, function(el, index, list){
                 if (el.get("id") === parseInt(id)) modelIndex = index; 
             }.bind(this))
 
-            this.collection.models = Utility.adjustElement(this.collection.models, modelIndex, false)
+            otherArray = Utility.adjustElement(otherArray, modelIndex, false)
 
-            this.collection.trigger("get.channel.success")
-        },
+            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
-        onClickItemNodeName: function(event){
-            var eventTarget = event.srcElement || event.target,
-                id = $(eventTarget).attr("id");
-
-            var model = this.collection.get(id), args = JSON.stringify({
-                domain: model.get("domain")
-            })
-            //var clientName = JSON.parse(this.options.query)
-            window.location.hash = '#/domainList/' + clientName + "/domainSetup/" + args;
-        },
-
-        initPaginator: function(){
-            this.$el.find(".total-items span").html(this.collection.total)
-            if (this.collection.total <= this.queryArgs.count) return;
-            var total = Math.ceil(this.collection.total/this.queryArgs.count);
-
-            this.$el.find(".pagination").jqPaginator({
-                totalPages: total,
-                visiblePages: 10,
-                currentPage: 1,
-                onPageChange: function (num, type) {
-                    if (type !== "init"){
-                        this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                        var args = _.extend(this.queryArgs);
-                        args.page = num;
-                        args.count = this.queryArgs.count;
-                        this.collection.queryChannel(args);
-                    }
-                }.bind(this)
-            });
-            this.isInitPaginator = true;
+            this.collection.trigger("get.speed.success")
         },
 
         hide: function(){
             this.$el.hide();
         },
 
-        update: function(){
-            this.$el.show();
+        update: function(query, query2){
+            this.options.query = query;
+            this.options.query2 = query2;
+            this.collection.off();
+            this.collection.reset();
+            this.$el.remove();
+            this.initialize(this.options);
+            this.render(this.target);
         },
 
-        render: function(target) {
-            this.$el.appendTo(target)
+        render: function(target){
+            this.$el.appendTo(target);
+            this.target = target;
         }
     });
 

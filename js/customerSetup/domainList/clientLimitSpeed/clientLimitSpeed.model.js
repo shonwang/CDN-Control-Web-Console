@@ -57,10 +57,7 @@ define("clientLimitSpeed.model", ['require','exports', 'utility'], function(requ
         setClientSpeed: function(args){
             var url = BASE_URL + "/channelManager/clientSpeed/setClientSpeed",
             successCallback = function(res){
-                if (res)
-                    this.trigger("set.speed.success", res)
-                else
-                    this.trigger("set.speed.error", res)
+                this.trigger("set.speed.success", res)
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("set.speed.error", response)

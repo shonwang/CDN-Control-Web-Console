@@ -45,10 +45,7 @@ define("delMarkCache.model", ['require','exports', 'utility'], function(require,
         setCacheQuestionMark: function(args){
             var url = BASE_URL + "/channelManager/cache/setCacheQuestionMark",
             successCallback = function(res){
-                if (res)
-                    this.trigger("set.mark.success", res)
-                else
-                    this.trigger("set.mark.error", res)
+                this.trigger("set.mark.success", res)
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("set.mark.error", response)

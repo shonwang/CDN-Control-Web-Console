@@ -15,7 +15,7 @@ define("matchCondition.model", ['require','exports', 'utility'], function(requir
                 if(res)
                     this.trigger("get.fileType.success", res);
                 else
-                    this.trigger("get.fileType.error", res);
+                    this.trigger("get.fileType.error");
             }.bind(this),function(res){
                 this.trigger("get.fileType.error", res);
             }.bind(this));

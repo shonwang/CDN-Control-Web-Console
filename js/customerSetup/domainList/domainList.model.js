@@ -62,11 +62,7 @@ define("domainList.model", ['require','exports','utility'], function(require, ex
         submitDomain: function(args){
             var url = BASE_URL + "/channelManager/domain/addDomainBasic";
             Utility.postAjax(url, args, function(res){
-                if(res == 1){
-                    this.trigger("submit.domain.success");
-                } else {
-                    this.trigger("submit.domain.error");
-                }
+                this.trigger("submit.domain.success");
             }.bind(this),function(res){
                 this.trigger("submit.domain.error", res);
             }.bind(this));

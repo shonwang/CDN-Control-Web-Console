@@ -12,11 +12,7 @@ define("following302.model", ['require','exports', 'utility'], function(require,
         setFollowing: function(args){
             var url = BASE_URL + "/channelManager/domain/setFollowing";
             Utility.getAjax(url, args, function(res){
-                if(res == 1){
-                    this.trigger("set.following.success");
-                } else {
-                    this.trigger("set.following.error");
-                }
+                this.trigger("set.following.success");
             }.bind(this),function(res){
                 this.trigger("set.following.error", res);
             }.bind(this));

@@ -353,7 +353,6 @@ define("customerSetup.controller", ['require','exports'],
                     this.domainSetupView = new DomainSetupView(options);
                     this.domainSetupView.render(this.thirdNavbar.$el.find('.sub-content'));
                 } else {
-                    this.thirdNavbar.update();
                     this.thirdNavbar.select(this.curPage);
                     this.domainSetupView.update(query, query2);
                 }
@@ -363,24 +362,26 @@ define("customerSetup.controller", ['require','exports'],
         domainListCallback: function(query) {
             require(['domainList.view', 'domainList.model', 'subNavbar.view'], function(DomainListView, DomainListModel, SubNavbar){
                 this.curPage = 'domainList';
+                var menu = [{
+                    id: '',
+                    name: '客户配置管理',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'domainList',
+                        name: '域名列表',
+                        hash: 'index.html#/domainList/' + query,
+                        active: true,
+                        children: []
+                    }]
+                }], menuOptions = {
+                    backHash: "index.html#/customerSetup",
+                    menuList: menu
+                }
                 if (!this.subNavbar){
-                    var menu = [{
-                        id: '',
-                        name: '客户配置管理',
-                        hash: 'javascript:void(0)',
-                        children: [{
-                            id: 'domainList',
-                            name: '域名列表',
-                            hash: 'index.html#/domainList/' + query,
-                            active: true,
-                            children: []
-                        }]
-                    }], menuOptions = {
-                        backHash: "index.html#/customerSetup",
-                        menuList: menu
-                    }
                     this.subNavbar = new SubNavbar(menuOptions);
                     this.subNavbar.select(this.curPage);
+                } else {
+                    this.subNavbar.update(query, null, menu, menuOptions.backHash)
                 }
                 if (!this.domainListModel)
                     this.domainListModel = new DomainListModel();
@@ -392,7 +393,6 @@ define("customerSetup.controller", ['require','exports'],
                     this.domainListView = new DomainListView(options);
                     this.domainListView.render(this.subNavbar.$el.find('.sub-content'));
                 } else {
-                    this.subNavbar.update();
                     this.subNavbar.select(this.curPage);
                     this.domainListView.update(query);
                 }

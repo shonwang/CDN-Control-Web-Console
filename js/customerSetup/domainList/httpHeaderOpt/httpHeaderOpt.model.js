@@ -60,10 +60,7 @@ define("httpHeaderOpt.model", ['require','exports', 'utility'], function(require
         setHttpHeader: function(args){
             var url = BASE_URL + "/channelManager/httpHeader/setHttpHeader",
             successCallback = function(res){
-                if (res)
-                    this.trigger("set.header.success", res)
-                else
-                    this.trigger("set.header.error", res)
+                this.trigger("set.header.success", res)
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("set.header.error", response)

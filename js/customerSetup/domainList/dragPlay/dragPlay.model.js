@@ -1,6 +1,14 @@
 define("dragPlay.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
-        initialize: function(){}
+        initialize: function(){
+            var videoType = this.get("videoType");
+            if (videoType === 1) this.set("videoTypeName", "MP4");
+            if (videoType === 2) this.set("videoTypeName", "FLV");
+
+            var dragMode = this.get("dragMode");
+            if (dragMode === 1) this.set("dragModeName", "按秒");
+            if (dragMode === 2) this.set("dragModeName", "按字节");
+        }
     });
 
     var DragPlayCollection = Backbone.Collection.extend({
@@ -9,40 +17,39 @@ define("dragPlay.model", ['require','exports', 'utility'], function(require, exp
 
         initialize: function(){},
 
-        queryChannel: function(args){
-            var url = BASE_URL + "/rs/channel/query",
+        getDragConfList: function(args){
+            var url = BASE_URL + "/channelManager/drag/getDragConfList",
             successCallback = function(res){
                 this.reset();
                 if (res){
-                    _.each(res.rows, function(element, index, list){
+                    _.each(res, function(element, index, list){
                         this.push(new Model(element));
                     }.bind(this))
                     this.total = res.total;
-                    this.trigger("get.channel.success");
+                    this.trigger("get.drag.success");
                 } else {
-                    this.trigger("get.channel.error"); 
+                    this.trigger("get.drag.error"); 
                 } 
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("get.channel.error", response); 
+                this.trigger("get.drag.error", response);  
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        setDragConf: function(args){
+            var url = BASE_URL + "/channelManager/drag/setDragConf",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("set.drag.success", res)
+                else
+                    this.trigger("set.drag.error", res)
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("set.drag.error", response)
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
-
-        getChannelDispgroup: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/get",
-            successCallback = function(res){
-                if (res){
-                    this.trigger("channel.dispgroup.success", res);
-                } else {
-                    this.trigger("channel.dispgroup.error", res); 
-                }
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("channel.dispgroup.error", response); 
-            }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
-        }
     });
 
     return DragPlayCollection;

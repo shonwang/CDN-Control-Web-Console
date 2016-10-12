@@ -6,24 +6,48 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
         initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
+            this.isEdit = options.isEdit;
+            this.model = options.model;
             this.$el = $(_.template(template['tpl/customerSetup/domainList/httpHeaderOpt/httpHeaderOpt.add.html'])());
 
-            require(['matchCondition.view'], function(MatchConditionView){
+            this.defaultParam = {
+                directionType: 1, //    1:客户端到CDN 2：CDN到源站 3：源站到CDN 4：CDN到客户端
+                actionType: 1, //动作类型 1:增加 2:修改 3:隐藏
+                headerKey: "",
+                headerValue: "",
+                type: 9,
+                policy: ""
+            }; 
+
+            if (this.isEdit){
+                this.defaultParam.type = this.model.get("matchingType");
+                this.defaultParam.policy = this.model.get("matchingValue");
+                this.defaultParam.directionType = this.model.get("directionType");
+                this.defaultParam.actionType = this.model.get("actionType");
+                this.defaultParam.headerKey = this.model.get("headerKey");
+                this.defaultParam.headerValue = this.model.get("headerValue");
+            }
+
+            require(['matchCondition.view', 'matchCondition.model'], function(MatchConditionView, MatchConditionModel){
                 var  matchConditionArray = [
-                    {name: "全部文件", value: 1},
-                    {name: "文件类型", value: 2},
-                    {name: "指定URI", value: 3},
-                    {name: "指定目录", value: 4},
-                    {name: "正则匹配", value: 5},
+                    {name: "全部文件", value: 9},
+                    {name: "文件类型", value: 0},
+                    {name: "指定URI", value: 2},
+                    {name: "指定目录", value: 1},
+                    {name: "正则匹配", value: 3},
                 ], matchConditionOption = {
-                    defaultCondition : 4,
+                    collection: new MatchConditionModel(),
+                    defaultCondition : this.defaultParam.type,
+                    defaultPolicy: this.defaultParam.policy,
                     matchConditionArray: matchConditionArray
                 }
                 this.matchConditionView = new MatchConditionView(matchConditionOption);
                 this.matchConditionView.render(this.$el.find(".match-condition-ctn"));
-            }.bind(this))
 
-            this.initDirectionDropdown();
+                this.$el.find("#args").val(this.defaultParam.headerKey);
+                this.$el.find("#values").val(this.defaultParam.headerValue);
+                this.initDirectionDropdown();
+            }.bind(this))
         },
 
         initDirectionDropdown: function(){
@@ -35,60 +59,97 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
             ],
             rootNode = this.$el.find(".direction");
             Utility.initDropMenu(rootNode, directionArray, function(value){
-                this.direction = parseInt(value)
+                this.defaultParam.directionType = parseInt(value)
                 this.initActionDropdown();
             }.bind(this));
 
             var defaultValue = _.find(directionArray, function(object){
-                return object.value === 1;
+                return object.value === this.defaultParam.directionType;
             }.bind(this));
 
             if (defaultValue){
                 this.$el.find("#dropdown-direction .cur-value").html(defaultValue.name);
-                this.direction = defaultValue.value;
+                this.defaultParam.directionType = defaultValue.value;
             } else {
                 this.$el.find("#dropdown-direction .cur-value").html(directionArray[0].name);
-                this.direction = directionArray[0].value;
+                this.defaultParam.directionType = directionArray[0].value;
             }
             this.initActionDropdown();
         },
 
         initActionDropdown: function(){
             var  actionArray;
-            if (this.direction === 1 || this.direction === 4){
+            if (this.defaultParam.directionType === 1 || this.defaultParam.directionType === 4){
                 actionArray = [
                     {name: "增加", value: 1},
-                    {name: "隐藏", value: 2},
-                    {name: "修改", value: 3}
+                    {name: "隐藏", value: 3},
+                    {name: "修改", value: 2}
                 ]
-            } else if (this.direction === 2){
+            } else if (this.defaultParam.directionType === 2){
                 actionArray = [
                     {name: "增加", value: 1},
-                    {name: "修改", value: 3}
+                    {name: "修改", value: 2}
                 ]
-            } else if (this.direction === 3){
+            } else if (this.defaultParam.directionType === 3){
                 actionArray = [
-                    {name: "隐藏", value: 2}
+                    {name: "隐藏", value: 3}
                 ]
             }
             var rootOtherNode = this.$el.find(".action");
             Utility.initDropMenu(rootOtherNode, actionArray, function(value){
-
+                this.defaultParam.actionType = parseInt(value)
             }.bind(this));
 
             var defaultOtherValue = _.find(actionArray, function(object){
-                return object.value === 3;
+                return object.value === this.defaultParam.actionType;
             }.bind(this));
 
-            if (defaultOtherValue)
+            if (defaultOtherValue){
                 this.$el.find("#dropdown-action .cur-value").html(defaultOtherValue.name);
-            else
+                this.defaultParam.actionType = defaultOtherValue.value;
+            } else {
                 this.$el.find("#dropdown-action .cur-value").html(actionArray[0].name);
+                this.defaultParam.actionType = actionArray[0].value;
+            }
         },
 
         onSure: function(){
-            var notCacheTime = this.$el.find(".yes-cache select").get(0).value;
-            console.log(notCacheTime)
+            var matchConditionParam = this.matchConditionView.getMatchConditionParam();
+            if (!matchConditionParam) return false;
+
+            var headerKey = this.$el.find("#args").val(), headerValue = this.$el.find("#values").val();
+            if (headerKey === "" || headerValue === ""){
+                alert("参数和值不能为空");
+                return false
+            } else {
+                var headerKeyName = "参数: " + headerKey + "<br>",
+                    headerValueName = "值: " + headerValue + "<br>";
+            }
+
+            var directionTypeName = "";
+            if (this.defaultParam.directionType === 1) directionTypeName = "方向：客户端到CDN支持<br>";
+            if (this.defaultParam.directionType === 2) directionTypeName = "方向：CDN到源站支持<br>";
+            if (this.defaultParam.directionType === 3) directionTypeName = "方向：源到CDN支持<br>";
+            if (this.defaultParam.directionType === 4) directionTypeName = "方向：CDN到客户端<br>";
+
+            var actionTypeName = "";
+            if (this.defaultParam.actionType === 1) actionTypeName = "动作：增加<br>";
+            if (this.defaultParam.actionType === 2) actionTypeName = "动作：修改<br>";
+            if (this.defaultParam.actionType === 3) actionTypeName = "动作：隐藏<br>";
+
+            var summary = directionTypeName + actionTypeName + headerKeyName + headerValueName
+
+            var postParam = {
+                "id": this.isEdit ? this.model.get("id") : new Date().valueOf(),
+                "matchingType": matchConditionParam.type,
+                "matchingValue": matchConditionParam.policy,
+                "directionType": this.defaultParam.directionType,
+                "actionType": this.defaultParam.actionType,
+                "headerKey": headerKey,
+                "headerValue": headerValue,
+                "summary": summary
+            }
+            return postParam
         },
 
         render: function(target) {
@@ -108,30 +169,68 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
                 domainInfo = JSON.parse(options.query2),
                 userInfo = {
                     clientName: clientInfo.clientName,
-                    domain: domainInfo.domain
+                    domain: domainInfo.domain,
+                    uid: clientInfo.uid
                 }
+            this.domainInfo = domainInfo;
+            this.clientInfo = clientInfo;
             this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
                 data: userInfo,
                 notShowBtn: false
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
-            this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
-            this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.header.success", $.proxy(this.onChannelListSuccess, this));
+            this.collection.on("get.header.error", $.proxy(this.onGetError, this));
 
-            this.$el.find(".add").on("click", $.proxy(this.onClickAddRole, this))
-
-            this.queryArgs = {
-                "domain"           : null,
-                "accelerateDomain" : null,
-                "businessType"     : null,
-                "clientName"       : null,
-                "status"           : null,
-                "page"             : 1,
-                "count"            : 10
-             }
+            this.$el.find(".add").on("click", $.proxy(this.onClickAddRule, this))
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
 
              this.onClickQueryButton();
+            this.collection.on("set.header.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.header.error", $.proxy(this.onGetError, this));
+        },
+
+        launchSendPopup: function(){
+            require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
+                var mySaveThenSendView = new SaveThenSendView({
+                    collection: this.collection, 
+                });
+                var options = {
+                    title: "发布",
+                    body : mySaveThenSendView,
+                    backdrop : 'static',
+                    type     : 2,
+                    onOKCallback:  function(){
+                        this.sendPopup.$el.modal("hide");
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();
+                    }.bind(this)
+                }
+                this.sendPopup = new Modal(options);
+            }.bind(this))
+        },
+
+        onClickSaveBtn: function(){
+            var list = [];
+            this.collection.each(function(obj){
+                list.push({
+                    "matchingType": obj.get('matchingType'),
+                    "matchingValue": obj.get('matchingValue'),
+                    "directionType": obj.get('directionType'),
+                    "actionType": obj.get('actionType'),
+                    "headerKey": obj.get('headerKey'),
+                    "headerValue": obj.get('headerValue')
+                })
+            }.bind(this))
+
+            var postParam = {
+                "originId": this.domainInfo.id,
+                "list": list
+            }
+
+            this.collection.setHttpHeader(postParam)
         },
 
         onGetError: function(error){
@@ -143,22 +242,28 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
 
         onChannelListSuccess: function(){
             this.initTable();
-            if (!this.isInitPaginator) this.initPaginator();
         },
 
         onClickQueryButton: function(){
-            this.isInitPaginator = false;
-            this.queryArgs.page = 1;
-            this.queryArgs.domain = this.$el.find("#input-domain").val();
-            this.queryArgs.clientName = this.$el.find("#input-client").val();
-            if (this.queryArgs.domain == "") this.queryArgs.domain = null;
-            if (this.queryArgs.clientName == "") this.queryArgs.clientName = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.$el.find(".pagination").html("");
-            this.collection.queryChannel(this.queryArgs);
+            this.collection.getHeaderList({originId:this.domainInfo.id});
         },
 
         initTable: function(){
+            var allFileArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 9;
+            }.bind(this));
+
+            var specifiedUrlArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 2;
+            }.bind(this));
+
+            var otherArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
+            }.bind(this));
+
+            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
+
             this.table = $(_.template(template['tpl/customerSetup/domainList/httpHeaderOpt/httpHeaderOpt.table.html'])({
                 data: this.collection.models
             }));
@@ -167,25 +272,97 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.table.find("tbody .manage").on("click", $.proxy(this.onClickItemNodeName, this));
+            this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
             this.table.find("tbody .up").on("click", $.proxy(this.onClickItemUp, this));
             this.table.find("tbody .down").on("click", $.proxy(this.onClickItemDown, this));
+            this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
         },
 
-        onClickAddRole: function(event){
+        onClickItemEdit: function(event){
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+
+            var model = this.collection.find(function(obj){
+                return obj.get("id") === parseInt(id)
+            }.bind(this));
+            if (this.addRolePopup) $("#" + this.addRolePopup.modalId).remove();
+
+            var myAddEditHttpHeaderView = new AddEditHttpHeaderView({
+                collection: this.collection,
+                model: model,
+                isEdit: true
+            });
+
+            var options = {
+                title:"HTTP头的增删该查",
+                body : myAddEditHttpHeaderView,
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback: function(){
+                    var postParam = myAddEditHttpHeaderView.onSure();
+                    if (!postParam) return;
+                    _.each(postParam, function(value, key, ls){
+                        this.collection.get(id).set(key, value);
+                    }.bind(this))
+                    this.collection.trigger("get.header.success");
+                    this.addRolePopup.$el.modal('hide');
+                }.bind(this),
+                onHiddenCallback: function(){}.bind(this)
+            }
+            this.addRolePopup = new Modal(options);
+        },
+
+        onClickAddRule: function(event){
             if (this.addRolePopup) $("#" + this.addRolePopup.modalId).remove();
 
             var myAddEditHttpHeaderView = new AddEditHttpHeaderView({collection: this.collection});
 
             var options = {
-                title:"缓存规则",
+                title:"HTTP头的增删该查",
                 body : myAddEditHttpHeaderView,
                 backdrop : 'static',
                 type     : 2,
-                onOkCallback: function(){}.bind(this),
+                onOKCallback: function(){
+                    var postParam = myAddEditHttpHeaderView.onSure();
+                    if (!postParam) return;
+                    var model = new this.collection.model(postParam);
+                    var allFileArray = this.collection.filter(function(obj){
+                        return obj.get('matchingType') === 9;
+                    }.bind(this));
+
+                    var specifiedUrlArray = this.collection.filter(function(obj){
+                        return obj.get('matchingType') === 2;
+                    }.bind(this));
+
+                    var otherArray = this.collection.filter(function(obj){
+                        return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
+                    }.bind(this));
+
+                    if (postParam.type === 9) allFileArray.push(model)
+                    if (postParam.type === 2) specifiedUrlArray.push(model)
+                    if (postParam.type !== 9 && postParam.type !== 2) otherArray.push(model)
+  
+                    this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
+                    this.collection.trigger("get.header.success");
+                    this.addRolePopup.$el.modal('hide');
+                }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
             this.addRolePopup = new Modal(options);
+        },
+
+        onClickItemDelete: function(event){
+            var result = confirm("你确定要删除吗？");
+            if (!result) return;
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+            for (var i = 0; i < this.collection.models.length; i++){
+                if (this.collection.models[i].get("id") === parseInt(id)){
+                    this.collection.models.splice(i, 1);
+                    this.collection.trigger("get.header.success")
+                    return;
+                }
+            }
         },
 
         onClickItemUp: function(event){
@@ -197,13 +374,28 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
                 id = $(eventTarget).attr("id");
             }
             var model = this.collection.get(id), modelIndex;
-            this.collection.each(function(el, index, list){
+
+            var allFileArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 9;
+            }.bind(this));
+
+            var specifiedUrlArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 2;
+            }.bind(this));
+
+            var otherArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
+            }.bind(this));
+
+            _.each(otherArray, function(el, index, list){
                 if (el.get("id") === parseInt(id)) modelIndex = index; 
             }.bind(this))
 
-            this.collection.models = Utility.adjustElement(this.collection.models, modelIndex, true)
+            otherArray = Utility.adjustElement(otherArray, modelIndex, true)
 
-            this.collection.trigger("get.channel.success")
+            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
+
+            this.collection.trigger("get.header.success")
         },
 
         onClickItemDown: function(event){
@@ -215,58 +407,47 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
                 id = $(eventTarget).attr("id");
             }
             var model = this.collection.get(id), modelIndex;
-            this.collection.each(function(el, index, list){
+
+            var allFileArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 9;
+            }.bind(this));
+
+            var specifiedUrlArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 2;
+            }.bind(this));
+
+            var otherArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
+            }.bind(this));
+
+            _.each(otherArray, function(el, index, list){
                 if (el.get("id") === parseInt(id)) modelIndex = index; 
             }.bind(this))
 
-            this.collection.models = Utility.adjustElement(this.collection.models, modelIndex, false)
+            otherArray = Utility.adjustElement(otherArray, modelIndex, false)
 
-            this.collection.trigger("get.channel.success")
-        },
+            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
-        onClickItemNodeName: function(event){
-            var eventTarget = event.srcElement || event.target,
-                id = $(eventTarget).attr("id");
-
-            var model = this.collection.get(id), args = JSON.stringify({
-                domain: model.get("domain")
-            })
-            //var clientName = JSON.parse(this.options.query)
-            window.location.hash = '#/domainList/' + clientName + "/domainSetup/" + args;
-        },
-
-        initPaginator: function(){
-            this.$el.find(".total-items span").html(this.collection.total)
-            if (this.collection.total <= this.queryArgs.count) return;
-            var total = Math.ceil(this.collection.total/this.queryArgs.count);
-
-            this.$el.find(".pagination").jqPaginator({
-                totalPages: total,
-                visiblePages: 10,
-                currentPage: 1,
-                onPageChange: function (num, type) {
-                    if (type !== "init"){
-                        this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                        var args = _.extend(this.queryArgs);
-                        args.page = num;
-                        args.count = this.queryArgs.count;
-                        this.collection.queryChannel(args);
-                    }
-                }.bind(this)
-            });
-            this.isInitPaginator = true;
+            this.collection.trigger("get.header.success")
         },
 
         hide: function(){
             this.$el.hide();
         },
 
-        update: function(){
-            this.$el.show();
+        update: function(query, query2){
+            this.options.query = query;
+            this.options.query2 = query2;
+            this.collection.off();
+            this.collection.reset();
+            this.$el.remove();
+            this.initialize(this.options);
+            this.render(this.target);
         },
 
-        render: function(target) {
-            this.$el.appendTo(target)
+        render: function(target){
+            this.$el.appendTo(target);
+            this.target = target;
         }
     });
 

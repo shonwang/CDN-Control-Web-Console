@@ -9,40 +9,19 @@ define("httpHeaderCtr.model", ['require','exports', 'utility'], function(require
 
         initialize: function(){},
 
-        queryChannel: function(args){
-            var url = BASE_URL + "/rs/channel/query",
+        setHttpHeaderControl: function(args){
+            var url = BASE_URL + "/channelManager/httpHeader/setHttpHeaderControl",
             successCallback = function(res){
-                this.reset();
-                if (res){
-                    _.each(res.rows, function(element, index, list){
-                        this.push(new Model(element));
-                    }.bind(this))
-                    this.total = res.total;
-                    this.trigger("get.channel.success");
-                } else {
-                    this.trigger("get.channel.error"); 
-                } 
+                if (res)
+                    this.trigger("set.headerCtr.success", res)
+                else
+                    this.trigger("set.headerCtr.error", res)
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("get.channel.error", response); 
+                this.trigger("set.headerCtr.error", response)
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
-
-        getChannelDispgroup: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/get",
-            successCallback = function(res){
-                if (res){
-                    this.trigger("channel.dispgroup.success", res);
-                } else {
-                    this.trigger("channel.dispgroup.error", res); 
-                }
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("channel.dispgroup.error", response); 
-            }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
-        }
     });
 
     return HttpHeaderCtrCollection;

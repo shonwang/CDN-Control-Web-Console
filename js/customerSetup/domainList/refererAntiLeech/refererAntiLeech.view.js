@@ -316,12 +316,18 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
             this.$el.hide();
         },
 
-        update: function(){
-            this.$el.show();
+        update: function(query, query2, target){
+            this.options.query = query;
+            this.options.query2 = query2;
+            this.collection.off();
+            this.collection.reset();
+            this.$el.remove();
+            this.initialize(this.options);
+            this.render(target);
         },
 
-        render: function(target) {
-            this.$el.appendTo(target)
+        render: function(target){
+            this.$el.appendTo(target);
         }
     });
 

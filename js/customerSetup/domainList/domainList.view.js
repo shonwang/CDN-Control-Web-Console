@@ -223,18 +223,17 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
             this.$el.hide();
         },
 
-        update: function(query){
+        update: function(query, target){
             this.options.query = query;
             this.collection.off();
             this.collection.reset();
             this.$el.remove();
             this.initialize(this.options);
-            this.render(this.target);
+            this.render(target);
         },
 
         render: function(target){
             this.$el.appendTo(target);
-            this.target = target;
         }
 
     });

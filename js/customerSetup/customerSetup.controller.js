@@ -7,6 +7,7 @@ define("customerSetup.controller", ['require','exports'],
             require(['openNgxLog.view', 'openNgxLog.model'], function(OpenNgxLogView, OpenNgxLogModel){
                 this.curPage = 'openNgxLog';
                 this.setUpThirdNavbar(query, query2);
+                var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
                 if (!this.openNgxLogModel)
                     this.openNgxLogModel = new OpenNgxLogModel();
@@ -17,10 +18,10 @@ define("customerSetup.controller", ['require','exports'],
                         query2    : query2
                     };
                     this.openNgxLogView = new OpenNgxLogView(options);
-                    this.openNgxLogView.render(this.thirdNavbar.$el.find('.sub-content'));
+                    this.openNgxLogView.render(renderTarget);
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.openNgxLogView.update(query, query2);
+                    this.openNgxLogView.update(query, query2, renderTarget);
                 }
             }.bind(this));
         },
@@ -29,6 +30,7 @@ define("customerSetup.controller", ['require','exports'],
             require(['timestamp.view', 'timestamp.model'], function(TimestampView, TimestampModel){
                 this.curPage = 'timestamp';
                 this.setUpThirdNavbar(query, query2);
+                var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
                 if (!this.timestampModel)
                     this.timestampModel = new TimestampModel();
@@ -39,10 +41,10 @@ define("customerSetup.controller", ['require','exports'],
                         query2    : query2
                     };
                     this.timestampView = new TimestampView(options);
-                    this.timestampView.render(this.thirdNavbar.$el.find('.sub-content'));
+                    this.timestampView.render(renderTarget);
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.timestampView.update(query, query2);
+                    this.timestampView.update(query, query2, renderTarget);
                 }
             }.bind(this));
         },
@@ -51,6 +53,7 @@ define("customerSetup.controller", ['require','exports'],
             require(['refererAntiLeech.view', 'refererAntiLeech.model'], function(RefererAntiLeechView, RefererAntiLeechModel){
                 this.curPage = 'refererAntiLeech';
                 this.setUpThirdNavbar(query, query2);
+                var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
                 if (!this.refererAntiLeechModel)
                     this.refererAntiLeechModel = new RefererAntiLeechModel();
@@ -61,10 +64,10 @@ define("customerSetup.controller", ['require','exports'],
                         query2    : query2
                     };
                     this.refererAntiLeechView = new RefererAntiLeechView(options);
-                    this.refererAntiLeechView.render(this.thirdNavbar.$el.find('.sub-content'));
+                    this.refererAntiLeechView.render(renderTarget);
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.refererAntiLeechView.update(query, query2);
+                    this.refererAntiLeechView.update(query, query2, renderTarget);
                 }
             }.bind(this));
         },
@@ -73,6 +76,7 @@ define("customerSetup.controller", ['require','exports'],
             require(['ipBlackWhiteList.view', 'ipBlackWhiteList.model'], function(IpBlackWhiteListView, IpBlackWhiteListModel){
                 this.curPage = 'ipBlackWhiteList';
                 this.setUpThirdNavbar(query, query2);
+                var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
                 if (!this.ipBlackWhiteListModel)
                     this.ipBlackWhiteListModel = new IpBlackWhiteListModel();
@@ -83,10 +87,10 @@ define("customerSetup.controller", ['require','exports'],
                         query2    : query2
                     };
                     this.ipBlackWhiteListView = new IpBlackWhiteListView(options);
-                    this.ipBlackWhiteListView.render(this.thirdNavbar.$el.find('.sub-content'));
+                    this.ipBlackWhiteListView.render(renderTarget);
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.ipBlackWhiteListView.update(query, query2);
+                    this.ipBlackWhiteListView.update(query, query2, renderTarget);
                 }
             }.bind(this));
         },
@@ -95,6 +99,7 @@ define("customerSetup.controller", ['require','exports'],
             require(['requestArgsModify.view', 'requestArgsModify.model'], function(RequestArgsModifyView, RequestArgsModifyModel){
                 this.curPage = 'requestArgsModify';
                 this.setUpThirdNavbar(query, query2);
+                var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
                 if (!this.requestArgsModifyModel)
                     this.requestArgsModifyModel = new RequestArgsModifyModel();
@@ -105,10 +110,10 @@ define("customerSetup.controller", ['require','exports'],
                         query2    : query2
                     };
                     this.requestArgsModifyView = new RequestArgsModifyView(options);
-                    this.requestArgsModifyView.render(this.thirdNavbar.$el.find('.sub-content'));
+                    this.requestArgsModifyView.render(renderTarget);
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.requestArgsModifyView.update(query, query2);
+                    this.requestArgsModifyView.update(query, query2, renderTarget);
                 }
             }.bind(this));
         },
@@ -117,6 +122,7 @@ define("customerSetup.controller", ['require','exports'],
             require(['httpHeaderCtr.view', 'httpHeaderCtr.model'], function(HttpHeaderCtrView, HttpHeaderCtrModel){
                 this.curPage = 'httpHeaderCtr';
                 this.setUpThirdNavbar(query, query2);
+                var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
                 if (!this.httpHeaderCtrModel)
                     this.httpHeaderCtrModel = new HttpHeaderCtrModel();
@@ -127,10 +133,10 @@ define("customerSetup.controller", ['require','exports'],
                         query2    : query2
                     };
                     this.httpHeaderCtrView = new HttpHeaderCtrView(options);
-                    this.httpHeaderCtrView.render(this.thirdNavbar.$el.find('.sub-content'));
+                    this.httpHeaderCtrView.render(renderTarget);
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.httpHeaderCtrView.update(query, query2);
+                    this.httpHeaderCtrView.update(query, query2, renderTarget);
                 }
             }.bind(this));
         },
@@ -140,6 +146,7 @@ define("customerSetup.controller", ['require','exports'],
             require(['httpHeaderOpt.view', 'httpHeaderOpt.model'], function(HttpHeaderOptView, HttpHeaderOptModel){
                 this.curPage = 'httpHeaderOpt';
                 this.setUpThirdNavbar(query, query2);
+                var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
                 if (!this.httpHeaderOptModel)
                     this.httpHeaderOptModel = new HttpHeaderOptModel();
@@ -150,10 +157,10 @@ define("customerSetup.controller", ['require','exports'],
                         query2    : query2
                     };
                     this.httpHeaderOptView = new HttpHeaderOptView(options);
-                    this.httpHeaderOptView.render(this.thirdNavbar.$el.find('.sub-content'));
+                    this.httpHeaderOptView.render(renderTarget);
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.httpHeaderOptView.update(query, query2);
+                    this.httpHeaderOptView.update(query, query2, renderTarget);
                 }
             }.bind(this));
         },
@@ -163,6 +170,7 @@ define("customerSetup.controller", ['require','exports'],
             require(['clientLimitSpeed.view', 'clientLimitSpeed.model'], function(ClientLimitSpeedView, ClientLimitSpeedModel){
                 this.curPage = 'clientLimitSpeed';
                 this.setUpThirdNavbar(query, query2);
+                var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
                 if (!this.clientLimitSpeedModel)
                     this.clientLimitSpeedModel = new ClientLimitSpeedModel();
@@ -173,10 +181,10 @@ define("customerSetup.controller", ['require','exports'],
                         query2    : query2
                     };
                     this.clientLimitSpeedView = new ClientLimitSpeedView(options);
-                    this.clientLimitSpeedView.render(this.thirdNavbar.$el.find('.sub-content'));
+                    this.clientLimitSpeedView.render(renderTarget);
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.clientLimitSpeedView.update(query, query2);
+                    this.clientLimitSpeedView.update(query, query2, renderTarget);
                 }
             }.bind(this));
         },
@@ -185,6 +193,7 @@ define("customerSetup.controller", ['require','exports'],
             require(['dragPlay.view', 'dragPlay.model'], function(DragPlayView, DragPlayModel){
                 this.curPage = 'dragPlay';
                 this.setUpThirdNavbar(query, query2);
+                var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
                 if (!this.dragPlayModel)
                     this.dragPlayModel = new DragPlayModel();
@@ -195,10 +204,10 @@ define("customerSetup.controller", ['require','exports'],
                         query2    : query2
                     };
                     this.dragPlayView = new DragPlayView(options);
-                    this.dragPlayView.render(this.thirdNavbar.$el.find('.sub-content'));
+                    this.dragPlayView.render(renderTarget);
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.dragPlayView.update(query, query2);
+                    this.dragPlayView.update(query, query2, renderTarget);
                 }
             }.bind(this));
         },
@@ -207,6 +216,7 @@ define("customerSetup.controller", ['require','exports'],
             require(['following302.view', 'following302.model'], function(Following302View, Following302Model){
                 this.curPage = 'following302';
                 this.setUpThirdNavbar(query, query2);
+                var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
                 if (!this.following302Model)
                     this.following302Model = new Following302Model();
@@ -217,10 +227,10 @@ define("customerSetup.controller", ['require','exports'],
                         query2    : query2
                     };
                     this.following302View = new Following302View(options);
-                    this.following302View.render(this.thirdNavbar.$el.find('.sub-content'));
+                    this.following302View.render(renderTarget);
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.following302View.update(query, query2);
+                    this.following302View.update(query, query2, renderTarget);
                 }
             }.bind(this));
         },
@@ -230,6 +240,7 @@ define("customerSetup.controller", ['require','exports'],
             require(['backOriginSetup.view', 'backOriginSetup.model'], function(BackOriginSetupView, BackOriginSetupModel){
                 this.curPage = 'backOriginSetup';
                 this.setUpThirdNavbar(query, query2);
+                var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
                 if (!this.backOriginSetupModel)
                     this.backOriginSetupModel = new BackOriginSetupModel();
@@ -240,10 +251,10 @@ define("customerSetup.controller", ['require','exports'],
                         query2    : query2
                     };
                     this.backOriginSetupView = new BackOriginSetupView(options);
-                    this.backOriginSetupView.render(this.thirdNavbar.$el.find('.sub-content'));
+                    this.backOriginSetupView.render(renderTarget);
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.backOriginSetupView.update(query, query2);
+                    this.backOriginSetupView.update(query, query2, renderTarget);
                 }
             }.bind(this));
         },
@@ -252,6 +263,7 @@ define("customerSetup.controller", ['require','exports'],
             require(['cnameSetup.view', 'cnameSetup.model'], function(CnameSetupView, CnameSetupModel){
                 this.curPage = 'cnameSetup';
                 this.setUpThirdNavbar(query, query2);
+                var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
                 if (!this.cnameSetupModel)
                     this.cnameSetupModel = new CnameSetupModel();
@@ -262,10 +274,10 @@ define("customerSetup.controller", ['require','exports'],
                         query2    : query2
                     };
                     this.cnameSetupView = new CnameSetupView(options);
-                    this.cnameSetupView.render(this.thirdNavbar.$el.find('.sub-content'));
+                    this.cnameSetupView.render(renderTarget);
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.cnameSetupView.update(query, query2);
+                    this.cnameSetupView.update(query, query2, renderTarget);
                 }
             }.bind(this));
         },
@@ -274,6 +286,7 @@ define("customerSetup.controller", ['require','exports'],
             require(['cacheKeySetup.view', 'cacheKeySetup.model'], function(CacheKeySetupView, CacheKeySetupModel){
                 this.curPage = 'cacheKeySetup';
                 this.setUpThirdNavbar(query, query2);
+                var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
                 if (!this.cacheKeySetupModel)
                     this.cacheKeySetupModel = new CacheKeySetupModel();
@@ -284,10 +297,10 @@ define("customerSetup.controller", ['require','exports'],
                         query2    : query2
                     };
                     this.cacheKeySetupView = new CacheKeySetupView(options);
-                    this.cacheKeySetupView.render(this.thirdNavbar.$el.find('.sub-content'));
+                    this.cacheKeySetupView.render(renderTarget);
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.cacheKeySetupView.update(query, query2);
+                    this.cacheKeySetupView.update(query, query2, renderTarget);
                 }
             }.bind(this));
         },
@@ -296,6 +309,7 @@ define("customerSetup.controller", ['require','exports'],
             require(['delMarkCache.view', 'delMarkCache.model'], function(DelMarkCacheView, DelMarkCacheModel){
                 this.curPage = 'delMarkCache';
                 this.setUpThirdNavbar(query, query2);
+                var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
                 if (!this.delMarkCacheModel)
                     this.delMarkCacheModel = new DelMarkCacheModel();
@@ -306,10 +320,10 @@ define("customerSetup.controller", ['require','exports'],
                         query2    : query2
                     };
                     this.delMarkCacheView = new DelMarkCacheView(options);
-                    this.delMarkCacheView.render(this.thirdNavbar.$el.find('.sub-content'));
+                    this.delMarkCacheView.render(renderTarget);
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.delMarkCacheView.update(query, query2);
+                    this.delMarkCacheView.update(query, query2, renderTarget);
                 }
             }.bind(this));
         },
@@ -319,6 +333,7 @@ define("customerSetup.controller", ['require','exports'],
             require(['cacheRule.view', 'cacheRule.model'], function(CacheRuleView, CacheRuleModel){
                 this.curPage = 'cacheRule';
                 this.setUpThirdNavbar(query, query2);
+                var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
                 if (!this.cacheRuleModel)
                     this.cacheRuleModel = new CacheRuleModel();
@@ -329,10 +344,10 @@ define("customerSetup.controller", ['require','exports'],
                         query2    : query2
                     };
                     this.cacheRuleView = new CacheRuleView(options);
-                    this.cacheRuleView.render(this.thirdNavbar.$el.find('.sub-content'));
+                    this.cacheRuleView.render(renderTarget);
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.cacheRuleView.update(query, query2);
+                    this.cacheRuleView.update(query, query2, renderTarget);
                 }
             }.bind(this));
         },
@@ -341,6 +356,7 @@ define("customerSetup.controller", ['require','exports'],
             require(['domainSetup.view', 'domainSetup.model'], function(DomainSetupView, DomainSetupModel){
                 this.curPage = 'domainSetup';
                 this.setUpThirdNavbar(query, query2);
+                var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
                 if (!this.domainSetupModel)
                     this.domainSetupModel = new DomainSetupModel();
@@ -351,10 +367,10 @@ define("customerSetup.controller", ['require','exports'],
                         query2    : query2
                     };
                     this.domainSetupView = new DomainSetupView(options);
-                    this.domainSetupView.render(this.thirdNavbar.$el.find('.sub-content'));
+                    this.domainSetupView.render(renderTarget);
                 } else {
                     this.thirdNavbar.select(this.curPage);
-                    this.domainSetupView.update(query, query2);
+                    this.domainSetupView.update(query, query2, renderTarget);
                 }
             }.bind(this));
         },
@@ -376,12 +392,15 @@ define("customerSetup.controller", ['require','exports'],
                 }], menuOptions = {
                     backHash: "index.html#/customerSetup",
                     menuList: menu
-                }
+                };
                 if (!this.subNavbar){
                     this.subNavbar = new SubNavbar(menuOptions);
                     this.subNavbar.select(this.curPage);
-                } else {
-                    this.subNavbar.update(query, null, menu, menuOptions.backHash)
+                }
+                var renderTarget = this.subNavbar.$el.find('.sub-content');
+                if (this.thirdNavbar) {
+                    this.thirdNavbar.$el.remove();
+                    this.thirdNavbar = null;
                 }
                 if (!this.domainListModel)
                     this.domainListModel = new DomainListModel();
@@ -391,10 +410,10 @@ define("customerSetup.controller", ['require','exports'],
                         query     : query
                     };
                     this.domainListView = new DomainListView(options);
-                    this.domainListView.render(this.subNavbar.$el.find('.sub-content'));
+                    this.domainListView.render(renderTarget);
                 } else {
                     this.subNavbar.select(this.curPage);
-                    this.domainListView.update(query);
+                    this.domainListView.update(query, renderTarget);
                 }
             }.bind(this));
         },
@@ -403,6 +422,10 @@ define("customerSetup.controller", ['require','exports'],
             require(['customerSetup.view', 'customerSetup.model'], function(CustomerSetupView, CustomerSetupModel){
                 this.curPage = 'customerSetup';
                 this.navbarView.select(this.curPage);
+                if (this.subNavbar){
+                    this.subNavbar.$el.remove();
+                    this.subNavbar = null;
+                } 
                 if (!this.customerSetupModel)
                     this.customerSetupModel = new CustomerSetupModel();
                 if (!this.customerSetupView){

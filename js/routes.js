@@ -62,8 +62,6 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                 }
                 this.thirdNavbar = new SubNavbar(menuOptions);
                 this.thirdNavbar.select(this.curPage);
-            } else {
-                this.thirdNavbar.update(query, query2);
             }
         },
 
@@ -151,71 +149,54 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                     break;
                 case 'domainList':
                     this.domainListView.hide();
-                    this.subNavbar.hide();
                     break;
                 case 'domainSetup':
                     this.domainSetupView.hide();
-                    this.thirdNavbar.hide();
                     break;
                 case 'cacheRule':
                     this.cacheRuleView.hide();
-                    this.thirdNavbar.hide();
                     break;
                 case 'delMarkCache':
                     this.delMarkCacheView.hide();
-                    this.thirdNavbar.hide();
                     break;
                 case 'cacheKeySetup':
                     this.cacheKeySetupView.hide();
-                    this.thirdNavbar.hide();
                     break;
                 case 'cnameSetup':
                     this.cnameSetupView.hide();
-                    this.thirdNavbar.hide();
                     break;
                 case 'backOriginSetup':
                     this.backOriginSetupView.hide();
-                    this.thirdNavbar.hide();
                     break;
                 case 'following302':
                     this.following302View.hide();
-                    this.thirdNavbar.hide();
                     break;
                 case 'dragPlay':
                     this.dragPlayView.hide();
-                    this.thirdNavbar.hide();
                     break;
                 case 'clientLimitSpeed':
                     this.clientLimitSpeedView.hide();
-                    this.thirdNavbar.hide();
                     break;
                 case 'httpHeaderOpt':
                     this.httpHeaderOptView.hide();
-                    this.thirdNavbar.hide();
                     break;
                 case 'httpHeaderCtr':
                     this.httpHeaderCtrView.hide();
-                    this.thirdNavbar.hide();
                     break;
                 case 'requestArgsModify':
                     this.requestArgsModifyView.hide();
-                    this.thirdNavbar.hide();
                     break;
                 case 'ipBlackWhiteList':
                     this.ipBlackWhiteListView.hide();
-                    this.thirdNavbar.hide();
                     break;
                 case 'refererAntiLeech':
                     this.refererAntiLeechView.hide();
-                    this.thirdNavbar.hide();
                     break;
                 case 'timestamp':
                     this.timestampView.hide();
-                    this.thirdNavbar.hide();
                     break
                 case 'openNgxLog':
                     this.openNgxLogView.hide();
-                    this.thirdNavbar.hide();
                 default:
             }
             if (callback)

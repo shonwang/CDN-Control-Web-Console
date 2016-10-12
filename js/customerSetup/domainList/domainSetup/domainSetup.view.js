@@ -132,19 +132,18 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
             this.$el.hide();
         },
 
-        update: function(query, query2){
+        update: function(query, query2, target){
             this.options.query = query;
             this.options.query2 = query2;
             this.collection.off();
             this.collection.reset();
             this.$el.remove();
             this.initialize(this.options);
-            this.render(this.target);
+            this.render(target);
         },
 
         render: function(target){
             this.$el.appendTo(target);
-            this.target = target;
         }
     });
 

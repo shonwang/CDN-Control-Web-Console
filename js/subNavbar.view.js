@@ -1,9 +1,7 @@
 define("subNavbar.view", ['require','exports', 'template'], function(require, exports, template) {
 
     var SubNavbarView = Backbone.View.extend({
-        events: {
-            //"click li":"open"
-        },
+        events: {},
 
         initialize: function(options) {
             this.options = options;

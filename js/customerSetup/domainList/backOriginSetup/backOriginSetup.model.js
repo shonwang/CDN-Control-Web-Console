@@ -12,11 +12,7 @@ define("backOriginSetup.model", ['require','exports', 'utility'], function(requi
         setBackSourceConfig: function(args){
             var url = BASE_URL + "/channelManager/domain/setBackSourceConfig";
             Utility.postAjax(url, args, function(res){
-                if(res == 1){
-                    this.trigger("set.backSourceConfig.success");
-                } else {
-                    this.trigger("set.backSourceConfig.error");
-                }
+                this.trigger("set.backSourceConfig.success");
             }.bind(this),function(res){
                 this.trigger("set.backSourceConfig.error", res);
             }.bind(this));

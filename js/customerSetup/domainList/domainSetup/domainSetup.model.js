@@ -12,11 +12,7 @@ define("domainSetup.model", ['require','exports', 'utility'], function(require, 
         modifyDomainBasic: function(args){
             var url = BASE_URL + "/channelManager/domain/modifyDomainBasic";
             Utility.postAjax(url, args, function(res){
-                if(res == 1){
-                    this.trigger("modify.domain.success");
-                } else {
-                    this.trigger("modify.domain.error");
-                }
+                this.trigger("modify.domain.success");
             }.bind(this),function(res){
                 this.trigger("modify.domain.error", res);
             }.bind(this));

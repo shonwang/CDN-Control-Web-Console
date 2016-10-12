@@ -12,11 +12,7 @@ define("cacheKeySetup.model", ['require','exports', 'utility'], function(require
         setCacheKey: function(args){
             var url = BASE_URL + "/channelManager/cache/setCacheKey";
             Utility.getAjax(url, args, function(res){
-                if(res == 1){
-                    this.trigger("modify.cacheKey.success");
-                } else {
-                    this.trigger("modify.cacheKey.error");
-                }
+                this.trigger("modify.cacheKey.success");
             }.bind(this),function(res){
                 this.trigger("modify.cacheKey.error", res);
             }.bind(this));

@@ -29,10 +29,7 @@ define("cacheRule.model", ['require','exports', 'utility'], function(require, ex
         setPolicy: function(args){
             var url = BASE_URL + "/channelManager/cache/setPolicy",
             successCallback = function(res){
-                if (res)
-                    this.trigger("set.policy.success", res)
-                else
-                    this.trigger("set.policy.error", res)
+                this.trigger("set.policy.success", res)
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("set.policy.error", response)

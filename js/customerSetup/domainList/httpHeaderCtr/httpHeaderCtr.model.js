@@ -12,10 +12,7 @@ define("httpHeaderCtr.model", ['require','exports', 'utility'], function(require
         setHttpHeaderControl: function(args){
             var url = BASE_URL + "/channelManager/httpHeader/setHttpHeaderControl",
             successCallback = function(res){
-                if (res)
-                    this.trigger("set.headerCtr.success", res)
-                else
-                    this.trigger("set.headerCtr.error", res)
+                this.trigger("set.headerCtr.success", res)
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("set.headerCtr.error", response)

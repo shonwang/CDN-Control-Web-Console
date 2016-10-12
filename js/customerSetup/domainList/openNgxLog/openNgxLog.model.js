@@ -12,11 +12,7 @@ define("openNgxLog.model", ['require','exports', 'utility'], function(require, e
         setChargingOpen: function(args){
             var url = BASE_URL + "/channelManager/domain/setChargingOpen";
             Utility.getAjax(url, args, function(res){
-                if(res == 1){
-                    this.trigger("set.chargingOpen.success");
-                } else {
-                    this.trigger("set.chargingOpen.error");
-                }
+                this.trigger("set.chargingOpen.success");
             }.bind(this),function(res){
                 this.trigger("set.chargingOpen.error", res);
             }.bind(this));

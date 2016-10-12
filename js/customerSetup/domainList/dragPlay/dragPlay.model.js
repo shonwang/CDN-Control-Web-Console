@@ -40,10 +40,7 @@ define("dragPlay.model", ['require','exports', 'utility'], function(require, exp
         setDragConf: function(args){
             var url = BASE_URL + "/channelManager/drag/setDragConf",
             successCallback = function(res){
-                if (res)
-                    this.trigger("set.drag.success", res)
-                else
-                    this.trigger("set.drag.error", res)
+                this.trigger("set.drag.success", res)
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("set.drag.error", response)

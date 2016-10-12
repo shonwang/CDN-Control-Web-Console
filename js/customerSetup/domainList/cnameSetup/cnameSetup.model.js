@@ -12,11 +12,7 @@ define("cnameSetup.model", ['require','exports', 'utility'], function(require, e
         modifyDomainCname: function(args){
             var url = BASE_URL + "/channelManager/domain/modifyDomainCname";
             Utility.postAjax(url, args, function(res){
-                if(res == 1){
-                    this.trigger("modify.cname.success");
-                } else {
-                    this.trigger("modify.cname.error");
-                }
+                this.trigger("modify.cname.success");
             }.bind(this),function(res){
                 this.trigger("modify.cname.error", res);
             }.bind(this));

@@ -85,6 +85,11 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 dropdownType.attr('disabled','disabled');
                 //触发开关按钮
                 this.$el.find("[name='my-checkbox']").bootstrapSwitch('state',false);
+                this.configurationFiletype = {
+                    domain:false,
+                    origdomain:false,
+                    lua:false
+                };
                 var self = this;
                 //1.生成domain,2.生成originDomain,3.生成lua.conf
                 if(this.args.configRole != null){
@@ -92,32 +97,30 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     configRole.forEach(function(item,index){
                         if(item == '1'){
                            self.$el.find(".domain").bootstrapSwitch('state',true);
+                           this.configurationFiletype.domain = true;
                         }else if(item == '2'){
                             self.$el.find(".origdomain").bootstrapSwitch('state',true)
+                            this.configurationFiletype.origdomain = true;
                         }else if(item == '3'){
                             self.$el.find('.lua').bootstrapSwitch('state',true);
+                            this.configurationFiletype.lua = true;
                         }
                     })
                 }
-                this.configurationFiletype = {
-                    domain:false,
-                    origdomain:false,
-                    lua:false
-                };
                 this.$el.find('.configurationFiletype').on('switchChange.bootstrapSwitch',function(event,state){
                     var target = event.target;
                    switch(target.className){
                       case 'origdomain':
                         self.configurationFiletype.origdomain = state;
-                        console.log(self.configurationFiletype);
+                        //console.log(self.configurationFiletype);
                         break;
                       case 'domain':
                         self.configurationFiletype.domain = state;
-                        console.log(self.configurationFiletype);
+                        //console.log(self.configurationFiletype);
                         break;
                       case 'lua':
                         self.configurationFiletype.lua = state;
-                        console.log(self.configurationFiletype);
+                        //console.log(self.configurationFiletype);
                         break;
                     }
                 })
@@ -753,7 +756,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 height   : 500,
                 onOKCallback:  function(){
                     var options = editDomainView.getArgs();
-                    console.log(options);
+                    //console.log(options);
                     if (!options) return;
                     this.collection.editDomain(options);
                     this.editDomainPopup.$el.modal("hide");

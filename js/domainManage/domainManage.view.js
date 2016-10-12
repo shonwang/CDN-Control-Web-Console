@@ -83,6 +83,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 inputUserId.attr('readonly',true);
                 cname.attr('readonly',true);
                 dropdownType.attr('disabled','disabled');
+                dropdownProtocol.attr('disabled','disabled');
                 //触发开关按钮
                 this.$el.find("[name='my-checkbox']").bootstrapSwitch('state',true);
                 this.configurationFiletype = {
@@ -147,8 +148,6 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 this.$el.find('#dropdown-protocol').attr('disabled','disabled');
                 this.$el.find("#dropdown-protocol .cur-value").html('无');
                 this.args.protocol = null;
-            }else{
-                this.$el.find('#dropdown-protocol').removeAttr('disabled');
             }
 
         },

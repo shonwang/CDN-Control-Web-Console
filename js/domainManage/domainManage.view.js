@@ -84,26 +84,37 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 cname.attr('readonly',true);
                 dropdownType.attr('disabled','disabled');
                 //触发开关按钮
-                this.$el.find("[name='my-checkbox']").bootstrapSwitch('state',false);
+                this.$el.find("[name='my-checkbox']").bootstrapSwitch('state',true);
                 this.configurationFiletype = {
-                    domain:false,
-                    origdomain:false,
-                    lua:false
+                    domain:true,
+                    origdomain:true,
+                    lua:true
                 };
+                //console.log(this.args.configRole);
                 var self = this;
                 //1.生成domain,2.生成originDomain,3.生成lua.conf
                 if(this.args.configRole != null){
                     var configRole = this.args.configRole.split(',');
-                    configRole.forEach(function(item,index){
-                        if(item == '1'){
-                           self.$el.find(".domain").bootstrapSwitch('state',true);
-                           this.configurationFiletype.domain = true;
-                        }else if(item == '2'){
-                            self.$el.find(".origdomain").bootstrapSwitch('state',true)
-                            this.configurationFiletype.origdomain = true;
-                        }else if(item == '3'){
-                            self.$el.find('.lua').bootstrapSwitch('state',true);
-                            this.configurationFiletype.lua = true;
+                    var s = ['1','2','3'];
+                    s.forEach(function(item,index){
+                        var flag = false;
+                        for(var i = 0;i<configRole.length;i++){
+                            if(item == configRole[i]){
+                               flag = true;
+                               return;
+                            }
+                        }
+                        if(flag == false){
+                            if(item == '1'){
+                               self.$el.find(".domain").bootstrapSwitch('state',false);
+                               self.configurationFiletype.domain = false;
+                            }else if(item == '2'){
+                                self.$el.find(".origdomain").bootstrapSwitch('state',false)
+                                self.configurationFiletype.origdomain = false;
+                            }else if(item == '3'){
+                                self.$el.find('.lua').bootstrapSwitch('state',false);
+                                self.configurationFiletype.lua = false;
+                            }
                         }
                     })
                 }
@@ -457,14 +468,14 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                         configRoleType = 1;
                     }
                 }else if(key == 'origdomain' && this.configurationFiletype.origdomain){
-                    console.log('originDomain');
+                    //console.log('originDomain');
                     if(configRoleType != ''){
                       configRoleType = configRoleType + ',' +2;
                     }else{
                         configRoleType = 2;
                     }
                 }else if(key == 'lua' && this.configurationFiletype.lua){
-                    console.log('lua.conf');
+                    //console.log('lua.conf');
                     if(configRoleType != ''){
                         configRoleType = configRoleType+ ',' +3;
                     }else{

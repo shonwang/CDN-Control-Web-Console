@@ -32,7 +32,7 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
 
             this.collection.on("set.headerCtr.success", $.proxy(this.launchSendPopup, this));
             this.collection.on("set.headerCtr.error", $.proxy(this.onGetError, this));
-            
+
             this.$el.find(".get-client-ip .togglebutton input").on("click", $.proxy(this.onClickGetIpToggle, this));
             this.$el.find(".add-cors-header .togglebutton input").on("click", $.proxy(this.onClickAddCrosToggle, this));
             this.$el.find(".delete-cookie-header .togglebutton input").on("click", $.proxy(this.onClickDelCookieToggle, this));
@@ -63,6 +63,10 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         onClickSaveBtn: function(){
+            if (this.defaultParam.obtainIp === 1 && this.$el.find("#custom-type").val() === ""){
+                alert("自定义不能为空！")
+                return false
+            }
             var postParam = {
                 "originId": this.domainInfo.id,
                 "obtainIp": this.defaultParam.obtainIp,

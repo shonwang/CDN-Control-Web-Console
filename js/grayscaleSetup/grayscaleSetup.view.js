@@ -284,7 +284,6 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         initDropMenu: function(){
-            console.log('进入下载菜单函数');
             Utility.initDropMenu(this.$el.find(".dropdown-businessType"), this.businessTypeList, function(value){
                 this.args.bisTypeId = parseInt($.trim(value));
                 console.log(this.args.bisTypeId);

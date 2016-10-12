@@ -188,6 +188,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             }.bind(this));
             if(this.isEdit){
                 $.each(typeList,function(k,v){
+
                     if(v.value == this.model.get("type")){
                         this.$el.find("#dropdown-type .cur-value").html(v.name);
                     }
@@ -762,7 +763,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 title:"编辑域名",
                 body : editDomainView,
                 backdrop : 'static',
-                type     : 2,
+                type     : 2, 
                 height   : 500,
                 onOKCallback:  function(){
                     var options = editDomainView.getArgs();

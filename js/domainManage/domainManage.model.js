@@ -124,7 +124,7 @@ define("domainManage.model", ['require','exports', 'utility'], function(require,
                 processData: false
             };
             defaultParas.data = JSON.stringify(args);
-
+            console.log(defaultParas.data);
             defaultParas.success = function(res){
                 this.trigger("add.domain.success");
             }.bind(this);

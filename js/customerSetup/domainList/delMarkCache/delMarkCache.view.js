@@ -13,7 +13,7 @@ define("delMarkCache.view", ['require','exports', 'template', 'modal.view', 'uti
             this.defaultParam = {
                 markType: 1,
                 markValue: "",
-                type: 0,
+                type: 9,
                 policy: ""
             };            
 

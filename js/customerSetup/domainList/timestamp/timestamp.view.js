@@ -252,7 +252,6 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
         //标准配置====================================================
 
         updateBaseKeyTable: function(){
-            if (this.defaultParam.baseSecretKeyBackup.length === 0) return;
             this.$el.find(".base-setup .backup-key-table").find(".table").remove()
             this.baseBackupKeyTable = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.backupKeyTable.html'])({
                 data: this.defaultParam.baseSecretKeyBackup
@@ -322,7 +321,6 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         updateAdvancedKeyTable: function(){
-            if (this.defaultParam.advancedSecretKeyBackup.length === 0) return;
             this.$el.find(".advanced-setup .backup-key-table").find(".table").remove()
             this.advancedBackupKeyTable = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.backupKeyTable.html'])({
                 data: this.defaultParam.advancedSecretKeyBackup

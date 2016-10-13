@@ -68,76 +68,76 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
         execute: function(callback, args) {
             switch(this.curPage){
                 case 'channelManage':
-                  this.channelManageView.hide();
-                  break;
+                    this.channelManageView.hide();
+                    break;
                 case 'setupChannelManage':
-                  this.setupChannelManageView.remove();
-                  this.setupChannelManageView = null;
-                  break;
+                    this.setupChannelManageView.remove();
+                    this.setupChannelManageView = null;
+                    break;
                 case 'setupAppManage':
-                  this.setupAppManageView.remove();
-                  this.setupAppManageView = null;
-                  break;
+                    this.setupAppManageView.remove();
+                    this.setupAppManageView = null;
+                    break;
                 case 'setupTopoManage':
-                  this.setupTopoManageView.remove();
-                  this.setupTopoManageView = null;
-                  break;
+                    this.setupTopoManageView.remove();
+                    this.setupTopoManageView = null;
+                    break;
                 case 'deviceManage':
-                  this.deviceManageView.remove();
-                  this.deviceManageView = null;
-                  break;
+                    this.deviceManageView.remove();
+                    this.deviceManageView = null;
+                    break;
                 case 'nodeManage':
-                  this.nodeManageView.hide();
-                  break;
+                    this.nodeManageView.hide();
+                    break;
                 case 'dispGroup':
-                  this.dispGroupView.hide();
-                  break;
+                    this.dispGroupView.hide();
+                    break;
                 case 'dispConfig':
-                  this.dispConfigView.remove();
-                  this.dispConfigView = null;
-                  break;
+                    this.dispConfigView.remove();
+                    this.dispConfigView = null;
+                    break;
                 case 'coverRegion':
-                  this.coverRegionView.hide();
-                  break;
+                    this.coverRegionView.hide();
+                    break;
                 case 'coverManage':
-                  this.coverManageView.hide();
-                  break;
+                    this.coverManageView.hide();
+                    break;
                 case "liveAllSetup":
                     this.liveAllSetupView.hide();
-                  break;
+                    break;
                 case "liveCurentSetup":
                     this.liveCurentSetupView.hide();
-                  break;
+                    break;
                 case "ipManage":
                     this.ipManageView.remove();
                     this.ipManageView = null
-                  break;
+                    break;
                 case "businessManage":
                     this.businessManageView.hide();
-                  break;
+                    break;
                 case 'clientStatistics':
-                  this.clientStatisticsView.remove();
-                  this.clientStatisticsView = null;
-                  break;
+                    this.clientStatisticsView.remove();
+                    this.clientStatisticsView = null;
+                    break;
                 case 'statisticsManage':
-                  this.statisticsManageView.remove();
-                  this.statisticsManageView = null;
-                  break;
+                    this.statisticsManageView.remove();
+                    this.statisticsManageView = null;
+                    break;
                 case 'domainStatistics':
-                  this.domainStatisticsView.remove();
-                  this.domainStatisticsView = null;
-                  break;
+                    this.domainStatisticsView.remove();
+                    this.domainStatisticsView = null;
+                    break;
                 case 'domainManage':
-                  this.domainManageView.hide();
-                  break;
+                    this.domainManageView.hide();
+                    break;
                 case 'refreshManual':
-                  this.refreshManualView.remove();
-                  this.refreshManualView = null;
-                  break;
+                    this.refreshManualView.remove();
+                    this.refreshManualView = null;
+                    break;
                 case 'customMaintenance':
-                  this.customMaintenanceView.remove();
-                  this.customMaintenanceView = null;
-                  break;
+                    this.customMaintenanceView.remove();
+                    this.customMaintenanceView = null;
+                    break;
                 case 'grayscaleSetup':
                     this.grayscaleSetupView.hide();
                     break;
@@ -147,60 +147,81 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                 case 'customerSetup':
                     this.customerSetupView.hide();
                     break;
-                case 'domainList':
+                case 'customerSetup-domainList':
                     this.domainListView.hide();
                     break;
-                case 'domainSetup':
+                case 'customerSetup-domainList-domainSetup':
                     this.domainSetupView.hide();
                     break;
-                case 'cacheRule':
+                case 'customerSetup-domainList-cacheRule':
                     this.cacheRuleView.hide();
                     break;
-                case 'delMarkCache':
+                case 'customerSetup-domainList-delMarkCache':
                     this.delMarkCacheView.hide();
                     break;
-                case 'cacheKeySetup':
+                case 'customerSetup-domainList-cacheKeySetup':
                     this.cacheKeySetupView.hide();
                     break;
-                case 'cnameSetup':
+                case 'customerSetup-domainList-cnameSetup':
                     this.cnameSetupView.hide();
                     break;
-                case 'backOriginSetup':
+                case 'customerSetup-domainList-backOriginSetup':
                     this.backOriginSetupView.hide();
                     break;
-                case 'following302':
+                case 'customerSetup-domainList-following302':
                     this.following302View.hide();
                     break;
-                case 'dragPlay':
+                case 'customerSetup-domainList-dragPlay':
                     this.dragPlayView.hide();
                     break;
-                case 'clientLimitSpeed':
+                case 'customerSetup-domainList-clientLimitSpeed':
                     this.clientLimitSpeedView.hide();
                     break;
-                case 'httpHeaderOpt':
+                case 'customerSetup-domainList-httpHeaderOpt':
                     this.httpHeaderOptView.hide();
                     break;
-                case 'httpHeaderCtr':
+                case 'customerSetup-domainList-httpHeaderCtr':
                     this.httpHeaderCtrView.hide();
                     break;
-                case 'requestArgsModify':
+                case 'customerSetup-domainList-requestArgsModify':
                     this.requestArgsModifyView.hide();
                     break;
-                case 'ipBlackWhiteList':
+                case 'customerSetup-domainList-ipBlackWhiteList':
                     this.ipBlackWhiteListView.hide();
                     break;
-                case 'refererAntiLeech':
+                case 'customerSetup-domainList-refererAntiLeech':
                     this.refererAntiLeechView.hide();
                     break;
-                case 'timestamp':
+                case 'customerSetup-domainList-timestamp':
                     this.timestampView.hide();
                     break
-                case 'openNgxLog':
+                case 'customerSetup-domainList-openNgxLog':
                     this.openNgxLogView.hide();
                 default:
             }
-            if (callback)
-                callback.apply(this, args);
+
+            if (callback) callback.apply(this, args);
+        },
+
+        removeSubSideBar: function(){
+            if (this.curPage.indexOf("customerSetup-") == -1 && 
+                this.curPage.indexOf("customerSetup-domainList-") == -1){
+                if (this.subNavbar){
+                    this.subNavbar.$el.remove();
+                    this.subNavbar = null;
+                }
+                if (this.thirdNavbar) {
+                    this.thirdNavbar.$el.remove();
+                    this.thirdNavbar = null;
+                } 
+            }
+            if (this.curPage.indexOf("customerSetup-") > -1 &&
+                this.curPage.indexOf("customerSetup-domainList-") == -1){
+                if (this.thirdNavbar) {
+                    this.thirdNavbar.$el.remove();
+                    this.thirdNavbar = null;
+                } 
+            }
         },
 
         setupTopoManage: function(){
@@ -210,7 +231,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
         setupTopoManageCallback: function(){
             require(['setupTopoManage.view', 'setupTopoManage.model'], function(SetupTopoManageView, SetupTopoManageModel){
                 this.curPage = 'setupTopoManage';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.setupTopoManageModel)
                     this.setupTopoManageModel = new SetupTopoManageModel();
                 if (!this.setupTopoManageView ){
@@ -232,7 +253,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
         setupAppManageCallback: function(){
             require(['setupAppManage.view', 'setupAppManage.model'], function(SetupAppManageView, SetupAppManageModel){
                 this.curPage = 'setupAppManage';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.setupAppManageModel)
                     this.setupAppManageModel = new SetupAppManageModel();
                 if (!this.setupAppManageView ){
@@ -254,7 +275,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
         setupChannelManageCallback: function(){
             require(['setupChannelManage.view', 'setupChannelManage.model'], function(SetupChannelManageView, SetupChannelManageModel){
                 this.curPage = 'setupChannelManage';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.setupChannelManageModel)
                     this.setupChannelManageModel = new SetupChannelManageModel();
                 if (!this.setupChannelManageView ){
@@ -276,7 +297,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
         customMaintenanceCallback: function(){
             require(['customMaintenance.view', 'customMaintenance.model'], function(CustomMaintenanceView, CustomMaintenanceModel){
                 this.curPage = 'customMaintenance';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.customMaintenanceModel)
                     this.customMaintenanceModel = new CustomMaintenanceModel();
                 if (!this.customMaintenanceView ){
@@ -296,7 +317,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
         refreshManualCallback: function(){
             require(['refreshManual.view', 'refreshManual.model'], function(RefreshManualView, RefreshManualModel){
                 this.curPage = 'refreshManual';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.refreshManualModel)
                     this.refreshManualModel = new RefreshManualModel();
                 if (!this.refreshManualView ){
@@ -317,7 +338,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             if (!AUTH_OBJ.ManageNodeGroups) return;
             require(['businessManage.view', 'businessManage.model', 'nodeManage.model'], function(BusinessManageView, BusinessManageModel, NodeManageModel){
                 this.curPage = 'businessManage';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.businessManageModel)
                     this.businessManageModel = new BusinessManageModel();
                 if (!this.nodeManageModel)
@@ -343,7 +364,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             if (!AUTH_OBJ.ManageIPs) return;
             require(['ipManage.view', 'ipManage.model', 'deviceManage.model'], function(IPManageView, IPManageModel, DeviceManageModel){
                 this.curPage = 'ipManage';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.ipManageModel)
                     this.ipManageModel = new IPManageModel();
                 if (!this.deviceManageModel)
@@ -367,7 +388,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             if (!AUTH_OBJ.CurrentConfigurations) return;
             require(['liveCurentSetup.view', 'liveCurentSetup.model'], function(LiveCurentSetupView, LiveCurentSetupModel){
                 this.curPage = 'liveCurentSetup';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.liveCurentSetupModel)
                     this.liveCurentSetupModel = new LiveCurentSetupModel();
                 if (!this.liveCurentSetupView ){
@@ -388,7 +409,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             if (!AUTH_OBJ.ManageConfigs) return;
             require(['liveAllSetup.view', 'liveAllSetup.model'], function(LiveAllSetupView, LiveAllSetupModel){
                 this.curPage = 'liveAllSetup';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.liveAllSetupModel)
                     this.liveAllSetupModel = new LiveAllSetupModel();
                 if (!this.liveAllSetupView ){
@@ -409,7 +430,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             if (!AUTH_OBJ.ManageCoverrelateds) return;
             require(['coverManage.view', 'coverManage.model', 'nodeManage.model'], function(CoverManageView, CoverManageModel, NodeManageModel){
                 this.curPage = 'coverManage';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.coverManageModel)
                     this.coverManageModel = new CoverManageModel();
                 if (!this.nodeManageModel)
@@ -435,7 +456,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             if (!AUTH_OBJ.Coverrelateds) return;
             require(['coverRegion.view', 'coverRegion.model'], function(CoverRegionView, CoverRegionModel){
                     this.curPage = 'coverRegion';
-                    this.navbarView.select(this.curPage);
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                     if (!this.coverRegionModel)
                         this.coverRegionModel = new CoverRegionModel();
                     if (!this.coverRegionView ){
@@ -456,7 +477,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             if (!AUTH_OBJ.GslbConfig) return;
             require(['dispConfig.view', 'dispConfig.model', 'dispGroup.model'], function(DispConfigView, DispConfigModel, DispGroupModel){
                 this.curPage = 'dispConfig';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.dispConfigModel)
                     this.dispConfigModel = new DispConfigModel();
                 if (!this.diffConfigModel)
@@ -485,7 +506,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             if (!AUTH_OBJ.ManageGslbGroups) return;
             require(['dispGroup.view', 'dispGroup.model'], function(DispGroupView, DispGroupModel){
                 this.curPage = 'dispGroup';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.dispGroupModel)
                     this.dispGroupModel = new DispGroupModel();
                 if (!this.dispGroupView ){
@@ -506,7 +527,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             if (!AUTH_OBJ.ManageNodes) return;
             require(['nodeManage.view', 'nodeManage.model'], function(NodeManageView, NodeManageModel){
                 this.curPage = 'nodeManage';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.nodeManageModel)
                     this.nodeManageModel = new NodeManageModel();
                 if (!this.nodeManageView ){
@@ -527,7 +548,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             if (!AUTH_OBJ.ManageHosts) return;
             require(['deviceManage.view', 'deviceManage.model'], function(DeviceManageView, DeviceManageModel){
                 this.curPage = 'deviceManage';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.deviceManageModel)
                     this.deviceManageModel = new DeviceManageModel();
                 if (!this.deviceManageView ){
@@ -551,7 +572,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             if (!AUTH_OBJ.ManageChannels) return;
             require(['channelManage.view', 'channelManage.model'], function(ChannelManageView, ChannelManageModel){
                 this.curPage = 'channelManage';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.channelManageModel)
                     this.channelManageModel = new ChannelManageModel();
                 if (!this.channelManageView){
@@ -572,7 +593,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             if (!AUTH_OBJ.KACustomersBandwidthStatistics) return;
             require(['clientStatistics.view', 'clientStatistics.model'], function(ClientStatisticsView, ClientStatisticsModel){
                 this.curPage = 'clientStatistics';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.downloadClientStatisticsModel)
                     this.downloadClientStatisticsModel = new ClientStatisticsModel();
                 if (!this.liveClientStatisticsModel)
@@ -596,7 +617,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             if (!AUTH_OBJ.KADomainBandwidthStatistics) return;
             require(['domainStatistics.view', 'domainStatistics.model'], function(DomainStatisticsView, DomainStatisticsModel){
                 this.curPage = 'domainStatistics';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.downloadDomainStatisticsModel)
                     this.downloadDomainStatisticsModel = new DomainStatisticsModel();
                 if (!this.liveDomainStatisticsModel)
@@ -620,7 +641,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             if (!AUTH_OBJ.CustomerBandwidthStatistics) return;
             require(['statisticsManage.view', 'statisticsManage.model'], function(StatisticsManageView, StatisticsManageModel){
                 this.curPage = 'statisticsManage';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.downloadStatisticsManageModel)
                     this.downloadStatisticsManageModel = new StatisticsManageModel();
                 if (!this.liveStatisticsManageModel)
@@ -643,7 +664,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
         domainManageCallback: function(){
             require(['domainManage.view', 'domainManage.model'], function(DomainManageView, DomainManageModel){
                 this.curPage = 'domainManage';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.domainManageModel)
                     this.domainManageModel = new DomainManageModel();
                 if (!this.domainManageView){
@@ -664,7 +685,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
 
             require(['grayscaleSetup.view', 'grayscaleSetup.model'], function(GrayscaleSetupView, GrayscaleSetupModel){
                 this.curPage = 'grayscaleSetup';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.grayscaleSetupModel)
                     this.grayscaleSetupModel = new GrayscaleSetupModel();
                 if (!this.grayscaleSetupView){
@@ -684,7 +705,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
         templateManageCallback: function(){
             require(['templateManage.view', 'templateManage.model'], function(TemplateManageView, TemplateManageModel){
                 this.curPage = 'templateManage';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.templateManageModel)
                     this.templateManageModel = new TemplateManageModel();
                 if (!this.templateManageView){

@@ -299,7 +299,11 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
         launchSendPopup: function(){
             require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
                 var mySaveThenSendView = new SaveThenSendView({
-                    collection: this.collection, 
+                    collection: new SaveThenSendModel(),
+                    originId: this.domainInfo.id,
+                    onSendSuccess: function() {
+                        this.sendPopup.$el.modal("hide");
+                    }.bind(this)
                 });
                 var options = {
                     title: "发布",
@@ -307,7 +311,7 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
                     backdrop : 'static',
                     type     : 2,
                     onOKCallback:  function(){
-                        this.sendPopup.$el.modal("hide");
+                        mySaveThenSendView.sendConfig();
                     }.bind(this),
                     onHiddenCallback: function(){
                         if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();

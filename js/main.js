@@ -174,3 +174,7 @@ requirejs.config({
 requirejs(['routes'], function(routes) {
     Backbone.history.start();
 });
+
+// requirejs.onError = function (err) {
+//     alert('模块: ' + err.requireModules + "拉取失败！请检查您的网络，清除浏览器缓存后重试！")
+// };

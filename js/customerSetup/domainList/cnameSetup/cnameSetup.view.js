@@ -21,16 +21,34 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
+            require(["domainSetup.model"], function(DomainSetupModel){
+                var myDomainSetupModel = new DomainSetupModel();
+                    myDomainSetupModel.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
+                    myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
+                    myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
+            }.bind(this))
+        },
+
+        onGetDomainInfo: function(data){
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveButton, this))
 
             this.collection.on("modify.cname.success", $.proxy(this.launchSendPopup, this));
             this.collection.on("modify.cname.error", $.proxy(this.onGetError, this));
+            
+            var cname = _.find(data.originDomain.cnameData, function(obj) {
+                return obj.type === 1
+            }.bind(this))
+            if (cname) this.$el.find("#cname-set").val(cname.name);
         },
 
         launchSendPopup: function(){
             require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
                 var mySaveThenSendView = new SaveThenSendView({
-                    collection: this.collection, 
+                    collection: new SaveThenSendModel(),
+                    originId: this.domainInfo.id,
+                    onSendSuccess: function() {
+                        this.sendPopup.$el.modal("hide");
+                    }.bind(this)
                 });
                 var options = {
                     title: "发布",
@@ -38,7 +56,7 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
                     backdrop : 'static',
                     type     : 2,
                     onOKCallback:  function(){
-                        this.sendPopup.$el.modal("hide");
+                        mySaveThenSendView.sendConfig();
                     }.bind(this),
                     onHiddenCallback: function(){
                         if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();

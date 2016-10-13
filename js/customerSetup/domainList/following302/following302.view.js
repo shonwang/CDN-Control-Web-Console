@@ -21,9 +21,19 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"));
 
-            this.defaultParam = {
-                following: 0 //0:关闭 1:开启
-            }
+            require(["domainSetup.model"], function(DomainSetupModel){
+                var myDomainSetupModel = new DomainSetupModel();
+                    myDomainSetupModel.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
+                    myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
+                    myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
+            }.bind(this))
+        },
+
+        onGetDomainInfo: function(data){
+            this.defaultParam = {following: 0}
+
+            if (data.domainConf && data.domainConf.following)
+                this.defaultParam.following === data.domainConf.following //0:关闭 1:开启
 
             this.initSetup();
 
@@ -34,17 +44,14 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("set.following.error", $.proxy(this.onGetError, this));
         },
 
-        initSetup: function(){
-            if (this.defaultParam.following === 0)
-                this.$el.find(".following302 .togglebutton input").get(0).checked = false;
-            else
-                this.$el.find(".following302 .togglebutton input").get(0).checked = true;
-        },
-
         launchSendPopup: function(){
             require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
                 var mySaveThenSendView = new SaveThenSendView({
-                    collection: this.collection, 
+                    collection: new SaveThenSendModel(),
+                    originId: this.domainInfo.id,
+                    onSendSuccess: function() {
+                        this.sendPopup.$el.modal("hide");
+                    }.bind(this)
                 });
                 var options = {
                     title: "发布",
@@ -52,7 +59,7 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
                     backdrop : 'static',
                     type     : 2,
                     onOKCallback:  function(){
-                        this.sendPopup.$el.modal("hide");
+                        mySaveThenSendView.sendConfig();
                     }.bind(this),
                     onHiddenCallback: function(){
                         if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();
@@ -60,6 +67,13 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
                 }
                 this.sendPopup = new Modal(options);
             }.bind(this))
+        },
+
+        initSetup: function(){
+            if (this.defaultParam.following === 0)
+                this.$el.find(".following302 .togglebutton input").get(0).checked = false;
+            else
+                this.$el.find(".following302 .togglebutton input").get(0).checked = true;
         },
 
         onClickSaveBtn: function(){

@@ -19,13 +19,13 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     name: '域名设置',
                     hash: 'javascript:void(0)',
                     children: [{
-                        id: 'domainSetup',
+                        id: 'customerSetup-domainList-domainSetup',
                         name: '域名基础设置',
                         hash: 'index.html#/domainList/' + query + /domainSetup/ + query2,
                         active: true,
                         children: []
                     },{
-                        id: 'cnameSetup',
+                        id: 'customerSetup-domainList-cnameSetup',
                         name: 'CNAME设置',
                         hash: 'index.html#/domainList/' + query + /cnameSetup/ + query2,
                         active: false,
@@ -36,7 +36,7 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     name: '源站配置',
                     hash: 'javascript:void(0)',
                     children: [{
-                        id: 'backOriginSetup',
+                        id: 'customerSetup-domainList-backOriginSetup',
                         name: '回源配置',
                         hash: 'index.html#/domainList/' + query + /backOriginSetup/ + query2,
                         active: false,
@@ -47,7 +47,7 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     name: 'HTTP协议优化',
                     hash: 'javascript:void(0)',
                     children: [{
-                        id: 'following302',
+                        id: 'customerSetup-domainList-following302',
                         name: 'Following 302',
                         hash: 'index.html#/domainList/' + query + /following302/ + query2,
                         active: false,
@@ -58,19 +58,19 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     name: '缓存优化',
                     hash: 'javascript:void(0)',
                     children: [{
-                        id: 'cacheRule',
+                        id: 'customerSetup-domainList-cacheRule',
                         name: '缓存规则',
                         hash: 'index.html#/domainList/' + query + /cacheRule/ + query2,
                         active: false,
                         children: []
                     },{
-                        id: 'delMarkCache',
+                        id: 'customerSetup-domainList-delMarkCache',
                         name: '去问号缓存',
                         hash: 'index.html#/domainList/' + query + /delMarkCache/ + query2,
                         active: false,
                         children: []
                     },{
-                        id: 'cacheKeySetup',
+                        id: 'customerSetup-domainList-cacheKeySetup',
                         name: '设置 Cache Key',
                         hash: 'index.html#/domainList/' + query + /cacheKeySetup/ + query2,
                         active: false,
@@ -81,7 +81,7 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     name: '点播优化',
                     hash: 'javascript:void(0)',
                     children: [{
-                        id: 'dragPlay',
+                        id: 'customerSetup-domainList-dragPlay',
                         name: '拖拽播放',
                         hash: 'index.html#/domainList/' + query + /dragPlay/ + query2,
                         active: false,
@@ -92,7 +92,7 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     name: '限速',
                     hash: 'javascript:void(0)',
                     children: [{
-                        id: 'clientLimitSpeed',
+                        id: 'customerSetup-domainList-clientLimitSpeed',
                         name: '客户端限速',
                         hash: 'index.html#/domainList/' + query + /clientLimitSpeed/ + query2,
                         active: false,
@@ -103,13 +103,13 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     name: 'HTTP头控制',
                     hash: 'javascript:void(0)',
                     children: [{
-                        id: 'httpHeaderOpt',
+                        id: 'customerSetup-domainList-httpHeaderOpt',
                         name: 'HTTP头的增删改查',
                         hash: 'index.html#/domainList/' + query + /httpHeaderOpt/ + query2,
                         active: false,
                         children: []
                     },{
-                        id: 'httpHeaderCtr',
+                        id: 'customerSetup-domainList-httpHeaderCtr',
                         name: '常用HTTP头控制功能',
                         hash: 'index.html#/domainList/' + query + /httpHeaderCtr/ + query2,
                         active: false,
@@ -120,7 +120,7 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     name: 'URL控制',
                     hash: 'javascript:void(0)',
                     children: [{
-                        id: 'requestArgsModify',
+                        id: 'customerSetup-domainList-requestArgsModify',
                         name: '请求参数的改写',
                         hash: 'index.html#/domainList/' + query + /requestArgsModify/ + query2,
                         active: false,
@@ -132,20 +132,20 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     hash: 'javascript:void(0)',
                     children: [
                     // {
-                    //     id: 'ipBlackWhiteList',
+                    //     id: 'customerSetup-domainList-ipBlackWhiteList',
                     //     name: 'IP黑白名单',
                     //     hash: 'index.html#/domainList/' + query + /ipBlackWhiteList/ + query2,
                     //     active: false,
                     //     children: []
                     // },
                     {
-                        id: 'refererAntiLeech',
+                        id: 'customerSetup-domainList-refererAntiLeech',
                         name: 'Referer防盗链',
                         hash: 'index.html#/domainList/' + query + /refererAntiLeech/ + query2,
                         active: false,
                         children: []
                     },{
-                        id: 'timestamp',
+                        id: 'customerSetup-domainList-timestamp',
                         name: '时间戳+共享秘钥防盗链',
                         hash: 'index.html#/domainList/' + query + /timestamp/ + query2,
                         active: false,
@@ -156,7 +156,7 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     name: '日志服务',
                     hash: 'javascript:void(0)',
                     children: [{
-                        id: 'openNgxLog',
+                        id: 'customerSetup-domainList-openNgxLog',
                         name: '开启Nginx计费日志',
                         hash: 'index.html#/domainList/' + query + /openNgxLog/ + query2,
                         active: false,

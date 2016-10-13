@@ -6,54 +6,127 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
         initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
+            this.isEdit = options.isEdit;
+            this.model = options.model;
             this.$el = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.add.html'])());
 
-            require(['matchCondition.view'], function(MatchConditionView){
+            this.defaultParam = {
+                isBaseSetup: 1,
+                antiLeech: 1,
+                baseSecretKeyPrimary: "",
+                baseSecretKeyBackup: [],
+                baseDeadline: 1,
+
+                encryption: 1,
+                mtPosition: 2,
+                timestampType: 1,
+                advancedDeadline: 1,
+                advancedSecretKeyPrimary: "",
+                advancedSecretKeyBackup: [],
+                spliceMd5: 1,
+                timeParam: "",
+                hashParam: "",
+                authFactor: "",
+                md5Truncate: "",
+                type: 9,
+                policy: ""
+            };
+
+            if (this.isEdit){
+                var protectionType = this.model.get("protectionType"), //1:typeA 2:typeB 3:typeC
+                    confType = this.model.get("confType"),
+                    authKeyList = this.model.get("authKeyList"),
+                    md5Truncate = this.model.get("md5Truncate")
+                    expirationTime = this.model.get("expirationTime");
+
+                if (confType === 0) {
+                    this.defaultParam.antiLeech = protectionType
+                } else if (confType === 1 && protectionType === 1){
+                    this.defaultParam.encryption = protectionType
+                } else if (confType === 1 && protectionType === 2) {
+                    this.defaultParam.mtPosition = protectionType
+                    this.defaultParam.encryption = 2
+                } else if (confType === 1 && protectionType === 3) {
+                    this.defaultParam.mtPosition = protectionType
+                    this.defaultParam.encryption = 2
+                }
+
+                if (authKeyList && authKeyList.length > 0 && confType === 0){
+                    this.defaultParam.baseSecretKeyPrimary = authKeyList[0].authKey;
+                } else if (authKeyList && authKeyList.length > 0 && confType === 1) {
+                    this.defaultParam.advancedSecretKeyPrimary = authKeyList[0].authKey;
+                }
+
+                _.each(authKeyList, function(el, index, ls){
+                    if (index !== 0 && confType === 0) {
+                        this.defaultParam.baseSecretKeyBackup.push({
+                            id: el.id,
+                            backupKey: el.authKey
+                        })
+                    } else if (index !== 0 && confType === 1){
+                        this.defaultParam.advancedSecretKeyBackup.push({
+                            id: el.id,
+                            backupKey: el.authKey
+                        })
+                    }
+                }.bind(this))
+
+                if (expirationTime !== 0 && confType === 0)
+                    this.defaultParam.baseDeadline === 1;
+                else if (expirationTime === 0 && confType === 0)
+                    this.defaultParam.baseDeadline === 2;
+                else if (expirationTime === 0 && confType === 1)
+                    this.defaultParam.advancedDeadline = 1;
+                else if (expirationTime === 0 && confType === 1)
+                    this.defaultParam.advancedDeadline = 2;
+
+                if (md5Truncate === ""){
+                    this.defaultParam.spliceMd5 = 1;
+                } else {
+                    this.defaultParam.spliceMd5 = 2;
+                }
+                this.defaultParam.isBaseSetup = confType === 0 ? 1 : 2; //0:标准配置 1:高级配置
+                this.defaultParam.timestampType = this.model.get("timeType") || 1; //1:UNIX时间（十六进制）2:UNix时间（十进制）3：Text格式
+                this.defaultParam.authFactor = this.model.get("authFactor");
+                this.defaultParam.timeParam = this.model.get("timeParam");
+                this.defaultParam.hashParam = this.model.get("hashParam");
+                this.defaultParam.md5Truncate = this.model.get("md5Truncate");
+                this.defaultParam.type = this.model.get("matchingType") || 0;
+                this.defaultParam.policy = this.model.get("matchingValue") || "";
+
+                console.log(this.defaultParam)
+            }
+
+            require(['matchCondition.view', 'matchCondition.model'], function(MatchConditionView, MatchConditionModel){
                 var  matchConditionArray = [
-                    {name: "全部文件", value: 1},
-                    {name: "文件类型", value: 2},
-                    {name: "指定URI", value: 3},
-                    {name: "指定目录", value: 4},
-                    {name: "正则匹配", value: 5},
+                    {name: "全部文件", value: 9},
+                    {name: "文件类型", value: 0},
+                    {name: "指定URI", value: 2},
+                    {name: "指定目录", value: 1},
+                    {name: "正则匹配", value: 3},
                 ], matchConditionOption = {
-                    defaultCondition : 4,
+                    collection: new MatchConditionModel(),
+                    defaultCondition : this.defaultParam.type,
+                    defaultPolicy: this.defaultParam.policy,
                     matchConditionArray: matchConditionArray
                 }
                 this.matchConditionView = new MatchConditionView(matchConditionOption);
                 this.matchConditionView.render(this.$el.find(".match-condition-ctn"));
+
+                this.$el.find(".setup-type input").on("click", $.proxy(this.onClickSetupRadio, this));
+                this.$el.find(".anti-leech input").on("click", $.proxy(this.onClickAntiLeechRadio, this));
+                this.$el.find(".base-setup .add-secret-key-backup").on("click", $.proxy(this.onClickBaseNewKey, this));
+                this.$el.find(".base-setup.deadline input[name='baseDeadline']").on("click", $.proxy(this.onClickBaseDeadlineRadio, this));
+
+                this.$el.find("#secret-key-primary").on("blur", $.proxy(this.onBlurSecretKeyInput, this));
+                this.$el.find("#new-backup-key").on("blur", $.proxy(this.onBlurSecretKeyInput, this));
+
+                this.$el.find(".encryption-url input[name='encryption']").on("click", $.proxy(this.onClickEncryptionUrlRadio, this));
+                this.$el.find(".advanced-setup.deadline input[name='deadline']").on("click", $.proxy(this.onClickAdvancedDeadlineRadio, this));
+                this.$el.find(".advanced-setup .add-secret-key-backup").on("click", $.proxy(this.onClickAdvancedNewKey, this));
+                this.$el.find(".splice-md5 input[name='spliceMd5']").on("click", $.proxy(this.onClickSpliceMd5Radio, this));
+                this.initBaseAdvancedSetup();
             }.bind(this))
-
-            this.$el.find(".setup-type input").on("click", $.proxy(this.onClickSetupRadio, this));
-            this.$el.find(".anti-leech input").on("click", $.proxy(this.onClickAntiLeechRadio, this));
-            this.$el.find(".base-setup .add-secret-key-backup").on("click", $.proxy(this.onClickBaseNewKey, this));
-            this.$el.find(".base-setup.deadline input").on("click", $.proxy(this.onClickBaseDeadlineRadio, this));
-
-            this.$el.find("#secret-key-primary").on("blur", $.proxy(this.onBlurSecretKeyInput, this));
-            this.$el.find("#new-backup-key").on("blur", $.proxy(this.onBlurSecretKeyInput, this));
-
-            this.$el.find(".encryption-url input").on("click", $.proxy(this.onClickEncryptionUrlRadio, this));
-            this.$el.find(".advanced-setup.deadline input").on("click", $.proxy(this.onClickAdvancedDeadlineRadio, this));
-            this.$el.find(".advanced-setup .add-secret-key-backup").on("click", $.proxy(this.onClickAdvancedNewKey, this));
-            this.$el.find(".splice-md5 input[name='spliceMd5']").on("click", $.proxy(this.onClickSpliceMd5Radio, this));
-
-            this.defaultParam = {
-                isBaseSetup: 2,
-                antiLeech: 1,
-                baseSecretKeyPrimary: "你好呀",
-                baseSecretKeyBackup: [{id:1, backupKey: "你快乐吗？"}, {id:2, backupKey: "你幸福吗？"}],
-                baseDeadline: 1,
-
-                encryption: 1,
-                mtPosition: 1,
-                timestampType: 1,
-                advancedDeadline: 1,
-                advancedSecretKeyPrimary: "你渴望力量吗？",
-                advancedSecretKeyBackup: [{id:1, backupKey: "不！"}, {id:2, backupKey: "我渴望……"}],
-                spliceMd5: 1
-
-
-            };
-            this.initBaseAdvancedSetup();
         },
 
         initBaseAdvancedSetup: function(){
@@ -76,10 +149,11 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.$el.find(".base-setup.deadline #deadline1").get(0).checked = true;
             else if (this.defaultParam.baseDeadline === 2)
                 this.$el.find(".base-setup.deadline #deadline2").get(0).checked = true;
+
             //高级配置
-            if (this.defaultParam.baseDeadline === 1)
+            if (this.defaultParam.encryption === 1)
                 this.$el.find(".advanced-setup #encryption1").get(0).checked = true;
-            else if (this.defaultParam.baseDeadline === 2)
+            else if (this.defaultParam.encryption === 2)
                 this.$el.find(".advanced-setup #encryption2").get(0).checked = true;
             this.initDropDropdown();
             if (this.defaultParam.advancedDeadline === 1)
@@ -92,12 +166,24 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.$el.find(".advanced-setup.splice-md5 #spliceMd51").get(0).checked = true;
             else if (this.defaultParam.spliceMd5 === 2)
                 this.$el.find(".advanced-setup.splice-md5 #spliceMd52").get(0).checked = true;
+
+            this.$el.find("#atuth-divisor").val(this.defaultParam.authFactor);
+            this.$el.find("#key_time").val(this.defaultParam.timeParam);
+            this.$el.find("#key_hash").val(this.defaultParam.hashParam);
+
+            if (this.model)
+                this.$el.find("#deadline-time").val(this.model.get("expirationTime"))
+
+            if (this.defaultParam.md5Truncate.indexOf("|") !== -1){
+                this.$el.find("#md5-start").val(this.defaultParam.md5Truncate.split("|")[0])
+                this.$el.find("#md5-end").val(this.defaultParam.md5Truncate.split("|")[1])
+            } 
         },
 
         initDropDropdown: function(){
             var  mtPositionArray = [
-                {name: "{md5hash/timestamp}", value: 1},
-                {name: "{timestamp/md5hash}", value: 2}
+                {name: "{md5hash/timestamp}", value: 2},
+                {name: "{timestamp/md5hash}", value: 3}
             ],
             rootNode = this.$el.find(".mt-position");
             Utility.initDropMenu(rootNode, mtPositionArray, function(value){
@@ -114,8 +200,8 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.$el.find("#dropdown-mt-position .cur-value").html(mtPositionArray[0].name);
 
             var  timeTypeArray = [
-                {name: "UNIX时间（十进制）", value: 1},
-                {name: "UNIX时间（十六进制）", value: 2},
+                {name: "UNIX时间（十进制）", value: 2},
+                {name: "UNIX时间（十六进制）", value: 1},
                 {name: "Text格式（例如20130623181426）", value: 3}
             ],
             rootOtherNode = this.$el.find(".timestamp-type");
@@ -166,6 +252,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
         //标准配置====================================================
 
         updateBaseKeyTable: function(){
+            if (this.defaultParam.baseSecretKeyBackup.length === 0) return;
             this.$el.find(".base-setup .backup-key-table").find(".table").remove()
             this.baseBackupKeyTable = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.backupKeyTable.html'])({
                 data: this.defaultParam.baseSecretKeyBackup
@@ -235,6 +322,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         updateAdvancedKeyTable: function(){
+            if (this.defaultParam.advancedSecretKeyBackup.length === 0) return;
             this.$el.find(".advanced-setup .backup-key-table").find(".table").remove()
             this.advancedBackupKeyTable = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.backupKeyTable.html'])({
                 data: this.defaultParam.advancedSecretKeyBackup
@@ -312,7 +400,104 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         onSure: function(){
             var result = this.checkBalabala();
-            if (result) alert("very good")
+            if (!result) return false;
+
+            var matchConditionParam = this.matchConditionView.getMatchConditionParam();
+            if (!matchConditionParam) return false;
+
+            var protectionType, confType, expirationTime, md5Truncate;
+            confType = this.defaultParam.isBaseSetup === 1 ? 0 : 1
+            if (confType === 0){
+                protectionType = this.defaultParam.antiLeech;
+            } else if (confType === 1 && this.defaultParam.encryption === 1){
+                protectionType = 1;
+            } else if (confType === 1 && this.defaultParam.encryption === 2){
+                protectionType = this.defaultParam.mtPosition;
+            }
+
+            var advancedTimeInput = this.$el.find(".advanced-setup #deadline-time").val(),
+                baseTimeInput = this.$el.find(".base-setup #deadline-time").val()
+
+            if ((this.defaultParam.baseDeadline === 1 && confType === 0) || 
+                (this.defaultParam.advancedDeadline === 1 && confType === 1)){
+                expirationTime = 0;
+            } else if (this.defaultParam.baseDeadline === 2 && confType === 0) {
+                expirationTime = baseTimeInput;
+            } else if (this.defaultParam.advancedDeadline === 2 && confType === 1) {
+                expirationTime = advancedTimeInput;
+            }
+
+            if (this.defaultParam.spliceMd5 === 1) {
+                md5Truncate = "";
+            } else {
+                md5Truncate = this.$el.find("#md5-start").val() + "|" + this.$el.find("#md5-end").val()
+            }
+            var authKeyList = [];
+
+            if (confType === 0){
+                authKeyList.push({
+                    id: new Date().valueOf(),
+                    authKey: this.$el.find(".base-setup #secret-key-primary").val()
+                })
+                _.each(this.defaultParam.baseSecretKeyBackup, function(el, index, ls){
+                    authKeyList.push({
+                        id: el.id,
+                        authKey: el.backupKey
+                    })
+                }.bind(this))
+            } else {
+                authKeyList.push({
+                    id: new Date().valueOf(),
+                    authKey: this.$el.find(".advanced-setup #secret-key-primary").val()
+                })
+                _.each(this.defaultParam.advancedSecretKeyBackup, function(el, index, ls){
+                    authKeyList.push({
+                        id: el.id,
+                        authKey: el.backupKey
+                    })
+                }.bind(this))
+            }
+
+            var confTypeName;
+            if (confType === 0) confTypeName = "配置类型：标准配置<br>";
+            if (confType === 1) confTypeName = "配置类型：高级配置<br>";
+
+            var protectionTypeName;
+            if (protectionType === 1 && confType === 0) protectionTypeName = "防盗链格式：TypeA<br>";
+            if (protectionType === 2 && confType === 0) protectionTypeName = "防盗链格式：TypeB<br>";
+            if (protectionType === 3 && confType === 0) protectionTypeName = "防盗链格式：TypeC<br>";
+            if (protectionType === 1 && confType === 1) protectionTypeName = "加密URL形式：形式1：加密字符串在参数中<br>";
+            if (protectionType === 2 && confType === 1) protectionTypeName = "加密URL形式：形式2：加密字符串在路径中<br>";
+            if (protectionType === 3 && confType === 1) protectionTypeName = "加密URL形式：形式2：加密字符串在路径中<br>";
+
+            var authKeyListName;
+            authKeyListName = "共享秘钥：1主，" + (authKeyList.length - 1) + "备<br>";
+
+            var expirationTimeName;
+            if (expirationTime === 0) expirationTimeName = "失效时间：时间戳时间<br>";
+            if (expirationTime !== 0) expirationTimeName = "失效时间：时间戳时间+过期时间：" + expirationTime + "秒<br>";
+
+            var summary = confTypeName + protectionTypeName + authKeyListName + expirationTimeName;
+
+            var postParam = {
+                "id": this.model ? this.model.get("id") : new Date().valueOf(),
+                "matchingType": matchConditionParam.type,
+                "matchingValue": matchConditionParam.policy,
+                "confType": confType,
+                "protectionType": protectionType,
+                "timeParam": this.$el.find("#key_time").val(),
+                "hashParam": this.$el.find("#key_hash").val(),
+                "timeType": this.defaultParam.timestampType,
+                "expirationTime": expirationTime,
+                "authFactor": this.$el.find("#atuth-divisor").val(),
+                "md5Truncate": md5Truncate,
+                "authKeyList": authKeyList,
+                "summary": summary
+            }
+
+            console.log(postParam)
+
+            return postParam;
         },
 
         render: function(target) {
@@ -332,30 +517,74 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 domainInfo = JSON.parse(options.query2),
                 userInfo = {
                     clientName: clientInfo.clientName,
-                    domain: domainInfo.domain
+                    domain: domainInfo.domain,
+                    uid: clientInfo.uid
                 }
+            this.domainInfo = domainInfo;
+            this.clientInfo = clientInfo;
             this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
                 data: userInfo,
                 notShowBtn: false
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
-            this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
-            this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.protection.success", $.proxy(this.onChannelListSuccess, this));
+            this.collection.on("get.protection.error", $.proxy(this.onGetError, this));
 
-            this.$el.find(".add").on("click", $.proxy(this.onClickAddRole, this))
+            this.$el.find(".add").on("click", $.proxy(this.onClickAddRule, this));
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
 
-            this.queryArgs = {
-                "domain"           : null,
-                "accelerateDomain" : null,
-                "businessType"     : null,
-                "clientName"       : null,
-                "status"           : null,
-                "page"             : 1,
-                "count"            : 10
-             }
+            this.collection.on("set.protection.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.protection.error", $.proxy(this.onGetError, this));
 
-             this.onClickQueryButton();
+            this.onClickQueryButton()
+        },
+
+        launchSendPopup: function(){
+            require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
+                var mySaveThenSendView = new SaveThenSendView({
+                    collection: this.collection, 
+                });
+                var options = {
+                    title: "发布",
+                    body : mySaveThenSendView,
+                    backdrop : 'static',
+                    type     : 2,
+                    onOKCallback:  function(){
+                        this.sendPopup.$el.modal("hide");
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();
+                    }.bind(this)
+                }
+                this.sendPopup = new Modal(options);
+            }.bind(this))
+        },
+
+        onClickSaveBtn: function(){
+            var list = [];
+            this.collection.each(function(obj){
+                list.push({
+                    "matchingType": obj.get('matchingType'),
+                    "matchingValue": obj.get('matchingValue'),
+                    "confType": obj.get('confType'),
+                    "protectionType": obj.get('protectionType'),
+                    "timeParam": obj.get('timeParam'),
+                    "hashParam": obj.get('hashParam'),
+                    "timeType": obj.get('timeType'),
+                    "expirationTime": obj.get('expirationTime'),
+                    "authFactor": obj.get('authFactor'),
+                    "md5Truncate": obj.get('md5Truncate'),
+                    "authKeyList": obj.get('authKeyList'),
+                })
+            }.bind(this))
+
+            var postParam = {
+                "originId": this.domainInfo.id,
+                "list": list
+            }
+
+            this.collection.setStandardProtection(postParam)
         },
 
         onGetError: function(error){
@@ -367,22 +596,28 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         onChannelListSuccess: function(){
             this.initTable();
-            if (!this.isInitPaginator) this.initPaginator();
         },
 
         onClickQueryButton: function(){
-            this.isInitPaginator = false;
-            this.queryArgs.page = 1;
-            this.queryArgs.domain = this.$el.find("#input-domain").val();
-            this.queryArgs.clientName = this.$el.find("#input-client").val();
-            if (this.queryArgs.domain == "") this.queryArgs.domain = null;
-            if (this.queryArgs.clientName == "") this.queryArgs.clientName = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.$el.find(".pagination").html("");
-            this.collection.queryChannel(this.queryArgs);
+            this.collection.getStandardProtection({originId:this.domainInfo.id});
         },
 
         initTable: function(){
+            var allFileArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 9;
+            }.bind(this));
+
+            var specifiedUrlArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 2;
+            }.bind(this));
+
+            var otherArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
+            }.bind(this));
+
+            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
+
             this.table = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.table.html'])({
                 data: this.collection.models
             }));
@@ -391,27 +626,97 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.table.find("tbody .manage").on("click", $.proxy(this.onClickItemNodeName, this));
+            this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
             this.table.find("tbody .up").on("click", $.proxy(this.onClickItemUp, this));
             this.table.find("tbody .down").on("click", $.proxy(this.onClickItemDown, this));
+            this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
         },
 
-        onClickAddRole: function(event){
+        onClickItemEdit: function(event){
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+
+            var model = this.collection.find(function(obj){
+                return obj.get("id") === parseInt(id)
+            }.bind(this));
+            if (this.addRolePopup) $("#" + this.addRolePopup.modalId).remove();
+
+            var myAddEditTimestampView = new AddEditTimestampView({
+                collection: this.collection,
+                model: model,
+                isEdit: true
+            });
+
+            var options = {
+                title:"去问号缓存",
+                body : myAddEditTimestampView,
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback: function(){
+                    var postParam = myAddEditTimestampView.onSure();
+                    if (!postParam) return;
+                    _.each(postParam, function(value, key, ls){
+                        model.set(key, value);
+                    }.bind(this))
+                    this.collection.trigger("get.protection.success");
+                    this.addRolePopup.$el.modal('hide');
+                }.bind(this),
+                onHiddenCallback: function(){}.bind(this)
+            }
+            this.addRolePopup = new Modal(options);
+        },
+
+        onClickAddRule: function(event){
             if (this.addRolePopup) $("#" + this.addRolePopup.modalId).remove();
 
             var myAddEditTimestampView = new AddEditTimestampView({collection: this.collection});
 
             var options = {
-                title:"时间戳+共享秘钥防盗链新增配置",
+                title:"去问号缓存",
                 body : myAddEditTimestampView,
                 backdrop : 'static',
                 type     : 2,
                 onOKCallback: function(){
-                    myAddEditTimestampView.onSure();
+                    var postParam = myAddEditTimestampView.onSure();
+                    if (!postParam) return;
+                    var model = new this.collection.model(postParam);
+                    var allFileArray = this.collection.filter(function(obj){
+                        return obj.get('matchingType') === 9;
+                    }.bind(this));
+
+                    var specifiedUrlArray = this.collection.filter(function(obj){
+                        return obj.get('matchingType') === 2;
+                    }.bind(this));
+
+                    var otherArray = this.collection.filter(function(obj){
+                        return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
+                    }.bind(this));
+
+                    if (postParam.type === 9) allFileArray.push(model)
+                    if (postParam.type === 2) specifiedUrlArray.push(model)
+                    if (postParam.type !== 9 && postParam.type !== 2) otherArray.push(model)
+  
+                    this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
+                    this.collection.trigger("get.protection.success");
+                    this.addRolePopup.$el.modal('hide');
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
             this.addRolePopup = new Modal(options);
+        },
+
+        onClickItemDelete: function(event){
+            var result = confirm("你确定要删除吗？");
+            if (!result) return;
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+            for (var i = 0; i < this.collection.models.length; i++){
+                if (this.collection.models[i].get("id") === parseInt(id)){
+                    this.collection.models.splice(i, 1);
+                    this.collection.trigger("get.protection.success")
+                    return;
+                }
+            }
         },
 
         onClickItemUp: function(event){
@@ -423,13 +728,28 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 id = $(eventTarget).attr("id");
             }
             var model = this.collection.get(id), modelIndex;
-            this.collection.each(function(el, index, list){
+
+            var allFileArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 9;
+            }.bind(this));
+
+            var specifiedUrlArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 2;
+            }.bind(this));
+
+            var otherArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
+            }.bind(this));
+
+            _.each(otherArray, function(el, index, list){
                 if (el.get("id") === parseInt(id)) modelIndex = index; 
             }.bind(this))
 
-            this.collection.models = Utility.adjustElement(this.collection.models, modelIndex, true)
+            otherArray = Utility.adjustElement(otherArray, modelIndex, true)
 
-            this.collection.trigger("get.channel.success")
+            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
+
+            this.collection.trigger("get.protection.success")
         },
 
         onClickItemDown: function(event){
@@ -441,46 +761,28 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 id = $(eventTarget).attr("id");
             }
             var model = this.collection.get(id), modelIndex;
-            this.collection.each(function(el, index, list){
+
+            var allFileArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 9;
+            }.bind(this));
+
+            var specifiedUrlArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 2;
+            }.bind(this));
+
+            var otherArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
+            }.bind(this));
+
+            _.each(otherArray, function(el, index, list){
                 if (el.get("id") === parseInt(id)) modelIndex = index; 
             }.bind(this))
 
-            this.collection.models = Utility.adjustElement(this.collection.models, modelIndex, false)
+            otherArray = Utility.adjustElement(otherArray, modelIndex, false)
 
-            this.collection.trigger("get.channel.success")
-        },
+            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
-        onClickItemNodeName: function(event){
-            var eventTarget = event.srcElement || event.target,
-                id = $(eventTarget).attr("id");
-
-            var model = this.collection.get(id), args = JSON.stringify({
-                domain: model.get("domain")
-            })
-            //var clientName = JSON.parse(this.options.query)
-            window.location.hash = '#/domainList/' + clientName + "/domainSetup/" + args;
-        },
-
-        initPaginator: function(){
-            this.$el.find(".total-items span").html(this.collection.total)
-            if (this.collection.total <= this.queryArgs.count) return;
-            var total = Math.ceil(this.collection.total/this.queryArgs.count);
-
-            this.$el.find(".pagination").jqPaginator({
-                totalPages: total,
-                visiblePages: 10,
-                currentPage: 1,
-                onPageChange: function (num, type) {
-                    if (type !== "init"){
-                        this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                        var args = _.extend(this.queryArgs);
-                        args.page = num;
-                        args.count = this.queryArgs.count;
-                        this.collection.queryChannel(args);
-                    }
-                }.bind(this)
-            });
-            this.isInitPaginator = true;
+            this.collection.trigger("get.protection.success")
         },
 
         hide: function(){

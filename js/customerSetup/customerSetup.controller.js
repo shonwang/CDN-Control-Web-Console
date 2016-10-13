@@ -5,7 +5,8 @@ define("customerSetup.controller", ['require','exports'],
 
         openNgxLogCallback: function(query, query2) {
             require(['openNgxLog.view', 'openNgxLog.model'], function(OpenNgxLogView, OpenNgxLogModel){
-                this.curPage = 'openNgxLog';
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-openNgxLog';
                 this.setUpThirdNavbar(query, query2);
                 var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
@@ -28,7 +29,8 @@ define("customerSetup.controller", ['require','exports'],
 
         timestampCallback: function(query, query2) {
             require(['timestamp.view', 'timestamp.model'], function(TimestampView, TimestampModel){
-                this.curPage = 'timestamp';
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-timestamp';
                 this.setUpThirdNavbar(query, query2);
                 var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
@@ -51,7 +53,8 @@ define("customerSetup.controller", ['require','exports'],
 
         refererAntiLeechCallback: function(query, query2) {
             require(['refererAntiLeech.view', 'refererAntiLeech.model'], function(RefererAntiLeechView, RefererAntiLeechModel){
-                this.curPage = 'refererAntiLeech';
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-refererAntiLeech';
                 this.setUpThirdNavbar(query, query2);
                 var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
@@ -74,7 +77,8 @@ define("customerSetup.controller", ['require','exports'],
 
         ipBlackWhiteListCallback: function(query, query2) {
             require(['ipBlackWhiteList.view', 'ipBlackWhiteList.model'], function(IpBlackWhiteListView, IpBlackWhiteListModel){
-                this.curPage = 'ipBlackWhiteList';
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-ipBlackWhiteList';
                 this.setUpThirdNavbar(query, query2);
                 var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
@@ -97,7 +101,8 @@ define("customerSetup.controller", ['require','exports'],
 
         requestArgsModifyCallback: function(query, query2) {
             require(['requestArgsModify.view', 'requestArgsModify.model'], function(RequestArgsModifyView, RequestArgsModifyModel){
-                this.curPage = 'requestArgsModify';
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-requestArgsModify';
                 this.setUpThirdNavbar(query, query2);
                 var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
@@ -120,7 +125,8 @@ define("customerSetup.controller", ['require','exports'],
 
         httpHeaderCtrCallback: function(query, query2) {
             require(['httpHeaderCtr.view', 'httpHeaderCtr.model'], function(HttpHeaderCtrView, HttpHeaderCtrModel){
-                this.curPage = 'httpHeaderCtr';
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-httpHeaderCtr';
                 this.setUpThirdNavbar(query, query2);
                 var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
@@ -144,7 +150,8 @@ define("customerSetup.controller", ['require','exports'],
 
         httpHeaderOptCallback: function(query, query2) {
             require(['httpHeaderOpt.view', 'httpHeaderOpt.model'], function(HttpHeaderOptView, HttpHeaderOptModel){
-                this.curPage = 'httpHeaderOpt';
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-httpHeaderOpt';
                 this.setUpThirdNavbar(query, query2);
                 var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
@@ -168,7 +175,8 @@ define("customerSetup.controller", ['require','exports'],
 
         clientLimitSpeedCallback: function(query, query2) {
             require(['clientLimitSpeed.view', 'clientLimitSpeed.model'], function(ClientLimitSpeedView, ClientLimitSpeedModel){
-                this.curPage = 'clientLimitSpeed';
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-clientLimitSpeed';
                 this.setUpThirdNavbar(query, query2);
                 var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
@@ -191,7 +199,8 @@ define("customerSetup.controller", ['require','exports'],
 
         dragPlayCallback: function(query, query2) {
             require(['dragPlay.view', 'dragPlay.model'], function(DragPlayView, DragPlayModel){
-                this.curPage = 'dragPlay';
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-dragPlay';
                 this.setUpThirdNavbar(query, query2);
                 var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
@@ -214,7 +223,8 @@ define("customerSetup.controller", ['require','exports'],
 
         following302Callback: function(query, query2) {
             require(['following302.view', 'following302.model'], function(Following302View, Following302Model){
-                this.curPage = 'following302';
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-following302';
                 this.setUpThirdNavbar(query, query2);
                 var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
@@ -238,7 +248,8 @@ define("customerSetup.controller", ['require','exports'],
 
         backOriginSetupCallback: function(query, query2) {
             require(['backOriginSetup.view', 'backOriginSetup.model'], function(BackOriginSetupView, BackOriginSetupModel){
-                this.curPage = 'backOriginSetup';
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-backOriginSetup';
                 this.setUpThirdNavbar(query, query2);
                 var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
@@ -261,7 +272,8 @@ define("customerSetup.controller", ['require','exports'],
 
         cnameSetupCallback: function(query, query2) {
             require(['cnameSetup.view', 'cnameSetup.model'], function(CnameSetupView, CnameSetupModel){
-                this.curPage = 'cnameSetup';
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-cnameSetup';
                 this.setUpThirdNavbar(query, query2);
                 var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
@@ -284,7 +296,8 @@ define("customerSetup.controller", ['require','exports'],
 
         cacheKeySetupCallback: function(query, query2) {
             require(['cacheKeySetup.view', 'cacheKeySetup.model'], function(CacheKeySetupView, CacheKeySetupModel){
-                this.curPage = 'cacheKeySetup';
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-cacheKeySetup';
                 this.setUpThirdNavbar(query, query2);
                 var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
@@ -307,7 +320,8 @@ define("customerSetup.controller", ['require','exports'],
 
         delMarkCacheCallback: function(query, query2) {
             require(['delMarkCache.view', 'delMarkCache.model'], function(DelMarkCacheView, DelMarkCacheModel){
-                this.curPage = 'delMarkCache';
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-delMarkCache';
                 this.setUpThirdNavbar(query, query2);
                 var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
@@ -328,10 +342,10 @@ define("customerSetup.controller", ['require','exports'],
             }.bind(this));
         },
 
-
         cacheRuleCallback: function(query, query2) {
             require(['cacheRule.view', 'cacheRule.model'], function(CacheRuleView, CacheRuleModel){
-                this.curPage = 'cacheRule';
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-cacheRule';
                 this.setUpThirdNavbar(query, query2);
                 var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
@@ -354,7 +368,8 @@ define("customerSetup.controller", ['require','exports'],
 
         domainSetupCallback: function(query, query2) {
             require(['domainSetup.view', 'domainSetup.model'], function(DomainSetupView, DomainSetupModel){
-                this.curPage = 'domainSetup';
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-domainSetup';
                 this.setUpThirdNavbar(query, query2);
                 var renderTarget = this.thirdNavbar.$el.find('.sub-content')
 
@@ -377,13 +392,14 @@ define("customerSetup.controller", ['require','exports'],
 
         domainListCallback: function(query) {
             require(['domainList.view', 'domainList.model', 'subNavbar.view'], function(DomainListView, DomainListModel, SubNavbar){
-                this.curPage = 'domainList';
+                this.curPage = 'customerSetup-domainList';
+                this.navbarView.select('customerSetup', $.proxy(this.removeSubSideBar, this));
                 var menu = [{
                     id: '',
                     name: '客户配置管理',
                     hash: 'javascript:void(0)',
                     children: [{
-                        id: 'domainList',
+                        id: 'customerSetup-domainList',
                         name: '域名列表',
                         hash: 'index.html#/domainList/' + query,
                         active: true,
@@ -398,10 +414,7 @@ define("customerSetup.controller", ['require','exports'],
                     this.subNavbar.select(this.curPage);
                 }
                 var renderTarget = this.subNavbar.$el.find('.sub-content');
-                if (this.thirdNavbar) {
-                    this.thirdNavbar.$el.remove();
-                    this.thirdNavbar = null;
-                }
+
                 if (!this.domainListModel)
                     this.domainListModel = new DomainListModel();
                 if (!this.domainListView ){
@@ -422,10 +435,7 @@ define("customerSetup.controller", ['require','exports'],
             require(['customerSetup.view', 'customerSetup.model'], function(CustomerSetupView, CustomerSetupModel){
                 this.curPage = 'customerSetup';
                 this.navbarView.select(this.curPage);
-                if (this.subNavbar){
-                    this.subNavbar.$el.remove();
-                    this.subNavbar = null;
-                } 
+
                 if (!this.customerSetupModel)
                     this.customerSetupModel = new CustomerSetupModel();
                 if (!this.customerSetupView){

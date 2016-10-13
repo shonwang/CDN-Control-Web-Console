@@ -22,6 +22,17 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
             // this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
             // this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
 
+            // "id": 1,
+            // "originId": 114,
+            // "parameterKey": "test",
+            // "parameterValue": "test",
+            // "type": 0, 0:添加 1:删除
+            // "status": 0:关闭 1:开启,
+            // "status": 1,
+            // "createTime": 1476273561000,
+            // "updateTime": 1476273561000,
+            // "deleted": 0
+
             this.defaultParam = {
                 deleteParam: 2,
                 deleteParamStr: "你渴望力量吗？",

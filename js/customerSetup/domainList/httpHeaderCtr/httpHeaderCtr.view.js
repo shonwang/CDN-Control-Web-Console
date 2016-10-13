@@ -22,6 +22,15 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
+            require(["domainSetup.model"], function(DomainSetupModel){
+                var myDomainSetupModel = new DomainSetupModel();
+                    myDomainSetupModel.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
+                    myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
+                    myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
+            }.bind(this))
+        },
+
+        onGetDomainInfo: function(data){
             this.defaultParam = {
                 obtainIp: 0, //0:不获取客户端ip 1：获取客户端ip
                 obtIpCustom: "",
@@ -44,7 +53,11 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
         launchSendPopup: function(){
             require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
                 var mySaveThenSendView = new SaveThenSendView({
-                    collection: this.collection, 
+                    collection: new SaveThenSendModel(),
+                    originId: this.domainInfo.id,
+                    onSendSuccess: function() {
+                        this.sendPopup.$el.modal("hide");
+                    }.bind(this)
                 });
                 var options = {
                     title: "发布",
@@ -52,7 +65,7 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
                     backdrop : 'static',
                     type     : 2,
                     onOKCallback:  function(){
-                        this.sendPopup.$el.modal("hide");
+                        mySaveThenSendView.sendConfig();
                     }.bind(this),
                     onHiddenCallback: function(){
                         if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();

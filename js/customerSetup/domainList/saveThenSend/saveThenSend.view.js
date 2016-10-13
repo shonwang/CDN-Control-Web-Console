@@ -7,23 +7,18 @@ define("saveThenSend.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection = options.collection;
             this.options = options;
             this.$el = $(_.template(template['tpl/customerSetup/domainList/saveThenSend/saveThenSend.html'])());
-            // var clientInfo = JSON.parse(options.query), 
-            //     domainInfo = JSON.parse(options.query2),
-            //     userInfo = {
-            //         clientName: clientInfo.clientName,
-            //         domain: domainInfo.domain
-            //     }
-            // this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
-            //     data: userInfo,
-            //     notShowBtn: true
-            // }));
-            // this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
-            //this.$el.find(".setup-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.collection.on("get.send.success", $.proxy(this.onSendSuccess, this));
+            this.collection.on("get.send.error", $.proxy(this.onGetError, this));
+        },
 
-            // this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
-            // this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+        onSendSuccess: function() {
+            alert("发布成功！")
+            this.options.onSendSuccess && this.options.onSendSuccess();
+        },
 
+        sendConfig: function() {
+            this.collection.publishConfig({originId: this.options.originId})
         },
 
         onGetError: function(error){

@@ -25,6 +25,8 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
 
             this.collection.on("modify.domain.success", $.proxy(this.launchSendPopup, this));
             this.collection.on("modify.domain.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
+            this.collection.on("get.domainInfo.error", $.proxy(this.onGetError, this));
 
             var regions = {
                 hasData: true,
@@ -40,6 +42,20 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
             };
             this.regionList = {};
             this.setRegionData(regions.data)
+
+            this.collection.getDomainInfo({originId: this.domainInfo.id});
+        },
+
+        onGetDomainInfo: function(data){
+            var regionStr = data.originDomain.region, regionArray = [];
+            if (regionStr.indexOf(";") !== -1) 
+                regionArray = regionStr.split(";")
+            else if (regionStr.indexOf(",") !== -1)
+                regionArray = regionStr.split(",")
+            _.each(regionArray, function(el, index, ls) {
+                this.regionCtn.find("input[value="+ el +"]").get(0).checked = true;
+            }.bind(this))
+            this.$el.find("#server-port").val(data.domainConf.originPort)
         },
 
         checkRegion:function(){
@@ -110,7 +126,11 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
         launchSendPopup: function(){
             require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
                 var mySaveThenSendView = new SaveThenSendView({
-                    collection: this.collection, 
+                    collection: new SaveThenSendModel(),
+                    originId: this.domainInfo.id,
+                    onSendSuccess: function() {
+                        this.sendPopup.$el.modal("hide");
+                    }.bind(this)
                 });
                 var options = {
                     title: "发布",
@@ -118,7 +138,7 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
                     backdrop : 'static',
                     type     : 2,
                     onOKCallback:  function(){
-                        this.sendPopup.$el.modal("hide");
+                        mySaveThenSendView.sendConfig();
                     }.bind(this),
                     onHiddenCallback: function(){
                         if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();

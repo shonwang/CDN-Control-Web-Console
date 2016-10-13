@@ -165,6 +165,14 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         getAddSelected: function(){
+            var domain = $.trim(this.$el.find('#input-domain').val());
+            if(domain == ''){
+                alert('请输入域名');
+                var treeObj = $.fn.zTree.getZTreeObj("tree");
+                treeObj.checkAllNodes(false);
+                return ;
+            }
+            
             this.nodeGroup = null;
             if (!this.treeObj) return;
 
@@ -221,6 +229,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                 confFileIds:confFileIds
             };
             this.collection.getConfContent(args_conf);
+            
         },
 
         getEditSelected: function(){
@@ -570,7 +579,6 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
 
         onClickCreate: function(){
             //this.getPageArgs.bisTypeId = 10;
-            console.log(this.getPageArgs.bisTypeId);
             this.collection.getNodeGroupTree({bisTypeId:10});
 
             if (this.addPopup) $("#" + this.addPopup.modalId).remove();

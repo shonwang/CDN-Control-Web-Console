@@ -20,12 +20,12 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
             }; 
 
             if (this.isEdit){
-                this.defaultParam.type = this.model.get("matchingType");
-                this.defaultParam.policy = this.model.get("matchingValue");
-                this.defaultParam.directionType = this.model.get("directionType");
-                this.defaultParam.actionType = this.model.get("actionType");
-                this.defaultParam.headerKey = this.model.get("headerKey");
-                this.defaultParam.headerValue = this.model.get("headerValue");
+                this.defaultParam.type = this.model.get("matchingType") || 9;
+                this.defaultParam.policy = this.model.get("matchingValue") || "";
+                this.defaultParam.directionType = this.model.get("directionType") || 1;
+                this.defaultParam.actionType = this.model.get("actionType") || 1;
+                this.defaultParam.headerKey = this.model.get("headerKey") || "";
+                this.defaultParam.headerValue = this.model.get("headerValue") || "";
             }
 
             require(['matchCondition.view', 'matchCondition.model'], function(MatchConditionView, MatchConditionModel){
@@ -269,7 +269,8 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
             this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
             this.table = $(_.template(template['tpl/customerSetup/domainList/httpHeaderOpt/httpHeaderOpt.table.html'])({
-                data: this.collection.models
+                data: this.collection.models,
+                hideAction: false
             }));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);

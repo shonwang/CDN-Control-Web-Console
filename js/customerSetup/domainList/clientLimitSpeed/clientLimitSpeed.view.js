@@ -73,12 +73,12 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
             }
 
             if (this.isEdit){
-                this.defaultParam.type = this.model.get("matchingType");
-                this.defaultParam.policy = this.model.get("matchingValue");
+                this.defaultParam.type = this.model.get("matchingType") || 0;
+                this.defaultParam.policy = this.model.get("matchingValue") || "";
                 this.defaultParam.byteNotLimit = this.model.get("preUnlimit") === 0 ? 1 : 2;
                 this.defaultParam.byteNotLimitUnit = this.model.get("preUnlimit") >= 1024 ? 2 : 1;
-                this.defaultParam.preUnlimit = this.model.get("preUnlimit");
-                this.defaultParam.limitSpeed = this.model.get("speedLimit");
+                this.defaultParam.preUnlimit = this.model.get("preUnlimit") || 0;
+                this.defaultParam.limitSpeed = this.model.get("speedLimit") || 0;
                 _.each(this.model.get("timeLimit"), function(el, index, ls){
                     this.defaultParam.timeLimitList.push({
                         id: el.id,
@@ -373,7 +373,8 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
             this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
             this.table = $(_.template(template['tpl/customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.table.html'])({
-                data: this.collection.models
+                data: this.collection.models,
+                hideAction: false
             }));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
@@ -433,7 +434,7 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
                 onOKCallback: function(){
                     var postParam = myAddEditLimitView.onSure();
                     if (!postParam) return;
-                    console.log(postParam)
+
                     var model = new this.collection.model(postParam);
                     var allFileArray = this.collection.filter(function(obj){
                         return obj.get('matchingType') === 9;

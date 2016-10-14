@@ -434,7 +434,7 @@ define("customerSetup.controller", ['require','exports'],
         customerSetupCallback: function(){
             require(['customerSetup.view', 'customerSetup.model'], function(CustomerSetupView, CustomerSetupModel){
                 this.curPage = 'customerSetup';
-                this.navbarView.select(this.curPage);
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
 
                 if (!this.customerSetupModel)
                     this.customerSetupModel = new CustomerSetupModel();

@@ -52,6 +52,8 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
                 regionArray = regionStr.split(";")
             else if (regionStr.indexOf(",") !== -1)
                 regionArray = regionStr.split(",")
+            else
+                regionArray = [regionStr]
             _.each(regionArray, function(el, index, ls) {
                 this.regionCtn.find("input[value="+ el +"]").get(0).checked = true;
             }.bind(this))

@@ -2,7 +2,8 @@
 <thead> 
   <tr>
     <th>IP</th>
-    <th>类型</th>    
+    <th>类型</th>
+    <th>IP运营商</th>    
     <th>设备</th> 
     <th>节点</th>
     <th>状态</th>  
@@ -14,6 +15,7 @@
         <tr data-id="<%=data[i].attributes.ipId%>">
           <td><%=data[i].attributes.ip%></td>
           <td><%=data[i].attributes.ipType%></td>
+          <td><%=data[i].attributes.operatorId%></td>
           <td><%=data[i].attributes.deviceName%></td>
           <td><%=data[i].attributes.nodeChName%></td>
           <td>

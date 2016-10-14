@@ -185,6 +185,11 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("ip.type.success", $.proxy(this.onGetIpTypeSuccess, this));
             this.collection.on("ip.type.error", $.proxy(this.onGetError, this));
 
+            this.collection.off("operator.type.success");
+            this.collection.off("operator.type.error");
+            this.collection.on("operator.type.success", $.proxy(this.onGetOperatorTypeSuccess, this));
+            this.collection.on("operator.type.error", $.proxy(this.onGetError, this));
+
 
             this.collection.off("get.ipInfoPause.success");
             this.collection.on("get.ipInfoPause.success", $.proxy(this.onIpInfoPauseSuccess, this));
@@ -225,7 +230,6 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             var id = this.model.get("id");
             this.collection.getDeviceIpList({deviceId:id})
         },
-
         onGetIpSuccess: function(data){
             this.ipList = data;
             this.updateIpTable();
@@ -614,6 +618,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
         initIpTypeDropmenu: function(res){
             var typeArray = this.deviceTypeArray;
+            console.log(typeArray);
             Utility.initDropMenu(this.$el.find(".dropdown-type"), typeArray, function(value){
                 this.deviceType = parseInt(value);
             }.bind(this));
@@ -674,6 +679,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 }.bind(this)
             });
             if (this.isEdit){
+                
                 var defaultValue = _.find(nameList, function(object){
                     return object.value === this.model.attributes.nodeId
                 }.bind(this));
@@ -681,6 +687,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find(".dropdown-node .cur-value").html(defaultValue.name)
                 this.nodeId = defaultValue.value;
             } else {
+                console.log(nameList);
                 this.$el.find(".dropdown-node .cur-value").html(nameList[0].name);
                 this.nodeId = nameList[0].value;
 

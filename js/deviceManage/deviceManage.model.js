@@ -229,7 +229,35 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
 
             $.ajax(defaultParas);
         },
+        operatorTypeList: function(){
+            var url = BASE_URL + "/rs/metaData/continent/country/operation/list?id=401";
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+            };
+            /*defaultParas.data = args || {};
+            defaultParas.data.t = new Date().valueOf();*/
 
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                if (res)
+                    this.trigger("operator.type.success", res.rows);
+                else
+                    this.trigger("operator.type.error");
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("operator.type.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
         getNodeList: function(args){
             var url = BASE_URL + "/rs/node/list";
             var defaultParas = {

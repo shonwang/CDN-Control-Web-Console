@@ -6,6 +6,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
 
         initialize: function(options) {
+            console.log(options);
             this.options = options;
             this.collection = options.collection;
             this.model      = options.model;

@@ -246,6 +246,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.$el.find(".pagination").html("");
             if (this.isMultiIPSearch){
                 this.queryArgs.page = this.currentPage;
+                console.log(this.queryArgs);
                 this.collection.getIpInfoList(this.queryArgs);
             } else {
                 this.anotherQuery.page = this.currentPage;

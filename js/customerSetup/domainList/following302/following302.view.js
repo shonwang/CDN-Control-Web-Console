@@ -32,7 +32,7 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
         onGetDomainInfo: function(data){
             this.defaultParam = {following: 0}
 
-            if (data.domainConf && data.domainConf.following)
+            if (data.domainConf && data.domainConf.following !== null && data.domainConf.following !== undefined)
                 this.defaultParam.following === data.domainConf.following //0:关闭 1:开启
 
             this.initSetup();

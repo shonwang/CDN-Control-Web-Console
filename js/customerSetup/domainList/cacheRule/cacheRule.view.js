@@ -23,14 +23,14 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.defaultParam.cacheTimeType = 1;
                 if (this.model.get("expireTime") !== 0 && this.model.get("hasOriginPolicy") === 0){
                     this.defaultParam.cacheTimeType = 2;
-                    this.defaultParam.cacheTime = this.model.get("expireTime");
+                    this.defaultParam.cacheTime = this.model.get("expireTime") || 60 * 60 * 24 * 30;
                 }
                 if (this.model.get("expireTime") !== 0 && this.model.get("hasOriginPolicy") === 1){
                     this.defaultParam.cacheTimeType = 3;
-                    this.defaultParam.cacheOriginTime = this.model.get("expireTime");
+                    this.defaultParam.cacheOriginTime = this.model.get("expireTime") || 60 * 60 * 24 * 30;
                 }
-                this.defaultParam.type = this.model.get("type");
-                this.defaultParam.policy = this.model.get("policy");
+                this.defaultParam.type = this.model.get("type") || 9;
+                this.defaultParam.policy = this.model.get("policy") || "";
             }
 
             require(['matchCondition.view', 'matchCondition.model'], function(MatchConditionView, MatchConditionModel){
@@ -286,7 +286,8 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
             this.table = $(_.template(template['tpl/customerSetup/domainList/cacheRule/cacheRule.table.html'])({
-                data: this.collection.models
+                data: this.collection.models,
+                hideAction: false
             }));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);

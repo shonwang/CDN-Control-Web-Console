@@ -21,9 +21,21 @@ define("openNgxLog.view", ['require','exports', 'template', 'modal.view', 'utili
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
+            require(["domainSetup.model"], function(DomainSetupModel){
+                var myDomainSetupModel = new DomainSetupModel();
+                    myDomainSetupModel.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
+                    myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
+                    myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
+            }.bind(this))
+        },
+
+        onGetDomainInfo: function(data){
             this.defaultParam = {
                 chargingOpen: 0 //0:关闭 1:开启
             }
+
+            if (data.domainConf && data.domainConf.chargingOpen !== null && data.domainConf.chargingOpen !== undefined)
+                this.defaultParam.chargingOpen === data.domainConf.chargingOpen //0:关闭 1:开启            
 
             this.initSetup();
 

@@ -18,10 +18,10 @@ define("delMarkCache.view", ['require','exports', 'template', 'modal.view', 'uti
             };            
 
             if (this.isEdit){
-                this.defaultParam.type = this.model.get("matchingType");
-                this.defaultParam.policy = this.model.get("matchingValue");
-                this.defaultParam.markType = this.model.get("markType");
-                this.defaultParam.markValue = this.model.get("markValue");
+                this.defaultParam.type = this.model.get("matchingType") || 1;
+                this.defaultParam.policy = this.model.get("matchingValue") || "";
+                this.defaultParam.markType = this.model.get("markType") || 9;
+                this.defaultParam.markValue = this.model.get("markValue") || "";
             }
 
             require(['matchCondition.view', 'matchCondition.model'], function(MatchConditionView, MatchConditionModel){
@@ -195,7 +195,8 @@ define("delMarkCache.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
             this.table = $(_.template(template['tpl/customerSetup/domainList/delMarkCache/delMarkCache.table.html'])({
-                data: this.collection.models
+                data: this.collection.models,
+                hideAction: false
             }));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);

@@ -46,7 +46,7 @@ define("dragPlay.model", ['require','exports', 'utility'], function(require, exp
                 this.trigger("set.drag.error", response)
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
-        },
+        }
     });
 
     return DragPlayCollection;

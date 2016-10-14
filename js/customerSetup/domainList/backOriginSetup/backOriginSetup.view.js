@@ -48,6 +48,42 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 ipNum: 1
             }
 
+            if (data.domainConf && data.domainConf.backsourceFlag !== null && data.domainConf.backsourceFlag !== undefined)
+                this.defaultParam.isUseAdvance = data.domainConf.backsourceFlag === 0 ? 1 : 2;
+
+            if (data.domainConf && data.domainConf.originType !== null && data.domainConf.originType !== undefined)
+                this.defaultParam.originBaseType = data.domainConf.originType;
+
+            if (data.domainConf && data.domainConf.advanceOriginType !== null && data.domainConf.advanceOriginType !== undefined)
+                this.defaultParam.originAdvanceType = data.domainConf.advanceOriginType;
+
+            if (data.domainConf && data.domainConf.originAddress !== null && data.domainConf.originAddress !== undefined)
+                this.defaultParam.originBaseDomain = data.domainConf.originAddress;
+
+            if (data.domainConf && data.domainConf.backsourcePolicy !== null && data.domainConf.backsourcePolicy !== undefined)
+                this.defaultParam.originStrategy = data.domainConf.backsourcePolicy;
+
+            if (data.domainConf && data.domainConf.backsourceBestcount !== null && data.domainConf.backsourceBestcount !== undefined)
+                this.defaultParam.ipNum = data.domainConf.backsourceBestcount;
+
+            if (data.advanceConfigList){
+                _.each(data.advanceConfigList, function(el, index, ls) {
+                    if (el.originLine === 1){
+                        this.defaultParam.defaultPrimary =  el.originAddress;
+                        this.defaultParam.defaultBackup = el.addressBackup;
+                    } else if (el.originLine === 2){
+                        this.defaultParam.unicomPrimary =  el.originAddress;
+                        this.defaultParam.unicomBackup = el.addressBackup;
+                    } else if (el.originLine === 3){
+                        this.defaultParam.telecomPrimary =  el.originAddress;
+                        this.defaultParam.telecomBackup = el.addressBackup;
+                    } else if (el.originLine === 4){
+                        this.defaultParam.mobilePrimary =  el.originAddress;
+                        this.defaultParam.mobileBackup = el.addressBackup;                        
+                    }
+                }.bind(this))
+            }
+
             this.initOriginSetup();
             this.$el.find(".use-advance .togglebutton input").on("click", $.proxy(this.onClickIsUseAdvanceBtn, this));
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
@@ -55,7 +91,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             this.collection.on("set.backSourceConfig.success", $.proxy(this.launchSendPopup, this));
             this.collection.on("set.backSourceConfig.error", $.proxy(this.onGetError, this));
 
-            this.initModifyHost();
+            this.initModifyHost(data);
         },
         
         initOriginSetup: function(){
@@ -317,13 +353,24 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
 
         //修改回源Host==================================================
 
-        initModifyHost: function(){
+        initModifyHost: function(data){
             this.hideModifyHostOptions();
-            this.isModifyHost = false;
+            this.isModifyHost = true;
+            this.$el.find(".modify-host .togglebutton input").get(0).checked = true
             this.defaultParamModifyHost = {
                 domainType: 3,
-                customHostHeader: ""
+                customHostHeader: "",
+                domain: "",
+                originAddress:""
             }
+
+            if (data.domainConf && data.domainConf.hostType !== null && data.domainConf.hostType !== undefined)
+                this.defaultParamModifyHost.domainType = data.domainConf.hostType;
+
+            this.defaultParamModifyHost.customHostHeader = data.domainConf.customHostHeader;
+            this.defaultParamModifyHost.domain = data.originDomain.domain;
+            this.defaultParamModifyHost.originAddress = data.domainConf.originAddress;
+
             this.initModifyHostSetup();
             this.initModifyHostDropdown();
 
@@ -352,12 +399,19 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             } else {
                 this.$el.find(".origin-domain").hide();
             }
+            var textareaNode = this.$el.find("#textarea-host-domain");
             if (this.defaultParamModifyHost.domainType !== 3)
-                this.$el.find("#textarea-host-domain").attr("readonly", "true")
+                textareaNode.attr("readonly", "true")
             else
-                this.$el.find("#textarea-host-domain").removeAttr("readonly")
+                textareaNode.removeAttr("readonly")
 
-            this.$el.find("#textarea-host-domain").val(this.defaultParamModifyHost.customHostHeader)
+            if (this.defaultParamModifyHost.domainType === 3) {
+                textareaNode.val(this.defaultParamModifyHost.customHostHeader);
+            } else if (this.defaultParamModifyHost.domainType === 1){
+                textareaNode.val(this.defaultParamModifyHost.domain);
+            } else if (this.defaultParamModifyHost.domainType === 2){
+                textareaNode.val(this.defaultParamModifyHost.originAddress);
+            }
         },
 
         hideModifyHostOptions: function(){

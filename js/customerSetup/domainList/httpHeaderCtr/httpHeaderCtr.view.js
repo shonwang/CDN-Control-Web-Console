@@ -37,7 +37,21 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
                 addCors: 0,
                 removeCookie: 0,
                 removeKs3: 1
-            };  
+            };
+
+            if (data.domainConf && data.domainConf.obtainIp !== null && data.domainConf.obtainIp !== undefined)
+                  this.defaultParam.obtainIp = data.domainConf.obtainIp
+
+            this.defaultParam.obtIpCustom = data.domainConf.obtainIpCustom
+
+            if (data.domainConf && data.domainConf.addCors !== null && data.domainConf.addCors !== undefined)
+                  this.defaultParam.addCors = data.domainConf.addCors
+
+            if (data.domainConf && data.domainConf.removeCookie !== null && data.domainConf.removeCookie !== undefined)
+                  this.defaultParam.removeCookie = data.domainConf.removeCookie
+
+            if (data.domainConf && data.domainConf.removeKs3 !== null && data.domainConf.removeKs3 !== undefined)
+                  this.defaultParam.removeKs3 = data.domainConf.removeKs3
 
             this.collection.on("set.headerCtr.success", $.proxy(this.launchSendPopup, this));
             this.collection.on("set.headerCtr.error", $.proxy(this.onGetError, this));

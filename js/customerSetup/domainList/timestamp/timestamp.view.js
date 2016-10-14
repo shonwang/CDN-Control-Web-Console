@@ -621,7 +621,8 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
             this.table = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.table.html'])({
-                data: this.collection.models
+                data: this.collection.models,
+                hideAction: false
             }));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);

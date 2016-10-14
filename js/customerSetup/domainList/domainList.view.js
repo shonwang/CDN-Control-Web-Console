@@ -101,11 +101,15 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
             }
         },
 
-        onClickViewSetupBillBtn: function(){
+        onClickViewSetupBillBtn: function(event){
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+
             require(['setupBill.view', 'setupBill.model'], function(SetupBillView, SetupBillModel){
                 var mySetupBillModel = new SetupBillModel();
                 var mySetupBillView = new SetupBillView({
                     collection: mySetupBillModel,
+                    originId: id,
                     onSaveCallback: function(){}.bind(this),
                     onCancelCallback: function(){
                         mySetupBillView.$el.remove();

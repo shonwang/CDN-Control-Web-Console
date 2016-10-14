@@ -11,40 +11,105 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
                 domainInfo = JSON.parse(options.query2),
                 userInfo = {
                     clientName: clientInfo.clientName,
-                    domain: domainInfo.domain
+                    domain: domainInfo.domain,
+                    uid: clientInfo.uid
                 }
+            this.domainInfo = domainInfo;
+            this.clientInfo = clientInfo;
             this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
                 data: userInfo,
                 notShowBtn: true
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
-            // this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
-            // this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.parameter.success", $.proxy(this.onUrlParameterSuccess, this));
+            this.collection.on("get.parameter.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.parameter.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.parameter.error", $.proxy(this.onGetError, this));
+            this.collection.getUrlParameter({originId: this.domainInfo.id})
+        },
 
-            // "id": 1,
-            // "originId": 114,
-            // "parameterKey": "test",
-            // "parameterValue": "test",
-            // "type": 0, 0:添加 1:删除
-            // "status": 0:关闭 1:开启,
-            // "status": 1,
-            // "createTime": 1476273561000,
-            // "updateTime": 1476273561000,
-            // "deleted": 0
-
+        onUrlParameterSuccess: function (data) {
             this.defaultParam = {
-                deleteParam: 2,
-                deleteParamStr: "你渴望力量吗？",
-                addParam: 2,
-                addParamList: [{id:1, name: "你快乐吗？", value: "快乐呀"}, {id:2, name: "你幸福吗？", value: "我姓曾！"}]
+                deleteParam: 1,
+                deleteParamStr: "",
+                addParam: 1,
+                addParamList: []
+            }
+
+            if (data && data.delType !== null && data.delType !== undefined)
+                this.defaultParam.deleteParam = data.delType === 0 ? 1 : 2;
+
+            if (data) this.defaultParam.deleteParamStr = data.delKeys;
+
+            if (data && data.addType !== null && data.addType !== undefined)
+                this.defaultParam.addParam = data.addType === 0 ? 1 : 2;
+            if (data){
+                _.each(data.addDetails, function(el, index, list){
+                    this.defaultParam.addParamList.push({
+                        id: new Date().valueOf(),
+                        name: el.key,
+                        value: el.value
+                    })
+                }.bind(this))
             }
 
             this.$el.find(".delete-args .togglebutton input").on("click", $.proxy(this.onClickDeleteToggle, this));
             this.$el.find(".add-args .togglebutton input").on("click", $.proxy(this.onClickAddToggle, this));
             this.$el.find(".add-args .add").on("click", $.proxy(this.onClickNewArgs, this));
-
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
+            
             this.initSetup();
+        },
+
+        onClickSaveBtn: function (argument) {
+            var list = [{
+                "parameterKey": "",
+                "parameterValue": this.$el.find("#delete-args").val(),
+                "type": 0,
+                "status": this.defaultParam.deleteParam === 1 ? 0 : 1
+            }];
+
+            _.each(this.defaultParam.addParamList, function(el, index, ls) {
+                list.push({
+                "parameterKey": el.name,
+                "parameterValue": el.value,
+                "type": 1,
+                "status": this.defaultParam.addParam === 1 ? 0 : 1
+            })
+            }.bind(this))
+
+            var postParam = {
+                "originId": this.domainInfo.id,
+                "list": list
+            }
+
+            this.collection.setUrlParameter(postParam)
+        },
+
+        launchSendPopup: function(){
+            require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
+                var mySaveThenSendView = new SaveThenSendView({
+                    collection: new SaveThenSendModel(),
+                    originId: this.domainInfo.id,
+                    onSendSuccess: function() {
+                        this.sendPopup.$el.modal("hide");
+                    }.bind(this)
+                });
+                var options = {
+                    title: "发布",
+                    body : mySaveThenSendView,
+                    backdrop : 'static',
+                    type     : 2,
+                    onOKCallback:  function(){
+                        mySaveThenSendView.sendConfig();
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();
+                    }.bind(this)
+                }
+                this.sendPopup = new Modal(options);
+            }.bind(this))
         },
 
         initSetup: function(){

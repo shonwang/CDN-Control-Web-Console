@@ -4,16 +4,23 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         events: {
             //"click .search-btn":"onClickSearch"
         },
-
         initialize: function(options) {
             console.log(options);
             this.options = options;
             this.collection = options.collection;
             this.model      = options.model;
             this.isEdit     = options.isEdit;
+           /* this.id         = options.model.id;*/
+            //console.log(this.id);
 
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.edit.html'])({data: {}}));
-
+            
+            /*this.collection.off("get.Topoinfo.success");
+            this.collection.off("get.Topoinfo.error");
+            this.collection.on("get.Topoinfo.success", $.proxy(this.onTopoinfoSuccess, this));
+            this.collection.on("get.Topoinfo.error", $.proxy(this.onTopoinfoError, this));
+            
+            this.collection.GetTopoinfo(this.id);*/
             var tempModel =  {
                 "id":12,
                 "name":"拓扑关系名称",
@@ -360,6 +367,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             if (this.queryArgs.clientName == "") this.queryArgs.clientName = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
+            console.log(this.query)
             this.collection.queryChannel(this.queryArgs);
         },
 

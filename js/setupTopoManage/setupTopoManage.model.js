@@ -94,6 +94,36 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
             }.bind(this);
 
             Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
+        },
+
+        GetTopoinfo:function(args){
+            var url = BASE_URL + '/resource/topo/origin/info';
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
+            };
+            defaultParas.data = args;
+
+            defaultParas.success = function(res){
+                //this.reset();
+                if (res){
+                    this.trigger("get.Topoinfo.success");
+                } else {
+                    this.trigger("get.Topoinfo.error"); 
+                }
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.Topoinfo.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
         }
     });
 

@@ -15,6 +15,15 @@ define("ipManage.model", ['require','exports', 'utility'], function(require, exp
 
             var operatorName = this.get('operatorId');
             if(operatorName == '0') this.set('operatorName','默认');
+            if(operatorName == '1') this.set('operatorName','联通');
+            if(operatorName == '2') this.set('operatorName','电信');
+            if(operatorName == '3') this.set('operatorName','移动');
+            if(operatorName == '4') this.set('operatorName','鹏博士');
+            if(operatorName == '5') this.set('operatorName','教育网');
+            if(operatorName == '6') this.set('operatorName','广电网');
+            if(operatorName == '7') this.set('operatorName','铁通');
+            if(operatorName == '8') this.set('operatorName','华数');
+            if(operatorName == '9') this.set('operatorName','多线');
         }
     });
 

@@ -214,14 +214,13 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.collection.ipTypeList();
             
-            var isMultiNode = false;
+            //var isMultiNode = this.model.get('multiNode');
+            var isMultiNode = true;
             if(isMultiNode == false){
-                this.$el.find('.ip-operator-type').hide();
-                this.$el.find('.ip-operator-default').show();
+                this.$el.find('.ip-operator-type').remove();
                 this.operatorId = 0;
             }else{
-                this.$el.find('.ip-operator-type').show();
-                this.$el.find('.ip-operator-type').hide();
+                this.$el.find('.ip-operator-default').remove();
                 this.collection.operatorTypeList();
             }
             
@@ -242,7 +241,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             }.bind(this));
             this.ipType = data[0].id;
             this.$el.find(".ip-type .cur-value").html(data[0].name)
-            
+            //console.log(this.model);
             var id = this.model.get("id");
             console.log(id);
             this.collection.getDeviceIpList({deviceId:id})
@@ -254,10 +253,13 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 typeOperatorArray.push({name:el.name,value:el.id})
             });
             Utility.initDropMenu(this.$el.find('.ip-operator-type'),typeOperatorArray,function(value){
-                this.operatorId = pasreInt(value);
-            }).bind(this);
+                this.operatorId = parseInt(value);
+            }.bind(this));
+            console.log(data[0].name);
             this.$el.find('.ip-operator-type .cur-value').html(data[0].name);
-            
+
+            this.operatorId = data[0].id;
+
         },
         onGetIpSuccess: function(data){
             this.ipList = data;
@@ -515,11 +517,13 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onClickAddIP: function(){
+            console.log(this.operatorId);
             var ip = this.$el.find("#input-ip").val();
             var args =  {
                 "deviceId": this.model.get("id"),
                 "ip"      : ip,
-                "ipType"  : this.ipType
+                "ipType"  : this.ipType,
+                "operatorId" : this.operatorId
              }
             this.collection.addDeviceIP(args);
         },

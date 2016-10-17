@@ -186,6 +186,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     this.args.protocol = 1;
                 }
             }.bind(this));
+            this.args.type = typeList[0].value;
             if(this.isEdit){
                 $.each(typeList,function(k,v){
 
@@ -263,6 +264,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             Utility.initDropMenu(this.$el.find(".dropdown-confRange"), confRangeList, function(value){
                 this.args.confRange = parseInt($.trim(value));
             }.bind(this));
+            this.args.confRange = confRangeList[0].value;
             if(this.isEdit){
                 $.each(confRangeList,function(k,v){
                     if(v.value == this.model.get("confRange")){

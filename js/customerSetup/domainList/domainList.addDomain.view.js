@@ -530,25 +530,17 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
                 Regions:''//地区
 
             };
-           this.setDropdownMenu();
+            this.setDropdownMenu();
 
             this.$el.find("#add-domain-btnSubmit").on("click",$.proxy(this.onSubmit,this));
             this.$el.find("#add-domain-btnCancle").on("click",$.proxy(this.onCancel,this));
 
-            var regions = {
-                hasData: true,
-                data: [
-                    {"id":1.0,"region":"CN","name":"中国大陆","cdnFactory":"ksc"},
-                    {"id":2.0,"region":"AS","name":"亚洲","cdnFactory":"ksc"},
-                    {"id":3.0,"region":"NA","name":"北美洲","cdnFactory":"ksc"},
-                    {"id":4.0,"region":"EU","name":"欧洲和中东","cdnFactory":"ksc"},
-                    {"id":5.0,"region":"AU","name":"澳洲","cdnFactory":"ksc"},
-                    {"id":6.0,"region":"AF","name":"非洲","cdnFactory":"ksc"},
-                    {"id":7.0,"region":"SA","name":"南美洲","cdnFactory":"ksc"}
-                ]
-            };
-            this.setRegionData(regions.data)
-            //Utility.getRegion(this.setRegionData.bind(this));
+            this.collection.off("get.region.success");
+            this.collection.off("get.region.error");
+            this.collection.on("get.region.success", $.proxy(this.onGetRegionSuccess, this))
+            this.collection.on("get.region.error", $.proxy(this.onGetError, this))
+
+            this.collection.getRegionBilling();
 
             this.$el.find("#text-domainName").on("focus",$.proxy(this.onDomainNameFocus,this));
 
@@ -556,6 +548,23 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
             this.collection.off("submit.domain.error");
             this.collection.on("submit.domain.success", $.proxy(this.onSubmitSuccess, this))
             this.collection.on("submit.domain.error", $.proxy(this.onGetError, this))
+        },
+
+        onGetRegionSuccess: function(data){
+            // var regions = {
+            //     hasData: true,
+            //     data: [
+            //         {"id":1.0,"region":"CN","name":"中国大陆","cdnFactory":"ksc"},
+            //         {"id":2.0,"region":"AS","name":"亚洲","cdnFactory":"ksc"},
+            //         {"id":3.0,"region":"NA","name":"北美洲","cdnFactory":"ksc"},
+            //         {"id":4.0,"region":"EU","name":"欧洲和中东","cdnFactory":"ksc"},
+            //         {"id":5.0,"region":"AU","name":"澳洲","cdnFactory":"ksc"},
+            //         {"id":6.0,"region":"AF","name":"非洲","cdnFactory":"ksc"},
+            //         {"id":7.0,"region":"SA","name":"南美洲","cdnFactory":"ksc"}
+            //     ]
+            // };
+            // this.setRegionData(regions.data)
+            this.setRegionData(data)
         },
 
         onSubmitSuccess: function(){

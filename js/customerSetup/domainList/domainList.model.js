@@ -66,6 +66,20 @@ define("domainList.model", ['require','exports','utility'], function(require, ex
             }.bind(this),function(res){
                 this.trigger("submit.domain.error", res);
             }.bind(this));
+        },
+
+        getRegionBilling: function(args){
+            var url = BASE_URL + "/channelManager/http/getRegionBilling",
+            successCallback = function(res){
+                if (res&&res.data)
+                    this.trigger("get.region.success", res.data);
+                else
+                    this.trigger("get.region.error"); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.region.error", response);  
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         }
 	});
 

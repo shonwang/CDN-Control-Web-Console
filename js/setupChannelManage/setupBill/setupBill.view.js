@@ -23,6 +23,16 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
 
             this.$el.find(".cancel").on("click", $.proxy(this.onClickBackButton, this))
 
+            require(["domainList.model"], function(DomainListModel){
+                var myDomainListModel = new DomainListModel();
+                    myDomainListModel.on("get.region.success", $.proxy(this.onGetRegionSuccess, this))
+                    myDomainListModel.on("get.region.error", $.proxy(this.onGetError, this))
+                    myDomainListModel.getRegionBilling();
+            }.bind(this))
+        },
+
+        onGetRegionSuccess: function(data){
+            this.allRegion = data;
             this.collection.on("get.version.success",$.proxy(this.onGetVersionInfo,this));
             this.collection.on("get.version.error",$.proxy(this.onGetError,this));
             //this.collection.getVersion({originId: this.options.originId})
@@ -48,7 +58,7 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (this.config.originDomain.type === 1) this.baseInfo.businessTypeStr = '下载加速';
             if (this.config.originDomain.type  === 2) this.baseInfo.businessTypeStr = '直播加速';
             //加速区域
-            var allRegion = [
+            var allRegion = this.allRegion || [
                     {"id":1.0,"region":"CN","name":"中国大陆","cdnFactory":"ksc"},
                     {"id":2.0,"region":"AS","name":"亚洲","cdnFactory":"ksc"},
                     {"id":3.0,"region":"NA","name":"北美洲","cdnFactory":"ksc"},
@@ -56,7 +66,8 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                     {"id":5.0,"region":"AU","name":"澳洲","cdnFactory":"ksc"},
                     {"id":6.0,"region":"AF","name":"非洲","cdnFactory":"ksc"},
                     {"id":7.0,"region":"SA","name":"南美洲","cdnFactory":"ksc"}
-                ]
+                ];
+                
             var regionArray = [], regionName = [];
             if (this.config.originDomain.region.indexOf(";") !== -1) {
                 regionArray = this.config.originDomain.region.split(";");
@@ -469,7 +480,21 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                     hideAction: true
                 }));
                 this.timestampTable.appendTo(this.$el.find(".bill-ctn"));
+
+                this.initOpenNgxLog()
             }.bind(this));
+        },
+
+        initOpenNgxLog: function() {
+            this.chargingOpenInfo = {};
+            var domainConf = this.config.domainConf, originDomain = this.config.originDomain;
+            //"chargingOpen" 是否开启计费 1 开启 0关闭
+            if (domainConf.chargingOpen === 0) this.chargingOpenInfo.chargingOpenStr = '关闭';
+            if (domainConf.chargingOpen  === 1) this.chargingOpenInfo.chargingOpenStr = '开启';
+            this.chargingOpenTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.chargingOpen.html'])({
+                data: this.chargingOpenInfo
+            }));
+            this.chargingOpenTable.appendTo(this.$el.find(".bill-ctn"));
         },
 
         onClickBackButton: function(){

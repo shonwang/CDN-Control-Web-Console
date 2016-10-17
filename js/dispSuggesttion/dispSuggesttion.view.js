@@ -694,6 +694,8 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onSureSending: function(){
+            var result = confirm("你确定要下发吗？")
+            if (!result) return;
             var args = this.getSendData();
             this.collection.adviceDispDns(args, this.nodeId, this.requestId, this.cc)
             this.showDisablePopup("下发中，请耐心等待...")

@@ -4,7 +4,7 @@
     <form class="form-inline ip-ctn">
         <div class="form-group">
             <label for="input-ip">IP</label>
-            <input type="text" class="form-control" id="input-ip">
+            <input type="text" class="form-control" id="input-ip" style="width:89px;">
         </div>
         <div class="form-group">
             <label for="dropdown-ip-type">类型</label>
@@ -17,6 +17,21 @@
                 </button>
                 <ul class="dropdown-menu"></ul>
             </div>
+        </div>
+        <div class="form-group">
+            <label for="dropdown-ip-type">IP运营商</label>
+        </div>
+        <div class="form-group ip-operator-type">
+            <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-ip-type" data-toggle="dropdown">
+                    <span class="cur-value">加载中...</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu"></ul>
+            </div>
+        </div>
+        <div class="form-group ip-operator-default" style="display:none;margin-right:10px;">
+           <button type="button" class="btn btn-default">默认</button>
         </div>
         <div class="form-group opt-ctn">
             <a href="javascript:void(0)" class="btn btn-success create"><span class="glyphicon glyphicon-plus"></span>添加IP</a>

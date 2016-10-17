@@ -11,7 +11,10 @@ define("ipManage.model", ['require','exports', 'utility'], function(require, exp
             if (status === "2" || status === "8" || status === "10" || status === "16" || status === "18" || status === "24" || status === "26") 
                 this.set("statusName", "<span class='label label-warning'>暂停中</span>");
 
-            this.set("id", Utility.randomStr(8))
+            this.set("id", Utility.randomStr(8));
+
+            var operatorName = this.get('operatorId');
+            if(operatorName == '0') this.set('operatorName','默认');
         }
     });
 

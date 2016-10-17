@@ -213,22 +213,51 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.ipInfoSubmit.error",  $.proxy(this.onGetError, this));
 
             this.collection.ipTypeList();
+            
+            var isMultiNode = false;
+            if(isMultiNode == false){
+                this.$el.find('.ip-operator-type').hide();
+                this.$el.find('.ip-operator-default').show();
+                this.operatorId = 0;
+            }else{
+                this.$el.find('.ip-operator-type').show();
+                this.$el.find('.ip-operator-type').hide();
+                this.collection.operatorTypeList();
+            }
+            
         },
-
+        //点击设备管理中的名称时，请求成功后执行的函数
         onGetIpTypeSuccess: function(data){
+            console.log('onGetIpTypeSuccess');
+            //console.log(data);
             this.ipTypeList = data;
+            console.log(this.ipTypeList);
             var typeIpArray = [];
             _.each(this.ipTypeList, function(el, key, ls){
                 typeIpArray.push({name: el.name, value: el.id})
             })
+            console.log(typeIpArray);
             Utility.initDropMenu(this.$el.find(".ip-type"), typeIpArray, function(value){
                 this.ipType = parseInt(value);
             }.bind(this));
             this.ipType = data[0].id;
             this.$el.find(".ip-type .cur-value").html(data[0].name)
-
+            
             var id = this.model.get("id");
+            console.log(id);
             this.collection.getDeviceIpList({deviceId:id})
+        },
+        onGetOperatorTypeSuccess:function(data){
+            this.operatorTypeList = data;
+            var typeOperatorArray = [];
+            _.each(this.operatorTypeList,function(el,key,ls){
+                typeOperatorArray.push({name:el.name,value:el.id})
+            });
+            Utility.initDropMenu(this.$el.find('.ip-operator-type'),typeOperatorArray,function(value){
+                this.operatorId = pasreInt(value);
+            }).bind(this);
+            this.$el.find('.ip-operator-type .cur-value').html(data[0].name);
+            
         },
         onGetIpSuccess: function(data){
             this.ipList = data;
@@ -241,12 +270,13 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.getDeviceIpList({deviceId:id});
             this.showIpManagePopup();
         },
-
+        
         updateIpTable: function(){
             if (this.ipList.length === 0){
                 this.$el.find(".ip-table-ctn").html(_.template(template['tpl/empty.html'])({data: this.ipList}));
                 return;
-            }
+            } 
+            console.log(this.ipList);
             _.each(this.ipList, function(el, index, list){
                 var ipTypeArray = _.filter(this.ipTypeList ,function(obj) {
                     return obj["id"] === parseInt(el.type);
@@ -257,6 +287,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 if (el.status === 4) el.statusName = "<span class='text-danger'>宕机</span>";
                 if (el.status === 6 || el.status === 12 || el.status === 14) el.statusName = "暂停且宕机";
             }.bind(this))
+           
             this.table = $(_.template(template['tpl/deviceManage/deviceManage.ip.table.html'])({
                 data: this.ipList, 
                 permission: AUTH_OBJ,
@@ -618,7 +649,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
         initIpTypeDropmenu: function(res){
             var typeArray = this.deviceTypeArray;
-            console.log(typeArray);
+            //console.log(typeArray);
             Utility.initDropMenu(this.$el.find(".dropdown-type"), typeArray, function(value){
                 this.deviceType = parseInt(value);
             }.bind(this));
@@ -687,7 +718,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find(".dropdown-node .cur-value").html(defaultValue.name)
                 this.nodeId = defaultValue.value;
             } else {
-                console.log(nameList);
+                //console.log(nameList);
                 this.$el.find(".dropdown-node .cur-value").html(nameList[0].name);
                 this.nodeId = nameList[0].value;
 
@@ -697,6 +728,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onGetIpTypeSuccess: function(data){
             this.ipTypeList = data;
+            console.log(this.ipTypeList);
             var typeIpArray = [];
             _.each(this.ipTypeList, function(el, key, ls){
                 typeIpArray.push({name: el.name, value: el.id})

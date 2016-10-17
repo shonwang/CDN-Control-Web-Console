@@ -246,7 +246,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.$el.find(".pagination").html("");
             if (this.isMultiIPSearch){
                 this.queryArgs.page = this.currentPage;
-                console.log(this.queryArgs);
+                //console.log(this.queryArgs);
                 this.collection.getIpInfoList(this.queryArgs);
             } else {
                 this.anotherQuery.page = this.currentPage;
@@ -259,6 +259,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         },
 
         initTable: function(){
+            //console.log(this.collection.models);
             this.table = $(_.template(template['tpl/ipManage/ipManage.table.html'])({data: this.collection.models, permission : AUTH_OBJ}));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);

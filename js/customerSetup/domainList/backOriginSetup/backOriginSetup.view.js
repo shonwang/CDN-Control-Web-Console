@@ -371,6 +371,8 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             this.defaultParamModifyHost.domain = data.originDomain.domain;
             this.defaultParamModifyHost.originAddress = data.domainConf.originAddress;
 
+            this.originType = data.domainConf.originType;
+
             this.initModifyHostSetup();
             this.initModifyHostDropdown();
 
@@ -382,7 +384,10 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onClickHostSaveBtn: function(){
-            if (this.defaultParamModifyHost.domainType !== 3) return;
+            if (this.defaultParamModifyHost.domainType === 2 && this.originType === 1) {
+                alert("未设置回源域名不能使用此项");
+                return;
+            };
             var value = this.$el.find("#textarea-host-domain").val();
             var result = this.checkBaseOrigin(value, 2)
             if (!result) return;

@@ -21,11 +21,7 @@ define("backOriginSetup.model", ['require','exports', 'utility'], function(requi
         setHostHeaderConfig: function(args){
             var url = BASE_URL + "/channelManager/domain/setHostHeaderConfig";
             Utility.getAjax(url, args, function(res){
-                if(res == 1){
-                    this.trigger("set.hostConfig.success");
-                } else {
-                    this.trigger("set.hostConfig.error");
-                }
+                this.trigger("set.hostConfig.success");
             }.bind(this),function(res){
                 this.trigger("set.hostConfig.error", res);
             }.bind(this));

@@ -5,22 +5,12 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             //"click .search-btn":"onClickSearch"
         },
         initialize: function(options) {
-            console.log(options);
             this.options = options;
             this.collection = options.collection;
             this.model      = options.model;
             this.isEdit     = options.isEdit;
            /* this.id         = options.model.id;*/
-           
-
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.edit.html'])({data: {}}));
-            
-            /*this.collection.off("get.Topoinfo.success");
-            this.collection.off("get.Topoinfo.error");
-            this.collection.on("get.Topoinfo.success", $.proxy(this.onTopoinfoSuccess, this));
-            this.collection.on("get.Topoinfo.error", $.proxy(this.onTopoinfoError, this));
-            
-            this.collection.GetTopoinfo(this.id);*/
             var tempModel =  {
                 "id":12,
                 "name":"拓扑关系名称",
@@ -72,61 +62,60 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
 
             this.collection.on("get.node.success", $.proxy(this.onGetAllNode, this));
             this.collection.on("get.node.error", $.proxy(this.onGetError, this));
-            this.collection.getNodeList({
+
+             this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
+            this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
+            if(!this.edit){
+                this.collection.getNodeList();
+            }
+            /*this.collection.getNodeList({
                 chname:null,
                 count:99999,
                 operator:null,
                 page:1,
                 status:null
-            })
+            })*/
             this.initRuleTable();
-            this.initAppDropdown();
+            this.collection.getDeviceTypeList();
         },
 
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
 
-        initAppDropdown: function(){
-            var appArray = [
-                {name:"审核中", value:0},
-                {name: "审核通过", value:1},
-                {name: "审核失败", value:2},
-                {name: "测试中", value:3},
-                {name: "测试未通过", value:4},
-                {name: "编辑中", value:5},
-                {name: "待下发", value:6},
-                {name: "灰度中", value:7},
-                {name: "运行中", value:8},
-                {name: "删除", value:23}
-            ];
+        initDeviceDropMenu: function(res){
+            this.deviceTypeArray = [];
+            var typeArray = [
+                {name: "全部", value: "All"}
+            ],
+            rootNode = this.$el.find(".dropdown-type");
 
+            _.each(res, function(el, index, ls){
+                typeArray.push({name:el.name, value: el.id});
+                this.deviceTypeArray.push({name:el.name, value: el.id});
+            }.bind(this));
             if (!this.isEdit){
                 var rootNode = this.$el.find(".dropdown-app");
-                Utility.initDropMenu(rootNode, appArray, function(value){
-
+                Utility.initDropMenu(rootNode, typeArray, function(value){
+                    if (value !== "All")
+                        this.queryArgs.type = parseInt(value)
+                    else
+                        this.queryArgs.type = null
                 }.bind(this));
             } else {
                 this.$el.find("#dropdown-app").attr("disabled", "disabled")
             }
 
-            var defaultValue = _.find(appArray, function(object){
-                return object.value === this.defaultParam.type;
-            }.bind(this));
-
-            if (defaultValue)
-                this.$el.find("#dropdown-app .cur-value").html(defaultValue.name);
-            else
-                this.$el.find("#dropdown-app .cur-value").html(appArray[0].name);
         },
 
         onGetAllNode: function(res){
             this.$el.find('.all .add-node').show();
             var nodesArray = [];
             this.selectedAllNodeList = [];
-
-            _.each(res.rows, function(el, index, list){
+            _.each(res, function(el, index, list){
+                console.log(el.id);
                 _.each(this.defaultParam.allNodes, function(defaultLocalId, inx, ls){
+                    console.log(defaultLocalId);
                     if (defaultLocalId === el.id) {
                         el.checked = true;
                         this.selectedAllNodeList.push({nodeId: el.id, nodeName: el.chName})
@@ -134,6 +123,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 }.bind(this))
                 nodesArray.push({name:el.chName, value: el.id, checked: el.checked})
             }.bind(this))
+           
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.all .add-node-ctn').get(0),
                 panelID: this.$el.find('.all .add-node').get(0),
@@ -166,10 +156,11 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onGetUpperNode: function(res){
+            console.log('选择加入上层节点');
             if (!this.isEdit) this.$el.find('.upper .add-node').show();
             var nodesArray = [];
             this.selectedUpperNodeList = [];
-
+      
             _.each(this.selectedAllNodeList, function(el, index, list){
                 _.each(this.defaultParam.upperNodes, function(upperId, inx, ls){
                     if (upperId === el.nodeId) {
@@ -182,7 +173,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 }.bind(this))
                 nodesArray.push({name:el.nodeName, value: el.nodeId, checked: el.checked})
             }.bind(this))
-
             this.initUpperTable()
 
             if (nodesArray.length === 0) return;
@@ -315,16 +305,16 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.html'])());
 
-            this.initChannelDropMenu();
-
-            this.collection.on("get.topoInfo.success", $.proxy(this.onChannelListSuccess, this));
+            this.collection.on("get.topoInfo.success", $.proxy(this.onGetTopoSuccess, this));
             this.collection.on("get.topoInfo.error", $.proxy(this.onGetError, this));
-
+            
+            this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
+            this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
+            
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
 
             this.enterKeyBindQuery();
-
             this.queryArgs = {
                 /*"domain"           : null,
                 "accelerateDomain" : null,
@@ -332,13 +322,14 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 "clientName"       : null,
                 "status"           : null,
                 "page"             : 1,*/
-                /*"count"            : 10,*/
+                "count": 10,
                 "name" : null,
                 "type" : null,
                 "page" : 1,
                 "size" : 10
              }
             this.onClickQueryButton();
+            this.collection.getDeviceTypeList();
         },
         
         enterKeyBindQuery:function(){
@@ -350,13 +341,14 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onGetError: function(error){
+            console.log('进入');
             if (error&&error.message)
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
         },
 
-        onChannelListSuccess: function(){
+        onGetTopoSuccess: function(){
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
         },
@@ -372,7 +364,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".pagination").html("");
             //this.collection.queryChannel(this.queryArgs);
             this.collection.getTopoinfo(this.queryArgs);
-           //this.initTable();
         },
 
         initTable: function(){
@@ -456,7 +447,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".total-items span").html(this.collection.total)
             if (this.collection.total <= this.queryArgs.count) return;
             var total = Math.ceil(this.collection.total/this.queryArgs.count);
-
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
                 visiblePages: 10,
@@ -474,25 +464,28 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.isInitPaginator = true;
         },
 
-        initChannelDropMenu: function(){
-            var statusArray = [
-                {name: "全部", value: "All"},
-                {name:"审核中", value:0},
-                {name: "审核通过", value:1},
-                {name: "审核失败", value:2},
-                {name: "测试中", value:3},
-                {name: "测试未通过", value:4},
-                {name: "编辑中", value:5},
-                {name: "待下发", value:6},
-                {name: "灰度中", value:7},
-                {name: "运行中", value:8},
-                {name: "删除", value:9}
+        initDeviceDropMenu: function(res){
+            this.deviceTypeArray = [];
+            var typeArray = [
+                {name: "全部", value: "All"}
             ],
-            rootNode = this.$el.find(".dropdown-app");
-            Utility.initDropMenu(rootNode, statusArray, function(value){
-                this.queryArgs.type = value;
-                console.log(this.queryArgs.type);
+            rootNode = this.$el.find(".dropdown-type");
+
+            _.each(res, function(el, index, ls){
+                typeArray.push({name:el.name, value: el.id});
+                this.deviceTypeArray.push({name:el.name, value: el.id});
             }.bind(this));
+            if (!this.isEdit){
+                var rootNode = this.$el.find(".dropdown-app");
+                Utility.initDropMenu(rootNode, typeArray, function(value){
+                    if (value !== "All")
+                        this.queryArgs.type = parseInt(value)
+                    else
+                        this.queryArgs.type = null
+                }.bind(this));
+            } else {
+                this.$el.find("#dropdown-app").attr("disabled", "disabled")
+            }
       
             var pageNum = [
                 {name: "10条", value: 10},

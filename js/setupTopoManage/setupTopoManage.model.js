@@ -22,29 +22,9 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
         model: Model,
 
         initialize: function(){},
-
-        queryChannel: function(args){
-            var url = BASE_URL + "/rs/channel/query",
-            successCallback = function(res){
-                this.reset();
-                if (res){
-                    _.each(res.rows, function(element, index, list){
-                        this.push(new Model(element));
-                    }.bind(this))
-                    this.total = res.total;
-                    this.trigger("get.channel.success");
-                } else {
-                    this.trigger("get.channel.error"); 
-                } 
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("get.channel.error", response); 
-            }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
-        },
+        
         getTopoinfo: function(args){
-             var url = BASE_URL + "/resource/topo/info/list",
-            //var url = 'http://10.4.2.37:9081/app/info/list',
+            var url = BASE_URL + "/resource/topo/info/list",
             successCallback = function(res){
                 this.reset();
                 if(res){
@@ -62,6 +42,21 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+        
+        getDeviceTypeList:function(){
+            var url = BASE_URL + "/resource/rs/metaData/deviceType/list",
+            successCallback = function(res) {
+                if(res){
+                    this.trigger("get.devicetype.success",res);
+                }else{
+                    this.trigger("get.devicetype.error");
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('get.devicetype.error');
+            }.bind(this);
+            Utility.getAjax(url, '' , successCallback, errorCallback);
+        },
         getChannelDispgroup: function(args){
             var url = BASE_URL + "/rs/channel/dispgroup/get",
             successCallback = function(res){
@@ -76,7 +71,6 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
-
         addDispGroupChannel: function(args){
             var url = BASE_URL + "/rs/channel/dispgroup/add",
             successCallback = function(res){
@@ -90,7 +84,7 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
         },
 
         getNodeList: function(args){
-            var url = BASE_URL + "/rs/node/list",
+            var url = BASE_URL + "/resource/rs/node/queryNode",
             successCallback = function(res){
                 if (res)
                     this.trigger("get.node.success", res); 

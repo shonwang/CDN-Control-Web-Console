@@ -1319,7 +1319,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 else
                     this.queryArgs.type = null
             }.bind(this));
-
+            console.log(typeArray);
             var statusArray = [
                 {name: "全部", value: "All"},
                 {name: "运行中", value: 1},

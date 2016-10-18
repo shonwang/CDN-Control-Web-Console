@@ -356,7 +356,7 @@ define("utility", ['require','exports'], function(require, exports) {
                 processData: false
             };
             defaultParas.data = JSON.stringify(args);
-
+            
             if (dataType) defaultParas.dataType = dataType;
 
             defaultParas.beforeSend = function(xhr){

@@ -11,7 +11,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.model      = options.model;
             this.isEdit     = options.isEdit;
            /* this.id         = options.model.id;*/
-            //console.log(this.id);
+           
 
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.edit.html'])({data: {}}));
             
@@ -134,7 +134,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 }.bind(this))
                 nodesArray.push({name:el.chName, value: el.id, checked: el.checked})
             }.bind(this))
-
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.all .add-node-ctn').get(0),
                 panelID: this.$el.find('.all .add-node').get(0),
@@ -318,8 +317,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
 
             this.initChannelDropMenu();
 
-            this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
-            this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.topoInfo.success", $.proxy(this.onChannelListSuccess, this));
+            this.collection.on("get.topoInfo.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
@@ -327,13 +326,17 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.enterKeyBindQuery();
 
             this.queryArgs = {
-                "domain"           : null,
+                /*"domain"           : null,
                 "accelerateDomain" : null,
                 "businessType"     : null,
                 "clientName"       : null,
                 "status"           : null,
-                "page"             : 1,
-                "count"            : 10
+                "page"             : 1,*/
+                /*"count"            : 10,*/
+                "name" : null,
+                "type" : null,
+                "page" : 1,
+                "size" : 10
              }
             this.onClickQueryButton();
         },
@@ -361,14 +364,15 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         onClickQueryButton: function(){
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
-            this.queryArgs.domain = this.$el.find("#input-domain").val();
-            this.queryArgs.clientName = this.$el.find("#input-client").val();
-            if (this.queryArgs.domain == "") this.queryArgs.domain = null;
-            if (this.queryArgs.clientName == "") this.queryArgs.clientName = null;
+            this.queryArgs.name = this.$el.find("#input-topo-name").val();
+            //this.queryArgs.clientName = this.$el.find("#input-client").val();
+            if (this.queryArgs.name == "") this.queryArgs.name = null;
+            //if (this.queryArgs.clientName == "") this.queryArgs.clientName = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
-            console.log(this.query)
-            this.collection.queryChannel(this.queryArgs);
+            //this.collection.queryChannel(this.queryArgs);
+            this.collection.getTopoinfo(this.queryArgs);
+           //this.initTable();
         },
 
         initTable: function(){
@@ -486,9 +490,10 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             ],
             rootNode = this.$el.find(".dropdown-app");
             Utility.initDropMenu(rootNode, statusArray, function(value){
-
+                this.queryArgs.type = value;
+                console.log(this.queryArgs.type);
             }.bind(this));
-
+      
             var pageNum = [
                 {name: "10条", value: 10},
                 {name: "20条", value: 20},

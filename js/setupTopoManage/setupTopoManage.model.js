@@ -4,7 +4,7 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
             var businessType = this.get("bussinessType"),
                 status       = this.get("status"),
                 cdnFactory   = this.get("cdnFactory"),
-                startTime    = this.get("startTime");
+                createTime    = this.get("createTime");
 
             if (status === 0) this.set("statusName", '<span class="text-danger">已停止</span>');
             if (status === 1) this.set("statusName", '<span class="text-success">服务中</span>');
@@ -13,7 +13,7 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
             if (cdnFactory === "1") this.set("cdnFactoryName", '自建');
             if (cdnFactory === "2") this.set("cdnFactoryName", '网宿');
             if (cdnFactory === "3") this.set("cdnFactoryName", '自建+网宿');
-            if (startTime) this.set("startTimeFormated", new Date(startTime).format("yyyy/MM/dd hh:mm"));
+            if (createTime) this.set("createTime", new Date(createTime).format("yyyy/MM/dd hh:mm"));
         }
     });
 
@@ -42,7 +42,26 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
-
+        getTopoinfo: function(args){
+             var url = BASE_URL + "/resource/topo/info/list",
+            //var url = 'http://10.4.2.37:9081/app/info/list',
+            successCallback = function(res){
+                this.reset();
+                if(res){
+                    _.each(res.rows,function(element, index ,list){
+                        this.push(new Model(element));
+                    }.bind(this))
+                    this.total = res.total;
+                    this.trigger("get.topoInfo.success");
+                }else{
+                    this.trigger("get.topoInfo.error");
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('get.topoInfo.error',response)
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
         getChannelDispgroup: function(args){
             var url = BASE_URL + "/rs/channel/dispgroup/get",
             successCallback = function(res){

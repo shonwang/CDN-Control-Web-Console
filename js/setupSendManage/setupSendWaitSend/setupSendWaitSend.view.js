@@ -1,212 +1,13 @@
-define("setupChannelManage.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
-    var HistoryView = Backbone.View.extend({
-        events: {
-            //"click .search-btn":"onClickSearch"
-        },
-
-        initialize: function(options) {
-            this.options = options;
-            this.collection = options.collection;
-            this.model      = options.model;
-
-            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.html'])({data: {}}));
-
-            this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-
-            this.initSetup()
-        },
-
-        initSetup: function(){
-            var data = [{localLayer: "1111", upperLayer: "22222"}];
-            this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.table.html'])({
-                data: data, 
-            }));
-            if (data.length !== 0)
-                this.$el.find(".table-ctn").html(this.table[0]);
-            else
-                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-
-            this.table.find("tbody .view-detail").on("click", $.proxy(this.onClickItemDetail, this));
-        },
-
-        onClickItemDetail: function(event){
-
-        },
-
-        onClickCancelButton: function(){
-            this.options.onCancelCallback && this.options.onCancelCallback();
-        },
-
-        onGetError: function(error){
-            if (error&&error.message)
-                alert(error.message)
-            else
-                alert("网络阻塞，请刷新重试！")
-        },
-
-        render: function(target) {
-            this.$el.appendTo(target);
-        }
-    });
-
-    var SpecialLayerManageView = Backbone.View.extend({
-        events: {
-            //"click .search-btn":"onClickSearch"
-        },
-
-        initialize: function(options) {
-            this.options = options;
-            this.collection = options.collection;
-            this.model      = options.model;
-
-            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.specialLayer.html'])({data: {}}));
-
-            this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-            this.$el.find(".add-role").on("click", $.proxy(this.onClickAddRuleButton, this));
-
-            this.initSetup()
-        },
-
-        initSetup: function(){
-            var data = [{localLayer: "1111", upperLayer: "22222"}];
-            this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.role.table.html'])({
-                data: data, 
-            }));
-            if (data.length !== 0)
-                this.$el.find(".table-ctn").html(this.table[0]);
-            else
-                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-
-            this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-        },
-
-        onClickAddRuleButton: function(){
-            require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel){
-                var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
-                var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
-                    collection: myAddEditLayerStrategyModel,
-                    onSaveCallback: function(){}.bind(this),
-                    onCancelCallback: function(){
-                        myAddEditLayerStrategyView.$el.remove();
-                        this.$el.find(".special-layer").show();
-                    }.bind(this)
-                })
-
-                this.$el.find(".special-layer").hide();
-                myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
-            }.bind(this))
-        },
-
-        onClickCancelButton: function(){
-            this.options.onCancelCallback && this.options.onCancelCallback();
-        },
-
-        onGetError: function(error){
-            if (error&&error.message)
-                alert(error.message)
-            else
-                alert("网络阻塞，请刷新重试！")
-        },
-
-        render: function(target) {
-            this.$el.appendTo(target);
-        }
-    });
-
-    var EditChannelView = Backbone.View.extend({
-        events: {
-            //"click .search-btn":"onClickSearch"
-        },
-
-        initialize: function(options) {
-            this.options = options;
-            this.collection = options.collection;
-            this.model      = options.model;
-
-            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.edit.html'])({data: {}}));
-
-            this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-            this.$el.find(".use-customized .togglebutton input").on("click", $.proxy(this.onClickIsUseCustomizedBtn, this));
-            this.$el.find(".view-setup-list").on("click", $.proxy(this.onClickViewSetupBillBtn, this))
-
-            this.initSetup()
-        },
-
-        initSetup: function(){
-            var isUseCustomized = this.model.get("tempUseCustomized");
-            if (isUseCustomized === 2){
-                this.$el.find(".use-customized .togglebutton input").get(0).checked = true;
-                this.showCustomized();
-            } else {
-                this.$el.find(".use-customized .togglebutton input").get(0).checked = false;
-                this.hideCustomized();
-            }
-        },
-
-        onClickIsUseCustomizedBtn: function(event){
-            var eventTarget = event.srcElement || event.target;
-            if (eventTarget.tagName !== "INPUT") return;
-            if (eventTarget.checked){
-                this.model.set("tempUseCustomized", 2);
-                this.showCustomized();
-            } else {
-                this.model.set("tempUseCustomized", 1);
-                this.hideCustomized();
-            }
-        },
-
-        hideCustomized: function(){
-            this.$el.find(".customized").hide();
-            this.$el.find(".customized-comment").hide();
-            this.$el.find(".automatic").addClass("col-md-offset-3");
-        },
-
-        showCustomized: function(){
-            this.$el.find(".customized").show();
-            this.$el.find(".customized-comment").show();
-            this.$el.find(".automatic").removeClass("col-md-offset-3");
-        },
-
-        onClickViewSetupBillBtn: function(){
-            require(['setupBill.view', 'setupBill.model'], function(SetupBillView, SetupBillModel){
-                var mySetupBillModel = new SetupBillModel();
-                var mySetupBillView = new SetupBillView({
-                    collection: mySetupBillModel,
-                    onSaveCallback: function(){}.bind(this),
-                    onCancelCallback: function(){
-                        mySetupBillView.$el.remove();
-                        this.$el.find(".edit-panel").show();
-                    }.bind(this)
-                })
-
-                this.$el.find(".edit-panel").hide();
-                mySetupBillView.render(this.$el.find(".bill-panel"));
-            }.bind(this))
-        },
-
-        onClickCancelButton: function(){
-            this.options.onCancelCallback && this.options.onCancelCallback();
-        },
-
-        onGetError: function(error){
-            if (error&&error.message)
-                alert(error.message)
-            else
-                alert("网络阻塞，请刷新重试！")
-        },
-
-        render: function(target) {
-            this.$el.appendTo(target);
-        }
-    });
-
-    var SetupChannelManageView = Backbone.View.extend({
+    var SetupSendWaitSendView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
+            this.options = options
             this.collection = options.collection;
-            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.html'])());
+            this.$el = $(_.template(template['tpl/setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.html'])());
+            this.$el.find("small").html("/待下发")
 
             this.initChannelDropMenu();
 
@@ -214,6 +15,8 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+            this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
+
             this.enterKeyBindQuery();
 
             this.queryArgs = {
@@ -262,7 +65,9 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
 
         initTable: function(){
             this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
-            this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
+            this.table = $(_.template(template['tpl/setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.table.html'])({
+                data: this.collection.models, permission: AUTH_OBJ
+            }));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
@@ -327,30 +132,28 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         },
 
         onClickItemEdit: function(event){
-            require(['setupChannelManage.edit.view'], function(EditChannelView){
-                var eventTarget = event.srcElement || event.target, id;
-                if (eventTarget.tagName == "SPAN"){
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
 
-                var model = this.collection.get(id);
+            var model = this.collection.get(id);
 
-                var myEditChannelView = new EditChannelView({
-                    collection: this.collection,
-                    model: model,
-                    onSaveCallback: function(){}.bind(this),
-                    onCancelCallback: function(){
-                        myEditChannelView.$el.remove();
-                        this.$el.find(".list-panel").show();
-                    }.bind(this)
-                })
+            var myEditChannelView = new EditChannelView({
+                collection: this.collection,
+                model: model,
+                onSaveCallback: function(){}.bind(this),
+                onCancelCallback: function(){
+                    myEditChannelView.$el.remove();
+                    this.$el.find(".list-panel").show();
+                }.bind(this)
+            })
 
-                this.$el.find(".list-panel").hide();
-                myEditChannelView.render(this.$el.find(".edit-panel"))
-            }.bind(this));
+            this.$el.find(".list-panel").hide();
+            myEditChannelView.render(this.$el.find(".edit-panel"))
         },
 
         onItemCheckedUpdated: function(event){
@@ -487,18 +290,20 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
 
         hide: function(){
             this.$el.hide();
-            $(document).off('keydown');
         },
 
-        update: function(){
-            this.$el.show();
-            this.enterKeyBindQuery();
+        update: function(target){
+            this.collection.off();
+            this.collection.reset();
+            this.$el.remove();
+            this.initialize(this.options);
+            this.render(target);
         },
 
-        render: function(target) {
-            this.$el.appendTo(target)
+        render: function(target){
+            this.$el.appendTo(target);
         }
     });
 
-    return SetupChannelManageView;
+    return SetupSendWaitSendView;
 });

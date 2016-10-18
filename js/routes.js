@@ -1,7 +1,13 @@
-define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.view', 'customerSetup.controller'], 
-    function(require, exports, Utility, NavbarView, SubNavbar, CustomerSetupController) {
+define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.view', 'controller', 'customerSetup.controller', 'setupSendManage.controller'], 
+    function(require, exports, Utility, NavbarView, SubNavbar, Controller, CustomerSetupController, SetupSendManageController) {
 
     var Workspace = Backbone.Router.extend({
+
+        initialize: function(){
+            Utility.dateFormat();
+            this.navbarView = new NavbarView();
+            this.curPage = "";
+        },
 
         routes: {
             ""                    : "channelManage",
@@ -26,61 +32,36 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             "customerSetup"       : "customerSetup",
             "domainList/:query"   : "domainList",
 
-            "domainList/:query/domainSetup/:query2": "domainSetup",
-            "domainList/:query/cnameSetup/:query2": "cnameSetup",
-            "domainList/:query/cacheRule/:query2": "cacheRule",
-            "domainList/:query/delMarkCache/:query2": "delMarkCache",
-            "domainList/:query/cacheKeySetup/:query2": "cacheKeySetup",
-            "domainList/:query/backOriginSetup/:query2": "backOriginSetup",
-            "domainList/:query/following302/:query2": "following302",
-            "domainList/:query/dragPlay/:query2": "dragPlay",
-            "domainList/:query/clientLimitSpeed/:query2": "clientLimitSpeed",
-            "domainList/:query/httpHeaderOpt/:query2": "httpHeaderOpt",
-            "domainList/:query/httpHeaderCtr/:query2": "httpHeaderCtr",
+            "domainList/:query/domainSetup/:query2"      : "domainSetup",
+            "domainList/:query/cnameSetup/:query2"       : "cnameSetup",
+            "domainList/:query/cacheRule/:query2"        : "cacheRule",
+            "domainList/:query/delMarkCache/:query2"     : "delMarkCache",
+            "domainList/:query/cacheKeySetup/:query2"    : "cacheKeySetup",
+            "domainList/:query/backOriginSetup/:query2"  : "backOriginSetup",
+            "domainList/:query/following302/:query2"     : "following302",
+            "domainList/:query/dragPlay/:query2"         : "dragPlay",
+            "domainList/:query/clientLimitSpeed/:query2" : "clientLimitSpeed",
+            "domainList/:query/httpHeaderOpt/:query2"    : "httpHeaderOpt",
+            "domainList/:query/httpHeaderCtr/:query2"    : "httpHeaderCtr",
             "domainList/:query/requestArgsModify/:query2": "requestArgsModify",
-            "domainList/:query/ipBlackWhiteList/:query2": "ipBlackWhiteList",
-            "domainList/:query/refererAntiLeech/:query2": "refererAntiLeech",
-            "domainList/:query/timestamp/:query2": "timestamp",
-            "domainList/:query/openNgxLog/:query2": "openNgxLog",
+            "domainList/:query/ipBlackWhiteList/:query2" : "ipBlackWhiteList",
+            "domainList/:query/refererAntiLeech/:query2" : "refererAntiLeech",
+            "domainList/:query/timestamp/:query2"        : "timestamp",
+            "domainList/:query/openNgxLog/:query2"       : "openNgxLog",
 
-            "setupChannelManage" : "setupChannelManage",
-            "setupAppManage" : "setupAppManage",
-            "setupTopoManage" : "setupTopoManage",
-        },
-
-        initialize: function(){
-            Utility.dateFormat();
-            this.navbarView = new NavbarView();
-            this.curPage = "";
-        },
-
-        setUpThirdNavbar: function(query, query2){
-            if (!this.thirdNavbar){
-                var menuOptions = {
-                    query: query,
-                    query2: query2
-                }
-                this.thirdNavbar = new SubNavbar(menuOptions);
-                this.thirdNavbar.select(this.curPage);
-            }
+            "setupChannelManage"     : "setupChannelManage",
+            "setupAppManage"         : "setupAppManage",
+            "setupTopoManage"        : "setupTopoManage",
+            "setupSendDone"          : "setupSendDone",
+            "setupSending"           : "setupSending",
+            "setupSendWaitCustomize" : "setupSendWaitCustomize",
+            "setupSendWaitSend"      : "setupSendWaitSend",
         },
 
         execute: function(callback, args) {
             switch(this.curPage){
                 case 'channelManage':
                     this.channelManageView.hide();
-                    break;
-                case 'setupChannelManage':
-                    this.setupChannelManageView.remove();
-                    this.setupChannelManageView = null;
-                    break;
-                case 'setupAppManage':
-                    this.setupAppManageView.remove();
-                    this.setupAppManageView = null;
-                    break;
-                case 'setupTopoManage':
-                    this.setupTopoManageView.remove();
-                    this.setupTopoManageView = null;
                     break;
                 case 'deviceManage':
                     this.deviceManageView.remove();
@@ -144,6 +125,30 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                 case 'templateManage':
                     this.templateManageView.hide();
                     break;
+                case 'setupChannelManage':
+                    this.setupChannelManageView.remove();
+                    this.setupChannelManageView = null;
+                    break;
+                case 'setupAppManage':
+                    this.setupAppManageView.remove();
+                    this.setupAppManageView = null;
+                    break;
+                case 'setupTopoManage':
+                    this.setupTopoManageView.remove();
+                    this.setupTopoManageView = null;
+                    break;
+                case 'setupSendDone':
+                    this.setupSendDoneView.hide();
+                    break;
+                case 'setupSending':
+                    this.setupSendingView.hide();
+                    break;
+                case 'setupSendWaitCustomize':
+                    this.setupSendWaitCustomizeView.hide();
+                    break;
+                case 'setupSendWaitSend':
+                    this.setupSendWaitSendView.hide();
+                    break;
                 case 'customerSetup':
                     this.customerSetupView.hide();
                     break;
@@ -194,528 +199,154 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                     break;
                 case 'customerSetup-domainList-timestamp':
                     this.timestampView.hide();
-                    break
+                    break;
                 case 'customerSetup-domainList-openNgxLog':
                     this.openNgxLogView.hide();
+                    break;
                 default:
             }
 
             if (callback) callback.apply(this, args);
         },
 
-        removeSubSideBar: function(){
-            if (this.curPage.indexOf("customerSetup-") == -1 && 
-                this.curPage.indexOf("customerSetup-domainList-") == -1){
-                if (this.subNavbar){
-                    this.subNavbar.$el.remove();
-                    this.subNavbar = null;
-                }
-                if (this.thirdNavbar) {
-                    this.thirdNavbar.$el.remove();
-                    this.thirdNavbar = null;
-                } 
-            }
-            if (this.curPage.indexOf("customerSetup-") > -1 &&
-                this.curPage.indexOf("customerSetup-domainList-") == -1){
-                if (this.thirdNavbar) {
-                    this.thirdNavbar.$el.remove();
-                    this.thirdNavbar = null;
-                } 
+        setupSendDone: function(){
+            this.navbarView.initLogin($.proxy(SetupSendManageController.setupSendDoneCallback, this))
+        },
+
+        setupSending: function(){
+            this.navbarView.initLogin($.proxy(SetupSendManageController.setupSendingCallback, this))
+        },
+
+        setupSendWaitCustomize: function(){
+            this.navbarView.initLogin($.proxy(SetupSendManageController.setupSendWaitCustomizeCallback, this))
+        },
+
+        setupSendWaitSend: function(){
+            this.navbarView.initLogin($.proxy(SetupSendManageController.setupSendWaitSendCallback, this))
+        },
+
+        initSetupSendNavbar: function(){
+            var menu = [{
+                    id: 'setupSendWaitCustomize',
+                    name: '待定制',
+                    hash: 'index.html#/setupSendWaitCustomize',
+                    active: true,
+                    children: []
+                },{
+                    id: 'setupSendWaitSend',
+                    name: '待下发',
+                    hash: 'index.html#/setupSendWaitSend',
+                    active: false,
+                    children: []
+                },{
+                    id: 'setupSending',
+                    name: '下发中',
+                    hash: 'index.html#/setupSending',
+                    active: false,
+                    children: []
+                },{
+                    id: 'setupSendDone',
+                    name: '下发完成',
+                    hash: 'index.html#/setupSendDone',
+                    active: false,
+                    children: []
+                },], menuOptions = {
+                backHash: "",
+                menuList: menu
+            };
+            if (!this.setupSendNavbar){
+                this.setupSendNavbar = new SubNavbar(menuOptions);
+                this.setupSendNavbar.$el.find(".back").remove();
+                this.setupSendNavbar.select(this.curPage);
             }
         },
 
         setupTopoManage: function(){
-            this.navbarView.initLogin($.proxy(this.setupTopoManageCallback, this))
-        },
-
-        setupTopoManageCallback: function(){
-            require(['setupTopoManage.view', 'setupTopoManage.model'], function(SetupTopoManageView, SetupTopoManageModel){
-                this.curPage = 'setupTopoManage';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.setupTopoManageModel)
-                    this.setupTopoManageModel = new SetupTopoManageModel();
-                if (!this.setupTopoManageView ){
-                    var options = {
-                        collection: this.setupTopoManageModel
-                    };
-                    this.setupTopoManageView = new SetupTopoManageView(options);
-                    this.setupTopoManageView.render($('.ksc-content'));
-                } else {
-                    this.setupTopoManageView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.setupTopoManageCallback, this))
         },
 
         setupAppManage: function(){
-            this.navbarView.initLogin($.proxy(this.setupAppManageCallback, this))
-        },
-
-        setupAppManageCallback: function(){
-            require(['setupAppManage.view', 'setupAppManage.model'], function(SetupAppManageView, SetupAppManageModel){
-                this.curPage = 'setupAppManage';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.setupAppManageModel)
-                    this.setupAppManageModel = new SetupAppManageModel();
-                if (!this.setupAppManageView ){
-                    var options = {
-                        collection: this.setupAppManageModel
-                    };
-                    this.setupAppManageView = new SetupAppManageView(options);
-                    this.setupAppManageView.render($('.ksc-content'));
-                } else {
-                    this.setupAppManageView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.setupAppManageCallback, this))
         },
 
         setupChannelManage: function(){
-            this.navbarView.initLogin($.proxy(this.setupChannelManageCallback, this))
-        },
-
-        setupChannelManageCallback: function(){
-            require(['setupChannelManage.view', 'setupChannelManage.model'], function(SetupChannelManageView, SetupChannelManageModel){
-                this.curPage = 'setupChannelManage';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.setupChannelManageModel)
-                    this.setupChannelManageModel = new SetupChannelManageModel();
-                if (!this.setupChannelManageView ){
-                    var options = {
-                        collection: this.setupChannelManageModel
-                    };
-                    this.setupChannelManageView = new SetupChannelManageView(options);
-                    this.setupChannelManageView.render($('.ksc-content'));
-                } else {
-                    this.setupChannelManageView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.setupChannelManageCallback, this))
         },
         
         customMaintenance: function(){
-            this.navbarView.initLogin($.proxy(this.customMaintenanceCallback, this))
-        },
-
-        customMaintenanceCallback: function(){
-            require(['customMaintenance.view', 'customMaintenance.model'], function(CustomMaintenanceView, CustomMaintenanceModel){
-                this.curPage = 'customMaintenance';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.customMaintenanceModel)
-                    this.customMaintenanceModel = new CustomMaintenanceModel();
-                if (!this.customMaintenanceView ){
-                    var options = {collection: this.customMaintenanceModel};
-                    this.customMaintenanceView = new CustomMaintenanceView(options);
-                    this.customMaintenanceView.render($('.ksc-content'));
-                } else {
-                    this.customMaintenanceView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.customMaintenanceCallback, this))
         },
 
         refreshManual: function(){
-            this.navbarView.initLogin($.proxy(this.refreshManualCallback, this))
-        },
-
-        refreshManualCallback: function(){
-            require(['refreshManual.view', 'refreshManual.model'], function(RefreshManualView, RefreshManualModel){
-                this.curPage = 'refreshManual';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.refreshManualModel)
-                    this.refreshManualModel = new RefreshManualModel();
-                if (!this.refreshManualView ){
-                    var options = {collection: this.refreshManualModel};
-                    this.refreshManualView = new RefreshManualView(options);
-                    this.refreshManualView.render($('.ksc-content'));
-                } else {
-                    this.refreshManualView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.refreshManualCallback, this))
         },
 
         businessManage: function(){
-            this.navbarView.initLogin($.proxy(this.businessManageCallback, this))
-        },
-
-        businessManageCallback: function(){
-            if (!AUTH_OBJ.ManageNodeGroups) return;
-            require(['businessManage.view', 'businessManage.model', 'nodeManage.model'], function(BusinessManageView, BusinessManageModel, NodeManageModel){
-                this.curPage = 'businessManage';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.businessManageModel)
-                    this.businessManageModel = new BusinessManageModel();
-                if (!this.nodeManageModel)
-                    this.nodeManageModel = new NodeManageModel();
-                if (!this.businessManageView ){
-                    var options = {
-                        collection: this.businessManageModel,
-                        nodeCollection: this.nodeManageModel
-                    };
-                    this.businessManageView = new BusinessManageView(options);
-                    this.businessManageView.render($('.ksc-content'));
-                } else {
-                    this.businessManageView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.businessManageCallback, this))
         },
 
         ipManage: function(){
-            this.navbarView.initLogin($.proxy(this.ipManageCallback, this))
-        },
-
-        ipManageCallback: function(){
-            if (!AUTH_OBJ.ManageIPs) return;
-            require(['ipManage.view', 'ipManage.model', 'deviceManage.model'], function(IPManageView, IPManageModel, DeviceManageModel){
-                this.curPage = 'ipManage';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.ipManageModel)
-                    this.ipManageModel = new IPManageModel();
-                if (!this.deviceManageModel)
-                    this.deviceManageModel = new DeviceManageModel();
-                if (!this.ipManageView ){
-                    var options = {
-                        collection: this.ipManageModel,
-                        deviceCollection: this.deviceManageModel
-                    };
-                    this.ipManageView = new IPManageView(options);
-                    this.ipManageView.render($('.ksc-content'));
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.ipManageCallback, this))
         },
 
         liveCurentSetup: function(){
-            this.navbarView.initLogin($.proxy(this.liveCurentSetupCallback, this))
-        },
-
-        liveCurentSetupCallback: function(){
-            if (!AUTH_OBJ.CurrentConfigurations) return;
-            require(['liveCurentSetup.view', 'liveCurentSetup.model'], function(LiveCurentSetupView, LiveCurentSetupModel){
-                this.curPage = 'liveCurentSetup';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.liveCurentSetupModel)
-                    this.liveCurentSetupModel = new LiveCurentSetupModel();
-                if (!this.liveCurentSetupView ){
-                    var options = {collection: this.liveCurentSetupModel};
-                    this.liveCurentSetupView = new LiveCurentSetupView(options);
-                    this.liveCurentSetupView.render($('.ksc-content'));
-                } else {
-                    this.liveCurentSetupView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.liveCurentSetupCallback, this))
         },
 
         liveAllSetup: function(){
-            this.navbarView.initLogin($.proxy(this.liveAllSetupCallback, this))
-        },
-
-        liveAllSetupCallback: function(){
-            if (!AUTH_OBJ.ManageConfigs) return;
-            require(['liveAllSetup.view', 'liveAllSetup.model'], function(LiveAllSetupView, LiveAllSetupModel){
-                this.curPage = 'liveAllSetup';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.liveAllSetupModel)
-                    this.liveAllSetupModel = new LiveAllSetupModel();
-                if (!this.liveAllSetupView ){
-                    var options = {collection: this.liveAllSetupModel};
-                    this.liveAllSetupView = new LiveAllSetupView(options);
-                    this.liveAllSetupView.render($('.ksc-content'));
-                } else {
-                    this.liveAllSetupView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.liveAllSetupCallback, this))
         },
 
         coverManage: function(){
-            this.navbarView.initLogin($.proxy(this.coverManageCallback, this))
-        },
-
-        coverManageCallback: function() {
-            if (!AUTH_OBJ.ManageCoverrelateds) return;
-            require(['coverManage.view', 'coverManage.model', 'nodeManage.model'], function(CoverManageView, CoverManageModel, NodeManageModel){
-                this.curPage = 'coverManage';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.coverManageModel)
-                    this.coverManageModel = new CoverManageModel();
-                if (!this.nodeManageModel)
-                    this.nodeManageModel = new NodeManageModel();
-                if (!this.coverManageView ){
-                    var options = {
-                        collection: this.coverManageModel,
-                        nodeCollection: this.nodeManageModel
-                    };
-                    this.coverManageView = new CoverManageView(options);
-                    this.coverManageView.render($('.ksc-content'));
-                } else {
-                    this.coverManageView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.coverManageCallback, this))
         },
 
         coverRegion: function(){
-            this.navbarView.initLogin($.proxy(this.coverRegionCallback, this))
-        },
-
-        coverRegionCallback: function() {
-            if (!AUTH_OBJ.Coverrelateds) return;
-            require(['coverRegion.view', 'coverRegion.model'], function(CoverRegionView, CoverRegionModel){
-                    this.curPage = 'coverRegion';
-                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                    if (!this.coverRegionModel)
-                        this.coverRegionModel = new CoverRegionModel();
-                    if (!this.coverRegionView ){
-                        var options = {collection: this.coverRegionModel};
-                        this.coverRegionView = new CoverRegionView(options);
-                        this.coverRegionView.render($('.ksc-content'));
-                    } else {
-                        this.coverRegionView.update();
-                    }
-                }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.coverRegionCallback, this))
         },
 
         dispConfig: function(){
-            this.navbarView.initLogin($.proxy(this.dispConfigCallback, this))
-        },
-
-        dispConfigCallback: function() {
-            if (!AUTH_OBJ.GslbConfig) return;
-            require(['dispConfig.view', 'dispConfig.model', 'dispGroup.model'], function(DispConfigView, DispConfigModel, DispGroupModel){
-                this.curPage = 'dispConfig';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.dispConfigModel)
-                    this.dispConfigModel = new DispConfigModel();
-                if (!this.diffConfigModel)
-                    this.diffConfigModel = new DispConfigModel();
-                if (!this.dispGroupModel)
-                    this.dispGroupModel = new DispGroupModel();
-                if (!this.dispConfigView ){
-                    var options = {
-                        collection: this.dispConfigModel,
-                        diffCollection: this.diffConfigModel,
-                        dispGroupCollection: this.dispGroupModel
-                    };
-                    this.dispConfigView = new DispConfigView(options);
-                    this.dispConfigView.render($('.ksc-content'));
-                } else {
-                    this.dispConfigView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.dispConfigCallback, this))
         },
 
         dispGroup: function(){
-            this.navbarView.initLogin($.proxy(this.dispGroupCallback, this))
-        },
-
-        dispGroupCallback: function() {
-            if (!AUTH_OBJ.ManageGslbGroups) return;
-            require(['dispGroup.view', 'dispGroup.model'], function(DispGroupView, DispGroupModel){
-                this.curPage = 'dispGroup';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.dispGroupModel)
-                    this.dispGroupModel = new DispGroupModel();
-                if (!this.dispGroupView ){
-                    var options = {collection: this.dispGroupModel};
-                    this.dispGroupView = new DispGroupView(options);
-                    this.dispGroupView.render($('.ksc-content'));
-                } else {
-                    this.dispGroupView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.dispGroupCallback, this))
         },
 
         nodeManage: function(){
-            this.navbarView.initLogin($.proxy(this.nodeManageCallback, this))
-        },
-
-        nodeManageCallback: function() {
-            if (!AUTH_OBJ.ManageNodes) return;
-            require(['nodeManage.view', 'nodeManage.model'], function(NodeManageView, NodeManageModel){
-                this.curPage = 'nodeManage';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.nodeManageModel)
-                    this.nodeManageModel = new NodeManageModel();
-                if (!this.nodeManageView ){
-                    var options = {collection: this.nodeManageModel};
-                    this.nodeManageView = new NodeManageView(options);
-                    this.nodeManageView.render($('.ksc-content'));
-                } else {
-                    this.nodeManageView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.nodeManageCallback, this))
         },
 
         deviceManage: function(query){
-            this.navbarView.initLogin($.proxy(this.deviceManageCallback, this, query))
-        },
-
-        deviceManageCallback: function(query) {
-            if (!AUTH_OBJ.ManageHosts) return;
-            require(['deviceManage.view', 'deviceManage.model'], function(DeviceManageView, DeviceManageModel){
-                this.curPage = 'deviceManage';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.deviceManageModel)
-                    this.deviceManageModel = new DeviceManageModel();
-                if (!this.deviceManageView ){
-                    var options = {
-                        collection: this.deviceManageModel,
-                        query     : query
-                    };
-                    this.deviceManageView = new DeviceManageView(options);
-                    this.deviceManageView.render($('.ksc-content'));
-                } else {
-                    this.deviceManageView.update(query);
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.deviceManageCallback, this, query))
         },
 
         channelManage: function(){
-            this.navbarView.initLogin($.proxy(this.channelManageCallback, this))
-        },
-
-        channelManageCallback: function(){
-            if (!AUTH_OBJ.ManageChannels) return;
-            require(['channelManage.view', 'channelManage.model'], function(ChannelManageView, ChannelManageModel){
-                this.curPage = 'channelManage';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.channelManageModel)
-                    this.channelManageModel = new ChannelManageModel();
-                if (!this.channelManageView){
-                    var options = {collection: this.channelManageModel};
-                    this.channelManageView = new ChannelManageView(options);
-                    this.channelManageView.render($('.ksc-content'));
-                } else {
-                    this.channelManageView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.channelManageCallback, this))
         },
 
         clientStatistics: function(){
-            this.navbarView.initLogin($.proxy(this.clientStatisticsCallback, this))
-        },
-
-        clientStatisticsCallback: function(){
-            if (!AUTH_OBJ.KACustomersBandwidthStatistics) return;
-            require(['clientStatistics.view', 'clientStatistics.model'], function(ClientStatisticsView, ClientStatisticsModel){
-                this.curPage = 'clientStatistics';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.downloadClientStatisticsModel)
-                    this.downloadClientStatisticsModel = new ClientStatisticsModel();
-                if (!this.liveClientStatisticsModel)
-                    this.liveClientStatisticsModel = new ClientStatisticsModel();
-                if (!this.clientStatisticsView){
-                    var options = {
-                        collection: this.downloadClientStatisticsModel,
-                        liveCollection: this.liveClientStatisticsModel,
-                    };
-                    this.clientStatisticsView = new ClientStatisticsView(options);
-                    this.clientStatisticsView.render($('.ksc-content'));
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.clientStatisticsCallback, this))
         },
 
         domainStatistics: function(){
-            this.navbarView.initLogin($.proxy(this.domainStatisticsCallback, this))
-        },
-
-        domainStatisticsCallback: function(){
-            if (!AUTH_OBJ.KADomainBandwidthStatistics) return;
-            require(['domainStatistics.view', 'domainStatistics.model'], function(DomainStatisticsView, DomainStatisticsModel){
-                this.curPage = 'domainStatistics';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.downloadDomainStatisticsModel)
-                    this.downloadDomainStatisticsModel = new DomainStatisticsModel();
-                if (!this.liveDomainStatisticsModel)
-                    this.liveDomainStatisticsModel = new DomainStatisticsModel();
-                if (!this.domainStatisticsView ){
-                    var options = {
-                        collection: this.downloadDomainStatisticsModel,
-                        liveCollection: this.liveDomainStatisticsModel,
-                    };
-                    this.domainStatisticsView = new DomainStatisticsView(options);
-                    this.domainStatisticsView.render($('.ksc-content'));
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.domainStatisticsCallback, this))
         },
 
         statisticsManage: function(){
-            this.navbarView.initLogin($.proxy(this.statisticsManageCallback, this))
-        },
-
-        statisticsManageCallback: function(){
-            if (!AUTH_OBJ.CustomerBandwidthStatistics) return;
-            require(['statisticsManage.view', 'statisticsManage.model'], function(StatisticsManageView, StatisticsManageModel){
-                this.curPage = 'statisticsManage';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.downloadStatisticsManageModel)
-                    this.downloadStatisticsManageModel = new StatisticsManageModel();
-                if (!this.liveStatisticsManageModel)
-                    this.liveStatisticsManageModel = new StatisticsManageModel();
-                if (!this.statisticsManageView ){
-                    var options = {
-                        collection: this.downloadStatisticsManageModel,
-                        liveCollection: this.liveStatisticsManageModel,
-                    };
-                    this.statisticsManageView = new StatisticsManageView(options);
-                    this.statisticsManageView.render($('.ksc-content'));
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.statisticsManageCallback, this))
         },
 
         domainManage: function(){
-            this.navbarView.initLogin($.proxy(this.domainManageCallback, this))
-        },
-
-        domainManageCallback: function(){
-            require(['domainManage.view', 'domainManage.model'], function(DomainManageView, DomainManageModel){
-                this.curPage = 'domainManage';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.domainManageModel)
-                    this.domainManageModel = new DomainManageModel();
-                if (!this.domainManageView){
-                    var options = {collection: this.domainManageModel};
-                    this.domainManageView = new DomainManageView(options);
-                    this.domainManageView.render($('.ksc-content'));
-                } else {
-                    this.domainManageView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.domainManageCallback, this))
         },
 
         grayscaleSetup: function(){
-            this.navbarView.initLogin($.proxy(this.grayscaleSetupCallback, this))
-        },
-
-        grayscaleSetupCallback: function(){
-
-            require(['grayscaleSetup.view', 'grayscaleSetup.model'], function(GrayscaleSetupView, GrayscaleSetupModel){
-                this.curPage = 'grayscaleSetup';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.grayscaleSetupModel)
-                    this.grayscaleSetupModel = new GrayscaleSetupModel();
-                if (!this.grayscaleSetupView){
-                    var options = {collection: this.grayscaleSetupModel};
-                    this.grayscaleSetupView = new GrayscaleSetupView(options);
-                    this.grayscaleSetupView.render($('.ksc-content'));
-                } else {
-                    this.grayscaleSetupView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.grayscaleSetupCallback, this))
         },
 
         templateManage: function(){
-            this.navbarView.initLogin($.proxy(this.templateManageCallback, this))
-        },
-
-        templateManageCallback: function(){
-            require(['templateManage.view', 'templateManage.model'], function(TemplateManageView, TemplateManageModel){
-                this.curPage = 'templateManage';
-                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.templateManageModel)
-                    this.templateManageModel = new TemplateManageModel();
-                if (!this.templateManageView){
-                    var options = {collection: this.templateManageModel};
-                    this.templateManageView = new TemplateManageView(options);
-                    this.templateManageView.render($('.ksc-content'));
-                } else {
-                    this.templateManageView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.templateManageCallback, this))
         },
 
         openNgxLog: function(query, query2){
@@ -786,8 +417,68 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             this.navbarView.initLogin($.proxy(CustomerSetupController.domainListCallback, this, query))
         },
 
+        setupDomainManageNavbar: function(query, query2){
+            if (!this.domainManageNavbar){
+                var menuOptions = {
+                    query: query,
+                    query2: query2
+                }
+                this.domainManageNavbar = new SubNavbar(menuOptions);
+                this.domainManageNavbar.select(this.curPage);
+            }
+        },
+
         customerSetup: function(){
             this.navbarView.initLogin($.proxy(CustomerSetupController.customerSetupCallback, this))
+        },
+
+        setupCustomerSetupNavbar: function(query){
+            var menu = [{
+                id: '',
+                name: '客户配置管理',
+                hash: 'javascript:void(0)',
+                children: [{
+                    id: 'customerSetup-domainList',
+                    name: '域名列表',
+                    hash: 'index.html#/domainList/' + query,
+                    active: true,
+                    children: []
+                }]
+            }], menuOptions = {
+                backHash: "index.html#/customerSetup",
+                menuList: menu
+            };
+            if (!this.customerSetupNavbar){
+                this.customerSetupNavbar = new SubNavbar(menuOptions);
+                this.customerSetupNavbar.select(this.curPage);
+            }
+        },
+
+        removeSubSideBar: function(){
+            //从域名列表页面、新域名管理页面进入到其他一级导航页面移除域名列表的二级导航、新域名管理的二级导航
+            if (this.curPage.indexOf("customerSetup-") == -1 && 
+                this.curPage.indexOf("customerSetup-domainList-") == -1){
+                if (this.customerSetupNavbar){
+                    this.customerSetupNavbar.$el.remove();
+                    this.customerSetupNavbar = null;
+                }
+                if (this.domainManageNavbar) {
+                    this.domainManageNavbar.$el.remove();
+                    this.domainManageNavbar = null;
+                } 
+            }
+            //从新域名管理页面进入到域名列表页面移除新域名管理的二级导航
+            if (this.curPage.indexOf("customerSetup-") > -1 &&
+                this.curPage.indexOf("customerSetup-domainList-") == -1 && 
+                this.domainManageNavbar){
+                this.domainManageNavbar.$el.remove();
+                this.domainManageNavbar = null;
+            }
+            //从下发页面进入到其他一级页面移除下发管理的二级导航
+            if (this.curPage.indexOf("setupSend") === -1 && this.setupSendNavbar){
+                this.setupSendNavbar.$el.remove();
+                this.setupSendNavbar = null;
+            }
         }
     });
     exports.Workspace = new Workspace();

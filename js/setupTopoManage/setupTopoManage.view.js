@@ -398,7 +398,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             mySpecialLayerManageView.render(this.$el.find(".strategy-panel"))
         },
 
-
         onClickAddRuleTopoBtn: function(){
             var myEditTopoView = new EditTopoView({
                 collection: this.collection,

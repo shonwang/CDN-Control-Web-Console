@@ -15,9 +15,9 @@
         <tr data-id="<%=data[i].get('id')%>">
             <td><%=data[i].get('videoTypeName')%></td>
             <td><%=data[i].get('dragModeName')%></td>
-            <td><input type="text" class="form-control suffix" value="<%=data[i].get('suffix')%>" id="<%=data[i].get('id')%>"></td>
-            <td><input type="text" class="form-control start" value="<%=data[i].get('startParam')%>" id="<%=data[i].get('id')%>"></td>
-            <td><input type="text" class="form-control end" value="<%=data[i].get('endParam')%>" id="<%=data[i].get('id')%>"></td>
+            <td><input type="text" class="form-control suffix" value="<%=data[i].get('suffix')%>" id="<%=data[i].get('id')%>" readonly="true"></td>
+            <td><input type="text" class="form-control start" value="<%=data[i].get('startParam')%>" id="<%=data[i].get('id')%>" readonly="true"></td>
+            <td><input type="text" class="form-control end" value="<%=data[i].get('endParam')%>" id="<%=data[i].get('id')%>" readonly="true"></td>
             <td>
                 <div class="togglebutton">
                     <label>

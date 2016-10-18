@@ -651,7 +651,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             });
 
             var options = {
-                title:"去问号缓存",
+                title:"时间戳+共享秘钥防盗链",
                 body : myAddEditTimestampView,
                 backdrop : 'static',
                 type     : 2,

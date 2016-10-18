@@ -36,8 +36,10 @@ define("saveThenSend.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.show();
         },
 
-        render: function(target) {
+        render: function(target, modalRoot) {
             this.$el.appendTo(target)
+            modalRoot.find(".ok").removeClass("btn-primary").addClass("btn-default").html("发布");
+            modalRoot.find(".cancel").removeClass("btn-default").addClass("btn-primary").html("暂不发布，继续编辑")
         }
     });
 

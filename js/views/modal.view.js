@@ -66,8 +66,8 @@ define("modal.view", ['require','exports', 'template', 'utility'],
         },
 
         initFooterButton: function(){
-            var okButton = this.$el.find(".modal-footer .btn-primary"),
-                cancelButton = this.$el.find(".modal-footer .btn-default")
+            var okButton = this.$el.find(".modal-footer .ok"),
+                cancelButton = this.$el.find(".modal-footer .cancel")
             if (this.options.type === 1){
                 okButton.hide();
                 cancelButton.html(this.options.cancelButtonText);

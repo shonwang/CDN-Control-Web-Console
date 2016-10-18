@@ -65,6 +65,7 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
                 regionArray = [regionStr]
             _.each(regionArray, function(el, index, ls) {
                 this.regionCtn.find("input[value="+ el +"]").get(0).checked = true;
+                this.regionList[el] = el;
             }.bind(this))
             this.$el.find("#server-port").val(data.domainConf.originPort)
         },

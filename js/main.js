@@ -4,8 +4,6 @@ if (window.DEBUG === 1)
     window.BASE_URL = "http://develop.gateway.center.cdn.ksyun.com";
 else if (window.DEBUG === 1.1)
     window.BASE_URL = "http://local.center.ksyun.com";
-    //window.BASE_URL = "http://192.168.158.85:9098";  //翟磊
-    // window.BASE_URL = "http://192.168.118.134:9098";   //王卫
 else if (window.DEBUG === 1.2)
     window.BASE_URL = "http://10.4.2.38:9098";
 else if (window.DEBUG === 2)
@@ -29,11 +27,13 @@ else if(window.DEBUG === 9)
 requirejs.config({
     paths: {
         "routes": 'routes',
+        "controller": 'controller',
         "utility": 'utility',
         "template": 'template',
-        "modal.view": "modal.view",
-        "navbar.view": "navbar.view",
-        "subNavbar.view": "subNavbar.view",
+
+        "modal.view": "views/modal.view",
+        "navbar.view": "views/navbar.view",
+        "subNavbar.view": "views/subNavbar.view",
         
         "channelManage.view": "channelManage/channelManage.view",
         "channelManage.model": "channelManage/channelManage.model",
@@ -159,14 +159,32 @@ requirejs.config({
 
         "setupChannelManage.model": "setupChannelManage/setupChannelManage.model",
         "setupChannelManage.view": "setupChannelManage/setupChannelManage.view",
+        "setupChannelManage.edit.view": "setupChannelManage/setupChannelManage.edit.view",
+
         "addEditLayerStrategy.model": "setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.model",
         "addEditLayerStrategy.view": "setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.view",
+
         "setupBill.model": 'setupChannelManage/setupBill/setupBill.model',
         "setupBill.view": 'setupChannelManage/setupBill/setupBill.view',
+
         "setupAppManage.model": "setupAppManage/setupAppManage.model",
         "setupAppManage.view": "setupAppManage/setupAppManage.view",
+
         "setupTopoManage.model": "setupTopoManage/setupTopoManage.model",
         "setupTopoManage.view": "setupTopoManage/setupTopoManage.view",
+
+        "setupSendManage.controller": "setupSendManage/setupSendManage.controller",
+        "setupSendDone.model": "setupSendManage/setupSendDone/setupSendDone.model",
+        "setupSendDone.view": "setupSendManage/setupSendDone/setupSendDone.view",
+
+        "setupSending.model": "setupSendManage/setupSending/setupSending.model",
+        "setupSending.view": "setupSendManage/setupSending/setupSending.view",
+
+        "setupSendWaitCustomize.model": "setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.model",
+        "setupSendWaitCustomize.view": "setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.view",
+
+        "setupSendWaitSend.model": "setupSendManage/setupSendWaitSend/setupSendWaitSend.model",
+        "setupSendWaitSend.view": "setupSendManage/setupSendWaitSend/setupSendWaitSend.view",
     },
     urlArgs: new Date().valueOf()
 });

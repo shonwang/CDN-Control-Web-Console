@@ -1100,12 +1100,16 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         update: function(){
-            this.$el.show();
-            if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
+            this.collection.off();
+            this.collection.reset();
+            this.$el.remove();
+            this.initialize(this.options);
+            this.render(this.target);
         },
 
         render: function(target) {
             this.$el.appendTo(target)
+            this.target = target
         }
     });
 

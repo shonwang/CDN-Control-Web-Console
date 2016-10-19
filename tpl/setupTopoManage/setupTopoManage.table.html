@@ -10,7 +10,12 @@
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].attributes.id%>">
-              <td><%=data[i].attributes["name"]%></td>
+              <td>
+                 <%=data[i].attributes["name"]%>
+                 <% if(data[i].attributes["defalut"]){ %>
+                   &nbsp;&nbsp;&nbsp;&nbsp;默认
+                 <%}%>
+              </td>
               <td><%=data[i].attributes["typeName"]%></td>
               <td><%=data[i].attributes["createTime"]%></td>
               <td>

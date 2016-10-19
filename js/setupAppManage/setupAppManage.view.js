@@ -106,17 +106,23 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.html'])());
 
-            this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
-            this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.app.info.success", $.proxy(this.onappListSuccess, this));
+            this.collection.on("get.app.info.error", $.proxy(this.onGetError, this));
 
             this.queryArgs = {
-                "domain"           : null,
+                /*"domain"           : null,
                 "accelerateDomain" : null,
                 "businessType"     : null,
                 "clientName"       : null,
                 "status"           : null,
-                "page"             : 1,
-                "count"            : 10
+                "page"             : 1,*/
+                "count"     : 10,
+                "id"        : null,
+                "name"      : null,
+                "createTime": null,
+                "type"      : null,
+                "topoId"    : null,
+                "typeName"  : null
              }
             this.onClickQueryButton();
         },
@@ -128,24 +134,25 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
                 alert("网络阻塞，请刷新重试！")
         },
 
-        onChannelListSuccess: function(){
+        onappListSuccess: function(){
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
         },
 
         onClickQueryButton: function(){
             this.isInitPaginator = false;
-            this.queryArgs.page = 1;
+            /*this.queryArgs.page = 1;
             this.queryArgs.domain = this.$el.find("#input-domain").val();
             this.queryArgs.clientName = this.$el.find("#input-client").val();
             if (this.queryArgs.domain == "") this.queryArgs.domain = null;
-            if (this.queryArgs.clientName == "") this.queryArgs.clientName = null;
+            if (this.queryArgs.clientName == "") this.queryArgs.clientName = null;*/
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
-            this.collection.queryChannel(this.queryArgs);
+            this.collection.getAppInfo(this.queryArgs);
         },
 
         initTable: function(){
+            console.log(this.collection.models[0].attributes['name']);
             this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
             this.table = $(_.template(template['tpl/setupAppManage/setupAppManage.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
             if (this.collection.models.length !== 0)
@@ -211,6 +218,7 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
         },
 
         initPaginator: function(){
+            console.log(this.collection.total);
             this.$el.find(".total-items span").html(this.collection.total)
             if (this.collection.total <= this.queryArgs.count) return;
             var total = Math.ceil(this.collection.total/this.queryArgs.count);

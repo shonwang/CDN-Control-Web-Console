@@ -42,7 +42,25 @@ define("setupAppManage.model", ['require','exports', 'utility'], function(requir
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
-
+        getAppInfo: function(args){
+            var url = BASE_URL + "/resource/app/info/list",
+            successCallback = function(res){
+                this.reset();
+                if (res){
+                    _.each(res, function(element, index, list){
+                        this.push(new Model(element));
+                    }.bind(this));
+                    this.total = res.total;
+                    this.trigger("get.app.info.success",res);
+                } else {
+                    this.trigger("get.app.info.error"); 
+                } 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.app.info.error", response); 
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
         getChannelDispgroup: function(args){
             var url = BASE_URL + "/rs/channel/dispgroup/get",
             successCallback = function(res){

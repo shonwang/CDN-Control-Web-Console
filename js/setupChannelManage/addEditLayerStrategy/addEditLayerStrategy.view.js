@@ -50,6 +50,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                     status:null
                 })
             } else {
+                console.log(this.options.localNodes);
                 this.onGetLocalNode(this.options.localNodes)
             }
         },

@@ -214,8 +214,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.collection.ipTypeList();
             
-            //var isMultiNode = this.model.get('multiNode');
-            var isMultiNode = true;
+            var isMultiNode = this.model.get('multiNode');
+            //var isMultiNode = true;
             if(isMultiNode == false){
                 this.$el.find('.ip-operator-type').remove();
                 this.operatorId = 0;

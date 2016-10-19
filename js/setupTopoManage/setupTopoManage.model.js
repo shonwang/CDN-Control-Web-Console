@@ -38,18 +38,46 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
                 }
             }.bind(this),
             errorCallback = function(response){
-                this.trigger('get.topoInfo.error',response)
+                this.trigger('get.topoInfo.error',response);
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
-        
-        getDeviceTypeList:function(){
+        getTopoOrigininfo:function(args){
+            var url = BASE_URL + "/resource/topo/origin/info?id="+args,
+            successCallback = function(res){
+                if(res){
+                    this.total = res.total;
+                    this.trigger("get.topo.OriginInfo.success",res);
+                }else{
+                    this.trigger("get.topo.OriginInfo.error");
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('get.topo.OriginInfo.error',response)
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+        getDeviceTypeList:function(args){
             var url = BASE_URL + "/resource/rs/metaData/deviceType/list",
             successCallback = function(res) {
                 if(res){
                     this.trigger("get.devicetype.success",res);
                 }else{
                     this.trigger("get.devicetype.error");
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('get.devicetype.error');
+            }.bind(this);
+            Utility.getAjax(url, '' , successCallback, errorCallback);
+        },
+        getOperatorList:function(args){
+            var url = BASE_URL + "/resource/rs/metaData/operator/list",
+            successCallback = function(res) {
+                if(res){
+                    this.trigger("get.operator.success",res);
+                }else{
+                    this.trigger("get.operator.error");
                 }
             }.bind(this),
             errorCallback = function(response){

@@ -97,7 +97,7 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
             var postParam = {
                 "originId": this.domainInfo.id,
                 "obtainIp": this.defaultParam.obtainIp,
-                "obtIpCustom": this.$el.find("#custom-type").val(),
+                "obtainIpCustom": this.$el.find("#custom-type").val(),
                 "addCors" : this.defaultParam.addCors,
                 "removeCookie": this.defaultParam.removeCookie,
                 "removeKs3": this.defaultParam.removeKs3

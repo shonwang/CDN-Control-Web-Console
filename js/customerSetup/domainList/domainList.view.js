@@ -28,7 +28,7 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
             this.args = {
                 pageSize: 10,//每页N条数据
                 currentPage: 1,
-                userId:'',
+                userId: this.userInfo.uid,
                 domain:''         
             };
             this.toQueryDomain();

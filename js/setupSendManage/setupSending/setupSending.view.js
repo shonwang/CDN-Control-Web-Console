@@ -1,6 +1,6 @@
 define("setupSending.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
-
-    var LookOverTopoView = Backbone.View.extend({
+    
+    var SendDetailView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
         },
@@ -10,7 +10,7 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection = options.collection;
             this.model      = options.model;
 
-            this.$el = $('<div><div class="table-ctn"></div></div>');
+            this.$el = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.detail.html'])({data: {}}));
 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
 
@@ -18,20 +18,20 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initSetup: function(){
-            var tempData = [{
-                name: "时间戳+共享秘钥防盗链",
-                id: 1,
-                comment: "你渴望力量吗？"
-            }]
-            this.table = $(_.template(template['tpl/setupAppManage/setupAppManage.topo.table.html'])({
-                data: tempData
+            var data = [{localLayer: "1111", upperLayer: "22222"}];
+            this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.table.html'])({
+                data: data, 
             }));
-            if (tempData.length !== 0)
+            if (data.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.table.find("tbody .view").on("click", $.proxy(this.onClickItemEdit, this));
+            this.table.find("tbody .view-detail").on("click", $.proxy(this.onClickItemDetail, this));
+        },
+
+        onClickItemDetail: function(event){
+
         },
 
         onClickCancelButton: function(){
@@ -50,64 +50,23 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
         }
     });
 
-    var AppDetailView = Backbone.View.extend({
-        events: {
-            //"click .search-btn":"onClickSearch"
-        },
-
-        initialize: function(options) {
-            this.options = options;
-            this.collection = options.collection;
-            this.model      = options.model;
-
-            this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.detail.html'])({data: {}}));
-
-            this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-
-            this.initSetup()
-        },
-
-        initSetup: function(){
-            var tempData = [{
-                name: "时间戳+共享秘钥防盗链",
-                id: 1
-            }]
-            this.table = $(_.template(template['tpl/setupAppManage/setupAppManage.func.table.html'])({
-                data: tempData
-            }));
-            if (tempData.length !== 0)
-                this.$el.find(".table-ctn").html(this.table[0]);
-            else
-                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-
-            this.table.find("tbody .view").on("click", $.proxy(this.onClickItemEdit, this));
-        },
-
-        onClickCancelButton: function(){
-            this.options.onCancelCallback && this.options.onCancelCallback();
-        },
-
-        onGetError: function(error){
-            if (error&&error.message)
-                alert(error.message)
-            else
-                alert("网络阻塞，请刷新重试！")
-        },
-
-        render: function(target) {
-            this.$el.appendTo(target);
-        }
-    });
-
-    var SetupAppManageView = Backbone.View.extend({
+    var SetupSendingView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
+            this.options = options
             this.collection = options.collection;
-            this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.html'])());
+            this.$el = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.html'])());
+
+            this.initChannelDropMenu();
 
             this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
             this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+
+            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+            this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
+
+            this.enterKeyBindQuery();
 
             this.queryArgs = {
                 "domain"           : null,
@@ -119,6 +78,14 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
                 "count"            : 10
              }
             this.onClickQueryButton();
+        },
+        
+        enterKeyBindQuery:function(){
+            $(document).on('keydown', function(e){
+                if(e.keyCode == 13){
+                    this.onClickQueryButton();
+                }
+            }.bind(this));
         },
 
         onGetError: function(error){
@@ -146,18 +113,54 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initTable: function(){
-            this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
-            this.table = $(_.template(template['tpl/setupAppManage/setupAppManage.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
+            this.$el.find(".mulit-send").attr("disabled", "disabled");
+            this.table = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.table.html'])({
+                data: this.collection.models, permission: AUTH_OBJ
+            }));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.table.find("tbody .detail").on("click", $.proxy(this.onClickItemDetail, this));
-            this.table.find("tbody .topo").on("click", $.proxy(this.onClickItemTopo, this));
+            this.table.find("tbody .detail").on("click", $.proxy(this.onClickItemEdit, this));
+            this.table.find("tbody .send").on("click", $.proxy(this.onClickItemSend, this));
+            this.table.find("tbody .reject").on("click", $.proxy(this.onClickItemReject, this));
+
+            this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
+            this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
         },
 
-        onClickItemTopo: function(event){
+        onClickItemSend: function(event){
+            var result = confirm("你确定要下发吗？");
+            if (!result) return;
+
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+
+            var model = this.collection.get(id);
+        },
+
+        onClickItemReject: function(event){
+            var result = confirm("你确定要打回吗？");
+            if (!result) return;
+
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+
+            var model = this.collection.get(id);
+        },
+
+        onClickItemEdit: function(event){
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();
@@ -168,46 +171,53 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
 
             var model = this.collection.get(id);
 
-            if (this.lookOverTopoViewPopup) $("#" + this.lookOverTopoViewPopup.modalId).remove();
-
-            var myLookOverTopoView = new LookOverTopoView({
-                collection: this.collection,
-                model     : model
-            });
-            var options = {
-                title:"拓扑关系",
-                body : myLookOverTopoView,
-                backdrop : 'static',
-                type     : 2,
-                onOKCallback:  function(){}.bind(this),
-                onHiddenCallback: function(){}.bind(this)
-            }
-            this.lookOverTopoViewPopup = new Modal(options);
-        },
-
-        onClickItemDetail: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
-
-            var model = this.collection.get(id);
-
-            var myAppDetailView = new AppDetailView({
+            var mySendDetailView = new SendDetailView({
                 collection: this.collection,
                 model: model,
                 onSaveCallback: function(){}.bind(this),
                 onCancelCallback: function(){
-                    myAppDetailView.$el.remove();
+                    mySendDetailView.$el.remove();
                     this.$el.find(".list-panel").show();
                 }.bind(this)
             })
 
             this.$el.find(".list-panel").hide();
-            myAppDetailView.render(this.$el.find(".detail-panel"))
+            mySendDetailView.render(this.$el.find(".edit-panel"))
+        },
+
+        onItemCheckedUpdated: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            var id = $(eventTarget).attr("id");
+            var model = this.collection.get(id);
+            model.set("isChecked", eventTarget.checked)
+
+            var checkedList = this.collection.filter(function(model) {
+                return model.get("isChecked") === true;
+            })
+            if (checkedList.length === this.collection.models.length)
+                this.table.find("thead input").get(0).checked = true;
+            if (checkedList.length !== this.collection.models.length)
+                this.table.find("thead input").get(0).checked = false;
+            if (checkedList.length === 0) {
+                this.$el.find(".mulit-send").attr("disabled", "disabled");
+            } else {
+                this.$el.find(".mulit-send").removeAttr("disabled", "disabled");
+            }
+        },
+
+        onAllCheckedUpdated: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            this.collection.each(function(model){
+                model.set("isChecked", eventTarget.checked);
+            }.bind(this))
+            this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
+            if (eventTarget.checked){
+                this.$el.find(".mulit-send").removeAttr("disabled", "disabled");
+            } else {
+                this.$el.find(".mulit-send").attr("disabled", "disabled");
+            }
         },
 
         initPaginator: function(){
@@ -232,18 +242,50 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
             this.isInitPaginator = true;
         },
 
+        initChannelDropMenu: function(){
+            var statusArray = [
+                {name: "全部", value: "All"},
+                {name:"新增", value:0},
+                {name: "删除", value:1},
+                {name: "修改", value:2},
+            ],
+            rootNode = this.$el.find(".dropdown-oper");
+            Utility.initDropMenu(rootNode, statusArray, function(value){
+                // if (value == "All")
+                //     this.queryArgs.status = null;
+                // else
+                //     this.queryArgs.status = parseInt(value)
+            }.bind(this));
+
+            var pageNum = [
+                {name: "10条", value: 10},
+                {name: "20条", value: 20},
+                {name: "50条", value: 50},
+                {name: "100条", value: 100}
+            ]
+            Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
+                this.queryArgs.count = value;
+                this.queryArgs.page = 1;
+                this.onClickQueryButton();
+            }.bind(this));
+        },
+
         hide: function(){
             this.$el.hide();
         },
 
-        update: function(){
-            this.$el.show();
+        update: function(target){
+            this.collection.off();
+            this.collection.reset();
+            this.$el.remove();
+            this.initialize(this.options);
+            this.render(target);
         },
 
-        render: function(target) {
-            this.$el.appendTo(target)
+        render: function(target){
+            this.$el.appendTo(target);
         }
     });
 
-    return SetupAppManageView;
+    return SetupSendingView;
 });

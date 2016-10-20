@@ -1,11 +1,23 @@
 <div class="setup-topo-manage fadeInLeft animated">
     <div class="list-panel">
-        <h3>配置下发<small>/拓扑管理</small></h3>
+        <h3>下发管理<small>/待下发</small></h3>
         <div class="well opt-ctn">
             <form class="form-inline">
                 <div class="form-group">
-                    <label for="input-topo-name">拓扑关系名称</label>
-                    <input type="text" class="form-control" id="input-topo-name">
+                    <label for="input-domain">加速域名</label>
+                    <input type="text" class="form-control" id="input-domain">
+                </div>
+                <div class="form-group">
+                    <label for="dropdown-oper">操作目的</label>
+                </div>
+                <div class="form-group dropdown-oper">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-oper" data-toggle="dropdown">
+                            <span class="cur-value">全部</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu"></ul>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="dropdown-app">应用</label>
@@ -19,8 +31,32 @@
                         <ul class="dropdown-menu"></ul>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="dropdown-topo">拓扑关系</label>
+                </div>
+                <div class="form-group dropdown-topo">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-topo" data-toggle="dropdown">
+                            <span class="cur-value">全部</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu"></ul>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="dropdown-iscustomize">是否定制化</label>
+                </div>
+                <div class="form-group dropdown-iscustomize">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-iscustomize" data-toggle="dropdown">
+                            <span class="cur-value">全部</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu"></ul>
+                    </div>
+                </div>
                 <a href="javascript:void(0)" class="btn btn-primary query"><span class="glyphicon glyphicon-search"></span>查询</a>
-                <a href="javascript:void(0)" class="btn btn-success new"><span class="glyphicon glyphicon-plus"></span>新建</a>
+                <a href="javascript:void(0)" class="btn btn-success mulit-send">批量下发</a>
             </form>
         </div>
         <div class="well">

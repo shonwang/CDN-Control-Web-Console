@@ -1,9 +1,7 @@
 define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
     var EditChannelView = Backbone.View.extend({
-        events: {
-            //"click .search-btn":"onClickSearch"
-        },
+        events: {},
 
         initialize: function(options) {
             this.options = options;
@@ -28,6 +26,21 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                 this.$el.find(".use-customized .togglebutton input").get(0).checked = false;
                 this.hideCustomized();
             }
+
+            this.initConfigFile();
+        },
+
+        initConfigFile: function(){
+            this.configReadOnly = $(_.template(template['tpl/setupChannelManage/setupChannelManage.editCfgFalse.html'])({
+                data: {},
+                panelId: Utility.randomStr(8)
+            }));
+            this.configReadOnly.appendTo(this.$el.find(".automatic"))
+            this.configEdit = $(_.template(template['tpl/setupChannelManage/setupChannelManage.editCfgTrue.html'])({
+                data: {},
+                panelId: Utility.randomStr(8)
+            }));
+            this.configEdit.appendTo(this.$el.find(".customized"))
         },
 
         onClickIsUseCustomizedBtn: function(event){

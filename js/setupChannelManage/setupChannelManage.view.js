@@ -27,11 +27,24 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.table.find("tbody .view-detail").on("click", $.proxy(this.onClickItemDetail, this));
+            this.table.find("tbody .bill").on("click", $.proxy(this.onClickItemBill, this));
         },
 
-        onClickItemDetail: function(event){
+        onClickItemBill: function(event){
+            require(['setupBill.view', 'setupBill.model'], function(SetupBillView, SetupBillModel){
+                var mySetupBillModel = new SetupBillModel();
+                var mySetupBillView = new SetupBillView({
+                    collection: mySetupBillModel,
+                    onSaveCallback: function(){}.bind(this),
+                    onCancelCallback: function(){
+                        mySetupBillView.$el.remove();
+                        this.$el.find(".history-panel").show();
+                    }.bind(this)
+                })
 
+                this.$el.find(".history-panel").hide();
+                mySetupBillView.render(this.$el.find(".bill-panel"));
+            }.bind(this))
         },
 
         onClickCancelButton: function(){

@@ -63,7 +63,7 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
         },
 
         initTable: function(){
-            this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
+            this.$el.find(".mulit-send").attr("disabled", "disabled");
             this.table = $(_.template(template['tpl/setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.table.html'])({
                 data: this.collection.models, permission: AUTH_OBJ
             }));
@@ -73,14 +73,17 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-            this.table.find("tbody .strategy").on("click", $.proxy(this.onClickItemSpecialLayer, this));
-            this.table.find("tbody .history").on("click", $.proxy(this.onClickItemHistory, this));
+            this.table.find("tbody .send").on("click", $.proxy(this.onClickItemSend, this));
+            this.table.find("tbody .reject").on("click", $.proxy(this.onClickItemReject, this));
 
             this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
         },
 
-        onClickItemHistory: function(event){
+        onClickItemSend: function(event){
+            var result = confirm("你确定要下发吗？");
+            if (!result) return;
+
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();
@@ -90,22 +93,12 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             }
 
             var model = this.collection.get(id);
-
-            var myHistoryView = new HistoryView({
-                collection: this.collection,
-                model: model,
-                onSaveCallback: function(){}.bind(this),
-                onCancelCallback: function(){
-                    myHistoryView.$el.remove();
-                    this.$el.find(".list-panel").show();
-                }.bind(this)
-            })
-
-            this.$el.find(".list-panel").hide();
-            myHistoryView.render(this.$el.find(".history-panel"))
         },
 
-        onClickItemSpecialLayer: function(event){
+        onClickItemReject: function(event){
+            var result = confirm("你确定要打回吗？");
+            if (!result) return;
+
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();
@@ -115,44 +108,33 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             }
 
             var model = this.collection.get(id);
-
-            var mySpecialLayerManageView = new SpecialLayerManageView({
-                collection: this.collection,
-                model: model,
-                onSaveCallback: function(){}.bind(this),
-                onCancelCallback: function(){
-                    mySpecialLayerManageView.$el.remove();
-                    this.$el.find(".list-panel").show();
-                }.bind(this)
-            })
-
-            this.$el.find(".list-panel").hide();
-            mySpecialLayerManageView.render(this.$el.find(".strategy-panel"))
         },
 
         onClickItemEdit: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
+            require(['setupChannelManage.edit.view'], function(EditChannelView){
+                var eventTarget = event.srcElement || event.target, id;
+                if (eventTarget.tagName == "SPAN"){
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
 
-            var model = this.collection.get(id);
+                var model = this.collection.get(id);
 
-            var myEditChannelView = new EditChannelView({
-                collection: this.collection,
-                model: model,
-                onSaveCallback: function(){}.bind(this),
-                onCancelCallback: function(){
-                    myEditChannelView.$el.remove();
-                    this.$el.find(".list-panel").show();
-                }.bind(this)
-            })
+                var myEditChannelView = new EditChannelView({
+                    collection: this.collection,
+                    model: model,
+                    onSaveCallback: function(){}.bind(this),
+                    onCancelCallback: function(){
+                        myEditChannelView.$el.remove();
+                        this.$el.find(".list-panel").show();
+                    }.bind(this)
+                })
 
-            this.$el.find(".list-panel").hide();
-            myEditChannelView.render(this.$el.find(".edit-panel"))
+                this.$el.find(".list-panel").hide();
+                myEditChannelView.render(this.$el.find(".edit-panel"))
+            }.bind(this));
         },
 
         onItemCheckedUpdated: function(event){
@@ -170,9 +152,9 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             if (checkedList.length !== this.collection.models.length)
                 this.table.find("thead input").get(0).checked = false;
             if (checkedList.length === 0) {
-                this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
+                this.$el.find(".mulit-send").attr("disabled", "disabled");
             } else {
-                this.$el.find(".multi-modify-topology").removeAttr("disabled", "disabled");
+                this.$el.find(".mulit-send").removeAttr("disabled", "disabled");
             }
         },
 
@@ -184,9 +166,9 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             }.bind(this))
             this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
             if (eventTarget.checked){
-                this.$el.find(".multi-modify-topology").removeAttr("disabled", "disabled");
+                this.$el.find(".mulit-send").removeAttr("disabled", "disabled");
             } else {
-                this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
+                this.$el.find(".mulit-send").attr("disabled", "disabled");
             }
         },
 
@@ -215,63 +197,16 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
         initChannelDropMenu: function(){
             var statusArray = [
                 {name: "全部", value: "All"},
-                {name:"审核中", value:0},
-                {name: "审核通过", value:1},
-                {name: "审核失败", value:2},
-                {name: "测试中", value:3},
-                {name: "测试未通过", value:4},
-                {name: "编辑中", value:5},
-                {name: "待下发", value:6},
-                {name: "灰度中", value:7},
-                {name: "运行中", value:8},
-                {name: "删除", value:9}
+                {name:"新增", value:0},
+                {name: "删除", value:1},
+                {name: "修改", value:2},
             ],
-            rootNode = this.$el.find(".dropdown-status");
+            rootNode = this.$el.find(".dropdown-oper");
             Utility.initDropMenu(rootNode, statusArray, function(value){
-                if (value == "All")
-                    this.queryArgs.status = null;
-                else
-                    this.queryArgs.status = parseInt(value)
-            }.bind(this));
-
-            var protocolArray = [
-                {name: "全部", value: "All"},
-                {name:"http+hlv", value:0},
-                {name: "hls", value:1},
-                {name: "rtmp", value:2}
-            ],
-            rootNode = this.$el.find(".dropdown-protocol");
-            Utility.initDropMenu(rootNode, protocolArray, function(value){
-                if (value == "All")
-                    this.queryArgs.status = null;
-                else
-                    this.queryArgs.status = parseInt(value)
-            }.bind(this));
-
-            var companyArray = [
-                {name: "全部", value: "All"},
-                {name:"自建", value:0},
-                {name: "网宿", value:1}
-            ],
-            rootNode = this.$el.find(".dropdown-company");
-            Utility.initDropMenu(rootNode, companyArray, function(value){
-                if (value == "All")
-                    this.queryArgs.status = null;
-                else
-                    this.queryArgs.status = parseInt(value)
-            }.bind(this));
-
-            var typeArray = [
-                {name: "全部", value: "All"},
-                {name:"下载加速", value:0},
-                {name: "直播加速", value:1}
-            ],
-            rootNode = this.$el.find(".dropdown-type");
-            Utility.initDropMenu(rootNode, typeArray, function(value){
-                if (value == "All")
-                    this.queryArgs.status = null;
-                else
-                    this.queryArgs.status = parseInt(value)
+                // if (value == "All")
+                //     this.queryArgs.status = null;
+                // else
+                //     this.queryArgs.status = parseInt(value)
             }.bind(this));
 
             var pageNum = [

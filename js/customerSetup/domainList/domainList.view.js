@@ -93,8 +93,6 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
                 this.$el.find(".ks-table tbody .setup-bill").on("click", $.proxy(this.onClickViewSetupBillBtn, this));  
             }
 
-            this.tbodyList.find("");
-
             if(!this.isInitPaginator){
                 this.$el.find(".pagination").html('');
                 this.initPaginator();

@@ -35,7 +35,7 @@ define("openNgxLog.view", ['require','exports', 'template', 'modal.view', 'utili
             }
 
             if (data.domainConf && data.domainConf.chargingOpen !== null && data.domainConf.chargingOpen !== undefined)
-                this.defaultParam.chargingOpen === data.domainConf.chargingOpen //0:关闭 1:开启            
+                this.defaultParam.chargingOpen = data.domainConf.chargingOpen //0:关闭 1:开启            
 
             this.initSetup();
 

@@ -10,6 +10,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.model      = options.model;
             this.isEdit     = options.isEdit;
             this.rule       = [];
+            this.allNodes   = [];//存储所有节点
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.edit.html'])({data: {}}));
             /*var tempModel =  {
                 "id":12,
@@ -93,7 +94,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
 
             this.collection.getNodeList(); //获取所有节点列表接口
             this.collection.getDeviceTypeList();//获取应用类型列表接口
-            this.initRuleTable();
+           // this.initRuleTable();
             
         },
 
@@ -135,12 +136,12 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 _.each(this.defaultParam.allNodes, function(defaultLocalId, inx, ls){
                     if (defaultLocalId === el.id) {
                         el.checked = true;
-                        this.selectedAllNodeList.push({nodeId: el.id, nodeName: el.chName})
+                        this.selectedAllNodeList.push({nodeId: el.id, nodeName: el.chName , operator:el.operatorId})
                     }
                 }.bind(this))
-                nodesArray.push({name:el.chName, value: el.id, checked: el.checked})
+                nodesArray.push({name:el.chName, value: el.id, checked: el.checked, operator:el.operatorId})
             }.bind(this))
-            
+            var self = this;
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.all .add-node-ctn').get(0),
                 panelID: this.$el.find('.all .add-node').get(0),
@@ -148,8 +149,19 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 onOk: function(data){
                     this.selectedAllNodeList = [];
                     _.each(data, function(el, key, ls){
-                        this.selectedAllNodeList.push({nodeId: el.value, nodeName: el.name});
+                        this.selectedAllNodeList.push({nodeId: el.value, nodeName: el.name, operatorId:''});
                     }.bind(this))
+                    _.each(this.selectedAllNodeList,function(el,key,ls){
+                        self.allNodes.push(el);
+                    })
+                    var one = this;
+                    _.each(nodesArray,function(el,key,ls){
+                        _.each(one.selectedAllNodeList,function(data,key,ls){
+                            if(el.value == data.nodeId){
+                                data.operatorId = el.operator;
+                            }
+                        })
+                    })
                     this.initAllNodesTable()
                 }.bind(this),
                 data: nodesArray,
@@ -173,7 +185,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onGetUpperNode: function(res){
-            console.log('选择加入上层节点');
             if (!this.isEdit) this.$el.find('.upper .add-node').show();
             var nodesArray = [];
             this.selectedUpperNodeList = [];
@@ -188,7 +199,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                         })
                     }
                 }.bind(this))
-                nodesArray.push({name:el.nodeName, value: el.nodeId, checked: el.checked})
+                nodesArray.push({name:el.nodeName, value: el.nodeId, checked: el.checked, operator:el.operatorId})
             }.bind(this))
             this.initUpperTable()
             
@@ -204,8 +215,17 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                         this.selectedUpperNodeList.push({
                             nodeId: el.value, 
                             nodeName: el.name,
+                            operatorId: ''
                         })
                     }.bind(this))
+                    var one = this;
+                    _.each(nodesArray,function(el,key,ls){
+                        _.each(one.selectedUpperNodeList,function(data,key,ls){
+                            if(el.value == data.nodeId){
+                                data.operatorId = el.operator;
+                            }
+                        })
+                    })
                     this.initUpperTable()
                 }.bind(this),
                 data: nodesArray,
@@ -264,9 +284,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             }
         },
 
-        initRuleTable: function(){
-            var data = [{localLayer: "1111", upperLayer: "22222"}];
-
+        initRuleTable: function(data){
+            //var data = [{localLayer: "1111", upperLayer: "22222"}];
+            var data = data;
             this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.role.table.html'])({
                 data: data, 
             }));
@@ -277,32 +297,58 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
 
             if (!this.isEdit){
                 this.roleTable.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-                this.roleTable.find("tbody .delete").on("click", $.proxy(this.onClickItemEdit, this));
+                this.roleTable.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
             } else {
                 this.roleTable.find("tbody .edit").hide();
                 this.roleTable.find("tbody .delete").hide();
             }
         },
+        onClickItemEdit: function(event){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "A"){
+                eventTarget = $(eventTarget).parent().parent();
+                id = eventTarget.attr("data-id");
+            } else {
+                id = $(eventTarget).attr("data-id");
+            }
+            this.id = id;
+            var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
+                collection: this.collection,
+                localNodes: this.selectedAllNodeList,
+                upperNodes: this.selectedUpperNodeList,
+                rule      : this.rule,
+                id        : this.id,
+                isEdit    : true,
+                onSaveCallback: function(){
+                    var data = this.InformationProcessing(this.rule);
+                    myAddEditLayerStrategyView.$el.remove();
+                    this.$el.find(".add-topo").show();
+                    this.initRuleTable(data);
+                    
+                }.bind(this),
+                onCancelCallback: function(){
+                    myAddEditLayerStrategyView.$el.remove();
+                    this.$el.find(".add-topo").show();
+                }.bind(this)
+            })
 
+            this.$el.find(".add-topo").hide();
+            myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
+        },
+        onClickItemDelete:function(){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "A"){
+                eventTarget = $(eventTarget).parent().parent();
+                id = eventTarget.attr("data-id");
+            } else {
+                id = $(eventTarget).attr("data-id");
+            }
+            this.rule.splice(id,1);
+            var data = this.InformationProcessing(this.rule);
+            this.initRuleTable(data);
+            
+        },
         onClickAddRuleButton: function(){
-            /*require(['setupTopoManageAddRule.view', 'setupTopoManageAddRule.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel){
-                var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
-                console.log(this.selectedAllNodeList);
-                console.log(this.selectedUpperNodeList);
-                var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
-                    collection: myAddEditLayerStrategyModel,
-                    localNodes: this.selectedAllNodeList,
-                    upperNodes: this.selectedUpperNodeList,
-                    onSaveCallback: function(){}.bind(this),
-                    onCancelCallback: function(){
-                        myAddEditLayerStrategyView.$el.remove();
-                        this.$el.find(".add-topo").show();
-                    }.bind(this)
-                })
-
-                this.$el.find(".add-topo").hide();
-                myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
-            }.bind(this))*/
                var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
                     collection: this.collection,
                     localNodes: this.selectedAllNodeList,
@@ -310,7 +356,10 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     rule      : this.rule,
                     onSaveCallback: function(){
                         console.log(this.rule);
-                        this.InformationProcessing(this.rule);
+                        var data = this.InformationProcessing(this.rule);
+                        myAddEditLayerStrategyView.$el.remove();
+                        this.$el.find(".add-topo").show();
+                        this.initRuleTable(data);
                         
                     }.bind(this),
                     onCancelCallback: function(){
@@ -325,6 +374,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         InformationProcessing:function(data){
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             var data_save = [];
+            var self = this;
             var operator = [
                 {name: "联通",  value:1},
                 {name: "电信",  value:2},
@@ -336,44 +386,48 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 {name: "华数",   value:8},
                 {name: "多线",   value:9}
             ];
-            
             _.each(data, function(el, key, ls){
                 var data_save_content = {
+                    id:null,
                     'localLayer':[],
                     'upperLayer':[]
                 };
                 if(el.localType == 2){
                     _.each(el.local,function(local){
                         _.each(operator,function(operator){
-                            console.log(local);
-                            console.log(operator.value);
                             if(local == operator.value){
-                               data_save_content.localLayer.push(el.name)
+                               data_save_content.localLayer.push(operator.name)
                             }
                         })
                     })
                 }else if(el.localType == 1){
                     _.each(el.local,function(local){
-                        _.each(this.nodesArray,function(nodes){
-                            if(local == nodes.value){
-                               data_save_content.localLayer.push(el.name)
+                        _.each(self.allNodes,function(nodes){
+                            if(local == nodes.nodeId){
+                               data_save_content.localLayer.push(nodes.chName)
                             }
                         })
                     })
                 }
                 _.each(el.upper,function(upper){
-                    _.each(this.nodesArray,function(nodes){
-                        if(upper.nodeId == nodes.value){
-                           data_save_content.upperLayer.push(el.name)
-                        }
-                    })
+                   
+                        _.each(self.allNodes,function(nodes){
+                            if(upper.nodeId == nodes.nodeId){
+                               data_save_content.upperLayer.push(nodes.chName)
+                            }
+                        })
+                    
+                    
                 })
+                data_save_content.localLayer = data_save_content.localLayer.join('、');
+                data_save_content.upperLayer = data_save_content.upperLayer.join('、');
+                data_save_content.id = key;
                 data_save.push(data_save_content);
+
             });
-            console.log(data_save);
+            return data_save;
         },
         onGetError: function(error){
-            console.log('发生错误');
             if (error&&error.message)
                 alert(error.message)
             else
@@ -391,24 +445,46 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.options = options;
             this.collection = options.collection;
             this.rule = options.rule;
-            this.ruleContent = {
-                "local":[1],
-                "localType":2,
-                "upper":[
-                     
-                  ]
-            };//用来存储规则的内容
+            this.isEdit = options.isEdit;
+            this.id = options.id;
+            if(!this.isEdit){
+                this.ruleContent = {
+                    "local":[1],
+                    "localType":2,
+                    "upper":[
+                         
+                     ]
+                };//用来存储规则的内容
+            }else{
+                this.ruleContent = this.rule[this.id];
+            }
+            
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             this.$el = $(_.template(template['tpl/setupTopoManage/addEditLayerStrategy.html'])());
- 
-            this.defaultParam = {
-                "local":[163,162,161],
-                "localType":2,
-                "upper":[{
-                    "nodeId":163,
-                    "ipCorporation":2
-                }]
+            if(!this.isEdit){
+                this.defaultParam = {
+                    "local":[],
+                    "localType":2,
+                    "upper":[{
+                        "nodeId":null,
+                        "ipCorporation":0
+                    }]
+                }
+            }else{
+                this.defaultParam = {
+                    "local":this.rule[this.id].local,
+                    "localType":this.rule[this.id].localType,
+                    "upper":[/*{
+                        "nodeId":this.rule[this.id].upper[this.id].nodeId,
+                        "ipCorporation":null
+                    }*/]
+                }
+                var self = this;
+                _.each(this.rule[this.id].upper,function(el){
+                    self.defaultParam.upper.push(el);
+                })
             }
+            
             this.initSetup();
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
@@ -420,20 +496,20 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         initSetup: function(){
             this.$el.find('.local .add-node').hide();
             if (this.defaultParam.localType === 1){
-                this.ruleContent.localType = 1;
                 this.$el.find("#strategyRadio1").get(0).checked = true;
+                this.$el.find("#strategyRadio2").get(0).checked = false;
                 this.$el.find(".operator-ctn").hide();
                 this.$el.find(".nodes-ctn").show();
             } else if (this.defaultParam.localType === 2){
-                this.ruleContent.localType = 2;
                 this.$el.find("#strategyRadio2").get(0).checked = true;
+                this.$el.find("#strategyRadio1").get(0).checked = false;
                 this.$el.find(".nodes-ctn").hide();
                 this.$el.find(".operator-ctn").show();
             }
             this.collection.on("get.operator.success", $.proxy(this.initDropMenu, this));
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
             this.collection.getOperatorList();
-
+            
             if (!this.options.localNodes && !this.options.upperNodes){
                 this.collection.on("get.node.success", $.proxy(this.onGetLocalNode, this));
                 this.collection.on("get.node.error", $.proxy(this.onGetError, this));
@@ -445,7 +521,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     status:null
                 })
             } else {
-                console.log(this.options.localNodes);
                 this.onGetLocalNode(this.options.localNodes)
             }
         },
@@ -454,7 +529,12 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
         onClickSaveBtn: function(){
-            this.rule.push(this.ruleContent);
+            if(!this.isEdit){
+                console.log(this.ruleContent);
+                this.rule.push(this.ruleContent);
+            }else{
+                this.rule[this.id] = this.ruleContent;
+            }
             this.options.onSaveCallback && this.options.onSaveCallback();
         },
         onGetError: function(error){
@@ -465,6 +545,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onGetLocalNode: function(res){
+            console.log(res);
             this.$el.find('.local .add-node').show();
             var nodesArray = [], data = res;
             this.selectedLocalNodeList = [];
@@ -473,14 +554,14 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
 
             _.each(data, function(el, index, list){
                 _.each(this.defaultParam.local, function(defaultLocalId, inx, ls){
-                    if (el.nodeId) el.id = el.nodeId;
-                    if (el.nodeName) el.chName = el.nodeName;
                     if (defaultLocalId === el.id) {
                         el.checked = true;
                         this.selectedLocalNodeList.push({nodeId: el.id, nodeName: el.chName})
                     }
                 }.bind(this))
-                nodesArray.push({name:el.chName, value: el.id, checked: el.checked})
+                if (el.nodeId) el.id = el.nodeId;
+                if (el.nodeName) el.chName = el.nodeName;
+                nodesArray.push({name:el.chName, value: el.id, checked: el.checked,operatorId:el.operatorId})
             }.bind(this))
 
             var searchSelect = new SearchSelect({
@@ -503,7 +584,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onGetUpperNode: function(res){
-            console.log(res);
             this.$el.find('.upper .add-node').show();
             var nodesArray = [];
             this.selectedUpperNodeList = [];
@@ -515,13 +595,14 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                         this.selectedUpperNodeList.push({
                             nodeId: el.id, 
                             nodeName: el.chName, 
-                            ipCorporation: defaultNode.ipCorporation
+                            ipCorporation: defaultNode.ipCorporation,
+                            operatorId: el.operatorId
                         })
                     }
                 }.bind(this))
-                nodesArray.push({name:el.chName, value: el.id, checked: el.checked})
+                nodesArray.push({name:el.chName, value: el.id, checked: el.checked, operatorId:el.operatorId})
             }.bind(this))
-
+            console.log(nodesArray);
             this.initUpperTable()
 
             var searchSelect = new SearchSelect({
@@ -534,11 +615,20 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                         this.selectedUpperNodeList.push({
                             nodeId: el.value, 
                             nodeName: el.name,
-                            ipCorporation: 0
+                            ipCorporation: 0,
+                            operatorId:''
                         });
-                        console.log(this.ruleContent.upper);
-                        this.ruleContent.upper.push({"nodeId":el.value,"ipCorporation":null});
+                        this.ruleContent.upper.push({"nodeId":el.value,"ipCorporation":0});
                     }.bind(this))
+                    var one = this;
+                    _.each(nodesArray,function(el,key,ls){
+                        _.each(one.selectedUpperNodeList,function(data,key,ls){
+                            if(el.value == data.nodeId){
+                                data.operatorId = el.operatorId;
+                            }
+                        })
+                    })
+                    console.log(this.selectedUpperNodeList);
                     this.initUpperTable()
                 }.bind(this),
                 data: nodesArray,
@@ -552,14 +642,31 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.defaultParam.localType = parseInt($(eventTarget).val());
 
             if (this.defaultParam.localType === 1){
+                this.ruleContent.localType = 1;
+                this.ruleContent.local = [];
                 this.$el.find(".operator-ctn").hide();
                 this.$el.find(".nodes-ctn").show();
             } else if (this.defaultParam.localType === 2){
+                this.ruleContent.localType = 2;
+                this.ruleContent.local = [];
                 this.$el.find(".nodes-ctn").hide();
                 this.$el.find(".operator-ctn").show();
             }
         },
         initUpperTable: function(){
+            if(this.selectedUpperNodeList.length > 0){
+                console.log(this.selectedUpperNodeList[0].operatorId);
+                console.log(this.selectedUpperNodeList[2].operatorId);
+                this.selectedUpperNodeList[0].operatorId = 9;
+                this.selectedUpperNodeList[2].operatorId = 9;
+                _.each(this.selectedUpperNodeList,function(el,index,li){
+                     if(el.operatorId == 9){
+                        this.selectedUpperNodeList.splice(index,1);
+                        this.selectedUpperNodeList.unshift(el);
+                     }
+                }.bind(this))
+            }
+           // console.log(this.selectedUpperNodeList);
             this.upperTable = $(_.template(template['tpl/setupTopoManage/addEditLayerStrategy.upper.table.html'])({
                 data: this.selectedUpperNodeList
             }));
@@ -569,18 +676,26 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 this.$el.find(".upper .table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.upperTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperDelete, this));
-
-            var statusArray = [
-                {name: "联通", value:2},
-                {name: "移动", value:0},
-                {name: "电信", value:1},
-            ],
+            
+            this.collection.on("get.operatorUpper.success",$.proxy(this.initOperatorUpperList,this));
+            this.collection.on("get.operatorUpper.error",$.proxy(this.onGetError, this));
+            this.collection.getOperatorUpperList();
+        },
+        initOperatorUpperList:function(data){
+            var statusArray = [];
+            _.each(data, function(el, key, list){
+                statusArray.push({name: el.name, value: el.id})
+            }.bind(this))
             rootNodes = this.upperTable.find(".ipOperator .dropdown");
             for (var i = 0; i < rootNodes.length; i++){
+                this.ruleContent.upper[i].ipCorporation = 1;
                 this.initTableDropMenu($(rootNodes[i]), statusArray, function(value, nodeId){
+                    this.ruleContent.upper[i].ipCorporation = value;
+                    console.log(this.ruleContent.upper[i].ipCorporation);
                     _.each(this.selectedUpperNodeList, function(el, key, list){
-                        if (el.nodeId === parseInt(nodeId))
-                            el.ipCorporation = parseInt(value)
+                        if (el.nodeId === parseInt(nodeId)){
+                            el.ipCorporation = parseInt(value);
+                        }
                     }.bind(this))
                 }.bind(this));
 
@@ -605,7 +720,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 }
             }
         },
-
         initTableDropMenu: function (rootNode, typeArray, callback){
             var dropRoot = rootNode.find(".dropdown-menu"),
                 rootId = rootNode.attr("id"),
@@ -645,8 +759,13 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 id = eventTarget.attr("id");
             } else {
                 id = $(eventTarget).attr("id");
+            } 
+            var local = this.rule[this.id].local;
+            for(var i=0;i<local.length;i++){
+                 if(local[i] == id){
+                    local.splice(i,1);
+                 }
             }
-
             for (var i = 0; i < this.selectedLocalNodeList.length; i++){
                 if (parseInt(this.selectedLocalNodeList[i].nodeId) === parseInt(id)){
                     this.selectedLocalNodeList.splice(i, 1);
@@ -654,6 +773,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     return;
                 }
             }
+            
+
         },
 
         onClickItemUpperDelete: function(event){
@@ -664,7 +785,15 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             } else {
                 id = $(eventTarget).attr("id");
             }
-
+            if(this.isEdit){
+                var upper = this.rule[this.id].upper;
+                for(var i=0;i<upper.length;i++){
+                     if(upper[i].nodeId == id){
+                        upper.splice(i,1);
+                     }
+                }
+            }
+            
             for (var i = 0; i < this.selectedUpperNodeList.length; i++){
                 if (parseInt(this.selectedUpperNodeList[i].nodeId) === parseInt(id)){
                     this.selectedUpperNodeList.splice(i, 1);
@@ -675,7 +804,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
 
         initDropMenu: function(data){
-            
             var statusArray = [],
             rootNode = this.$el.find(".operator");
             _.each(data, function(el, key, list){
@@ -684,13 +812,16 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             Utility.initDropMenu(rootNode, statusArray, function(value){
                 this.ruleContent.local = value;
             }.bind(this));
+            
+            if(this.defaultParam.localType == 2){
+                var defaultValue = _.find(statusArray, function(object){
+                   return object.value == this.defaultParam.local[0];
+                }.bind(this));
 
-            var defaultValue = _.find(statusArray, function(object){
-                return object.value === this.defaultParam.mtPosition;
-            }.bind(this));
-
-            if (defaultValue)
+            }
+            if (defaultValue){
                 this.$el.find("#dropdown-operator .cur-value").html(defaultValue.name);
+            }
             else
                 this.$el.find("#dropdown-operator .cur-value").html(statusArray[0].name);
         },

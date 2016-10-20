@@ -85,6 +85,20 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
             }.bind(this);
             Utility.getAjax(url, '' , successCallback, errorCallback);
         },
+        getOperatorUpperList:function(args){
+            var url = BASE_URL + "/resource/rs/metaData/operator/list",
+            successCallback = function(res) {
+                if(res){
+                    this.trigger("get.operatorUpper.success",res);
+                }else{
+                    this.trigger("get.operatorUpper.error");
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('get.operatorUpper.error');
+            }.bind(this);
+            Utility.getAjax(url, '' , successCallback, errorCallback);
+        },
         getChannelDispgroup: function(args){
             var url = BASE_URL + "/rs/channel/dispgroup/get",
             successCallback = function(res){

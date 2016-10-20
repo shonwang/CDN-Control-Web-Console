@@ -30,6 +30,7 @@ define("domainSetup.model", ['require','exports', 'utility'], function(require, 
             errorCallback = function(response){
                 this.trigger("get.domainInfo.error", response);  
             }.bind(this);
+            args.t = new Date().valueOf();
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
     });

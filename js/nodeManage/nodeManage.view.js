@@ -580,6 +580,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         events: {},
 
         initialize: function(options) {
+            this.options = options;
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.html'])());
 
@@ -612,7 +613,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
 
             this.collection.on("operate.node.success", $.proxy(this.onOperateNodeSuccess, this));
             this.collection.on("operate.node.error", function(res){
-                this.disablePopup.$el.modal('hide');
+                this.disablePopup&&this.disablePopup.$el.modal('hide');
                 this.onGetError(res)
             }.bind(this));
 

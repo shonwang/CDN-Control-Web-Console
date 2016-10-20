@@ -81,7 +81,8 @@ define("openNgxLog.view", ['require','exports', 'template', 'modal.view', 'utili
         onClickSaveBtn: function(){
             var postParam =  {
                 "originId": this.domainInfo.id,
-                "chargingOpen": this.defaultParam.chargingOpen
+                "chargingOpen": this.defaultParam.chargingOpen,
+                t: new Date().valueOf()
             }
             this.collection.setChargingOpen(postParam)
         },

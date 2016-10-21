@@ -37,9 +37,9 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                     this.defaultParam.upper.push(el);
                 }.bind(this));
             }
-            
+            console.log('sssss');
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
-            this.$el = $(_.template(template['tpl/setupTopoManage/addEditLayerStrategy.html'])());
+            this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
             
             this.initSetup();
 
@@ -101,6 +101,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
         },
 
         onGetLocalNode: function(res){
+            console.log(res);
             this.$el.find('.local .add-node').show();
             var nodesArray = [], data = res;
             this.selectedLocalNodeList = [];
@@ -215,7 +216,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                      }
                 }.bind(this))
             }
-            this.upperTable = $(_.template(template['tpl/setupTopoManage/addEditLayerStrategy.upper.table.html'])({
+            this.upperTable = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.upper.table.html'])({
                 data: this.selectedUpperNodeList
             }));
             if (this.selectedUpperNodeList.length !== 0)

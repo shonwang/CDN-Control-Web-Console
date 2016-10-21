@@ -1,6 +1,9 @@
 define("setupTopoManage.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
+            var createTime = this.get('createTime')
+            
+            createTime = this.set("createTime", new Date(createTime).format("yyyy/MM/dd hh:mm"));
         }
     });
 
@@ -102,6 +105,25 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
             }.bind(this),
             errorCallback = function(response){
                 this.trigger('add.topo.error',response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+        topoModify:function(args){
+            var url = BASE_URL + "/resource/topo/modify",
+            successCallback = function(res){
+                this.reset();
+                if(res){
+                    _.each(res.rows,function(element, index ,list){
+                        this.push(new Model(element));
+                    }.bind(this))
+                    this.total = res.total;
+                    this.trigger("modify.topo.success");
+                }else{
+                    this.trigger("modify.topo.error");
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('modify.topo.error',response);
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },

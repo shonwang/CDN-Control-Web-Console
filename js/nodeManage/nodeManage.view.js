@@ -581,6 +581,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
 
         initialize: function(options) {
             this.collection = options.collection;
+            console.log(this.collection);
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.html'])());
 
             this.initNodeDropMenu();
@@ -709,7 +710,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".opt-ctn .multi-delete").attr("disabled", "disabled");
             this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
             this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
-
+            console.log(this.collection.models);
             this.table = $(_.template(template['tpl/nodeManage/nodeManage.table.html'])({data: this.collection.models, permission:AUTH_OBJ}));
             if (this.collection.models.length !== 0){
                 this.$el.find(".table-ctn").html(this.table[0]);

@@ -72,7 +72,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.options = options;
             this.collection = options.collection;
             this.model      = options.model;
-
+            this.rule = [];
             this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.specialLayer.html'])({data: {}}));
 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
@@ -99,7 +99,10 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                 var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
                     collection: myAddEditLayerStrategyModel,
-                    onSaveCallback: function(){}.bind(this),
+                    rule      : this.rule,
+                    onSaveCallback: function(){
+    
+                    }.bind(this),
                     onCancelCallback: function(){
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".special-layer").show();
@@ -114,7 +117,62 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
+        InformationProcessing:function(data){
+            //var data = [{localLayer: "1111", upperLayer: "22222"}];
+            var data_save = [];
+            var self = this;
+            var operator = [
+                {name: "联通",  value:1},
+                {name: "电信",  value:2},
+                {name: "移动",  value:3},
+                {name: "鹏博士", value:4},
+                {name: "教育网", value:5},
+                {name: "广电网", value:6},
+                {name: "铁通",   value:7},
+                {name: "华数",   value:8},
+                {name: "多线",   value:9}
+            ];
+            _.each(data, function(el, key, ls){
+                var data_save_content = {
+                    id:null,
+                    'localLayer':[],
+                    'upperLayer':[]
+                };
+                if(el.localType == 2){
+                    _.each(el.local,function(local){
+                        _.each(operator,function(operator){
+                            if(local == operator.value){
+                               data_save_content.localLayer.push(operator.name)
+                            }
+                        })
+                    })
+                }else if(el.localType == 1){
+                    _.each(el.local,function(local){
+                        _.each(self.allNodes,function(nodes){
+                            if(local == nodes.nodeId){
+                               data_save_content.localLayer.push(nodes.chName)
+                            }
+                        })
+                    })
+                }
+                _.each(el.upper,function(upper){
+                   
+                        _.each(self.allNodes,function(nodes){
+                            if(upper.nodeId == nodes.nodeId){
+                               data_save_content.upperLayer.push(nodes.chName)
+                            }
+                        })
+                    
+                    
+                })
+                data_save_content.localLayer = data_save_content.localLayer.join('、');
+                data_save_content.upperLayer = data_save_content.upperLayer.join('、');
+                data_save_content.id = key;
+                data_save.push(data_save_content);
 
+            });
+            return data_save;
+        },
         onGetError: function(error){
             if (error&&error.message)
                 alert(error.message)

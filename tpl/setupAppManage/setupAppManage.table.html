@@ -8,10 +8,11 @@
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].attributes.id%>">
-              <td><%=data[i].attributes["cname"]%></td>
+              <td><%=data[i].attributes["name"]%></td>
               <td>
                   <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="detail">详情</a>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="topo">拓扑关系</a>
+                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="topo">
+                  拓扑关系</a>
               </td>
             </tr>
         <% } %>  

@@ -874,7 +874,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 $(eventTarget).val("1");
                 return
             }
-            if (parseInt(value) > parseInt(maxValue)){
+            if (parseInt(value) > parseInt(maxValue) || parseInt(value) === 0){
                 $(eventTarget).val("1")
             }
         },

@@ -70,11 +70,12 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
 
             this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
             this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
-
             this.collection.getNodeList(); //获取所有节点列表接口
             this.collection.getDeviceTypeList();//获取应用类型列表接口
-           // this.initRuleTable();
-            
+            if(this.isEdit){
+                var data = this.InformationProcessing(this.defaultParam.rule);
+                this.initRuleTable(data);
+            }
         },
         onClickSaveButton:function(){
             
@@ -155,8 +156,15 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 Utility.initDropMenu(rootNode, typeArray, function(value){
                        this.queryArgs.type = parseInt(value)
                 }.bind(this));
+
+               this.$el.find("#dropdown-app .cur-value").html(typeArray[0].name); 
                 
             } else {
+                //this.$el.find('#dropdown-app .cur-value').html()
+                var upperObj = _.find(typeArray, function(object){
+                    return object.value == this.defaultParam.type;
+                }.bind(this))
+                this.$el.find('#dropdown-app .cur-value').html(upperObj.name);
                 this.$el.find("#dropdown-app").attr("disabled", "disabled")
             }
           
@@ -172,6 +180,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     if (defaultLocalId === el.id) {
                         el.checked = true;
                         this.selectedAllNodeList.push({nodeId: el.id, nodeName: el.chName , operator:el.operatorId})
+                        this.allNodes.push({nodeId: el.id, nodeName: el.chName, operatorId:''})
                     }
                 }.bind(this))
                 nodesArray.push({name:el.chName, value: el.id, checked: el.checked, operator:el.operatorId})
@@ -358,6 +367,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     isEdit    : true,
                     onSaveCallback: function(){
                         this.queryArgs.rule = this.rule;
+
                         var data = this.InformationProcessing(this.rule);
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".add-topo").show();
@@ -395,7 +405,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     upperNodes: this.selectedUpperNodeList,
                     rule      : this.rule,
                     onSaveCallback: function(){
-                        //console.log(this.rule);
                         this.queryArgs.rule = this.rule;
                         var data = this.InformationProcessing(this.rule);
                         myAddEditLayerStrategyView.$el.remove();
@@ -415,7 +424,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
         InformationProcessing:function(data){
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
+            console.log(data);
             var data_save = [];
+            console.log(data);
             var self = this;
             var operator = [
                 {name: "联通",  value:1},
@@ -429,8 +440,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 {name: "多线",   value:9}
             ];
             _.each(data, function(el, key, ls){
+                console.log(el.localType);
                 var data_save_content = {
-                    id:null,
+                     id:null,
                     'localLayer':[],
                     'upperLayer':[]
                 };
@@ -443,7 +455,10 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                         })
                     })
                 }else if(el.localType == 1){
+                    console.log('ssss');
                     _.each(el.local,function(local){
+                        console.log(local);
+                        console.log(self.allNodes);
                         _.each(self.allNodes,function(nodes){
                             if(local == nodes.nodeId){
                                data_save_content.localLayer.push(nodes.chName)

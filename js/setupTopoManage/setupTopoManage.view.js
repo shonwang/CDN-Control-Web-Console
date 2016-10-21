@@ -180,10 +180,11 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     if (defaultLocalId === el.id) {
                         el.checked = true;
                         this.selectedAllNodeList.push({nodeId: el.id, nodeName: el.chName , operator:el.operatorId})
-                        this.allNodes.push({nodeId: el.id, nodeName: el.chName, operatorId:''})
+                        //this.allNodes.push({nodeId: el.id, nodeName: el.chName, operatorId:''})
                     }
                 }.bind(this))
                 nodesArray.push({name:el.chName, value: el.id, checked: el.checked, operator:el.operatorId})
+                this.allNodes.push({name:el.chName, nodeId: el.id, checked: el.checked, operator:el.operatorId})
             }.bind(this))
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.all .add-node-ctn').get(0),
@@ -195,7 +196,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                         this.selectedAllNodeList.push({nodeId: el.value, nodeName: el.name, operatorId:''});
                     }.bind(this))
                     _.each(this.selectedAllNodeList,function(el,key,ls){
-                        this.allNodes.push(el);
+                        //this.allNodes.push(el);
                         this.queryArgs.allNodes.push(parseInt(el.nodeId));
                     }.bind(this))
                     _.each(nodesArray,function(el,key,ls){
@@ -424,9 +425,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
         InformationProcessing:function(data){
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
-            console.log(data);
+            //console.log(data);
+            console.log(this.allNodes);
             var data_save = [];
-            console.log(data);
             var self = this;
             var operator = [
                 {name: "联通",  value:1},
@@ -455,13 +456,10 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                         })
                     })
                 }else if(el.localType == 1){
-                    console.log('ssss');
                     _.each(el.local,function(local){
-                        console.log(local);
-                        console.log(self.allNodes);
                         _.each(self.allNodes,function(nodes){
                             if(local == nodes.nodeId){
-                               data_save_content.localLayer.push(nodes.chName)
+                               data_save_content.localLayer.push(nodes.name);
                             }
                         })
                     })
@@ -470,7 +468,10 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                    
                         _.each(self.allNodes,function(nodes){
                             if(upper.nodeId == nodes.nodeId){
-                               data_save_content.upperLayer.push(nodes.chName)
+                    
+                                 data_save_content.upperLayer.push(nodes.name)
+                               
+                               
                             }
                         })
                     

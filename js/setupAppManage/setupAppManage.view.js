@@ -13,16 +13,25 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.$el = $('<div><div class="table-ctn"></div></div>');
 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-
-            this.initSetup()
+            
+            this.collection.off('get.topo.OriginInfo.success');
+            this.collection.off('get.topo.OriginInfo.error');
+            this.collection.on('get.topo.OriginInfo.success',$.proxy(this.onOriginInfo, this));
+            this.collection.on('get.topo.OriginInfo.error',$.proxy(this.onGetError, this));
+            
+            this.collection.getTopoOrigininfo(this.model.get('id'));
+            
+            //this.initSetup()
         },
-
-        initSetup: function(){
+        onOriginInfo:function(res){
+            //console.log(res);
             var tempData = [{
-                name: "时间戳+共享秘钥防盗链",
-                id: 1,
-                comment: "你渴望力量吗？"
-            }]
+                name : res.name,
+                id:res.id
+            }];
+            this.initSetup(tempData);
+        },
+        initSetup: function(tempData){
             this.table = $(_.template(template['tpl/setupAppManage/setupAppManage.topo.table.html'])({
                 data: tempData
             }));
@@ -63,10 +72,13 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.detail.html'])({data: {}}));
 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-
-            this.initSetup()
+            
+            
+           // this.initSetup()
         },
-
+        onOriginInfo:function(){
+            this.$el.find('#name').val
+        },
         initSetup: function(){
             var tempData = [{
                 name: "时间戳+共享秘钥防盗链",
@@ -136,7 +148,7 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
 
         onappListSuccess: function(){
             this.initTable();
-            if (!this.isInitPaginator) this.initPaginator();
+          //  if (!this.isInitPaginator) this.initPaginator();
         },
 
         onClickQueryButton: function(){
@@ -152,7 +164,7 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
         },
 
         initTable: function(){
-            console.log(this.collection.models[0].attributes['name']);
+            //console.log(this.collection.models[0].attributes['name']);
             this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
             this.table = $(_.template(template['tpl/setupAppManage/setupAppManage.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
             if (this.collection.models.length !== 0)

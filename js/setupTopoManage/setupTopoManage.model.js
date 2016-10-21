@@ -108,6 +108,25 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+        topoModify:function(args){
+            var url = BASE_URL + "/resource/topo/modify",
+            successCallback = function(res){
+                this.reset();
+                if(res){
+                    _.each(res.rows,function(element, index ,list){
+                        this.push(new Model(element));
+                    }.bind(this))
+                    this.total = res.total;
+                    this.trigger("modify.topo.success");
+                }else{
+                    this.trigger("modify.topo.error");
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('modify.topo.error',response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
         getChannelDispgroup: function(args){
             var url = BASE_URL + "/rs/channel/dispgroup/get",
             successCallback = function(res){

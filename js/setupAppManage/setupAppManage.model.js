@@ -61,6 +61,21 @@ define("setupAppManage.model", ['require','exports', 'utility'], function(requir
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
+        getTopoOrigininfo:function(args){
+            var url = BASE_URL + "/resource/topo/origin/info?id="+args,
+            successCallback = function(res){
+                if(res){
+                    this.total = res.total;
+                    this.trigger("get.topo.OriginInfo.success",res);
+                }else{
+                    this.trigger("get.topo.OriginInfo.error");
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('get.topo.OriginInfo.error',response)
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
         getChannelDispgroup: function(args){
             var url = BASE_URL + "/rs/channel/dispgroup/get",
             successCallback = function(res){

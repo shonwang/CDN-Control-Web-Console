@@ -2,6 +2,7 @@
     <thead> 
       <tr>
         <th>名称</th>
+        <th>类型名称</th>
         <th>操作</th>    
       </tr>
     </thead>
@@ -9,12 +10,11 @@
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].attributes.id%>">
               <td><%=data[i].attributes["name"]%></td>
-              <td id="name"></td>
-              <!-- <td>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="detail">详情</a>
+              <td><%=data[i].attributes["typeName"]%></td>
+              <td>
                   <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="topo">
                   拓扑关系</a>
-              </td> -->
+              </td>
             </tr>
         <% } %>  
     </tbody>

@@ -101,6 +101,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
         },
 
         onGetLocalNode: function(res){
+            console.log(res);
             this.$el.find('.local .add-node').show();
             var nodesArray = [], data = res;
             this.selectedLocalNodeList = [];

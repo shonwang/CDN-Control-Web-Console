@@ -6,21 +6,46 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
         initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
-            this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
+            this.rule = options.rule;
+            this.isEdit = options.isEdit;
+            this.id = options.id;
+            if(!this.isEdit){
+                this.ruleContent = {
+                    "local":[1],
+                    "localType":2,
+                    "upper":[
+                         
+                     ]
+                };
+                this.defaultParam = {
+                    "local":[],
+                    "localType":2,
+                    "upper":[{
+                        "nodeId":null,
+                        "ipCorporation":0
+                    }]
+                }
 
-            this.defaultParam = {
-                "local":[163,162,161],
-                "localType":1,
-                "upper":[{
-                    "nodeId":163,
-                    "ipCorporation":2
-                }]
+            }else{
+                this.ruleContent = this.rule[this.id];
+                this.defaultParam = {
+                    "local":this.ruleContent.local,
+                    "localType":this.ruleContent.localType,
+                    "upper":[]
+                }
+                _.each(this.rule[this.id].upper,function(el){
+                    this.defaultParam.upper.push(el);
+                }.bind(this));
             }
+            
+            //var data = [{localLayer: "1111", upperLayer: "22222"}];
+            this.$el = $(_.template(template['tpl/setupTopoManage/addEditLayerStrategy.html'])());
+            
             this.initSetup();
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".strategy-type input").on("click", $.proxy(this.onClickLocalTypeRadio, this));
-            this.$el.find(".save").on("click", $.proxy(this.onClickLocalTypeRadio, this));
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancelBtn, this));
         },
 
@@ -28,17 +53,19 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             this.$el.find('.local .add-node').hide();
             if (this.defaultParam.localType === 1){
                 this.$el.find("#strategyRadio1").get(0).checked = true;
+                this.$el.find("#strategyRadio2").get(0).checked = false;
                 this.$el.find(".operator-ctn").hide();
                 this.$el.find(".nodes-ctn").show();
             } else if (this.defaultParam.localType === 2){
-                this.$el.find("#strategyRadio2").get(0).checked = false;
+                this.$el.find("#strategyRadio2").get(0).checked = true;
+                this.$el.find("#strategyRadio1").get(0).checked = false;
                 this.$el.find(".nodes-ctn").hide();
                 this.$el.find(".operator-ctn").show();
             }
             this.collection.on("get.operator.success", $.proxy(this.initDropMenu, this));
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
             this.collection.getOperatorList();
-
+            
             if (!this.options.localNodes && !this.options.upperNodes){
                 this.collection.on("get.node.success", $.proxy(this.onGetLocalNode, this));
                 this.collection.on("get.node.error", $.proxy(this.onGetError, this));
@@ -50,7 +77,6 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                     status:null
                 })
             } else {
-                console.log(this.options.localNodes);
                 this.onGetLocalNode(this.options.localNodes)
             }
         },
@@ -58,7 +84,15 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
         onClickCancelBtn: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
-
+        onClickSaveBtn: function(){
+            if(!this.isEdit){
+                console.log(this.ruleContent);
+                this.rule.push(this.ruleContent);
+            }else{
+                this.rule[this.id] = this.ruleContent;
+            }
+            this.options.onSaveCallback && this.options.onSaveCallback();
+        },
         onGetError: function(error){
             if (error&&error.message)
                 alert(error.message)
@@ -75,14 +109,14 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
 
             _.each(data, function(el, index, list){
                 _.each(this.defaultParam.local, function(defaultLocalId, inx, ls){
-                    if (el.nodeId) el.id = el.nodeId;
-                    if (el.nodeName) el.chName = el.nodeName;
                     if (defaultLocalId === el.id) {
                         el.checked = true;
                         this.selectedLocalNodeList.push({nodeId: el.id, nodeName: el.chName})
                     }
                 }.bind(this))
-                nodesArray.push({name:el.chName, value: el.id, checked: el.checked})
+                if (el.nodeId) el.id = el.nodeId;
+                if (el.nodeName) el.chName = el.nodeName;
+                nodesArray.push({name:el.chName, value: el.id, checked: el.checked,operatorId:el.operatorId})
             }.bind(this))
 
             var searchSelect = new SearchSelect({
@@ -93,6 +127,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                     this.selectedLocalNodeList = [];
                     _.each(data, function(el, key, ls){
                         this.selectedLocalNodeList.push({nodeId: el.value, nodeName: el.name})
+                        this.ruleContent.local.push(el.value);
                     }.bind(this))
                     this.initLocalTable()
                 }.bind(this),
@@ -107,21 +142,22 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             this.$el.find('.upper .add-node').show();
             var nodesArray = [];
             this.selectedUpperNodeList = [];
-
-            _.each(res.rows, function(el, index, list){
+            var data = res;
+            if (res&&res.rows) data = res.rows
+            _.each(data, function(el, index, list){
                 _.each(this.defaultParam.upper, function(defaultNode, inx, ls){
                     if (defaultNode.nodeId === el.id) {
                         el.checked = true;
                         this.selectedUpperNodeList.push({
                             nodeId: el.id, 
                             nodeName: el.chName, 
-                            ipCorporation: defaultNode.ipCorporation
+                            ipCorporation: defaultNode.ipCorporation,
+                            operatorId: el.operatorId
                         })
                     }
                 }.bind(this))
-                nodesArray.push({name:el.chName, value: el.id, checked: el.checked})
+                nodesArray.push({name:el.chName, value: el.id, checked: el.checked, operatorId:el.operatorId})
             }.bind(this))
-
             this.initUpperTable()
 
             var searchSelect = new SearchSelect({
@@ -134,8 +170,17 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                         this.selectedUpperNodeList.push({
                             nodeId: el.value, 
                             nodeName: el.name,
-                            ipCorporation: 0
-                        })
+                            ipCorporation: 0,
+                            operatorId:''
+                        });
+                        this.ruleContent.upper.push({"nodeId":el.value,"ipCorporation":0});
+                    }.bind(this))
+                    _.each(nodesArray,function(el,key,ls){
+                        _.each(this.selectedUpperNodeList,function(data,key,ls){
+                            if(el.value == data.nodeId){
+                                data.operatorId = el.operatorId;
+                            }
+                        }.bind(this))
                     }.bind(this))
                     this.initUpperTable()
                 }.bind(this),
@@ -150,16 +195,27 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             this.defaultParam.localType = parseInt($(eventTarget).val());
 
             if (this.defaultParam.localType === 1){
+                this.ruleContent.localType = 1;
+                this.ruleContent.local = [];
                 this.$el.find(".operator-ctn").hide();
                 this.$el.find(".nodes-ctn").show();
             } else if (this.defaultParam.localType === 2){
+                this.ruleContent.localType = 2;
+                this.ruleContent.local = [];
                 this.$el.find(".nodes-ctn").hide();
                 this.$el.find(".operator-ctn").show();
             }
         },
-
         initUpperTable: function(){
-            this.upperTable = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.upper.table.html'])({
+            if(this.selectedUpperNodeList.length > 0){
+                _.each(this.selectedUpperNodeList,function(el,index,li){
+                     if(el.operatorId == 9){
+                        this.selectedUpperNodeList.splice(index,1);
+                        this.selectedUpperNodeList.unshift(el);
+                     }
+                }.bind(this))
+            }
+            this.upperTable = $(_.template(template['tpl/setupTopoManage/addEditLayerStrategy.upper.table.html'])({
                 data: this.selectedUpperNodeList
             }));
             if (this.selectedUpperNodeList.length !== 0)
@@ -168,43 +224,66 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 this.$el.find(".upper .table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.upperTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperDelete, this));
-
-            var statusArray = [
-                {name: "联通", value:2},
-                {name: "移动", value:0},
-                {name: "电信", value:1},
-            ],
+            
+            this.collection.off("get.operatorUpper.success");
+            this.collection.off("get.operatorUpper.error");
+            this.collection.on("get.operatorUpper.success",$.proxy(this.initOperatorUpperList,this));
+            this.collection.on("get.operatorUpper.error",$.proxy(this.onGetError, this));
+            this.collection.getOperatorUpperList();
+        },
+        initOperatorUpperList:function(data){
+            var statusArray = [];
+            _.each(data, function(el, key, list){
+                statusArray.push({name: el.name, value: el.id})
+            }.bind(this))
             rootNodes = this.upperTable.find(".ipOperator .dropdown");
+            if(!this.isEdit){
+                _.each(rootNodes,function(el){
+                    _.each(this.ruleContent.upper,function(key){
+                        if(el.id == key.nodeId){
+                            key.ipCorporation = 1;
+                        }
+                    }.bind(this))
+                }.bind(this))
+            }
+            
             for (var i = 0; i < rootNodes.length; i++){
                 this.initTableDropMenu($(rootNodes[i]), statusArray, function(value, nodeId){
                     _.each(this.selectedUpperNodeList, function(el, key, list){
-                        if (el.nodeId === parseInt(nodeId))
-                            el.ipCorporation = parseInt(value)
-                    }.bind(this))
+                        if (el.nodeId === parseInt(nodeId)){
+                            el.ipCorporation = parseInt(value);
+                        }
+                    }.bind(this));
+                    _.each(this.ruleContent.upper,function(el,key,list){
+                        if(el.nodeId == parseInt(nodeId)){
+                            el.ipCorporation = parseInt(value);
+                        }
+                    }.bind(this));
                 }.bind(this));
 
                 var nodeId = $(rootNodes[i]).attr("id"),
-                    upperObj = _.find(this.selectedUpperNodeList, function(object){
-                        return object.nodeId === parseInt(nodeId);
-                    }.bind(this))
-
-                var leberNode = this.$el.find("#dropdown-ip-operator .cur-value");
+                upperObj = _.find(this.ruleContent.upper, function(object){
+                    return object.nodeId == parseInt(nodeId);
+                }.bind(this))
+                var leberNode = $(rootNodes[i]).find("#dropdown-ip-operator .cur-value");
 
                 if (upperObj){
                     var defaultValue = _.find(statusArray, function(object){
-                        return object.value === upperObj.ipCorporation;
+                        return object.value == upperObj.ipCorporation;
                     }.bind(this));
 
-                    if (defaultValue)
+                    if (defaultValue){
                         leberNode.html(defaultValue.name);
+                    }
                     else
                         leberNode.html(statusArray[0].name);
                 } else {
                     leberNode.html(statusArray[0].name);
                 }
+                
+                
             }
         },
-
         initTableDropMenu: function (rootNode, typeArray, callback){
             var dropRoot = rootNode.find(".dropdown-menu"),
                 rootId = rootNode.attr("id"),
@@ -244,8 +323,13 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 id = eventTarget.attr("id");
             } else {
                 id = $(eventTarget).attr("id");
+            } 
+            var local = this.rule[this.id].local;
+            for(var i=0;i<local.length;i++){
+                 if(local[i] == id){
+                    local.splice(i,1);
+                 }
             }
-
             for (var i = 0; i < this.selectedLocalNodeList.length; i++){
                 if (parseInt(this.selectedLocalNodeList[i].nodeId) === parseInt(id)){
                     this.selectedLocalNodeList.splice(i, 1);
@@ -254,7 +338,6 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 }
             }
         },
-
         onClickItemUpperDelete: function(event){
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN"){
@@ -263,7 +346,14 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             } else {
                 id = $(eventTarget).attr("id");
             }
-
+            if(this.isEdit){
+                var upper = this.rule[this.id].upper;
+                for(var i=0;i<upper.length;i++){
+                     if(upper[i].nodeId == id){
+                        upper.splice(i,1);
+                     }
+                }
+            }
             for (var i = 0; i < this.selectedUpperNodeList.length; i++){
                 if (parseInt(this.selectedUpperNodeList[i].nodeId) === parseInt(id)){
                     this.selectedUpperNodeList.splice(i, 1);
@@ -276,19 +366,22 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
         initDropMenu: function(data){
             var statusArray = [],
             rootNode = this.$el.find(".operator");
-            _.each(data.rows, function(el, key, list){
+            _.each(data, function(el, key, list){
                 statusArray.push({name: el.name, value: el.id})
             }.bind(this))
             Utility.initDropMenu(rootNode, statusArray, function(value){
-
+                this.ruleContent.local = value;
             }.bind(this));
+            
+            if(this.defaultParam.localType == 2){
+                var defaultValue = _.find(statusArray, function(object){
+                   return object.value == this.defaultParam.local[0];
+                }.bind(this));
 
-            var defaultValue = _.find(statusArray, function(object){
-                return object.value === this.defaultParam.mtPosition;
-            }.bind(this));
-
-            if (defaultValue)
+            }
+            if (defaultValue){
                 this.$el.find("#dropdown-operator .cur-value").html(defaultValue.name);
+            }
             else
                 this.$el.find("#dropdown-operator .cur-value").html(statusArray[0].name);
         },
@@ -297,6 +390,5 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             this.$el.appendTo(target)
         }
     });
-
     return AddEditLayerStrategyView;
 });

@@ -12,43 +12,12 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.rule       = [];
             this.allNodes   = [];//存储所有节点
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.edit.html'])({data: {}}));
-            /*var tempModel =  {
-                "id":12,
-                "name":"拓扑关系名称",
-                "type":23 ,
-                "allNodes":[1,2,3,4,5,6],
-                "upperNodes":[3,4],
-                "createTime": new Date().valueOf(),
-                "rule":[{
-                            "id":44,
-                            "local":[1,3,4],
-                            "localType":1,
-                            "upper":[{
-                                "upperNodeId":23,
-                                "upperIpCorporation":0
-                            }]
-                        }]
-            };*/
-
-           /* if (this.isEdit){
-                this.model = tempModel;
-                this.defaultParam = {
-                    "allNodes": this.model.allNodes,
-                    "upperNodes": this.model.upperNodes,
-                    "rule": this.model.rule,
-                    "type": this.model.type
-                }
-                this.$el.find("#input-name").val(this.model.name);
-                this.$el.find("#input-name").attr("readonly", "true");
-            } else {
-                this.defaultParam = {
-                    "allNodes": [],
-                    "upperNodes": [],
-                    "rule": []
-                }
-            }*/
+            
+            this.collection.on('get.topo.OriginInfo.success');
+            this.collection.on('get.topo.OriginInfo.error');
             this.collection.on('get.topo.OriginInfo.success',$.proxy(this.onOriginInfo, this));
             this.collection.on('get.topo.OriginInfo.error',$.proxy(this.onGetError, this));
+            
             if(this.isEdit){
                 this.collection.getTopoOrigininfo(this.model.id);
             }else{
@@ -59,8 +28,17 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 }
                 this.initSetup();
             }
-            
-            //this.initSetup()
+            this.queryArgs = {
+                "id":0,
+                 "name":"拓扑关系名称",
+                 "type":null ,
+                 "allNodes":[],
+                 "upperNodes":[],
+                 "rule":[
+                         
+                     ]
+                 
+            }
         },
         onOriginInfo: function(res){
             var tempModel = res;
@@ -79,7 +57,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         initSetup: function(){
             this.$el.find('.all .add-node').hide();
             this.$el.find('.upper .add-node').hide();
-
+            
+            this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
             if (!this.isEdit)
                 this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
@@ -97,16 +76,72 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
            // this.initRuleTable();
             
         },
-
+        onClickSaveButton:function(){
+            
+            this.queryArgs.name = $.trim(this.$el.find("#input-name").val());
+            if(this.queryArgs.name == ''){
+                alert('请输入拓扑关系名称');
+                return ;
+            }
+            else if(this.queryArgs.type == null){
+                alert('请选择设备类型');
+                return ;
+            }
+            else if(this.queryArgs.allNodes.length == 0){
+                alert('请选择加入拓扑关系的节点');
+                return ;
+            }
+            else if(this.queryArgs.upperNodes.length == 0){
+                alert('请选择拓扑关系的上层节点');
+                return ;
+            }
+            else if(this.queryArgs.rule.length == 0){
+                alert('请添加规则');
+                return;
+            }
+            _.each(this.queryArgs.rule,function(el){
+                if(el.local.length == 0){
+                    alert('请在配置规则中选择本层节点');
+                    return ;
+                }else if(el.upper.length == 0){
+                    alert('请在配置规则中选择上层节点');
+                    return ;
+                }
+            })
+            
+            console.log(this.queryArgs);
+           /*this.queryArgs = {
+             "id":0,
+             "name":"拓扑关系名称",
+             "type":203 ,
+             "allNodes":[1,2],
+             "upperNodes":[1],
+             "rule":[
+                     {
+                         "local":[2],
+                         "localType":1,
+                         "upper":[
+                              {
+                                "nodeId":23,
+                                "ipCorporation":0
+                                },
+                                
+                            ]
+                      },
+                     
+                 ]
+             }*/
+             //this.collection.topoAdd(this.queryArgs);
+             
+             this.options.onSaveCallback && this.options.onSaveCallback();
+        },
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
 
         initDeviceDropMenu: function(res){
             this.deviceTypeArray = [];
-            var typeArray = [
-                {name: "全部", value: "All"}
-            ],
+            var typeArray = [],
             rootNode = this.$el.find(".dropdown-type");
 
             _.each(res, function(el, index, ls){
@@ -114,17 +149,17 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 this.deviceTypeArray.push({name:el.name, value: el.id});
             }.bind(this));
             if (!this.isEdit){
+                //console.log(typeArray);
+                this.queryArgs.type = typeArray[0].value;
                 var rootNode = this.$el.find(".dropdown-app");
                 Utility.initDropMenu(rootNode, typeArray, function(value){
-                    if (value !== "All")
-                        this.queryArgs.type = parseInt(value)
-                    else
-                        this.queryArgs.type = null
+                       this.queryArgs.type = parseInt(value)
                 }.bind(this));
+                
             } else {
                 this.$el.find("#dropdown-app").attr("disabled", "disabled")
             }
-
+          
         },
 
         onGetAllNode: function(res){
@@ -141,7 +176,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 }.bind(this))
                 nodesArray.push({name:el.chName, value: el.id, checked: el.checked, operator:el.operatorId})
             }.bind(this))
-            var self = this;
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.all .add-node-ctn').get(0),
                 panelID: this.$el.find('.all .add-node').get(0),
@@ -152,16 +186,16 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                         this.selectedAllNodeList.push({nodeId: el.value, nodeName: el.name, operatorId:''});
                     }.bind(this))
                     _.each(this.selectedAllNodeList,function(el,key,ls){
-                        self.allNodes.push(el);
-                    })
-                    var one = this;
+                        this.allNodes.push(el);
+                        this.queryArgs.allNodes.push(parseInt(el.nodeId));
+                    }.bind(this))
                     _.each(nodesArray,function(el,key,ls){
-                        _.each(one.selectedAllNodeList,function(data,key,ls){
+                        _.each(this.selectedAllNodeList,function(data,key,ls){
                             if(el.value == data.nodeId){
                                 data.operatorId = el.operator;
                             }
-                        })
-                    })
+                        }.bind(this))
+                    }.bind(this))
                     this.initAllNodesTable()
                 }.bind(this),
                 data: nodesArray,
@@ -218,14 +252,16 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                             operatorId: ''
                         })
                     }.bind(this))
-                    var one = this;
+                    _.each(this.selectedUpperNodeList,function(el){
+                          this.queryArgs.upperNodes.push(parseInt(el.nodeId));
+                    }.bind(this))
                     _.each(nodesArray,function(el,key,ls){
-                        _.each(one.selectedUpperNodeList,function(data,key,ls){
+                        _.each(this.selectedUpperNodeList,function(data,key,ls){
                             if(el.value == data.nodeId){
                                 data.operatorId = el.operator;
                             }
-                        })
-                    })
+                        }.bind(this))
+                    }.bind(this))
                     this.initUpperTable()
                 }.bind(this),
                 data: nodesArray,
@@ -312,28 +348,31 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 id = $(eventTarget).attr("data-id");
             }
             this.id = id;
-            var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
-                collection: this.collection,
-                localNodes: this.selectedAllNodeList,
-                upperNodes: this.selectedUpperNodeList,
-                rule      : this.rule,
-                id        : this.id,
-                isEdit    : true,
-                onSaveCallback: function(){
-                    var data = this.InformationProcessing(this.rule);
-                    myAddEditLayerStrategyView.$el.remove();
-                    this.$el.find(".add-topo").show();
-                    this.initRuleTable(data);
-                    
-                }.bind(this),
-                onCancelCallback: function(){
-                    myAddEditLayerStrategyView.$el.remove();
-                    this.$el.find(".add-topo").show();
-                }.bind(this)
-            })
+            require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel){
+                var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
+                    collection: this.collection,
+                    localNodes: this.selectedAllNodeList,
+                    upperNodes: this.selectedUpperNodeList,
+                    rule      : this.rule,
+                    id        : this.id,
+                    isEdit    : true,
+                    onSaveCallback: function(){
+                        this.queryArgs.rule = this.rule;
+                        var data = this.InformationProcessing(this.rule);
+                        myAddEditLayerStrategyView.$el.remove();
+                        this.$el.find(".add-topo").show();
+                        this.initRuleTable(data);
+                        
+                    }.bind(this),
+                    onCancelCallback: function(){
+                        myAddEditLayerStrategyView.$el.remove();
+                        this.$el.find(".add-topo").show();
+                    }.bind(this)
+                })
 
-            this.$el.find(".add-topo").hide();
-            myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
+                this.$el.find(".add-topo").hide();
+                myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
+            }.bind(this))
         },
         onClickItemDelete:function(){
             var eventTarget = event.srcElement || event.target, id;
@@ -349,13 +388,15 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             
         },
         onClickAddRuleButton: function(){
-               var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
+            require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel){
+                var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
                     collection: this.collection,
                     localNodes: this.selectedAllNodeList,
                     upperNodes: this.selectedUpperNodeList,
                     rule      : this.rule,
                     onSaveCallback: function(){
-                        console.log(this.rule);
+                        //console.log(this.rule);
+                        this.queryArgs.rule = this.rule;
                         var data = this.InformationProcessing(this.rule);
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".add-topo").show();
@@ -370,6 +411,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
 
                 this.$el.find(".add-topo").hide();
                 myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
+            }.bind(this))
         },
         InformationProcessing:function(data){
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
@@ -438,415 +480,33 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.appendTo(target);
         }
     });
-    var AddEditLayerStrategyView = Backbone.View.extend({
-        events: {},
-
-        initialize: function(options) {
-            this.options = options;
-            this.collection = options.collection;
-            this.rule = options.rule;
-            this.isEdit = options.isEdit;
-            this.id = options.id;
-            if(!this.isEdit){
-                this.ruleContent = {
-                    "local":[1],
-                    "localType":2,
-                    "upper":[
-                         
-                     ]
-                };//用来存储规则的内容
-            }else{
-                this.ruleContent = this.rule[this.id];
-            }
-            
-            //var data = [{localLayer: "1111", upperLayer: "22222"}];
-            this.$el = $(_.template(template['tpl/setupTopoManage/addEditLayerStrategy.html'])());
-            if(!this.isEdit){
-                this.defaultParam = {
-                    "local":[],
-                    "localType":2,
-                    "upper":[{
-                        "nodeId":null,
-                        "ipCorporation":0
-                    }]
-                }
-            }else{
-                this.defaultParam = {
-                    "local":this.rule[this.id].local,
-                    "localType":this.rule[this.id].localType,
-                    "upper":[/*{
-                        "nodeId":this.rule[this.id].upper[this.id].nodeId,
-                        "ipCorporation":null
-                    }*/]
-                }
-                var self = this;
-                _.each(this.rule[this.id].upper,function(el){
-                    self.defaultParam.upper.push(el);
-                })
-            }
-            
-            this.initSetup();
-
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.$el.find(".strategy-type input").on("click", $.proxy(this.onClickLocalTypeRadio, this));
-            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
-            this.$el.find(".cancel").on("click", $.proxy(this.onClickCancelBtn, this));
-        },
-
-        initSetup: function(){
-            this.$el.find('.local .add-node').hide();
-            if (this.defaultParam.localType === 1){
-                this.$el.find("#strategyRadio1").get(0).checked = true;
-                this.$el.find("#strategyRadio2").get(0).checked = false;
-                this.$el.find(".operator-ctn").hide();
-                this.$el.find(".nodes-ctn").show();
-            } else if (this.defaultParam.localType === 2){
-                this.$el.find("#strategyRadio2").get(0).checked = true;
-                this.$el.find("#strategyRadio1").get(0).checked = false;
-                this.$el.find(".nodes-ctn").hide();
-                this.$el.find(".operator-ctn").show();
-            }
-            this.collection.on("get.operator.success", $.proxy(this.initDropMenu, this));
-            this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
-            this.collection.getOperatorList();
-            
-            if (!this.options.localNodes && !this.options.upperNodes){
-                this.collection.on("get.node.success", $.proxy(this.onGetLocalNode, this));
-                this.collection.on("get.node.error", $.proxy(this.onGetError, this));
-                this.collection.getNodeList({
-                    chname:null,
-                    count:99999,
-                    operator:null,
-                    page:1,
-                    status:null
-                })
-            } else {
-                this.onGetLocalNode(this.options.localNodes)
-            }
-        },
-
-        onClickCancelBtn: function(){
-            this.options.onCancelCallback && this.options.onCancelCallback();
-        },
-        onClickSaveBtn: function(){
-            if(!this.isEdit){
-                console.log(this.ruleContent);
-                this.rule.push(this.ruleContent);
-            }else{
-                this.rule[this.id] = this.ruleContent;
-            }
-            this.options.onSaveCallback && this.options.onSaveCallback();
-        },
-        onGetError: function(error){
-            if (error&&error.message)
-                alert(error.message)
-            else
-                alert("网络阻塞，请刷新重试！")
-        },
-
-        onGetLocalNode: function(res){
-            console.log(res);
-            this.$el.find('.local .add-node').show();
-            var nodesArray = [], data = res;
-            this.selectedLocalNodeList = [];
-
-            if (res&&res.rows) data = res.rows
-
-            _.each(data, function(el, index, list){
-                _.each(this.defaultParam.local, function(defaultLocalId, inx, ls){
-                    if (defaultLocalId === el.id) {
-                        el.checked = true;
-                        this.selectedLocalNodeList.push({nodeId: el.id, nodeName: el.chName})
-                    }
-                }.bind(this))
-                if (el.nodeId) el.id = el.nodeId;
-                if (el.nodeName) el.chName = el.nodeName;
-                nodesArray.push({name:el.chName, value: el.id, checked: el.checked,operatorId:el.operatorId})
-            }.bind(this))
-
-            var searchSelect = new SearchSelect({
-                containerID: this.$el.find('.local .add-node-ctn').get(0),
-                panelID: this.$el.find('.local .add-node').get(0),
-                openSearch: true,
-                onOk: function(data){
-                    this.selectedLocalNodeList = [];
-                    _.each(data, function(el, key, ls){
-                        this.selectedLocalNodeList.push({nodeId: el.value, nodeName: el.name})
-                        this.ruleContent.local.push(el.value);
-                    }.bind(this))
-                    this.initLocalTable()
-                }.bind(this),
-                data: nodesArray,
-                callback: function(data){}.bind(this)
-            });
-            this.initLocalTable()
-            this.onGetUpperNode(res);
-        },
-
-        onGetUpperNode: function(res){
-            this.$el.find('.upper .add-node').show();
-            var nodesArray = [];
-            this.selectedUpperNodeList = [];
-
-            _.each(res, function(el, index, list){
-                _.each(this.defaultParam.upper, function(defaultNode, inx, ls){
-                    if (defaultNode.nodeId === el.id) {
-                        el.checked = true;
-                        this.selectedUpperNodeList.push({
-                            nodeId: el.id, 
-                            nodeName: el.chName, 
-                            ipCorporation: defaultNode.ipCorporation,
-                            operatorId: el.operatorId
-                        })
-                    }
-                }.bind(this))
-                nodesArray.push({name:el.chName, value: el.id, checked: el.checked, operatorId:el.operatorId})
-            }.bind(this))
-            console.log(nodesArray);
-            this.initUpperTable()
-
-            var searchSelect = new SearchSelect({
-                containerID: this.$el.find('.upper .add-node-ctn').get(0),
-                panelID: this.$el.find('.upper .add-node').get(0),
-                openSearch: true,
-                onOk: function(data){
-                    this.selectedUpperNodeList = [];
-                    _.each(data, function(el, key, ls){
-                        this.selectedUpperNodeList.push({
-                            nodeId: el.value, 
-                            nodeName: el.name,
-                            ipCorporation: 0,
-                            operatorId:''
-                        });
-                        this.ruleContent.upper.push({"nodeId":el.value,"ipCorporation":0});
-                    }.bind(this))
-                    var one = this;
-                    _.each(nodesArray,function(el,key,ls){
-                        _.each(one.selectedUpperNodeList,function(data,key,ls){
-                            if(el.value == data.nodeId){
-                                data.operatorId = el.operatorId;
-                            }
-                        })
-                    })
-                    console.log(this.selectedUpperNodeList);
-                    this.initUpperTable()
-                }.bind(this),
-                data: nodesArray,
-                callback: function(data){}.bind(this)
-            });
-        },
-
-        onClickLocalTypeRadio: function(event){
-            var eventTarget = event.srcElement || event.target;
-            if (eventTarget.tagName !== "INPUT") return;
-            this.defaultParam.localType = parseInt($(eventTarget).val());
-
-            if (this.defaultParam.localType === 1){
-                this.ruleContent.localType = 1;
-                this.ruleContent.local = [];
-                this.$el.find(".operator-ctn").hide();
-                this.$el.find(".nodes-ctn").show();
-            } else if (this.defaultParam.localType === 2){
-                this.ruleContent.localType = 2;
-                this.ruleContent.local = [];
-                this.$el.find(".nodes-ctn").hide();
-                this.$el.find(".operator-ctn").show();
-            }
-        },
-        initUpperTable: function(){
-            if(this.selectedUpperNodeList.length > 0){
-                console.log(this.selectedUpperNodeList[0].operatorId);
-                console.log(this.selectedUpperNodeList[2].operatorId);
-                this.selectedUpperNodeList[0].operatorId = 9;
-                this.selectedUpperNodeList[2].operatorId = 9;
-                _.each(this.selectedUpperNodeList,function(el,index,li){
-                     if(el.operatorId == 9){
-                        this.selectedUpperNodeList.splice(index,1);
-                        this.selectedUpperNodeList.unshift(el);
-                     }
-                }.bind(this))
-            }
-           // console.log(this.selectedUpperNodeList);
-            this.upperTable = $(_.template(template['tpl/setupTopoManage/addEditLayerStrategy.upper.table.html'])({
-                data: this.selectedUpperNodeList
-            }));
-            if (this.selectedUpperNodeList.length !== 0)
-                this.$el.find(".upper .table-ctn").html(this.upperTable[0]);
-            else
-                this.$el.find(".upper .table-ctn").html(_.template(template['tpl/empty.html'])());
-
-            this.upperTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperDelete, this));
-            
-            this.collection.on("get.operatorUpper.success",$.proxy(this.initOperatorUpperList,this));
-            this.collection.on("get.operatorUpper.error",$.proxy(this.onGetError, this));
-            this.collection.getOperatorUpperList();
-        },
-        initOperatorUpperList:function(data){
-            var statusArray = [];
-            _.each(data, function(el, key, list){
-                statusArray.push({name: el.name, value: el.id})
-            }.bind(this))
-            rootNodes = this.upperTable.find(".ipOperator .dropdown");
-            for (var i = 0; i < rootNodes.length; i++){
-                this.ruleContent.upper[i].ipCorporation = 1;
-                this.initTableDropMenu($(rootNodes[i]), statusArray, function(value, nodeId){
-                    this.ruleContent.upper[i].ipCorporation = value;
-                    console.log(this.ruleContent.upper[i].ipCorporation);
-                    _.each(this.selectedUpperNodeList, function(el, key, list){
-                        if (el.nodeId === parseInt(nodeId)){
-                            el.ipCorporation = parseInt(value);
-                        }
-                    }.bind(this))
-                }.bind(this));
-
-                var nodeId = $(rootNodes[i]).attr("id"),
-                    upperObj = _.find(this.selectedUpperNodeList, function(object){
-                        return object.nodeId === parseInt(nodeId);
-                    }.bind(this))
-
-                var leberNode = this.$el.find("#dropdown-ip-operator .cur-value");
-
-                if (upperObj){
-                    var defaultValue = _.find(statusArray, function(object){
-                        return object.value === upperObj.ipCorporation;
-                    }.bind(this));
-
-                    if (defaultValue)
-                        leberNode.html(defaultValue.name);
-                    else
-                        leberNode.html(statusArray[0].name);
-                } else {
-                    leberNode.html(statusArray[0].name);
-                }
-            }
-        },
-        initTableDropMenu: function (rootNode, typeArray, callback){
-            var dropRoot = rootNode.find(".dropdown-menu"),
-                rootId = rootNode.attr("id"),
-                showNode = rootNode.find(".cur-value");
-            dropRoot.html("");
-            _.each(typeArray, function(element, index, list){
-                var itemTpl = '<li value="' + element.value + '">' + 
-                                  '<a href="javascript:void(0);" value="' + element.value + '">'+ element.name + '</a>' + 
-                            '</li>',
-                itemNode = $(itemTpl);
-                itemNode.on("click", function(event){
-                    var eventTarget = event.srcElement || event.target;
-                        showNode.html($(eventTarget).html()),
-                        value = $(eventTarget).attr("value");
-                    callback&&callback(value, rootId);
-                });
-                itemNode.appendTo(dropRoot);
-            });
-        },
-
-        initLocalTable: function(){
-            this.localTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
-                data: this.selectedLocalNodeList
-            }));
-            if (this.selectedLocalNodeList.length !== 0)
-                this.$el.find(".local .table-ctn").html(this.localTable[0]);
-            else
-                this.$el.find(".local .table-ctn").html(_.template(template['tpl/empty.html'])());
-
-            this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemLocalDelete, this));
-        },
-
-        onClickItemLocalDelete: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            } 
-            var local = this.rule[this.id].local;
-            for(var i=0;i<local.length;i++){
-                 if(local[i] == id){
-                    local.splice(i,1);
-                 }
-            }
-            for (var i = 0; i < this.selectedLocalNodeList.length; i++){
-                if (parseInt(this.selectedLocalNodeList[i].nodeId) === parseInt(id)){
-                    this.selectedLocalNodeList.splice(i, 1);
-                    this.initLocalTable();
-                    return;
-                }
-            }
-            
-
-        },
-
-        onClickItemUpperDelete: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
-            if(this.isEdit){
-                var upper = this.rule[this.id].upper;
-                for(var i=0;i<upper.length;i++){
-                     if(upper[i].nodeId == id){
-                        upper.splice(i,1);
-                     }
-                }
-            }
-            
-            for (var i = 0; i < this.selectedUpperNodeList.length; i++){
-                if (parseInt(this.selectedUpperNodeList[i].nodeId) === parseInt(id)){
-                    this.selectedUpperNodeList.splice(i, 1);
-                    this.initUpperTable();
-                    return;
-                }
-            }
-        },
-
-        initDropMenu: function(data){
-            var statusArray = [],
-            rootNode = this.$el.find(".operator");
-            _.each(data, function(el, key, list){
-                statusArray.push({name: el.name, value: el.id})
-            }.bind(this))
-            Utility.initDropMenu(rootNode, statusArray, function(value){
-                this.ruleContent.local = value;
-            }.bind(this));
-            
-            if(this.defaultParam.localType == 2){
-                var defaultValue = _.find(statusArray, function(object){
-                   return object.value == this.defaultParam.local[0];
-                }.bind(this));
-
-            }
-            if (defaultValue){
-                this.$el.find("#dropdown-operator .cur-value").html(defaultValue.name);
-            }
-            else
-                this.$el.find("#dropdown-operator .cur-value").html(statusArray[0].name);
-        },
-
-        render: function(target) {
-            this.$el.appendTo(target)
-        }
-    });
     var SetupTopoManageView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.html'])());
-
+            this.collection.on("get.topoInfo.success");
+            this.collection.on("get.topoInfo.error");
             this.collection.on("get.topoInfo.success", $.proxy(this.onGetTopoSuccess, this));
             this.collection.on("get.topoInfo.error", $.proxy(this.onGetError, this));
             
+            this.collection.on("get.devicetype.success");
+            this.collection.on("get.devicetype.error");
             this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
             this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
             
+            this.collection.on('add.topo.success');
+            this.collection.on('add.topo.error');
+            this.collection.on('add.topo.success',$.proxy(this.addTopoSuccess, this));
+            this.collection.on('add.topo.error',$.proxy(this.onGetError, this));
+            
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
-
+            
             this.enterKeyBindQuery();
+            this.off('enterKeyBindQuery');
+            this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this))
             this.queryArgs = {
                 "count": 10,
                 "name" : null,
@@ -857,11 +517,14 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.onClickQueryButton();
             this.collection.getDeviceTypeList();
         },
-        
+        addTopoSuccess: function(){
+            alert('保存成功');
+            this.onClickQueryButton();
+        },
         enterKeyBindQuery:function(){
             $(document).on('keydown', function(e){
                 if(e.keyCode == 13){
-                    this.onClickQueryButton();
+                   this.trigger('enterKeyBindQuery');
                 }
             }.bind(this));
         },
@@ -928,9 +591,13 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
 
 
         onClickAddRuleTopoBtn: function(){
+            this.off('enterKeyBindQuery');
             var myEditTopoView = new EditTopoView({
                 collection: this.collection,
-                onSaveCallback: function(){}.bind(this),
+                onSaveCallback: function(){
+                    myEditTopoView.$el.remove();
+                    this.$el.find(".list-panel").show();
+                }.bind(this),
                 onCancelCallback: function(){
                     myEditTopoView.$el.remove();
                     this.$el.find(".list-panel").show();
@@ -942,6 +609,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onClickItemEdit: function(event){
+            this.off('enterKeyBindQuery');
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();
@@ -992,7 +660,10 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         initDeviceDropMenu: function(res){
             this.deviceTypeArray = [];
             var typeArray = [
-                {name: "全部", value: "All"}
+                {
+                    name:'全部',
+                    value:'all'
+                }
             ],
             rootNode = this.$el.find(".dropdown-type");
 

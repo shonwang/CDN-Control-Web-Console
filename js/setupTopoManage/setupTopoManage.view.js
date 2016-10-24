@@ -75,12 +75,17 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
             else
                 this.$el.find(".add-rule").hide();
-
+            
+            this.collection.off("get.node.success");
+            this.collection.off("get.node.error");
             this.collection.on("get.node.success", $.proxy(this.onGetAllNode, this));
             this.collection.on("get.node.error", $.proxy(this.onGetError, this));
-
+            
+            this.collection.off("get.devicetype.success");
+            this.collection.off("get.devicetype.error");
             this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
             this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
+            
             this.collection.getNodeList(); //获取所有节点列表接口
             this.collection.getDeviceTypeList();//获取应用类型列表接口
             if(this.isEdit){
@@ -587,6 +592,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.off('enterKeyBindQuery');
             this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
             this.enterKeyBindQuery();
+            
             this.queryArgs = {
                 "count": 10,
                 "name" : null,

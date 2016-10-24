@@ -17,6 +17,13 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.collection.off('get.topo.OriginInfo.error');
             this.collection.on('get.topo.OriginInfo.success',$.proxy(this.onOriginInfo, this));
             this.collection.on('get.topo.OriginInfo.error',$.proxy(this.onGetError, this));
+
+            //获取应用商类型
+            this.collection.off("get.operator.success");
+            this.collection.off("get.operator.error");
+            this.collection.on("get.operator.success", $.proxy(this.setOperatorInfo, this));
+            this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
+            this.collection.getOperatorList();
             
             if(this.isEdit){
                 this.collection.getTopoOrigininfo(this.model.get('id'));
@@ -34,7 +41,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
         onOriginInfo: function(res){
             var tempModel = res;
-           // this.model = tempModel;
             var allNodes = [];
             _.each(tempModel.allNodes,function(el){
                 allNodes.push(el.id);
@@ -146,7 +152,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     return ;
                 }
             })
-             console.log(this.defaultParam);
              if(this.isEdit){
                 var rule = [];
                 _.each(this.defaultParam.rule,function(el){
@@ -168,7 +173,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     this.collection.topoModify(this.defaultParam);
                 }
                 else{
-                    this.collection.topoAdd(this.defaultParam);
+                    console.log(this.defaultParam);
+                  //  this.collection.topoAdd(this.defaultParam);
                 }
                 this.options.onSaveCallback && this.options.onSaveCallback();
              }
@@ -467,7 +473,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     rule      : this.rule,
                     onSaveCallback: function(){
                         this.defaultParam.rule = this.rule;
-                         console.log(this.defaultParam.rule);
                         var data = this.InformationProcessing(this.rule);
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".add-topo").show();
@@ -484,21 +489,19 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
             }.bind(this))
         },
+        setOperatorInfo: function(res){
+            this.operator = [];
+            _.each(res,function(el,index,list){
+                this.operator.push({
+                   'name' : el.name,
+                   'value': el.id
+                })
+            }.bind(this));
+        },
         InformationProcessing:function(data){
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             var data_save = [];
             var self = this;
-            var operator = [
-                {name: "联通",  value:1},
-                {name: "电信",  value:2},
-                {name: "移动",  value:3},
-                {name: "鹏博士", value:4},
-                {name: "教育网", value:5},
-                {name: "广电网", value:6},
-                {name: "铁通",   value:7},
-                {name: "华数",   value:8},
-                {name: "多线",   value:9}
-            ];
             _.each(data, function(el, key, ls){
                 var data_save_content = {
                      id:null,
@@ -507,12 +510,12 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 };
                 if(el.localType == 2){
                     _.each(el.local,function(local){
-                        _.each(operator,function(operator){
+                        _.each(self.operator,function(operator){
                             if(local == operator.value){
                                data_save_content.localLayer.push(operator.name)
                             }
                         })
-                    })
+                    }.bind(this))
                 }else if(el.localType == 1){
                     _.each(el.local,function(local){
                         _.each(self.allNodes,function(nodes){
@@ -558,21 +561,22 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         initialize: function(options) {
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.html'])());
+            //获取所有的拓扑关系信息
             this.collection.off("get.topoInfo.success");
             this.collection.off("get.topoInfo.error");
             this.collection.on("get.topoInfo.success", $.proxy(this.onGetTopoSuccess, this));
             this.collection.on("get.topoInfo.error", $.proxy(this.onGetError, this));
-            
+            //获取应用类型
             this.collection.off("get.devicetype.success");
             this.collection.off("get.devicetype.error");
             this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
             this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
-            
+            //添加拓扑关系
             this.collection.off('add.topo.success');
             this.collection.off('add.topo.error');
             this.collection.on('add.topo.success',$.proxy(this.addTopoSuccess, this));
             this.collection.on('add.topo.error',$.proxy(this.onGetError, this));
-            
+            //修改拓扑关系
             this.collection.off('modify.topo.success');
             this.collection.off('modify.topo.error');
             this.collection.on('modify.topo.success',$.proxy(this.modifyTopoSuccess, this));
@@ -655,7 +659,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             }
 
             var model = this.collection.get(id);
-
+            console.log(model);
             var mySpecialLayerManageView = new SpecialLayerManageView({
                 collection: this.collection,
                 model: model,
@@ -697,10 +701,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             } else {
                 id = $(eventTarget).attr("id");
             }
-            
-           
             var model = this.collection.get(id);
-
             var myEditTopoView = new EditTopoView({
                 collection: this.collection,
                 model: model,

@@ -37,10 +37,15 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                     this.defaultParam.upper.push(el);
                 }.bind(this));
             }
-            console.log('sssss');
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
             
+            this.collection.off("get.operator.success");
+            this.collection.off("get.operator.error");
+            this.collection.on("get.operator.success", $.proxy(this.initDropMenu, this));
+            this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
+            this.collection.getOperatorList();
+
             this.initSetup();
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
@@ -62,9 +67,6 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 this.$el.find(".nodes-ctn").hide();
                 this.$el.find(".operator-ctn").show();
             }
-            this.collection.on("get.operator.success", $.proxy(this.initDropMenu, this));
-            this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
-            this.collection.getOperatorList();
             
             if (!this.options.localNodes && !this.options.upperNodes){
                 this.collection.on("get.node.success", $.proxy(this.onGetLocalNode, this));
@@ -86,7 +88,6 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
         },
         onClickSaveBtn: function(){
             if(!this.isEdit){
-                console.log(this.ruleContent);
                 this.rule.push(this.ruleContent);
             }else{
                 this.rule[this.id] = this.ruleContent;
@@ -101,7 +102,6 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
         },
 
         onGetLocalNode: function(res){
-            console.log(res);
             this.$el.find('.local .add-node').show();
             var nodesArray = [], data = res;
             this.selectedLocalNodeList = [];

@@ -584,9 +584,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
             
-            this.enterKeyBindQuery();
             this.off('enterKeyBindQuery');
-            this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this))
+            this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
+            this.enterKeyBindQuery();
             this.queryArgs = {
                 "count": 10,
                 "name" : null,

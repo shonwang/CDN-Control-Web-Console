@@ -371,7 +371,8 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 statusArray.push({name: el.name, value: el.id})
             }.bind(this))
             Utility.initDropMenu(rootNode, statusArray, function(value){
-                this.ruleContent.local = value;
+                this.ruleContent.local = [];
+                this.ruleContent.local.push(parseInt(value));
             }.bind(this));
             
             if(this.defaultParam.localType == 2){

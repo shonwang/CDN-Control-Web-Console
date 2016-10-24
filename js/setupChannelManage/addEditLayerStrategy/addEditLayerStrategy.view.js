@@ -87,12 +87,44 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
         onClickSaveBtn: function(){
-            if(!this.isEdit){
-                this.rule.push(this.ruleContent);
-            }else{
-                this.rule[this.id] = this.ruleContent;
+            var flag = true;
+            if(this.ruleContent.local.length == 0){
+                    alert('请选择本层节点');
+                    return;
+            }else if(this.ruleContent.upper.length == 0){
+                    alert('请选择上层节点');
+                    return;
             }
-            this.options.onSaveCallback && this.options.onSaveCallback();
+            _.each(this.rule,function(rule,index,list){
+                if(rule.localType == this.ruleContent.localType == 1){
+                    _.each(this.ruleContent.local,function(local,index,list){
+                        if(rule.local.indexOf(local) >= 0){
+                            alert('同一节点不能同时存在于两条规则的“本层”中');
+                            flag = false;
+                        }
+                    }.bind(this))
+                }else if(rule.localType == this.ruleContent.localType == 2){
+                    _.each(this.rule.local,function(ruleLocal,index,list){
+                        if(ruleLocal == this.ruleContent.local){
+                            alert('同一运营商不能同时存在于两条规则的“本层”中');
+                            flag = false;
+                        }
+                    }.bind(this))
+                }
+            }.bind(this))
+            
+            if(flag){
+                if(!this.isEdit){
+                    this.rule.push(this.ruleContent);
+
+                }else{
+                    this.rule[this.id] = this.ruleContent;
+                }
+                
+                this.options.onSaveCallback && this.options.onSaveCallback();
+            }
+            
+            
         },
         onGetError: function(error){
             if (error&&error.message)
@@ -127,8 +159,9 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 onOk: function(data){
                     this.selectedLocalNodeList = [];
                     _.each(data, function(el, key, ls){
+                        this.ruleContent.local = [];
                         this.selectedLocalNodeList.push({nodeId: el.value, nodeName: el.name})
-                        this.ruleContent.local.push(el.value);
+                        this.ruleContent.local.push(parseInt(el.value));
                     }.bind(this))
                     this.initLocalTable()
                 }.bind(this),
@@ -174,6 +207,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                             ipCorporation: 0,
                             operatorId:''
                         });
+                        this.ruleContent.upper = [];
                         this.ruleContent.upper.push({"nodeId":el.value,"ipCorporation":0});
                     }.bind(this))
                     _.each(nodesArray,function(el,key,ls){
@@ -325,12 +359,11 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             } else {
                 id = $(eventTarget).attr("id");
             } 
-            var local = this.rule[this.id].local;
-            for(var i=0;i<local.length;i++){
-                 if(local[i] == id){
-                    local.splice(i,1);
-                 }
-            }
+            _.each(this.ruleContent.local,function(el,index,list){
+                if(el == id){
+                    this.ruleContent.local.splice(index,1);
+                }
+            }.bind(this));
             for (var i = 0; i < this.selectedLocalNodeList.length; i++){
                 if (parseInt(this.selectedLocalNodeList[i].nodeId) === parseInt(id)){
                     this.selectedLocalNodeList.splice(i, 1);

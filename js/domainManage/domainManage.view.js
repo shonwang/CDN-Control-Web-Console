@@ -670,9 +670,11 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             else
                 this.$el.find(".table-ctn .send").remove();
 
-            /*应该加上权限的判断*/
-            this.$el.find(".table-ctn .deleteConfiguration").on("click", $.proxy(this.onClickDeleteConfiguration, this));
-        
+            if(AUTH_OBJ.DomainManagerDeleteConfig)
+                this.$el.find(".table-ctn .deleteConfiguration").on("click", $.proxy(this.onClickDeleteConfiguration, this));
+            else
+                this.$el.find(".table-ctn .deleteConfiguration").remove();
+            
             this.table.find("tbody .description").tooltip({
                 animation  : false,
                 "placement": "top", 

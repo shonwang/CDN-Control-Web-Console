@@ -221,12 +221,20 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             var nodesArray = [];
             
             this.selectedAllNodeList = [];
+            var resFlag = [];
+            _.each(res,function(el,index,list){
+                resFlag.push(el);
+            })
+            _.each(resFlag,function(el,index,list){
+                if(el.status == 3){
+                   res.splice(index,1);
+                }
+            }.bind(this));
             _.each(res, function(el, index, list){
                 _.each(this.defaultParam.allNodes, function(defaultLocalId, inx, ls){
                     if (defaultLocalId === el.id) {
                         el.checked = true;
                         this.selectedAllNodeList.push({nodeId: el.id, nodeName: el.chName , operator:el.operatorId, checked:el.checked})
-                        //this.allNodes.push({nodeId: el.id, nodeName: el.chName, operatorId:''})
                     }
                 }.bind(this))
                 nodesArray.push({name:el.chName, value: el.id, checked: el.checked, operator:el.operatorId})

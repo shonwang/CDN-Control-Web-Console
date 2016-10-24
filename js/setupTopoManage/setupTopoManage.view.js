@@ -173,8 +173,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     this.collection.topoModify(this.defaultParam);
                 }
                 else{
-                    console.log(this.defaultParam);
-                  //  this.collection.topoAdd(this.defaultParam);
+                    this.collection.topoAdd(this.defaultParam);
                 }
                 this.options.onSaveCallback && this.options.onSaveCallback();
              }

@@ -19,7 +19,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
 
                 encryption: 1,
                 mtPosition: 2,
-                timestampType: 1,
+                timestampType: 2,
                 advancedDeadline: 1,
                 advancedSecretKeyPrimary: "",
                 advancedSecretKeyBackup: [],

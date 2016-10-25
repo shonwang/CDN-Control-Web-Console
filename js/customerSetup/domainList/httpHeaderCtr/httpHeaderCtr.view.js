@@ -150,8 +150,9 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
             if (defaultValue){
                 this.$el.find(".get-ip-type .cur-value").html(defaultValue.name);
             } else {
-                this.$el.find(".get-ip-type .cur-value").html("自定义");
+                this.$el.find(".get-ip-type .cur-value").html("Cdn-Src-IP");
                 this.$el.find("#custom-type").val(this.defaultParam.obtIpCustom);
+                this.$el.find("#custom-type").hide();
             }
         },
 

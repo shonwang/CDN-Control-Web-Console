@@ -13,45 +13,56 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.allNodes   = [];//存储所有节点
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.edit.html'])({data: {}}));
             
-            this.collection.on('get.topo.OriginInfo.success');
-            this.collection.on('get.topo.OriginInfo.error');
+            this.collection.off('get.topo.OriginInfo.success');
+            this.collection.off('get.topo.OriginInfo.error');
             this.collection.on('get.topo.OriginInfo.success',$.proxy(this.onOriginInfo, this));
             this.collection.on('get.topo.OriginInfo.error',$.proxy(this.onGetError, this));
+
+            //获取应用商类型
+            this.collection.off("get.operator.success");
+            this.collection.off("get.operator.error");
+            this.collection.on("get.operator.success", $.proxy(this.setOperatorInfo, this));
+            this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
+            this.collection.getOperatorList();
             
             if(this.isEdit){
-                this.collection.getTopoOrigininfo(this.model.id);
+                this.collection.getTopoOrigininfo(this.model.get('id'));
             }else{
                 this.defaultParam = {
+                    "id":null,
+                    "name":"拓扑关系名称",
+                    "type":null,
                     "allNodes": [],
                     "upperNodes": [],
                     "rule": []
                 }
                 this.initSetup();
             }
-            this.queryArgs = {
-                "id":0,
-                 "name":"拓扑关系名称",
-                 "type":null ,
-                 "allNodes":[],
-                 "upperNodes":[],
-                 "rule":[
-                         
-                     ]
-                 
-            }
         },
         onOriginInfo: function(res){
             var tempModel = res;
-            this.model = tempModel;
+            var allNodes = [];
+            _.each(tempModel.allNodes,function(el){
+                allNodes.push(el.id);
+            })
+            var upperNodes = [];
+            _.each(tempModel.upperNodes,function(el){
+                upperNodes.push(el.id);
+            })
             this.defaultParam = {
-                "allNodes": this.model.allNodes,
-                "upperNodes": this.model.upperNodes,
-                "rule": this.model.rule,
-                "type": this.model.type
+                "id":tempModel.id,
+                "name":tempModel.name,
+                "allNodes": allNodes,
+                "upperNodes":upperNodes,
+                "rule": tempModel.rule,
+                "type": tempModel.type
             }
-            this.$el.find("#input-name").val(this.model.name);
+            this.NodeleteNodes = [];
+            _.each(this.defaultParam.allNodes,function(el){
+                this.NodeleteNodes.push(el)  
+            }.bind(this));
+            this.$el.find("#input-name").val(tempModel.name);
             this.$el.find("#input-name").attr("readonly", "true");
-            
             this.initSetup();
         },
         initSetup: function(){
@@ -70,75 +81,108 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
 
             this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
             this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
-
             this.collection.getNodeList(); //获取所有节点列表接口
             this.collection.getDeviceTypeList();//获取应用类型列表接口
-           // this.initRuleTable();
-            
+            if(this.isEdit){
+                var data = this.analyticFunction(this.defaultParam.rule);
+                this.initRuleTable(data);
+            }
+        },
+        analyticFunction:function(data){
+            var data_save = [];
+            var self = this;
+            _.each(data, function(el, key, ls){
+                var data_save_content = {
+                     id:null,
+                    'localLayer':[],
+                    'upperLayer':[]
+                };
+                if(el.localType == 2){
+                    _.each(el.local,function(local){
+                        data_save_content.localLayer.push(local.name)
+                    })
+                }else if(el.localType == 1){
+                    _.each(el.local,function(local){
+                         data_save_content.localLayer.push(local.name);
+                    })
+                }
+                _.each(el.upper,function(upper){
+                     data_save_content.upperLayer.push(upper.rsNodeMsgVo.name)
+                               
+                })
+                data_save_content.localLayer = data_save_content.localLayer.join('、');
+                data_save_content.upperLayer = data_save_content.upperLayer.join('、');
+                data_save_content.id = key;
+                data_save.push(data_save_content);
+
+            });
+            return data_save;
         },
         onClickSaveButton:function(){
-            
-            this.queryArgs.name = $.trim(this.$el.find("#input-name").val());
-            if(this.queryArgs.name == ''){
+            var flag = true;
+            this.defaultParam.name = $.trim(this.$el.find("#input-name").val());
+            if(this.defaultParam.name == ''){
                 alert('请输入拓扑关系名称');
                 return ;
             }
-            else if(this.queryArgs.type == null){
+            else if(this.defaultParam.type == null){
                 alert('请选择设备类型');
                 return ;
             }
-            else if(this.queryArgs.allNodes.length == 0){
+            else if(this.defaultParam.allNodes.length == 0){
                 alert('请选择加入拓扑关系的节点');
                 return ;
             }
-            else if(this.queryArgs.upperNodes.length == 0){
+            else if(this.defaultParam.upperNodes.length == 0){
                 alert('请选择拓扑关系的上层节点');
                 return ;
             }
-            else if(this.queryArgs.rule.length == 0){
+            else if(this.defaultParam.rule.length == 0){
                 alert('请添加规则');
                 return;
             }
-            _.each(this.queryArgs.rule,function(el){
+            _.each(this.defaultParam.rule,function(el){
                 if(el.local.length == 0){
                     alert('请在配置规则中选择本层节点');
+                    flag = false;
                     return ;
                 }else if(el.upper.length == 0){
                     alert('请在配置规则中选择上层节点');
+                    flag = false;
                     return ;
                 }
             })
+             if(this.isEdit){
+                var rule = [];
+                _.each(this.defaultParam.rule,function(el){
+                    var localAll = [];
+                    var upperAll = [];
+                    _.each(el.local,function(local){
+                         localAll.push(local.id);
+                    })
+                    _.each(el.upper,function(upper){
+                        upperAll.push({id:upper.rsNodeMsgVo.id,ipCorporation:upper.ipCorporation});
+                    })
+                    rule.push({id:el.id,localType:el.localType,local:localAll,upper:upperAll});
+                });
+                this.defaultParam.rule = rule;
+             }
             
-            console.log(this.queryArgs);
-           /*this.queryArgs = {
-             "id":0,
-             "name":"拓扑关系名称",
-             "type":203 ,
-             "allNodes":[1,2],
-             "upperNodes":[1],
-             "rule":[
-                     {
-                         "local":[2],
-                         "localType":1,
-                         "upper":[
-                              {
-                                "nodeId":23,
-                                "ipCorporation":0
-                                },
-                                
-                            ]
-                      },
-                     
-                 ]
-             }*/
-             //this.collection.topoAdd(this.queryArgs);
-             
-             this.options.onSaveCallback && this.options.onSaveCallback();
+             if(flag){
+                if(this.isEdit){
+                    this.collection.topoModify(this.defaultParam);
+                }
+                else{
+                    console.log(this.defaultParam);
+                  //  this.collection.topoAdd(this.defaultParam);
+                }
+                this.options.onSaveCallback && this.options.onSaveCallback();
+             }
+              
         },
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
-
         initDeviceDropMenu: function(res){
             this.deviceTypeArray = [];
             var typeArray = [],
@@ -149,14 +193,20 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 this.deviceTypeArray.push({name:el.name, value: el.id});
             }.bind(this));
             if (!this.isEdit){
-                //console.log(typeArray);
-                this.queryArgs.type = typeArray[0].value;
+                this.defaultParam.type = typeArray[0].value;
                 var rootNode = this.$el.find(".dropdown-app");
                 Utility.initDropMenu(rootNode, typeArray, function(value){
-                       this.queryArgs.type = parseInt(value)
+                       this.defaultParam.type = parseInt(value)
                 }.bind(this));
+
+               this.$el.find("#dropdown-app .cur-value").html(typeArray[0].name); 
                 
             } else {
+                //this.$el.find('#dropdown-app .cur-value').html()
+                var upperObj = _.find(typeArray, function(object){
+                    return object.value == this.defaultParam.type;
+                }.bind(this))
+                this.$el.find('#dropdown-app .cur-value').html(upperObj.name);
                 this.$el.find("#dropdown-app").attr("disabled", "disabled")
             }
           
@@ -171,10 +221,12 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 _.each(this.defaultParam.allNodes, function(defaultLocalId, inx, ls){
                     if (defaultLocalId === el.id) {
                         el.checked = true;
-                        this.selectedAllNodeList.push({nodeId: el.id, nodeName: el.chName , operator:el.operatorId})
+                        this.selectedAllNodeList.push({nodeId: el.id, nodeName: el.chName , operator:el.operatorId, checked:el.checked})
+                        //this.allNodes.push({nodeId: el.id, nodeName: el.chName, operatorId:''})
                     }
                 }.bind(this))
                 nodesArray.push({name:el.chName, value: el.id, checked: el.checked, operator:el.operatorId})
+                this.allNodes.push({name:el.chName, nodeId: el.id, checked: el.checked, operator:el.operatorId})
             }.bind(this))
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.all .add-node-ctn').get(0),
@@ -185,9 +237,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     _.each(data, function(el, key, ls){
                         this.selectedAllNodeList.push({nodeId: el.value, nodeName: el.name, operatorId:''});
                     }.bind(this))
+                    this.defaultParam.allNodes.length = 0;
                     _.each(this.selectedAllNodeList,function(el,key,ls){
-                        this.allNodes.push(el);
-                        this.queryArgs.allNodes.push(parseInt(el.nodeId));
+                        this.defaultParam.allNodes.push(parseInt(el.nodeId));
                     }.bind(this))
                     _.each(nodesArray,function(el,key,ls){
                         _.each(this.selectedAllNodeList,function(data,key,ls){
@@ -205,9 +257,31 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
 
         initAllNodesTable: function(){
+            if(this.isEdit){
+                var s = [];
+                _.each(this.selectedAllNodeList,function(el){
+                    if(this.NodeleteNodes.indexOf(el.nodeId) < 0){
+                        s.push(el.nodeId);
+                    }
+                }.bind(this))
+                _.each(this.selectedAllNodeList,function(node,index){
+                    if(this.NodeleteNodes.indexOf(node.nodeId) < 0){
+                        this.selectedAllNodeList.splice(index,1);
+                        this.selectedAllNodeList.unshift(node);
+                    }
+                }.bind(this))
+            }
+           
             this.localTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
                 data: this.selectedAllNodeList
             }));
+            _.each($(this.localTable).find('.addOrEdit .delete'),function(el){
+                _.each(this.NodeleteNodes,function(nodes){
+                    if(el.id == nodes){
+                        el.remove();
+                    }
+                }.bind(this))
+            }.bind(this))
             if (this.selectedAllNodeList.length !== 0)
                 this.$el.find(".all .table-ctn").html(this.localTable[0]);
             else
@@ -235,6 +309,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 }.bind(this))
                 nodesArray.push({name:el.nodeName, value: el.nodeId, checked: el.checked, operator:el.operatorId})
             }.bind(this))
+
             this.initUpperTable()
             
             if (nodesArray.length === 0) return;
@@ -252,8 +327,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                             operatorId: ''
                         })
                     }.bind(this))
+                    this.defaultParam.upperNodes = [];
                     _.each(this.selectedUpperNodeList,function(el){
-                          this.queryArgs.upperNodes.push(parseInt(el.nodeId));
+                          this.defaultParam.upperNodes.push(parseInt(el.nodeId));
                     }.bind(this))
                     _.each(nodesArray,function(el,key,ls){
                         _.each(this.selectedUpperNodeList,function(data,key,ls){
@@ -357,7 +433,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     id        : this.id,
                     isEdit    : true,
                     onSaveCallback: function(){
-                        this.queryArgs.rule = this.rule;
+                        this.defaultParam.rule = this.rule;
+                       
                         var data = this.InformationProcessing(this.rule);
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".add-topo").show();
@@ -395,8 +472,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     upperNodes: this.selectedUpperNodeList,
                     rule      : this.rule,
                     onSaveCallback: function(){
-                        //console.log(this.rule);
-                        this.queryArgs.rule = this.rule;
+                        this.defaultParam.rule = this.rule;
                         var data = this.InformationProcessing(this.rule);
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".add-topo").show();
@@ -413,53 +489,52 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
             }.bind(this))
         },
+        setOperatorInfo: function(res){
+            this.operator = [];
+            _.each(res,function(el,index,list){
+                this.operator.push({
+                   'name' : el.name,
+                   'value': el.id
+                })
+            }.bind(this));
+        },
         InformationProcessing:function(data){
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             var data_save = [];
             var self = this;
-            var operator = [
-                {name: "联通",  value:1},
-                {name: "电信",  value:2},
-                {name: "移动",  value:3},
-                {name: "鹏博士", value:4},
-                {name: "教育网", value:5},
-                {name: "广电网", value:6},
-                {name: "铁通",   value:7},
-                {name: "华数",   value:8},
-                {name: "多线",   value:9}
-            ];
             _.each(data, function(el, key, ls){
                 var data_save_content = {
-                    id:null,
+                     id:null,
                     'localLayer':[],
                     'upperLayer':[]
                 };
                 if(el.localType == 2){
                     _.each(el.local,function(local){
-                        _.each(operator,function(operator){
+                        _.each(self.operator,function(operator){
                             if(local == operator.value){
                                data_save_content.localLayer.push(operator.name)
                             }
                         })
-                    })
+                    }.bind(this))
                 }else if(el.localType == 1){
                     _.each(el.local,function(local){
                         _.each(self.allNodes,function(nodes){
+
                             if(local == nodes.nodeId){
-                               data_save_content.localLayer.push(nodes.chName)
+                               data_save_content.localLayer.push(nodes.name);
                             }
                         })
                     })
                 }
                 _.each(el.upper,function(upper){
-                   
                         _.each(self.allNodes,function(nodes){
                             if(upper.nodeId == nodes.nodeId){
-                               data_save_content.upperLayer.push(nodes.chName)
+                    
+                                 data_save_content.upperLayer.push(nodes.name)
+                               
+                               
                             }
                         })
-                    
-                    
                 })
                 data_save_content.localLayer = data_save_content.localLayer.join('、');
                 data_save_content.upperLayer = data_save_content.upperLayer.join('、');
@@ -486,20 +561,26 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         initialize: function(options) {
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.html'])());
-            this.collection.on("get.topoInfo.success");
-            this.collection.on("get.topoInfo.error");
+            //获取所有的拓扑关系信息
+            this.collection.off("get.topoInfo.success");
+            this.collection.off("get.topoInfo.error");
             this.collection.on("get.topoInfo.success", $.proxy(this.onGetTopoSuccess, this));
             this.collection.on("get.topoInfo.error", $.proxy(this.onGetError, this));
-            
-            this.collection.on("get.devicetype.success");
-            this.collection.on("get.devicetype.error");
+            //获取应用类型
+            this.collection.off("get.devicetype.success");
+            this.collection.off("get.devicetype.error");
             this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
             this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
-            
-            this.collection.on('add.topo.success');
-            this.collection.on('add.topo.error');
+            //添加拓扑关系
+            this.collection.off('add.topo.success');
+            this.collection.off('add.topo.error');
             this.collection.on('add.topo.success',$.proxy(this.addTopoSuccess, this));
             this.collection.on('add.topo.error',$.proxy(this.onGetError, this));
+            //修改拓扑关系
+            this.collection.off('modify.topo.success');
+            this.collection.off('modify.topo.error');
+            this.collection.on('modify.topo.success',$.proxy(this.modifyTopoSuccess, this));
+            this.collection.on('modify.topo.error',$.proxy(this.onGetError, this));
             
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
@@ -519,6 +600,10 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
         addTopoSuccess: function(){
             alert('保存成功');
+            this.onClickQueryButton();
+        },
+        modifyTopoSuccess:function(){
+            alert('修改成功');
             this.onClickQueryButton();
         },
         enterKeyBindQuery:function(){
@@ -574,7 +659,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             }
 
             var model = this.collection.get(id);
-
+            console.log(model);
             var mySpecialLayerManageView = new SpecialLayerManageView({
                 collection: this.collection,
                 model: model,
@@ -616,15 +701,15 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             } else {
                 id = $(eventTarget).attr("id");
             }
-            
-           
             var model = this.collection.get(id);
-
             var myEditTopoView = new EditTopoView({
                 collection: this.collection,
                 model: model,
                 isEdit: true,
-                onSaveCallback: function(){}.bind(this),
+                onSaveCallback: function(){
+                    myEditTopoView.$el.remove();
+                    this.$el.find(".list-panel").show();
+                }.bind(this),
                 onCancelCallback: function(){
                     myEditTopoView.$el.remove();
                     this.$el.find(".list-panel").show();
@@ -649,7 +734,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                         var args = _.extend(this.queryArgs);
                         args.page = num;
                         args.count = this.queryArgs.count;
-                        this.collection.queryChannel(args);
+                        this.collection.getTopoinfo(args);
                     }
                 }.bind(this)
             });

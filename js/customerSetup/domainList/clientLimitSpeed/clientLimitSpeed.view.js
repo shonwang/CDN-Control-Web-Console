@@ -68,7 +68,7 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
                 limitSpeed: 0,
                 preUnlimit: 0,
                 timeLimitList: [],
-                type: 0,
+                type: 9,
                 policy: ""
             }
 

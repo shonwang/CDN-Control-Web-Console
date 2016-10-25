@@ -196,7 +196,6 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
             var statusArray = [
                 {name: "全部", value: "All"},
                 {name:"新增", value:0},
-                {name: "删除", value:1},
                 {name: "修改", value:2},
             ],
             rootNode = this.$el.find(".dropdown-oper");
@@ -217,6 +216,62 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
                 this.queryArgs.count = value;
                 this.queryArgs.page = 1;
                 this.onClickQueryButton();
+            }.bind(this));
+
+            require(["setupTopoManage.model"], function(SetupTopoManageModel){
+                this.mySetupTopoManageModel = new SetupTopoManageModel();
+                this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.onGetTopoSuccess, this))
+                this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this))
+                var postParam = {
+                    "name" : null,
+                    "type" : null,
+                    "page" : 1,
+                    "size" : 99999
+                 }
+                this.mySetupTopoManageModel.getTopoinfo(postParam);
+            }.bind(this))
+
+            require(["setupAppManage.model"], function(SetupAppManageModel){
+                this.mySetupAppManageModel = new SetupAppManageModel();
+                this.mySetupAppManageModel.on("get.app.info.success", $.proxy(this.onGetAppSuccess, this))
+                this.mySetupAppManageModel.on("get.app.info.error", $.proxy(this.onGetError, this))
+                this.mySetupAppManageModel.getAppInfo();
+            }.bind(this))
+        },
+
+        onGetTopoSuccess: function(){
+            var topoArray = []
+            this.mySetupTopoManageModel.each(function(el, index, lst){
+                topoArray.push({
+                    name: el.get('name'),
+                    value: el.get('id')
+                })
+            }.bind(this))
+
+            rootNode = this.$el.find(".dropdown-topo");
+            Utility.initDropMenu(rootNode, topoArray, function(value){
+                // if (value == "All")
+                //     this.queryArgs.status = null;
+                // else
+                //     this.queryArgs.status = parseInt(value)
+            }.bind(this));
+        },
+
+        onGetAppSuccess: function(){
+            var appArray = []
+            this.mySetupAppManageModel.each(function(el, index, lst){
+                appArray.push({
+                    name: el.get('name'),
+                    value: el.get('id')
+                })
+            }.bind(this))
+
+            rootNode = this.$el.find(".dropdown-app");
+            Utility.initDropMenu(rootNode, appArray, function(value){
+                // if (value == "All")
+                //     this.queryArgs.status = null;
+                // else
+                //     this.queryArgs.status = parseInt(value)
             }.bind(this));
         },
 

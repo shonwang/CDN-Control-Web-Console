@@ -315,10 +315,11 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         getArgs: function() {
             this.args.domain = $.trim(this.$el.find("#input-domain").val());
             if(this.args.domain.length > 0){
-                if (!/\.com$|\.net$|\.org$|\.edu$|\.gov$|\.cn$/gi.test(this.args.domain)){
+                /*if (!/\.com$|\.net$|\.org$|\.edu$|\.gov$|\.cn$/gi.test(this.args.domain)){
                     alert('域名需以com、org、net、edu、gov、cn结尾');
                     return;
-                }else if(this.args.domain.length > 100){
+                }else */
+                if(this.args.domain.length > 100){
                     alert("域名最大可输入100个字符");
                     return;
                 }
@@ -548,10 +549,11 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             if (this.getPageArgs.domain == ""){
                 this.getPageArgs.domain = null;
             }else{
-                if (!/\.com$|\.net$|\.org$|\.edu$|\.gov$|\.cn$/gi.test(this.getPageArgs.domain)){
+                /*if (!/\.com$|\.net$|\.org$|\.edu$|\.gov$|\.cn$/gi.test(this.getPageArgs.domain)){
                     alert('域名需以com、org、net、edu、gov、cn结尾');
                     return;
-                }else if(this.getPageArgs.domain.length > 100){
+                }else*/ 
+                if(this.getPageArgs.domain.length > 100){
                     alert("域名最大可输入100个字符");
                     return;
                 }

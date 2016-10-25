@@ -75,12 +75,17 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
             else
                 this.$el.find(".add-rule").hide();
-
+            
+            this.collection.off("get.node.success");
+            this.collection.off("get.node.error");
             this.collection.on("get.node.success", $.proxy(this.onGetAllNode, this));
             this.collection.on("get.node.error", $.proxy(this.onGetError, this));
-
+            
+            this.collection.off("get.devicetype.success");
+            this.collection.off("get.devicetype.error");
             this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
             this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
+            
             this.collection.getNodeList(); //获取所有节点列表接口
             this.collection.getDeviceTypeList();//获取应用类型列表接口
             if(this.isEdit){
@@ -173,8 +178,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     this.collection.topoModify(this.defaultParam);
                 }
                 else{
-                    console.log(this.defaultParam);
-                  //  this.collection.topoAdd(this.defaultParam);
+                    this.collection.topoAdd(this.defaultParam);
                 }
                 this.options.onSaveCallback && this.options.onSaveCallback();
              }
@@ -217,12 +221,20 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             var nodesArray = [];
             
             this.selectedAllNodeList = [];
+            var resFlag = [];
+            _.each(res,function(el,index,list){
+                resFlag.push(el);
+            })
+            _.each(resFlag,function(el,index,list){
+                if(el.status == 3){
+                   res.splice(index,1);
+                }
+            }.bind(this));
             _.each(res, function(el, index, list){
                 _.each(this.defaultParam.allNodes, function(defaultLocalId, inx, ls){
                     if (defaultLocalId === el.id) {
                         el.checked = true;
                         this.selectedAllNodeList.push({nodeId: el.id, nodeName: el.chName , operator:el.operatorId, checked:el.checked})
-                        //this.allNodes.push({nodeId: el.id, nodeName: el.chName, operatorId:''})
                     }
                 }.bind(this))
                 nodesArray.push({name:el.chName, value: el.id, checked: el.checked, operator:el.operatorId})
@@ -585,9 +597,10 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
             
-            this.enterKeyBindQuery();
             this.off('enterKeyBindQuery');
-            this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this))
+            this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
+            this.enterKeyBindQuery();
+            
             this.queryArgs = {
                 "count": 10,
                 "name" : null,

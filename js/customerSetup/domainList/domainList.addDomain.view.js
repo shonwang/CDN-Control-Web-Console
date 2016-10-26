@@ -569,6 +569,7 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
 
         onSubmitSuccess: function(){
             alert("操作成功！")
+            this.$el.find("#add-domain-btnSubmit").removeAttr("disabled");
             this.options.okCallback && this.options.okCallback();
         },
 
@@ -577,6 +578,7 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
+            this.$el.find("#add-domain-btnSubmit").removeAttr("disabled");
         },
 
         onDomainNameFocus:function(){
@@ -615,6 +617,7 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
                   "originPort": result.OriginPort
             }
             this.collection.submitDomain(postParam);
+            this.$el.find("#add-domain-btnSubmit").attr("disabled", "disabled");
         },
 
         onCancel:function(){

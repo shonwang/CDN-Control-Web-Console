@@ -52,10 +52,10 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
 
         initDirectionDropdown: function(){
             var  directionArray = [
-                {name: "客户端到CDN支持", value: 1},
-                {name: "CDN到源站支持", value: 2},
-                {name: "源到CDN支持", value: 3},
-                {name: "CDN到客户端", value: 4}
+                {name: "1.客户端到CDN支持", value: 1},
+                {name: "2.CDN到源站支持", value: 2},
+                {name: "3.源到CDN支持", value: 3},
+                {name: "4.CDN到客户端", value: 4}
             ],
             rootNode = this.$el.find(".direction");
             Utility.initDropMenu(rootNode, directionArray, function(value){

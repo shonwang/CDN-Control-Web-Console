@@ -67,14 +67,12 @@ define("cacheKeySetup.view", ['require','exports', 'template', 'modal.view', 'ut
         checkDomainName:function(){
             //检查域名
             var domainName = this.$el.find("#modify-cache-host").val().trim();
-            if(domainName == ""){
-                alert("不能为空");
-                return false;
-            }
-            var result = Utility.isDomain(domainName);
-            if(!result){
-                alert("填写错误");
-                return false;
+            if(domainName !== ""){
+                var result = Utility.isDomain(domainName);
+                if(!result){
+                    alert("填写错误");
+                    return false;
+                }
             }
             return true;
         },

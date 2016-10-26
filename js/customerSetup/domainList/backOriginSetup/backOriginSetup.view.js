@@ -113,11 +113,11 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 this.$el.find(".mobile #primary").val(this.defaultParam.mobilePrimary);
                 this.$el.find(".mobile #secondary").val(this.defaultParam.mobileBackup);
                 if (this.defaultParam.originStrategy === 1){
-                    this.$el.find(".poll .togglebutton input").get(0).checked = true;
-                    this.$el.find(".quality .togglebutton input").get(0).checked = false;
+                    this.$el.find(".poll .radio input").get(0).checked = true;
+                    this.$el.find(".quality .radio input").get(0).checked = false;
                 } else if (this.defaultParam.originStrategy === 2){
-                    this.$el.find(".poll .togglebutton input").get(0).checked = false;
-                    this.$el.find(".quality .togglebutton input").get(0).checked = true;
+                    this.$el.find(".poll .radio input").get(0).checked = false;
+                    this.$el.find(".quality .radio input").get(0).checked = true;
                 }
                 this.$el.find("#ip-num").val(this.defaultParam.ipNum);
             }

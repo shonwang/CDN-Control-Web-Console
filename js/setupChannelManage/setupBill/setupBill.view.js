@@ -394,30 +394,32 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             //     "key": "11",  //添加的key
             //     "value": "11" //添加的value
             // }]
-            var delTypeName, addTypeName, addDetailsStr = [];
-            if (this.urlParameterVo.delType === 0) delTypeName = "关闭";
-            if (this.urlParameterVo.addType === 0) addTypeName = "关闭";
-            if (this.urlParameterVo.delType === 1) delTypeName = "开启";
-            if (this.urlParameterVo.addType === 1) addTypeName = "开启";
+            if (this.urlParameterVo) {
+                var delTypeName, addTypeName, addDetailsStr = [];
+                if (this.urlParameterVo.delType === 0) delTypeName = "关闭";
+                if (this.urlParameterVo.addType === 0) addTypeName = "关闭";
+                if (this.urlParameterVo.delType === 1) delTypeName = "开启";
+                if (this.urlParameterVo.addType === 1) addTypeName = "开启";
 
-            _.each(this.urlParameterVo.addDetails, function(el, index, ls) {
-                addDetailsStr.push("参数：" + el.key + ", 值：" + el.value)
-            })
+                _.each(this.urlParameterVo.addDetails, function(el, index, ls) {
+                    addDetailsStr.push("参数：" + el.key + ", 值：" + el.value)
+                })
 
-            var list = [{
-                type:"删除参数",
-                status: delTypeName,
-                value: this.urlParameterVo.delKeys
-            }, {
-                type:"添加参数参数",
-                status: addTypeName,
-                value: addDetailsStr.join("<br>")
-            }]
+                var list = [{
+                    type:"删除参数",
+                    status: delTypeName,
+                    value: this.urlParameterVo.delKeys
+                }, {
+                    type:"添加参数",
+                    status: addTypeName,
+                    value: addDetailsStr.join("<br>")
+                }]
 
-            this.requestArgsModifyTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.requestArgsModify.html'])({
-                data: list
-            }));
-            this.requestArgsModifyTable.appendTo(this.$el.find(".bill-ctn"));
+                this.requestArgsModifyTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.requestArgsModify.html'])({
+                    data: list
+                }));
+                this.requestArgsModifyTable.appendTo(this.$el.find(".bill-ctn"));
+            }
 
             this.initRefererAntiLeech();
         },

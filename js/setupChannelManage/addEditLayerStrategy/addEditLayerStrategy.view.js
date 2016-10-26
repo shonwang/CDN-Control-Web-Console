@@ -143,12 +143,11 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             this.$el.find('.local .add-node').show();
             var nodesArray = [], data = res;
             this.selectedLocalNodeList = [];
-
+       
             if (res&&res.rows) data = res.rows
-
             _.each(data, function(el, index, list){
                 _.each(this.defaultParam.local, function(defaultLocalId, inx, ls){
-                    if (defaultLocalId === el.id) {
+                    if (defaultLocalId == el.id) {
                         el.checked = true;
                         this.selectedLocalNodeList.push({nodeId: el.id, nodeName: el.chName})
                     }
@@ -157,6 +156,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 if (el.nodeName) el.chName = el.nodeName;
                 nodesArray.push({name:el.chName, value: el.id, checked: el.checked,operatorId:el.operatorId})
             }.bind(this))
+            this.initLocalTable();
 
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.local .add-node-ctn').get(0),
@@ -174,7 +174,6 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 data: nodesArray,
                 callback: function(data){}.bind(this)
             });
-            this.initLocalTable()
             this.onGetUpperNode(res);
         },
 
@@ -183,7 +182,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             var nodesArray = [];
             this.selectedUpperNodeList = [];
             var data = res;
-            if (res&&res.rows) data = res.rows
+            if (res&&res.rows) data = res.rows;
             _.each(data, function(el, index, list){
                 _.each(this.defaultParam.upper, function(defaultNode, inx, ls){
                     if (defaultNode.nodeId === el.id) {
@@ -242,7 +241,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 this.$el.find(".nodes-ctn").show();
             } else if (this.defaultParam.localType === 2){
                 this.ruleContent.localType = 2;
-                this.ruleContent.local = [];
+                this.ruleContent.local = [1];
                 this.$el.find(".nodes-ctn").hide();
                 this.$el.find(".operator-ctn").show();
             }

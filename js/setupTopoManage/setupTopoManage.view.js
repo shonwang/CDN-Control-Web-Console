@@ -446,7 +446,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     isEdit    : true,
                     onSaveCallback: function(){
                         this.defaultParam.rule = this.rule;
-                       
                         var data = this.InformationProcessing(this.rule);
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".add-topo").show();
@@ -486,6 +485,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     onSaveCallback: function(){
                         this.defaultParam.rule = this.rule;
                         var data = this.InformationProcessing(this.rule);
+                        /*console.log(this.rule);
+                        console.log(data);*/
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".add-topo").show();
                         this.initRuleTable(data);

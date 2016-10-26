@@ -96,6 +96,9 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                     return;
             }
             _.each(this.rule,function(rule,index,list){
+                if(index == (this.rule.length - 1)){
+                    return;
+                }
                 if((rule.localType == 1) && (rule.localType == this.ruleContent.localType)){
                     _.each(this.ruleContent.local,function(local,index,list){
                         if(rule.local.indexOf(local) >= 0){

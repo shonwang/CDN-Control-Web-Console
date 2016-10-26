@@ -80,7 +80,7 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
                 return false;
             }
 
-            var isError = this.$el.find(".alert").css("display") === "none" ? false : true;
+            var isError = this.$el.find(".alert-danger").css("display") === "none" ? false : true;
             if (isError) {
                 alert("匹配条件有错误，请改正后再提交！");
                 return false;
@@ -126,7 +126,7 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
             if (value === "") 
                 this.showAlert("不能为空！")
             else
-                this.$el.find(".alert").hide();
+                this.$el.find(".alert-danger").hide();
         },
 
         initDir: function(){
@@ -143,7 +143,7 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
             if (!re.test(value)) 
                 this.showAlert("请输入正确的目录")
             else
-                this.$el.find(".alert").hide();
+                this.$el.find(".alert-danger").hide();
         },
 
         initUri: function(){
@@ -160,7 +160,7 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
             if (!re.test(value)) 
                 this.showAlert("禁止http://或https://开头，仅需要URL中的URI部分。例如：http://www.baidu.com/123/index.html,则需要配置内容为：/123/index.html")
             else
-                this.$el.find(".alert").hide();
+                this.$el.find(".alert-danger").hide();
         },
 
         initFileType: function(){
@@ -274,8 +274,8 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
         },
 
         showAlert: function(msg){
-            this.$el.find(".alert").show();
-            this.$el.find(".alert strong").html(msg);
+            this.$el.find(".alert-danger").show();
+            this.$el.find(".alert-danger strong").html(msg);
         },
 
         hideAllOptions: function(){
@@ -283,7 +283,7 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
             this.$el.find(".uri").hide();
             this.$el.find(".dir").hide();
             this.$el.find(".re").hide();
-            this.$el.find(".alert").hide();
+            this.$el.find(".alert-danger").hide();
         },
 
         render: function(target) {

@@ -597,12 +597,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
             
-            this.off('enterKeyBindQuery');
-            this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
             this.enterKeyBindQuery();
             
             this.queryArgs = {
-                "count": 10,
                 "name" : null,
                 "type" : null,
                 "page" : 1,
@@ -610,6 +607,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
              }
             this.onClickQueryButton();
             this.collection.getDeviceTypeList();
+
+
         },
         addTopoSuccess: function(){
             alert('保存成功');
@@ -622,6 +621,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         enterKeyBindQuery:function(){
             $(document).on('keydown', function(e){
                 if(e.keyCode == 13){
+                   this.off('enterKeyBindQuery');
+                   this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
                    this.trigger('enterKeyBindQuery');
                 }
             }.bind(this));
@@ -736,8 +737,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
 
         initPaginator: function(){
             this.$el.find(".total-items span").html(this.collection.total)
-            if (this.collection.total <= this.queryArgs.count) return;
-            var total = Math.ceil(this.collection.total/this.queryArgs.count);
+            if (this.collection.total <= this.queryArgs.size) return;
+            var total = Math.ceil(this.collection.total/this.queryArgs.size);
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
                 visiblePages: 10,
@@ -747,7 +748,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                         this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                         var args = _.extend(this.queryArgs);
                         args.page = num;
-                        args.count = this.queryArgs.count;
+                        args.count = this.queryArgs.size;
                         this.collection.getTopoinfo(args);
                     }
                 }.bind(this)
@@ -788,7 +789,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 {name: "100条", value: 100}
             ]
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
-                this.queryArgs.count = value;
+                this.queryArgs.size = parseInt(value);
                 this.queryArgs.page = 1;
                 this.onClickQueryButton();
             }.bind(this));

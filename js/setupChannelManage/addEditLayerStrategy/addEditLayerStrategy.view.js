@@ -96,17 +96,23 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                     return;
             }
             _.each(this.rule,function(rule,index,list){
-                if(rule.localType == this.ruleContent.localType == 1){
+                if((rule.localType == 1) && (rule.localType == this.ruleContent.localType)){
                     _.each(this.ruleContent.local,function(local,index,list){
                         if(rule.local.indexOf(local) >= 0){
-                            alert('同一节点不能同时存在于两条规则的“本层”中');
+                            var select = _.each(this.selectedLocalNodeList,function(local,index,list){
+                                 return local.nodeId == local
+                            }.bind(this))
+                            alert(select[0].nodeName+'不能同时存在于两条规则的“本层”中');
                             flag = false;
                         }
                     }.bind(this))
-                }else if(rule.localType == this.ruleContent.localType == 2){
-                    _.each(this.rule.local,function(ruleLocal,index,list){
+                }else if((rule.localType == 2) && (rule.localType == this.ruleContent.localType)){
+                    _.each(rule.local,function(ruleLocal,index,list){
                         if(ruleLocal == this.ruleContent.local){
-                            alert('同一运营商不能同时存在于两条规则的“本层”中');
+                            var select = _.each(this.statusArray,function(status,index,list){
+                                 return status.value == ruleLocal;
+                            }.bind(this))
+                            alert(select[0].name+'不能同时存在于两条规则的“本层”中');
                             flag = false;
                         }
                     }.bind(this))
@@ -137,12 +143,11 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             this.$el.find('.local .add-node').show();
             var nodesArray = [], data = res;
             this.selectedLocalNodeList = [];
-
+       
             if (res&&res.rows) data = res.rows
-
             _.each(data, function(el, index, list){
                 _.each(this.defaultParam.local, function(defaultLocalId, inx, ls){
-                    if (defaultLocalId === el.id) {
+                    if (defaultLocalId == el.id) {
                         el.checked = true;
                         this.selectedLocalNodeList.push({nodeId: el.id, nodeName: el.chName})
                     }
@@ -151,6 +156,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 if (el.nodeName) el.chName = el.nodeName;
                 nodesArray.push({name:el.chName, value: el.id, checked: el.checked,operatorId:el.operatorId})
             }.bind(this))
+            this.initLocalTable();
 
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.local .add-node-ctn').get(0),
@@ -158,8 +164,8 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 openSearch: true,
                 onOk: function(data){
                     this.selectedLocalNodeList = [];
+                    this.ruleContent.local = [];
                     _.each(data, function(el, key, ls){
-                        this.ruleContent.local = [];
                         this.selectedLocalNodeList.push({nodeId: el.value, nodeName: el.name})
                         this.ruleContent.local.push(parseInt(el.value));
                     }.bind(this))
@@ -168,7 +174,6 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 data: nodesArray,
                 callback: function(data){}.bind(this)
             });
-            this.initLocalTable()
             this.onGetUpperNode(res);
         },
 
@@ -177,7 +182,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             var nodesArray = [];
             this.selectedUpperNodeList = [];
             var data = res;
-            if (res&&res.rows) data = res.rows
+            if (res&&res.rows) data = res.rows;
             _.each(data, function(el, index, list){
                 _.each(this.defaultParam.upper, function(defaultNode, inx, ls){
                     if (defaultNode.nodeId === el.id) {
@@ -200,6 +205,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 openSearch: true,
                 onOk: function(data){
                     this.selectedUpperNodeList = [];
+                    this.ruleContent.upper = [];
                     _.each(data, function(el, key, ls){
                         this.selectedUpperNodeList.push({
                             nodeId: el.value, 
@@ -207,7 +213,6 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                             ipCorporation: 0,
                             operatorId:''
                         });
-                        this.ruleContent.upper = [];
                         this.ruleContent.upper.push({"nodeId":el.value,"ipCorporation":0});
                     }.bind(this))
                     _.each(nodesArray,function(el,key,ls){
@@ -236,7 +241,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 this.$el.find(".nodes-ctn").show();
             } else if (this.defaultParam.localType === 2){
                 this.ruleContent.localType = 2;
-                this.ruleContent.local = [];
+                this.ruleContent.local = [1];
                 this.$el.find(".nodes-ctn").hide();
                 this.$el.find(".operator-ctn").show();
             }
@@ -398,18 +403,18 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
         },
 
         initDropMenu: function(data){
-            var statusArray = [],
+            this.statusArray = [],
             rootNode = this.$el.find(".operator");
             _.each(data, function(el, key, list){
-                statusArray.push({name: el.name, value: el.id})
+                this.statusArray.push({name: el.name, value: el.id})
             }.bind(this))
-            Utility.initDropMenu(rootNode, statusArray, function(value){
+            Utility.initDropMenu(rootNode, this.statusArray, function(value){
                 this.ruleContent.local = [];
                 this.ruleContent.local.push(parseInt(value));
             }.bind(this));
             
             if(this.defaultParam.localType == 2){
-                var defaultValue = _.find(statusArray, function(object){
+                var defaultValue = _.find(this.statusArray, function(object){
                    return object.value == this.defaultParam.local[0];
                 }.bind(this));
 
@@ -418,7 +423,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 this.$el.find("#dropdown-operator .cur-value").html(defaultValue.name);
             }
             else
-                this.$el.find("#dropdown-operator .cur-value").html(statusArray[0].name);
+                this.$el.find("#dropdown-operator .cur-value").html(this.statusArray[0].name);
         },
 
         render: function(target) {

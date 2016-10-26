@@ -127,32 +127,6 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
-        getChannelDispgroup: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/get",
-            successCallback = function(res){
-                if (res){
-                    this.trigger("channel.dispgroup.success", res);
-                } else {
-                    this.trigger("channel.dispgroup.error", res); 
-                }
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("channel.dispgroup.error", response); 
-            }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
-        },
-        addDispGroupChannel: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/add",
-            successCallback = function(res){
-                this.trigger("add.dispGroup.channel.success", res);
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("add.dispGroup.channel.error", response); 
-            }.bind(this);
-
-            Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
-        },
-
         getNodeList: function(args){
             var url = BASE_URL + "/resource/rs/node/queryNode",
             successCallback = function(res){
@@ -165,48 +139,6 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
                 this.trigger("get.node.error", response);  
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
-        },
-
-        deleteDispGroupChannel: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/delete",
-            successCallback = function(res){
-                this.trigger("add.dispGroup.channel.success", res);
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("add.dispGroup.channel.error", response); 
-            }.bind(this);
-
-            Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
-        },
-
-        GetTopoinfo:function(args){
-            var url = BASE_URL + '/resource/topo/origin/info';
-            var defaultParas = {
-                type: "GET",
-                url: url,
-                async: true,
-                timeout: 30000,
-                contentType: "application/json",
-                processData: false
-            };
-            defaultParas.data = args;
-
-            defaultParas.success = function(res){
-                //this.reset();
-                if (res){
-                    this.trigger("get.Topoinfo.success");
-                } else {
-                    this.trigger("get.Topoinfo.error"); 
-                }
-            }.bind(this);
-
-            defaultParas.error = function(response, msg){
-                if (response&&response.responseText)
-                    response = JSON.parse(response.responseText)
-                this.trigger("get.Topoinfo.error", response); 
-            }.bind(this);
-
-            $.ajax(defaultParas);
         }
     });
 

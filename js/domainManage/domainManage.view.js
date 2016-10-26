@@ -639,6 +639,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
         enterKeyBindQuery:function(){
             $(document).on('keydown', function(e){
                 if(e.keyCode == 13){
+                    alert('ssss');
                     this.onClickQueryButton();
                 }
             }.bind(this));

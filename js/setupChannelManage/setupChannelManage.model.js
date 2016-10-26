@@ -1,10 +1,7 @@
 define("setupChannelManage.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-            var businessType = this.get("bussinessType"),
-                status       = this.get("status"),
-                cdnFactory   = this.get("cdnFactory"),
-                startTime    = this.get("startTime");
+            var startTime    = this.get("startTime");
 
             if (status === 0) this.set("statusName", '<span class="text-danger">已停止</span>');
             if (status === 1) this.set("statusName", '<span class="text-success">服务中</span>');

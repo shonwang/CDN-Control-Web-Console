@@ -39,8 +39,6 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-
-            this.table.find("tbody .view").on("click", $.proxy(this.onClickItemEdit, this));
         },
 
         onClickCancelButton: function(){
@@ -72,9 +70,7 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.detail.html'])({data: {}}));
 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-            
-            
-           // this.initSetup()
+            this.initSetup()
         },
         onOriginInfo:function(){
             this.$el.find('#name').val
@@ -92,9 +88,11 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.table.find("tbody .view").on("click", $.proxy(this.onClickItemEdit, this));
+            this.table.find("tbody .detail").on("click", $.proxy(this.onClickDetail, this));
         },
-
+        onClickDetail: function(){
+            var FuncDetailView = new FuncDetailView({});
+        },
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
@@ -110,7 +108,20 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.$el.appendTo(target);
         }
     });
+    var FuncDetailView = Backbone.view.extend({
+        events: function(){
 
+        },
+        initialize: function(){
+            this.tempData = {
+
+            };
+            this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.detail.html'])({data: {}}));
+
+        },
+
+
+    })
     var SetupAppManageView = Backbone.View.extend({
         events: {},
 
@@ -122,12 +133,6 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.collection.on("get.app.info.error", $.proxy(this.onGetError, this));
 
             this.queryArgs = {
-                /*"domain"           : null,
-                "accelerateDomain" : null,
-                "businessType"     : null,
-                "clientName"       : null,
-                "status"           : null,
-                "page"             : 1,*/
                 "count"     : 10,
                 "id"        : null,
                 "name"      : null,

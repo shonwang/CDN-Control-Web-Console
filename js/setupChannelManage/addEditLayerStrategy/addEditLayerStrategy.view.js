@@ -149,6 +149,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
        
             if (res&&res.rows) data = res.rows
             _.each(data, function(el, index, list){
+                el.checked = false;
                 _.each(this.defaultParam.local, function(defaultLocalId, inx, ls){
                     if (defaultLocalId == el.id) {
                         el.checked = true;
@@ -187,6 +188,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             var data = res;
             if (res&&res.rows) data = res.rows;
             _.each(data, function(el, index, list){
+                el.checked = false;
                 _.each(this.defaultParam.upper, function(defaultNode, inx, ls){
                     if (defaultNode.nodeId === el.id) {
                         el.checked = true;

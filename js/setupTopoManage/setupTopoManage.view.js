@@ -42,9 +42,11 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         onOriginInfo: function(res){
             var tempModel = res;
             var allNodes = [];
+            this.NodeleteNodes = [];
             _.each(tempModel.allNodes,function(el){
                 allNodes.push(el.id);
-            })
+                this.NodeleteNodes.push(el.id);
+            }.bind(this));
             var upperNodes = [];
             _.each(tempModel.upperNodes,function(el){
                 upperNodes.push(el.id);
@@ -230,7 +232,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                    res.splice(index,1);
                 }
             }.bind(this));
-            console.log(res);
             _.each(res, function(el, index, list){
                 _.each(this.defaultParam.allNodes, function(defaultLocalId, inx, ls){
                     if (defaultLocalId === el.id) {

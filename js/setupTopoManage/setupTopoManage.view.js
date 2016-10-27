@@ -226,10 +226,11 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 resFlag.push(el);
             })
             _.each(resFlag,function(el,index,list){
-                if(el.status == 3){
+                if(el.status == 3 || el.status == 2){
                    res.splice(index,1);
                 }
             }.bind(this));
+            console.log(res);
             _.each(res, function(el, index, list){
                 _.each(this.defaultParam.allNodes, function(defaultLocalId, inx, ls){
                     if (defaultLocalId === el.id) {

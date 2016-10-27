@@ -92,6 +92,7 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
         },
         onClickDetail: function(){
             var FuncDetailView = new FuncDetailView({});
+            
         },
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();
@@ -108,20 +109,21 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.$el.appendTo(target);
         }
     });
-    var FuncDetailView = Backbone.view.extend({
-        events: function(){
-
+    var FuncDetailView = Backbone.View.extend({
+        events: {
         },
-        initialize: function(){
-            this.tempData = {
 
-            };
+        initialize: function(options) {
+            this.options = options;
+            this.collection = options.collection;
+            this.model      = options.model;
+
             this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.detail.html'])({data: {}}));
-
         },
-
-
-    })
+        render: function(target) {
+            this.$el.appendTo(target);
+        }
+    });
     var SetupAppManageView = Backbone.View.extend({
         events: {},
 

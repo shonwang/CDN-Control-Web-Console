@@ -56,7 +56,22 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.$el.appendTo(target);
         }
     });
+    var FuncDetailView = Backbone.View.extend({
+            events: {
+            },
 
+            initialize: function(options) {
+                this.options = options;
+                this.collection = options.collection;
+                this.model      = options.model;
+
+                this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.detail.html'])({data: {}}));
+            },
+            render: function(target) {
+                this.$el.appendTo(target);
+            }
+    });
+   
     var AppDetailView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
@@ -91,8 +106,14 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.table.find("tbody .detail").on("click", $.proxy(this.onClickDetail, this));
         },
         onClickDetail: function(){
-            var FuncDetailView = new FuncDetailView({});
-            
+            var myFuncDetailView = new FuncDetailView({});
+            var options = {
+                title:'时间戳+共享秘钥防盗链',
+                body:myFuncDetailView,
+                onOKCallback:  function(){}.bind(this),
+                onHiddenCallback: function(){}.bind(this)
+            }
+
         },
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();
@@ -109,21 +130,7 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.$el.appendTo(target);
         }
     });
-    var FuncDetailView = Backbone.View.extend({
-        events: {
-        },
-
-        initialize: function(options) {
-            this.options = options;
-            this.collection = options.collection;
-            this.model      = options.model;
-
-            this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.detail.html'])({data: {}}));
-        },
-        render: function(target) {
-            this.$el.appendTo(target);
-        }
-    });
+    
     var SetupAppManageView = Backbone.View.extend({
         events: {},
 

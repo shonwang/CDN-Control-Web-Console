@@ -65,7 +65,7 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
                 this.collection = options.collection;
                 this.model      = options.model;
 
-                this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.detail.html'])({data: {}}));
+                this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.func.table.detail.html'])({data: {}}));
             },
             render: function(target) {
                 this.$el.appendTo(target);
@@ -110,9 +110,13 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             var options = {
                 title:'时间戳+共享秘钥防盗链',
                 body:myFuncDetailView,
+                width:1000,
+                height:300,
+                type:1,
                 onOKCallback:  function(){}.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
+            this.FuncDetailViewPopup = new Modal(options);
 
         },
         onClickCancelButton: function(){

@@ -1,7 +1,10 @@
 define("setupChannelManage.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-            var startTime    = this.get("startTime");
+            var businessType = this.get("bussinessType"),
+                status       = this.get("status"),
+                cdnFactory   = this.get("cdnFactory"),
+                startTime    = this.get("startTime");
 
             if (status === 0) this.set("statusName", '<span class="text-danger">已停止</span>');
             if (status === 1) this.set("statusName", '<span class="text-success">服务中</span>');
@@ -19,7 +22,20 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
         model: Model,
 
         initialize: function(){},
-
+        getOperatorList:function(args){
+            var url = BASE_URL + "/resource/rs/metaData/operator/list",
+            successCallback = function(res) {
+                if(res){
+                    this.trigger("get.operator.success",res);
+                }else{
+                    this.trigger("get.operator.error");
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('get.devicetype.error');
+            }.bind(this);
+            Utility.getAjax(url, '' , successCallback, errorCallback);
+        },
         queryChannel: function(args){
             var url = BASE_URL + "/rs/channel/query",
             successCallback = function(res){

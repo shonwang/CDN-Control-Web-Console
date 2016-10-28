@@ -446,7 +446,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     isEdit    : true,
                     onSaveCallback: function(){
                         this.defaultParam.rule = this.rule;
-                       
                         var data = this.InformationProcessing(this.rule);
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".add-topo").show();
@@ -478,8 +477,11 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
         onClickAddRuleButton: function(){
             require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel){
+                
+                var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
+                var options = myAddEditLayerStrategyModel;
                 var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
-                    collection: this.collection,
+                    collection: options,
                     localNodes: this.selectedAllNodeList,
                     upperNodes: this.selectedUpperNodeList,
                     rule      : this.rule,
@@ -564,6 +566,15 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
 
         render: function(target) {
+            this.$el.appendTo(target);
+        }
+    });
+    var SendView = Backbone.View.extend({
+        event:{},
+        initialize:function(){
+            this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.send.html'])({data: {}}));
+        },
+        render:function(target){
             this.$el.appendTo(target);
         }
     });
@@ -659,35 +670,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-            this.table.find("tbody .strategy").on("click", $.proxy(this.onClickItemSpecialLayer, this));
+            this.table.find("tbody .send").on("click", $.proxy(this.onClickItemSend, this));
         },
-
-        onClickItemSpecialLayer: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
-
-            var model = this.collection.get(id);
-            console.log(model);
-            var mySpecialLayerManageView = new SpecialLayerManageView({
-                collection: this.collection,
-                model: model,
-                onSaveCallback: function(){}.bind(this),
-                onCancelCallback: function(){
-                    mySpecialLayerManageView.$el.remove();
-                    this.$el.find(".list-panel").show();
-                }.bind(this)
-            })
-
-            this.$el.find(".list-panel").hide();
-            mySpecialLayerManageView.render(this.$el.find(".strategy-panel"))
-        },
-
-
         onClickAddRuleTopoBtn: function(){
             this.off('enterKeyBindQuery');
             var myEditTopoView = new EditTopoView({
@@ -733,7 +717,29 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".list-panel").hide();
             myEditTopoView.render(this.$el.find(".edit-panel"))
         },
+        onClickItemSend: function(){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+            var model = this.collection.get(id);
+            var mySendTopoView = new SendView({
+                onSaveCallback: function(){
+                    myEditTopoView.$el.remove();
+                    this.$el.find(".list-panel").show();
+                }.bind(this),
+                onCancelCallback: function(){
+                    myEditTopoView.$el.remove();
+                    this.$el.find(".list-panel").show();
+                }.bind(this)
+            })
 
+            this.$el.find(".list-panel").hide();
+            mySendTopoView.render(this.$el.find(".edit-panel"))
+        },
         initPaginator: function(){
             this.$el.find(".total-items span").html(this.collection.total)
             if (this.collection.total <= this.queryArgs.count) return;

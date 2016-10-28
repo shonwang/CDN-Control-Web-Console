@@ -105,7 +105,15 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
 
             this.table.find("tbody .detail").on("click", $.proxy(this.onClickDetail, this));
         },
-        onClickDetail: function(){
+        onClickDetail: function(event){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+            
             var myFuncDetailView = new FuncDetailView({});
             var options = {
                 title:'时间戳+共享秘钥防盗链',

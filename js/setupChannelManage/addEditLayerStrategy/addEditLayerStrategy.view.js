@@ -153,7 +153,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 _.each(this.defaultParam.local, function(defaultLocalId, inx, ls){
                     if (defaultLocalId == el.id) {
                         el.checked = true;
-                        this.selectedLocalNodeList.push({nodeId: el.id, nodeName: el.chName})
+                        this.selectedLocalNodeList.push({nodeId: el.id, nodeName: el.chName,operatorId:el.operatorId})
                     }
                 }.bind(this))
                 if (el.nodeId) el.id = el.nodeId;
@@ -172,6 +172,13 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                     _.each(data, function(el, key, ls){
                         this.selectedLocalNodeList.push({nodeId: el.value, nodeName: el.name})
                         this.ruleContent.local.push(parseInt(el.value));
+                    }.bind(this))
+                    _.each(nodesArray,function(el,key,ls){
+                        _.each(this.selectedLocalNodeList,function(data,key,ls){
+                            if(el.value == data.nodeId){
+                                data.operatorId = el.operatorId;
+                            }
+                        }.bind(this))
                     }.bind(this))
                     this.initLocalTable()
                 }.bind(this),
@@ -350,6 +357,14 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
         },
 
         initLocalTable: function(){
+            if(this.selectedLocalNodeList.length > 0){
+                _.each(this.selectedLocalNodeList,function(el,index,li){
+                     if(el.operatorId == 9){
+                        this.selectedLocalNodeList.splice(index,1);
+                        this.selectedLocalNodeList.unshift(el);
+                     }
+                }.bind(this))
+            }
             this.localTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
                 data: this.selectedLocalNodeList
             }));

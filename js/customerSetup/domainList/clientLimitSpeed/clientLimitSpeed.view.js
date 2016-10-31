@@ -220,7 +220,7 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
             var matchConditionParam = this.matchConditionView.getMatchConditionParam();
             if (!matchConditionParam) return false;
 
-            var preUnlimit = this.$el.find("#byte-limit").val();
+            var preUnlimit = parseInt(this.$el.find("#byte-limit").val());
 
             if (this.defaultParam.byteNotLimitUnit === 2)
                 preUnlimit = preUnlimit * 1024

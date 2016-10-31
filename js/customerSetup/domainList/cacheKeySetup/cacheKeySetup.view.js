@@ -30,13 +30,16 @@ define("cacheKeySetup.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         onGetDomainInfo: function(data){
+            this.defaultParam = {
+                cacheKeyFlag: 0 //0:关闭 1:开启
+            }
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveButton, this))
+            this.$el.find(".cache-key input").on("click", $.proxy(this.onClickToggle, this))
 
             this.collection.on("modify.cacheKey.success", $.proxy(this.launchSendPopup, this));
             this.collection.on("modify.cacheKey.error", $.proxy(this.onGetError, this));
-            
-            if (data.domainConf && data.domainConf.cacheKey)
-                this.$el.find("#modify-cache-host").val(data.domainConf.cacheKey)
+
+            this.initSetup(data)
         },
 
         launchSendPopup: function(){
@@ -64,6 +67,29 @@ define("cacheKeySetup.view", ['require','exports', 'template', 'modal.view', 'ut
             }.bind(this))
         },
 
+        initSetup: function(data){
+            if (data.domainConf)
+                this.defaultParam.cacheKeyFlag = data.domainConf.cacheKeyFlag
+
+            if (this.defaultParam.cacheKeyFlag === 0)
+                this.$el.find(".cache-key .togglebutton input").get(0).checked = false;
+            else
+                this.$el.find(".cache-key .togglebutton input").get(0).checked = true;
+
+            if (data.domainConf && data.domainConf.cacheKey)
+                this.$el.find("#modify-cache-host").val(data.domainConf.cacheKey)
+        },
+
+        onClickToggle: function(){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            if (eventTarget.checked){
+                this.defaultParam.cacheKeyFlag = 1;
+            } else {
+                this.defaultParam.cacheKeyFlag = 0;
+            }
+        },
+
         checkDomainName:function(){
             //检查域名
             var domainName = this.$el.find("#modify-cache-host").val().trim();
@@ -83,6 +109,7 @@ define("cacheKeySetup.view", ['require','exports', 'template', 'modal.view', 'ut
             var postParam = {
                 originId: this.domainInfo.id,
                 cacheKey: this.$el.find("#modify-cache-host").val().trim(),
+                cacheKeyFlag: this.defaultParam.cacheKeyFlag
             };
             this.collection.setCacheKey(postParam);
         },

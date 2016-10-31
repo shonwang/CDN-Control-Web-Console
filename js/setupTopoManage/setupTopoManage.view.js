@@ -509,13 +509,16 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             } else {
                 id = $(eventTarget).attr("id");
             }
-
-            for (var i = 0; i < this.selectedAllNodeList.length; i++){
+            var length = this.selectedAllNodeList.length;
+            for (var i = 0; i < length; i++){ 
                 if (parseInt(this.selectedAllNodeList[i].nodeId) === parseInt(id)){
+                   _.each(this.nodesArrayFirst,function(el,index,list){
+                          if(el.value == parseInt(id)){
+                             el.checked = false;
+                          }
+                    }.bind(this));
                     this.selectedAllNodeList.splice(i, 1);
-                    this.nodesArrayFirst[i].checked = false;
                     this.initAllNodesTable();
-                    console.log(this.nodesArrayFirst);
                     this.initAllNodesSelect(this.nodesArrayFirst);
                     return;
                 }

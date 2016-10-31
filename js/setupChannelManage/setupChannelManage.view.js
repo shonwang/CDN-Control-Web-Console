@@ -101,9 +101,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                     isEdit    : false,
                     onSaveCallback: function(){
                         this.defaultParam.rule = this.rule;
-                        console.log(this.rule);
                         var data = this.InformationProcessing(this.rule);
-                        console.log(data);
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".special-layer").show();
                         this.initRuleTable(data);

@@ -571,8 +571,45 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
     });
     var SendView = Backbone.View.extend({
         event:{},
-        initialize:function(){
+        initialize:function(options){
+            this.options = options;
+            this.collection = options.collection;
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.send.html'])({data: {}}));
+            this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
+            
+            this.queryArgs = {
+                "count": 10,
+                "name" : null,
+                "type" : null,
+                "page" : 1,
+                "size" : 10
+             }
+            
+            this.collection.off("get.sendInfo.success");
+            this.collection.off("get.sendInfo.error");
+            this.collection.on("get.sendInfo.success", $.proxy(this.getSendInfoSuccess, this));
+            this.collection.on("get.sendInfo.error", $.proxy(this.onGetError, this));
+            this.collection.getSendinfo(this.queryArgs);
+          //  this.initSetup();
+        },
+        onClickCancelButton: function(){
+            this.options.onCancelCallback && this.options.onCancelCallback();
+        },
+        getSendInfoSuccess: function(res){
+             /*var res = [{
+                "id":1,
+                "name":"单元测试规则01",
+                "createTime" : new Date(1476009575632).format("yyyy/MM/dd hh:mm"),
+                "type":200,
+                "typeName":"LVS",
+                "appId":0,
+                "defalut":false
+            }]*/
+           this.table = $(_.template(template['tpl/setupTopoManage/setupTopoManage.send.table.html'])({data:res.rows}));
+           if (res.length !== 0)
+                this.$el.find(".table-ctn").html(this.table[0]);
+            else
+                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
         },
         render:function(target){
             this.$el.appendTo(target);
@@ -726,19 +763,20 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 id = $(eventTarget).attr("id");
             }
             var model = this.collection.get(id);
-            var mySendTopoView = new SendView({
+            var mySendView = new SendView({
+                collection:this.collection,
                 onSaveCallback: function(){
-                    myEditTopoView.$el.remove();
+                    mySendView.$el.remove();
                     this.$el.find(".list-panel").show();
                 }.bind(this),
                 onCancelCallback: function(){
-                    myEditTopoView.$el.remove();
+                    mySendView.$el.remove();
                     this.$el.find(".list-panel").show();
                 }.bind(this)
             })
 
             this.$el.find(".list-panel").hide();
-            mySendTopoView.render(this.$el.find(".edit-panel"))
+            mySendView.render(this.$el.find(".edit-panel"))
         },
         initPaginator: function(){
             this.$el.find(".total-items span").html(this.collection.total)

@@ -16,6 +16,7 @@
         this.isSingle = options.isSingle || false;
         this.defaultChecked = options.defaultChecked || false;
         this.scrollBarHeight=options.scrollBarHeight || null;
+        this.isDisabled = options.isDisabled || false;
         this.init();
 
     };
@@ -390,11 +391,19 @@
             var html = [];
             html.push('<label class="select-checkboxcon ' + _class + '">');
             if (this.defaultChecked){
-                html.push('<input class="select-checkbox" type="checkbox" checked="true"/>');
+                if(this.isDisabled){
+                  html.push('<input class="select-checkbox" type="checkbox" checked="true" disabled="disabled"/>');
+                }else{
+                   html.push('<input class="select-checkbox" type="checkbox" checked="true"/>'); 
+                }
             }
             else{
                 if(_checked){
-                    html.push('<input class="select-checkbox" type="checkbox" checked="'+_checked+'"/>');
+                    if(this.isDisabled){
+                       html.push('<input class="select-checkbox" type="checkbox" checked="'+_checked+'" disabled="disabled"/>');
+                    }else{
+                       html.push('<input class="select-checkbox" type="checkbox" checked="'+_checked+'"/>');
+                    }
                 }
                 else{
                      html.push('<input class="select-checkbox" type="checkbox"/>');

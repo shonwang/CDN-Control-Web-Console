@@ -717,7 +717,10 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.$el.find(".table-ctn").html(this.table[0]);
                 this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
                 this.table.find("tbody .node-name").on("click", $.proxy(this.onClickItemNodeName, this));
-                this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+                if(AUTH_OBJ.DeleteNode)
+                  this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+                else
+                  this.table.find("tbody .delete").remove();
                 this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
                 this.table.find("tbody .hangup").on("click", $.proxy(this.onClickItemHangup, this));
                 this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));

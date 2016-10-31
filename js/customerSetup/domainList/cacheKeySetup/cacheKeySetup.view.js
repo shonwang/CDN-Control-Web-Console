@@ -31,7 +31,7 @@ define("cacheKeySetup.view", ['require','exports', 'template', 'modal.view', 'ut
 
         onGetDomainInfo: function(data){
             this.defaultParam = {
-                chargingOpen: 0 //0:关闭 1:开启
+                cacheKeyFlag: 0 //0:关闭 1:开启
             }
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveButton, this))
             this.$el.find(".cache-key input").on("click", $.proxy(this.onClickToggle, this))
@@ -68,7 +68,10 @@ define("cacheKeySetup.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         initSetup: function(data){
-            if (this.defaultParam.chargingOpen === 0)
+            if (data.domainConf)
+                this.defaultParam.cacheKeyFlag = data.domainConf.cacheKeyFlag
+
+            if (this.defaultParam.cacheKeyFlag === 0)
                 this.$el.find(".cache-key .togglebutton input").get(0).checked = false;
             else
                 this.$el.find(".cache-key .togglebutton input").get(0).checked = true;
@@ -81,9 +84,9 @@ define("cacheKeySetup.view", ['require','exports', 'template', 'modal.view', 'ut
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){
-                this.defaultParam.chargingOpen = 1;
+                this.defaultParam.cacheKeyFlag = 1;
             } else {
-                this.defaultParam.chargingOpen = 0;
+                this.defaultParam.cacheKeyFlag = 0;
             }
         },
 
@@ -106,6 +109,7 @@ define("cacheKeySetup.view", ['require','exports', 'template', 'modal.view', 'ut
             var postParam = {
                 originId: this.domainInfo.id,
                 cacheKey: this.$el.find("#modify-cache-host").val().trim(),
+                cacheKeyFlag: this.defaultParam.cacheKeyFlag
             };
             this.collection.setCacheKey(postParam);
         },

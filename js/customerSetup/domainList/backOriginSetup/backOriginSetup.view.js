@@ -218,7 +218,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                     alert("默认源主必填！")
                     return;
                 }
-                var ipNum = this.$el.find("#ip-num").val();
+                var ipNum = parseInt(this.$el.find("#ip-num").val());
                 if (this.defaultParam.originStrategy === 2 && parseInt(ipNum) > 10 && parseInt(ipNum) < 1){
                     alert("IP数量取值1-10")
                     return;
@@ -232,7 +232,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 "originType": this.defaultParam.isUseAdvance === 1 ? this.defaultParam.originBaseType : this.defaultParam.originAdvanceType,
                 "originAddress": this.$el.find(".base #textarea-origin-type").val(),
                 "backsourcePolicy": this.defaultParam.originStrategy,
-                "backsourceBestcount": this.defaultParam.ipNum,
+                "backsourceBestcount": parseInt(this.$el.find("#ip-num").val()),
                 "advanceConfigList":[{
                     "originLine": 1, //1:default默认源； 2:un联通源; 3:ct电信源; 4:cm移动源
                     "originAddress": this.$el.find(".default #primary").val(),
@@ -291,7 +291,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                     return false;
                 }
 
-                var ipArray = originAddress.split(",");
+                var ipArray = originAddress.split(";");
                 if(ipArray.length>10){
                     alert("你的IP数是否超过了10个。");
                     return false;

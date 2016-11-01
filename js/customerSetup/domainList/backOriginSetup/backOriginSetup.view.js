@@ -403,7 +403,8 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             if (!result) return;
             var postParam = {
                 "originId": this.domainInfo.id,
-                "customHostHeader": value
+                "customHostHeader": value,
+                "hostType": this.defaultParamModifyHost.domainType
             };
             this.collection.setHostHeaderConfig(postParam)
         },

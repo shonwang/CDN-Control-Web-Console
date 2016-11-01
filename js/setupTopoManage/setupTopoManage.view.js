@@ -67,7 +67,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.options.onSaveCallback && this.options.onSaveCallback();
             alert('修改成功');
         },
-        modifyTopoError: function(){
+        modifyTopoError: function(error){
            if (error&&error.message){
                 alert(error.message);
             }

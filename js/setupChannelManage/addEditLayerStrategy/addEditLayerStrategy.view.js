@@ -87,12 +87,55 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
         onClickSaveBtn: function(){
-            if(!this.isEdit){
-                this.rule.push(this.ruleContent);
-            }else{
-                this.rule[this.id] = this.ruleContent;
+            var flag = true;
+            if(this.ruleContent.local.length == 0){
+                    alert('请选择本层节点');
+                    return;
+            }else if(this.ruleContent.upper.length == 0){
+                    alert('请选择上层节点');
+                    return;
             }
-            this.options.onSaveCallback && this.options.onSaveCallback();
+            _.each(this.rule,function(rule,index,list){
+                if(index == this.id || flag == false){
+                    return;
+                }
+                if((rule.localType == 1) && (rule.localType == this.ruleContent.localType)){
+                    _.each(this.ruleContent.local,function(Rlocal,index,list){
+                        if(rule.local.indexOf(Rlocal) >= 0){
+                            var select = _.filter(this.nodesArrayFirst,function(local,index,list){
+                                 return Rlocal == local.value;
+                            }.bind(this))
+                            alert(select[0].name+'不能同时存在于两条规则的“本层”中');
+                            flag = false;
+                            return;
+                        }
+                    }.bind(this))
+                }else if((rule.localType == 2) && (rule.localType == this.ruleContent.localType)){
+                    _.each(rule.local,function(ruleLocal,index,list){
+                        if(ruleLocal == this.ruleContent.local){
+                            var select = _.filter(this.statusArray,function(status,index,list){
+                                 return status.value == ruleLocal;
+                            }.bind(this))
+                            alert(select[0].name+'不能同时存在于两条规则的“本层”中');
+                            flag = false;
+                            return;
+                        }
+                    }.bind(this))
+                }
+            }.bind(this))
+            
+            if(flag){
+                if(!this.isEdit){
+                    this.rule.push(this.ruleContent);
+
+                }else{
+                    this.rule[this.id] = this.ruleContent;
+                }
+                
+                this.options.onSaveCallback && this.options.onSaveCallback();
+            }
+            
+            
         },
         onGetError: function(error){
             if (error&&error.message)
@@ -105,20 +148,22 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             this.$el.find('.local .add-node').show();
             var nodesArray = [], data = res;
             this.selectedLocalNodeList = [];
-
+            this.nodesArrayFirst = [];
             if (res&&res.rows) data = res.rows
-
             _.each(data, function(el, index, list){
+                el.checked = false;
                 _.each(this.defaultParam.local, function(defaultLocalId, inx, ls){
-                    if (defaultLocalId === el.id) {
+                    if (defaultLocalId == el.id) {
                         el.checked = true;
-                        this.selectedLocalNodeList.push({nodeId: el.id, nodeName: el.chName})
+                        this.selectedLocalNodeList.push({nodeId: el.id, nodeName: el.chName,operatorId:el.operatorId, checked:el.checked})
                     }
                 }.bind(this))
                 if (el.nodeId) el.id = el.nodeId;
                 if (el.nodeName) el.chName = el.nodeName;
-                nodesArray.push({name:el.chName, value: el.id, checked: el.checked,operatorId:el.operatorId})
+                nodesArray.push({name:el.chName, value: el.id, checked: el.checked,operatorId:el.operatorId});
+                this.nodesArrayFirst.push({name:el.chName, value: el.id, checked: el.checked,operatorId:el.operatorId})
             }.bind(this))
+            this.initLocalTable();
 
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.local .add-node-ctn').get(0),
@@ -126,16 +171,25 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 openSearch: true,
                 onOk: function(data){
                     this.selectedLocalNodeList = [];
+                    this.ruleContent.local = [];
                     _.each(data, function(el, key, ls){
-                        this.selectedLocalNodeList.push({nodeId: el.value, nodeName: el.name})
-                        this.ruleContent.local.push(el.value);
+                        el.checked = true;
+                        this.selectedLocalNodeList.push({nodeId: el.value, nodeName: el.name, checked:el.checked})
+                        this.ruleContent.local.push(parseInt(el.value));
+                    }.bind(this))
+                    _.each(this.nodesArrayFirst,function(el,key,ls){
+                        _.each(this.selectedLocalNodeList,function(data,key,ls){
+                            if(el.value == data.nodeId){
+                                el.checked = true;
+                                data.operatorId = el.operatorId;
+                            }
+                        }.bind(this))
                     }.bind(this))
                     this.initLocalTable()
                 }.bind(this),
                 data: nodesArray,
                 callback: function(data){}.bind(this)
             });
-            this.initLocalTable()
             this.onGetUpperNode(res);
         },
 
@@ -143,9 +197,11 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             this.$el.find('.upper .add-node').show();
             var nodesArray = [];
             this.selectedUpperNodeList = [];
+            this.nodesArrayFirstLocal = [];
             var data = res;
-            if (res&&res.rows) data = res.rows
+            if (res&&res.rows) data = res.rows;
             _.each(data, function(el, index, list){
+                el.checked = false;
                 _.each(this.defaultParam.upper, function(defaultNode, inx, ls){
                     if (defaultNode.nodeId === el.id) {
                         el.checked = true;
@@ -157,7 +213,8 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                         })
                     }
                 }.bind(this))
-                nodesArray.push({name:el.chName, value: el.id, checked: el.checked, operatorId:el.operatorId})
+                nodesArray.push({name:el.chName, value: el.id, checked: el.checked, operatorId:el.operatorId});
+                this.nodesArrayFirstLocal.push({name:el.chName, value: el.id, checked: el.checked, operatorId:el.operatorId});
             }.bind(this))
             this.initUpperTable()
 
@@ -167,6 +224,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 openSearch: true,
                 onOk: function(data){
                     this.selectedUpperNodeList = [];
+                    this.ruleContent.upper = [];
                     _.each(data, function(el, key, ls){
                         this.selectedUpperNodeList.push({
                             nodeId: el.value, 
@@ -176,9 +234,10 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                         });
                         this.ruleContent.upper.push({"nodeId":el.value,"ipCorporation":0});
                     }.bind(this))
-                    _.each(nodesArray,function(el,key,ls){
+                    _.each(this.nodesArrayFirstLocal,function(el,key,ls){
                         _.each(this.selectedUpperNodeList,function(data,key,ls){
                             if(el.value == data.nodeId){
+                                el.checked = true;
                                 data.operatorId = el.operatorId;
                             }
                         }.bind(this))
@@ -202,10 +261,41 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 this.$el.find(".nodes-ctn").show();
             } else if (this.defaultParam.localType === 2){
                 this.ruleContent.localType = 2;
-                this.ruleContent.local = [];
+                this.ruleContent.local = [1];
                 this.$el.find(".nodes-ctn").hide();
                 this.$el.find(".operator-ctn").show();
             }
+        },
+        initUpperSelect: function(res){
+            var nodesArray = this.nodesArrayFirstLocal;
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.upper .add-node-ctn').get(0),
+                panelID: this.$el.find('.upper .add-node').get(0),
+                openSearch: true,
+                onOk: function(data){
+                    this.selectedUpperNodeList = [];
+                    this.ruleContent.upper = [];
+                    _.each(data, function(el, key, ls){
+                        this.selectedUpperNodeList.push({
+                            nodeId: el.value, 
+                            nodeName: el.name,
+                            ipCorporation: 0,
+                            operatorId:''
+                        });
+                        this.ruleContent.upper.push({"nodeId":el.value,"ipCorporation":0});
+                    }.bind(this))
+                    _.each(this.nodesArrayFirstLocal,function(el,key,ls){
+                        _.each(this.selectedUpperNodeList,function(data,key,ls){
+                            if(el.value == data.nodeId){
+                                el.checked = true;
+                            }
+                        }.bind(this))
+                    }.bind(this))
+                    this.initUpperTable()
+                }.bind(this),
+                data: nodesArray,
+                callback: function(data){}.bind(this)
+            });
         },
         initUpperTable: function(){
             if(this.selectedUpperNodeList.length > 0){
@@ -304,8 +394,43 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 itemNode.appendTo(dropRoot);
             });
         },
-
+        initLocalSelect: function(res){
+            var nodesArray = this.nodesArrayFirst;
+            console.log(nodesArray);
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.local .add-node-ctn').get(0),
+                panelID: this.$el.find('.local .add-node').get(0),
+                openSearch: true,
+                onOk: function(data){
+                    this.selectedLocalNodeList = [];
+                    this.ruleContent.local = [];
+                    _.each(data, function(el, key, ls){
+                        el.checked = true;
+                        this.selectedLocalNodeList.push({nodeId: el.value, nodeName: el.name, checked:el.checked})
+                        this.ruleContent.local.push(parseInt(el.value));
+                    }.bind(this));
+                     _.each(this.nodesArrayFirst,function(el,key,ls){
+                        _.each(this.selectedLocalNodeList,function(data,key,ls){
+                            if(el.value == data.nodeId){
+                                el.checked = true;
+                            }
+                        }.bind(this))
+                    }.bind(this))
+                    this.initLocalTable()
+                }.bind(this),
+                data: nodesArray,
+                callback: function(data){}.bind(this)
+            });
+        },
         initLocalTable: function(){
+            if(this.selectedLocalNodeList.length > 0){
+                _.each(this.selectedLocalNodeList,function(el,index,li){
+                     if(el.operatorId == 9){
+                        this.selectedLocalNodeList.splice(index,1);
+                        this.selectedLocalNodeList.unshift(el);
+                     }
+                }.bind(this))
+            }
             this.localTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
                 data: this.selectedLocalNodeList
             }));
@@ -325,16 +450,17 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             } else {
                 id = $(eventTarget).attr("id");
             } 
-            var local = this.rule[this.id].local;
-            for(var i=0;i<local.length;i++){
-                 if(local[i] == id){
-                    local.splice(i,1);
-                 }
-            }
+            _.each(this.ruleContent.local,function(el,index,list){
+                if(el == id){
+                    this.ruleContent.local.splice(index,1);
+                }
+            }.bind(this));
             for (var i = 0; i < this.selectedLocalNodeList.length; i++){
                 if (parseInt(this.selectedLocalNodeList[i].nodeId) === parseInt(id)){
                     this.selectedLocalNodeList.splice(i, 1);
+                    this.nodesArrayFirst[i].checked = false;
                     this.initLocalTable();
+                    this.initLocalSelect(this.nodesArrayFirst);
                     return;
                 }
             }
@@ -358,24 +484,27 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             for (var i = 0; i < this.selectedUpperNodeList.length; i++){
                 if (parseInt(this.selectedUpperNodeList[i].nodeId) === parseInt(id)){
                     this.selectedUpperNodeList.splice(i, 1);
+                    this.nodesArrayFirstLocal[i].checked = false;
                     this.initUpperTable();
+                    this.initUpperSelect(this.nodesArrayFirstLocal);
                     return;
                 }
             }
         },
 
         initDropMenu: function(data){
-            var statusArray = [],
+            this.statusArray = [],
             rootNode = this.$el.find(".operator");
             _.each(data, function(el, key, list){
-                statusArray.push({name: el.name, value: el.id})
+                this.statusArray.push({name: el.name, value: el.id})
             }.bind(this))
-            Utility.initDropMenu(rootNode, statusArray, function(value){
-                this.ruleContent.local = value;
+            Utility.initDropMenu(rootNode, this.statusArray, function(value){
+                this.ruleContent.local = [];
+                this.ruleContent.local.push(parseInt(value));
             }.bind(this));
             
             if(this.defaultParam.localType == 2){
-                var defaultValue = _.find(statusArray, function(object){
+                var defaultValue = _.find(this.statusArray, function(object){
                    return object.value == this.defaultParam.local[0];
                 }.bind(this));
 
@@ -384,7 +513,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 this.$el.find("#dropdown-operator .cur-value").html(defaultValue.name);
             }
             else
-                this.$el.find("#dropdown-operator .cur-value").html(statusArray[0].name);
+                this.$el.find("#dropdown-operator .cur-value").html(this.statusArray[0].name);
         },
 
         render: function(target) {

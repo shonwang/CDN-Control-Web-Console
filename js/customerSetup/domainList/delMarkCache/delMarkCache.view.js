@@ -76,7 +76,7 @@ define("delMarkCache.view", ['require','exports', 'template', 'modal.view', 'uti
                 "matchingValue": matchConditionParam.policy,
                 "markType": markType,
                 "markValue": spParam,
-                "markTypeName": markTypeName
+                "markTypeName": markTypeName || ""
             }
             return postParam
         },

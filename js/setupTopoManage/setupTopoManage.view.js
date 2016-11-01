@@ -85,7 +85,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             var upperNodes = [];
             _.each(tempModel.upperNodes,function(el){
                 upperNodes.push(el.id);
-            })
+            });
             this.defaultParam = {
                 "id":tempModel.id,
                 "name":tempModel.name,
@@ -127,6 +127,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.collection.getDeviceTypeList();//获取应用类型列表接口
             if(this.isEdit){
                 var data = this.analyticFunction(this.defaultParam.rule);
+                this.defaultParam.rule = this. analyticRuleFunction(this.defaultParam);
                 this.initRuleTable(data);
             }
         },
@@ -159,6 +160,21 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
 
             });
             return data_save;
+        },
+        analyticRuleFunction: function(res){
+            var rule = [];
+            _.each(res.rule,function(el){
+                var localAll = [];
+                var upperAll = [];
+                _.each(el.local,function(local){
+                     localAll.push(local.id);
+                })
+                _.each(el.upper,function(upper){
+                    upperAll.push({id:upper.rsNodeMsgVo.id,ipCorporation:upper.ipCorporation});
+                })
+                rule.push({id:el.id,localType:el.localType,local:localAll,upper:upperAll});
+            });
+            return rule;
         },
         onClickSaveButton:function(){
             var flag = true;
@@ -194,24 +210,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     return ;
                 }
             })
-             if(this.isEdit){
-                var rule = [];
-                _.each(this.defaultParam.rule,function(el){
-                    var localAll = [];
-                    var upperAll = [];
-                    _.each(el.local,function(local){
-                         localAll.push(local.id);
-                    })
-                    _.each(el.upper,function(upper){
-                        upperAll.push({id:upper.rsNodeMsgVo.id,ipCorporation:upper.ipCorporation});
-                    })
-                    rule.push({id:el.id,localType:el.localType,local:localAll,upper:upperAll});
-                });
-                this.defaultParam.rule = rule;
-             }
-            
              if(flag){
                 if(this.isEdit){
+                    console.log(this.defaultParam);
                     this.collection.topoModify(this.defaultParam);
                 }
                 else{
@@ -510,6 +511,11 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 id = $(eventTarget).attr("id");
             }
             var length = this.selectedAllNodeList.length;
+            for(var i=0; i < length; i++){
+                if(this.defaultParam.allNodes[i] == parseInt(id)){
+                    this.defaultParam.allNodes.splice(i,1);
+                }
+            }
             for (var i = 0; i < length; i++){ 
                 if (parseInt(this.selectedAllNodeList[i].nodeId) === parseInt(id)){
                    _.each(this.nodesArrayFirst,function(el,index,list){

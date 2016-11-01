@@ -261,7 +261,7 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
                 DomainName:this.parent.args.DomainName || '',
                 OriginType:null,//源站类型
                 CdnProtocol:null,//访问协议
-                OriginProtocol:null,//回源方式
+                OriginProtocol: null,//回源方式
                 Origin:null,//源站类型选选择后输入的ipList或urlList
                 OriginPort:80//端口
             };
@@ -269,7 +269,7 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
             this.$el = $(_.template(template['tpl/customerSetup/domainList/domainList.addDomain.live.html'])({}));
             
             this.$el.find("input[name=radio-protocol]").on("click",$.proxy(this.onRadioProtocolChange,this))
-            this.$el.find("input[name=radio-origin]").on("click",$.proxy(this.onRadioOriginChange,this));
+            this.$el.find("input[name=radio-origin2]").on("click",$.proxy(this.onRadioOriginChange,this));
             this.$el.find("#cdn-originIP").on("focus",$.proxy(this.hideOriginTips,this));
             this.$el.find("#cdn-originAddress").on("focus",$.proxy(this.hideOriginTips,this));
             this.$el.find("#cdn-KS3Address").on("focus",$.proxy(this.hideOriginTips,this));
@@ -287,7 +287,7 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
         checkArgs:function(){
             this.args.DomainName = this.parent.args.DomainName;
             this.args.CdnProtocol = this.$el.find("input[name=radio-protocol]:checked").val() || null;
-            this.args.OriginProtocol = this.$el.find("input[name=radio-origin]:checked").val() || null;
+            this.args.OriginProtocol = this.$el.find("input[name=radio-origin2]:checked").val() || null;
             if(!this.checkProtocol()){
                 return false;
             }
@@ -409,7 +409,7 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
                 }
                 if(domainName == originAddress){
                     //域名不能与填写的域名相同
-                    this.$el.find("#cdn-originAddress-error").html("源站地址不能与加速域名相同").show();
+                    this.$el.find("#cdn-KS3Address-error").html("源站地址不能与加速域名相同").show();
                     return false;
                 }
                 //域名校验

@@ -200,7 +200,15 @@
                             };                            
                         }
                         var _html = this.createCheckBox(_data[i]["name"],_checked);
-                        arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
+                        if(this.isDisabled){
+                            if(_checked || this.defaultChecked){
+                                arr.push('<li style="display:none" data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
+                            }else{
+                                arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
+                            }
+                        }else{
+                            arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
+                        }
                         if (this.defaultChecked){
                             this.checkList[_data[i]["value"]] = {
                                 name:  _data[i]["name"],
@@ -223,7 +231,7 @@
                 oUl.style.height=scrollBarHeight+"px";
                 oUl.style.overflowY = 'scroll';
                 oUl.style.borderBottom="1px solid #ececec";
-            }		
+            }       
         },
 
         checkList: {

@@ -283,7 +283,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     }
                 }.bind(this))
             }
-           
+             console.log(this.selectedAllNodeList);
             this.localTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
                 data: this.selectedAllNodeList
             }));
@@ -578,6 +578,28 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
 
             this.$el.find('.opt-ctn .cancel').on('click',$.proxy(this.onClickCancelButton, this));
 
+         //   this.initstepTable();
+
+        },
+        initstepTable: function(){
+            this.sel
+            this.localTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
+                 data: this.selectedAllNodeList
+            }));
+            _.each($(this.localTable).find('.addOrEdit .delete'),function(el){
+                _.each(this.NodeleteNodes,function(nodes){
+                    if(el.id == nodes){
+                        el.remove();
+                    }
+                }.bind(this))
+            }.bind(this))
+            
+            if (this.selectedAllNodeList.length !== 0)
+                this.$el.find(".all .table-ctn").html(this.localTable[0]);
+            else
+                this.$el.find(".all .table-ctn").html(_.template(template['tpl/empty.html'])());
+
+            this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemAllDelete, this));
         },
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();

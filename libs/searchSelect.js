@@ -186,7 +186,6 @@
         },
 
         setData: function() {
-            //this.disabledNodes = [];
             var oUl = this.selectValueLayer;
             var _data = this.selectData;
             var arr = [];
@@ -203,12 +202,12 @@
                         var _html = this.createCheckBox(_data[i]["name"],_checked);
                         if(this.isDisabled){
                             if(_checked || this.defaultChecked){
-                               arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
+                                arr.push('<li style="display:none" data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
                             }else{
-                               arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');} 
+                                arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
                             }
                         }else{
-                            arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>')
+                            arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
                         }
                         if (this.defaultChecked){
                             this.checkList[_data[i]["value"]] = {
@@ -232,7 +231,7 @@
                 oUl.style.height=scrollBarHeight+"px";
                 oUl.style.overflowY = 'scroll';
                 oUl.style.borderBottom="1px solid #ececec";
-            }		
+            }       
         },
 
         checkList: {
@@ -400,15 +399,19 @@
             var html = [];
             html.push('<label class="select-checkboxcon ' + _class + '">');
             if (this.defaultChecked){
-                
+                if(this.isDisabled){
+                  html.push('<input class="select-checkbox" type="checkbox" checked="true" disabled="disabled"/>');
+                }else{
                    html.push('<input class="select-checkbox" type="checkbox" checked="true"/>'); 
-                
+                }
             }
             else{
                 if(_checked){
-                   
+                    if(this.isDisabled){
+                       html.push('<input class="select-checkbox" type="checkbox" checked="'+_checked+'" disabled="disabled"/>');
+                    }else{
                        html.push('<input class="select-checkbox" type="checkbox" checked="'+_checked+'"/>');
-                    
+                    }
                 }
                 else{
                      html.push('<input class="select-checkbox" type="checkbox"/>');
@@ -431,14 +434,6 @@
                 var _val = liList[i].getAttribute("value");
                 var _name = liList[i].getAttribute('data-name');
                 selectList[i].checked = bool || false;
-                //console.log(this.disabledNodes);
-                if(this.isDisabled){
-                    for(var j=0;j<this.disabledNodes.length;j++){
-                        if(i == this.disabledNodes[j]){
-                            selectList[i].checked = true;
-                        }
-                    }
-                }
                 if (bool) {
                     this.checkList[_val] = {
                         value: _val,

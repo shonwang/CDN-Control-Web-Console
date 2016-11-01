@@ -343,6 +343,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     containerID: this.$el.find('.all .add-node-ctn').get(0),
                     panelID: this.$el.find('.all .add-node').get(0),
                     openSearch: true,
+                    isDisabled:true,
                     onOk: function(data){
                         this.selectedAllNodeList = [];
                         _.each(data, function(el, key, ls){

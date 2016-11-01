@@ -144,7 +144,6 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
         getSendinfo: function(args){
             var url = BASE_URL + "/resource/topo/info/list",
             successCallback = function(res){
-                this.reset();
                 if(res){
                     this.total = res.total;
                     this.trigger("get.sendInfo.success",res);

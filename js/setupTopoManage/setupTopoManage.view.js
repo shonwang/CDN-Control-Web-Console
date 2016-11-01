@@ -855,7 +855,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             var myEditTopoView = new EditTopoView({
                 collection: this.collection,
                 model: model,
-                WhetherModifySuccess: this.WhetherModifySuccess,
                 isEdit: true,
                 onSaveCallback: function(){
                     myEditTopoView.$el.remove();

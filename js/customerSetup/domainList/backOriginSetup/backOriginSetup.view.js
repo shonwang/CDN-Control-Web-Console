@@ -155,11 +155,21 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             var rootOtherNode = this.$el.find(".advanced .origin-type");
             Utility.initDropMenu(rootOtherNode, advancedArray, function(value){
                 this.defaultParam.originAdvanceType = parseInt(value)
+                
+                if (this.defaultParam.originAdvanceType === 2)
+                    this.$el.find("textarea[id='secondary']").hide();
+                else
+                    this.$el.find("textarea[id='secondary']").show();
             }.bind(this));
 
             var defaultOtherValue = _.find(advancedArray, function(object){
                 return object.value === this.defaultParam.originAdvanceType;
             }.bind(this));
+
+            if (this.defaultParam.originAdvanceType === 2)
+                this.$el.find("textarea[id='secondary']").hide();
+            else
+                this.$el.find("textarea[id='secondary']").show();
 
             if (defaultOtherValue)
                 this.$el.find(".advanced #dropdown-origin-type .cur-value").html(defaultOtherValue.name);
@@ -219,7 +229,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                     return;
                 }
                 var ipNum = parseInt(this.$el.find("#ip-num").val());
-                if (this.defaultParam.originStrategy === 2 && parseInt(ipNum) > 10 && parseInt(ipNum) < 1){
+                if (this.defaultParam.originStrategy === 2 && (ipNum > 10 || ipNum < 1)){
                     alert("IP数量取值1-10")
                     return;
                 }

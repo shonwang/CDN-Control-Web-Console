@@ -291,7 +291,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                     return false;
                 }
 
-                var ipArray = originAddress.split(";");
+                var ipArray = originAddress.split(",");
                 if(ipArray.length>10){
                     alert("你的IP数是否超过了10个。");
                     return false;

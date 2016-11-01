@@ -510,12 +510,14 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             } else {
                 id = $(eventTarget).attr("id");
             }
-            var length = this.selectedAllNodeList.length;
-            for(var i=0; i < length; i++){
+            var lengthParam = this.defaultParam.allNodes.length;
+            for(var i=0; i < lengthParam; i++){
                 if(this.defaultParam.allNodes[i] == parseInt(id)){
                     this.defaultParam.allNodes.splice(i,1);
                 }
             }
+            
+            var length = this.selectedAllNodeList.length;
             for (var i = 0; i < length; i++){ 
                 if (parseInt(this.selectedAllNodeList[i].nodeId) === parseInt(id)){
                    _.each(this.nodesArrayFirst,function(el,index,list){
@@ -539,8 +541,14 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             } else {
                 id = $(eventTarget).attr("id");
             }
-
-            for (var i = 0; i < this.selectedUpperNodeList.length; i++){
+            var lengthParam = this.defaultParam.upperNodes.length;
+            for(var i = 0 ;i<lengthParam;i++){
+                if(this.defaultParam.upperNodes[i] == parseInt(id)){
+                    this.defaultParam.upperNodes.splice(i,1);
+                }
+            }
+            var length = this.selectedUpperNodeList.length;
+            for (var i = 0; i < length; i++){
                 if (parseInt(this.selectedUpperNodeList[i].nodeId) === parseInt(id)){
                     this.selectedUpperNodeList.splice(i, 1);
                     this.nodesArrayFirstUpper[i].checked = false;
@@ -730,6 +738,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
             
+            this.off('enterKeyBindQuery');
+            this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
             this.enterKeyBindQuery();
             
             this.queryArgs = {
@@ -746,8 +756,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         enterKeyBindQuery:function(){
             $(document).on('keydown', function(e){
                 if(e.keyCode == 13){
-                   this.off('enterKeyBindQuery');
-                   this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
                    this.trigger('enterKeyBindQuery');
                 }
             }.bind(this));

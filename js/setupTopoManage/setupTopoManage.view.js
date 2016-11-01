@@ -301,7 +301,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                                 }
                             }.bind(this))
                         }.bind(this))
-                        this.initAllNodesTable()
+                        var ifreset = true;
+                        this.initAllNodesTable(ifreset)
                     }.bind(this),
                     data: nodesArray,
                     isDisabled:true,
@@ -360,13 +361,14 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                                 }
                             }.bind(this))
                         }.bind(this))
-                        this.initAllNodesTable()
+                        var ifreset = true
+                        this.initAllNodesTable(ifreset)
                     }.bind(this),
                     data: nodesArray,
                     callback: function(data){}.bind(this)
                 });
         },
-        initAllNodesTable: function(){
+        initAllNodesTable: function(ifreset){
             if(this.isEdit){
                 var s = [];
                 _.each(this.selectedAllNodeList,function(el){
@@ -398,8 +400,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 this.$el.find(".all .table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemAllDelete, this));
-
-            this.onGetUpperNode();
+            if(ifreset!=true){
+             this.onGetUpperNode();
+            }
         },
 
         onGetUpperNode: function(res){

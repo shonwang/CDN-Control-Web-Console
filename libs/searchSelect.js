@@ -201,13 +201,13 @@
                         }
                         var _html = this.createCheckBox(_data[i]["name"],_checked);
                         if(this.isDisabled){
-                            if(_checked || this.defaultChecked){
-                                arr.push('<li style="display:none" data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
-                            }else{
-                                arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
-                            }
+                           if(_checked || this.defaultChecked){
+                              arr.push('<li style="display:none" data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
+                           }else{
+                               arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
+                           }
                         }else{
-                            arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
+                             arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
                         }
                         if (this.defaultChecked){
                             this.checkList[_data[i]["value"]] = {
@@ -231,7 +231,7 @@
                 oUl.style.height=scrollBarHeight+"px";
                 oUl.style.overflowY = 'scroll';
                 oUl.style.borderBottom="1px solid #ececec";
-            }       
+            }		
         },
 
         checkList: {
@@ -267,11 +267,20 @@
                 btnCheckAll.onclick = function() {
                     me.checkAll(true);
                 }
-                btnCancelAll.onclick = function() {
-                    me.checkAll(false);
-                }
-                btnSelectBack.onclick = function() {
-                    me.selectInvert();
+                if(this.isDisabled){
+                    btnCancelAll.onclick = function() {
+                       return false;
+                    }
+                    btnSelectBack.onclick = function() {
+                       return false;
+                    }
+                }else{
+                    btnCancelAll.onclick = function() {
+                        me.checkAll(false);
+                    }
+                    btnSelectBack.onclick = function() {
+                        me.selectInvert();
+                    }
                 }
                 if (btnSearchOK) {
                     //定制ok按钮
@@ -400,7 +409,7 @@
             html.push('<label class="select-checkboxcon ' + _class + '">');
             if (this.defaultChecked){
                 if(this.isDisabled){
-                  html.push('<input class="select-checkbox" type="checkbox" checked="true" disabled="disabled"/>');
+                  html.push('<input class="select-checkbox" type="checkbox" checked="true" />');
                 }else{
                    html.push('<input class="select-checkbox" type="checkbox" checked="true"/>'); 
                 }

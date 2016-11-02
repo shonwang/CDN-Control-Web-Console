@@ -241,8 +241,6 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                             if(el.value == data.nodeId){
                                 el.checked = true;
                                 data.operatorId = el.operatorId;
-                            }else{
-                                el.checked = false;
                             }
                         }.bind(this))
                     }.bind(this))
@@ -271,7 +269,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             }
         },
         initUpperSelect: function(res){
-            var nodesArray = this.nodesArrayFirstLocal;
+            var nodesArray = this.nodesArrayFirstLocal; 
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.upper .add-node-ctn').get(0),
                 panelID: this.$el.find('.upper .add-node').get(0),

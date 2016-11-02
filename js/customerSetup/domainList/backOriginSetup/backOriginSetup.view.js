@@ -398,9 +398,11 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 alert("未设置回源域名不能使用此项");
                 return;
             };
-            var value = this.$el.find("#textarea-host-domain").val();
-            var result = this.checkBaseOrigin(value, 2)
-            if (!result) return;
+            if (this.defaultParamModifyHost.domainType === 3) {
+                var value = this.$el.find("#textarea-host-domain").val();
+                var result = this.checkBaseOrigin(value, 2)
+                if (!result) return;
+            }
             var postParam = {
                 "originId": this.domainInfo.id,
                 "customHostHeader": value,

@@ -254,7 +254,8 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
             }.bind(this))
 
             var fileTypePolicy = fileTypeArray.join(";");
-            if (customFileType) fileTypePolicy = fileTypePolicy + ";" + customFileType;
+            if (customFileType&&fileTypePolicy) fileTypePolicy = fileTypePolicy + ";" + customFileType;
+            if (customFileType&&!fileTypePolicy) fileTypePolicy = customFileType;
 
             return fileTypePolicy
         },

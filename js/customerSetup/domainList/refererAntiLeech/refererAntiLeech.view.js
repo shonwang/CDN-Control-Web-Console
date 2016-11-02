@@ -19,11 +19,11 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
             };
 
             if (this.isEdit){
-                this.defaultParam.type = this.model.get("matchingType") || 9;
+                this.defaultParam.type = this.model.get("matchingType");
                 this.defaultParam.policy = this.model.get("matchingValue") || "";
-                this.defaultParam.refererType = this.model.get("type") || 1;
+                this.defaultParam.refererType = this.model.get("type");
                 this.defaultParam.domains = this.model.get("domains") || "";
-                this.defaultParam.nullReferer = this.model.get("nullReferer") || 0;
+                this.defaultParam.nullReferer = this.model.get("nullReferer");
             }
 
             require(['matchCondition.view', 'matchCondition.model'], function(MatchConditionView, MatchConditionModel){
@@ -42,10 +42,13 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
                 this.matchConditionView = new MatchConditionView(matchConditionOption);
                 this.matchConditionView.render(this.$el.find(".match-condition-ctn"));
 
-                if (this.defaultParam.refererType === 1)
+                if (this.defaultParam.refererType === 1) {
                     this.$el.find(".black-list").hide();
-                else if (this.defaultParam.refererType === 2)
+                    this.$el.find("#white-domain").val(this.defaultParam.domains)
+                } else if (this.defaultParam.refererType === 2){
                     this.$el.find(".white-list").hide();
+                    this.$el.find("#black-domain").val(this.defaultParam.domains)
+                }
 
                 if (this.defaultParam.nullReferer === 1){
                     this.$el.find(".null-referer .togglebutton input").get(0).checked = true;

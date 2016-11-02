@@ -96,10 +96,16 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
                 alert("自定义不能为空！")
                 return false
             }
+            var obtainIpCustom = "";
+            if (this.$el.find(".get-ip-type .cur-value").html() === "自定义")
+                obtainIpCustom = this.$el.find("#custom-type").val()
+            else
+                obtainIpCustom = this.$el.find(".get-ip-type .cur-value").html()
+            
             var postParam = {
                 "originId": this.domainInfo.id,
                 "obtainIp": this.defaultParam.obtainIp,
-                "obtainIpCustom": this.$el.find("#custom-type").val(),
+                "obtainIpCustom":  obtainIpCustom,
                 "addCors" : this.defaultParam.addCors,
                 "removeCookie": this.defaultParam.removeCookie,
                 "removeKs3": this.defaultParam.removeKs3

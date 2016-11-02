@@ -140,10 +140,24 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
             var re = /^\/[^\/]{0,}([a-z0-9\_\-%]|\/[^\/]){0,}\/$/;
             var eventTarget = event.srcElement || event.target, value = $(eventTarget).val();
 
-            if (!re.test(value)) 
-                this.showAlert("请输入正确的目录")
-            else
-                this.$el.find(".alert-danger").hide();
+            if (value.indexOf(",") > -1){
+                var valueArray = value.split(",");
+                for (var i = 0; i < valueArray.length; i++){
+                    var res = re.test(valueArray[i].trim())
+                    if (!res) {
+                        this.showAlert("第" + (i+1) + "个目录没填对！")
+                        return;
+                    } else {
+                        this.$el.find(".alert-danger").hide();
+                    }
+                }
+            } else {
+                var res = re.test(value.trim())
+                if (!res)
+                    this.showAlert("请输入正确的目录")
+                else
+                    this.$el.find(".alert-danger").hide();
+            }
         },
 
         initUri: function(){
@@ -157,10 +171,24 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
             var re = /^\/[^\/]{0,}([a-z0-9\_\-\.]|\/[^\/]){0,}[^\/]{0,}$/;
             var eventTarget = event.srcElement || event.target, value = $(eventTarget).val();
 
-            if (!re.test(value)) 
-                this.showAlert("禁止http://或https://开头，仅需要URL中的URI部分。例如：http://www.baidu.com/123/index.html,则需要配置内容为：/123/index.html")
-            else
-                this.$el.find(".alert-danger").hide();
+            if (value.indexOf(",") > -1){
+                var valueArray = value.split(",");
+                for (var i = 0; i < valueArray.length; i++){
+                    var res = re.test(valueArray[i].trim())
+                    if (!res) {
+                        this.showAlert("第" + (i+1) + "个uri没填对！")
+                        return;
+                    } else {
+                        this.$el.find(".alert-danger").hide();
+                    }
+                }
+            } else {
+                var res = re.test(value.trim())
+                if (!res)
+                    this.showAlert("请输入正确的uri")
+                else
+                    this.$el.find(".alert-danger").hide();
+            }
         },
 
         initFileType: function(){

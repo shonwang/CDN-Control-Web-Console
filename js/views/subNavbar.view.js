@@ -42,18 +42,20 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                         active: false,
                         children: []
                     }]
-                },{
-                    id: '',
-                    name: 'HTTP协议优化',
-                    hash: 'javascript:void(0)',
-                    children: [{
-                        id: 'customerSetup-domainList-following302',
-                        name: 'Following 302',
-                        hash: 'index.html#/domainList/' + query + /following302/ + query2,
-                        active: false,
-                        children: []
-                    }]
-                },{
+                },
+                // {
+                //     id: '',
+                //     name: 'HTTP协议优化',
+                //     hash: 'javascript:void(0)',
+                //     children: [{
+                //         id: 'customerSetup-domainList-following302',
+                //         name: 'Following 302',
+                //         hash: 'index.html#/domainList/' + query + /following302/ + query2,
+                //         active: false,
+                //         children: []
+                //     }]
+                // },
+                {
                     id: '',
                     name: '缓存优化',
                     hash: 'javascript:void(0)',

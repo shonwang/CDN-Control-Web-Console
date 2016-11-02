@@ -572,7 +572,11 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
     var AddStepView = Backbone.View.extend({
         events:{},
         initialize:function(){
+            alert('ssss');
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.addStep.html'])({data: {}}));
+        },
+        render: function(target){
+            this.$el.appendTo(target);
         }
     });
     var EditOrAddSendView = Backbone.View.extend({
@@ -609,7 +613,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemAllDelete, this));
         },
         onClickAddStepButton: function(){
-            
+            var myAddStepView = new AddStepView({});
+            this.$el.find('.special-layer').hide();
+            myAddStepView.render(this.$el.find('add-role-ctn'));
         },
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();

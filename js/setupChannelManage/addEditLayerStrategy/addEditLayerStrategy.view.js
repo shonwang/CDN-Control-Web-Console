@@ -287,6 +287,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                     _.each(this.nodesArrayFirstLocal,function(el,key,ls){
                         _.each(this.selectedUpperNodeList,function(data,key,ls){
                             if(el.value == data.nodeId){
+                                data.operatorId = el.operatorId;
                                 el.checked = true;
                             }
                         }.bind(this))
@@ -411,6 +412,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                      _.each(this.nodesArrayFirst,function(el,key,ls){
                         _.each(this.selectedLocalNodeList,function(data,key,ls){
                             if(el.value == data.nodeId){
+                                data.operatorId = el.operatorId;
                                 el.checked = true;
                             }
                         }.bind(this))

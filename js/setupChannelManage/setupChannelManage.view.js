@@ -73,16 +73,23 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.collection = options.collection;
             this.model      = options.model;
             this.rule = [];
-            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.specialLayer.html'])({data: {}}));
+            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.specialLayer.html'])({data: this.model.attributes}));
 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
             this.$el.find(".add-role").on("click", $.proxy(this.onClickAddRuleButton, this));
+            this.defaultParam = {
+                rule: []
+            }
 
-            this.initSetup()
+            this.collection.off("get.operator.success");
+            this.collection.off("get.operator.error");
+            this.collection.on("get.operator.success", $.proxy(this.setOperatorInfo, this));
+            this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
+            this.collection.getOperatorList();
+            
         },
-
-        initSetup: function(){
-            var data = [{localLayer: "1111", upperLayer: "22222"}];
+        initRuleTable: function(data){
+            var data = data;
             this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.role.table.html'])({
                 data: data, 
             }));
@@ -92,16 +99,26 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-        },
 
+        },
         onClickAddRuleButton: function(){
             require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel){
                 var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
+                var options = myAddEditLayerStrategyModel;
                 var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
-                    collection: myAddEditLayerStrategyModel,
+                    collection: options,
+                    localNodes: this.selectedAllNodeList,
+                    upperNodes: this.selectedUpperNodeList,
                     rule      : this.rule,
+                    id        : this.id,
+                    isEdit    : false,
                     onSaveCallback: function(){
-    
+                        this.defaultParam.rule = this.rule;
+                        var data = this.InformationProcessing(this.rule);
+                        myAddEditLayerStrategyView.$el.remove();
+                        this.$el.find(".special-layer").show();
+                        this.initRuleTable(data);
+                        
                     }.bind(this),
                     onCancelCallback: function(){
                         myAddEditLayerStrategyView.$el.remove();
@@ -117,53 +134,52 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
+        setOperatorInfo: function(res){
+            this.operator = [];
+            _.each(res,function(el,index,list){
+                this.operator.push({
+                   'name' : el.name,
+                   'value': el.id
+                })
+            }.bind(this));
+        },
         InformationProcessing:function(data){
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             var data_save = [];
             var self = this;
-            var operator = [
-                {name: "联通",  value:1},
-                {name: "电信",  value:2},
-                {name: "移动",  value:3},
-                {name: "鹏博士", value:4},
-                {name: "教育网", value:5},
-                {name: "广电网", value:6},
-                {name: "铁通",   value:7},
-                {name: "华数",   value:8},
-                {name: "多线",   value:9}
-            ];
             _.each(data, function(el, key, ls){
                 var data_save_content = {
-                    id:null,
+                     id:null,
                     'localLayer':[],
                     'upperLayer':[]
                 };
                 if(el.localType == 2){
                     _.each(el.local,function(local){
-                        _.each(operator,function(operator){
+                        _.each(self.operator,function(operator){
                             if(local == operator.value){
                                data_save_content.localLayer.push(operator.name)
                             }
                         })
-                    })
+                    }.bind(this))
                 }else if(el.localType == 1){
                     _.each(el.local,function(local){
                         _.each(self.allNodes,function(nodes){
+
                             if(local == nodes.nodeId){
-                               data_save_content.localLayer.push(nodes.chName)
+                               data_save_content.localLayer.push(nodes.name);
                             }
                         })
                     })
                 }
                 _.each(el.upper,function(upper){
-                   
                         _.each(self.allNodes,function(nodes){
                             if(upper.nodeId == nodes.nodeId){
-                               data_save_content.upperLayer.push(nodes.chName)
+                    
+                                 data_save_content.upperLayer.push(nodes.name)
+                               
+                               
                             }
                         })
-                    
-                    
                 })
                 data_save_content.localLayer = data_save_content.localLayer.join('、');
                 data_save_content.upperLayer = data_save_content.upperLayer.join('、');

@@ -139,6 +139,22 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
                 this.trigger("get.node.error", response);  
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+        getSendinfo: function(args){
+            var url = BASE_URL + "/resource/topo/info/list",
+            successCallback = function(res){
+                if(res){
+                    this.total = res.total;
+                    this.trigger("get.sendInfo.success",res);
+                }else{
+                    this.trigger("get.sendInfo.error");
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('get.sendInfo.error',response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         }
     });
 

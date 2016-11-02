@@ -22,7 +22,20 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
         model: Model,
 
         initialize: function(){},
-
+        getOperatorList:function(args){
+            var url = BASE_URL + "/resource/rs/metaData/operator/list",
+            successCallback = function(res) {
+                if(res){
+                    this.trigger("get.operator.success",res);
+                }else{
+                    this.trigger("get.operator.error");
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('get.devicetype.error');
+            }.bind(this);
+            Utility.getAjax(url, '' , successCallback, errorCallback);
+        },
         queryChannel: function(args){
             var url = BASE_URL + "/rs/channel/query",
             successCallback = function(res){

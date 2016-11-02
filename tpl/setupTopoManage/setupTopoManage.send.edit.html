@@ -1,19 +1,26 @@
-<div class="setup-channel-manage-special">
-    <h3>配置下发<small>/特殊分层策略管理</small></h3>
+<div class="setup-topo-manage-send">
+    <h3></h3>
     <div class="well">
         <div class="special-layer">
             <form class="form-horizontal">
                 <div class="form-group">
-                    <label for="input-domain" class="col-sm-3 control-label">域名</label>
+                    <label for="input-domain" class="col-sm-3 control-label">名称</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" id="input-domain" value="<%=data.domain%>" readonly="true">
+                        <input type="text" class="form-control" id="input-domain" value="<%=data.domain%>">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-3 control-label">回上层配置规则</label>
+                    <label for="input-domain" class="col-sm-3 control-label">拓扑关系</label>
                     <div class="col-sm-6">
-                        <a href="javascript:void(0)" class="btn btn-success add-role">添加规则</a>
+                        <input type="text" class="form-control" id="input-domain" value="<%=data.domain%>">
                     </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">策略</label>
+                    <div class="col-sm-6">
+                        <a href="javascript:void(0)" class="btn btn-success add-step">添加步骤</a>
+                    </div>
+                    <div class="table-ctn table-responsive long-dropdown-menu"></div>
                 </div>
             </form>
             <hr>
@@ -30,7 +37,7 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="add-role-ctn"></div>
+                <div class="add-step-ctn"></div>
             </div>
         </div>
     </div>

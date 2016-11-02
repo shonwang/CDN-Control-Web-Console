@@ -301,7 +301,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                                 }
                             }.bind(this))
                         }.bind(this))
-                        this.initAllNodesTable()
+                        var ifreset = true;
+                        this.initAllNodesTable(ifreset)
                     }.bind(this),
                     data: nodesArray,
                     isDisabled:true,
@@ -359,13 +360,14 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                                 }
                             }.bind(this))
                         }.bind(this))
-                        this.initAllNodesTable()
+                        var ifreset = true
+                        this.initAllNodesTable(ifreset)
                     }.bind(this),
                     data: nodesArray,
                     callback: function(data){}.bind(this)
                 });
         },
-        initAllNodesTable: function(){
+        initAllNodesTable: function(ifreset){
             if(this.isEdit){
                 var s = [];
                 _.each(this.selectedAllNodeList,function(el){
@@ -397,8 +399,10 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 this.$el.find(".all .table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemAllDelete, this));
-
-            this.onGetUpperNode();
+            
+            /*if(ifreset!=true){*/
+             this.onGetUpperNode();
+            /*}*/
         },
 
         onGetUpperNode: function(res){
@@ -516,18 +520,19 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     this.defaultParam.allNodes.splice(i,1);
                 }
             }
-            
+            _.each(this.nodesArrayFirst,function(el,index,list){
+                  if(el.value == parseInt(id)){
+                     el.checked = false;
+                     this.initAllNodesSelect(this.nodesArrayFirst);
+                  }
+            }.bind(this));
             var length = this.selectedAllNodeList.length;
             for (var i = 0; i < length; i++){ 
                 if (parseInt(this.selectedAllNodeList[i].nodeId) === parseInt(id)){
-                   _.each(this.nodesArrayFirst,function(el,index,list){
-                          if(el.value == parseInt(id)){
-                             el.checked = false;
-                          }
-                    }.bind(this));
+                   
                     this.selectedAllNodeList.splice(i, 1);
                     this.initAllNodesTable();
-                    this.initAllNodesSelect(this.nodesArrayFirst);
+                    
                     return;
                 }
             }
@@ -547,13 +552,19 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     this.defaultParam.upperNodes.splice(i,1);
                 }
             }
+            var lengthUpperNode = this.nodesArrayFirstUpper.length;
+            for(var i = 0 ;i<lengthUpperNode;i++){
+                if(parseInt(this.nodesArrayFirstUpper[i].value) === parseInt(id)){
+                    console.log('sssss');
+                    this.nodesArrayFirstUpper[i].checked = false;
+                    this.initUpperSelect(this.nodesArrayFirstUpper);
+                }
+            }
             var length = this.selectedUpperNodeList.length;
             for (var i = 0; i < length; i++){
                 if (parseInt(this.selectedUpperNodeList[i].nodeId) === parseInt(id)){
                     this.selectedUpperNodeList.splice(i, 1);
-                    this.nodesArrayFirstUpper[i].checked = false;
                     this.initUpperTable();
-                    this.initUpperSelect(this.nodesArrayFirstUpper);
                     return;
                 }
             }
@@ -854,7 +865,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             var myEditTopoView = new EditTopoView({
                 collection: this.collection,
                 model: model,
-                WhetherModifySuccess: this.WhetherModifySuccess,
                 isEdit: true,
                 onSaveCallback: function(){
                     myEditTopoView.$el.remove();

@@ -572,7 +572,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
     var AddStepView = Backbone.View.extend({
         events:{},
         initialize:function(){
-            alert('ssss');
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.addStep.html'])({data: {}}));
         },
         render: function(target){
@@ -593,7 +592,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
 
         },
         initstepTable: function(){
-            this.sel
+            
             this.localTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
                  data: this.selectedAllNodeList
             }));
@@ -615,7 +614,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         onClickAddStepButton: function(){
             var myAddStepView = new AddStepView({});
             this.$el.find('.special-layer').hide();
-            myAddStepView.render(this.$el.find('add-role-ctn'));
+            myAddStepView.render(this.$el.find('.add-step-ctn'));
+            console.log(myAddStepView);
+            console.log(this.$el.find('.add-step-ctn'));
         },
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();

@@ -673,7 +673,7 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
             var dateArray = [
                 {name:"请选择",value:"1"},
                 {name:"下载加速",value:"download"},
-                {name:"直播加速",value:"live"}
+                //{name:"直播加速",value:"live"}
             ];
             this.initDropMenu(ctn,dateArray,function(obj){
                 var cdnType = obj.value;

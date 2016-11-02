@@ -1,5 +1,206 @@
 define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+    var SendView = Backbone.View.extend({
+        event:{},
+        initialize:function(options){
+            this.options = options;
+            this.collection = options.collection;
+            this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.send.html'])({data: {}}));
+            this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
+            
+            this.queryArgs = {
+                "count": 10,
+                "name" : null,
+                "type" : null,
+                "page" : 1,
+                "size" : 10
+             }
+            
+            this.collection.off("get.sendInfo.success");
+            this.collection.off("get.sendInfo.error");
+            this.collection.on("get.sendInfo.success", $.proxy(this.getSendInfoSuccess, this));
+            this.collection.on("get.sendInfo.error", $.proxy(this.onGetError, this));
+            
+            this.$el.find('.opt-ctn .query').on('click',$.proxy(this.onClickQueryButton, this));
+            this.$el.find('.opt-ctn .new').on('click',$.proxy(this.onClickAddSend, this));
+            
+            this.collection.getSendinfo(this.queryArgs);
+        },
+        onClickCancelButton: function(){
+            this.options.onCancelCallback && this.options.onCancelCallback();
+        },
+        getSendInfoSuccess: function(res){
+           _.each(res.rows,function(el,index,list){
+              el.createTime = new Date(el.createTime).format("yyyy/MM/dd hh:mm");
+           })
+           this.table = $(_.template(template['tpl/setupTopoManage/setupTopoManage.send.table.html'])({data:res.rows}));
+           if (res.length !== 0)
+                this.$el.find(".table-ctn").html(this.table[0]);
+            else
+                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+        },
+        onClickAddSend: function(){
+            var myEditOrAddSendView = new EditOrAddSendView({
+                collection:this.collection,
+                onSaveCallback:function(){}.bind(this),
+                onCancelCallback:function(){
+                    myEditOrAddSendView.$el.remove();
+                    this.$el.find(".list-panel").show();
+                }.bind(this)
+            });
+            this.$el.find('.list-panel').hide();
+            myEditOrAddSendView.render(this.$el.find('.SendTable'));
+        },
+        render:function(target){
+            this.$el.appendTo(target);
+        }
+    });
+    var EditOrAddSendView = Backbone.View.extend({
+        events:{},
+        initialize: function(options){
+            this.options = options;
+            this.collection = options.collection;
+            this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.send.edit.html'])({data: {}}));
+            
+            this.$el.find('.add-step').on('click',$.proxy(this.onClickAddStepButton, this));
+            this.$el.find('.opt-ctn .cancel').on('click',$.proxy(this.onClickCancelButton, this));
+            
+         //   this.initstepTable();
 
+        },
+        initstepTable: function(){
+            
+            this.localTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
+                 data: this.selectedAllNodeList
+            }));
+            _.each($(this.localTable).find('.addOrEdit .delete'),function(el){
+                _.each(this.NodeleteNodes,function(nodes){
+                    if(el.id == nodes){
+                        el.remove();
+                    }
+                }.bind(this))
+            }.bind(this))
+            
+            if (this.selectedAllNodeList.length !== 0)
+                this.$el.find(".all .table-ctn").html(this.localTable[0]);
+            else
+                this.$el.find(".all .table-ctn").html(_.template(template['tpl/empty.html'])());
+
+            this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemAllDelete, this));
+        },
+        onClickAddStepButton: function(){
+            var myAddStepView = new AddStepView({
+                collection:this.collection,
+                onCancelCallback: function(){
+                    myAddStepView.$el.remove();
+                    this.$el.find('.special-layer').show();
+                }.bind(this),
+                onSaveCallback: function(){
+
+                }.bind(this)
+            });
+            this.$el.find('.special-layer').hide();
+            myAddStepView.render(this.$el.find('.add-step-ctn'));
+        },
+        onClickCancelButton: function(){
+            this.options.onCancelCallback && this.options.onCancelCallback();
+        },
+        render: function(target){
+            this.$el.appendTo(target);
+        }
+    });
+    var AddStepView = Backbone.View.extend({
+        events:{},
+        initialize:function(options){
+            this.options = options;
+            this.collection = options.collection;
+            
+            this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.addStep.html'])({data: {}}));
+            this.$el.find('.opt-ctn .cancel').on('click', $.proxy(this.onClickCancelButton, this));
+            
+            this.collection.off('get.node.error');
+            this.collection.off('get.node.success');
+            this.collection.on('get.node.success',$.proxy(this.onGetNodeSuccess,this));
+            this.collection.on('get.node.error',$.proxy(this.onGetError,this));
+            
+            this.collection.getNodeList();
+            
+            this.defaultParam = {
+                "id":null,
+                "name":"拓扑关系名称",
+                "type":null,
+                "allNodes": [],
+                "upperNodes": [],
+                "rule": []
+            }
+            
+        },
+        onGetNodeSuccess: function(res){
+            var nodesArray = [];
+            this.allNodes = [];
+            this.selectedAllNodeList = [];
+            _.each(res, function(el, index, list){
+                _.each(this.defaultParam.allNodes, function(defaultLocalId, inx, ls){
+                    if (defaultLocalId === el.id) {
+                        el.checked = true;
+                        this.selectedAllNodeList.push({nodeId: el.id, nodeName: el.chName , operator:el.operatorId, checked:el.checked})
+                    }
+                }.bind(this))
+                nodesArray.push({name:el.chName, value: el.id, checked: el.checked, operator:el.operatorId})
+                this.allNodes.push({name:el.chName, nodeId: el.id, checked: el.checked, operator:el.operatorId})
+            }.bind(this))
+            
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.all .add-node-ctn').get(0),
+                panelID: this.$el.find('.all .add-node').get(0),
+                openSearch: true,
+                onOk: function(data){
+                    this.selectedAllNodeList = [];
+                    _.each(data, function(el, key, ls){
+                        this.selectedAllNodeList.push({nodeId: el.value, nodeName: el.name, operatorId:''});
+                    }.bind(this))
+                    this.defaultParam.allNodes.length = 0;
+                    _.each(this.selectedAllNodeList,function(el,key,ls){
+                        this.defaultParam.allNodes.push(parseInt(el.nodeId));
+                    }.bind(this))
+                    _.each(nodesArray,function(el,key,ls){
+                        _.each(this.selectedAllNodeList,function(data,key,ls){
+                            if(el.value == data.nodeId){
+                                data.operatorId = el.operator;
+                            }
+                        }.bind(this))
+                    }.bind(this))
+                    this.initAllNodesTable()
+                }.bind(this),
+                data: nodesArray,
+                callback: function(data){}.bind(this)
+            });
+            this.initAllNodesTable();
+        },
+        initAllNodesTable: function(){
+            this.localTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
+                data: this.selectedAllNodeList
+            }));
+            _.each($(this.localTable).find('.addOrEdit .delete'),function(el){
+                _.each(this.NodeleteNodes,function(nodes){
+                    if(el.id == nodes){
+                        el.remove();
+                    }
+                }.bind(this))
+            }.bind(this))
+            if (this.selectedAllNodeList.length !== 0)
+                this.$el.find(".all .table-ctn").html(this.localTable[0]);
+            else
+                this.$el.find(".all .table-ctn").html(_.template(template['tpl/empty.html'])());
+
+            this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemAllDelete, this));
+        },
+        onClickCancelButton: function(){
+           this.options.onCancelCallback && this.options.onCancelCallback();
+        },
+        render: function(target){
+            this.$el.appendTo(target);
+        }
+    });
     var EditTopoView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
@@ -88,6 +289,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             
             this.collection.getNodeList(); //获取所有节点列表接口
             this.collection.getDeviceTypeList();//获取应用类型列表接口
+            
             if(this.isEdit){
                 var data = this.analyticFunction(this.defaultParam.rule);
                 this.initRuleTable(data);
@@ -566,117 +768,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
 
         render: function(target) {
-            this.$el.appendTo(target);
-        }
-    });
-    var AddStepView = Backbone.View.extend({
-        events:{},
-        initialize:function(){
-            this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.addStep.html'])({data: {}}));
-        },
-        render: function(target){
-            this.$el.appendTo(target);
-        }
-    });
-    var EditOrAddSendView = Backbone.View.extend({
-        events:{},
-        initialize: function(options){
-            this.options = options;
-            this.collection = options.collection;
-            this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.send.edit.html'])({data: {}}));
-            
-            this.$el.find('.add-step').on('click',$.proxy(this.onClickAddStepButton, this));
-            this.$el.find('.opt-ctn .cancel').on('click',$.proxy(this.onClickCancelButton, this));
-            
-         //   this.initstepTable();
-
-        },
-        initstepTable: function(){
-            
-            this.localTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
-                 data: this.selectedAllNodeList
-            }));
-            _.each($(this.localTable).find('.addOrEdit .delete'),function(el){
-                _.each(this.NodeleteNodes,function(nodes){
-                    if(el.id == nodes){
-                        el.remove();
-                    }
-                }.bind(this))
-            }.bind(this))
-            
-            if (this.selectedAllNodeList.length !== 0)
-                this.$el.find(".all .table-ctn").html(this.localTable[0]);
-            else
-                this.$el.find(".all .table-ctn").html(_.template(template['tpl/empty.html'])());
-
-            this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemAllDelete, this));
-        },
-        onClickAddStepButton: function(){
-            var myAddStepView = new AddStepView({});
-            this.$el.find('.special-layer').hide();
-            myAddStepView.render(this.$el.find('.add-step-ctn'));
-            console.log(myAddStepView);
-            console.log(this.$el.find('.add-step-ctn'));
-        },
-        onClickCancelButton: function(){
-            this.options.onCancelCallback && this.options.onCancelCallback();
-        },
-        render: function(target){
-            this.$el.appendTo(target);
-        }
-    });
-    var SendView = Backbone.View.extend({
-        event:{},
-        initialize:function(options){
-            this.options = options;
-            this.collection = options.collection;
-            this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.send.html'])({data: {}}));
-            this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-            
-            this.queryArgs = {
-                "count": 10,
-                "name" : null,
-                "type" : null,
-                "page" : 1,
-                "size" : 10
-             }
-            
-            this.collection.off("get.sendInfo.success");
-            this.collection.off("get.sendInfo.error");
-            this.collection.on("get.sendInfo.success", $.proxy(this.getSendInfoSuccess, this));
-            this.collection.on("get.sendInfo.error", $.proxy(this.onGetError, this));
-            
-            this.$el.find('.opt-ctn .query').on('click',$.proxy(this.onClickQueryButton, this));
-            this.$el.find('.opt-ctn .new').on('click',$.proxy(this.onClickAddSend, this));
-            
-            this.collection.getSendinfo(this.queryArgs);
-        },
-        onClickCancelButton: function(){
-            this.options.onCancelCallback && this.options.onCancelCallback();
-        },
-        getSendInfoSuccess: function(res){
-           _.each(res.rows,function(el,index,list){
-              el.createTime = new Date(el.createTime).format("yyyy/MM/dd hh:mm");
-           })
-           this.table = $(_.template(template['tpl/setupTopoManage/setupTopoManage.send.table.html'])({data:res.rows}));
-           if (res.length !== 0)
-                this.$el.find(".table-ctn").html(this.table[0]);
-            else
-                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-        },
-        onClickAddSend: function(){
-            var myEditOrAddSendView = new EditOrAddSendView({
-                collection:this.collection,
-                onSaveCallback:function(){}.bind(this),
-                onCancelCallback:function(){
-                    myEditOrAddSendView.$el.remove();
-                    this.$el.find(".list-panel").show();
-                }.bind(this)
-            });
-            this.$el.find('.list-panel').hide();
-            myEditOrAddSendView.render(this.$el.find('.SendTable'));
-        },
-        render:function(target){
             this.$el.appendTo(target);
         }
     });

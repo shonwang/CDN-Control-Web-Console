@@ -324,7 +324,7 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
                     var postParam = myAddEditRoleView.onSure();
                     if (!postParam) return;
                     _.each(postParam, function(value, key, ls){
-                        this.collection.get(id).set(key, value);
+                        model.set(key, value);
                     }.bind(this))
                     this.collection.trigger("get.policy.success");
                     this.addRolePopup.$el.modal('hide');

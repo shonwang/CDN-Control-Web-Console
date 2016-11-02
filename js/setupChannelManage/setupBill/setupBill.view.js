@@ -102,10 +102,10 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         initCname: function() {
-            this.cnameTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.cname.html'])({
-                data: this.config.originDomain.cnameData
-            }));
-            this.cnameTable.appendTo(this.$el.find(".bill-ctn"));
+            // this.cnameTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.cname.html'])({
+            //     data: this.config.originDomain.cnameData
+            // }));
+            // this.cnameTable.appendTo(this.$el.find(".bill-ctn"));
 
             this.initOriginSetup();
         },
@@ -171,16 +171,16 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             var domainConf = this.config.domainConf, originDomain = this.config.originDomain;
             //"hostType": 回源host头类型,1加速域名,2回源域名,3自定义host头
             if (domainConf.hostType === 3) {
-                this.originSetupInfo.hostTypeStr = '自定义';
-                this.originSetupInfo.customHostHeader = domainConf.customHostHeader;
+                this.originHostSetupInfo.hostTypeStr = '自定义';
+                this.originHostSetupInfo.customHostHeader = domainConf.customHostHeader;
             }
-            if (domainConf.hostType  === 1) {
-                this.originSetupInfo.hostTypeStr = '加速域名';
-                this.originSetupInfo.customHostHeader = originDomain.domain;
+            if (domainConf.hostType === 1) {
+                this.originHostSetupInfo.hostTypeStr = '加速域名';
+                this.originHostSetupInfo.customHostHeader = originDomain.domain;
             }
-            if (domainConf.hostType  === 2) {
-                this.originSetupInfo.hostTypeStr = '回源域名';
-                this.originSetupInfo.customHostHeader = domainConf.originAddress;
+            if (domainConf.hostType === 2) {
+                this.originHostSetupInfo.hostTypeStr = '回源域名';
+                this.originHostSetupInfo.customHostHeader = domainConf.originAddress;
             }
             this.originHostSetupTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.originHostSetup.html'])({
                 data: this.originHostSetupInfo

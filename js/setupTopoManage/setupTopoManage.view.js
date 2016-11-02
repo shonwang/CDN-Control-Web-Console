@@ -569,15 +569,22 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.appendTo(target);
         }
     });
+    var AddStepView = Backbone.View.extend({
+        events:{},
+        initialize:function(){
+            this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.addStep.html'])({data: {}}));
+        }
+    });
     var EditOrAddSendView = Backbone.View.extend({
         events:{},
         initialize: function(options){
             this.options = options;
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.send.edit.html'])({data: {}}));
-
+            
+            this.$el.find('.add-step').on('click',$.proxy(this.onClickAddStepButton, this));
             this.$el.find('.opt-ctn .cancel').on('click',$.proxy(this.onClickCancelButton, this));
-
+            
          //   this.initstepTable();
 
         },
@@ -600,6 +607,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 this.$el.find(".all .table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemAllDelete, this));
+        },
+        onClickAddStepButton: function(){
+            
         },
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();

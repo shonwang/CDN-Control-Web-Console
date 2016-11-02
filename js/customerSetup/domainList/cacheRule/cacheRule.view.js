@@ -29,7 +29,7 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.defaultParam.cacheTimeType = 3;
                     this.defaultParam.cacheOriginTime = this.model.get("expireTime") || 60 * 60 * 24 * 30;
                 }
-                this.defaultParam.type = this.model.get("type") || 9;
+                this.defaultParam.type = this.model.get("type");
                 this.defaultParam.policy = this.model.get("policy") || "";
             }
 

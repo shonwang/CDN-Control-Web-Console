@@ -90,7 +90,9 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         onClickSaveBtn: function(){
-            if (this.defaultParam.obtainIp === 1 && this.$el.find("#custom-type").val() === ""){
+            if (this.defaultParam.obtainIp === 1 && 
+                this.$el.find("#custom-type").val() === "" &&
+                this.$el.find(".get-ip-type .cur-value").html() === "自定义"){
                 alert("自定义不能为空！")
                 return false
             }

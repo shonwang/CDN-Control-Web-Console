@@ -121,10 +121,10 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
             }
             if (this.defaultParam.addParam === 2){
                 this.$el.find(".add-args .togglebutton input").get(0).checked = true;
-                this.updateAddArgsTable();
             } else {
                 this.$el.find(".add-args .togglebutton input").get(0).checked = false;
             }
+            this.updateAddArgsTable();
         },
 
         updateAddArgsTable: function(){
@@ -148,6 +148,10 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
                 name: newName,
                 value: newKey
             });
+            if (this.defaultParam.addParamList.length > 20){
+                alert("只能添加20个");
+                return
+            }
             this.updateAddArgsTable();
         },
 

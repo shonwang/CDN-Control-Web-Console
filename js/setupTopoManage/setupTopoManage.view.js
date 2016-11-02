@@ -770,7 +770,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 this.enterKeyBindQuery();
             }
             else{
-                
                 this.$el.find(".opt-ctn .query").remove();
             }
             if(AUTH_OBJ.CreateTopos) {
@@ -872,11 +871,13 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 collection: this.collection,
                 WhetherSaveSuccess: this.WhetherSaveSuccess,
                 onSaveCallback: function(){
+                    this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
                     myEditTopoView.$el.remove();
                     this.$el.find(".list-panel").show();
                     this.onClickQueryButton();
                 }.bind(this),
                 onCancelCallback: function(){
+                    this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
                     myEditTopoView.$el.remove();
                     this.$el.find(".list-panel").show();
                 }.bind(this)
@@ -901,11 +902,13 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 model: model,
                 isEdit: true,
                 onSaveCallback: function(){
+                    this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
                     myEditTopoView.$el.remove();
                     this.$el.find(".list-panel").show();
                     this.onClickQueryButton();
                 }.bind(this),
                 onCancelCallback: function(){
+                    this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
                     myEditTopoView.$el.remove();
                     this.$el.find(".list-panel").show();
                 }.bind(this)

@@ -396,7 +396,6 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
         },
         initLocalSelect: function(res){
             var nodesArray = this.nodesArrayFirst;
-            console.log(nodesArray);
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.local .add-node-ctn').get(0),
                 panelID: this.$el.find('.local .add-node').get(0),
@@ -455,12 +454,16 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                     this.ruleContent.local.splice(index,1);
                 }
             }.bind(this));
+            _.each(this.nodesArrayFirst,function(el,index,list){
+                if(el.value == parseInt(id)){
+                    el.checked = false;
+                    this.initLocalSelect(this.nodesArrayFirst);
+                }
+            }.bind(this));
             for (var i = 0; i < this.selectedLocalNodeList.length; i++){
                 if (parseInt(this.selectedLocalNodeList[i].nodeId) === parseInt(id)){
                     this.selectedLocalNodeList.splice(i, 1);
-                    this.nodesArrayFirst[i].checked = false;
                     this.initLocalTable();
-                    this.initLocalSelect(this.nodesArrayFirst);
                     return;
                 }
             }
@@ -481,12 +484,16 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                      }
                 }
             }
+            _.each(this.nodesArrayFirstLocal,function(el,index,list){
+                if(el.value == parseInt(id)){
+                    el.checked = false;
+                    this.initUpperSelect(this.nodesArrayFirstLocal);
+                }
+            }.bind(this));
             for (var i = 0; i < this.selectedUpperNodeList.length; i++){
                 if (parseInt(this.selectedUpperNodeList[i].nodeId) === parseInt(id)){
                     this.selectedUpperNodeList.splice(i, 1);
-                    this.nodesArrayFirstLocal[i].checked = false;
                     this.initUpperTable();
-                    this.initUpperSelect(this.nodesArrayFirstLocal);
                     return;
                 }
             }

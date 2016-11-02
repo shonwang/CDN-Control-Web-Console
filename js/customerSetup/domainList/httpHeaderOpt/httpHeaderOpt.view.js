@@ -307,7 +307,7 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
                     var postParam = myAddEditHttpHeaderView.onSure();
                     if (!postParam) return;
                     _.each(postParam, function(value, key, ls){
-                        this.collection.get(id).set(key, value);
+                        model.set(key, value);
                     }.bind(this))
                     this.collection.trigger("get.header.success");
                     this.addRolePopup.$el.modal('hide');

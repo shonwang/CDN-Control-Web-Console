@@ -105,14 +105,21 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         initSetup: function(){
             this.$el.find('.all .add-node').hide();
             this.$el.find('.upper .add-node').hide();
-            
-            this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-            if (!this.isEdit)
+            if (!this.isEdit){
+                if(AUTH_OBJ.ApplyCreateTopos){
+                   this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
+                }
                 this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
-            else
+                this.$el.find(".alert-danger").show();
+            }
+            else{
+                if(AUTH_OBJ.ApplyEditTopos){
+                   this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this)); 
+                }
                 this.$el.find(".add-rule").hide();
-            
+                this.$el.find(".alert-danger").hide();
+            }
             this.collection.off("get.node.success");
             this.collection.off("get.node.error");
             this.collection.on("get.node.success", $.proxy(this.onGetAllNode, this));
@@ -269,6 +276,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 }
             }.bind(this));
             _.each(res, function(el, index, list){
+                el.checked = false;
                 _.each(this.defaultParam.allNodes, function(defaultLocalId, inx, ls){
                     if (defaultLocalId === el.id) {
                         el.checked = true;
@@ -294,6 +302,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                             this.defaultParam.allNodes.push(parseInt(el.nodeId));
                         }.bind(this))
                         _.each(this.nodesArrayFirst,function(el,key,ls){
+                            el.checked = false;
                             _.each(this.selectedAllNodeList,function(data,key,ls){
                                 if(el.value == data.nodeId){
                                     el.checked = true;
@@ -323,6 +332,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                             this.defaultParam.allNodes.push(parseInt(el.nodeId));
                         }.bind(this))
                         _.each(this.nodesArrayFirst,function(el,key,ls){
+                            el.checked = false;
                             _.each(this.selectedAllNodeList,function(data,key,ls){
                                 if(el.value == data.nodeId){
                                     el.checked = true;
@@ -354,6 +364,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                             this.defaultParam.allNodes.push(parseInt(el.nodeId));
                         }.bind(this))
                         _.each(this.nodesArrayFirst,function(el,key,ls){
+                            el.checked = false;
                             _.each(this.selectedAllNodeList,function(data,key,ls){
                                 if(el.value == data.nodeId){
                                     el.checked = true;
@@ -411,6 +422,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.selectedUpperNodeList = [];
             this.nodesArrayFirstUpper = [];
             _.each(this.selectedAllNodeList, function(el, index, list){
+                el.checked = false;
                 _.each(this.defaultParam.upperNodes, function(upperId, inx, ls){
                     if (upperId === el.nodeId) {
                         el.checked = true;
@@ -446,6 +458,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                           this.defaultParam.upperNodes.push(parseInt(el.nodeId));
                     }.bind(this))
                     _.each(this.nodesArrayFirstUpper,function(el,key,ls){
+                        el.checked = false;
                         _.each(this.selectedUpperNodeList,function(data,key,ls){
                             if(el.value == data.nodeId){
                                 el.checked = true;
@@ -479,6 +492,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                           this.defaultParam.upperNodes.push(parseInt(el.nodeId));
                     }.bind(this))
                     _.each(this.nodesArrayFirstUpper,function(el,key,ls){
+                        el.checked = false;
                         _.each(this.selectedUpperNodeList,function(data,key,ls){
                             if(el.value == data.nodeId){
                                 el.checked = true;
@@ -746,12 +760,26 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
             this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
             
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
+            //this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+            //this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
             
-            this.off('enterKeyBindQuery');
-            this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
-            this.enterKeyBindQuery();
+            if(AUTH_OBJ.QueryTopos) {
+                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+                this.off('enterKeyBindQuery');
+                this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
+                this.enterKeyBindQuery();
+            }
+            else{
+                this.$el.find(".opt-ctn .query").remove();
+            }
+            if(AUTH_OBJ.CreateTopos) {
+                this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
+            }
+            else{
+                
+                this.$el.find(".opt-ctn .new").remove();
+            }
+            
             
             this.queryArgs = {
                 "name" : null,
@@ -798,12 +826,17 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         initTable: function(){
 
             this.table = $(_.template(template['tpl/setupTopoManage/setupTopoManage.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
+            
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-
-            this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
+           
+            if(AUTH_OBJ.EditTopos){
+               this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
+            }else{
+               this.table.find("tbody .edit").remove();
+            }
             this.table.find("tbody .strategy").on("click", $.proxy(this.onClickItemSpecialLayer, this));
         },
 
@@ -838,11 +871,13 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 collection: this.collection,
                 WhetherSaveSuccess: this.WhetherSaveSuccess,
                 onSaveCallback: function(){
+                    this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
                     myEditTopoView.$el.remove();
                     this.$el.find(".list-panel").show();
                     this.onClickQueryButton();
                 }.bind(this),
                 onCancelCallback: function(){
+                    this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
                     myEditTopoView.$el.remove();
                     this.$el.find(".list-panel").show();
                 }.bind(this)
@@ -867,11 +902,13 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 model: model,
                 isEdit: true,
                 onSaveCallback: function(){
+                    this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
                     myEditTopoView.$el.remove();
                     this.$el.find(".list-panel").show();
                     this.onClickQueryButton();
                 }.bind(this),
                 onCancelCallback: function(){
+                    this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
                     myEditTopoView.$el.remove();
                     this.$el.find(".list-panel").show();
                 }.bind(this)

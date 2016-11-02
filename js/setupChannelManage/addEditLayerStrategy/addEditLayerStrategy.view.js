@@ -178,6 +178,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                         this.ruleContent.local.push(parseInt(el.value));
                     }.bind(this))
                     _.each(this.nodesArrayFirst,function(el,key,ls){
+                        el.checked = false;
                         _.each(this.selectedLocalNodeList,function(data,key,ls){
                             if(el.value == data.nodeId){
                                 el.checked = true;
@@ -235,6 +236,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                         this.ruleContent.upper.push({"nodeId":el.value,"ipCorporation":0});
                     }.bind(this))
                     _.each(this.nodesArrayFirstLocal,function(el,key,ls){
+                        el.checked = false;
                         _.each(this.selectedUpperNodeList,function(data,key,ls){
                             if(el.value == data.nodeId){
                                 el.checked = true;
@@ -267,7 +269,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             }
         },
         initUpperSelect: function(res){
-            var nodesArray = this.nodesArrayFirstLocal;
+            var nodesArray = this.nodesArrayFirstLocal; 
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.upper .add-node-ctn').get(0),
                 panelID: this.$el.find('.upper .add-node').get(0),
@@ -285,6 +287,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                         this.ruleContent.upper.push({"nodeId":el.value,"ipCorporation":0});
                     }.bind(this))
                     _.each(this.nodesArrayFirstLocal,function(el,key,ls){
+                        el.checked = false;
                         _.each(this.selectedUpperNodeList,function(data,key,ls){
                             if(el.value == data.nodeId){
                                 data.operatorId = el.operatorId;
@@ -410,6 +413,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                         this.ruleContent.local.push(parseInt(el.value));
                     }.bind(this));
                      _.each(this.nodesArrayFirst,function(el,key,ls){
+                        el.checked = false;
                         _.each(this.selectedLocalNodeList,function(data,key,ls){
                             if(el.value == data.nodeId){
                                 data.operatorId = el.operatorId;

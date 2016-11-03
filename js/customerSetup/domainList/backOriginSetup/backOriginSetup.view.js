@@ -161,9 +161,9 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 
                 if (this.defaultParam.originAdvanceType === 2){
                     this.$el.find("textarea[id='secondary']").hide();
+                    this.$el.find("textarea[id='secondary']").val("");
                 } else {
                     this.$el.find("textarea[id='secondary']").show();
-                    this.$el.find("textarea[id='secondary']").val("");
                 }
             }.bind(this));
 

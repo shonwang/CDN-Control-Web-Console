@@ -20,10 +20,10 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
             }; 
 
             if (this.isEdit){
-                this.defaultParam.type = this.model.get("matchingType") || 9;
+                this.defaultParam.type = this.model.get("matchingType");
                 this.defaultParam.policy = this.model.get("matchingValue") || "";
-                this.defaultParam.directionType = this.model.get("directionType") || 1;
-                this.defaultParam.actionType = this.model.get("actionType") || 1;
+                this.defaultParam.directionType = this.model.get("directionType");
+                this.defaultParam.actionType = this.model.get("actionType");
                 this.defaultParam.headerKey = this.model.get("headerKey") || "";
                 this.defaultParam.headerValue = this.model.get("headerValue") || "";
             }
@@ -127,9 +127,9 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
             }
 
             var directionTypeName = "";
-            if (this.defaultParam.directionType === 1) directionTypeName = "方向：客户端到CDN支持<br>";
-            if (this.defaultParam.directionType === 2) directionTypeName = "方向：CDN到源站支持<br>";
-            if (this.defaultParam.directionType === 3) directionTypeName = "方向：源到CDN支持<br>";
+            if (this.defaultParam.directionType === 1) directionTypeName = "方向：客户端到CDN<br>";
+            if (this.defaultParam.directionType === 2) directionTypeName = "方向：CDN到源站<br>";
+            if (this.defaultParam.directionType === 3) directionTypeName = "方向：源到CDN<br>";
             if (this.defaultParam.directionType === 4) directionTypeName = "方向：CDN到客户端<br>";
 
             var actionTypeName = "";

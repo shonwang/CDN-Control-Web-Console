@@ -47,7 +47,7 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
             if (data){
                 _.each(data.addDetails, function(el, index, list){
                     this.defaultParam.addParamList.push({
-                        id: new Date().valueOf(),
+                        id: el.id || new Date().valueOf(),
                         name: el.key,
                         value: el.value
                     })

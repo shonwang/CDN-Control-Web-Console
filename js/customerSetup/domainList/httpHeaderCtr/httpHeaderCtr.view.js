@@ -143,7 +143,7 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
             rootNode = this.$el.find(".get-ip-type");
             Utility.initDropMenu(rootNode, baseArray, function(value){
                 if (value !== "custom"){
-                    this.defaultParam.obtIpCustom = parseInt(value);
+                    this.defaultParam.obtIpCustom = value;
                     this.$el.find("#custom-type").hide();
                 } else {
                     this.$el.find("#custom-type").show();
@@ -157,10 +157,10 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
 
             if (defaultValue){
                 this.$el.find(".get-ip-type .cur-value").html(defaultValue.name);
-            } else {
-                this.$el.find(".get-ip-type .cur-value").html("Cdn-Src-IP");
-                this.$el.find("#custom-type").val(this.defaultParam.obtIpCustom);
                 this.$el.find("#custom-type").hide();
+            } else {
+                this.$el.find(".get-ip-type .cur-value").html("自定义");
+                this.$el.find("#custom-type").val(this.defaultParam.obtIpCustom);
             }
         },
 

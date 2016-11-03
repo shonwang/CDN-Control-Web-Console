@@ -101,28 +101,29 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 this.$el.find(".use-advance .togglebutton input").get(0).checked = false;
                 this.$el.find(".advanced").hide();
                 this.$el.find(".base").show();
-                this.$el.find(".base #textarea-origin-type").val(this.defaultParam.originBaseDomain);
             } else if (this.defaultParam.isUseAdvance === 2) {
                 this.$el.find(".use-advance .togglebutton input").get(0).checked = true;
                 this.$el.find(".advanced").show();
                 this.$el.find(".base").hide();
-                this.$el.find(".default #primary").val(this.defaultParam.defaultPrimary);
-                this.$el.find(".default #secondary").val(this.defaultParam.defaultBackup);
-                this.$el.find(".unicom #primary").val(this.defaultParam.unicomPrimary);
-                this.$el.find(".unicom #secondary").val(this.defaultParam.unicomBackup);
-                this.$el.find(".telecom #primary").val(this.defaultParam.telecomPrimary);
-                this.$el.find(".telecom #secondary").val(this.defaultParam.telecomBackup);
-                this.$el.find(".mobile #primary").val(this.defaultParam.mobilePrimary);
-                this.$el.find(".mobile #secondary").val(this.defaultParam.mobileBackup);
-                if (this.defaultParam.originStrategy === 1){
-                    this.$el.find(".poll .radio input").get(0).checked = true;
-                    this.$el.find(".quality .radio input").get(0).checked = false;
-                } else if (this.defaultParam.originStrategy === 2){
-                    this.$el.find(".poll .radio input").get(0).checked = false;
-                    this.$el.find(".quality .radio input").get(0).checked = true;
-                }
-                this.$el.find("#ip-num").val(this.defaultParam.ipNum);
             }
+            this.$el.find(".base #textarea-origin-type").val(this.defaultParam.originBaseDomain);
+            this.$el.find(".default #primary").val(this.defaultParam.defaultPrimary);
+            this.$el.find(".default #secondary").val(this.defaultParam.defaultBackup);
+            this.$el.find(".unicom #primary").val(this.defaultParam.unicomPrimary);
+            this.$el.find(".unicom #secondary").val(this.defaultParam.unicomBackup);
+            this.$el.find(".telecom #primary").val(this.defaultParam.telecomPrimary);
+            this.$el.find(".telecom #secondary").val(this.defaultParam.telecomBackup);
+            this.$el.find(".mobile #primary").val(this.defaultParam.mobilePrimary);
+            this.$el.find(".mobile #secondary").val(this.defaultParam.mobileBackup);
+            if (this.defaultParam.originStrategy === 1){
+                this.$el.find(".poll .radio input").get(0).checked = true;
+                this.$el.find(".quality .radio input").get(0).checked = false;
+            } else if (this.defaultParam.originStrategy === 2){
+                this.$el.find(".poll .radio input").get(0).checked = false;
+                this.$el.find(".quality .radio input").get(0).checked = true;
+            }
+            this.$el.find("#ip-num").val(this.defaultParam.ipNum);
+
             this.initOriginTypeDropdown();
             this.$el.find(".base #textarea-origin-type").on("blur", $.proxy(this.onBlurTextarea, this))
             this.$el.find(".advanced textarea").on("blur", $.proxy(this.onBlurAdvancedTextarea, this))
@@ -405,7 +406,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             if (this.defaultParamModifyHost.domainType === 2 && this.originType === 1) {
                 alert("未设置回源域名不能使用此项");
                 return;
-            };
+            }
             if (this.defaultParamModifyHost.domainType === 3) {
                 var value = this.$el.find("#textarea-host-domain").val();
                 var result = this.checkBaseOrigin(value, 2)

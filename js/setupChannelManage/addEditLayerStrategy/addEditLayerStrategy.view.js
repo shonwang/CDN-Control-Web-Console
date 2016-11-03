@@ -45,7 +45,6 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             this.collection.on("get.operator.success", $.proxy(this.initDropMenu, this));
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
             this.collection.getOperatorList();
-
             this.initSetup();
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
@@ -224,8 +223,19 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 panelID: this.$el.find('.upper .add-node').get(0),
                 openSearch: true,
                 onOk: function(data){
+                    var NowselectedUpperNodeList = [];
+                    _.each(this.selectedUpperNodeList,function(el,index,list){
+                         NowselectedUpperNodeList.push(el);
+                    }.bind(this));
+                    
+                    var NowruleContentUpper = [];
+                    _.each(this.ruleContent.upper,function(el,index,list){
+                          NowruleContentUpper.push(el);
+                    }.bind(this));
+                    
                     this.selectedUpperNodeList = [];
                     this.ruleContent.upper = [];
+                    
                     _.each(data, function(el, key, ls){
                         this.selectedUpperNodeList.push({
                             nodeId: el.value, 
@@ -235,6 +245,25 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                         });
                         this.ruleContent.upper.push({"nodeId":el.value,"ipCorporation":0});
                     }.bind(this))
+                    
+                    _.each(this.selectedUpperNodeList,function(el,index,list){
+                        el.ipCorporation = 0;
+                        _.each(NowselectedUpperNodeList,function(upperNode,index,list){
+                            if(el.nodeId == upperNode.nodeId){
+                                el.ipCorporation = upperNode.ipCorporation;
+                            }
+                        })
+                    }.bind(this))
+                    
+                    _.each(this.ruleContent.upper,function(el,index,list){
+                        el.ipCorporation = 0;
+                        _.each(NowruleContentUpper,function(upper,index,list){
+                            if(el.nodeId == upper.nodeId){
+                                el.ipCorporation = upper.ipCorporation;
+                            }
+                        })
+                    }.bind(this))
+                    
                     _.each(this.nodesArrayFirstLocal,function(el,key,ls){
                         el.checked = false;
                         _.each(this.selectedUpperNodeList,function(data,key,ls){
@@ -275,17 +304,48 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 panelID: this.$el.find('.upper .add-node').get(0),
                 openSearch: true,
                 onOk: function(data){
+                    var NowselectedUpperNodeList = [];
+                    _.each(this.selectedUpperNodeList,function(el,index,list){
+                         NowselectedUpperNodeList.push(el);
+                    }.bind(this));
+                    
+                    var NowruleContentUpper = [];
+                    _.each(this.ruleContent.upper,function(el,index,list){
+                          NowruleContentUpper.push(el);
+                    }.bind(this));
+                    
+                    this.selectedUpperNodeList = [];
+                    this.ruleContent.upper = [];
                     this.selectedUpperNodeList = [];
                     this.ruleContent.upper = [];
                     _.each(data, function(el, key, ls){
                         this.selectedUpperNodeList.push({
                             nodeId: el.value, 
                             nodeName: el.name,
-                            ipCorporation: 0,
+                            ipCorporation:0,
                             operatorId:''
                         });
                         this.ruleContent.upper.push({"nodeId":el.value,"ipCorporation":0});
+                    }.bind(this));
+                   
+                     _.each(this.selectedUpperNodeList,function(el,index,list){
+                        el.ipCorporation = 0;
+                        _.each(NowselectedUpperNodeList,function(upperNode,index,list){
+                            if(el.nodeId == upperNode.nodeId){
+                                el.ipCorporation = upperNode.ipCorporation;
+                            }
+                        })
                     }.bind(this))
+                    
+                    _.each(this.ruleContent.upper,function(el,index,list){
+                        el.ipCorporation = 0;
+                        _.each(NowruleContentUpper,function(upper,index,list){
+                            if(el.nodeId == upper.nodeId){
+                                el.ipCorporation = upper.ipCorporation;
+                            }
+                        })
+                    }.bind(this))
+                   
                     _.each(this.nodesArrayFirstLocal,function(el,key,ls){
                         el.checked = false;
                         _.each(this.selectedUpperNodeList,function(data,key,ls){
@@ -335,17 +395,16 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             if(!this.isEdit){
                 _.each(rootNodes,function(el){
                     _.each(this.ruleContent.upper,function(key){
-                        if(el.id == key.nodeId){
+                        if(el.id == key.nodeId && el.ipCorporation == 0){
                             key.ipCorporation = 1;
                         }
                     }.bind(this))
                 }.bind(this))
             }
-            
             for (var i = 0; i < rootNodes.length; i++){
                 this.initTableDropMenu($(rootNodes[i]), statusArray, function(value, nodeId){
                     _.each(this.selectedUpperNodeList, function(el, key, list){
-                        if (el.nodeId === parseInt(nodeId)){
+                        if (parseInt(el.nodeId) === parseInt(nodeId)){
                             el.ipCorporation = parseInt(value);
                         }
                     }.bind(this));
@@ -355,27 +414,48 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                         }
                     }.bind(this));
                 }.bind(this));
-
+                
                 var nodeId = $(rootNodes[i]).attr("id"),
+                
+                newUpperObj = _.find(this.selectedUpperNodeList,function(obj){
+                     return obj.nodeId == parseInt(nodeId);
+                }.bind(this))
+                
                 upperObj = _.find(this.ruleContent.upper, function(object){
                     return object.nodeId == parseInt(nodeId);
                 }.bind(this))
-                var leberNode = $(rootNodes[i]).find("#dropdown-ip-operator .cur-value");
-
-                if (upperObj){
-                    var defaultValue = _.find(statusArray, function(object){
-                        return object.value == upperObj.ipCorporation;
-                    }.bind(this));
-
-                    if (defaultValue){
-                        leberNode.html(defaultValue.name);
-                    }
-                    else
-                        leberNode.html(statusArray[0].name);
-                } else {
-                    leberNode.html(statusArray[0].name);
-                }
                 
+                var leberNode = $(rootNodes[i]).find("#dropdown-ip-operator .cur-value");
+                
+                if(this.isEdit){
+                    if (upperObj){
+                        var defaultValue = _.find(statusArray, function(object){
+                            return object.value == upperObj.ipCorporation;
+                        }.bind(this));
+
+                        if (defaultValue){
+                            leberNode.html(defaultValue.name);
+                        }
+                        else
+                            leberNode.html(statusArray[0].name);
+                    } else {
+                        leberNode.html(statusArray[0].name);
+                    }
+                }
+                else{
+                    if (newUpperObj){
+                        var defaultValue = _.find(statusArray, function(object){
+                            return object.value == newUpperObj.ipCorporation;
+                        }.bind(this));
+                        if (defaultValue){
+                            leberNode.html(defaultValue.name);
+                        }
+                        else
+                            leberNode.html(statusArray[0].name);
+                    } else {
+                        leberNode.html(statusArray[0].name);
+                    }
+                }
                 
             }
         },

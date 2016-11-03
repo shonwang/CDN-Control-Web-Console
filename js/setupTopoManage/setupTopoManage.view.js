@@ -53,10 +53,18 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             myEditOrAddSendView.render(this.$el.find('.SendTable'));
         },
         onClickEditSend: function(event){
-            var target = event.target || event.srcElement;
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
             
             var myEditOrAddSendView = new EditOrAddSendView({
                 collection:this.collection,
+                isEdit:true,
+                id:id,
                 onSaveCallback:function(){}.bind(this),
                 onCancelCallback:function(){
                     myEditOrAddSendView.$el.remove();
@@ -75,18 +83,26 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         initialize: function(options){
             this.options = options;
             this.collection = options.collection;
+            this.id = options.id,
+            this.isEdit = options.isEdit,
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.send.edit.html'])({data: {}}));
             
             this.$el.find('.add-step').on('click',$.proxy(this.onClickAddStepButton, this));
             this.$el.find('.opt-ctn .cancel').on('click',$.proxy(this.onClickCancelButton, this));
             
-         //   this.initstepTable();
+            this.initstepTable();
+
+            //this.collection.getOriginSendinfo();
 
         },
         initstepTable: function(){
-            
-            this.localTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
-                 data: this.selectedAllNodeList
+            var data = [
+              {name:'扬州电信节点、扬州联通节点、杭州'},
+              {name:'济南联通节点、惠州联通节点、天津电信节点'},
+              {name:'石家庄联通节点、襄阳电信节点、德阳电信节点、天津移动节点'}
+            ]
+            this.localTable = $(_.template(template['tpl/setupTopoManage/setupTopoManage.addStep.table.html'])({
+                 data: data
             }));
             _.each($(this.localTable).find('.addOrEdit .delete'),function(el){
                 _.each(this.NodeleteNodes,function(nodes){
@@ -96,10 +112,10 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 }.bind(this))
             }.bind(this))
             
-            if (this.selectedAllNodeList.length !== 0)
-                this.$el.find(".all .table-ctn").html(this.localTable[0]);
+            if (data.length !== 0)
+                this.$el.find(".sendStrategy .table-ctn").html(this.localTable[0]);
             else
-                this.$el.find(".all .table-ctn").html(_.template(template['tpl/empty.html'])());
+                this.$el.find(".sendStrategy .table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemAllDelete, this));
         },

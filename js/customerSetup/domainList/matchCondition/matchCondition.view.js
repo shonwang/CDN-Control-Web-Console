@@ -224,7 +224,7 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
             //     { id:23, pId:2, name:"随意勾选 2-3"}
             // ];
             var policyArray = [], allFileTypeArray = []; this.customFileType = [];
-            if (this.options.defaultPolicy) policyArray = this.options.defaultPolicy.split(";");
+            if (this.options.defaultPolicy) policyArray = this.options.defaultPolicy.split(",");
 
             _.each(this.allFileType, function(el, index, ls){
                 if (el.pId === null) el.open = true;
@@ -241,7 +241,7 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
                     this.customFileType.push(el)
             }.bind(this))
 
-            this.$el.find("#textarea-file-type").val(this.customFileType.join(";"))
+            this.$el.find("#textarea-file-type").val(this.customFileType.join(","))
 
             this.treeObj = $.fn.zTree.init(this.$el.find("#tree"), setting, this.allFileType);
             this.getTreeSelected(); 
@@ -281,8 +281,8 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
                 fileTypeArray.push(el.name)
             }.bind(this))
 
-            var fileTypePolicy = fileTypeArray.join(";");
-            if (customFileType&&fileTypePolicy) fileTypePolicy = fileTypePolicy + ";" + customFileType;
+            var fileTypePolicy = fileTypeArray.join(",");
+            if (customFileType&&fileTypePolicy) fileTypePolicy = fileTypePolicy + "," + customFileType;
             if (customFileType&&!fileTypePolicy) fileTypePolicy = customFileType;
 
             return fileTypePolicy

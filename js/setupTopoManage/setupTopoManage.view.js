@@ -511,8 +511,11 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             }));
             if (this.selectedUpperNodeList.length !== 0)
                 this.$el.find(".upper .table-ctn").html(this.upperTable[0]);
-            else
+            else{
                 this.$el.find(".upper .table-ctn").html(_.template(template['tpl/empty.html'])());
+                this.defaultParam.upperNodes = [];
+            }
+
 
             if (!this.isEdit)
                 this.upperTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperDelete, this));
@@ -569,7 +572,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             var lengthUpperNode = this.nodesArrayFirstUpper.length;
             for(var i = 0 ;i<lengthUpperNode;i++){
                 if(parseInt(this.nodesArrayFirstUpper[i].value) === parseInt(id)){
-                    console.log('sssss');
                     this.nodesArrayFirstUpper[i].checked = false;
                     this.initUpperSelect(this.nodesArrayFirstUpper);
                 }
@@ -625,7 +627,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                         var data = this.InformationProcessing(this.rule);
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".add-topo").show();
-                        console.log(data);
                         this.initRuleTable(data);
                         
                     }.bind(this),

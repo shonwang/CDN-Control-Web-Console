@@ -191,8 +191,8 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
             if (matchingType === 9) matchingTypeName = "全部文件";
 
             var type = this.defaultParam.refererType, typeName;
-            if (type === 0) typeName = "Referer类型：白名单<br>";
-            if (type === 1) typeName = "Referer类型：黑名单<br>";
+            if (type === 1) typeName = "Referer类型：白名单<br>";
+            if (type === 2) typeName = "Referer类型：黑名单<br>";
 
             var domains = this.defaultParam.refererType === 1 ? this.$el.find("#white-domain").val() : this.$el.find("#black-domain").val(), 
                 domainsName;
@@ -374,7 +374,7 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
                     var postParam = myAddEditRefererAntiLeechView.onSure();
                     if (!postParam) return;
                     _.each(postParam, function(value, key, ls){
-                        this.collection.get(id).set(key, value);
+                        model.set(key, value);
                     }.bind(this))
                     this.collection.trigger("get.refer.success");
                     this.addRolePopup.$el.modal('hide');

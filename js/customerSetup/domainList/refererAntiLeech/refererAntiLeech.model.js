@@ -10,8 +10,8 @@ define("refererAntiLeech.model", ['require','exports', 'utility'], function(requ
             if (matchingType === 9) this.set("matchingTypeName", "全部文件");
 
             var type = this.get('type'), typeName;
-            if (type === 0) typeName = "Referer类型：白名单<br>";
-            if (type === 1) typeName = "Referer类型：黑名单<br>";
+            if (type === 1) typeName = "Referer类型：白名单<br>";
+            if (type === 2) typeName = "Referer类型：黑名单<br>";
 
             var domains = this.get('domains'), domainsName;
             if (domains) domainsName = "合法域名：" + domains + "<br>";

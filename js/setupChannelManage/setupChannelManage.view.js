@@ -185,6 +185,45 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         }
     });
 
+    var HistoryView = Backbone.View.extend({
+        events: {
+            //"click .search-btn":"onClickSearch"
+        },
+
+        initialize: function(options) {
+            this.options = options;
+            this.collection = options.collection;
+            this.model      = options.model;
+
+            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.html'])({data: {}}));
+
+            this.initSetup()
+        },
+
+        initSetup: function(){
+            this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.table.html'])({
+                data: data, 
+            }));
+            if (data.length !== 0)
+                this.$el.find(".table-ctn").html(this.table[0]);
+            else
+                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+
+            this.table.find("tbody .bill").on("click", $.proxy(this.onClickItemBill, this));
+        },
+
+        onGetError: function(error){
+            if (error&&error.message)
+                alert(error.message)
+            else
+                alert("网络阻塞，请刷新重试！")
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target);
+        }
+    }); 
+
     var SetupChannelManageView = Backbone.View.extend({
         events: {},
 

@@ -10,9 +10,9 @@ define("httpHeaderOpt.model", ['require','exports', 'utility'], function(require
             if (type === 9) this.set("typeName", "全部文件");
 
             var directionType = this.get("directionType"), directionTypeName;
-            if (directionType === 1) directionTypeName = "方向：客户端到CDN支持<br>";
-            if (directionType === 2) directionTypeName = "方向：CDN到源站支持<br>";
-            if (directionType === 3) directionTypeName = "方向：源到CDN支持<br>";
+            if (directionType === 1) directionTypeName = "方向：客户端到CDN<br>";
+            if (directionType === 2) directionTypeName = "方向：CDN到源站<br>";
+            if (directionType === 3) directionTypeName = "方向：源到CDN<br>";
             if (directionType === 4) directionTypeName = "方向：CDN到客户端<br>";
 
             var actionType = this.get("actionType"), actionTypeName;

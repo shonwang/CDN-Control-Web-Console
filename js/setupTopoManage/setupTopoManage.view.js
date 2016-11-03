@@ -1013,6 +1013,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onGetTopoSuccess: function(){
+            alert('进入');
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
         },
@@ -1029,7 +1030,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
 
         initTable: function(){
-
+            alert('sss');
             this.table = $(_.template(template['tpl/setupTopoManage/setupTopoManage.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
             if(AUTH_OBJ.EditTopos){
                this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
@@ -1063,13 +1064,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".list-panel").hide();
             mySpecialLayerManageView.render(this.$el.find(".strategy-panel"))
         },
-
-/*=======
-
-            this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-            this.table.find("tbody .send").on("click", $.proxy(this.onClickItemSend, this));
-        },
->>>>>>> dzq-vCustomerSetup-other*/
         onClickAddRuleTopoBtn: function(){
             this.off('enterKeyBindQuery');
             var myEditTopoView = new EditTopoView({

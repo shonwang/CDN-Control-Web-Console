@@ -37,8 +37,24 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+
+            this.table.find('.edit').on('click',$.proxy(this.onClickEditSend,this));
         },
         onClickAddSend: function(){
+            var myEditOrAddSendView = new EditOrAddSendView({
+                collection:this.collection,
+                onSaveCallback:function(){}.bind(this),
+                onCancelCallback:function(){
+                    myEditOrAddSendView.$el.remove();
+                    this.$el.find(".list-panel").show();
+                }.bind(this)
+            });
+            this.$el.find('.list-panel').hide();
+            myEditOrAddSendView.render(this.$el.find('.SendTable'));
+        },
+        onClickEditSend: function(event){
+            var target = event.target || event.srcElement;
+            
             var myEditOrAddSendView = new EditOrAddSendView({
                 collection:this.collection,
                 onSaveCallback:function(){}.bind(this),
@@ -595,7 +611,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     }
                 }.bind(this))
             }
-             console.log(this.selectedAllNodeList);
             this.localTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
                 data: this.selectedAllNodeList
             }));
@@ -1013,7 +1028,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onGetTopoSuccess: function(){
-            alert('进入');
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
         },
@@ -1030,39 +1044,18 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
 
         initTable: function(){
-            alert('sss');
             this.table = $(_.template(template['tpl/setupTopoManage/setupTopoManage.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
+            if (this.collection.models.length !== 0)
+                this.$el.find(".table-ctn").html(this.table[0]);
+            else
+                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+            
             if(AUTH_OBJ.EditTopos){
                this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
             }else{
                this.table.find("tbody .edit").remove();
             }
-            this.table.find("tbody .strategy").on("click", $.proxy(this.onClickItemSpecialLayer, this));
-        },
-
-        onClickItemSpecialLayer: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
-
-            var model = this.collection.get(id);
-            console.log(model);
-            var mySpecialLayerManageView = new SpecialLayerManageView({
-                collection: this.collection,
-                model: model,
-                onSaveCallback: function(){}.bind(this),
-                onCancelCallback: function(){
-                    mySpecialLayerManageView.$el.remove();
-                    this.$el.find(".list-panel").show();
-                }.bind(this)
-            })
-
-            this.$el.find(".list-panel").hide();
-            mySpecialLayerManageView.render(this.$el.find(".strategy-panel"))
+            this.table.find("tbody .send").on("click", $.proxy(this.onClickItemSend, this));
         },
         onClickAddRuleTopoBtn: function(){
             this.off('enterKeyBindQuery');

@@ -198,6 +198,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+            this.$el.find(".multi-modify-topology").on("click", $.proxy(this.onClickMultiModifyTopology, this))
             this.enterKeyBindQuery();
 
             this.queryArgs = {
@@ -258,6 +259,19 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
 
             this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+        },
+
+        onClickMultiModifyTopology: function(){
+            var checkedList = this.collection.filter(function(model) {
+                return model.get("isChecked") === true;
+            });
+
+            var domainArray = [];
+            _.each(checkedList, function(el, index, ls){
+                domainArray.push(el.get("domain"));
+            }.bind(this))
+
+            console.log(domainArray)
         },
 
         onClickItemHistory: function(event){

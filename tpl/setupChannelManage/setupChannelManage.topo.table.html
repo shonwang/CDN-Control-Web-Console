@@ -7,16 +7,16 @@
     </thead>
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
-            <tr data-id="<%=data[i].attributes.id%>">
+            <tr data-id="<%=data[i].get('id')%>">
               <td>
                   <div class="radio">
                       <label>
-                        <input type="radio" name="options-topo" id=<%="options-topo" + i%>>
-                        <%=data[i].get("cname")%>
+                        <input type="radio" name="options-topo" id=<%=data[i].get('id')%>>
+                        <%=data[i].get("name")%>
                       </label>
                   </div>
               </td>
-              <td><%=data[i].get("cname")%></td>
+              <td>备注</td>
             </tr>
         <% } %>  
     </tbody>

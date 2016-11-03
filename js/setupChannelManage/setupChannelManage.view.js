@@ -195,6 +195,8 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
 
             this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])());
 
+            this.initDomainList();
+
             require(["setupTopoManage.model"], function(SetupTopoManageModel){
                 this.mySetupTopoManageModel = new SetupTopoManageModel();
                 this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.initTable, this));
@@ -208,6 +210,16 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             }.bind(this))
         },
 
+        initDomainList: function(){
+            this.domainList = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.detail.domain.html'])({
+                data: this.domainArray, 
+            }));
+            if (this.domainArray.length !== 0)
+                this.$el.find(".domain-ctn").html(this.domainList[0]);
+            else
+                this.$el.find(".domain-ctn").html(_.template(template['tpl/empty.html'])());
+        },
+
         initTable: function(){
             this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.topo.table.html'])({
                 data: this.mySetupTopoManageModel.models, 
@@ -216,6 +228,18 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+        },
+
+        onSure: function(){
+            var selectedTopo = this.$el.find("input:checked");
+            if (!selectedTopo.get(0)){
+                alert("请选择一个拓扑关系")
+                return false;
+            }
+            var topoId = selectedTopo.get(0).id,
+                model = this.mySetupTopoManageModel.get(topoId);
+
+            return model;   
         },
 
         onGetError: function(error){
@@ -313,7 +337,10 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
 
             var domainArray = [];
             _.each(checkedList, function(el, index, ls){
-                domainArray.push(el.get("domain"));
+                domainArray.push({
+                    domain: el.get("domain"), 
+                    id: el.get("id")
+                });
             }.bind(this))
 
             if (this.selectTopoPopup) $("#" + this.selectTopoPopup.modalId).remove();
@@ -328,6 +355,8 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 backdrop : 'static',
                 type     : 2,
                 onOKCallback:  function(){
+                    var result  = mySelectTopoView.onSure();
+                    if (!result) return;
                     this.selectTopoPopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){

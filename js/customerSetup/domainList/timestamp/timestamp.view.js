@@ -174,9 +174,9 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (this.model)
                 this.$el.find("#deadline-time").val(this.model.get("expirationTime"))
 
-            if (this.defaultParam.md5Truncate.indexOf("|") !== -1){
-                this.$el.find("#md5-start").val(this.defaultParam.md5Truncate.split("|")[0])
-                this.$el.find("#md5-end").val(this.defaultParam.md5Truncate.split("|")[1])
+            if (this.defaultParam.md5Truncate.indexOf(",") !== -1){
+                this.$el.find("#md5-start").val(this.defaultParam.md5Truncate.split(",")[0])
+                this.$el.find("#md5-end").val(this.defaultParam.md5Truncate.split(",")[1])
             } 
         },
 
@@ -428,7 +428,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (this.defaultParam.spliceMd5 === 1) {
                 md5Truncate = "";
             } else {
-                md5Truncate = this.$el.find("#md5-start").val() + "|" + this.$el.find("#md5-end").val()
+                md5Truncate = this.$el.find("#md5-start").val() + "," + this.$el.find("#md5-end").val()
             }
             var authKeyList = [];
 

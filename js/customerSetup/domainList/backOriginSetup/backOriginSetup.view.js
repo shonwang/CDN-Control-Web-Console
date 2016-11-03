@@ -159,10 +159,12 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             Utility.initDropMenu(rootOtherNode, advancedArray, function(value){
                 this.defaultParam.originAdvanceType = parseInt(value)
                 
-                if (this.defaultParam.originAdvanceType === 2)
+                if (this.defaultParam.originAdvanceType === 2){
                     this.$el.find("textarea[id='secondary']").hide();
-                else
+                    this.$el.find("textarea[id='secondary']").val("");
+                } else {
                     this.$el.find("textarea[id='secondary']").show();
+                }
             }.bind(this));
 
             var defaultOtherValue = _.find(advancedArray, function(object){

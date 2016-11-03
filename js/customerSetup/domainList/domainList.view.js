@@ -226,6 +226,7 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
         },
 
         update: function(query, target){
+            this.isInitPaginator = false;
             this.options.query = query;
             this.collection.off();
             this.collection.reset();

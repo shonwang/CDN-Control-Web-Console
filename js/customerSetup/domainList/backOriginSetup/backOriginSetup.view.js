@@ -66,6 +66,8 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             if (data.domainConf && data.domainConf.backsourceBestcount !== null && data.domainConf.backsourceBestcount !== undefined)
                 this.defaultParam.ipNum = data.domainConf.backsourceBestcount;
 
+            this.hostType = data.domainConf.hostType;
+
             if (data.advanceConfigList){
                 _.each(data.advanceConfigList, function(el, index, ls) {
                     if (el.originLine === 1){
@@ -213,6 +215,11 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onClickSaveBtn: function(){
+            if ((this.hostType === 2 && this.defaultParam.originBaseType === 1) || 
+                (this.hostType === 2 && this.defaultParam.originAdvanceType === 1)){
+                alert("修改回源Host设置为源站域名，不能使用IP回源");
+                return;
+            };
             if (this.defaultParam.isUseAdvance === 1 && !this.checkBaseOrigin()){
                 return;
             } if (this.defaultParam.isUseAdvance === 2) {
@@ -283,6 +290,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                     }.bind(this),
                     onHiddenCallback: function(){
                         if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();
+                        this.update(this.options.query, this.options.query2, this.target);
                     }.bind(this)
                 }
                 this.sendPopup = new Modal(options);
@@ -493,6 +501,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
 
         render: function(target){
             this.$el.appendTo(target);
+            this.target = target
         }
     });
 

@@ -185,31 +185,60 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         }
     });
 
-    var HistoryView = Backbone.View.extend({
-        events: {
-            //"click .search-btn":"onClickSearch"
-        },
+    var SelectTopoView = Backbone.View.extend({
+        events: {},
 
         initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
-            this.model      = options.model;
+            this.domainArray = options.domainArray;
 
-            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.html'])({data: {}}));
+            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])());
 
-            this.initSetup()
+            this.initDomainList();
+            require(["setupTopoManage.model"], function(SetupTopoManageModel){
+                this.mySetupTopoManageModel = new SetupTopoManageModel();
+                this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.initTable, this));
+                this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this));
+                this.mySetupTopoManageModel.getTopoinfo({
+                    name:null,
+                    page:1,
+                    size:99999,
+                    type:null
+                });
+            }.bind(this))
         },
 
-        initSetup: function(){
-            this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.table.html'])({
-                data: data, 
+        initDomainList: function(){
+            this.domainList = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.detail.domain.html'])({
+                data: this.domainArray, 
             }));
-            if (data.length !== 0)
+            if (this.domainArray.length !== 0)
+                this.$el.find(".domain-ctn").html(this.domainList[0]);
+            else
+                this.$el.find(".domain-ctn").html(_.template(template['tpl/empty.html'])());
+        },
+
+        initTable: function(){
+            this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.topo.table.html'])({
+                data: this.mySetupTopoManageModel.models, 
+            }));
+            if (this.mySetupTopoManageModel.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+        },
 
-            this.table.find("tbody .bill").on("click", $.proxy(this.onClickItemBill, this));
+        onSure: function(){
+            var selectedTopo = this.$el.find("input:checked");
+            if (!selectedTopo.get(0)){
+                alert("请选择一个拓扑关系")
+                return false;
+            }
+            var topoId = selectedTopo.get(0).id,
+                model = this.mySetupTopoManageModel.get(topoId);
+
+            return model;   
         },
 
         onGetError: function(error){
@@ -307,10 +336,33 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
 
             var domainArray = [];
             _.each(checkedList, function(el, index, ls){
-                domainArray.push(el.get("domain"));
+                domainArray.push({
+                    domain: el.get("domain"), 
+                    id: el.get("id")
+                });
             }.bind(this))
 
-            console.log(domainArray)
+            if (this.selectTopoPopup) $("#" + this.selectTopoPopup.modalId).remove();
+
+            var mySelectTopoView = new SelectTopoView({
+                collection: this.collection, 
+                domainArray : domainArray
+            });
+            var options = {
+                title: "选择拓扑关系",
+                body : mySelectTopoView,
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback:  function(){
+                    var result  = mySelectTopoView.onSure();
+                    if (!result) return;
+                    this.selectTopoPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){
+                    this.enterKeyBindQuery();
+                }.bind(this)
+            }
+            this.selectTopoPopup = new Modal(options);
         },
 
         onClickItemHistory: function(event){

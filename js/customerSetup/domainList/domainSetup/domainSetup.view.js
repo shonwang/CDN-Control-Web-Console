@@ -32,7 +32,7 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
                 var myDomainListModel = new DomainListModel();
                     myDomainListModel.on("get.region.success", $.proxy(this.onGetRegionSuccess, this))
                     myDomainListModel.on("get.region.error", $.proxy(this.onGetError, this))
-                    myDomainListModel.getRegionBilling();
+                    myDomainListModel.getRegionBilling({userId: clientInfo.uid});
             }.bind(this))
         },
 

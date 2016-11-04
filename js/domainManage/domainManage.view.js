@@ -186,7 +186,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     this.args.protocol = 1;
                 }
             }.bind(this));
-            this.args.type = typeList[0].value;
+            if(this.args.type == null){
+               this.args.type = typeList[0].value;
+            }
             if(this.isEdit){
                 $.each(typeList,function(k,v){
 
@@ -221,7 +223,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "带?自定义域名", value: 2},
                 {name: "不带?自定义域名", value: 3}
             ];
-            this.args.confParamNew = confParamNewList[1].value;
+            if(this.args.confParamNew == null){
+              this.args.confParamNew = confParamNewList[1].value;
+            }
             Utility.initDropMenu(this.$el.find(".dropdown-confParamNew"), confParamNewList, function(value){
                 this.args.confParamNew = parseInt($.trim(value));
                 if(this.args.confParamNew > 1){
@@ -247,7 +251,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "源站域名", value: 2},
                 {name: "OSS域名", value: 3}
             ];
-            this.args.originType = originTypeList[0].value;
+            if(this.args.originType == null){
+              this.args.originType = originTypeList[0].value;
+            }
             Utility.initDropMenu(this.$el.find(".dropdown-originType"), originTypeList, function(value){
                 this.args.originType = parseInt($.trim(value));
             }.bind(this));
@@ -266,7 +272,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             Utility.initDropMenu(this.$el.find(".dropdown-confRange"), confRangeList, function(value){
                 this.args.confRange = parseInt($.trim(value));
             }.bind(this));
-            this.args.confRange = confRangeList[1].value;
+            if(this.args.confRange == null){
+              this.args.confRange = confRangeList[1].value;
+            }
             if(this.isEdit){
                 $.each(confRangeList,function(k,v){
                     if(v.value == this.model.get("confRange")){
@@ -279,7 +287,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "是", value: 1},
                 {name: "否", value: 0}
             ];
-            this.args.referNullable = referNullableList[0].value;
+            if(this.args.referNullable == null){
+               this.args.referNullable = referNullableList[0].value;
+            }
             Utility.initDropMenu(this.$el.find(".dropdown-referNullable"), referNullableList, function(value){
                 this.args.referNullable = parseInt($.trim(value));
             }.bind(this));
@@ -296,7 +306,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "白名单", value: 1},
                 {name: "黑名单", value: 2}
             ];
-            this.args.referVisitControl = referVisitControlList[0].value;
+            if(this.args.referVisitControl == null){
+               this.args.referVisitControl = referVisitControlList[0].value;
+            }
             Utility.initDropMenu(this.$el.find(".dropdown-referVisitControl"), referVisitControlList, function(value){
                 this.args.referVisitControl = parseInt($.trim(value));
             }.bind(this));
@@ -313,7 +325,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "白名单", value: 1},
                 {name: "黑名单", value: 2}
             ];
-            this.args.ipVisitControl = ipVisitControlList[0].value;
+            if(this.args.ipVisitControl == null){
+               this.args.ipVisitControl = ipVisitControlList[0].value;
+            }
             Utility.initDropMenu(this.$el.find(".dropdown-ipVisitControl"), ipVisitControlList, function(value){
                 this.args.ipVisitControl = parseInt($.trim(value));
             }.bind(this));
@@ -329,7 +343,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "普通域名", value: 1},
                 {name: "泛域名", value: 2}
             ];
-            this.args.wildcard = wildcardList[0].value;
+            if(this.args.wildcard == null){
+               this.args.wildcard = wildcardList[0].value;
+            }
             Utility.initDropMenu(this.$el.find(".dropdown-wildcard"), wildcardList, function(value){
                 this.args.wildcard = parseInt($.trim(value));
             }.bind(this));
@@ -345,7 +361,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "加速域名", value: 1},
                 {name: "回源域名", value: 2}
             ];
-            this.args.hostType = hostTypeList[0].value;
+            if(this.args.hostType == null){
+               this.args.hostType = hostTypeList[0].value;
+           }
             Utility.initDropMenu(this.$el.find(".dropdown-hostType"), hostTypeList, function(value){
                 this.args.hostType = parseInt($.trim(value));
             }.bind(this));

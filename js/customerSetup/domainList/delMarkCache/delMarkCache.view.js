@@ -64,12 +64,13 @@ define("delMarkCache.view", ['require','exports', 'template', 'modal.view', 'uti
             if (markType === 1) {
                 markTypeName = "是否去问号缓存：是";
             } else if (markType === 0){
-                if (spParam === "") {
-                    alert("指定缓存的参数没有填");
-                    return false;
-                } else {
-                    markTypeName = "是否去问号缓存：否; 指定缓存的参数：" + spParam;
-                }
+                // if (spParam === "") {
+                //     alert("指定缓存的参数没有填");
+                //     return false;
+                // } else {
+                    //markTypeName = "是否去问号缓存：否; 指定缓存的参数：" + spParam;
+                //}
+                markTypeName = "是否去问号缓存：否";
             } else if (markType === 2){
                 markTypeName = "是否去问号缓存：否";
             }

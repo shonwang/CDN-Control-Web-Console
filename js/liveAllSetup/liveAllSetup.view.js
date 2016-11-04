@@ -646,7 +646,6 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             };
             this.matchDeviceNodes = this.treeObj.getNodesByFilter(matchDeviceFilter);
             this.$el.find(".device-num").html(this.matchDeviceNodes.length);
-
         },
 
         getChecked: function(e,treeId,treeNode){

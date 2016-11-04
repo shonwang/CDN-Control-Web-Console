@@ -64,19 +64,19 @@ define("utility", ['require','exports'], function(require, exports) {
         timeFormat: function(input) {
             var input = input || 0, num = parseInt(input);
             if (input >= 60 && input < 60 * 60) {
-                num = parseInt(input / 60)
+                num = Math.ceil(input / 60)
                 return num + '分';
             } else if (input >= 60 * 60 && input < 60 * 60 * 24) {
-                num = parseInt(input / 60 / 60);
+                num = Math.ceil(input / 60 / 60);
                 return num + '时';
             } else if (input >= 60 * 60 * 24 && input < 60 * 60 * 24 * 30) {
-                num = parseInt(input / 60 / 60 / 24);
+                num = Math.ceil(input / 60 / 60 / 24);
                 return num + '天';
             } else if (input >= 60 * 60 * 24 * 30 && input < 60 * 60 * 24 * 30 * 12) {
-                num = parseInt(input / 60 / 60 / 24 / 30);
+                num = Math.ceil(input / 60 / 60 / 24 / 30);
                 return num + '月';
             } else if (input >= 60 * 60 * 24 * 30 * 12){
-                num = parseInt(input / 60 / 60 / 24 / 30 / 12);
+                num = Math.ceil(input / 60 / 60 / 24 / 30 / 12);
                 return num + '年';
             } else {
                 return num + '秒';
@@ -228,6 +228,11 @@ define("utility", ['require','exports'], function(require, exports) {
             return strRegex.test(str_url)
         },
 
+        isAntileechDomain: function(url) {
+            var reg = /^(([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)|\*{1}\.)+[a-zA-Z]{2,20}$/;
+            return reg.test(url);
+        },
+
         isHostHeader:function(str_url){
             var reg=/^([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
             return reg.test(str_url);
@@ -322,6 +327,25 @@ define("utility", ['require','exports'], function(require, exports) {
             );
         },
 
+        adjustElement: function(array, index, isUp){
+            if (index === 0 && isUp) {
+                alert("已经是第一个了！");
+                return array;
+            } else if (index === array.length - 1 && !isUp) {
+                alert("已经是最后一个了！")
+                return array;
+            }
+            var adjustIndex, endArray, selectedArray = array.splice(index, 1);
+            if (isUp)
+                adjustIndex = index - 1;
+            else
+                adjustIndex = index + 1; 
+            endArray = array.splice(adjustIndex, array.length - adjustIndex);
+            array = array.concat(selectedArray, endArray);
+
+            return array;
+        },
+
         postAjax: function(url, args, successCallback, errorCallback, timeout, dataType){
             var defaultParas = {
                 type: "POST",
@@ -332,7 +356,7 @@ define("utility", ['require','exports'], function(require, exports) {
                 processData: false
             };
             defaultParas.data = JSON.stringify(args);
-
+            
             if (dataType) defaultParas.dataType = dataType;
 
             defaultParas.beforeSend = function(xhr){

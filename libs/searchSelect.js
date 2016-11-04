@@ -16,6 +16,8 @@
         this.isSingle = options.isSingle || false;
         this.defaultChecked = options.defaultChecked || false;
         this.scrollBarHeight=options.scrollBarHeight || null;
+        this.isDisabled = options.isDisabled || false;
+        this.disabledNode = options.disabledNode || null;
         this.init();
 
     };
@@ -199,7 +201,26 @@
                             };                            
                         }
                         var _html = this.createCheckBox(_data[i]["name"],_checked);
-                        arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
+                        if(this.isDisabled){
+                           if(_checked || this.defaultChecked){
+                              var flag = true;
+                              _.each(this.disabledNode,function(el,index,list){
+                                  if(_data[i].value == el.value){
+                                    flag = false;
+                                  }
+                              })
+                              if(!flag){
+                                  arr.push('<li style="display:none" data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
+                              }else{
+                                 arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
+                              }
+                              
+                           }else{
+                               arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
+                           }
+                        }else{
+                             arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
+                        }
                         if (this.defaultChecked){
                             this.checkList[_data[i]["value"]] = {
                                 name:  _data[i]["name"],
@@ -258,11 +279,20 @@
                 btnCheckAll.onclick = function() {
                     me.checkAll(true);
                 }
-                btnCancelAll.onclick = function() {
-                    me.checkAll(false);
-                }
-                btnSelectBack.onclick = function() {
-                    me.selectInvert();
+                if(this.isDisabled){
+                    btnCancelAll.onclick = function() {
+                       return false;
+                    }
+                    btnSelectBack.onclick = function() {
+                       return false;
+                    }
+                }else{
+                    btnCancelAll.onclick = function() {
+                        me.checkAll(false);
+                    }
+                    btnSelectBack.onclick = function() {
+                        me.selectInvert();
+                    }
                 }
                 if (btnSearchOK) {
                     //定制ok按钮
@@ -390,11 +420,19 @@
             var html = [];
             html.push('<label class="select-checkboxcon ' + _class + '">');
             if (this.defaultChecked){
-                html.push('<input class="select-checkbox" type="checkbox" checked="true"/>');
+                if(this.isDisabled){
+                  html.push('<input class="select-checkbox" type="checkbox" checked="true" />');
+                }else{
+                   html.push('<input class="select-checkbox" type="checkbox" checked="true"/>'); 
+                }
             }
             else{
                 if(_checked){
-                    html.push('<input class="select-checkbox" type="checkbox" checked="'+_checked+'"/>');
+                    if(this.isDisabled){
+                       html.push('<input class="select-checkbox" type="checkbox" checked="'+_checked+'" disabled="disabled"/>');
+                    }else{
+                       html.push('<input class="select-checkbox" type="checkbox" checked="'+_checked+'"/>');
+                    }
                 }
                 else{
                      html.push('<input class="select-checkbox" type="checkbox"/>');

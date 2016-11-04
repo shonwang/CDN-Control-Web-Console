@@ -92,13 +92,15 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
             }.bind(this))
         },
 
-        select: function(id){
+        select: function(id, callback){
             var activeNode = this.$el.find('#' + id);
             if (activeNode.parent().css("display") == "none") {
                 activeNode.parent().parent().click()
             }
             $("#jquery-accordion-menu").children("ul").find("li").removeClass("active");
             activeNode.addClass("active");
+
+            callback && callback()
         },
 
         initLogin: function(callback){

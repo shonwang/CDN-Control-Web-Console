@@ -1,0 +1,16 @@
+<%if(data.length>0){%>
+<div class="cdn-row clearfix margin-top10">
+	<div class="label-text-show">加速区域：</div>
+	<div class="label-content-show margin-left10 region-select-ctn">
+		<%for(var i=0;i<data.length;i++){%>
+		<label class="select-checkboxcon margin-right10">
+			<input class="select-checkbox" type="checkbox" value="<%=data[i].region%>" />
+			<div class="select-checkbox-value"><%=data[i].name%></div>
+		</label>
+		<%}%>
+		<div class="ks-form-control add-domain-error-tips">
+			<div class="error dir-refresh-error cdn-error-tip" id="cdn-regions-error">请选择加速区域</div>
+		</div>
+	</div>
+</div>
+<%}%>

@@ -71,13 +71,13 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                     }
                 }.bind(this))
 
-                if (expirationTime !== 0 && confType === 0)
+                if (expirationTime === 0 && confType === 0)
                     this.defaultParam.baseDeadline === 1;
-                else if (expirationTime === 0 && confType === 0)
+                else if (expirationTime !== 0 && confType === 0)
                     this.defaultParam.baseDeadline === 2;
                 else if (expirationTime === 0 && confType === 1)
                     this.defaultParam.advancedDeadline = 1;
-                else if (expirationTime === 0 && confType === 1)
+                else if (expirationTime !== 0 && confType === 1)
                     this.defaultParam.advancedDeadline = 2;
 
                 if (md5Truncate === ""){
@@ -172,7 +172,10 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.$el.find("#key_hash").val(this.defaultParam.hashParam);
 
             if (this.model)
-                this.$el.find("#deadline-time").val(this.model.get("expirationTime"))
+                this.$el.find(".deadline-time #deadline-time").val(this.model.get("expirationTime"))
+
+            console.log(this.$el.find(".deadline-time #deadline-time").get(0))
+            console.log(this.model.get("expirationTime"))
 
             if (this.defaultParam.md5Truncate.indexOf(",") !== -1){
                 this.$el.find("#md5-start").val(this.defaultParam.md5Truncate.split(",")[0])
@@ -481,6 +484,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 "id": this.model ? this.model.get("id") : new Date().valueOf(),
                 "matchingType": matchConditionParam.type,
                 "matchingValue": matchConditionParam.policy,
+                "typeName": matchConditionParam.typeName,
                 "confType": confType,
                 "protectionType": protectionType,
                 "timeParam": this.$el.find("#key_time").val(),
@@ -492,9 +496,6 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 "authKeyList": authKeyList,
                 "summary": summary
             }
-
-            console.log(postParam)
-
             return postParam;
         },
 
@@ -675,7 +676,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             var myAddEditTimestampView = new AddEditTimestampView({collection: this.collection});
 
             var options = {
-                title:"去问号缓存",
+                title:"时间戳+共享秘钥防盗链",
                 body : myAddEditTimestampView,
                 backdrop : 'static',
                 type     : 2,

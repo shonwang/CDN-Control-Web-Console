@@ -215,8 +215,6 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
                 matchingTypeName: matchingTypeName
             }
 
-            console.log(postParam)
-
             return postParam
         },
 

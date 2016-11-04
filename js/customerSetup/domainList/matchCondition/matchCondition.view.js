@@ -108,7 +108,8 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
             }
             var postParam = {
                 type: this.options.defaultCondition,
-                policy: policy
+                policy: policy,
+                typeName: this.$el.find("#dropdown-match-type .cur-value").html()
             }
             return postParam
         },

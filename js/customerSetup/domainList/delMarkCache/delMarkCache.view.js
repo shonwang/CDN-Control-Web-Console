@@ -18,9 +18,9 @@ define("delMarkCache.view", ['require','exports', 'template', 'modal.view', 'uti
             };            
 
             if (this.isEdit){
-                this.defaultParam.type = this.model.get("matchingType") || 1;
+                this.defaultParam.type = this.model.get("matchingType");
                 this.defaultParam.policy = this.model.get("matchingValue") || "";
-                this.defaultParam.markType = this.model.get("markType") || 9;
+                this.defaultParam.markType = this.model.get("markType");
                 this.defaultParam.markValue = this.model.get("markValue") || "";
             }
 
@@ -45,9 +45,11 @@ define("delMarkCache.view", ['require','exports', 'template', 'modal.view', 'uti
         initSetup: function(){
             if (this.defaultParam.markType === 1){
                 this.$el.find("#delMarkRadio1").get(0).checked = true;
-            } else if (this.defaultParam.cacheTimeType === 0) {
+            } else if (this.defaultParam.markType === 0) {
                 this.$el.find("#delMarkRadio2").get(0).checked = true;
                 this.$el.find("#sp-param").val(this.defaultParam.markValue)
+            } else if (this.defaultParam.markType === 2) {
+                this.$el.find("#delMarkRadio3").get(0).checked = true;
             }
         },
 
@@ -62,17 +64,21 @@ define("delMarkCache.view", ['require','exports', 'template', 'modal.view', 'uti
             if (markType === 1) {
                 markTypeName = "是否去问号缓存：是";
             } else if (markType === 0){
-                if (spParam === "") {
-                    alert("指定缓存的参数没有填");
-                    return false;
-                } else {
-                    markTypeName = "是否去问号缓存：否; 指定缓存的参数：" + spParam;
-                }
-            } 
+                // if (spParam === "") {
+                //     alert("指定缓存的参数没有填");
+                //     return false;
+                // } else {
+                    //markTypeName = "是否去问号缓存：否; 指定缓存的参数：" + spParam;
+                //}
+                markTypeName = "是否去问号缓存：否";
+            } else if (markType === 2){
+                markTypeName = "是否去问号缓存：否";
+            }
 
             var postParam = {
                 "id": this.isEdit ? this.model.get("id") : new Date().valueOf(),
                 "matchingType": matchConditionParam.type,
+                "typeName": matchConditionParam.typeName,
                 "matchingValue": matchConditionParam.policy,
                 "markType": markType,
                 "markValue": spParam,

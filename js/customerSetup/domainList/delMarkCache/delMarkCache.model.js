@@ -11,9 +11,9 @@ define("delMarkCache.model", ['require','exports', 'utility'], function(require,
             if (type === 9) this.set("typeName", "全部文件");
 
             var markType = this.get("markType");
-            if (markType === 0) this.set("markTypeName", "是否去问号缓存：否; 指定缓存的参数：" + this.get("markValue"));
+            //if (markType === 0) this.set("markTypeName", "是否去问号缓存：否; 指定缓存的参数：" + this.get("markValue"));
             if (markType === 1) this.set("markTypeName", "是否去问号缓存：是");
-            if (markType === 2) this.set("markTypeName", "是否去问号缓存：否");
+            if (markType === 0) this.set("markTypeName", "是否去问号缓存：否");
         }
     });
 

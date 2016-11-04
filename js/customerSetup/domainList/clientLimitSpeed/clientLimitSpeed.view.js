@@ -249,6 +249,7 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
             var postParam = {
                 "id": this.isEdit ? this.model.get("id") : new Date().valueOf(),
                 "matchingType": matchConditionParam.type,
+                "typeName": matchConditionParam.typeName,
                 "matchingValue": matchConditionParam.policy,
                 "preUnlimit": preUnlimit,
                 "speedLimit": speedLimit,

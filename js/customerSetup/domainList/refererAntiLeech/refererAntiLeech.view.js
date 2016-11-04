@@ -211,6 +211,7 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
                 id: this.isEdit ? this.model.get("id") : new Date().valueOf(),
                 matchingType: matchingType,
                 matchingValue: matchConditionParam.policy,
+                "matchingType": matchConditionParam.typeName,
                 summary: summary,
                 matchingTypeName: matchingTypeName
             }

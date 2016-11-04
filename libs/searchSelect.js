@@ -17,6 +17,7 @@
         this.defaultChecked = options.defaultChecked || false;
         this.scrollBarHeight=options.scrollBarHeight || null;
         this.isDisabled = options.isDisabled || false;
+        this.disabledNode = options.disabledNode || null;
         this.init();
 
     };
@@ -202,7 +203,18 @@
                         var _html = this.createCheckBox(_data[i]["name"],_checked);
                         if(this.isDisabled){
                            if(_checked || this.defaultChecked){
-                              arr.push('<li style="display:none" data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
+                              var flag = true;
+                              _.each(this.disabledNode,function(el,index,list){
+                                  if(_data[i].value == el.value){
+                                    flag = false;
+                                  }
+                              })
+                              if(!flag){
+                                  arr.push('<li style="display:none" data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
+                              }else{
+                                 arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
+                              }
+                              
                            }else{
                                arr.push('<li data-name=' + _data[i]["name"] + ' value=' + _data[i]["value"] + '>' + _html + '</li>');
                            }

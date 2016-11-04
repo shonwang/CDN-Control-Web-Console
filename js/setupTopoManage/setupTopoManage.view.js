@@ -287,7 +287,14 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 this.allNodes.push({name:el.chName, nodeId: el.id, checked: el.checked, operator:el.operatorId});
                 this.nodesArrayFirst.push({name:el.chName, value: el.id, checked: el.checked, operator:el.operatorId});
             }.bind(this))
+            
             if(this.isEdit){
+                this.disabledNode = [];
+                _.each(this.nodesArrayFirst,function(el,index,list){
+                     if(el.checked == true){
+                         this.disabledNode.push(el);
+                     } 
+                }.bind(this));
                 var searchSelect = new SearchSelect({
                     containerID: this.$el.find('.all .add-node-ctn').get(0),
                     panelID: this.$el.find('.all .add-node').get(0),
@@ -315,6 +322,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     }.bind(this),
                     data: nodesArray,
                     isDisabled:true,
+                    disabledNode:this.disabledNode,
                     callback: function(data){}.bind(this)
                 });
             }else{
@@ -350,7 +358,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
         initAllNodesSelect: function(res){
             var nodesArray = res;
-            var searchSelect = new SearchSelect({
+            if(this.isEdit){
+                var searchSelect = new SearchSelect({
                     containerID: this.$el.find('.all .add-node-ctn').get(0),
                     panelID: this.$el.find('.all .add-node').get(0),
                     openSearch: true,
@@ -370,13 +379,42 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                                     el.checked = true;
                                 }
                             }.bind(this))
+                        }.bind(this)),
+                        this.initAllNodesTable()
+                    }.bind(this),
+                    isDisabled:true,
+                    disabledNode:this.disabledNode,
+                    data: nodesArray,
+                    callback: function(data){}.bind(this)
+                });
+            }else{
+                var searchSelect = new SearchSelect({
+                    containerID: this.$el.find('.all .add-node-ctn').get(0),
+                    panelID: this.$el.find('.all .add-node').get(0),
+                    openSearch: true,
+                    onOk: function(data){
+                        this.selectedAllNodeList = [];
+                        _.each(data, function(el, key, ls){
+                            this.selectedAllNodeList.push({nodeId: el.value, nodeName: el.name, operatorId:''});
                         }.bind(this))
-                        var ifreset = true
-                        this.initAllNodesTable(ifreset)
+                        this.defaultParam.allNodes.length = 0;
+                        _.each(this.selectedAllNodeList,function(el,key,ls){
+                            this.defaultParam.allNodes.push(parseInt(el.nodeId));
+                        }.bind(this))
+                        _.each(this.nodesArrayFirst,function(el,key,ls){
+                            el.checked = false;
+                            _.each(this.selectedAllNodeList,function(data,key,ls){
+                                if(el.value == data.nodeId){
+                                    el.checked = true;
+                                }
+                            }.bind(this))
+                        }.bind(this)),
+                        this.initAllNodesTable()
                     }.bind(this),
                     data: nodesArray,
                     callback: function(data){}.bind(this)
                 });
+            }
         },
         initAllNodesTable: function(ifreset){
             if(this.isEdit){

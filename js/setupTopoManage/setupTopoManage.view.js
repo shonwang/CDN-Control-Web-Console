@@ -98,7 +98,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
         initNextStep: function(){
           var mynextStepView = new nextStepView({});
-           mynextStepView.render(this.$el.find('.selectNextTime')); 
+           mynextStepView.render(this.$el.find('#selectNextTime')); 
+           this.$el.find('#selectNextTime').css('visibility','hidden');
         },
         initstepTable: function(){
             var data = [
@@ -141,12 +142,12 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         onClickNextStepButton: function(event){
            var eventTarget = event.srcElement || event.target;
            if(eventTarget.tagName != 'INPUT') return;
-           this.$el.find('.selectNextTime').css('visibility','hidden');
+               
            if(eventTarget.id == 'ManualRadio'){
-              this.$el.find('.selectNextTime').css('visibility','hidden');
+              this.$el.find('#selectNextTime').css('visibility','hidden');
            }
            else if(eventTarget.id == 'TimingRadio'){
-              this.$el.find('.selectNextTime').css('display','block');
+              this.$el.find('#selectNextTime').css('visibility','visible');
            }
         },
         onClickCancelButton: function(){
@@ -173,7 +174,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.addStep.html'])({data: {}}));
             this.$el.find('.opt-ctn .cancel').on('click', $.proxy(this.onClickCancelButton, this));
-            
+            this.$el.find('.other-all-node').on('click',$.proxy(this.onClickOtherNodeButton,this));
+
             this.collection.off('get.node.error');
             this.collection.off('get.node.success');
             this.collection.on('get.node.success',$.proxy(this.onGetNodeSuccess,this));
@@ -250,6 +252,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 this.$el.find(".all .table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemAllDelete, this));
+        },
+        onClickOtherNodeButton: function(){
+            this.$el.find('.all').hide();
         },
         onClickCancelButton: function(){
            this.options.onCancelCallback && this.options.onCancelCallback();

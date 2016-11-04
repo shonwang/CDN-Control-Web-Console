@@ -218,8 +218,8 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onClickSaveBtn: function(){
-            if ((this.hostType === 2 && this.defaultParam.originBaseType === 1) || 
-                (this.hostType === 2 && this.defaultParam.originAdvanceType === 1)){
+            if ((this.hostType === 2 && this.defaultParam.originBaseType === 1 && this.defaultParam.isUseAdvance === 1) || 
+                (this.hostType === 2 && this.defaultParam.originAdvanceType === 1 && this.defaultParam.isUseAdvance === 2)){
                 alert("修改回源Host设置为源站域名，不能使用IP回源");
                 return;
             };

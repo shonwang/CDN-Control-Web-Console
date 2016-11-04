@@ -1069,21 +1069,39 @@ td .table {
 }
 
 .templateManage .select-container{
+<<<<<<< HEAD
 /*
     left:632px;
     top:90px;
 */
     left:0;
+=======
+  /*
+      left:632px;
+      top:90px;
+  */
+  left:0;
+>>>>>>> dzq-permissionMaster
 }
+
 .templateManage .dropdown-area {
 	position:relative;
 }
 
+<<<<<<< HEAD
 
 .grayscaleSetup-tips {width:90%;margin:0px auto 10px;}
+=======
+.grayscaleSetup-tips {
+  width:90%;margin:0px auto 10px;
+}
+>>>>>>> dzq-permissionMaster
 
 .setup-channel-manage-edit .panel-collapse .panel-body{
     height: 245px;
     overflow: auto;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> dzq-permissionMaster

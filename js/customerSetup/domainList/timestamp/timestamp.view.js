@@ -484,6 +484,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 "id": this.model ? this.model.get("id") : new Date().valueOf(),
                 "matchingType": matchConditionParam.type,
                 "matchingValue": matchConditionParam.policy,
+                "typeName": matchConditionParam.typeName,
                 "confType": confType,
                 "protectionType": protectionType,
                 "timeParam": this.$el.find("#key_time").val(),
@@ -495,9 +496,6 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 "authKeyList": authKeyList,
                 "summary": summary
             }
-
-            console.log(postParam)
-
             return postParam;
         },
 

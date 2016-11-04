@@ -162,6 +162,7 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
             var postParam = {
                 "id": this.isEdit ? this.model.get("id") : new Date().valueOf(),
                 "type": matchConditionParam.type,
+                "typeName": matchConditionParam.typeName,
                 "policy": matchConditionParam.policy,
                 "expireTime": expireTime,
                 "hasOriginPolicy": hasOriginPolicy,

@@ -142,6 +142,7 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
             var postParam = {
                 "id": this.isEdit ? this.model.get("id") : new Date().valueOf(),
                 "matchingType": matchConditionParam.type,
+                "typeName": matchConditionParam.typeName,
                 "matchingValue": matchConditionParam.policy,
                 "directionType": this.defaultParam.directionType,
                 "actionType": this.defaultParam.actionType,

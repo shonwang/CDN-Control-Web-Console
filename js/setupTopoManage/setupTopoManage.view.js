@@ -92,9 +92,13 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find('.opt-ctn .cancel').on('click',$.proxy(this.onClickCancelButton, this));
             
             this.initstepTable();
-
+            this.initNextStep();
             //this.collection.getOriginSendinfo();
 
+        },
+        initNextStep: function(){
+          var mynextStepView = new nextStepView({});
+           mynextStepView.render(this.$el.find('.selectNextTime')); 
         },
         initstepTable: function(){
             var data = [
@@ -125,25 +129,25 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 collection:this.collection,
                 onCancelCallback: function(){
                     myAddStepView.$el.remove();
-                    this.$el.find('.special-layer').show();
+                    this.$el.find('.sendStrategy').show();
                 }.bind(this),
                 onSaveCallback: function(){
 
                 }.bind(this)
             });
-            this.$el.find('.special-layer').hide();
+            this.$el.find('.sendStrategy').hide();
             myAddStepView.render(this.$el.find('.add-step-ctn'));
         },
         onClickNextStepButton: function(event){
            var eventTarget = event.srcElement || event.target;
-            /*if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }*/
-            console.log(eventTarget.id);
-
+           if(eventTarget.tagName != 'INPUT') return;
+           this.$el.find('.selectNextTime').css('visibility','hidden');
+           if(eventTarget.id == 'ManualRadio'){
+              this.$el.find('.selectNextTime').css('visibility','hidden');
+           }
+           else if(eventTarget.id == 'TimingRadio'){
+              this.$el.find('.selectNextTime').css('display','block');
+           }
         },
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();
@@ -155,10 +159,10 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
     var nextStepView = Backbone.View.extend({
         events:{},
         initialize:function(options){
-            this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.nextTime.table.html'])({data: {}}));
+            this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.nextTimeTable.html'])({data: {}}));
         },
         render(target){
-            this.$el.render(target);
+            this.$el.appendTo(target);
         }
     });
     var AddStepView = Backbone.View.extend({

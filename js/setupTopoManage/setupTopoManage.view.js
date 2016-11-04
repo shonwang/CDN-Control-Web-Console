@@ -88,6 +88,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.send.edit.html'])({data: {}}));
             
             this.$el.find('.add-step').on('click',$.proxy(this.onClickAddStepButton, this));
+            this.$el.find('.nextStep').on('click',$.proxy(this.onClickNextStepButton,this));
             this.$el.find('.opt-ctn .cancel').on('click',$.proxy(this.onClickCancelButton, this));
             
             this.initstepTable();
@@ -133,11 +134,31 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find('.special-layer').hide();
             myAddStepView.render(this.$el.find('.add-step-ctn'));
         },
+        onClickNextStepButton: function(event){
+           var eventTarget = event.srcElement || event.target;
+            /*if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }*/
+            console.log(eventTarget.id);
+
+        },
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
         render: function(target){
             this.$el.appendTo(target);
+        }
+    });
+    var nextStepView = Backbone.View.extend({
+        events:{},
+        initialize:function(options){
+            this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.nextTime.table.html'])({data: {}}));
+        },
+        render(target){
+            this.$el.render(target);
         }
     });
     var AddStepView = Backbone.View.extend({

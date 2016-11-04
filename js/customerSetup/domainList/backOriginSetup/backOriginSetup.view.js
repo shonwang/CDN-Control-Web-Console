@@ -219,7 +219,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
 
         onClickSaveBtn: function(){
             if ((this.hostType === 2 && this.defaultParam.originBaseType === 1 && this.defaultParam.isUseAdvance === 1) || 
-                (this.hostType === 2 && this.defaultParam.originAdvanceType === 1 && this.defaultParam.isUseAdvance === 2)){
+                (this.hostType === 2 && this.defaultParam.isUseAdvance === 2)){
                 alert("修改回源Host设置为源站域名，不能使用IP回源");
                 return;
             };
@@ -393,6 +393,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             this.defaultParamModifyHost.originAddress = data.domainConf.originAddress;
 
             this.originType = data.domainConf.originType;
+            this.isUseAdvanced = data.domainConf.backsourceFlag === 0 ? 1 : 2
 
             this.initModifyHostSetup();
             this.initModifyHostDropdown();
@@ -405,7 +406,8 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onClickHostSaveBtn: function(){
-            if (this.defaultParamModifyHost.domainType === 2 && this.originType === 1) {
+            if ((this.defaultParamModifyHost.domainType === 2 && this.originType === 1 && this.isUseAdvanced === 1) ||
+                (this.defaultParamModifyHost.domainType === 2 && this.isUseAdvanced === 2)) {
                 alert("未设置回源域名不能使用此项");
                 return;
             }

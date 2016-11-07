@@ -3,26 +3,23 @@
         <div class="panel-heading">上层配置</div>
         <div class="panel-body">
             <div class="panel-group" id="upper-layer-<%=panelId%>">
+                <% for(var i = 0; i < data.up.length; i++) { %>
                 <div class="panel panel-default">
-                    <div class="panel-heading" id="headingOne-<%=panelId%>">
+                    <div class="panel-heading" id="heading-<%=data.up[i].id%>-<%=panelId%>">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#upper-layer-<%=panelId%>" href="#upper-layer-one-<%=panelId%>">Item #1</a>
+                            <a data-toggle="collapse" data-parent="#upper-layer-<%=panelId%>" href="#upper-layer-<%=data.up[i].id%>-<%=panelId%>">
+                                <%=data.up[i].name%>
+                                <% if (!data.up[i].luaOnly) { %>
+                                    <span class="text-danger">：文件不包含全部配置，请下发nginx文件</span>
+                                <% } %>
+                            </a>
                         </h4>
                     </div>
-                    <div id="upper-layer-one-<%=panelId%>" class="panel-collapse collapse">
-                        <div class="panel-body"></div>
+                    <div id="upper-layer-<%=data.up[i].id%>-<%=panelId%>" class="panel-collapse collapse">
+                        <div class="panel-body"><%=data.up[i].content%></div>
                     </div>
                 </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading" id="headingTwo-<%=panelId%>">
-                        <h4 class="panel-title">
-                            <a class="collapsed" data-toggle="collapse" data-parent="#upper-layer-<%=panelId%>" href="#upper-layer-two-<%=panelId%>">Item #2</a>
-                        </h4>
-                    </div>
-                    <div id="upper-layer-two-<%=panelId%>" class="panel-collapse collapse">
-                        <div class="panel-body"></div>
-                    </div>
-                </div>
+                <% } %> 
             </div>
         </div>
     </div>
@@ -30,26 +27,23 @@
         <div class="panel-heading">下层配置</div>
         <div class="panel-body">
             <div class="panel-group" id="down-layer">
+                <% for(var i = 0; i < data.down.length; i++) { %>
                 <div class="panel panel-default">
-                    <div class="panel-heading" id="headingOne-<%=panelId%>">
+                    <div class="panel-heading" id="heading-<%=data.down[i].id%>-<%=panelId%>">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#down-layer" href="#down-layer-one-<%=panelId%>">Item #1</a>
+                            <a data-toggle="collapse" data-parent="#down-layer" href="#down-layer-<%=data.down[i].id%>-<%=panelId%>">
+                                <%=data.down[i].name%>
+                                <% if (!data.down[i].luaOnly) { %>
+                                    <span class="text-danger">：文件不包含全部配置，请下发nginx文件</span>
+                                <% } %>
+                            </a>
                         </h4>
                     </div>
-                    <div id="down-layer-one-<%=panelId%>" class="panel-collapse collapse">
-                        <div class="panel-body"></div>
+                    <div id="down-layer-<%=data.down[i].id%>-<%=panelId%>" class="panel-collapse collapse">
+                        <div class="panel-body"><%=data.down[i].content%></div>
                     </div>
                 </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading" id="headingTwo-<%=panelId%>">
-                        <h4 class="panel-title">
-                            <a class="collapsed" data-toggle="collapse" data-parent="#down-layer" href="#down-layer-two-<%=panelId%>">Item #2</a>
-                        </h4>
-                    </div>
-                    <div id="down-layer-two-<%=panelId%>" class="panel-collapse collapse">
-                        <div class="panel-body"></div>
-                    </div>
-                </div>
+                <% } %> 
             </div>
         </div>
     </div>

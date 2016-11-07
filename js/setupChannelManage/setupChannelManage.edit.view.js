@@ -14,11 +14,38 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
             this.$el.find(".use-customized .togglebutton input").on("click", $.proxy(this.onClickIsUseCustomizedBtn, this));
             this.$el.find(".view-setup-list").on("click", $.proxy(this.onClickViewSetupBillBtn, this))
 
-            this.initSetup()
+            this.collection.off("get.channel.config.success");
+            this.collection.off("get.channel.config.error");
+            this.collection.on("get.channel.config.success", $.proxy(this.initSetup, this));
+            this.collection.on("get.channel.config.error", $.proxy(this.onGetError, this));
+            this.collection.getChannelConfig({
+                domain: this.model.get("domain"),
+                version: this.model.get("version")
+            })
+
+            if (this.model.get("topologyId")) {
+                require(['setupTopoManage.model'], function(SetupTopoManageModel){
+                    var mySetupTopoManageModel = new SetupTopoManageModel();
+                    mySetupTopoManageModel.on("get.topo.OriginInfo.success", $.proxy(this.onGetTopoInfo, this));
+                    mySetupTopoManageModel.on("get.topo.OriginInfo.error", $.proxy(this.onGetError, this));
+                    mySetupTopoManageModel.getTopoOrigininfo(this.model.get("topologyId"))
+                }.bind(this));
+            }
         },
 
-        initSetup: function(){
+        onGetTopoInfo: function(data){
+            this.$el.find("#input-topology").val(data.name);
+        },
+
+        initSetup: function(data){
+            this.$el.find("#input-domain").val(this.model.get("domain"));
+            this.$el.find("#input-type").val(this.model.get("businessTypeName"));
+            this.$el.find("#input-protocol").val(this.model.get("protocolName"));
+            this.$el.find("#input-application").val(data.applicationType.name);
+            this.$el.find("#text-comment").val(this.model.get("description"));
+
             var isUseCustomized = this.model.get("tempUseCustomized");
+            this.$el.find(".use-customized .togglebutton input").attr("disabled", "disabled");
             if (isUseCustomized === 2){
                 this.$el.find(".use-customized .togglebutton input").get(0).checked = true;
                 this.showCustomized();
@@ -27,12 +54,35 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                 this.hideCustomized();
             }
 
-            this.initConfigFile();
+            this.initConfigFile(data);
         },
 
-        initConfigFile: function(){
+        initConfigFile: function(data){
+            var upArray = [], downArray = [];
+            _.each(data, function(el, key, ls){
+                if (key !== "applicationType"){
+                    _.each(el, function(fileObj, index, list){
+                        if (fileObj.topologyLevel === 1){
+                            upArray.push({
+                                id: fileObj.id,
+                                name: key,
+                                content: fileObj.content,
+                                luaOnly: fileObj.luaOnly === undefined ? true : fileObj.luaOnly
+                            })
+                        } else if (fileObj.topologyLevel === 2){
+                            downArray.push({
+                                id: fileObj.id,
+                                name: key,
+                                content: fileObj.content,
+                                luaOnly: fileObj.luaOnly === undefined ? true : fileObj.luaOnly
+                            })
+                        }
+                    }.bind(this))
+                }
+            }.bind(this))
+
             this.configReadOnly = $(_.template(template['tpl/setupChannelManage/setupChannelManage.editCfgFalse.html'])({
-                data: {},
+                data: {up: upArray, down: downArray},
                 panelId: Utility.randomStr(8)
             }));
             this.configReadOnly.appendTo(this.$el.find(".automatic"))
@@ -72,6 +122,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                 var mySetupBillModel = new SetupBillModel();
                 var mySetupBillView = new SetupBillView({
                     collection: mySetupBillModel,
+                    originId: this.model.get("id"),
                     onSaveCallback: function(){}.bind(this),
                     onCancelCallback: function(){
                         mySetupBillView.$el.remove();

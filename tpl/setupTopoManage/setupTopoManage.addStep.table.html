@@ -8,14 +8,14 @@
     </thead>
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
-            <tr data-id="<%=data[i].id%>">
-              <td>第<%=i+1%>步</td>
-              <td><%=data[i].name%></td>
+            <tr data-id="<%=data[i].step%>">
+              <td>第<%=data[i].step%>步</td>
+              <td><%=data[i].nodeName%></td>
               <td>
-                  <a href="javascript:void(0)" id="<%=data[i].id%>" class="edit" title="编辑">
+                  <a href="javascript:void(0)" id="<%=data[i].step%>" class="edit" title="编辑">
                       <span class="glyphicon glyphicon-edit"></span>
                   </a>
-                  <a href="javascript:void(0)" id="<%=data[i].id%>" class="delete" title="删除">
+                  <a href="javascript:void(0)" id="<%=data[i].step%>" class="delete" title="删除">
                       <span class="glyphicon glyphicon-trash"></span>
                   </a>
               </td>

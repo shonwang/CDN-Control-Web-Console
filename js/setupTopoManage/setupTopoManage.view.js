@@ -6,15 +6,16 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.send.html'])({data: {}}));
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
+            this.initNumberDrop();
             
             this.queryArgs = {
-                "count": 10,
                 "name" : null,
                 "type" : null,
                 "page" : 1,
                 "size" : 10
-             }
-            
+            }
+            this.onClickQueryButton();
+             
             this.collection.off("get.sendInfo.success");
             this.collection.off("get.sendInfo.error");
             this.collection.on("get.sendInfo.success", $.proxy(this.getSendInfoSuccess, this));
@@ -23,6 +24,17 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find('.opt-ctn .query').on('click',$.proxy(this.onClickQueryButton, this));
             this.$el.find('.opt-ctn .new').on('click',$.proxy(this.onClickAddSend, this));
             
+
+            
+        },
+         onClickQueryButton: function(){
+            this.isInitPaginator = false;
+            this.queryArgs.page = 1;
+            this.queryArgs.name = this.$el.find("#input-topo-name").val();
+            if (this.queryArgs.name == "") this.queryArgs.name = null;
+            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.$el.find(".pagination").html("");
+            //this.collection.queryChannel(this.queryArgs);
             this.collection.getSendinfo(this.queryArgs);
         },
         onClickCancelButton: function(){
@@ -39,6 +51,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.table.find('.edit').on('click',$.proxy(this.onClickEditSend,this));
+            this.table.find('.delete').on('click',$.proxy(this.onClickDeleteSend,this));
+
+            if(!this.isInitPaginator) this.initPaginator();
         },
         onClickAddSend: function(){
             var myEditOrAddSendView = new EditOrAddSendView({
@@ -51,6 +66,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             });
             this.$el.find('.list-panel').hide();
             myEditOrAddSendView.render(this.$el.find('.SendTable'));
+        },
+        onClickDeleteSend: function(){
+            alert('确定删除？')
         },
         onClickEditSend: function(event){
             var eventTarget = event.srcElement || event.target, id;
@@ -74,6 +92,39 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find('.list-panel').hide();
             myEditOrAddSendView.render(this.$el.find('.SendTable'));
         },
+        initPaginator: function(){
+            this.$el.find(".total-items span").html(this.collection.total)
+            if (this.collection.total <= this.queryArgs.size) return;
+            var total = Math.ceil(this.collection.total/this.queryArgs.size);
+            this.$el.find(".pagination").jqPaginator({
+                totalPages: total,
+                visiblePages: 10,
+                currentPage: 1,
+                onPageChange: function (num, type) {
+                    if (type !== "init"){
+                        this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                        var args = _.extend(this.queryArgs);
+                        args.page = num;
+                        args.count = this.queryArgs.size;
+                        this.collection.getTopoinfo(args);
+                    }
+                }.bind(this)
+            });
+            this.isInitPaginator = true;
+        },
+        initNumberDrop: function(){
+            var pageNum = [
+                {name: "10条", value: 10},
+                {name: "20条", value: 20},
+                {name: "50条", value: 50},
+                {name: "100条", value: 100}
+            ]
+            Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
+                this.queryArgs.size = parseInt(value);
+                this.queryArgs.page = 1;
+                this.onClickQueryButton();
+            }.bind(this));
+        },
         render:function(target){
             this.$el.appendTo(target);
         }
@@ -85,7 +136,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.collection = options.collection;
             this.id = options.id;
             this.isEdit = options.isEdit;
-            
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.send.edit.html'])({data: {}}));
             this.$el.find('.add-step').on('click',$.proxy(this.onClickAddStepButton, this));
             this.$el.find('.nextStep').on('click',$.proxy(this.onClickNextStepButton,this));
@@ -133,7 +183,11 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
 
         },
         onGetNodeSuccess: function(res){
-            this.allNodes = res;
+            this.allNodes = res; //所有的节点,会执行节点的过滤操作
+            this.allNodesShow = []; //所有的节点，执行过滤操作后,此不会进行改变，从而进行回显
+            _.each(res,function(el,index,list){
+                 this.allNodesShow.push(el);
+            }.bind(this))
             this.initstepTable(this.InformationProcessing(this.defaultParam.deliveryStrategyDef));
         },
         initNextStep: function(){
@@ -142,11 +196,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
            this.$el.find('#selectNextTime').css('visibility','hidden');
         },
         initstepTable: function(data){
-            /*var data = [
-              {step:1,nodeName:'扬州电信节点、扬州联通节点、杭州'},
-              {step:2,nodeName:'济南联通节点、惠州联通节点、天津电信节点'},
-              {step:3,nodeName:'石家庄联通节点、襄阳电信节点、德阳电信节点、天津移动节点'}
-            ]*/
+            /*var data = [{step:1,nodeName:'扬州电信节点、扬州联通节点、杭州'},{step:2,nodeName:'济南联通节点、惠州联通节点、天津电信节点'},{step:3,nodeName:'石家庄联通节点、襄阳电信节点、德阳电信节点、天津移动节点'}]*/
             var data = data;
             this.localTable = $(_.template(template['tpl/setupTopoManage/setupTopoManage.addStep.table.html'])({
                  data: data
@@ -178,6 +228,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             } else {
                 id = $(eventTarget).attr("id");
             }
+            this.RestoreNodes(this.allNodesShow,id);
             var length = this.defaultParam.deliveryStrategyDef.length;
             for (var i = 0; i < length; i++){ 
                 if (parseInt(this.defaultParam.deliveryStrategyDef[i].step) === parseInt(id)){
@@ -188,6 +239,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             }
         },
         onClickAddStepButton: function(){
+            this.allNodes = this.FilterNodes(this.allNodes);
             var myAddStepView = new AddOrEditStepView({
                 collection:this.collection,
                 deliveryStrategyDef:this.defaultParam.deliveryStrategyDef,
@@ -200,8 +252,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 }.bind(this),
                 onSaveCallback: function(){
                     this.initstepTable(this.InformationProcessing(this.defaultParam.deliveryStrategyDef));
-                  //  this.allNodes = this.FilterNodes(this.allNodes);
-                    console.log(this.allNodes);
+                    this.allNodes = this.FilterNodes(this.allNodes);
                     myAddStepView.$el.remove();
                     this.$el.find('.sendStrategy').show();
                 }.bind(this)
@@ -217,6 +268,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             } else {
                 id = $(eventTarget).attr("id");
             }
+            this.allNodes = this.FilterNodes(this.allNodes);
+            this.RestoreNodes(this.allNodesShow,id);
             var myAddStepView = new AddOrEditStepView({
                 collection:this.collection,
                 deliveryStrategyDef:this.defaultParam.deliveryStrategyDef,
@@ -224,11 +277,13 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 allNodes:this.allNodes,
                 CurrentStep:id,
                 onCancelCallback: function(){
+                    this.allNodes = this.FilterNodes(this.allNodes);
                     myAddStepView.$el.remove();
                     this.$el.find('.sendStrategy').show();
                 }.bind(this),
                 onSaveCallback: function(){
                     this.initstepTable(this.InformationProcessing(this.defaultParam.deliveryStrategyDef));
+                    this.allNodes = this.FilterNodes(this.allNodes);
                     myAddStepView.$el.remove();
                     this.$el.find('.sendStrategy').show();
                 }.bind(this)
@@ -259,7 +314,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                      nodeName:[],
                 };
                 _.each(el.nodeId,function(node){
-                    _.each(this.allNodes,function(data){
+                    _.each(this.allNodesShow,function(data){
                         if(node == data.id){
                             data_save_content.nodeName.push(data.chName);
                             return;
@@ -290,6 +345,24 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             }.bind(this));
 
             return arr;
+        },
+        RestoreNodes: function(data,id){
+           var Nodes = _.filter(this.defaultParam.deliveryStrategyDef,function(el,index,list){
+                return el.step == id;
+           })[0];
+           for(var i = data.length - 1;i>=0;i--){
+               var flag = false;
+               data[i].checked = false;
+               _.each(Nodes.nodeId,function(Nodes,index,list){
+                  if(data[i].id == Nodes){
+                      data[i].checked = true;
+                      flag = true;
+                  }
+               }.bind(this));
+               if(flag){
+                 this.allNodes.unshift(data[i]);
+               }
+           }
         },
         render: function(target){
             this.$el.appendTo(target);
@@ -454,21 +527,47 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             var length = this.selectedAllNodeList.length;
             for (var i = 0; i < length; i++){ 
                 if (parseInt(this.selectedAllNodeList[i].nodeId) === parseInt(id)){
-                   
-                    this.selectedAllNodeList.splice(i, 1);
-                    this.initAllNodesTable();
-                    
-                    return;
+                   this.selectedAllNodeList.splice(i, 1);
+                   this.initAllNodesTable();
+                   return;
                 }
             }
         },
         onClickOtherNodeButton: function(){
+            var nodesArray = [];
+            _.each(this.allNodes, function(el, index, list){
+                nodesArray.push({name:el.chName, value: el.id, checked: el.checked, operator:el.operatorId});
+            }.bind(this))
+
+            this.selectedAllNodeList = [];
+            _.each(nodesArray, function(el, key, ls){
+                this.selectedAllNodeList.push({nodeId: el.value, nodeName: el.name, operatorId:''});
+            }.bind(this))
+            this.defaultParam.nodeId.length = 0;
+            _.each(this.selectedAllNodeList,function(el,key,ls){
+                this.defaultParam.nodeId.push(parseInt(el.nodeId));
+            }.bind(this));
+            _.each(this.nodesArrayFirst,function(el,key,ls){
+                el.checked = false;
+                _.each(this.selectedAllNodeList,function(data,key,ls){
+                    if(el.value == data.nodeId){
+                        el.checked = true;
+                    }
+                }.bind(this))
+            }.bind(this))
+
+
+
             this.$el.find('.all').hide();
         },
         onClickCancelButton: function(){
            this.options.onCancelCallback && this.options.onCancelCallback();
         },
         onClickSaveButton: function(){
+            if(this.defaultParam.nodeId.length == 0){
+                alert('您还未选择节点');
+                return;
+            }
             if(!this.isEdit){
                 this.deliveryStrategyDef.push(this.defaultParam);
             }
@@ -1410,6 +1509,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             myEditTopoView.render(this.$el.find(".edit-panel"))
         },
         onClickItemSend: function(){
+            this.off('enterKeyBindQuery');
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();

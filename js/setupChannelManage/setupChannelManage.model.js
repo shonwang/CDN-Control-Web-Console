@@ -1,19 +1,24 @@
 define("setupChannelManage.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-            var businessType = this.get("bussinessType"),
-                status       = this.get("status"),
-                cdnFactory   = this.get("cdnFactory"),
-                startTime    = this.get("startTime");
+            var businessType = this.get("type"),
+                status       = this.get("auditStatus"),
+                protocol     = this.get("protocol"),
+                cdnFactory   = this.get("cdnFactory");
 
-            if (status === 0) this.set("statusName", '<span class="text-danger">已停止</span>');
-            if (status === 1) this.set("statusName", '<span class="text-success">服务中</span>');
-            if (businessType === "1") this.set("businessTypeName", '下载加速');
-            if (businessType === "2") this.set("businessTypeName", '直播加速');
-            if (cdnFactory === "1") this.set("cdnFactoryName", '自建');
-            if (cdnFactory === "2") this.set("cdnFactoryName", '网宿');
-            if (cdnFactory === "3") this.set("cdnFactoryName", '自建+网宿');
-            if (startTime) this.set("startTimeFormated", new Date(startTime).format("yyyy/MM/dd hh:mm"));
+            if (status === 0) this.set("statusName", '<span class="text-default">审核中</span>');
+            if (status === 1) this.set("statusName", '<span class="text-success">审核通过</span>');
+            if (status === -1) this.set("statusName", '<span class="text-danger">删除</span>');
+            if (businessType === 1) this.set("businessTypeName", '下载加速');
+            if (businessType === 2) this.set("businessTypeName", '直播加速');
+            if (protocol === 1) this.set("protocolName","http+hlv");
+            if (protocol === 2) this.set("protocolName","hls");
+            if (protocol === 3) this.set("protocolName","rtmp");
+            if (cdnFactory === 1) this.set("cdnFactoryName", '自建');
+            if (cdnFactory === 2) this.set("cdnFactoryName", '网宿');
+            if (cdnFactory === 3) this.set("cdnFactoryName", '自建+网宿');
+
+            this.set("tempUseCustomized", 1)
         }
     });
 
@@ -24,14 +29,14 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
         initialize: function(){},
 
         queryChannel: function(args){
-            var url = BASE_URL + "/rs/channel/query",
+            var url = BASE_URL + "/channelManager/domain/getChannelManager",
             successCallback = function(res){
                 this.reset();
                 if (res){
-                    _.each(res.rows, function(element, index, list){
+                    _.each(res.data, function(element, index, list){
                         this.push(new Model(element));
                     }.bind(this))
-                    this.total = res.total;
+                    this.total = res.totalCount;
                     this.trigger("get.channel.success");
                 } else {
                     this.trigger("get.channel.error"); 
@@ -43,57 +48,33 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
-        getChannelDispgroup: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/get",
+        getVersionList: function(args){
+            var url = BASE_URL + "/channelManager/configuration/getVersionList",
             successCallback = function(res){
-                if (res){
-                    this.trigger("channel.dispgroup.success", res);
+                if (res) {
+                    this.trigger("get.channel.history.success", res);
                 } else {
-                    this.trigger("channel.dispgroup.error", res); 
+                    this.trigger("get.channel.history.error", res); 
                 }
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("channel.dispgroup.error", response); 
+                this.trigger("get.channel.history.error", response); 
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        addDispGroupChannel: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/add",
-            successCallback = function(res){
-                this.trigger("add.dispGroup.channel.success", res);
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("add.dispGroup.channel.error", response); 
-            }.bind(this);
-
-            Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
-        },
-
-        ipTypeList: function(args){
-            var url = BASE_URL + "/rs/metaData/ipTypeList",
+        getChannelConfig: function(args){
+            var url = BASE_URL + "/cg/config/download/domain/config",
             successCallback = function(res){
                 if (res)
-                    this.trigger("ip.type.success", res.rows);
+                    this.trigger("get.channel.config.success", res);
                 else
-                    this.trigger("ip.type.error");
+                    this.trigger("get.channel.config.error");
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("ip.type.error", response);
+                this.trigger("get.channel.config.error", response);
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
-        },
-
-        deleteDispGroupChannel: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/delete",
-            successCallback = function(res){
-                this.trigger("add.dispGroup.channel.success", res);
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("add.dispGroup.channel.error", response); 
-            }.bind(this);
-
-            Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
         }
     });
 

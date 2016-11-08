@@ -14,11 +14,23 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
 
-            this.initSetup()
+            this.collection.off("get.channel.history.success");
+            this.collection.off("get.channel.history.error");
+            this.collection.on("get.channel.history.success", $.proxy(this.initSetup, this));
+            this.collection.on("get.channel.history.error", $.proxy(this.onGetError, this));
+            this.collection.getVersionList({"originId": this.model.get("id")})
         },
 
-        initSetup: function(){
-            var data = [{localLayer: "1111", upperLayer: "22222"}];
+        initSetup: function(data){
+            this.versionList = data;
+
+            this.$el.find('#input-domain').val(this.model.get("domain"))
+
+            _.each(data, function(el, index, ls){
+                if (el.createTime) 
+                    el.createTimeFormated = new Date(el.createTime).format("yyyy/MM/dd hh:mm:ss")
+            }.bind(this))
+
             this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.table.html'])({
                 data: data, 
             }));
@@ -31,10 +43,15 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         },
 
         onClickItemBill: function(event){
+            var eventTarget = event.srcElement || event.target,
+                version = $(eventTarget).attr("version");
+
             require(['setupBill.view', 'setupBill.model'], function(SetupBillView, SetupBillModel){
                 var mySetupBillModel = new SetupBillModel();
                 var mySetupBillView = new SetupBillView({
                     collection: mySetupBillModel,
+                    originId: this.model.get("id"),
+                    version: version,
                     onSaveCallback: function(){}.bind(this),
                     onCancelCallback: function(){
                         mySetupBillView.$el.remove();
@@ -271,14 +288,14 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.enterKeyBindQuery();
 
             this.queryArgs = {
-                "domain"           : null,
-                "accelerateDomain" : null,
-                "businessType"     : null,
-                "clientName"       : null,
-                "status"           : null,
-                "page"             : 1,
-                "count"            : 10
-             }
+                "domain":null,
+                "type":null,
+                "protocol":null,
+                "cdnFactory":null,
+                "auditStatus":null,
+                "currentPage":null,
+                "pageSize":null
+            }
             this.onClickQueryButton();
         },
         
@@ -480,8 +497,8 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
 
         initPaginator: function(){
             this.$el.find(".total-items span").html(this.collection.total)
-            if (this.collection.total <= this.queryArgs.count) return;
-            var total = Math.ceil(this.collection.total/this.queryArgs.count);
+            if (this.collection.total <= this.queryArgs.pageSize) return;
+            var total = Math.ceil(this.collection.total/this.queryArgs.pageSize);
 
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
@@ -491,8 +508,8 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                     if (type !== "init"){
                         this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                         var args = _.extend(this.queryArgs);
-                        args.page = num;
-                        args.count = this.queryArgs.count;
+                        args.currentPage = num;
+                        args.pageSize = this.queryArgs.pageSize;
                         this.collection.queryChannel(args);
                     }
                 }.bind(this)
@@ -569,8 +586,8 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 {name: "100条", value: 100}
             ]
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
-                this.queryArgs.count = value;
-                this.queryArgs.page = 1;
+                this.queryArgs.pageSize = value;
+                this.queryArgs.currentPage = 1;
                 this.onClickQueryButton();
             }.bind(this));
         },

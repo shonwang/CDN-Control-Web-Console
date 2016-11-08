@@ -93,8 +93,9 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.specialLayer.html'])({data: this.model.attributes}));
 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
+            this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
             this.$el.find(".add-role").on("click", $.proxy(this.onClickAddRuleButton, this));
-            this.defaultParam = {
+            /*this.defaultParam = {
                 rule: []
             }
 
@@ -102,8 +103,61 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.collection.off("get.operator.error");
             this.collection.on("get.operator.success", $.proxy(this.setOperatorInfo, this));
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
-            this.collection.getOperatorList();
+            this.collection.getOperatorList();*/
+            this.collection.off('get.rule.origin.success');
+            this.collection.off('get.rule.origin.error');
+            this.collection.on('get.rule.origin.success',$.proxy(this.onOriginInfo, this));
+            this.collection.on('get.rule.origin.error',$.proxy(this.onGetError, this));
+            console.log(typeof(this.model.get('topologyId')));
+            this.collection.getRuleOrigin(this.model.get('topologyId'));
+
+
             
+        },
+        onOriginInfo: function(res){
+            console.log(res);
+            var tempModel = res;
+            this.defaultParam = {
+                "id":res.id,
+                "local":res.local,
+                "localType":res.localType,
+                "upper":res.upper
+            }
+            
+            var data = this.analyticFunction(this.defaultParam.rule);
+            //this.defaultParam.rule = this.analyticRuleFunction(this.defaultParam);
+           // this.initRuleTable(data);
+       
+        },
+        analyticFunction:function(data){
+            var data_save = [];
+            var self = this;
+            _.each(data, function(el, key, ls){
+                var data_save_content = {
+                     id:null,
+                    'localLayer':[],
+                    'upperLayer':[]
+                };
+                if(el.localType == 2){
+                    _.each(el.local,function(local){
+                        data_save_content.localLayer.push(local.name)
+                    })
+                }else if(el.localType == 1){
+                    _.each(el.local,function(local){
+                         data_save_content.localLayer.push(local.name);
+                    })
+                }
+                _.each(el.upper,function(upper){
+                     data_save_content.upperLayer.push(upper.rsNodeMsgVo.name)
+                               
+                })
+                data_save_content.localLayer = data_save_content.localLayer.join('、');
+                data_save_content.upperLayer = data_save_content.upperLayer.join('、');
+                data_save_content.id = key;
+                data_save.push(data_save_content);
+
+            });
+            return data_save;
         },
         initRuleTable: function(data){
             var data = data;
@@ -124,11 +178,10 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 var options = myAddEditLayerStrategyModel;
                 var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
                     collection: options,
-                    localNodes: this.selectedAllNodeList,
-                    upperNodes: this.selectedUpperNodeList,
                     rule      : this.rule,
-                    id        : this.id,
+                    topologyId: this.model.get('topologyId'),
                     isEdit    : false,
+                    isChannel : true,
                     onSaveCallback: function(){
                         this.defaultParam.rule = this.rule;
                         var data = this.InformationProcessing(this.rule);
@@ -150,6 +203,9 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
 
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();
+        },
+        onClickSaveButton: function(){
+            this.options.onSaveCallback && this.options.onSaveCallback();
         },
         setOperatorInfo: function(res){
             this.operator = [];
@@ -433,11 +489,19 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             }
 
             var model = this.collection.get(id);
-
+            
+            if(model.get('topologyId') == null){
+                alert('出现错误');
+                return;
+            }
             var mySpecialLayerManageView = new SpecialLayerManageView({
                 collection: this.collection,
                 model: model,
-                onSaveCallback: function(){}.bind(this),
+                onSaveCallback: function(){
+                    alert('保存成功');
+                    mySpecialLayerManageView.$el.remove();
+                    this.$el.find(".list-panel").show();
+                }.bind(this),
                 onCancelCallback: function(){
                     mySpecialLayerManageView.$el.remove();
                     this.$el.find(".list-panel").show();

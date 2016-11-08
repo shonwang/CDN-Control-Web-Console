@@ -88,7 +88,37 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
                 this.trigger("get.channel.config.error", response);
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
-        }
+        },
+        getTopoOrigininfo:function(args){
+            var url = BASE_URL + "/resource/topo/origin/info?id="+args,
+            successCallback = function(res){
+                if(res){
+                    this.total = res.total;
+                    this.trigger("get.topo.OriginInfo.success",res);
+                }else{
+                    this.trigger("get.topo.OriginInfo.error");
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('get.topo.OriginInfo.error',response)
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+        getRuleOrigin: function(args){
+           var url = BASE_URL + "/resource/topo/rule/origin?ruleIds"+args,
+           successCallback = function(res){
+                if(res){
+                    this.total = res.total;
+                    this.trigger("get.rule.origin.success",res);
+                }else{
+                    this.trigger("get.rule.origin.error");
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('get.rule.origin.error',response)
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
     });
 
     return SetupChannelManageCollection;

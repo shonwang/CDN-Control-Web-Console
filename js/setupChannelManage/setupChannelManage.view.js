@@ -269,9 +269,18 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 return false;
             }
             var topoId = selectedTopo.get(0).id,
-                model = this.mySetupTopoManageModel.get(topoId);
+                domainIdArray = [];
 
-            return model;   
+            _.each(this.domainArray, function(el, index, ls){
+                domainIdArray.push(el.id)
+            }.bind(this))
+
+            var postParam = {
+                topologyId: topoId,
+                originIdList: domainIdArray
+            };
+
+            return postParam
         },
 
         onGetError: function(error){
@@ -297,6 +306,8 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
 
             this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
             this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+            this.collection.on("add.channel.topology.success", $.proxy(this.onAddChannelTopologySuccess, this));
+            this.collection.on("add.channel.topology.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".multi-modify-topology").on("click", $.proxy(this.onClickMultiModifyTopology, this))
@@ -389,13 +400,21 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 onOKCallback:  function(){
                     var result  = mySelectTopoView.onSure();
                     if (!result) return;
-                    this.selectTopoPopup.$el.modal("hide");
+                    this.collection.addTopologyList(result)
+
                 }.bind(this),
                 onHiddenCallback: function(){
                     this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.selectTopoPopup = new Modal(options);
+        },
+
+        onAddChannelTopologySuccess: function(){
+            this.selectTopoPopup.$el.modal("hide");
+            alert("批量更换拓扑关系成功！")
+
+            window.location.hash = '#/setupSending';
         },
 
         onClickItemHistory: function(event){

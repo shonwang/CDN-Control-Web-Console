@@ -88,6 +88,17 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
                 this.trigger("get.channel.config.error", response);
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        addTopologyList: function(args){
+            var url = BASE_URL + "/channelManager/topology/addTopologyList",
+            successCallback = function(res){
+                this.trigger("add.channel.topology.success", res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("add.channel.topology.error", response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         }
     });
 

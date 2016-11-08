@@ -2,14 +2,14 @@
     <thead> 
       <tr>
         <th><input type="checkbox" id="inlineCheckbox6"></th>
-        <th>接入域名</th>
-        <th>客户域名</th>
-        <th>CDN厂商</th>
+        <th>加速域名</th>
         <th>业务类型</th>
+        <th>使用协议</th>
         <th>客户名称</th>
+        <th>CDN厂商</th>
         <th>状态</th>   
-<!--         <th>开始服务时间</th>   -->
-        <th>关联调度组</th>
+        <th>版本号</th>  
+        <th>备注</th>
         <th>操作</th>    
       </tr>
     </thead>
@@ -17,22 +17,22 @@
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].attributes.id%>">
               <td><input type="checkbox" id="<%=data[i].id%>"></td>
-              <td><%=data[i].attributes["cname"]%></td>
-              <td><%=data[i].attributes["domain"]%></td>
-              <td><%=data[i].attributes["cdnFactoryName"]%></td>
-              <td><%=data[i].attributes["businessTypeName"]%></td>
-              <td><%=data[i].attributes["clientName"]%></td>
-              <td><%=data[i].attributes["statusName"]%></td>
-<!--               <td><%=data[i].attributes["startTimeFormated"]%></td> -->
-              <td><%=data[i].attributes["dispName"]%></td>
+              <td><%=data[i].get("domain")%></td>
+              <td><%=data[i].get("businessTypeName")%></td>
+              <td><%=data[i].get("protocolName")%></td>
+              <td><%=data[i].get("cdnFactoryName")%></td>
+              <td><%=data[i].get("cdnFactoryName")%></td>
+              <td><%=data[i].get("statusName")%></td>
+              <td><%=data[i].get("version")%></td>
+              <td><%=data[i].get("description")%></td>
               <td>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="edit" title="编辑">
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit" title="编辑">
                       <span class="glyphicon glyphicon-edit"></span>
                   </a>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="strategy" title="特殊分层策略管理">
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="strategy" title="特殊分层策略管理">
                       <span class="glyphicon glyphicon-tasks"></span>
                   </a>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="history" title="历史记录">
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="history" title="历史记录">
                       <span class="glyphicon glyphicon-time"></span>
                   </a>
               </td>

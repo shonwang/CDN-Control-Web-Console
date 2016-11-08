@@ -35,7 +35,10 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.allRegion = data;
             this.collection.on("get.version.success",$.proxy(this.onGetVersionInfo,this));
             this.collection.on("get.version.error",$.proxy(this.onGetError,this));
-            this.collection.getVersion({originId: this.options.originId})
+            if (this.options.version)
+                this.collection.getVersion({originId: this.options.originId, versionNum: this.options.version})
+            else
+                this.collection.getVersion({originId: this.options.originId})
         },
 
         onGetVersionInfo: function(data) {

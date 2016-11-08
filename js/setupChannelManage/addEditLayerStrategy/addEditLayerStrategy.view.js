@@ -40,11 +40,12 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
             
+            this.collection.getOperatorList();
             this.collection.off("get.operator.success");
             this.collection.off("get.operator.error");
             this.collection.on("get.operator.success", $.proxy(this.initDropMenu, this));
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
-            this.collection.getOperatorList();
+
             this.initSetup();
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));

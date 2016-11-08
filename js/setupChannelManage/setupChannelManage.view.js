@@ -528,54 +528,54 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 {name: "待下发", value:6},
                 {name: "灰度中", value:7},
                 {name: "运行中", value:8},
-                {name: "删除", value:9}
+                {name: "删除", value:-1}
             ],
             rootNode = this.$el.find(".dropdown-status");
             Utility.initDropMenu(rootNode, statusArray, function(value){
                 if (value == "All")
-                    this.queryArgs.status = null;
+                    this.queryArgs.auditStatus = null;
                 else
-                    this.queryArgs.status = parseInt(value)
+                    this.queryArgs.auditStatus = parseInt(value)
             }.bind(this));
 
             var protocolArray = [
                 {name: "全部", value: "All"},
-                {name:"http+hlv", value:0},
-                {name: "hls", value:1},
-                {name: "rtmp", value:2}
+                {name:"http+hlv", value:1},
+                {name: "hls", value:2},
+                {name: "rtmp", value:3}
             ],
             rootNode = this.$el.find(".dropdown-protocol");
             Utility.initDropMenu(rootNode, protocolArray, function(value){
                 if (value == "All")
-                    this.queryArgs.status = null;
+                    this.queryArgs.protocol = null;
                 else
-                    this.queryArgs.status = parseInt(value)
+                    this.queryArgs.protocol = parseInt(value)
             }.bind(this));
 
             var companyArray = [
                 {name: "全部", value: "All"},
-                {name:"自建", value:0},
-                {name: "网宿", value:1}
+                {name:"自建", value:1},
+                {name: "网宿", value:2}
             ],
             rootNode = this.$el.find(".dropdown-company");
             Utility.initDropMenu(rootNode, companyArray, function(value){
                 if (value == "All")
-                    this.queryArgs.status = null;
+                    this.queryArgs.cdnFactory = null;
                 else
-                    this.queryArgs.status = parseInt(value)
+                    this.queryArgs.cdnFactory = parseInt(value)
             }.bind(this));
 
             var typeArray = [
                 {name: "全部", value: "All"},
-                {name:"下载加速", value:0},
-                {name: "直播加速", value:1}
+                {name:"下载加速", value:1},
+                {name: "直播加速", value:2}
             ],
             rootNode = this.$el.find(".dropdown-type");
             Utility.initDropMenu(rootNode, typeArray, function(value){
                 if (value == "All")
-                    this.queryArgs.status = null;
+                    this.queryArgs.type = null;
                 else
-                    this.queryArgs.status = parseInt(value)
+                    this.queryArgs.type = parseInt(value)
             }.bind(this));
 
             var pageNum = [

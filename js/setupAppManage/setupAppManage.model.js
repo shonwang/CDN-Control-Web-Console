@@ -1,6 +1,7 @@
 define("setupAppManage.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
-        initialize: function(){}
+        initialize: function(){
+        }
     });
 
     var SetupAppManageCollection = Backbone.Collection.extend({

@@ -100,6 +100,69 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         }
+        getTopoOrigininfo:function(args){
+            var url = BASE_URL + "/resource/topo/origin/info?id="+args,
+            successCallback = function(res){
+                if(res){
+                    this.total = res.total;
+                    this.trigger("get.topo.OriginInfo.success",res);
+                }else{
+                    this.trigger("get.topo.OriginInfo.error");
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('get.topo.OriginInfo.error',response)
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+        getRuleOrigin: function(args){
+           var url = BASE_URL + "/resource/topo/rule/origin?ruleIds="+args,
+           successCallback = function(res){
+                if(res){
+                    this.total = res.total;
+                    this.trigger("get.rule.origin.success",res);
+                }else{
+                    this.trigger("get.rule.origin.error");
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('get.rule.origin.error',response)
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+        getNodeList: function(args){
+            var url = BASE_URL + "/resource/rs/node/queryNode",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("get.node.success", res); 
+                else
+                    this.trigger("get.node.error", res); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.node.error", response);  
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+        specilaAdd:function(args){
+            var url = BASE_URL + "/resource/topo/add/special/rule",
+            successCallback = function(res){
+                //this.reset();
+                if(res){
+                    /*_.each(res.rows,function(element, index ,list){
+                        this.push(new Model(element));
+                    }.bind(this))
+                    this.total = res.total;*/
+                    this.trigger("add.special.success");
+                }else{
+                    this.trigger("add.special.error");
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('add.special.error',response);
+            }.bind(this);
+            
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
     });
 
     return SetupChannelManageCollection;

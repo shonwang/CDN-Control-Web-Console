@@ -49,6 +49,21 @@ define("addEditLayerStrategy.model", ['require','exports', 'utility'], function(
                 this.trigger('get.operatorUpper.error');
             }.bind(this);
             Utility.getAjax(url, '' , successCallback, errorCallback);
+        },
+        getTopoAndNodeInfo: function(args){
+            var url = BASE_URL + "/resource/topo/origin/info?id="+args,
+            successCallback = function(res){
+                if(res){
+                    this.trigger('get.topoAndNodeInfo.success',res);
+                }else{
+                    this.trigger('get.topoAndNodeInfo.error');
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('get.topoAndNodeInfo.error');
+            }.bind(this);
+            Utility.getAjax(url, '' , successCallback, errorCallback);
+
         }
     });
 

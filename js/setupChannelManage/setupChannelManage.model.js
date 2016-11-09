@@ -135,13 +135,8 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
         specilaAdd:function(args){
             var url = BASE_URL + "/resource/topo/add/special/rule",
             successCallback = function(res){
-                //this.reset();
                 if(res){
-                    /*_.each(res.rows,function(element, index ,list){
-                        this.push(new Model(element));
-                    }.bind(this))
-                    this.total = res.total;*/
-                    this.trigger("add.special.success");
+                    this.trigger("add.special.success",res);
                 }else{
                     this.trigger("add.special.error");
                 }
@@ -152,6 +147,31 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
             
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+        getTopologyRole: function(args){
+            var url = BASE_URL + "/channelManager/topology/getTopologyRoleByOriginId?originId="+args,
+            successCallback = function(res){
+                if (res)
+                    this.trigger("getTopologyRole.success", res); 
+                else
+                    this.trigger("getTopologyRole.error"); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("getTopologyRole.error", response);  
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+        addTopologyRole: function(args){
+             var url = BASE_URL + '/channelManager/topology/addTopologyRole',
+            successCallback = function(res){
+                this.trigger("addTopologyRole.success", res); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("addTopologyRole.error", response);  
+            }.bind(this);
+            
+            Utility.getAjax(url, args, successCallback, errorCallback); 
+        }
+
     });
 
     return SetupChannelManageCollection;

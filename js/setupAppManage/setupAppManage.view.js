@@ -19,7 +19,7 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.collection.on('get.topo.OriginInfo.success',$.proxy(this.onOriginInfo, this));
             this.collection.on('get.topo.OriginInfo.error',$.proxy(this.onGetError, this));
             
-            this.collection.getTopoOrigininfo(this.model.get('id'));
+            this.collection.getTopoOrigininfo(this.model.get('topoId'));
             
             //this.initSetup()
         },

@@ -108,9 +108,21 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.collection.off('get.rule.origin.error');
             this.collection.on('get.rule.origin.success',$.proxy(this.onRuleInfo, this));
             this.collection.on('get.rule.origin.error',$.proxy(this.onGetError, this));
-            
-            this.collection.getRuleOrigin(String(this.model.get('topologyId')));
+             
+            //获取特殊规则的id
+            this.collection.off('getTopologyRole.success');
+            this.collection.off('getTopologyRole.error');
+            this.collection.on('getTopologyRole.success',$.proxy(this.getTopologyRoleSuccess, this));
+            this.collection.on('getTopologyRole.error',$.proxy(this.onGetError, this));
+           
+            this.collection.getTopologyRole(this.model.get('id'));
 
+            //保存特殊规则的id
+            this.collection.off('addTopologyRole.success');
+            this.collection.off('addTopologyRole.error');
+            this.collection.on('addTopologyRole.success',$.proxy(this.addTopologyRoleSuccess, this));
+            this.collection.on('addTopologyRole.error',$.proxy(this.onGetError, this));
+           
             //获取本id下的节点列表信息
             this.collection.off('get.node.success');
             this.collection.off('get.node.error');
@@ -128,10 +140,24 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.collection.getOperatorList();
 
         },
-        addSpecialSuccess: function(){
-            //this.WhetherSaveSuccess = true;
-            this.options.onSaveCallback && this.options.onSaveCallback();
+        getTopologyRoleSuccess: function(res){
+            this.collection.getRuleOrigin(res);
+        },
+        addTopologyRoleSuccess: function(res){
             alert('保存成功');
+            this.options.onSaveCallback && this.options.onSaveCallback();
+        },
+        addSpecialSuccess: function(res){
+            var ruleIds = [];
+            _.each(res.rule,function(res,index,list){
+                ruleIds.push(res.id);
+            });
+            ruleIds = ruleIds.join(',');
+            var args = {
+                "originId":this.model.get('id'),
+                "roleIds":ruleIds
+            }
+            this.collection.addTopologyRole(args);
         },
         addSpecialError: function(error){
             if (error&&error.message){
@@ -146,6 +172,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             _.each(res,function(el,index,list){
                 this.defaultParam.push({
                     "id":el.id,
+                    "NoEdit":true,
                     "local":el.local,
                     "localType":el.localType,
                     "upper":el.upper
@@ -292,6 +319,10 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         },
         onClickSaveButton: function(){
             var flag = true;
+            if(this.defaultParam.length == 0){
+                alert('请选择节点');
+                return;
+            }
             _.each(this.defaultParam,function(el){
                 if(el.local.length == 0){
                     alert('请在配置规则中选择本层节点');
@@ -304,14 +335,19 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 }
             })
              if(flag){
+                console.log(this.defaultParam);
                 _.each(this.defaultParam,function(el,index,list){
-                    delete el.id;
+                    if(!el.NoEdit){
+                         el.id = 0;
+                    }
+                }.bind(this));
+                _.each(this.defaultParam,function(el,index,list){
+                    delete el.NoEdit;
                 }.bind(this));
                 this.Param = {
                     "topoId":this.model.get('topologyId'),
                     "rule":this.defaultParam
                 }
-                console.log(this.Param);
                 this.collection.specilaAdd(this.Param);
              }
             //this.options.onSaveCallback && this.options.onSaveCallback();
@@ -366,7 +402,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 _.each(el.upper,function(upper){
                     upperAll.push({nodeId:upper.rsNodeMsgVo.id,ipCorporation:upper.ipCorporation});
                 })
-                rule.push({id:el.id,localType:el.localType,local:localAll,upper:upperAll});
+                rule.push({id:el.id,NoEdit:el.NoEdit,localType:el.localType,local:localAll,upper:upperAll});
             });
             return rule;
         },

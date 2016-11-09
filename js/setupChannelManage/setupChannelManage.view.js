@@ -231,6 +231,8 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.initDomainList();
             require(["setupTopoManage.model"], function(SetupTopoManageModel){
                 this.mySetupTopoManageModel = new SetupTopoManageModel();
+                // this.mySetupTopoManageModel.on("get.topoInfo.success");
+                // this.mySetupTopoManageModel.on("get.topoInfo.error");
                 this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.initTable, this));
                 this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this));
                 this.mySetupTopoManageModel.getTopoinfo({

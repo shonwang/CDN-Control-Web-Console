@@ -99,7 +99,7 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
                 this.trigger("add.channel.topology.error", response);
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
-        }
+        },
         getTopoOrigininfo:function(args){
             var url = BASE_URL + "/resource/topo/origin/info?id="+args,
             successCallback = function(res){

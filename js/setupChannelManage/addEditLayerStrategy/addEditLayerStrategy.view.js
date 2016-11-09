@@ -146,11 +146,10 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             this.selectedLocalNodeList = [];
             this.nodesArrayFirst = [];
             var data = res;
+            if (res&&res.rows) data = res.rows;
             if(this.isChannel){
                 data = res.allNodes;
-            }else{
-                if (res&&res.rows) data = res.rows
-            }
+            } 
             _.each(data, function(el, index, list){
                 el.checked = false;
                 if(typeof(el.chName) == 'undefined'){
@@ -204,18 +203,17 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             this.selectedUpperNodeList = [];
             this.nodesArrayFirstLocal = [];
             var data = res;
+            if (res&&res.rows) data = res.rows
             if(this.isChannel){
                 data = res.allNodes;
-            }else{
-                if (res&&res.rows) data = res.rows
             }
-            _.each(data, function(el, index, list){
+             _.each(data, function(el, index, list){
                 el.checked = false;
                 if(typeof(el.chName) == 'undefined'){
                     el.chName = el.name;
                 }
                 _.each(this.defaultParam.upper, function(defaultNode, inx, ls){
-                    if (defaultNode.nodeId === el.id) {
+                    if (defaultNode.nodeId == el.id) {
                         el.checked = true;
                         this.selectedUpperNodeList.push({
                             nodeId: el.id, 

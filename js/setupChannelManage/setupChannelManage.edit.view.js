@@ -10,6 +10,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
 
             this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.edit.html'])({data: {}}));
 
+            this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickCancelButton, this));
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
             this.$el.find(".use-customized .togglebutton input").on("click", $.proxy(this.onClickIsUseCustomizedBtn, this));
             this.$el.find(".view-setup-list").on("click", $.proxy(this.onClickViewSetupBillBtn, this))

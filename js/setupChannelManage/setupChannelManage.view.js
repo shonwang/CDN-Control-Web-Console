@@ -215,8 +215,6 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.initDomainList();
             require(["setupTopoManage.model"], function(SetupTopoManageModel){
                 this.mySetupTopoManageModel = new SetupTopoManageModel();
-                // this.mySetupTopoManageModel.on("get.topoInfo.success");
-                // this.mySetupTopoManageModel.on("get.topoInfo.error");
                 this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.initTable, this));
                 this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this));
                 this.mySetupTopoManageModel.getTopoinfo({
@@ -292,8 +290,6 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
 
             this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
             this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
-            this.collection.on("add.channel.topology.success", $.proxy(this.onAddChannelTopologySuccess, this));
-            this.collection.on("add.channel.topology.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".multi-modify-topology").on("click", $.proxy(this.onClickMultiModifyTopology, this))
@@ -386,8 +382,11 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 onOKCallback:  function(){
                     var result  = mySelectTopoView.onSure();
                     if (!result) return;
+                    this.collection.off("add.channel.topology.success");
+                    this.collection.off("add.channel.topology.error");
+                    this.collection.on("add.channel.topology.success", $.proxy(this.onAddChannelTopologySuccess, this));
+                    this.collection.on("add.channel.topology.error", $.proxy(this.onGetError, this));
                     this.collection.addTopologyList(result)
-
                 }.bind(this),
                 onHiddenCallback: function(){
                     this.enterKeyBindQuery();

@@ -458,6 +458,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
 
         initialize: function(options) {
             this.collection = options.collection;
+            console.log(this.collection);
             this.$el = $(_.template(template['tpl/domainManage/domainManage.html'])());
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
@@ -468,6 +469,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 page: 1,
                 count: 10
             };
+            console.log(this.collection);
 
             this.collection.getDomainList(this.getPageArgs); //请求域名列表接口
 

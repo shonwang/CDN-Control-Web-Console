@@ -9,6 +9,8 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             this.rule = options.rule;
             this.isEdit = options.isEdit;
             this.id = options.id;
+            this.topologyId = options.topologyId;
+            this.isChannel = options.isChannel;
             if(!this.isEdit){
                 this.ruleContent = {
                     "local":[1],
@@ -40,11 +42,12 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
             
+            this.collection.getOperatorList();
             this.collection.off("get.operator.success");
             this.collection.off("get.operator.error");
             this.collection.on("get.operator.success", $.proxy(this.initDropMenu, this));
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
-            this.collection.getOperatorList();
+
             this.initSetup();
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
@@ -68,15 +71,9 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             }
             
             if (!this.options.localNodes && !this.options.upperNodes){
-                this.collection.on("get.node.success", $.proxy(this.onGetLocalNode, this));
-                this.collection.on("get.node.error", $.proxy(this.onGetError, this));
-                this.collection.getNodeList({
-                    chname:null,
-                    count:99999,
-                    operator:null,
-                    page:1,
-                    status:null
-                })
+                this.collection.on("get.topoAndNodeInfo.success", $.proxy(this.onGetLocalNode, this));
+                this.collection.on("get.topoAndNodeInfo.error", $.proxy(this.onGetError, this));
+                this.collection.getTopoAndNodeInfo(this.topologyId);
             } else {
                 this.onGetLocalNode(this.options.localNodes)
             }
@@ -148,9 +145,16 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             var nodesArray = [], data = res;
             this.selectedLocalNodeList = [];
             this.nodesArrayFirst = [];
-            if (res&&res.rows) data = res.rows
+            var data = res;
+            if (res&&res.rows) data = res.rows;
+            if(this.isChannel){
+                data = res.allNodes;
+            } 
             _.each(data, function(el, index, list){
                 el.checked = false;
+                if(typeof(el.chName) == 'undefined'){
+                    el.chName = el.name;
+                }
                 _.each(this.defaultParam.local, function(defaultLocalId, inx, ls){
                     if (defaultLocalId == el.id) {
                         el.checked = true;
@@ -199,11 +203,17 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             this.selectedUpperNodeList = [];
             this.nodesArrayFirstLocal = [];
             var data = res;
-            if (res&&res.rows) data = res.rows;
-            _.each(data, function(el, index, list){
+            if (res&&res.rows) data = res.rows
+            if(this.isChannel){
+                data = res.allNodes;
+            }
+             _.each(data, function(el, index, list){
                 el.checked = false;
+                if(typeof(el.chName) == 'undefined'){
+                    el.chName = el.name;
+                }
                 _.each(this.defaultParam.upper, function(defaultNode, inx, ls){
-                    if (defaultNode.nodeId === el.id) {
+                    if (defaultNode.nodeId == el.id) {
                         el.checked = true;
                         this.selectedUpperNodeList.push({
                             nodeId: el.id, 

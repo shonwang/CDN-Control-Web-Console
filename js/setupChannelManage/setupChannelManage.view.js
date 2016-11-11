@@ -40,6 +40,29 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.table.find("tbody .bill").on("click", $.proxy(this.onClickItemBill, this));
+            this.table.find("tbody .publish").on("click", $.proxy(this.onClickItemPublish, this));
+        },
+
+        onClickItemPublish: function(){
+            var eventTarget = event.srcElement || event.target,
+                version = $(eventTarget).attr("version");
+
+            var postParam = [{
+                    domain: this.model.get("domain"),
+                    version: version,
+                    description: this.model.get("description")
+                }]
+
+            this.collection.off("post.predelivery.success");
+            this.collection.off("post.predelivery.error");
+            this.collection.on("post.predelivery.success", $.proxy(this.onPostPredelivery, this));
+            this.collection.on("post.predelivery.error", $.proxy(this.onGetError, this));
+            this.collection.predelivery(postParam)
+        },
+
+        onPostPredelivery: function(){
+            alert("发布成功！")
+            window.location.hash = '#/setupSending';
         },
 
         onClickItemBill: function(event){
@@ -627,10 +650,12 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 return model.get("isChecked") === true;
             });
 
-            var domainArray = [];
+            this.domainArray = [];
             _.each(checkedList, function(el, index, ls){
-                domainArray.push({
-                    domain: el.get("domain"), 
+                this.domainArray.push({
+                    domain: el.get("domain"),
+                    version: el.get("version"),
+                    description: el.get("description"), 
                     id: el.get("id")
                 });
             }.bind(this))
@@ -639,7 +664,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
 
             var mySelectTopoView = new SelectTopoView({
                 collection: this.collection, 
-                domainArray : domainArray
+                domainArray : this.domainArray
             });
             var options = {
                 title: "选择拓扑关系",
@@ -663,6 +688,23 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         },
 
         onAddChannelTopologySuccess: function(){
+            var postParam = [];
+            _.each(this.domainArray, function(el, index, ls){
+                postParam.push({
+                    domain: el.domain,
+                    version: el.version,
+                    description: el.description
+                });
+            }.bind(this))
+
+            this.collection.off("post.predelivery.success");
+            this.collection.off("post.predelivery.error");
+            this.collection.on("post.predelivery.success", $.proxy(this.onPostPredelivery, this));
+            this.collection.on("post.predelivery.error", $.proxy(this.onGetError, this));
+            this.collection.predelivery(postParam)
+        },
+
+        onPostPredelivery: function(){
             this.selectTopoPopup.$el.modal("hide");
             alert("批量更换拓扑关系成功！")
 

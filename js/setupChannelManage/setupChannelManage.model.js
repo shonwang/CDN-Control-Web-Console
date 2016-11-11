@@ -27,6 +27,7 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
         model: Model,
 
         initialize: function(){},
+
         getOperatorList:function(args){
             var url = BASE_URL + "/resource/rs/metaData/operator/list",
             successCallback = function(res) {
@@ -41,6 +42,18 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
             }.bind(this);
             Utility.getAjax(url, '' , successCallback, errorCallback);
         },
+
+        predelivery:function(args){
+            var url = BASE_URL + "/cd/predelivery",
+            successCallback = function(res) {
+                this.trigger("post.predelivery.success", res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('post.predelivery.error', response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
         queryChannel: function(args){
             var url = BASE_URL + "/channelManager/domain/getChannelManager",
             successCallback = function(res){
@@ -100,6 +113,7 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+
         getTopoOrigininfo:function(args){
             var url = BASE_URL + "/resource/topo/origin/info?id="+args,
             successCallback = function(res){
@@ -115,6 +129,7 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+
         getRuleOrigin: function(args){
            var url = BASE_URL + "/resource/topo/rule/origin?ruleIds="+args,
            successCallback = function(res){
@@ -130,6 +145,7 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+
         getNodeList: function(args){
             var url = BASE_URL + "/resource/rs/node/queryNode",
             successCallback = function(res){
@@ -143,6 +159,7 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+
         specilaAdd:function(args){
             var url = BASE_URL + "/resource/topo/add/special/rule",
             successCallback = function(res){
@@ -158,6 +175,7 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
             
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+
         getTopologyRole: function(args){
             var url = BASE_URL + "/channelManager/topology/getTopologyRoleByOriginId?originId="+args,
             successCallback = function(res){
@@ -171,6 +189,7 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
+
         addTopologyRole: function(args){
              var url = BASE_URL + '/channelManager/topology/addTopologyRole',
             successCallback = function(res){

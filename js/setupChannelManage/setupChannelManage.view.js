@@ -119,7 +119,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
             this.$el.find(".add-role").on("click", $.proxy(this.onClickAddRuleButton, this));
 
-              //添加特殊策略
+            //添加特殊策略
             this.collection.off('add.special.success');
             this.collection.off('add.special.error');
             this.collection.on('add.special.success',$.proxy(this.addSpecialSuccess, this));
@@ -136,7 +136,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.collection.off('getTopologyRole.success');
             this.collection.off('getTopologyRole.error');
             this.collection.on('getTopologyRole.success',$.proxy(this.getTopologyRoleSuccess, this));
-            this.collection.on('getTopologyRole.error',$.proxy(this.onGetError, this));
+            this.collection.on('getTopologyRole.error',$.proxy(this.getTopologyRoleError, this));
            
             this.collection.getTopologyRole(this.model.get('id'));
 
@@ -163,13 +163,42 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.collection.getOperatorList();
 
         },
+        //获取特殊规则的rulesID成功
         getTopologyRoleSuccess: function(res){
             this.collection.getRuleOrigin(res);
         },
+        getTopologyRoleError: function(error){
+             if (error&&error.message){
+                alert(error.message);
+                if(error.status == 404){
+                     this.defaultParam = [];
+                    /*_.each(res,function(el,index,list){
+                        this.defaultParam.push({
+                            "id":el.id,
+                            "NoEdit":true,
+                            "local":el.local,
+                            "localType":el.localType,
+                            "upper":el.upper
+                        })
+                    }.bind(this));*/
+                    /* this.NoEditNodes = [];
+                     _.each(this.defaultParam,function(el,index,list){
+                          this.NoEditNodes.push(el.id);
+                     }.bind(this));
+                     var data = this.analyticFunction(this.defaultParam);
+                     this.defaultParam = this. analyticRuleFunction(this.defaultParam);*/
+                     this.initRuleTable(this.defaultParam);   
+                }
+             }
+             else
+                alert("网络阻塞，请刷新重试！")
+        },
+        //保存特殊策略成功之后保存特殊策略的域名ID和特殊规则的id成功
         addTopologyRoleSuccess: function(res){
             alert('保存成功');
             this.options.onSaveCallback && this.options.onSaveCallback();
         },
+        //保存特殊策略成功
         addSpecialSuccess: function(res){
             var ruleIds = [];
             _.each(res.rule,function(res,index,list){
@@ -180,7 +209,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 "originId":this.model.get('id'),
                 "roleIds":ruleIds
             }
-            this.collection.addTopologyRole(args);
+            this.collection.addTopologyRole(args); //保存域名的ID和特殊策略的ID
         },
         addSpecialError: function(error){
             if (error&&error.message){
@@ -340,6 +369,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
+        //点击保存按钮保存特殊策略
         onClickSaveButton: function(){
             var flag = true;
             if(this.defaultParam.length == 0){
@@ -485,6 +515,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
+
         },
 
         render: function(target) {

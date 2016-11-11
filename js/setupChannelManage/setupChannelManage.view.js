@@ -40,6 +40,29 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.table.find("tbody .bill").on("click", $.proxy(this.onClickItemBill, this));
+            this.table.find("tbody .publish").on("click", $.proxy(this.onClickItemPublish, this));
+        },
+
+        onClickItemPublish: function(){
+            var eventTarget = event.srcElement || event.target,
+                version = $(eventTarget).attr("version");
+
+            var postParam = [{
+                    domain: this.model.get("domain"),
+                    version: version,
+                    description: this.model.get("description")
+                }]
+
+            this.collection.off("post.predelivery.success");
+            this.collection.off("post.predelivery.error");
+            this.collection.on("post.predelivery.success", $.proxy(this.onPostPredelivery, this));
+            this.collection.on("post.predelivery.error", $.proxy(this.onGetError, this));
+            this.collection.predelivery(postParam)
+        },
+
+        onPostPredelivery: function(){
+            alert("发布成功！")
+            window.location.hash = '#/setupSending';
         },
 
         onClickItemBill: function(event){
@@ -96,7 +119,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
             this.$el.find(".add-role").on("click", $.proxy(this.onClickAddRuleButton, this));
 
-              //添加特殊策略
+            //添加特殊策略
             this.collection.off('add.special.success');
             this.collection.off('add.special.error');
             this.collection.on('add.special.success',$.proxy(this.addSpecialSuccess, this));
@@ -113,7 +136,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.collection.off('getTopologyRole.success');
             this.collection.off('getTopologyRole.error');
             this.collection.on('getTopologyRole.success',$.proxy(this.getTopologyRoleSuccess, this));
-            this.collection.on('getTopologyRole.error',$.proxy(this.onGetError, this));
+            this.collection.on('getTopologyRole.error',$.proxy(this.getTopologyRoleError, this));
            
             this.collection.getTopologyRole(this.model.get('id'));
 
@@ -140,13 +163,42 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.collection.getOperatorList();
 
         },
+        //获取特殊规则的rulesID成功
         getTopologyRoleSuccess: function(res){
             this.collection.getRuleOrigin(res);
         },
+        getTopologyRoleError: function(error){
+             if (error&&error.message){
+                alert(error.message);
+                if(error.status == 404){
+                     this.defaultParam = [];
+                    /*_.each(res,function(el,index,list){
+                        this.defaultParam.push({
+                            "id":el.id,
+                            "NoEdit":true,
+                            "local":el.local,
+                            "localType":el.localType,
+                            "upper":el.upper
+                        })
+                    }.bind(this));*/
+                    /* this.NoEditNodes = [];
+                     _.each(this.defaultParam,function(el,index,list){
+                          this.NoEditNodes.push(el.id);
+                     }.bind(this));
+                     var data = this.analyticFunction(this.defaultParam);
+                     this.defaultParam = this. analyticRuleFunction(this.defaultParam);*/
+                     this.initRuleTable(this.defaultParam);   
+                }
+             }
+             else
+                alert("网络阻塞，请刷新重试！")
+        },
+        //保存特殊策略成功之后保存特殊策略的域名ID和特殊规则的id成功
         addTopologyRoleSuccess: function(res){
             alert('保存成功');
             this.options.onSaveCallback && this.options.onSaveCallback();
         },
+        //保存特殊策略成功
         addSpecialSuccess: function(res){
             var ruleIds = [];
             _.each(res.rule,function(res,index,list){
@@ -157,7 +209,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 "originId":this.model.get('id'),
                 "roleIds":ruleIds
             }
-            this.collection.addTopologyRole(args);
+            this.collection.addTopologyRole(args); //保存域名的ID和特殊策略的ID
         },
         addSpecialError: function(error){
             if (error&&error.message){
@@ -317,6 +369,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
+        //点击保存按钮保存特殊策略
         onClickSaveButton: function(){
             var flag = true;
             if(this.defaultParam.length == 0){
@@ -462,6 +515,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
+
         },
 
         render: function(target) {
@@ -628,10 +682,12 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 return model.get("isChecked") === true;
             });
 
-            var domainArray = [];
+            this.domainArray = [];
             _.each(checkedList, function(el, index, ls){
-                domainArray.push({
-                    domain: el.get("domain"), 
+                this.domainArray.push({
+                    domain: el.get("domain"),
+                    version: el.get("version"),
+                    description: el.get("description"), 
                     id: el.get("id")
                 });
             }.bind(this))
@@ -640,7 +696,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
 
             var mySelectTopoView = new SelectTopoView({
                 collection: this.collection, 
-                domainArray : domainArray
+                domainArray : this.domainArray
             });
             var options = {
                 title: "选择拓扑关系",
@@ -664,6 +720,23 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         },
 
         onAddChannelTopologySuccess: function(){
+            var postParam = [];
+            _.each(this.domainArray, function(el, index, ls){
+                postParam.push({
+                    domain: el.domain,
+                    version: el.version,
+                    description: el.description
+                });
+            }.bind(this))
+
+            this.collection.off("post.predelivery.success");
+            this.collection.off("post.predelivery.error");
+            this.collection.on("post.predelivery.success", $.proxy(this.onPostPredelivery, this));
+            this.collection.on("post.predelivery.error", $.proxy(this.onGetError, this));
+            this.collection.predelivery(postParam)
+        },
+
+        onPostPredelivery: function(){
             this.selectTopoPopup.$el.modal("hide");
             alert("批量更换拓扑关系成功！")
 

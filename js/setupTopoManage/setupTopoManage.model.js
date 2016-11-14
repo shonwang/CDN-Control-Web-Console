@@ -142,9 +142,13 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
         },
 
         getSendinfo: function(args){
-            var url = BASE_URL + "/resource/topo/info/list",
+            var url = BASE_URL + "/cd/strategy/list",
             successCallback = function(res){
+               // this.reset();
                 if(res){
+                   /* _.each(res.rows,function(element, index ,list){
+                        this.push(new Model(element));
+                    }.bind(this))*/
                     this.total = res.total;
                     this.trigger("get.sendInfo.success",res);
                 }else{
@@ -154,7 +158,7 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
             errorCallback = function(response){
                 this.trigger('get.sendInfo.error',response);
             }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         },
         getOriginSendinfo: function(args){
             var url = BASE_URL + "/resource/topo/info/list",

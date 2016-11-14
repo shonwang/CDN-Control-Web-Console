@@ -21,7 +21,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
             this.collection.on("get.channel.config.error", $.proxy(this.onGetError, this));
             this.collection.getChannelConfig({
                 domain: this.model.get("domain"),
-                version: this.model.get("version")
+                version: this.model.get("version") || this.model.get("domainVersion")
             })
 
             if (this.model.get("topologyId")) {
@@ -40,7 +40,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
 
         initSetup: function(data){
             this.$el.find("#input-domain").val(this.model.get("domain"));
-            this.$el.find("#input-type").val(this.model.get("businessTypeName"));
+            this.$el.find("#input-type").val(this.model.get("businessTypeName") || this.model.get("platformName"));
             this.$el.find("#input-protocol").val(this.model.get("protocolName"));
             this.$el.find("#input-application").val(data.applicationType.name);
             this.$el.find("#text-comment").val(this.model.get("description"));
@@ -88,7 +88,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
             }));
             this.configReadOnly.appendTo(this.$el.find(".automatic"))
             this.configEdit = $(_.template(template['tpl/setupChannelManage/setupChannelManage.editCfgTrue.html'])({
-                data: {},
+                data: {up: upArray, down: downArray},
                 panelId: Utility.randomStr(8)
             }));
             this.configEdit.appendTo(this.$el.find(".customized"))

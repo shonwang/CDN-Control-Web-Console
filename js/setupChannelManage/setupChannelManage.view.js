@@ -531,7 +531,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.collection = options.collection;
             this.domainArray = options.domainArray;
 
-            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])());
+            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({data: {name: "拓扑关系"}}));
 
             this.initDomainList();
             require(["setupTopoManage.model"], function(SetupTopoManageModel){
@@ -558,7 +558,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.topo.table.html'])({
+            this.table = $(_.template(template['tpl/setupSendManage/setupSendWaitSend/setupSendWaitSend.sendStrategy.table.html'])({
                 data: this.mySetupTopoManageModel.models, 
             }));
             if (this.mySetupTopoManageModel.models.length !== 0)

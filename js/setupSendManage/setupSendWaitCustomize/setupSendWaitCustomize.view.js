@@ -1,5 +1,5 @@
 define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
-    
+ 
     var SetupSendWaitCustomizeView = Backbone.View.extend({
         events: {},
 
@@ -14,18 +14,17 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
+            this.$el.find(".mulit-send").on("click", $.proxy(this.onClickMultiSend, this))
 
             this.enterKeyBindQuery();
 
             this.queryArgs = {
-                "domain"           : null,
-                "accelerateDomain" : null,
-                "businessType"     : null,
-                "clientName"       : null,
-                "status"           : null,
-                "page"             : 1,
-                "count"            : 10
+                "domain" : null,
+                "operateType": null,
+                "platformId" : null,
+                "status" : 0,
+                "count": 10,
+                "page": 1
              }
             this.onClickQueryButton();
         },
@@ -50,13 +49,53 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             if (!this.isInitPaginator) this.initPaginator();
         },
 
+        onClickMultiSend: function(){
+            var checkedList = this.collection.filter(function(model) {
+                return model.get("isChecked") === true;
+            });
+
+            this.domainArray = [];
+            _.each(checkedList, function(el, index, ls){
+                this.domainArray.push({
+                    domain: el.get("domain"),
+                    id: el.get("id")
+                });
+            }.bind(this))
+
+            if (this.selectStrategyPopup) $("#" + this.selectStrategyPopup.modalId).remove();
+
+            require(["setupSendWaitCustomize.stratety.view"], function(SelectStrategyView){
+                var mySelectStrategyView = new SelectStrategyView({
+                    collection: this.collection, 
+                    domainArray : this.domainArray
+                });
+                var options = {
+                    title: "生成下发任务",
+                    body : mySelectStrategyView,
+                    backdrop : 'static',
+                    type     : 2,
+                    onOKCallback:  function(){
+                        var result  = mySelectStrategyView.onSure();
+                        if (!result) return;
+                        // this.collection.off("create.task.success");
+                        // this.collection.off("create.task.error");
+                        // this.collection.on("create.task.success", $.proxy(this.onAddChannelTopologySuccess, this));
+                        // this.collection.on("create.task.error", $.proxy(this.onGetError, this));
+                        this.collection.createTask(result)
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        this.enterKeyBindQuery();
+                    }.bind(this)
+                }
+                this.selectStrategyPopup = new Modal(options);
+            }.bind(this))
+        },
+
         onClickQueryButton: function(){
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
             this.queryArgs.domain = this.$el.find("#input-domain").val();
-            this.queryArgs.clientName = this.$el.find("#input-client").val();
             if (this.queryArgs.domain == "") this.queryArgs.domain = null;
-            if (this.queryArgs.clientName == "") this.queryArgs.clientName = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
             this.collection.queryChannel(this.queryArgs);
@@ -198,14 +237,15 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             var statusArray = [
                 {name: "全部", value: "All"},
                 {name:"新增", value:0},
-                {name: "修改", value:2},
+                {name: "更新", value:1},
+                {name: "删除", value:2},
             ],
             rootNode = this.$el.find(".dropdown-oper");
             Utility.initDropMenu(rootNode, statusArray, function(value){
-                // if (value == "All")
-                //     this.queryArgs.status = null;
-                // else
-                //     this.queryArgs.status = parseInt(value)
+                if (value == "All")
+                    this.queryArgs.operateType = null;
+                else
+                    this.queryArgs.operateType = parseInt(value)
             }.bind(this));
 
             var pageNum = [
@@ -220,18 +260,18 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
                 this.onClickQueryButton();
             }.bind(this));
  
-             require(["setupTopoManage.model"], function(SetupTopoManageModel){
-                this.mySetupTopoManageModel = new SetupTopoManageModel();
-                this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.onGetTopoSuccess, this))
-                this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this))
-                var postParam = {
-                    "name" : null,
-                    "type" : null,
-                    "page" : 1,
-                    "size" : 99999
-                 }
-                this.mySetupTopoManageModel.getTopoinfo(postParam);
-            }.bind(this))
+            //  require(["setupTopoManage.model"], function(SetupTopoManageModel){
+            //     this.mySetupTopoManageModel = new SetupTopoManageModel();
+            //     this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.onGetTopoSuccess, this))
+            //     this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this))
+            //     var postParam = {
+            //         "name" : null,
+            //         "type" : null,
+            //         "page" : 1,
+            //         "size" : 99999
+            //      }
+            //     this.mySetupTopoManageModel.getTopoinfo(postParam);
+            // }.bind(this))
 
             require(["setupAppManage.model"], function(SetupAppManageModel){
                 this.mySetupAppManageModel = new SetupAppManageModel();

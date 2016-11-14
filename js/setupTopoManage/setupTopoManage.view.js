@@ -10,9 +10,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             
             this.queryArgs = {
                 "name" : null,
-                "type" : null,
                 "page" : 1,
-                "size" : 10
+                "count" : 10
             }
             this.onClickQueryButton();
              
@@ -35,15 +34,16 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
             //this.collection.queryChannel(this.queryArgs);
+            console.log(this.queryArgs);
             this.collection.getSendinfo(this.queryArgs);
         },
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
         getSendInfoSuccess: function(res){
-           _.each(res.rows,function(el,index,list){
+           /*_.each(res.rows,function(el,index,list){
               el.createTime = new Date(el.createTime).format("yyyy/MM/dd hh:mm");
-           })
+           })*/
            this.table = $(_.template(template['tpl/setupTopoManage/setupTopoManage.send.table.html'])({data:res.rows}));
            if (res.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
@@ -94,8 +94,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         },
         initPaginator: function(){
             this.$el.find(".total-items span").html(this.collection.total)
-            if (this.collection.total <= this.queryArgs.size) return;
-            var total = Math.ceil(this.collection.total/this.queryArgs.size);
+            if (this.collection.total <= this.queryArgs.count) return;
+            var total = Math.ceil(this.collection.total/this.queryArgs.count);
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
                 visiblePages: 10,
@@ -1517,21 +1517,30 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             } else {
                 id = $(eventTarget).attr("id");
             }
-            var model = this.collection.get(id);
-            var mySendView = new SendView({
-                collection:this.collection,
-                onSaveCallback: function(){
-                    mySendView.$el.remove();
-                    this.$el.find(".list-panel").show();
-                }.bind(this),
-                onCancelCallback: function(){
-                    mySendView.$el.remove();
-                    this.$el.find(".list-panel").show();
-                }.bind(this)
-            })
+            var model = this.collection.get(id);            
+            
+            require(['setupTopoManageSendStrategy.model'], function(setupTopoManageSendStrategyModel){
+                var mySendStrategeModel = new setupTopoManageSendStrategyModel();
+                var options = mySendStrategeModel;
 
-            this.$el.find(".list-panel").hide();
-            mySendView.render(this.$el.find(".edit-panel"))
+                var mySendView = new SendView({
+                    //collection:this.collection,
+                    collection:options,
+                    onSaveCallback: function(){
+                        mySendView.$el.remove();
+                        this.$el.find(".list-panel").show();
+                    }.bind(this),
+                    onCancelCallback: function(){
+                        mySendView.$el.remove();
+                        this.$el.find(".list-panel").show();
+                    }.bind(this)
+                })
+
+                this.$el.find(".list-panel").hide();
+                mySendView.render(this.$el.find(".edit-panel"))
+            }.bind(this));
+            
+            
         },
         initPaginator: function(){
             this.$el.find(".total-items span").html(this.collection.total)

@@ -11,7 +11,8 @@ define("setupSendWaitCustomize.model", ['require','exports', 'utility'], functio
 
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
 
-            this.set("tempUseCustomized", 2)
+            this.set("tempUseCustomized", 2);
+            this.set("isChecked", false);
         }
     });
 
@@ -55,17 +56,13 @@ define("setupSendWaitCustomize.model", ['require','exports', 'utility'], functio
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        createTask: function(args){
-            var url = BASE_URL + "/cd/delivery/task/createtask",
+        setChannelConfig: function(args){
+            var url = BASE_URL + "/cg/config/download/nginx.conf",
             successCallback = function(res){
-                if (res){
-                    this.trigger("create.task.success", res);
-                } else {
-                    this.trigger("create.task.error", res); 
-                }
+                this.trigger("set.channel.config.success", res);
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("create.task.error", response); 
+                this.trigger("set.channel.config.error", response);
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
@@ -91,18 +88,6 @@ define("setupSendWaitCustomize.model", ['require','exports', 'utility'], functio
                 this.trigger("set.publish.error", response);
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
-        },
-
-        deleteDispGroupChannel: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/delete",
-            successCallback = function(res){
-                this.trigger("add.dispGroup.channel.success", res);
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("add.dispGroup.channel.error", response); 
-            }.bind(this);
-
-            Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
         }
     });
 

@@ -14,7 +14,7 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.sending.channel.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
+            this.$el.find(".mulit-next").on("click", $.proxy(this.onClickMultiNext, this));
 
             this.enterKeyBindQuery();
 
@@ -51,6 +51,19 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
             if (!this.isInitPaginator) this.initPaginator();
         },
 
+        onClickMultiNext: function(){
+            var checkedList = this.collection.filter(function(model) {
+                return model.get("isChecked") === true;
+            });
+
+            this.domainArray = [];
+            _.each(checkedList, function(el, index, ls){
+                this.domainArray.push({
+                    predeliveryId: el.get("id")
+                });
+            }.bind(this))
+        },
+
         onClickQueryButton: function(){
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
@@ -80,7 +93,7 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onClickItemSend: function(event){
-            var result = confirm("你确定要下发吗？");
+            var result = confirm("你确定要进入下一步吗？");
             if (!result) return;
 
             var eventTarget = event.srcElement || event.target, id;
@@ -95,7 +108,7 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onClickItemReject: function(event){
-            var result = confirm("你确定要打回吗？");
+            var result = confirm("你确定要终止吗？");
             if (!result) return;
 
             var eventTarget = event.srcElement || event.target, id;
@@ -295,10 +308,10 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
 
             rootNode = this.$el.find(".dropdown-app");
             Utility.initDropMenu(rootNode, appArray, function(value){
-                // if (value == "All")
-                //     this.queryArgs.status = null;
-                // else
-                //     this.queryArgs.status = parseInt(value)
+                if (value == "All")
+                    this.queryArgs.platformId = null;
+                else
+                    this.queryArgs.platformId = parseInt(value)
             }.bind(this));
         },
 

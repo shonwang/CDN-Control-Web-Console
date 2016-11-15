@@ -13,7 +13,8 @@ define("setupSendWaitSend.model", ['require','exports', 'utility'], function(req
 
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
 
-            this.set("tempUseCustomized", 2)
+            this.set("tempUseCustomized", 2);
+            this.set("isChecked", false);
         }
     });
 
@@ -43,20 +44,6 @@ define("setupSendWaitSend.model", ['require','exports', 'utility'], function(req
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        getChannelConfig: function(args){
-            var url = BASE_URL + "/cg/config/download/domain/config",
-            successCallback = function(res){
-                if (res)
-                    this.trigger("get.channel.config.success", res);
-                else
-                    this.trigger("get.channel.config.error");
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("get.channel.config.error", response);
-            }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
-        },
-
         createTask: function(args){
             var url = BASE_URL + "/cd/delivery/task/createtask",
             successCallback = function(res){
@@ -82,29 +69,6 @@ define("setupSendWaitSend.model", ['require','exports', 'utility'], function(req
             }.bind(this);
 
             Utility.postAjax(url, args, successCallback, errorCallback);
-        },
-
-        setChannelConfig: function(args){
-            var url = BASE_URL + "/cg/config/download/nginx.conf",
-            successCallback = function(res){
-                this.trigger("set.channel.config.success", res);
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("set.channel.config.error", response);
-            }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
-        },
-
-        deleteDispGroupChannel: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/delete",
-            successCallback = function(res){
-                this.trigger("add.dispGroup.channel.success", res);
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("add.dispGroup.channel.error", response); 
-            }.bind(this);
-
-            Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
         }
     });
 

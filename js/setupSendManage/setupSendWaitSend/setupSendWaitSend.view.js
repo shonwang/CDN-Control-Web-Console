@@ -342,10 +342,10 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
 
             rootNode = this.$el.find(".dropdown-app");
             Utility.initDropMenu(rootNode, appArray, function(value){
-                // if (value == "All")
-                //     this.queryArgs.status = null;
-                // else
-                //     this.queryArgs.status = parseInt(value)
+                if (value == "All")
+                    this.queryArgs.platformId = null;
+                else
+                    this.queryArgs.platformId = parseInt(value)
             }.bind(this));
         },
 

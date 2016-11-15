@@ -11,19 +11,22 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
 
             this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.edit.html'])({data: {}}));
 
-            this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickCancelButton, this));
+            this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
             this.$el.find(".use-customized .togglebutton input").on("click", $.proxy(this.onClickIsUseCustomizedBtn, this));
             this.$el.find(".view-setup-list").on("click", $.proxy(this.onClickViewSetupBillBtn, this))
 
-            this.collection.off("get.channel.config.success");
-            this.collection.off("get.channel.config.error");
-            this.collection.on("get.channel.config.success", $.proxy(this.initSetup, this));
-            this.collection.on("get.channel.config.error", $.proxy(this.onGetError, this));
-            this.collection.getChannelConfig({
-                domain: this.model.get("domain"),
-                version: this.model.get("version") || this.model.get("domainVersion")
-            })
+            require(['setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeModel){
+                this.mySetupSendWaitCustomizeModel = new SetupSendWaitCustomizeModel();
+                this.mySetupSendWaitCustomizeModel.off("get.channel.config.success");
+                this.mySetupSendWaitCustomizeModel.off("get.channel.config.error");
+                this.mySetupSendWaitCustomizeModel.on("get.channel.config.success", $.proxy(this.initSetup, this));
+                this.mySetupSendWaitCustomizeModel.on("get.channel.config.error", $.proxy(this.onGetError, this));
+                this.mySetupSendWaitCustomizeModel.getChannelConfig({
+                    domain: this.model.get("domain"),
+                    version: this.model.get("version") || this.model.get("domainVersion")
+                })
+            }.bind(this));
 
             if (this.model.get("topologyId")) {
                 require(['setupTopoManage.model'], function(SetupTopoManageModel){
@@ -33,6 +36,11 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                     mySetupTopoManageModel.getTopoOrigininfo(this.model.get("topologyId"))
                 }.bind(this));
             }
+
+            this.$el.find("#input-domain").val(this.model.get("domain"));
+            this.$el.find("#input-type").val(this.model.get("businessTypeName") || this.model.get("platformName"));
+            this.$el.find("#input-protocol").val(this.model.get("protocolName"));
+            this.$el.find("#text-comment").val(this.model.get("description"));
         },
 
         onGetTopoInfo: function(data){
@@ -40,11 +48,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
         },
 
         initSetup: function(data){
-            this.$el.find("#input-domain").val(this.model.get("domain"));
-            this.$el.find("#input-type").val(this.model.get("businessTypeName") || this.model.get("platformName"));
-            this.$el.find("#input-protocol").val(this.model.get("protocolName"));
             this.$el.find("#input-application").val(data.applicationType.name);
-            this.$el.find("#text-comment").val(this.model.get("description"));
 
             var isUseCustomized = this.model.get("tempUseCustomized");
             this.$el.find(".use-customized .togglebutton input").attr("disabled", "disabled");
@@ -61,6 +65,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
 
         initConfigFile: function(data){
             var upArray = [], downArray = [];
+            this.configInfo = data;
             _.each(data, function(el, key, ls){
                 if (key !== "applicationType"){
                     _.each(el, function(fileObj, index, list){
@@ -139,6 +144,35 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                 this.$el.find(".edit-panel").hide();
                 mySetupBillView.render(this.$el.find(".bill-panel"));
             }.bind(this))
+        },
+
+        onClickSaveButton: function(){
+            if (this.isEdit) {
+                var postParam = [], nginxInfo = this.configInfo['nginx.conf'];
+
+                _.each(nginxInfo, function(el, index, ls){
+                    postParam.push({
+                        domain: this.model.get("domain"),
+                        version: this.model.get("version") || this.model.get("domainVersion"),
+                        "topologyLevel": el.topologyLevel,
+                        "manuallyModifed": true,
+                        "content": this.$el.find("#customized-file-" + el.id).val()
+                    })
+                }.bind(this))
+
+                this.mySetupSendWaitCustomizeModel.off("set.channel.config.success");
+                this.mySetupSendWaitCustomizeModel.off("set.channel.config.error");
+                this.mySetupSendWaitCustomizeModel.on("set.channel.config.success", $.proxy(this.onSaveConfigSuccess, this));
+                this.mySetupSendWaitCustomizeModel.on("set.channel.config.error", $.proxy(this.onGetError, this));
+                this.mySetupSendWaitCustomizeModel.setChannelConfig(postParam)
+            } else {
+                this.onClickCancelButton();
+            }
+        },
+
+        onSaveConfigSuccess: function(){
+            alert("保存成功！")
+            this.onClickCancelButton();
         },
 
         onClickCancelButton: function(){

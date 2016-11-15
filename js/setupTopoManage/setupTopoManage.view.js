@@ -14,13 +14,15 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 "page" : 1,
                 "count" : 10
             }
+            
             this.onClickQueryButton();
-             
-             this.$el.on('keydown',function(e){
+            //Enter键查询
+            this.$el.find('#input-topo-name').on('keydown',function(e){
                   if(e.keyCode == 13){
                      this.onClickQueryButton();
                   }
-             });
+            }.bind(this));
+            
             this.collection.off("get.sendInfo.success");
             this.collection.off("get.sendInfo.error");
             this.collection.on("get.sendInfo.success", $.proxy(this.getSendInfoSuccess, this));
@@ -46,7 +48,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             if (this.queryArgs.name == "") this.queryArgs.name = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
-            console.log(this.queryArgs);
             this.collection.getSendinfo(this.queryArgs);
         },
         onClickCancelButton: function(){
@@ -198,28 +199,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find('.opt-ctn .save').on('click',$.proxy(this.onClickSaveButton, this));
 
             if(this.isEdit){
-                /*this.defaultParam = {
-                    "id":1,
-                    "name":"下发策略",
-                    "topology_id":123,
-                    "deliveryStrategyDef":[
-                      {
-                        "step":1,
-                        "nodeId":[1,2,3],
-                        "shell":"ls;pwd;"
-                      },
-                     {
-                          "step":2,
-                          "nodeId":[4,5,6],
-                          "shell":"ls;pwd;"
-                      },
-                      {
-                          "step":3,
-                          "nodeId":[7,8,9],
-                          "shell":"ls;pwd;"
-                      }
-                    ]
-                  }*/
                 this.collection.getSendViewDetail(this.id);
             }else{
                 this.defaultParam = {
@@ -387,15 +366,12 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.defaultParam.name = this.$el.find('#input-Name').val();
             this.defaultParam.topologyId = this.model.get('id');
             this.defaultParam.description = this.$el.find('#description').val();
-            console.log(this.defaultParam);
             if(!this.isEdit){
                this.collection.addSendView(this.defaultParam);
             }else{
-                console.log(this.defaultParam);
                 delete this.defaultParam.creator;
                 delete this.defaultParam.nodeNames;
                 delete this.defaultParam.default;
-                console.log(this.defaultParam);
                 this.collection.modifySendStrategy(this.defaultParam);
             }
         },
@@ -1633,14 +1609,15 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 var mySendStrategeModel = new setupTopoManageSendStrategyModel();
                 var options = mySendStrategeModel;
                 var mySendView = new SendView({
-                    //collection:this.collection,
                     collection:options,
                     model:model,
                     onSaveCallback: function(){
+                        this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
                         mySendView.$el.remove();
                         this.$el.find(".list-panel").show();
                     }.bind(this),
                     onCancelCallback: function(){
+                        this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
                         mySendView.$el.remove();
                         this.$el.find(".list-panel").show();
                     }.bind(this)

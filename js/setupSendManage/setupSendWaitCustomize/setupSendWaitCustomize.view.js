@@ -12,6 +12,8 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
 
             this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
             this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.publish.success", $.proxy(this.onPublishSuccess, this));
+            this.collection.on("set.publish.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".mulit-send").on("click", $.proxy(this.onClickMultiSend, this))
@@ -57,38 +59,16 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             this.domainArray = [];
             _.each(checkedList, function(el, index, ls){
                 this.domainArray.push({
-                    domain: el.get("domain"),
-                    id: el.get("id")
+                    predeliveryId: el.get("id")
                 });
             }.bind(this))
 
-            if (this.selectStrategyPopup) $("#" + this.selectStrategyPopup.modalId).remove();
+            this.collection.publish(this.domainArray)
+        },
 
-            require(["setupSendWaitCustomize.stratety.view"], function(SelectStrategyView){
-                var mySelectStrategyView = new SelectStrategyView({
-                    collection: this.collection, 
-                    domainArray : this.domainArray
-                });
-                var options = {
-                    title: "生成下发任务",
-                    body : mySelectStrategyView,
-                    backdrop : 'static',
-                    type     : 2,
-                    onOKCallback:  function(){
-                        var result  = mySelectStrategyView.onSure();
-                        if (!result) return;
-                        // this.collection.off("create.task.success");
-                        // this.collection.off("create.task.error");
-                        // this.collection.on("create.task.success", $.proxy(this.onAddChannelTopologySuccess, this));
-                        // this.collection.on("create.task.error", $.proxy(this.onGetError, this));
-                        this.collection.createTask(result)
-                    }.bind(this),
-                    onHiddenCallback: function(){
-                        this.enterKeyBindQuery();
-                    }.bind(this)
-                }
-                this.selectStrategyPopup = new Modal(options);
-            }.bind(this))
+        onPublishSuccess: function(){
+            alert("操作成功！");
+            this.selectStrategyPopup.$el.modal('hide')
         },
 
         onClickQueryButton: function(){
@@ -120,18 +100,18 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
         },
 
         onClickItemSend: function(event){
-            var result = confirm("你确定要下发吗？");
+            var result = confirm("你确定要发布到待下发吗？");
             if (!result) return;
 
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
+            var eventTarget = event.srcElement || event.target, 
                 id = $(eventTarget).attr("id");
-            }
-
             var model = this.collection.get(id);
+
+            this.domainArray = [{
+                predeliveryId: model.get("id")
+            }];
+
+            this.collection.publish(this.domainArray)
         },
 
         onClickItemReject: function(event){
@@ -146,7 +126,7 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
                 id = $(eventTarget).attr("id");
             }
 
-            var model = this.collection.get(id);
+            this.collection.rollBack({predeliveryId: id})
         },
 
         onClickItemEdit: function(event){
@@ -164,6 +144,7 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
                 var myEditChannelView = new EditChannelView({
                     collection: this.collection,
                     model: model,
+                    isEdit: true,
                     onSaveCallback: function(){}.bind(this),
                     onCancelCallback: function(){
                         myEditChannelView.$el.remove();
@@ -300,7 +281,7 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
         },
 
         onGetAppSuccess: function(){
-            var appArray = []
+            var appArray = [{name: "全部", value: "All"},]
             this.mySetupAppManageModel.each(function(el, index, lst){
                 appArray.push({
                     name: el.get('name'),

@@ -10,15 +10,14 @@ define("setupSendWaitCustomize.stratety.view", ['require','exports', 'template',
             this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({data: {name: "下发策略"}}));
 
             this.initDomainList();
-            require(["setupTopoManage.model"], function(SetupTopoManageModel){
-                this.mySetupTopoManageModel = new SetupTopoManageModel();
-                this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.initTable, this));
-                this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this));
-                this.mySetupTopoManageModel.getTopoinfo({
+            require(["setupTopoManageSendStrategy.model"], function(SetupTopoManageSendStrategy){
+                this.mySetupTopoManageSendStrategy = new SetupTopoManageSendStrategy();
+                this.mySetupTopoManageSendStrategy.on("get.sendInfo.success", $.proxy(this.initTable, this));
+                this.mySetupTopoManageSendStrategy.on("get.sendInfo.error", $.proxy(this.onGetError, this));
+                this.mySetupTopoManageSendStrategy.getSendinfo({
                     name:null,
                     page:1,
-                    size:99999,
-                    type:null
+                    size:99999
                 });
             }.bind(this))
         },
@@ -35,9 +34,9 @@ define("setupSendWaitCustomize.stratety.view", ['require','exports', 'template',
 
         initTable: function(){
             this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.topo.table.html'])({
-                data: this.mySetupTopoManageModel.models, 
+                data: this.mySetupTopoManageSendStrategy.models, 
             }));
-            if (this.mySetupTopoManageModel.models.length !== 0)
+            if (this.mySetupTopoManageSendStrategy.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
@@ -49,6 +48,12 @@ define("setupSendWaitCustomize.stratety.view", ['require','exports', 'template',
                 alert("请选择一个下发策略")
                 return false;
             }
+            var taskName = this.$el.find("#input-task-name").val();
+            if (taskName === ""){
+                alert("请输入任务名称")
+                return false;
+            }
+
             var strategyId = selectedStrategy.get(0).id,
                 domainIdArray = [];
 

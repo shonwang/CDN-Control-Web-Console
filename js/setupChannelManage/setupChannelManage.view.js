@@ -62,7 +62,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
 
         onPostPredelivery: function(){
             alert("发布成功！")
-            window.location.hash = '#/setupSending';
+            window.location.hash = '#/setupSendWaitSend';
         },
 
         onClickItemBill: function(event){
@@ -652,9 +652,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
             this.queryArgs.domain = this.$el.find("#input-domain").val();
-            this.queryArgs.clientName = this.$el.find("#input-client").val();
             if (this.queryArgs.domain == "") this.queryArgs.domain = null;
-            if (this.queryArgs.clientName == "") this.queryArgs.clientName = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
             this.collection.queryChannel(this.queryArgs);
@@ -739,7 +737,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.selectTopoPopup.$el.modal("hide");
             alert("批量更换拓扑关系成功！")
 
-            window.location.hash = '#/setupSending';
+            window.location.hash = '#/setupSendWaitSend';
         },
 
         onClickItemHistory: function(event){
@@ -814,6 +812,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 var myEditChannelView = new EditChannelView({
                     collection: this.collection,
                     model: model,
+                    isEdit: false,
                     onSaveCallback: function(){}.bind(this),
                     onCancelCallback: function(){
                         myEditChannelView.$el.remove();

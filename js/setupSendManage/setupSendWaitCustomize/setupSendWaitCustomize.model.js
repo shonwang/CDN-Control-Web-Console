@@ -3,7 +3,6 @@ define("setupSendWaitCustomize.model", ['require','exports', 'utility'], functio
         initialize: function(){
             var operType = this.get("operType"),
                 status       = this.get("status"),
-                cdnFactory   = this.get("cdnFactory"),
                 createTime    = this.get("createTime");
 
             if (operType === 0) this.set("operTypeName", '新建');
@@ -71,30 +70,27 @@ define("setupSendWaitCustomize.model", ['require','exports', 'utility'], functio
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
-        addDispGroupChannel: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/add",
+        rollBack: function(args){
+            var url = BASE_URL + "/cd/predelivery/rollback",
             successCallback = function(res){
-                this.trigger("add.dispGroup.channel.success", res);
+                this.trigger("roll.back.success", res);
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("add.dispGroup.channel.error", response); 
+                this.trigger("roll.back.error", response); 
             }.bind(this);
 
-            Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
+            Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
-        ipTypeList: function(args){
-            var url = BASE_URL + "/rs/metaData/ipTypeList",
+        publish: function(args){
+            var url = BASE_URL + "/cd/predelivery/publish",
             successCallback = function(res){
-                if (res)
-                    this.trigger("ip.type.success", res.rows);
-                else
-                    this.trigger("ip.type.error");
+                this.trigger("set.publish.success", res);
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("ip.type.error", response);
+                this.trigger("set.publish.error", response);
             }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
         deleteDispGroupChannel: function(args){

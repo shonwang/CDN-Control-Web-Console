@@ -16,7 +16,11 @@
                         </h4>
                     </div>
                     <div id="upper-layer-<%=data.up[i].id%>-<%=panelId%>" class="panel-collapse collapse">
-                        <div class="panel-body"><%=data.up[i].content%></div>
+                        <div class="panel-body">
+                            <textarea class="form-control" rows="10" id="auto-file-<%=data.up[i].id%>" readonly="true">
+                                <%=data.up[i].content%>
+                            </textarea>
+                        </div>
                     </div>
                 </div>
                 <% } %> 
@@ -40,7 +44,11 @@
                         </h4>
                     </div>
                     <div id="down-layer-<%=data.down[i].id%>-<%=panelId%>" class="panel-collapse collapse">
-                        <div class="panel-body"><%=data.down[i].content%></div>
+                        <div class="panel-body">
+                            <textarea class="form-control" rows="10" id="customized-file-<%=data.down[i].id%>" readonly="true">
+                                <%=data.down[i].content%>
+                            </textarea>
+                        </div>
                     </div>
                 </div>
                 <% } %> 

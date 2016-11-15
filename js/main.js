@@ -180,6 +180,8 @@ requirejs.config({
 
         "setupSending.model": "setupSendManage/setupSending/setupSending.model",
         "setupSending.view": "setupSendManage/setupSending/setupSending.view",
+        "setupSendDetail.model": "setupSendManage/setupSending/setupSending.detail.model",
+        "setupSendDetail.view": "setupSendManage/setupSending/setupSending.detail.view",
 
         "setupSendWaitCustomize.model": "setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.model",
         "setupSendWaitCustomize.view": "setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.view",

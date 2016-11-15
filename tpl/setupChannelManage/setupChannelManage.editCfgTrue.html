@@ -17,7 +17,10 @@
                     </div>
                     <div id="upper-layer-<%=data.up[i].id%>-<%=panelId%>" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <textarea class="form-control" rows="10" id="customized-file-<%=data.up[i].id%>"><%=data.up[i].content%></textarea>
+                            <textarea class="form-control" rows="10" id="customized-file-<%=data.up[i].id%>" 
+                            <% if (data.up[i].name !== "nginx.conf") { %> readonly="true" <% } %>>
+                                <%=data.up[i].content%>
+                            </textarea>
                         </div>
                     </div>
                 </div>
@@ -43,7 +46,10 @@
                     </div>
                     <div id="down-layer-<%=data.down[i].id%>-<%=panelId%>" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <textarea class="form-control" rows="10" id="customized-file-<%=data.down[i].id%>"><%=data.down[i].content%></textarea>
+                            <textarea class="form-control" rows="10" id="customized-file-<%=data.down[i].id%>" 
+                            <% if (data.up[i].name !== "nginx.conf") { %> readonly="true" <% } %>>>
+                                <%=data.down[i].content%>
+                            </textarea>
                         </div>
                     </div>
                 </div>

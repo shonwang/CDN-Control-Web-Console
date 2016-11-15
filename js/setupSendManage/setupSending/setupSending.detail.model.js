@@ -1,4 +1,4 @@
-define("setupSending.model", ['require','exports', 'utility'], function(require, exports, Utility) {
+define("setupSendDetail.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
             var businessType = this.get("bussinessType"),
@@ -17,7 +17,7 @@ define("setupSending.model", ['require','exports', 'utility'], function(require,
         }
     });
 
-    var SetupAppManageCollection = Backbone.Collection.extend({
+    var SetupSendDetailCollection = Backbone.Collection.extend({
         
         model: Model,
 
@@ -97,5 +97,5 @@ define("setupSending.model", ['require','exports', 'utility'], function(require,
         }
     });
 
-    return SetupAppManageCollection;
+    return SetupSendDetailCollection;
 });

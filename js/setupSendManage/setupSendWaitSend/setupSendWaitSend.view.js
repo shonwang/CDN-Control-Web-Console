@@ -14,18 +14,17 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
             this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
+            this.$el.find(".mulit-send").on("click", $.proxy(this.onClickMultiSend, this))
 
             this.enterKeyBindQuery();
 
             this.queryArgs = {
-                "domain"           : null,
-                "accelerateDomain" : null,
-                "businessType"     : null,
-                "clientName"       : null,
-                "status"           : null,
-                "page"             : 1,
-                "count"            : 10
+                "domain" : null,
+                "operateType": null,
+                "platformId" : null,
+                "status" : 1,
+                "count": 10,
+                "page": 1
              }
             this.onClickQueryButton();
         },
@@ -48,6 +47,57 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
         onChannelListSuccess: function(){
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
+        },
+
+        onClickMultiSend: function(){
+            var checkedList = this.collection.filter(function(model) {
+                return model.get("isChecked") === true;
+            });
+
+            this.domainArray = [];
+            _.each(checkedList, function(el, index, ls){
+                this.domainArray.push({
+                    domain: el.get("domain"),
+                    id: el.get("id")
+                });
+            }.bind(this))
+
+            this.showSelectStrategyPopup();
+        },
+
+        showSelectStrategyPopup: function(){
+            if (this.selectStrategyPopup) $("#" + this.selectStrategyPopup.modalId).remove();
+
+            require(["setupSendWaitCustomize.stratety.view"], function(SelectStrategyView){
+                var mySelectStrategyView = new SelectStrategyView({
+                    collection: this.collection, 
+                    domainArray : this.domainArray
+                });
+                var options = {
+                    title: "生成下发任务",
+                    body : mySelectStrategyView,
+                    backdrop : 'static',
+                    type     : 2,
+                    onOKCallback:  function(){
+                        var result  = mySelectStrategyView.onSure();
+                        if (!result) return;
+                        this.collection.off("create.task.success");
+                        this.collection.off("create.task.error");
+                        this.collection.on("create.task.success", $.proxy(this.onCreatTaskSuccess, this));
+                        this.collection.on("create.task.error", $.proxy(this.onGetError, this));
+                        this.collection.createTask(result)
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        this.enterKeyBindQuery();
+                    }.bind(this)
+                }
+                this.selectStrategyPopup = new Modal(options);
+            }.bind(this))
+        },
+
+        onCreatTaskSuccess: function(){
+            alert("创建任务成功！");
+            this.selectStrategyPopup.$el.modal('hide')
         },
 
         onClickQueryButton: function(){
@@ -93,6 +143,13 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
             }
 
             var model = this.collection.get(id);
+
+            this.domainArray = [{
+                domain: model.get("domain"),
+                id: model.get("id")
+            }];
+
+            this.showSelectStrategyPopup();
         },
 
         onClickItemReject: function(event){
@@ -107,7 +164,7 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
                 id = $(eventTarget).attr("id");
             }
 
-            var model = this.collection.get(id);
+            this.collection.rollBack({predeliveryId: id})
         },
 
         onClickItemEdit: function(event){
@@ -125,6 +182,7 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
                 var myEditChannelView = new EditChannelView({
                     collection: this.collection,
                     model: model,
+                    isEdit: false,
                     onSaveCallback: function(){}.bind(this),
                     onCancelCallback: function(){
                         myEditChannelView.$el.remove();
@@ -198,14 +256,15 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
             var statusArray = [
                 {name: "全部", value: "All"},
                 {name:"新增", value:0},
-                {name: "修改", value:2},
+                {name: "更新", value:1},
+                {name: "删除", value:2},
             ],
             rootNode = this.$el.find(".dropdown-oper");
             Utility.initDropMenu(rootNode, statusArray, function(value){
-                // if (value == "All")
-                //     this.queryArgs.status = null;
-                // else
-                //     this.queryArgs.status = parseInt(value)
+                if (value == "All")
+                    this.queryArgs.operateType = null;
+                else
+                    this.queryArgs.operateType = parseInt(value)
             }.bind(this));
 
             var isCustomizeArray = [
@@ -215,10 +274,10 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
             ],
             rootNode = this.$el.find(".dropdown-iscustomize");
             Utility.initDropMenu(rootNode, isCustomizeArray, function(value){
-                // if (value == "All")
-                //     this.queryArgs.status = null;
-                // else
-                //     this.queryArgs.status = parseInt(value)
+                if (value == "All")
+                    this.queryArgs.status = null;
+                else
+                    this.queryArgs.status = parseInt(value)
             }.bind(this));
 
             var pageNum = [
@@ -233,18 +292,18 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
                 this.onClickQueryButton();
             }.bind(this));
 
-            require(["setupTopoManage.model"], function(SetupTopoManageModel){
-                this.mySetupTopoManageModel = new SetupTopoManageModel();
-                this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.onGetTopoSuccess, this))
-                this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this))
-                var postParam = {
-                    "name" : null,
-                    "type" : null,
-                    "page" : 1,
-                    "size" : 99999
-                 }
-                this.mySetupTopoManageModel.getTopoinfo(postParam);
-            }.bind(this))
+            // require(["setupTopoManage.model"], function(SetupTopoManageModel){
+            //     this.mySetupTopoManageModel = new SetupTopoManageModel();
+            //     this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.onGetTopoSuccess, this))
+            //     this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this))
+            //     var postParam = {
+            //         "name" : null,
+            //         "type" : null,
+            //         "page" : 1,
+            //         "size" : 99999
+            //      }
+            //     this.mySetupTopoManageModel.getTopoinfo(postParam);
+            // }.bind(this))
 
             require(["setupAppManage.model"], function(SetupAppManageModel){
                 this.mySetupAppManageModel = new SetupAppManageModel();
@@ -273,7 +332,7 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
         },
 
         onGetAppSuccess: function(){
-            var appArray = []
+            var appArray = [{name: "全部", value: "All"}]
             this.mySetupAppManageModel.each(function(el, index, lst){
                 appArray.push({
                     name: el.get('name'),

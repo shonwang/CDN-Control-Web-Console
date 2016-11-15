@@ -7,6 +7,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
             this.options = options;
             this.collection = options.collection;
             this.model      = options.model;
+            this.isEdit = options.isEdit;
 
             this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.edit.html'])({data: {}}));
 
@@ -87,7 +88,11 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                 panelId: Utility.randomStr(8)
             }));
             this.configReadOnly.appendTo(this.$el.find(".automatic"))
-            this.configEdit = $(_.template(template['tpl/setupChannelManage/setupChannelManage.editCfgTrue.html'])({
+
+            var tplPath = 'tpl/setupChannelManage/setupChannelManage.editCfgTrue.html';
+            if (!this.isEdit) tplPath = 'tpl/setupChannelManage/setupChannelManage.editCfgFalse.html'
+
+            this.configEdit = $(_.template(template[tplPath])({
                 data: {up: upArray, down: downArray},
                 panelId: Utility.randomStr(8)
             }));

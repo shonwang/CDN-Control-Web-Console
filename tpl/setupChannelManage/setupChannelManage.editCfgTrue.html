@@ -2,62 +2,58 @@
     <div class="panel panel-primary">
         <div class="panel-heading">上层配置</div>
         <div class="panel-body">
-            <div class="panel-group" id="customized-upper-layer-<%=panelId%>">
+            <div class="panel-group" id="upper-layer-<%=panelId%>">
+                <% for(var i = 0; i < data.up.length; i++) { %>
                 <div class="panel panel-default">
-                    <div class="panel-heading" id="headingOne-<%=panelId%>">
+                    <div class="panel-heading" id="heading-<%=data.up[i].id%>-<%=panelId%>">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#customized-upper-layer-<%=panelId%>" href="#customized-upper-layer-one-<%=panelId%>">Item #1</a>
+                            <a data-toggle="collapse" data-parent="#upper-layer-<%=panelId%>" href="#upper-layer-<%=data.up[i].id%>-<%=panelId%>">
+                                <%=data.up[i].name%>
+                                <% if (!data.up[i].luaOnly) { %>
+                                    <span class="text-danger">：文件不包含全部配置，请下发nginx文件</span>
+                                <% } %>
+                            </a>
                         </h4>
                     </div>
-                    <div id="customized-upper-layer-one-<%=panelId%>" class="panel-collapse collapse">
+                    <div id="upper-layer-<%=data.up[i].id%>-<%=panelId%>" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <textarea class="form-control" rows="10" id="customized-file-one"></textarea>
+                            <textarea class="form-control" rows="10" id="customized-file-<%=data.up[i].id%>" 
+                            <% if (data.up[i].name !== "nginx.conf") { %> readonly="true" <% } %>>
+                                <%=data.up[i].content%>
+                            </textarea>
                         </div>
                     </div>
                 </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading" id="headingTwo-<%=panelId%>">
-                        <h4 class="panel-title">
-                            <a class="collapsed" data-toggle="collapse" data-parent="#customized-upper-layer-<%=panelId%>" href="#customized-upper-layer-two-<%=panelId%>">Item #2</a>
-                        </h4>
-                    </div>
-                    <div id="customized-upper-layer-two-<%=panelId%>" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <textarea class="form-control" rows="10" id="customized-file-two"></textarea>
-                        </div>
-                    </div>
-                </div>
+                <% } %> 
             </div>
         </div>
     </div>
     <div class="panel panel-primary">
         <div class="panel-heading">下层配置</div>
         <div class="panel-body">
-            <div class="panel-group" id="customized-down-layer-<%=panelId%>">
+            <div class="panel-group" id="down-layer">
+                <% for(var i = 0; i < data.down.length; i++) { %>
                 <div class="panel panel-default">
-                    <div class="panel-heading" id="headingOne-<%=panelId%>">
+                    <div class="panel-heading" id="heading-<%=data.down[i].id%>-<%=panelId%>">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#customized-down-layer-<%=panelId%>" href="#customized-down-layer-one-<%=panelId%>">Item #1</a>
+                            <a data-toggle="collapse" data-parent="#down-layer" href="#down-layer-<%=data.down[i].id%>-<%=panelId%>">
+                                <%=data.down[i].name%>
+                                <% if (!data.down[i].luaOnly) { %>
+                                    <span class="text-danger">：文件不包含全部配置，请下发nginx文件</span>
+                                <% } %>
+                            </a>
                         </h4>
                     </div>
-                    <div id="customized-down-layer-one-<%=panelId%>" class="panel-collapse collapse">
+                    <div id="down-layer-<%=data.down[i].id%>-<%=panelId%>" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <textarea class="form-control" rows="10" id="customized-file-one"></textarea>
+                            <textarea class="form-control" rows="10" id="customized-file-<%=data.down[i].id%>" 
+                            <% if (data.up[i].name !== "nginx.conf") { %> readonly="true" <% } %>>>
+                                <%=data.down[i].content%>
+                            </textarea>
                         </div>
                     </div>
                 </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading" id="headingTwo-<%=panelId%>">
-                        <h4 class="panel-title">
-                            <a class="collapsed" data-toggle="collapse" data-parent="#customized-down-layer-<%=panelId%>" href="#customized-down-layer-two-<%=panelId%>">Item #2</a>
-                        </h4>
-                    </div>
-                    <div id="customized-down-layer-two-<%=panelId%>" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <textarea class="form-control" rows="10" id="customized-file-two"></textarea>
-                        </div>
-                    </div>
-                </div>
+                <% } %> 
             </div>
         </div>
     </div>

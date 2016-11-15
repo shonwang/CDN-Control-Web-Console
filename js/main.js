@@ -172,6 +172,7 @@ requirejs.config({
 
         "setupTopoManage.model": "setupTopoManage/setupTopoManage.model",
         "setupTopoManage.view": "setupTopoManage/setupTopoManage.view",
+        "setupTopoManageSendStrategy.model": "setupTopoManage/setupTopoManageSendStrategy.model",
 
         "setupSendManage.controller": "setupSendManage/setupSendManage.controller",
         "setupSendDone.model": "setupSendManage/setupSendDone/setupSendDone.model",
@@ -179,9 +180,12 @@ requirejs.config({
 
         "setupSending.model": "setupSendManage/setupSending/setupSending.model",
         "setupSending.view": "setupSendManage/setupSending/setupSending.view",
+        "setupSendDetail.model": "setupSendManage/setupSending/setupSending.detail.model",
+        "setupSendDetail.view": "setupSendManage/setupSending/setupSending.detail.view",
 
         "setupSendWaitCustomize.model": "setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.model",
         "setupSendWaitCustomize.view": "setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.view",
+        "setupSendWaitCustomize.stratety.view": "setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.stratety.view",
 
         "setupSendWaitSend.model": "setupSendManage/setupSendWaitSend/setupSendWaitSend.model",
         "setupSendWaitSend.view": "setupSendManage/setupSendWaitSend/setupSendWaitSend.view",

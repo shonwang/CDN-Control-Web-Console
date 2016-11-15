@@ -89,20 +89,6 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        getChannelConfig: function(args){
-            var url = BASE_URL + "/cg/config/download/domain/config",
-            successCallback = function(res){
-                if (res)
-                    this.trigger("get.channel.config.success", res);
-                else
-                    this.trigger("get.channel.config.error");
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("get.channel.config.error", response);
-            }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
-        },
-
         addTopologyList: function(args){
             var url = BASE_URL + "/channelManager/topology/addTopologyList",
             successCallback = function(res){

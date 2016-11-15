@@ -1,19 +1,14 @@
 define("setupSending.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-            var businessType = this.get("bussinessType"),
-                status       = this.get("status"),
-                cdnFactory   = this.get("cdnFactory"),
-                startTime    = this.get("startTime");
+            var status       = this.get("status"),
+                createTime    = this.get("createTime");
 
-            if (status === 0) this.set("statusName", '<span class="text-danger">已停止</span>');
-            if (status === 1) this.set("statusName", '<span class="text-success">服务中</span>');
-            if (businessType === "1") this.set("businessTypeName", '下载加速');
-            if (businessType === "2") this.set("businessTypeName", '直播加速');
-            if (cdnFactory === "1") this.set("cdnFactoryName", '自建');
-            if (cdnFactory === "2") this.set("cdnFactoryName", '网宿');
-            if (cdnFactory === "3") this.set("cdnFactoryName", '自建+网宿');
-            if (startTime) this.set("startTimeFormated", new Date(startTime).format("yyyy/MM/dd hh:mm"));
+            if (status === 1) this.set("statusName", '<span class="text-info">执行中</span>');
+            if (status === 2) this.set("statusName", '<span class="text-success">执行完成</span>');
+            if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
+
+            this.set("isChecked", false);
         }
     });
 
@@ -23,8 +18,8 @@ define("setupSending.model", ['require','exports', 'utility'], function(require,
 
         initialize: function(){},
 
-        queryChannel: function(args){
-            var url = BASE_URL + "/rs/channel/query",
+        querySendingChannel: function(args){
+            var url = BASE_URL + "/cd/delivery/task/doinglist",
             successCallback = function(res){
                 this.reset();
                 if (res){
@@ -32,13 +27,13 @@ define("setupSending.model", ['require','exports', 'utility'], function(require,
                         this.push(new Model(element));
                     }.bind(this))
                     this.total = res.total;
-                    this.trigger("get.channel.success");
+                    this.trigger("get.sending.channel.success");
                 } else {
-                    this.trigger("get.channel.error"); 
+                    this.trigger("get.sending.channel.error"); 
                 } 
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("get.channel.error", response); 
+                this.trigger("get.sending.channel.error", response); 
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },

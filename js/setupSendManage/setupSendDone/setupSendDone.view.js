@@ -10,23 +10,24 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
 
             this.initChannelDropMenu();
 
-            this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
-            this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.donlist.success", $.proxy(this.onChannelListSuccess, this));
+            this.collection.on("get.donlist.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
 
             this.enterKeyBindQuery();
 
-            this.queryArgs = {
-                "domain"           : null,
-                "accelerateDomain" : null,
-                "businessType"     : null,
-                "clientName"       : null,
-                "status"           : null,
+             this.queryArgs = {
+                "name"           : null,//任务名称
+                "platformId" : null,//应用平台ID
+                "topologyId"     : null,//拓扑关系ID
+                "deliveryStrategyDefId"       : null,//下发策略ID
+                "status"           : null,//任务状态，目前接口没有
                 "page"             : 1,
                 "count"            : 10
              }
+
             this.onClickQueryButton();
         },
         
@@ -53,13 +54,11 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
         onClickQueryButton: function(){
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
-            this.queryArgs.domain = this.$el.find("#input-domain").val();
-            this.queryArgs.clientName = this.$el.find("#input-client").val();
-            if (this.queryArgs.domain == "") this.queryArgs.domain = null;
-            if (this.queryArgs.clientName == "") this.queryArgs.clientName = null;
+            this.queryArgs.name = this.$el.find("#input-task-name").val();
+            if (this.queryArgs.name == "") this.queryArgs.domain = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
-            this.collection.queryChannel(this.queryArgs);
+            this.collection.queryTaskDonelist(this.queryArgs);
         },
 
         initTable: function(){
@@ -72,12 +71,88 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.table.find("tbody .detail").on("click", $.proxy(this.onClickItemEdit, this));
-            this.table.find("tbody .send").on("click", $.proxy(this.onClickItemSend, this));
-            this.table.find("tbody .reject").on("click", $.proxy(this.onClickItemReject, this));
+            //this.table.find("tbody .detail").on("click", $.proxy(this.onClickItemEdit, this));
+            //this.table.find("tbody .send").on("click", $.proxy(this.onClickItemSend, this));
+            //this.table.find("tbody .reject").on("click", $.proxy(this.onClickItemReject, this));
 
-            this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
-            this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+            //this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
+            //this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+            this.table.find("tbody .repeat").on("click", $.proxy(this.onClickRePublish, this));
+            this.table.find("tbody .detail").on("click", $.proxy(this.onShowDetail, this));
+        },
+
+        onShowDetail: function(event){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+
+            var model = this.collection.get(id);
+            /*
+            var mySendedDetailView = new SendedDetailView({
+                collection: this.collection,
+                model: model,
+                onSaveCallback: function(){}.bind(this),
+                onCancelCallback: function(){
+                    mySendedDetailView.$el.remove();
+                    this.$el.find(".list-panel").show();
+                }.bind(this)
+            })*/
+
+            //this.$el.find(".list-panel").hide();
+            //mySendedDetailView.render(this.$el.find(".edit-panel"))
+            require(["setupSendDetail.view", "setupSendDetail.model"], function(SendDetailView, SetupSendDetailModel){
+                var mySetupSendDetailModel = new SetupSendDetailModel();
+                var mySendDetailView = new SendDetailView({
+                    collection: mySetupSendDetailModel,
+                    model: model,
+                    onSaveCallback: function(){}.bind(this),
+                    onCancelCallback: function(){
+                        mySendDetailView.$el.remove();
+                        this.$el.find(".list-panel").show();
+                    }.bind(this)
+                })
+
+                this.$el.find(".list-panel").hide();
+                mySendDetailView.render(this.$el.find(".edit-panel"))
+            }.bind(this))
+        },        
+
+        rePublish:function(domains){
+
+            require(["setupChannelManage.model"], function(SetupChannelManageModel){
+                this.mySetupChannelManageModel = new SetupChannelManageModel();
+                /*var postParam = [{
+                        domain: this.options.domainInfo.domain,
+                        version: res.version,
+                        description: this.$el.find(".comment #secondary").val()
+                    }]
+                    */
+                _.each(domains,function(item){
+                    item.version = item.domainVersion;
+                });
+                var postParam = domains;
+
+                this.mySetupChannelManageModel.off("post.predelivery.success");
+                this.mySetupChannelManageModel.off("post.predelivery.error");
+                this.mySetupChannelManageModel.on("post.predelivery.success", $.proxy(this.rePublishSuccess, this));
+                this.mySetupChannelManageModel.on("post.predelivery.error", $.proxy(this.rePublishError, this));
+                this.mySetupChannelManageModel.predelivery(postParam);
+            }.bind(this))
+
+        },
+
+        rePublishSuccess:function(){
+            alert("发布成功");
+            this.onClickQueryButton();
+        },
+
+        rePublishError:function(res){
+            var msg = res.message || "重新发布失败";
+            alert(msg);
         },
 
         onClickItemSend: function(event){
@@ -95,8 +170,8 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
             var model = this.collection.get(id);
         },
 
-        onClickItemReject: function(event){
-            var result = confirm("你确定要打回吗？");
+        onClickRePublish: function(event){
+            var result = confirm("你确定要重新发布吗？");
             if (!result) return;
 
             var eventTarget = event.srcElement || event.target, id;
@@ -108,6 +183,8 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
             }
 
             var model = this.collection.get(id);
+            var domains = model.get("domains");
+            this.rePublish(domains);
         },
 
         onClickItemEdit: function(event){
@@ -185,7 +262,7 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
                         var args = _.extend(this.queryArgs);
                         args.page = num;
                         args.count = this.queryArgs.count;
-                        this.collection.queryChannel(args);
+                        this.collection.queryTaskDonelist(args);
                     }
                 }.bind(this)
             });
@@ -195,15 +272,17 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
         initChannelDropMenu: function(){
             var statusArray = [
                 {name: "全部", value: "All"},
-                {name:"新增", value:0},
-                {name: "修改", value:2},
+                {name:"下发完成", value:1},
+                {name: "被终止", value:2},
             ],
-            rootNode = this.$el.find(".dropdown-oper");
+            rootNode = this.$el.find(".dropdown-done-type");
             Utility.initDropMenu(rootNode, statusArray, function(value){
-                // if (value == "All")
-                //     this.queryArgs.status = null;
-                // else
-                //     this.queryArgs.status = parseInt(value)
+                 if (value == "All"){
+                     this.queryArgs.status = null;
+                 }
+                 else{
+                     this.queryArgs.status = parseInt(value)
+                 }
             }.bind(this));
 
             var pageNum = [
@@ -236,11 +315,41 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
                 this.mySetupAppManageModel.on("get.app.info.success", $.proxy(this.onGetAppSuccess, this))
                 this.mySetupAppManageModel.on("get.app.info.error", $.proxy(this.onGetError, this))
                 this.mySetupAppManageModel.getAppInfo();
-            }.bind(this))
+            }.bind(this));
+            
+            //下发策略
+            require(['setupTopoManageSendStrategy.model'],function(SetupTopoManageSendStrategyModel){
+                this.mySetupTopoManageSendStrategyModel = new SetupTopoManageSendStrategyModel();
+                this.mySetupTopoManageSendStrategyModel.on("get.sendInfo.success", $.proxy(this.onGetSendStrategySuccess, this))
+                this.mySetupTopoManageSendStrategyModel.on("get.sendInfo.error", $.proxy(this.onGetSendStrategyError, this))
+                this.mySetupTopoManageSendStrategyModel.getSendinfo();
+            }.bind(this));
+        },
+
+        onGetSendStrategySuccess:function(){
+            //下发策略下拉框
+            var mySetupTopoManageSendStrategyModel=this.mySetupTopoManageSendStrategyModel;
+            var dendStrategyArr = [{name:"全部",value:"All"}];
+            mySetupTopoManageSendStrategyModel.each(function(el,index,lst){
+                dendStrategyArr.push({
+                    name:el.get('name'),
+                    value:el.get('id')
+                });
+            }.bind(this));
+            rootNode = this.$el.find('.dropdown-strategy');
+            Utility.initDropMenu(rootNode, dendStrategyArr, function(value){
+                 if (value == "All"){
+                     this.queryArgs.deliveryStrategyDefId = null;
+                 }
+                 else{
+                     this.queryArgs.deliveryStrategyDefId = parseInt(value)
+                 }
+            }.bind(this));
         },
 
         onGetTopoSuccess: function(){
-            var topoArray = []
+            //拓扑关系下拉框
+            var topoArray = [{name:"全部",value:"All"}]
             this.mySetupTopoManageModel.each(function(el, index, lst){
                 topoArray.push({
                     name: el.get('name'),
@@ -250,15 +359,18 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
 
             rootNode = this.$el.find(".dropdown-topo");
             Utility.initDropMenu(rootNode, topoArray, function(value){
-                // if (value == "All")
-                //     this.queryArgs.status = null;
-                // else
-                //     this.queryArgs.status = parseInt(value)
+                 if (value == "All"){
+                     this.queryArgs.topologyId = null;
+                 }
+                 else{
+                     this.queryArgs.topologyId = parseInt(value)
+                 }
             }.bind(this));
         },
 
         onGetAppSuccess: function(){
-            var appArray = []
+            //应用 下拉框
+            var appArray = [{name:"全部",value:"All"}]
             this.mySetupAppManageModel.each(function(el, index, lst){
                 appArray.push({
                     name: el.get('name'),
@@ -268,10 +380,12 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
 
             rootNode = this.$el.find(".dropdown-app");
             Utility.initDropMenu(rootNode, appArray, function(value){
-                // if (value == "All")
-                //     this.queryArgs.status = null;
-                // else
-                //     this.queryArgs.status = parseInt(value)
+                if (value == "All"){
+                    this.queryArgs.platformId = null;
+                }
+                else{
+                    this.queryArgs.platformId = parseInt(value)
+                }
             }.bind(this));
         },
 

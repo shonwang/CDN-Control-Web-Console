@@ -1,19 +1,20 @@
 define("setupSendWaitSend.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-            var businessType = this.get("bussinessType"),
-                status       = this.get("status"),
-                cdnFactory   = this.get("cdnFactory"),
-                startTime    = this.get("startTime");
+            var operType = this.get("operType"),
+                isCustom = this.get("isCustom"),
+                createTime = this.get("createTime");
 
-            if (status === 0) this.set("statusName", '<span class="text-danger">已停止</span>');
-            if (status === 1) this.set("statusName", '<span class="text-success">服务中</span>');
-            if (businessType === "1") this.set("businessTypeName", '下载加速');
-            if (businessType === "2") this.set("businessTypeName", '直播加速');
-            if (cdnFactory === "1") this.set("cdnFactoryName", '自建');
-            if (cdnFactory === "2") this.set("cdnFactoryName", '网宿');
-            if (cdnFactory === "3") this.set("cdnFactoryName", '自建+网宿');
-            if (startTime) this.set("startTimeFormated", new Date(startTime).format("yyyy/MM/dd hh:mm"));
+            if (operType === 0) this.set("operTypeName", '新建');
+            if (operType === 2) this.set("operTypeName", '删除');
+            if (operType === 1) this.set("operTypeName", '更新');
+            if (isCustom === true) this.set("isCustomName", '是');
+            if (isCustom === false) this.set("isCustomName", '否');
+
+            if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
+
+            this.set("tempUseCustomized", 2);
+            this.set("isChecked", false);
         }
     });
 
@@ -24,7 +25,7 @@ define("setupSendWaitSend.model", ['require','exports', 'utility'], function(req
         initialize: function(){},
 
         queryChannel: function(args){
-            var url = BASE_URL + "/rs/channel/query",
+            var url = BASE_URL + "/cd/predelivery/list",
             successCallback = function(res){
                 this.reset();
                 if (res){
@@ -40,60 +41,34 @@ define("setupSendWaitSend.model", ['require','exports', 'utility'], function(req
             errorCallback = function(response){
                 this.trigger("get.channel.error", response); 
             }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        getChannelDispgroup: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/get",
+        createTask: function(args){
+            var url = BASE_URL + "/cd/delivery/task/createtask",
             successCallback = function(res){
                 if (res){
-                    this.trigger("channel.dispgroup.success", res);
+                    this.trigger("create.task.success", res);
                 } else {
-                    this.trigger("channel.dispgroup.error", res); 
+                    this.trigger("create.task.error", res); 
                 }
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("channel.dispgroup.error", response); 
+                this.trigger("create.task.error", response); 
             }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
-        addDispGroupChannel: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/add",
+        rollBack: function(args){
+            var url = BASE_URL + "/cd/predelivery/rollback",
             successCallback = function(res){
-                this.trigger("add.dispGroup.channel.success", res);
+                this.trigger("roll.back.success", res);
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("add.dispGroup.channel.error", response); 
+                this.trigger("roll.back.error", response); 
             }.bind(this);
 
-            Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
-        },
-
-        ipTypeList: function(args){
-            var url = BASE_URL + "/rs/metaData/ipTypeList",
-            successCallback = function(res){
-                if (res)
-                    this.trigger("ip.type.success", res.rows);
-                else
-                    this.trigger("ip.type.error");
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("ip.type.error", response);
-            }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
-        },
-
-        deleteDispGroupChannel: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/delete",
-            successCallback = function(res){
-                this.trigger("add.dispGroup.channel.success", res);
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("add.dispGroup.channel.error", response); 
-            }.bind(this);
-
-            Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
+            Utility.postAjax(url, args, successCallback, errorCallback);
         }
     });
 

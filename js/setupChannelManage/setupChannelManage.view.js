@@ -62,7 +62,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
 
         onPostPredelivery: function(){
             alert("发布成功！")
-            window.location.hash = '#/setupSending';
+            window.location.hash = '#/setupSendWaitSend';
         },
 
         onClickItemBill: function(event){
@@ -531,7 +531,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.collection = options.collection;
             this.domainArray = options.domainArray;
 
-            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])());
+            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({data: {name: "拓扑关系"}}));
 
             this.initDomainList();
 
@@ -559,7 +559,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.topo.table.html'])({
+            this.table = $(_.template(template['tpl/setupSendManage/setupSendWaitSend/setupSendWaitSend.sendStrategy.table.html'])({
                 data: this.mySetupTopoManageModel.models, 
             }));
             if (this.mySetupTopoManageModel.models.length !== 0)
@@ -653,9 +653,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
             this.queryArgs.domain = this.$el.find("#input-domain").val();
-            this.queryArgs.clientName = this.$el.find("#input-client").val();
             if (this.queryArgs.domain == "") this.queryArgs.domain = null;
-            if (this.queryArgs.clientName == "") this.queryArgs.clientName = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
             this.collection.queryChannel(this.queryArgs);
@@ -740,7 +738,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.selectTopoPopup.$el.modal("hide");
             alert("批量更换拓扑关系成功！")
 
-            window.location.hash = '#/setupSending';
+            window.location.hash = '#/setupSendWaitSend';
         },
 
         onClickItemHistory: function(event){
@@ -815,6 +813,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 var myEditChannelView = new EditChannelView({
                     collection: this.collection,
                     model: model,
+                    isEdit: false,
                     onSaveCallback: function(){}.bind(this),
                     onCancelCallback: function(){
                         myEditChannelView.$el.remove();

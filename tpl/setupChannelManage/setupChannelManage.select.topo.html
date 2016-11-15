@@ -1,11 +1,21 @@
 <div>
+    <% if (data.name === "下发策略") { %>
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label for="input-domain" class="col-sm-3 control-label">任务名称</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="input-task-name">
+            </div>
+        </div>
+    </div>
+    <% } %>
     <div class="long-dropdown-menu">
-        <p>本次修改涉及的域名</p>
+        <p>涉及的域名</p>
         <div class="domain-ctn"></div>
     </div>
     <hr>
     <div>
-        <p>选择拓扑关系</p>
+        <p>选择<%=data.name%></p>
         <div class="table-ctn table-responsive long-dropdown-menu"></div>
     </div>
 </div>

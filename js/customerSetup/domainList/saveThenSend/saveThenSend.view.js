@@ -12,13 +12,31 @@ define("saveThenSend.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.send.error", $.proxy(this.onGetError, this));
         },
 
-        onSendSuccess: function() {
+        onSendSuccess: function(res) {
+            require(["setupChannelManage.model"], function(SetupChannelManageModel){
+                this.mySetupChannelManageModel = new SetupChannelManageModel();
+
+                var postParam = [{
+                        domain: this.options.domainInfo.domain,
+                        version: res.version,
+                        description: this.$el.find(".comment #secondary").val()
+                    }]
+
+                this.mySetupChannelManageModel.off("post.predelivery.success");
+                this.mySetupChannelManageModel.off("post.predelivery.error");
+                this.mySetupChannelManageModel.on("post.predelivery.success", $.proxy(this.onPostPredelivery, this));
+                this.mySetupChannelManageModel.on("post.predelivery.error", $.proxy(this.onGetError, this));
+                this.mySetupChannelManageModel.predelivery(postParam)
+            }.bind(this))
+        },
+
+        onPostPredelivery: function(){
             alert("发布成功！")
             this.options.onSendSuccess && this.options.onSendSuccess();
         },
 
         sendConfig: function() {
-            this.collection.publishConfig({originId: this.options.originId})
+            this.collection.publishConfig({originId: this.options.domainInfo.id})
         },
 
         onGetError: function(error){

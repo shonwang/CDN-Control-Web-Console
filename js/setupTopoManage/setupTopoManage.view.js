@@ -3,6 +3,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         event:{},
         initialize:function(options){
             this.options = options;
+            this.model = options.model;
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.send.html'])({data: {}}));
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
@@ -10,22 +11,35 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             
             this.queryArgs = {
                 "name" : null,
-                "type" : null,
                 "page" : 1,
-                "size" : 10
+                "count" : 10
             }
+            
             this.onClickQueryButton();
-             
+            //Enter键查询
+            this.$el.find('#input-topo-name').on('keydown',function(e){
+                  if(e.keyCode == 13){
+                     this.onClickQueryButton();
+                  }
+            }.bind(this));
+            
             this.collection.off("get.sendInfo.success");
             this.collection.off("get.sendInfo.error");
             this.collection.on("get.sendInfo.success", $.proxy(this.getSendInfoSuccess, this));
             this.collection.on("get.sendInfo.error", $.proxy(this.onGetError, this));
+            //删除下发策略
+            this.collection.off("delete.SendStrategy.success");
+            this.collection.off("delete.SendStrategy.error");
+            this.collection.on("delete.SendStrategy.success", $.proxy(this.deleteSendStrategySuccess, this));
+            this.collection.on("delete.SendStrategy.error", $.proxy(this.onGetError, this));
+            //设为默认
+            this.collection.off("set.DefaultStrategy.success");
+            this.collection.off("set.DefaultStrategy.error");
+            this.collection.on("set.DefaultStrategy.success", $.proxy(this.setDefaultStrategySuccess, this));
+            this.collection.on("set.DefaultStrategy.error", $.proxy(this.onGetError, this));
             
             this.$el.find('.opt-ctn .query').on('click',$.proxy(this.onClickQueryButton, this));
             this.$el.find('.opt-ctn .new').on('click',$.proxy(this.onClickAddSend, this));
-            
-
-            
         },
          onClickQueryButton: function(){
             this.isInitPaginator = false;
@@ -34,17 +48,13 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             if (this.queryArgs.name == "") this.queryArgs.name = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
-            //this.collection.queryChannel(this.queryArgs);
             this.collection.getSendinfo(this.queryArgs);
         },
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
         getSendInfoSuccess: function(res){
-           _.each(res.rows,function(el,index,list){
-              el.createTime = new Date(el.createTime).format("yyyy/MM/dd hh:mm");
-           })
-           this.table = $(_.template(template['tpl/setupTopoManage/setupTopoManage.send.table.html'])({data:res.rows}));
+           this.table = $(_.template(template['tpl/setupTopoManage/setupTopoManage.send.table.html'])({data:this.collection.models}));
            if (res.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
@@ -52,13 +62,19 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
 
             this.table.find('.edit').on('click',$.proxy(this.onClickEditSend,this));
             this.table.find('.delete').on('click',$.proxy(this.onClickDeleteSend,this));
+            this.table.find('.setDefault').on('click',$.proxy(this.onClickDefault,this));
 
             if(!this.isInitPaginator) this.initPaginator();
         },
         onClickAddSend: function(){
             var myEditOrAddSendView = new EditOrAddSendView({
                 collection:this.collection,
-                onSaveCallback:function(){}.bind(this),
+                model:this.model,
+                onSaveCallback:function(){
+                    this.onClickQueryButton();
+                    myEditOrAddSendView.$el.remove();
+                    this.$el.find(".list-panel").show();
+                }.bind(this),
                 onCancelCallback:function(){
                     myEditOrAddSendView.$el.remove();
                     this.$el.find(".list-panel").show();
@@ -66,9 +82,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             });
             this.$el.find('.list-panel').hide();
             myEditOrAddSendView.render(this.$el.find('.SendTable'));
-        },
-        onClickDeleteSend: function(){
-            alert('确定删除？')
         },
         onClickEditSend: function(event){
             var eventTarget = event.srcElement || event.target, id;
@@ -81,9 +94,14 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             
             var myEditOrAddSendView = new EditOrAddSendView({
                 collection:this.collection,
+                model:this.model,
                 isEdit:true,
                 id:id,
-                onSaveCallback:function(){}.bind(this),
+                onSaveCallback:function(){
+                    this.onClickQueryButton();
+                    myEditOrAddSendView.$el.remove();
+                    this.$el.find(".list-panel").show();
+                }.bind(this),
                 onCancelCallback:function(){
                     myEditOrAddSendView.$el.remove();
                     this.$el.find(".list-panel").show();
@@ -92,10 +110,44 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find('.list-panel').hide();
             myEditOrAddSendView.render(this.$el.find('.SendTable'));
         },
+        onClickDeleteSend: function(){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+            var model = this.collection.get(id);
+            var result = confirm("确定删除"+model.get('name')+'?');
+            if (!result) return;
+             this.collection.deleteSendStrategy(id);
+        },
+        onClickDefault: function(){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+            var model = this.collection.get(id);
+            var result = confirm("确定将"+model.get('name')+"设为默认?");
+            if (!result) return;
+             this.collection.setDefaultStrategy(id);
+        },
+        deleteSendStrategySuccess: function(){
+             alert('删除成功');
+             this.onClickQueryButton();
+        },
+        setDefaultStrategySuccess: function(){
+             alert('设置成功');
+             this.onClickQueryButton();
+        },
         initPaginator: function(){
             this.$el.find(".total-items span").html(this.collection.total)
-            if (this.collection.total <= this.queryArgs.size) return;
-            var total = Math.ceil(this.collection.total/this.queryArgs.size);
+            if (this.collection.total <= this.queryArgs.count) return;
+            var total = Math.ceil(this.collection.total/this.queryArgs.count);
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
                 visiblePages: 10,
@@ -105,8 +157,8 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                         this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                         var args = _.extend(this.queryArgs);
                         args.page = num;
-                        args.count = this.queryArgs.size;
-                        this.collection.getTopoinfo(args);
+                        args.count = this.queryArgs.count;
+                        this.collection.getSendinfo(args);
                     }
                 }.bind(this)
             });
@@ -120,7 +172,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 {name: "100条", value: 100}
             ]
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
-                this.queryArgs.size = parseInt(value);
+                this.queryArgs.count = parseInt(value);
                 this.queryArgs.page = 1;
                 this.onClickQueryButton();
             }.bind(this));
@@ -133,61 +185,66 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         events:{},
         initialize: function(options){
             this.options = options;
+            this.model = options.model;
             this.collection = options.collection;
             this.id = options.id;
             this.isEdit = options.isEdit;
+            
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.send.edit.html'])({data: {}}));
+            this.$el.find('#input-Topo').val(this.model.get('name'));
+            
             this.$el.find('.add-step').on('click',$.proxy(this.onClickAddStepButton, this));
             this.$el.find('.nextStep').on('click',$.proxy(this.onClickNextStepButton,this));
             this.$el.find('.opt-ctn .cancel').on('click',$.proxy(this.onClickCancelButton, this));
-            
+            this.$el.find('.opt-ctn .save').on('click',$.proxy(this.onClickSaveButton, this));
+
             if(this.isEdit){
-                this.defaultParam = {
-                    "id":1,
-                    "name":"下发策略",
-                    "topology_id":123,
-                    "deliveryStrategyDef":[
-                      {
-                        "step":1,
-                        "nodeId":[1,2,3],
-                        "shell":"ls;pwd;"
-                      },
-                     {
-                          "step":2,
-                          "nodeId":[4,5,6],
-                          "shell":"ls;pwd;"
-                      },
-                      {
-                          "step":3,
-                          "nodeId":[7,8,9],
-                          "shell":"ls;pwd;"
-                      }
-                    ]
-                  }
+                this.collection.getSendViewDetail(this.id);
             }else{
                 this.defaultParam = {
-                    "id":null,
                     "name":null,
-                    "topology_id":null,
+                    "topologyId":null,
+                    "description":null,
                     "deliveryStrategyDef":[]
-                  }
+                }
             }
 
+            //新建下发策略
+            this.collection.off('add.SendView.error');
+            this.collection.off('add.SendView.success');
+            this.collection.on('add.SendView.success',$.proxy(this.addSendViewSuccess,this));
+            this.collection.on('add.SendView.error',$.proxy(this.onGetError,this));
+            //查看下发策略详情
+            this.collection.off('get.SendViewDetail.success');
+            this.collection.off('get.SendViewDetail.error');
+            this.collection.on('get.SendViewDetail.success',$.proxy(this.getSendViewDetailSuccess,this));
+            this.collection.on('get.SendViewDetail.error',$.proxy(this.onGetError,this));
+            //修改下发策略
+            this.collection.off('modify.SendStrategy.success');
+            this.collection.off('modify.SendStrategy.error');
+            this.collection.on('modify.SendStrategy.success',$.proxy(this.modifySendStrategySuccess,this));
+            this.collection.on('modify.SendStrategy.error',$.proxy(this.onGetError,this));
+            //获取节点信息
             this.collection.off('get.node.error');
             this.collection.off('get.node.success');
             this.collection.on('get.node.success',$.proxy(this.onGetNodeSuccess,this));
             this.collection.on('get.node.error',$.proxy(this.onGetError,this));
             this.collection.getNodeList();       
-           
+            
             this.initNextStep();
 
+        },
+        getSendViewDetailSuccess:function(res){
+            this.defaultParam = res; 
+            this.$el.find('#input-Name').val(this.defaultParam.name); 
+            this.$el.find('#description').val(this.defaultParam.description);
         },
         onGetNodeSuccess: function(res){
             this.allNodes = res; //所有的节点,会执行节点的过滤操作
             this.allNodesShow = []; //所有的节点，执行过滤操作后,此不会进行改变，从而进行回显
             _.each(res,function(el,index,list){
                  this.allNodesShow.push(el);
-            }.bind(this))
+            }.bind(this));
             this.initstepTable(this.InformationProcessing(this.defaultParam.deliveryStrategyDef));
         },
         initNextStep: function(){
@@ -198,6 +255,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         initstepTable: function(data){
             /*var data = [{step:1,nodeName:'扬州电信节点、扬州联通节点、杭州'},{step:2,nodeName:'济南联通节点、惠州联通节点、天津电信节点'},{step:3,nodeName:'石家庄联通节点、襄阳电信节点、德阳电信节点、天津移动节点'}]*/
             var data = data;
+            _.each(data,function(el,index,list){
+                el.step = index+1;
+            })
             this.localTable = $(_.template(template['tpl/setupTopoManage/setupTopoManage.addStep.table.html'])({
                  data: data
             }));
@@ -302,8 +362,35 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
               this.$el.find('#selectNextTime').css('visibility','visible');
            }
         },
+        onClickSaveButton: function(){
+            this.defaultParam.name = this.$el.find('#input-Name').val();
+            this.defaultParam.topologyId = this.model.get('id');
+            this.defaultParam.description = this.$el.find('#description').val();
+            if(!this.isEdit){
+               this.collection.addSendView(this.defaultParam);
+            }else{
+                delete this.defaultParam.creator;
+                delete this.defaultParam.nodeNames;
+                delete this.defaultParam.default;
+                this.collection.modifySendStrategy(this.defaultParam);
+            }
+        },
+        addSendViewSuccess: function(res){
+            alert('保存成功');
+            this.options.onSaveCallback && this.options.onSaveCallback();
+        },
+        modifySendStrategySuccess: function(res){
+            alert('修改成功');
+            this.options.onSaveCallback && this.options.onSaveCallback();
+        },
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();
+        },
+        onGetError: function(error){
+            if (error&&error.message)
+                alert(error.message)
+            else
+                alert("网络阻塞，请刷新重试！")
         },
         InformationProcessing:function(data){
             var data_save = [];
@@ -385,13 +472,13 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.deliveryStrategyDef = options.deliveryStrategyDef; //全部的步骤参数
             this.isEdit = options.isEdit;
             this.allNodes = options.allNodes;
+            
             if(!this.isEdit){
                 this.Step = options.FinallyStep;
             }else{
                 this.Step = options.CurrentStep;
             }
             this.defaultParam = this.parameterProcessing(this.deliveryStrategyDef);//每一条的步骤参数
-            
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.addStep.html'])({data:this.Step}));
             this.$el.find('.opt-ctn .save').on('click', $.proxy(this.onClickSaveButton, this));
             this.$el.find('.opt-ctn .cancel').on('click', $.proxy(this.onClickCancelButton, this));
@@ -1514,21 +1601,30 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             } else {
                 id = $(eventTarget).attr("id");
             }
-            var model = this.collection.get(id);
-            var mySendView = new SendView({
-                collection:this.collection,
-                onSaveCallback: function(){
-                    mySendView.$el.remove();
-                    this.$el.find(".list-panel").show();
-                }.bind(this),
-                onCancelCallback: function(){
-                    mySendView.$el.remove();
-                    this.$el.find(".list-panel").show();
-                }.bind(this)
-            })
+            var model = this.collection.get(id);            
+            require(['setupTopoManageSendStrategy.model'], function(setupTopoManageSendStrategyModel){
+                var mySendStrategeModel = new setupTopoManageSendStrategyModel();
+                var options = mySendStrategeModel;
+                var mySendView = new SendView({
+                    collection:options,
+                    model:model,
+                    onSaveCallback: function(){
+                        this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
+                        mySendView.$el.remove();
+                        this.$el.find(".list-panel").show();
+                    }.bind(this),
+                    onCancelCallback: function(){
+                        this.on('enterKeyBindQuery',$.proxy(this.onClickQueryButton, this));
+                        mySendView.$el.remove();
+                        this.$el.find(".list-panel").show();
+                    }.bind(this)
+                })
 
-            this.$el.find(".list-panel").hide();
-            mySendView.render(this.$el.find(".edit-panel"))
+                this.$el.find(".list-panel").hide();
+                mySendView.render(this.$el.find(".edit-panel"))
+            }.bind(this));
+            
+            
         },
         initPaginator: function(){
             this.$el.find(".total-items span").html(this.collection.total)

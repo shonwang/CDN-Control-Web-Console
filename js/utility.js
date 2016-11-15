@@ -406,6 +406,34 @@ define("utility", ['require','exports'], function(require, exports) {
             };
 
             $.ajax(defaultParas);
+        },
+        deleteAjax: function(url, args, successCallback, errorCallback, timeout){
+            var defaultParas = {
+                type: "DELETE",
+                url: url,
+                async: true,
+                timeout: timeout || 30000,
+            };
+            defaultParas.data = args || {t: new Date().valueOf()};
+
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                successCallback && successCallback(res)
+            };
+
+            defaultParas.error = function(response, msg){
+                try{
+                    if (response&&response.responseText)
+                        response = JSON.parse(response.responseText)
+                    errorCallback && errorCallback(response)
+                } catch(e){
+                    errorCallback && errorCallback(response)
+                } 
+            };
+
+            $.ajax(defaultParas);
         }
     };
     return Utility;

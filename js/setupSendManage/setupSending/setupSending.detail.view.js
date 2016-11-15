@@ -35,7 +35,9 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             this.options = options;
             this.collection = options.collection;
             this.model      = options.model;
-
+            this.queryArgs = {
+                taskId:""
+            };
             this.$el = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.detail.html'])({data: {}}));
 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));

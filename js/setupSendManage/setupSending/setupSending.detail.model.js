@@ -23,8 +23,8 @@ define("setupSendDetail.model", ['require','exports', 'utility'], function(requi
 
         initialize: function(){},
 
-        querySendingChannel: function(args){
-            var url = BASE_URL + "/cd/delivery/task/doinglist",
+        taskDoingdetail:function(args){
+            var url = BASE_URL + "/cd/delivery/task/doingdetail",
             successCallback = function(res){
                 this.reset();
                 if (res){
@@ -32,69 +32,17 @@ define("setupSendDetail.model", ['require','exports', 'utility'], function(requi
                         this.push(new Model(element));
                     }.bind(this))
                     this.total = res.total;
-                    this.trigger("get.sending.channel.success");
+                    this.trigger("get.task.doingdetail.success");
                 } else {
-                    this.trigger("get.sending.channel.error"); 
+                    this.trigger("get.task.doingdetail.error"); 
                 } 
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("get.sending.channel.error", response); 
+                this.trigger("get.task.doingdetail.error", response); 
             }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
-        },
-
-        getChannelDispgroup: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/get",
-            successCallback = function(res){
-                if (res){
-                    this.trigger("channel.dispgroup.success", res);
-                } else {
-                    this.trigger("channel.dispgroup.error", res); 
-                }
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("channel.dispgroup.error", response); 
-            }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
-        },
-
-        addDispGroupChannel: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/add",
-            successCallback = function(res){
-                this.trigger("add.dispGroup.channel.success", res);
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("add.dispGroup.channel.error", response); 
-            }.bind(this);
-
-            Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
-        },
-
-        ipTypeList: function(args){
-            var url = BASE_URL + "/rs/metaData/ipTypeList",
-            successCallback = function(res){
-                if (res)
-                    this.trigger("ip.type.success", res.rows);
-                else
-                    this.trigger("ip.type.error");
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("ip.type.error", response);
-            }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
-        },
-
-        deleteDispGroupChannel: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/delete",
-            successCallback = function(res){
-                this.trigger("add.dispGroup.channel.success", res);
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("add.dispGroup.channel.error", response); 
-            }.bind(this);
-
-            Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
+            Utility.postAjax(url, args, successCallback, errorCallback);        
         }
+
     });
 
     return SetupSendDetailCollection;

@@ -1,40 +1,115 @@
-<ul id="demo-list"> 
+<ul id="demo-list">
+    <% if (permission.CustomerResource) { %> 
    <li>
         <a href="javascript:void(0)"><i class="glyphicon glyphicon-user"></i>客户资源</a>
         <ul class="submenu">
+            <% if (permission.ManageChannels) { %>
             <li class="active" id="channelManage"><a href="index.html#"><i class="icon icon-monit-20"></i>频道管理</a></li>
+            <% } %>
+            <li id="domainManage"><a href="index.html#/domainManage"><i class="glyphicon glyphicon-list"></i>域名管理</a></li>
         </ul>
    </li>
+   <% } %>
+   <% if (permission.ManageResources) { %> 
     <li><a href="javascript:void(0)"><i class="icon icon-vm-16"></i>资源管理</a>
         <ul class="submenu">
+            <% if (permission.ManageNodes) { %> 
             <li id="nodeManage"><a href="index.html#/nodeManage"><i class="icon icon-loadblance-16"></i>节点管理</a></li>
+            <% } %>
+            <% if (permission.ManageHosts) { %>
             <li id="deviceManage"><a href="index.html#/deviceManage/none"><i class="icon icon-physical-16"></i>设备管理</a></li>
+            <% } %>
+            <% if (permission.ManageIPs) { %>
             <li id="ipManage"><a href="index.html#/ipManage"><i class="icon icon-ip-16"></i>IP管理</a></li>
+            <% } %>
+            <% if (permission.ManageTopos) { %>
+            <li id="setupTopoManage"><a href="index.html#/setupTopoManage"><i class="glyphicon glyphicon-text-width"></i>拓扑管理</a></li>
+             <% } %>
+             <% if (permission.ManageApplications) { %> 
+            <li id="setupAppManage"><a href="index.html#/setupAppManage"><i class="glyphicon glyphicon-font"></i>应用管理</a></li>
+             <% } %>
         </ul>
     </li>
+    <% } %>
+    <% if (permission.ManageServices) { %> 
     <li><a href="javascript:void(0)"><i class="icon icon-content-16"></i>服务管理</a>
         <ul class="submenu">
+            <% if (permission.ManageGslbGroups) { %> 
             <li id="dispGroup"><a href="index.html#/dispGroup"><i class="icon icon-cache-16"></i>调度组管理</a></li>
+            <% } %>
+            <% if (permission.GslbConfig) { %> 
             <li id="dispConfig"><a href="index.html#/dispConfig"><i class="glyphicon glyphicon-cog"></i>调度配置</a></li>
+            <% } %>
         </ul>
     </li>
+    <% } %>
+    <% if (permission.ManageRegions) { %> 
     <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-globe"></i>区域管理</a>
         <ul class="submenu">
+            <% if (permission.ManageCoverrelateds) { %> 
             <li id="coverManage"><a href="map.html#/coverManage"><i class="glyphicon glyphicon-map-marker"></i>覆盖管理</a></li>
+            <% } %>
+            <% if (permission.Coverrelateds) { %> 
             <li id="coverRegion"><a href="index.html#/coverRegion"><i class="glyphicon glyphicon-link"></i>节点区域关联</a></li>
+            <% } %>
         </ul>
     </li>
-    <li style="display:none"><a href="javascript:void(0)"><i class="fa fa-home"></i><i class="glyphicon glyphicon-cloud-download"></i>配置拉取</a>
+    <% } %>
+    <% if (permission.ManageServiceConfigs) { %>
+    <li><a href="javascript:void(0)"><i class="fa fa-home"></i><i class="glyphicon glyphicon-cloud-upload"></i>配置拉取</a>
         <ul class="submenu">
+            <% if (permission.ManageNodeGroups) { %> 
             <li id="businessManage"><a href="index.html#/businessManage"><i class="icon icon-rds-16"></i>业务管理</a></li>
+            <% } %>
+            <% if (permission.ManageConfigs) { %> 
             <li id="liveAllSetup"><a href="index.html#/liveAllSetup"><i class="icon icon-set-20"></i>所有配置</a></li>
+            <% } %>
+            <% if (permission.CurrentConfigurations) { %> 
             <li id="liveCurentSetup"><a href="index.html#/liveCurentSetup"><i class="glyphicon glyphicon-wrench"></i>当前配置</a></li>
+            <% } %>
+            <% if (permission.GrayConfig) { %> 
+            <li id="grayscaleSetup"><a href="index.html#/grayscaleSetup"><i class="glyphicon glyphicon-dashboard"></i>灰度配置</a></li>
+            <% } %>
+            <li id="templateManage" style="display:none"><a href="index.html#/templateManage"><i class="glyphicon glyphicon-align-justify"></i>模版管理</a></li>
         </ul>
     </li>
-    <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-object-align-bottom"></i>数据统计</a>
+    <% } %>
+    <% if (permission.SendConfigs) { %>
+    <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-cloud-download"></i>配置下发</a>
         <ul class="submenu">
-            <li id="statisticsManage"><a href="index.html#/statisticsManage"><i class="glyphicon glyphicon-thumbs-up"></i>客户带宽统计</a></li>
-            <li id="domainStatistics"><a href="index.html#/domainStatistics"><i class="glyphicon glyphicon-list"></i>KA客户带宽统计</a></li>
+            <li id="setupChannelManage"><a href="index.html#/setupChannelManage"><i class="icon icon-monit-20"></i>频道管理</a></li>
+            <li id="setupSendManage"><a href="index.html#/setupSendWaitCustomize"><i class="glyphicon glyphicon-send"></i>下发管理</a></li>
+        </ul>
+    </li>
+    <% } %>
+    <% if (permission.DataStatistics) { %>
+    <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-stats"></i>数据统计</a>
+        <ul class="submenu">
+            <% if (permission.CustomerBandwidthStatistics) { %>
+            <li id="statisticsManage"><a href="index.html#/statisticsManage"><i class="glyphicon glyphicon-user"></i>客户带宽统计</a></li>
+            <% } %>
+            <% if (permission.KADomainBandwidthStatistics) { %>
+            <li id="domainStatistics"><a href="index.html#/domainStatistics"><i class="glyphicon glyphicon-object-align-bottom"></i>KA客户带宽统计(域名)</a></li>
+            <% } %>
+            <% if (permission.KACustomersBandwidthStatistics) { %>
+            <li id="clientStatistics"><a href="index.html#/clientStatistics"><i class="glyphicon glyphicon-object-align-bottom"></i>KA客户带宽统计(客户)</a></li>
+            <% } %>
+        </ul>
+    </li>
+    <% } %>
+    <% if (permission.ManageCustomerDomain) { %>
+    <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-credit-card"></i>客户频道管理</a>
+        <ul class="submenu">
+            <% if (permission.CustomerConfig) { %>
+            <li id="customerSetup"><a href="index.html#/customerSetup"><i class="glyphicon glyphicon-user"></i>客户配置</a></li>
+            <% } %>
+        </ul>
+    </li>
+    <% } %>
+    <li style="display:none"><a href="javascript:void(0)"><i class="glyphicon glyphicon-refresh"></i>刷新自助</a>
+        <ul class="submenu">
+            <li id="refreshManual"><a href="index.html#/refreshManual"><i class="glyphicon glyphicon-hand-up"></i>手动刷新</a></li>
+            <li id="customMaintenance"><a href="index.html#/customMaintenance"><i class="glyphicon glyphicon-th"></i>自助运维</a></li>
         </ul>
     </li>
 </ul>

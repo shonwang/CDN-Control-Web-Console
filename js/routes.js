@@ -1,7 +1,13 @@
-define("routes", ['require','exports', 'utility','navbar.view'], 
-    function(require, exports, Utility, NavbarView) {
+define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.view', 'controller', 'customerSetup.controller', 'setupSendManage.controller'], 
+    function(require, exports, Utility, NavbarView, SubNavbar, Controller, CustomerSetupController, SetupSendManageController) {
 
     var Workspace = Backbone.Router.extend({
+
+        initialize: function(){
+            Utility.dateFormat();
+            this.navbarView = new NavbarView();
+            this.curPage = "";
+        },
 
         routes: {
             ""                    : "channelManage",
@@ -15,302 +21,464 @@ define("routes", ['require','exports', 'utility','navbar.view'],
             "liveCurentSetup"     : "liveCurentSetup",
             "ipManage"            : "ipManage",
             "statisticsManage"    : "statisticsManage",
+            "refreshManual"       : "refreshManual",
+            "customMaintenance"   : "customMaintenance",
             "domainStatistics"    : "domainStatistics",
-            "businessManage"      : "businessManage"
-        },
+            "domainManage"        : "domainManage",
+            "clientStatistics"    : "clientStatistics",
+            "businessManage"      : "businessManage",
+            "grayscaleSetup"      : "grayscaleSetup",
+            "templateManage"      : "templateManage",
+            "customerSetup"       : "customerSetup",
+            "domainList/:query"   : "domainList",
 
-        initialize: function(){
-            Utility.dateFormat();
-            this.navbarView = new NavbarView();
-            this.navbarView.render($('.jquery-accordion-menu'));
-            this.curPage = "";
+            "domainList/:query/domainSetup/:query2"      : "domainSetup",
+            "domainList/:query/cnameSetup/:query2"       : "cnameSetup",
+            "domainList/:query/cacheRule/:query2"        : "cacheRule",
+            "domainList/:query/delMarkCache/:query2"     : "delMarkCache",
+            "domainList/:query/cacheKeySetup/:query2"    : "cacheKeySetup",
+            "domainList/:query/backOriginSetup/:query2"  : "backOriginSetup",
+            "domainList/:query/following302/:query2"     : "following302",
+            "domainList/:query/dragPlay/:query2"         : "dragPlay",
+            "domainList/:query/clientLimitSpeed/:query2" : "clientLimitSpeed",
+            "domainList/:query/httpHeaderOpt/:query2"    : "httpHeaderOpt",
+            "domainList/:query/httpHeaderCtr/:query2"    : "httpHeaderCtr",
+            "domainList/:query/requestArgsModify/:query2": "requestArgsModify",
+            "domainList/:query/ipBlackWhiteList/:query2" : "ipBlackWhiteList",
+            "domainList/:query/refererAntiLeech/:query2" : "refererAntiLeech",
+            "domainList/:query/timestamp/:query2"        : "timestamp",
+            "domainList/:query/openNgxLog/:query2"       : "openNgxLog",
+
+            "setupChannelManage"     : "setupChannelManage",
+            "setupAppManage"         : "setupAppManage",
+            "setupTopoManage"        : "setupTopoManage",
+            "setupSendDone"          : "setupSendDone",
+            "setupSending"           : "setupSending",
+            "setupSendWaitCustomize" : "setupSendWaitCustomize",
+            "setupSendWaitSend"      : "setupSendWaitSend",
         },
 
         execute: function(callback, args) {
             switch(this.curPage){
                 case 'channelManage':
-                  this.channelManageView.hide();
-                  break;
+                    this.channelManageView.hide();
+                    break;
                 case 'deviceManage':
-                  this.deviceManageView.remove();
-                  this.deviceManageView = null;
-                  break;
+                    this.deviceManageView.remove();
+                    this.deviceManageView = null;
+                    break;
                 case 'nodeManage':
-                  this.nodeManageView.hide();
-                  break;
+                    this.nodeManageView.hide();
+                    break;
                 case 'dispGroup':
-                  this.dispGroupView.hide();
-                  break;
+                    this.dispGroupView.hide();
+                    break;
                 case 'dispConfig':
-                  this.dispConfigView.remove();
-                  this.dispConfigView = null;
-                  break;
+                    this.dispConfigView.remove();
+                    this.dispConfigView = null;
+                    break;
                 case 'coverRegion':
-                  this.coverRegionView.hide();
-                  break;
+                    this.coverRegionView.hide();
+                    break;
                 case 'coverManage':
-                  this.coverManageView.hide();
-                  break;
+                    this.coverManageView.hide();
+                    break;
                 case "liveAllSetup":
                     this.liveAllSetupView.hide();
-                  break;
+                    break;
                 case "liveCurentSetup":
                     this.liveCurentSetupView.hide();
-                  break;
+                    break;
                 case "ipManage":
                     this.ipManageView.remove();
                     this.ipManageView = null
-                  break;
+                    break;
                 case "businessManage":
                     this.businessManageView.hide();
-                  break;
+                    break;
+                case 'clientStatistics':
+                    this.clientStatisticsView.remove();
+                    this.clientStatisticsView = null;
+                    break;
                 case 'statisticsManage':
-                  this.statisticsManageView.remove();
-                  this.statisticsManageView = null;
-                  break;
+                    this.statisticsManageView.remove();
+                    this.statisticsManageView = null;
+                    break;
                 case 'domainStatistics':
-                  this.domainStatisticsView.remove();
-                  this.domainStatisticsView = null;
-                  break;
+                    this.domainStatisticsView.remove();
+                    this.domainStatisticsView = null;
+                    break;
+                case 'domainManage':
+                    this.domainManageView.hide();
+                    break;
+                case 'refreshManual':
+                    this.refreshManualView.remove();
+                    this.refreshManualView = null;
+                    break;
+                case 'customMaintenance':
+                    this.customMaintenanceView.remove();
+                    this.customMaintenanceView = null;
+                    break;
+                case 'grayscaleSetup':
+                    this.grayscaleSetupView.hide();
+                    break;
+                case 'templateManage':
+                    this.templateManageView.hide();
+                    break;
+                case 'setupChannelManage':
+                    this.setupChannelManageView.remove();
+                    this.setupChannelManageView = null;
+                    break;
+                case 'setupAppManage':
+                    this.setupAppManageView.remove();
+                    this.setupAppManageView = null;
+                    break;
+                case 'setupTopoManage':
+                    this.setupTopoManageView.remove();
+                    this.setupTopoManageView = null;
+                    break;
+                case 'setupSendDone':
+                    this.setupSendDoneView.hide();
+                    break;
+                case 'setupSending':
+                    this.setupSendingView.hide();
+                    break;
+                case 'setupSendWaitCustomize':
+                    this.setupSendWaitCustomizeView.hide();
+                    break;
+                case 'setupSendWaitSend':
+                    this.setupSendWaitSendView.hide();
+                    break;
+                case 'customerSetup':
+                    this.customerSetupView.hide();
+                    break;
+                case 'customerSetup-domainList':
+                    this.domainListView.hide();
+                    break;
+                case 'customerSetup-domainList-domainSetup':
+                    this.domainSetupView.hide();
+                    break;
+                case 'customerSetup-domainList-cacheRule':
+                    this.cacheRuleView.hide();
+                    break;
+                case 'customerSetup-domainList-delMarkCache':
+                    this.delMarkCacheView.hide();
+                    break;
+                case 'customerSetup-domainList-cacheKeySetup':
+                    this.cacheKeySetupView.hide();
+                    break;
+                case 'customerSetup-domainList-cnameSetup':
+                    this.cnameSetupView.hide();
+                    break;
+                case 'customerSetup-domainList-backOriginSetup':
+                    this.backOriginSetupView.hide();
+                    break;
+                case 'customerSetup-domainList-following302':
+                    this.following302View.hide();
+                    break;
+                case 'customerSetup-domainList-dragPlay':
+                    this.dragPlayView.hide();
+                    break;
+                case 'customerSetup-domainList-clientLimitSpeed':
+                    this.clientLimitSpeedView.hide();
+                    break;
+                case 'customerSetup-domainList-httpHeaderOpt':
+                    this.httpHeaderOptView.hide();
+                    break;
+                case 'customerSetup-domainList-httpHeaderCtr':
+                    this.httpHeaderCtrView.hide();
+                    break;
+                case 'customerSetup-domainList-requestArgsModify':
+                    this.requestArgsModifyView.hide();
+                    break;
+                case 'customerSetup-domainList-ipBlackWhiteList':
+                    this.ipBlackWhiteListView.hide();
+                    break;
+                case 'customerSetup-domainList-refererAntiLeech':
+                    this.refererAntiLeechView.hide();
+                    break;
+                case 'customerSetup-domainList-timestamp':
+                    this.timestampView.hide();
+                    break;
+                case 'customerSetup-domainList-openNgxLog':
+                    this.openNgxLogView.hide();
+                    break;
                 default:
             }
-            if (callback)
-                callback.apply(this, args);
+
+            if (callback) callback.apply(this, args);
+        },
+
+        setupSendDone: function(){
+            this.navbarView.initLogin($.proxy(SetupSendManageController.setupSendDoneCallback, this))
+        },
+
+        setupSending: function(){
+            this.navbarView.initLogin($.proxy(SetupSendManageController.setupSendingCallback, this))
+        },
+
+        setupSendWaitCustomize: function(){
+            this.navbarView.initLogin($.proxy(SetupSendManageController.setupSendWaitCustomizeCallback, this))
+        },
+
+        setupSendWaitSend: function(){
+            this.navbarView.initLogin($.proxy(SetupSendManageController.setupSendWaitSendCallback, this))
+        },
+
+        initSetupSendNavbar: function(){
+            var menu = [{
+                    id: 'setupSendWaitCustomize',
+                    name: '待定制',
+                    hash: 'index.html#/setupSendWaitCustomize',
+                    active: true,
+                    children: []
+                },{
+                    id: 'setupSendWaitSend',
+                    name: '待下发',
+                    hash: 'index.html#/setupSendWaitSend',
+                    active: false,
+                    children: []
+                },{
+                    id: 'setupSending',
+                    name: '下发中',
+                    hash: 'index.html#/setupSending',
+                    active: false,
+                    children: []
+                },{
+                    id: 'setupSendDone',
+                    name: '下发完成',
+                    hash: 'index.html#/setupSendDone',
+                    active: false,
+                    children: []
+                },], menuOptions = {
+                backHash: "",
+                menuList: menu
+            };
+            if (!this.setupSendNavbar){
+                this.setupSendNavbar = new SubNavbar(menuOptions);
+                this.setupSendNavbar.$el.find(".back").remove();
+                this.setupSendNavbar.select(this.curPage);
+            }
+        },
+
+        setupTopoManage: function(){
+            this.navbarView.initLogin($.proxy(Controller.setupTopoManageCallback, this))
+        },
+
+        setupAppManage: function(){
+            this.navbarView.initLogin($.proxy(Controller.setupAppManageCallback, this))
+        },
+
+        setupChannelManage: function(){
+            this.navbarView.initLogin($.proxy(Controller.setupChannelManageCallback, this))
+        },
+        
+        customMaintenance: function(){
+            this.navbarView.initLogin($.proxy(Controller.customMaintenanceCallback, this))
+        },
+
+        refreshManual: function(){
+            this.navbarView.initLogin($.proxy(Controller.refreshManualCallback, this))
         },
 
         businessManage: function(){
-            require(['businessManage.view', 'businessManage.model', 'nodeManage.model'], function(BusinessManageView, BusinessManageModel, NodeManageModel){
-                this.curPage = 'businessManage';
-                this.navbarView.select(this.curPage);
-                if (!this.businessManageModel)
-                    this.businessManageModel = new BusinessManageModel();
-                if (!this.nodeManageModel)
-                    this.nodeManageModel = new NodeManageModel();
-                if (!this.businessManageView ){
-                    var options = {
-                        collection: this.businessManageModel,
-                        nodeCollection: this.nodeManageModel
-                    };
-                    this.businessManageView = new BusinessManageView(options);
-                    this.businessManageView.render($('.ksc-content'));
-                } else {
-                    this.businessManageView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.businessManageCallback, this))
         },
 
         ipManage: function(){
-            require(['ipManage.view', 'ipManage.model', 'deviceManage.model'], function(IPManageView, IPManageModel, DeviceManageModel){
-                this.curPage = 'ipManage';
-                this.navbarView.select(this.curPage);
-                if (!this.ipManageModel)
-                    this.ipManageModel = new IPManageModel();
-                if (!this.deviceManageModel)
-                    this.deviceManageModel = new DeviceManageModel();
-                if (!this.ipManageView ){
-                    var options = {
-                        collection: this.ipManageModel,
-                        deviceCollection: this.deviceManageModel
-                    };
-                    this.ipManageView = new IPManageView(options);
-                    this.ipManageView.render($('.ksc-content'));
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.ipManageCallback, this))
         },
 
         liveCurentSetup: function(){
-            require(['liveCurentSetup.view', 'liveCurentSetup.model'], function(LiveCurentSetupView, LiveCurentSetupModel){
-                this.curPage = 'liveCurentSetup';
-                this.navbarView.select(this.curPage);
-                if (!this.liveCurentSetupModel)
-                    this.liveCurentSetupModel = new LiveCurentSetupModel();
-                if (!this.liveCurentSetupView ){
-                    var options = {collection: this.liveCurentSetupModel};
-                    this.liveCurentSetupView = new LiveCurentSetupView(options);
-                    this.liveCurentSetupView.render($('.ksc-content'));
-                } else {
-                    this.liveCurentSetupView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.liveCurentSetupCallback, this))
         },
 
         liveAllSetup: function(){
-            require(['liveAllSetup.view', 'liveAllSetup.model'], function(LiveAllSetupView, LiveAllSetupModel){
-                this.curPage = 'liveAllSetup';
-                this.navbarView.select(this.curPage);
-                if (!this.liveAllSetupModel)
-                    this.liveAllSetupModel = new LiveAllSetupModel();
-                if (!this.liveAllSetupView ){
-                    var options = {collection: this.liveAllSetupModel};
-                    this.liveAllSetupView = new LiveAllSetupView(options);
-                    this.liveAllSetupView.render($('.ksc-content'));
-                } else {
-                    this.liveAllSetupView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.liveAllSetupCallback, this))
         },
 
-        coverManage: function() {
-            require(['coverManage.view', 'coverManage.model', 'nodeManage.model'], function(CoverManageView, CoverManageModel, NodeManageModel){
-                this.curPage = 'coverManage';
-                this.navbarView.select(this.curPage);
-                if (!this.coverManageModel)
-                    this.coverManageModel = new CoverManageModel();
-                if (!this.nodeManageModel)
-                    this.nodeManageModel = new NodeManageModel();
-                if (!this.coverManageView ){
-                    var options = {
-                        collection: this.coverManageModel,
-                        nodeCollection: this.nodeManageModel
-                    };
-                    this.coverManageView = new CoverManageView(options);
-                    this.coverManageView.render($('.ksc-content'));
-                } else {
-                    this.coverManageView.update();
-                }
-            }.bind(this));
+        coverManage: function(){
+            this.navbarView.initLogin($.proxy(Controller.coverManageCallback, this))
         },
 
-        coverRegion: function() {
-            require(['coverRegion.view', 'coverRegion.model'], function(CoverRegionView, CoverRegionModel){
-                    this.curPage = 'coverRegion';
-                    this.navbarView.select(this.curPage);
-                    if (!this.coverRegionModel)
-                        this.coverRegionModel = new CoverRegionModel();
-                    if (!this.coverRegionView ){
-                        var options = {collection: this.coverRegionModel};
-                        this.coverRegionView = new CoverRegionView(options);
-                        this.coverRegionView.render($('.ksc-content'));
-                    } else {
-                        this.coverRegionView.update();
-                    }
-                }.bind(this));
+        coverRegion: function(){
+            this.navbarView.initLogin($.proxy(Controller.coverRegionCallback, this))
         },
 
-        dispConfig: function() {
-            require(['dispConfig.view', 'dispConfig.model', 'dispGroup.model'], function(DispConfigView, DispConfigModel, DispGroupModel){
-                this.curPage = 'dispConfig';
-                this.navbarView.select(this.curPage);
-                if (!this.dispConfigModel)
-                    this.dispConfigModel = new DispConfigModel();
-                if (!this.dispGroupModel)
-                    this.dispGroupModel = new DispGroupModel();
-                if (!this.dispConfigView ){
-                    var options = {
-                        collection: this.dispConfigModel,
-                        dispGroupCollection: this.dispGroupModel
-                    };
-                    this.dispConfigView = new DispConfigView(options);
-                    this.dispConfigView.render($('.ksc-content'));
-                } else {
-                    this.dispConfigView.update();
-                }
-            }.bind(this));
+        dispConfig: function(){
+            this.navbarView.initLogin($.proxy(Controller.dispConfigCallback, this))
         },
 
-        dispGroup: function() {
-            require(['dispGroup.view', 'dispGroup.model'], function(DispGroupView, DispGroupModel){
-                this.curPage = 'dispGroup';
-                this.navbarView.select(this.curPage);
-                if (!this.dispGroupModel)
-                    this.dispGroupModel = new DispGroupModel();
-                if (!this.dispGroupView ){
-                    var options = {collection: this.dispGroupModel};
-                    this.dispGroupView = new DispGroupView(options);
-                    this.dispGroupView.render($('.ksc-content'));
-                } else {
-                    this.dispGroupView.update();
-                }
-            }.bind(this));
+        dispGroup: function(){
+            this.navbarView.initLogin($.proxy(Controller.dispGroupCallback, this))
         },
 
-        nodeManage: function() {
-            require(['nodeManage.view', 'nodeManage.model'], function(NodeManageView, NodeManageModel){
-                this.curPage = 'nodeManage';
-                this.navbarView.select(this.curPage);
-                if (!this.nodeManageModel)
-                    this.nodeManageModel = new NodeManageModel();
-                if (!this.nodeManageView ){
-                    var options = {collection: this.nodeManageModel};
-                    this.nodeManageView = new NodeManageView(options);
-                    this.nodeManageView.render($('.ksc-content'));
-                } else {
-                    this.nodeManageView.update();
-                }
-            }.bind(this));
+        nodeManage: function(){
+            this.navbarView.initLogin($.proxy(Controller.nodeManageCallback, this))
         },
 
-        deviceManage: function(query) {
-            require(['deviceManage.view', 'deviceManage.model'], function(DeviceManageView, DeviceManageModel){
-                this.curPage = 'deviceManage';
-                this.navbarView.select(this.curPage);
-                if (!this.deviceManageModel)
-                    this.deviceManageModel = new DeviceManageModel();
-                if (!this.deviceManageView ){
-                    var options = {
-                        collection: this.deviceManageModel,
-                        query     : query
-                    };
-                    this.deviceManageView = new DeviceManageView(options);
-                    this.deviceManageView.render($('.ksc-content'));
-                } else {
-                    this.deviceManageView.update(query);
-                }
-            }.bind(this));
+        deviceManage: function(query){
+            this.navbarView.initLogin($.proxy(Controller.deviceManageCallback, this, query))
         },
 
         channelManage: function(){
-            require(['channelManage.view', 'channelManage.model'], function(ChannelManageView, ChannelManageModel){
-                this.curPage = 'channelManage';
-                this.navbarView.select(this.curPage);
-                if (!this.channelManageModel)
-                    this.channelManageModel = new ChannelManageModel();
-                if (!this.channelManageView){
-                    var options = {collection: this.channelManageModel};
-                    this.channelManageView = new ChannelManageView(options);
-                    this.channelManageView.render($('.ksc-content'));
-                } else {
-                    this.channelManageView.update();
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.channelManageCallback, this))
+        },
+
+        clientStatistics: function(){
+            this.navbarView.initLogin($.proxy(Controller.clientStatisticsCallback, this))
         },
 
         domainStatistics: function(){
-            require(['domainStatistics.view', 'domainStatistics.model'], function(DomainStatisticsView, DomainStatisticsModel){
-                this.curPage = 'domainStatistics';
-                this.navbarView.select(this.curPage);
-                if (!this.downloadDomainStatisticsModel)
-                    this.downloadDomainStatisticsModel = new DomainStatisticsModel();
-                if (!this.liveDomainStatisticsModel)
-                    this.liveDomainStatisticsModel = new DomainStatisticsModel();
-                if (!this.domainStatisticsView ){
-                    var options = {
-                        collection: this.downloadDomainStatisticsModel,
-                        liveCollection: this.liveDomainStatisticsModel,
-                    };
-                    this.domainStatisticsView = new DomainStatisticsView(options);
-                    this.domainStatisticsView.render($('.ksc-content'));
-                }
-            }.bind(this));
+            this.navbarView.initLogin($.proxy(Controller.domainStatisticsCallback, this))
         },
 
         statisticsManage: function(){
-            require(['statisticsManage.view', 'statisticsManage.model'], function(StatisticsManageView, StatisticsManageModel){
-                this.curPage = 'statisticsManage';
-                this.navbarView.select(this.curPage);
-                if (!this.downloadStatisticsManageModel)
-                    this.downloadStatisticsManageModel = new StatisticsManageModel();
-                if (!this.liveStatisticsManageModel)
-                    this.liveStatisticsManageModel = new StatisticsManageModel();
-                if (!this.statisticsManageView ){
-                    var options = {
-                        collection: this.downloadStatisticsManageModel,
-                        liveCollection: this.liveStatisticsManageModel,
-                    };
-                    this.statisticsManageView = new StatisticsManageView(options);
-                    this.statisticsManageView.render($('.ksc-content'));
+            this.navbarView.initLogin($.proxy(Controller.statisticsManageCallback, this))
+        },
+
+        domainManage: function(){
+            this.navbarView.initLogin($.proxy(Controller.domainManageCallback, this))
+        },
+
+        grayscaleSetup: function(){
+            this.navbarView.initLogin($.proxy(Controller.grayscaleSetupCallback, this))
+        },
+
+        templateManage: function(){
+            this.navbarView.initLogin($.proxy(Controller.templateManageCallback, this))
+        },
+
+        openNgxLog: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.openNgxLogCallback, this, query, query2))
+        },
+
+        timestamp: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.timestampCallback, this, query, query2))
+        },
+
+        refererAntiLeech: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.refererAntiLeechCallback, this, query, query2))
+        },
+
+        ipBlackWhiteList: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.ipBlackWhiteListCallback, this, query, query2))
+        },
+
+        requestArgsModify: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.requestArgsModifyCallback, this, query, query2))
+        },
+
+        httpHeaderCtr: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.httpHeaderCtrCallback, this, query, query2))
+        },
+
+        httpHeaderOpt: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.httpHeaderOptCallback, this, query, query2))
+        },
+
+        clientLimitSpeed: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.clientLimitSpeedCallback, this, query, query2))
+        },
+
+        dragPlay: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.dragPlayCallback, this, query, query2))
+        },
+
+        following302: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.following302Callback, this, query, query2))
+        },
+
+        backOriginSetup: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.backOriginSetupCallback, this, query, query2))
+        },
+
+        cnameSetup: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.cnameSetupCallback, this, query, query2))
+        },
+
+        cacheKeySetup: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.cacheKeySetupCallback, this, query, query2))
+        },
+
+        delMarkCache: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.delMarkCacheCallback, this, query, query2))
+        },
+
+        cacheRule: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.cacheRuleCallback, this, query, query2))
+        },
+
+        domainSetup: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.domainSetupCallback, this, query, query2))
+        },
+
+        domainList: function(query){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.domainListCallback, this, query))
+        },
+
+        setupDomainManageNavbar: function(query, query2){
+            if (!this.domainManageNavbar){
+                var menuOptions = {
+                    query: query,
+                    query2: query2
                 }
-            }.bind(this));
+                this.domainManageNavbar = new SubNavbar(menuOptions);
+                this.domainManageNavbar.select(this.curPage);
+            }
+        },
+
+        customerSetup: function(){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.customerSetupCallback, this))
+        },
+
+        setupCustomerSetupNavbar: function(query){
+            var menu = [{
+                id: '',
+                name: '客户配置管理',
+                hash: 'javascript:void(0)',
+                children: [{
+                    id: 'customerSetup-domainList',
+                    name: '域名列表',
+                    hash: 'index.html#/domainList/' + query,
+                    active: true,
+                    children: []
+                }]
+            }], menuOptions = {
+                backHash: "index.html#/customerSetup",
+                menuList: menu
+            };
+            if (!this.customerSetupNavbar){
+                this.customerSetupNavbar = new SubNavbar(menuOptions);
+                this.customerSetupNavbar.select(this.curPage);
+            }
+        },
+
+        removeSubSideBar: function(){
+            //从域名列表页面、新域名管理页面进入到其他一级导航页面移除域名列表的二级导航、新域名管理的二级导航
+            if (this.curPage.indexOf("customerSetup-") == -1 && 
+                this.curPage.indexOf("customerSetup-domainList-") == -1){
+                if (this.customerSetupNavbar){
+                    this.customerSetupNavbar.$el.remove();
+                    this.customerSetupNavbar = null;
+                }
+                if (this.domainManageNavbar) {
+                    this.domainManageNavbar.$el.remove();
+                    this.domainManageNavbar = null;
+                } 
+            }
+            //从新域名管理页面进入到域名列表页面移除新域名管理的二级导航
+            if (this.curPage.indexOf("customerSetup-") > -1 &&
+                this.curPage.indexOf("customerSetup-domainList-") == -1 && 
+                this.domainManageNavbar){
+                this.domainManageNavbar.$el.remove();
+                this.domainManageNavbar = null;
+            }
+            //从下发页面进入到其他一级页面移除下发管理的二级导航
+            if (this.curPage.indexOf("setupSend") === -1 && this.setupSendNavbar){
+                this.setupSendNavbar.$el.remove();
+                this.setupSendNavbar = null;
+            }
         }
     });
     exports.Workspace = new Workspace();

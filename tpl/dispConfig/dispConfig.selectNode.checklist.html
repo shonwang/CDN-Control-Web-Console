@@ -4,8 +4,11 @@
     <div class="checkbox">
         <label>
             <input type="checkbox" name="optionsRadios" id='<%=data[i]["node.id"]%>' value="<%=data[i]["node.id"]%>" <% if(data[i]["isChecked"]) { %> checked="true" <% } %>>
-            <%=data[i]["node.chName"] + "(" + data[i]["node.minBandwidth"] + "/" + data[i]["node.maxBandwidth"] + ")L" + data[i]["cover.crossLevel"]%>
+            <%=data[i]["node.chName"] + "(" + data[i]["node.maxBWLastNight"] + "/" + data[i]["node.currBW"] + "/" + data[i]["node.maxBandwidth"] + ")L" + data[i]["cover.crossLevel"]%>
         </label>
+        <% if (isShowChart) { %>
+        <a href="javascript:void(0)" class="chart" id='<%=data[i]["node.id"]%>'>查看带宽</a>
+        <% } %>
     </div>
     <% } %>
     <% if(data[i]["line"]) { %> <hr> <% } %>

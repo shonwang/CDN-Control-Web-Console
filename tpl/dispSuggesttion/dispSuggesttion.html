@@ -1,0 +1,58 @@
+<div class="disp-suggesttion fadeInLeft animated">
+    <h3>服务管理<small>/调度建议</small></h3>
+    <div class="well opt-ctn opt-panel">
+        <div class="form-inline">
+            <a href="javascript:void(0)" class="btn btn-default back">返回</a>
+            <a href="javascript:void(0)" class="btn btn-danger giveup">
+                <span class="glyphicon glyphicon-remove"></span>不采纳本次调度建议
+            </a>
+<!--             <a href="javascript:void(0)" class="btn btn-primary query">
+                <span class="glyphicon glyphicon-search"></span>查询
+            </a>
+            <a href="javascript:void(0)" class="btn btn-default query-multi">
+                <span class="glyphicon glyphicon-search"></span>批量查询
+            </a> -->
+            <a href="javascript:void(0)" class="btn btn-success sending">
+                <span class="glyphicon glyphicon-send"></span>下发DNSpod
+            </a>
+            <a href="javascript:void(0)" class="btn btn-default hide-node-change">
+                <span class="glyphicon glyphicon-chevron-up"></span>收起节点带宽变化
+            </a>
+            <a href="javascript:void(0)" class="btn btn-default show-node-change" style="display: none">
+                <span class="glyphicon glyphicon-chevron-down"></span>展开节点带宽变化
+            </a>
+            <div class="form-group">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="disp-config-filter" placeholder="快速搜索">
+                    <div class="input-group-btn disp-config-filter-drop">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            <span class="cur-value">按调度组</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu"></ul>
+                    </div><!-- /btn-group -->
+                </div><!-- /input-group -->
+            </div>
+        </div>
+        <div class="content-ctn">
+            <hr>
+            <div class="node-table-ctn table-responsive"></div>
+        </div>
+    </div>
+    <div class="main-list">
+        <div class="well fail-panel">
+            <div class="alert alert-dismissable alert-danger text-center">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong><span class="glyphicon glyphicon-warning-sign"></span>以下区域调度建议失败，需要人工处理后下发！</strong>
+            </div>
+            <div class="fail-table-ctn table-responsive"></div>
+        </div>
+        <div class="well success-panel">
+            <div class="alert alert-dismissable alert-success text-center">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>以下区域调度建议成功！</strong>
+            </div>
+            <div class="success-table-ctn table-responsive"></div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,146 @@
+<div class="addDomain-download-layer">
+
+	<div class="cdn-row clearfix margin-top10">
+		<div class="label-text-show">访问协议：</div>
+		<div class="label-content-show margin-left10">
+			<div class="radio">
+				<label for="radio-protocol2">
+					<input type="radio" name="radio-protocol" id="radio-protocol2" value="HLS" checked="true">
+					<span class="circle"></span>
+					<span class="check"></span>
+					hls
+				</label>
+			</div>
+			<div class="radio">
+				<label for="radio-protocol1">
+					<input type="radio" name="radio-protocol" id="radio-protocol1" value="HTTP+FLV">
+					<span class="circle"></span>
+					<span class="check"></span>
+					http+flv
+				</label>
+			</div>
+			<div class="radio">
+				<label for="radio-protocol3">
+					<input type="radio" name="radio-protocol" id="radio-protocol3" value="RTMP">
+					<span class="circle"></span>
+					<span class="check"></span>
+					rtmp
+				</label>
+			</div>
+			<div class="ks-form-control add-domain-error-tips">
+				<div class="error dir-refresh-error cdn-error-tip" id="cdn-cdnProtocol-error">请选择访问协议</div>
+			</div>
+		</div>
+	</div>	
+	
+	<div class="cdn-row clearfix margin-top10">
+		<div class="label-text-show">回源方式：</div>
+		<div class="label-content-show margin-left10">
+			<div class="radio">
+				<label for="radio-origin-h">
+					<input type="radio" name="radio-origin2" id="radio-origin-h" value="HTTP+FLV" checked="true">
+					<span class="circle"></span>
+					<span class="check"></span>
+					http+flv
+				</label>
+			</div>	
+			<div class="radio">
+				<label for="radio-origin-r">
+					<input type="radio" name="radio-origin2" id="radio-origin-r" value="RTMP">
+					<span class="circle"></span>
+					<span class="check"></span>
+					rtmp
+				</label>
+			</div>	
+			<div class="ks-form-control add-domain-error-tips">
+				<div class="error dir-refresh-error cdn-error-tip" id="cdn-originProtocol-error">请选择回源方式</div>
+			</div>
+		</div>
+	</div>	
+	<!-- region -->
+	<div class="cdn-region-ctn"></div>
+
+	<!-- 源站类型直播 -->
+	<div class="cdn-row clearfix margin-top10">
+		<div class="label-text-show">源站类型：</div>
+		<div class="label-content-show margin-left10">
+			<div class="cdn-row clearfix">
+				<div class="ks-dropdown margin-left10 margin-right10 floatLeft" id="dropdown-menu-origin-type">
+					<button type="button" id="origin-type-dropdown" class="ks-btn ks-dropdown-text" data-toggle="dropdown"><span class="cur-caret">请选择</span><span class="ks-caret"></span></button>
+					<ul class="ks-dropdown-menu" role="menu" aria-labelledby="url-dropdown"></ul>
+				</div>
+				<div class="ks-form-control add-domain-error-tips margin-left10">
+					<div class="error dir-refresh-error cdn-error-tip" id="cdn-originType-error">请选择源站类型</div>
+				</div>
+			</div>
+
+			<div class="cdn-row margin-top10 cdn-originType-list-ctn cdn-originIP">
+				<div class="ks-form-control clearfix">
+					<textarea placeholder="输入域名的源站IP地址" class="origin-address clearfix" id="cdn-originIP"></textarea>
+					<div class="ks-form-control clearfix">
+						<div class="error dir-refresh-error cdn-error-tip" id="cdn-originIP-error">IP不能为空</div>
+					</div>
+					<p class="text-muted">请用英文半角逗号分割多个IP，最多添加10个。</p>
+				</div>
+			</div>
+
+			<div class="cdn-row margin-top10 cdn-originType-list-ctn cdn-originAddress">
+				<div class="ks-form-control clearfix">
+					<input  type="text" class="ks-form-text" placeholder="输入域名的源站域名" id="cdn-originAddress" />
+					<div class="ks-form-control clearfix">
+						<div class="error dir-refresh-error cdn-error-tip" id="cdn-originAddress-error">域名不能为空</div>
+					</div>
+					<p class="text-muted">源站地址不能与加速域名相同</p>
+				</div>
+			</div>
+
+			<div class="cdn-row margin-top10 cdn-originType-list-ctn cdn-originKsVideo">
+				<div class="ks-form-control clearfix">
+					<input  type="text" class="ks-form-text" placeholder="输入视频云源站地址"  id="cdn-KS3Address" />
+					<div class="ks-form-control clearfix">
+						<div class="error dir-refresh-error cdn-error-tip" id="cdn-KS3Address-error">KS3域名域名不能为空</div>
+					</div>
+					<p class="text-muted">视频云座位源站，为您节省更多回源流量费用</p>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<!-- 源站类型直播 -->
+
+	<!-- 端口 -->
+	<div class="cdn-download-live-port">
+		<div class="cdn-row clearfix margin-top10">
+			<div class="label-text-show">端口：</div>
+			<div class="label-content-show margin-left10">
+				<div class="clearfix">
+					<div class="radio">
+						<label for="radio-port1">
+							<input type="radio" name="radio-port" id="radio-port1" checked value="80">
+							<span class="circle"></span>
+							<span class="check"></span>
+							80
+						</label>
+					</div>	
+					<div class="radio">
+						<label for="radio-port2">
+							<input type="radio" name="radio-port" id="radio-port2" value="443">
+							<span class="circle"></span>
+							<span class="check"></span>
+							443
+						</label>
+					</div>
+					<div class="ks-form-control add-domain-error-tips">
+						<div class="error dir-refresh-error textarea-error-tip">请选择端口</div>
+					</div>
+				</div>
+				<p class="text-muted">源站的443端口需要提供HTTPS服务，需使用正规CA签发的证书，否则可能造成无法正常回源。</p>
+			</div>
+			
+		</div>
+	</div>
+	<!-- 端口 -->
+	
+
+</div>
+

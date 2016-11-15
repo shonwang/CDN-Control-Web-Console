@@ -29,9 +29,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         onGetNodeSuccess: function(res){
             this.nodeList = res;
             _.each(this.nodeList, function(el, index, list){
-                if (el.status === 3) el.statusName =  '<span class="text-danger">已关闭</span>'
-                if (el.status === 2) el.statusName =  '<span class="text-warning">挂起</span>'
-                if (el.status === 1) el.statusName =  '<span class="text-success">运行中</span>'
+                if (el.status === 3) el.statusName =  '<span class="label label-danger">已关闭</span>'
+                if (el.status === 2) el.statusName =  '<span class="label label-warning">挂起</span>'
+                if (el.status === 1) el.statusName =  '<span class="label label-success">运行中</span>'
 
                 if (el.type === 3) el.typeName =  'lvs&cache'
                 if (el.type === 2) el.typeName =  'cache'
@@ -172,12 +172,26 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.$el = $(_.template(template['tpl/dispGroup/dispGroup.channel.html'])({}));
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
-            this.collection.off("get.channel.success");
-            this.collection.off("get.channel.error");
-            this.collection.on("get.channel.success", $.proxy(this.onGetChannelSuccess, this));
-            this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+            this.collection.off("get.channelByDisp.success");
+            this.collection.off("get.channelByDisp.error");
+            this.collection.on("get.channelByDisp.success", $.proxy(this.onGetChannelSuccess, this));
+            this.collection.on("get.channelByDisp.error", $.proxy(this.onGetError, this));
 
-            this.collection.getChannelList({groupId: this.model.get("id")});
+            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+
+            this.initNodeDropMenu();
+
+            this.backUpChannelList = [];
+
+            this.queryArgs = {
+                "disgId"      : this.model.get("id"),
+                "domain"      : null,
+                "clientName"  : null,
+                "page"        : 1,
+                "count"       : 5
+             }
+
+            this.collection.getChannelByDisp(this.queryArgs);
         },
 
         onGetError: function(error){
@@ -187,33 +201,104 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 alert("网络阻塞，请刷新重试！")
         },
 
+        onClickQueryButton: function(){
+            this.isInitPaginator = false;
+            this.queryArgs.page = 1;
+            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.$el.find(".pagination").html("");
+            this.queryArgs.domain = this.$el.find("#input-domain").val() || null;
+            this.queryArgs.clientName = this.$el.find("#input-client").val() || null;
+            this.collection.getChannelByDisp(this.queryArgs);
+        },
+
+        enterKeyBindQuery: function(){
+            $(document).on('keydown', function(e){
+                if(e.keyCode == 13){
+                    this.onClickQueryButton();
+                }
+            }.bind(this));
+        },
+
+        initPaginator: function(){
+            this.$el.find(".total-items span").html(this.total)
+            if (this.total <= this.queryArgs.count) return;
+            var total = Math.ceil(this.total/this.queryArgs.count);
+
+            this.$el.find(".pagination").jqPaginator({
+                totalPages: total,
+                visiblePages: 5,
+                currentPage: 1,
+                onPageChange: function (num, type) {
+                    if (type !== "init"){
+                        this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                        var args = _.extend(this.queryArgs);
+                        args.page = num;
+                        args.count = this.queryArgs.count;
+                        this.collection.getChannelByDisp(args);
+                    }
+                }.bind(this)
+            });
+            this.isInitPaginator = true;
+        },
+
+        initNodeDropMenu: function(){
+            var pageNum = [
+                {name: "5条", value: 5},
+                {name: "10条", value: 10},
+                {name: "50条", value: 50},
+                {name: "100条", value: 100}
+            ]
+            Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
+                this.queryArgs.count = value;
+                this.queryArgs.page = 1;
+                this.onClickQueryButton();
+            }.bind(this));
+        },
+
         onGetChannelSuccess: function(res){
-            this.channelList = res;
-            var count = 0, isCheckedAll = false;
+            this.channelList = res.rows || [];
+            this.total = res.total;
+            var count = 0; this.isCheckedAll = false;
             _.each(this.channelList, function(el, index, list){
                 if (el.associated === 0) el.isChecked = false;
-                if (el.associated === 1) {
-                    el.isChecked = true;
-                    count = count + 1
-                }
-                if (el.status === 0) el.statusName = '<span class="text-danger">已停止</span>';
-                if (el.status === 1) el.statusName = '<span class="text-success">服务中</span>';
+                if (el.associated === 1) el.isChecked = true;
+
+                var aChannel = _.find(this.backUpChannelList, function(obj){
+                    return el.id === obj.id
+                })
+                if (aChannel)
+                    el.isChecked = aChannel.isChecked;
+                else
+                    this.backUpChannelList.push(el)
+
+                if (el.status === 0) el.statusName = '<span class="label label-danger">已停止</span>';
+                if (el.status === 1) el.statusName = '<span class="label label-success">服务中</span>';
+            }.bind(this))
+            _.each(this.channelList, function(el, index, list){
+                if (el.isChecked) count = count + 1
             }.bind(this))
 
-            if (count === this.channelList.length) isCheckedAll = true
+            if (count === this.channelList.length) this.isCheckedAll = true;
+            this.initTable();
+        },
 
+        initTable: function(){
             this.table = $(_.template(template['tpl/dispGroup/dispGroup.channel.table.html'])({
                 data: this.channelList, 
-                isCheckedAll: isCheckedAll,
+                isCheckedAll: this.isCheckedAll,
                 type: 0//显示checkbox
             }));
-            if (res.length !== 0)
+            if (this.channelList.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
-                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+                this.$el.find(".table-ctn").html(_.template(template['tpl/empty-2.html'])({
+                        data:{message: "赵宪亮在胸前仔细摸索了一番，但是却没有找到数据！"}
+                    }));
 
             this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+
+            if (!this.isInitPaginator) this.initPaginator();
         },
 
         onItemCheckedUpdated: function(event){
@@ -226,6 +311,11 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             }.bind(this));
 
             selectedObj.isChecked = eventTarget.checked
+
+            var aChannel = _.find(this.backUpChannelList, function(obj){
+                return selectedObj.id === obj.id
+            })
+            if (aChannel) aChannel.isChecked = selectedObj.isChecked;
 
             var checkedList = this.channelList.filter(function(object) {
                 return object.isChecked === true;
@@ -240,13 +330,17 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             _.each(this.channelList, function(el, index, list){
-                el.isChecked = eventTarget.checked
+                el.isChecked = eventTarget.checked;
+                var aChannel = _.find(this.backUpChannelList, function(obj){
+                    return el.id === obj.id
+                })
+                if (aChannel) aChannel.isChecked = el.isChecked;
             }.bind(this))
             this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
         },
 
         getArgs: function(){
-            var checkedList = this.channelList.filter(function(object) {
+            var checkedList = this.backUpChannelList.filter(function(object) {
                 return object.isChecked === true;
             })
             var channelIds = [];
@@ -262,6 +356,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         render: function(target) {
             this.$el.appendTo(target);
+            this.enterKeyBindQuery();
         }
     });
 
@@ -273,6 +368,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         initialize: function(options) {
             this.collection = options.collection;
             this.isEdit     = options.isEdit;
+            this.isCopy     = options.isCopy;
             this.model      = options.model;
 
             this.$el = $(_.template(template['tpl/dispGroup/dispGroup.add&edit.html'])({}));
@@ -299,7 +395,8 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.$el.find(".setup #inlineCheckbox1").get(0).checked = true;
                     this.$el.find(".setup #inlineCheckbox2").get(0).checked = true;
                 }
-                this.$el.find("#input-name").attr("readonly", true);
+                if (!this.isCopy)
+                    this.$el.find("#input-name").attr("readonly", true);
             } else {
                 this.collection.off("get.node.success");
                 this.collection.off("get.node.error");
@@ -421,8 +518,13 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
-            this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+            if (!this.isCopy) {
+                this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
+                this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+            } else {
+                this.table.find("tbody tr").find("input").prop("disabled", true);
+                this.table.find("thead input").prop("disabled", true);
+            }
         },
 
         onItemCheckedUpdated: function(event){
@@ -515,7 +617,6 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 nodeIds.push(el.id)
             })
             options.nodeIdList = nodeIds.join(",");
-
             return options
         },
 
@@ -592,10 +693,17 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.collection.on("get.InfoPrompt.success", $.proxy(this.onGetInfoPromptSuccess, this));
             this.collection.on("get.InfoPrompt.error", $.proxy(this.onGetError, this));
 
-            this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+            if (AUTH_OBJ.CreateGslbGroup)
+                this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
+            else
+                this.$el.find(".opt-ctn .create").remove();
 
-            this.enterKeyBindQuery();
+            if (AUTH_OBJ.QueryGslbGroup){
+                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+                this.enterKeyBindQuery();
+            } else {
+                this.$el.find(".opt-ctn .query").remove();
+            }
 
             this.queryArgs = {
                 "name"  : null,//调度组名称
@@ -605,6 +713,25 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 "count" :10
             }
             this.onClickQueryButton();
+        }, 
+
+        onRequireDispSuggesttionModule: function(DispSuggesttionViews, DispSuggesttionModel){
+            if (!this.dispSuggesttionModel)
+                this.dispSuggesttionModel = new DispSuggesttionModel();
+            this.hide();
+            var options = {
+                collection: this.dispSuggesttionModel,
+                backCallback: $.proxy(this.backFromDispSuggesttion, this)
+            };
+            this.dispSuggesttionView = new DispSuggesttionViews.DispSuggesttionView(options);
+            this.dispSuggesttionView.render($('.ksc-content'));
+        },
+
+        backFromDispSuggesttion: function(){
+            this.dispSuggesttionView.remove();
+            this.dispSuggesttionView = null;
+            this.update();
+            this.editDispGroupPopup.$el.modal("show");
         },
 
         enterKeyBindQuery:function(){
@@ -623,6 +750,21 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         onDispGroupListSuccess: function(){
+            this.collection.off("ip.type.success");
+            this.collection.off("ip.type.error");
+            this.collection.on("ip.type.success", $.proxy(this.onGetIpTypeSuccess, this));
+            this.collection.on("ip.type.error", $.proxy(this.onGetError, this));
+            this.collection.ipTypeList();
+        },
+
+        onGetIpTypeSuccess: function(data){
+            _.each(this.collection.models, function(el, inx, list){
+                var ipObj = _.find(data, function(obj){
+                    return obj.id === el.get("resolveIpType")
+                }.bind(this))
+                el.set("resolveIpTypeName", ipObj.name)
+            }.bind(this))
+
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
         },
@@ -651,13 +793,17 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.collection.addDispGroup(options)
                     this.addDispGroupPopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+                    if (AUTH_OBJ.QueryGslbGroup) this.enterKeyBindQuery();
+                }.bind(this)
             }
             this.addDispGroupPopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyCreateGslbGroup)
+                 this.addDispGroupPopup.$el.find(".btn-primary").remove();
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/dispGroup/dispGroup.table.html'])({data: this.collection.models}));
+            this.table = $(_.template(template['tpl/dispGroup/dispGroup.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
@@ -672,6 +818,13 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
             this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));
             this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+            this.table.find("tbody .remark").tooltip({
+                animation  : false,
+                "placement": "top", 
+                "html"     : true,
+                "title"  : function(){return $(this).attr("remark")}, 
+                "trigger"  : "hover"
+            })
         },
 
         onClickItemDetail: function(event){
@@ -691,11 +844,46 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 body : dgDetailView,
                 backdrop : 'static',
                 type     : 1,
+                height: 500,
                 onOKCallback:  function(){},
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+                    if (AUTH_OBJ.QueryGslbGroup) this.enterKeyBindQuery();
+                }.bind(this)
             }
             this.dgDetailPopup = new Modal(options);
         },
+
+        // onClickItemCopy: function(event){
+        //     var eventTarget = event.srcElement || event.target, id;
+        //     if (eventTarget.tagName == "SPAN"){
+        //         eventTarget = $(eventTarget).parent();
+        //         id = eventTarget.attr("id");
+        //     } else {
+        //         id = $(eventTarget).attr("id");
+        //     }
+        //     var model = this.collection.get(id);
+
+        //     if (this.copyDispGroupPopup) $("#" + this.copyDispGroupPopup.modalId).remove();
+
+        //     var cyDispGroupView = new CopyDispGroupView({
+        //         collection: this.collection,
+        //         model: model
+        //     });
+        //     var options = {
+        //         title:"复制调度组：" + model.get("dispDomain"),
+        //         body : cyDispGroupView,
+        //         backdrop : 'static',
+        //         type     : 2,
+        //         onOKCallback:  function(){
+        //             var options = cyDispGroupView.getArgs();
+        //             if (!options) return;
+        //             this.collection.copyDispGroup(options)
+        //             this.copyDispGroupPopup.$el.modal("hide");
+        //         }.bind(this),
+        //         onHiddenCallback: function(){}
+        //     }
+        //     this.copyDispGroupPopup = new Modal(options);
+        // },
 
         onClickItemCopy: function(event){
             var eventTarget = event.srcElement || event.target, id;
@@ -709,24 +897,30 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
             if (this.copyDispGroupPopup) $("#" + this.copyDispGroupPopup.modalId).remove();
 
-            var cyDispGroupView = new CopyDispGroupView({
-                collection: this.collection,
-                model: model
+            var copyDispGroupView = new AddOrEditDispGroupView({
+                collection: this.collection, 
+                model     : model,
+                isEdit    : true,
+                isCopy    : true
             });
             var options = {
                 title:"复制调度组：" + model.get("dispDomain"),
-                body : cyDispGroupView,
+                body : copyDispGroupView,
                 backdrop : 'static',
                 type     : 2,
                 onOKCallback:  function(){
-                    var options = cyDispGroupView.getArgs();
-                    if (!options) return;
-                    this.collection.copyDispGroup(options)
+                    var options = copyDispGroupView.getArgs();
+                    if (!options) return
+                    this.collection.copyDispGroup(options);
                     this.copyDispGroupPopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+                    if (AUTH_OBJ.QueryGslbGroup) this.enterKeyBindQuery();
+                }.bind(this)
             }
             this.copyDispGroupPopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyCopyGslbGroup)
+                 this.copyDispGroupPopup.$el.find(".btn-primary").remove();
         },
 
         onClickItemEdit: function(event){
@@ -761,20 +955,25 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                         this.collection.getInfoPrompt(prompt);
                     }.bind(this), 500)
                     this.editDispGroupPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){
+                    if (AUTH_OBJ.QueryGslbGroup) this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.editDispGroupPopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyEditGslbGroup)
+                 this.editDispGroupPopup.$el.find(".btn-primary").remove();
         },
 
         onGetInfoPromptSuccess: function(res) {
             this.editDispGroupPopup.$el.modal("hide");
-            if (this.PromptPopup) $("#" + this.PromptPopup.modalId).remove();
 
             var data = res;
             var args = this.editGroupArgs;
-            if (data.length > 0) {
+            if (data.length !== 0) {
+                //require(["dispSuggesttion.view", "dispSuggesttion.model"], $.proxy(this.onRequireDispSuggesttionModule, this))
                 data[0].title = '取消关联的节点当前覆盖区域信息如下：';
-
+                if (this.PromptPopup) $("#" + this.PromptPopup.modalId).remove();
                 var promptView = new PromptInfoView({
                     collection: this.collection,
                     data: data,
@@ -846,16 +1045,22 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 backdrop : 'static',
                 type     : 2,
                 width: 800,
+                height: 500,
                 onOKCallback:  function(){
                     var options = chInfoView.getArgs();
                     if (!options) return;
                     this.collection.addDispGroupChannel(options)
                     this.channelInfoPopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+                    $(document).off('keydown');
+                    if (AUTH_OBJ.QueryGslbGroup) this.enterKeyBindQuery();
+                }.bind(this)
             }
             this.channelInfoPopup = new Modal(options);
             this.channelInfoPopup.$el.find(".btn-primary").html('<span class="glyphicon glyphicon-link"></span>关联');
+            if (!AUTH_OBJ.GslbGroupAssociatetoDomain)
+                 this.channelInfoPopup.$el.find(".btn-primary").remove()
         },
 
         onClickItemPlay: function(event){
@@ -975,13 +1180,17 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         hide: function(){
+            if (this.dispSuggesttionView){
+                this.dispSuggesttionView.remove();
+                this.dispSuggesttionView = null;
+            }
             this.$el.hide();
             $(document).off('keydown');
         },
 
         update: function(){
             this.$el.show();
-            this.enterKeyBindQuery();
+            if (AUTH_OBJ.QueryGslbGroup) this.enterKeyBindQuery();
         },
 
         render: function(target) {

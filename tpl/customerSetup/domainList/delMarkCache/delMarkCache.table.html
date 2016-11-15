@@ -1,0 +1,35 @@
+<table class="table table-striped table-hover">
+    <caption>去问号缓存</caption>
+    <thead> 
+      <tr>
+        <th>匹配类型</th>
+        <th>类型配置</th>
+        <th>概要配置</th>
+        <% if (!hideAction) { %>
+        <th>优先级</th>
+        <th>操作</th>
+        <% } %>    
+      </tr>
+    </thead>
+    <tbody>
+        <% for(var i = 0; i < data.length; i++) { %>
+            <tr data-id="<%=data[i].get('id')%>" <% if (data[i].get('matchingType') === 2 || data[i].get('matchingType') === 9) { %>class="info" <% } %>>
+              <td><%=data[i].get("typeName")%></td>
+              <td><%=data[i].get("matchingValue")%></td>
+              <td><%=data[i].get("markTypeName")%></td>
+              <% if (!hideAction) { %>
+              <td>
+                  <% if (data[i].get('matchingType') !== 2 && data[i].get('matchingType') !== 9) { %>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="up"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="down"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                  <% } %>
+              </td>
+              <td>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit">修改</a>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="delete">删除</a>
+              </td>
+              <% } %> 
+            </tr>
+        <% } %>  
+    </tbody>
+</table>

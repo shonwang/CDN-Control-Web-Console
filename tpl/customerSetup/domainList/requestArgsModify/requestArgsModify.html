@@ -1,0 +1,74 @@
+<div class="request-args-modify-panel fadeInLeft animated">
+    <h3>URL控制<small>/请求参数的改写</small></h3>
+    <div class="well opt-ctn"></div>
+    <div class="well">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <div class="alert alert-dismissable alert-info col-sm-offset-2 col-sm-6">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            <strong>提示：</strong>填写URL中需要删除的参数,多个以英文半角逗号隔开。
+                        </div>
+                    </div>
+                    <div class="form-group delete-args">
+                        <label for="delete-args" class="col-sm-2 control-label">删除参数</label>
+                        <div class="col-sm-2">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group delete-args">
+                        <div class="col-sm-offset-2 col-sm-6">
+                            <textarea class="form-control" rows="3" id="delete-args"></textarea>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <div class="alert alert-dismissable alert-info col-sm-offset-2 col-sm-6">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            <strong>提示：</strong>填写URL中需要添加的参数与对应的参数值,最多可以添加20个。
+                        </div>
+                    </div>
+                    <div class="form-group add-args">
+                        <label for="add-args" class="col-sm-2 control-label">添加参数</label>
+                        <div class="col-sm-2">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group add-args">
+                        <label for="args" class="col-sm-2 control-label">参数</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="args">
+                        </div>
+                        <label for="value" class="col-sm-1 control-label">值</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="value">
+                        </div>
+                        <div class="col-sm-2">
+                            <a href="javascript:void(0)" class="btn btn-success add"><span class="glyphicon glyphicon-plus"></span>新增</a>
+                        </div>
+                    </div>
+                    <div class="form-group add-args">
+                        <div class="col-sm-offset-2 col-sm-6">
+                            <div class="table-ctn table-responsive"></div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2">
+                            <a href="javascript:void(0)" class="btn btn-primary save"><span class="glyphicon glyphicon-save"></span>保存</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

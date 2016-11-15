@@ -2,21 +2,34 @@
     <thead> 
       <tr>
         <th>名称</th>
+        <th>配置</th> 
+        <th>IP类型</th>
+        <th>备注</th>
         <th>状态</th>    
       </tr>
     </thead>
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
+            <% if (data[i]["isDisplay"]) { %>
             <tr data-id="<%=data[i].id%>">
               <td>
                   <div class="radio">
                       <label>
-                          <input type="radio" name="optionsRadios1" id="<%=data[i].id%>" <% if (data[i].isChecked) { %> checked="true" <% } %>><%=data[i]["dispDomain"]%>
+                          <input type="radio" name="optionsRadios1" id="<%=data[i].id%>" 
+                          <% if (data[i].isChecked) { %> checked="true" <% } %>
+                          <% if (isDisabled) { %> disabled="disabled" <% } %>>
+                          <%=data[i]["dispDomain"]%>
                       </label>
                   </div>
               </td>
+              <td><%=data[i]["priorityName"]%></td>
+              <td><%=data[i]["resolveIpTypeName"]%></td>
+              <td>
+                  <a href="javascript:void(0)" remark='<%=data[i]["remark"] || "无"%>' class="remark">备注</a>
+              </td>
               <td><%=data[i]["statusName"]%></td>
             </tr>
+            <% } %>
         <% } %>  
     </tbody>
 </table>

@@ -13,9 +13,12 @@ define("coverRegion.view", ['require','exports', 'template', 'modal.view', 'util
             this.collection.on("get.node.success", $.proxy(this.onNodeListSuccess, this));
             this.collection.on("get.node.error", $.proxy(this.onGetError, this));
 
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-
-            this.enterKeyBindQuery();
+            if (AUTH_OBJ.QueryCoverrelated){
+                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+                this.enterKeyBindQuery();
+            } else {
+                this.$el.find(".opt-ctn .query").remove();
+            }
 
             this.queryArgs = {
                 page : 1,
@@ -135,7 +138,7 @@ define("coverRegion.view", ['require','exports', 'template', 'modal.view', 'util
 
         update: function(){
             this.$el.show();
-            this.enterKeyBindQuery();
+            if (AUTH_OBJ.QueryCoverrelated) this.enterKeyBindQuery();
         },
 
         render: function(target) {

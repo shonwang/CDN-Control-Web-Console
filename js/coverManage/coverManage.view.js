@@ -5,7 +5,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
         initialize: function(options) {
             this.collection = options.collection;
             this.nodeCollection = options.nodeCollection;
-            this.$el = $(_.template(template['tpl/coverManage/coverManage.html'])());
+            this.$el = $(_.template(template['tpl/coverManage/coverManage.html'])({permission: AUTH_OBJ}));
             this.$el.find(".map-ctn").html(_.template(template['tpl/loading.html'])({}));
 
             this.collection.on("get.map.success", $.proxy(this.onNodeListSuccess, this));
@@ -14,15 +14,36 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.nodeCollection.on("get.operator.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.$el.find(".opt-ctn .fullscreen").on("click", $.proxy(this.onLaunchFullScreen, this));
-            this.$el.find(".opt-ctn .show-relation").on("click", $.proxy(this.onClickShowRelation, this));   
-            this.$el.find(".opt-ctn .hide-relation").on("click", $.proxy(this.onClickHideRelation, this));
-            this.$el.find(".opt-ctn .node-region").on("click", $.proxy(this.onClickNode2Region, this));   
-            this.$el.find(".opt-ctn .region-node").on("click", $.proxy(this.onClickRegion2Node, this));
-            this.$el.find(".opt-ctn .global").on("click", $.proxy(this.onClickGlobal, this));   
-            this.$el.find(".opt-ctn .china").on("click", $.proxy(this.onClickChina, this));  
 
-            $(document).on('keyup', $.proxy(this.onKeyupFullscreen, this));
+            if (AUTH_OBJ.FullScreen){
+                this.$el.find(".opt-ctn .fullscreen").on("click", $.proxy(this.onLaunchFullScreen, this));
+                $(document).on('keyup', $.proxy(this.onKeyupFullscreen, this));
+            } else {
+                this.$el.find(".opt-ctn .fullscreen").remove();
+            }
+
+            if (AUTH_OBJ.ShoworHideCoverrelateds){
+                this.$el.find(".opt-ctn .show-relation").on("click", $.proxy(this.onClickShowRelation, this));   
+                this.$el.find(".opt-ctn .hide-relation").on("click", $.proxy(this.onClickHideRelation, this));
+            } else {
+                this.$el.find(".opt-ctn .show-relation").remove();
+                this.$el.find(".opt-ctn .hide-relation").remove();
+            }
+            if (AUTH_OBJ.ChoosetheShowWay){
+                this.$el.find(".opt-ctn .node-region").on("click", $.proxy(this.onClickNode2Region, this));   
+                this.$el.find(".opt-ctn .region-node").on("click", $.proxy(this.onClickRegion2Node, this));
+            } else {
+                this.$el.find(".opt-ctn .node-region").remove();
+                this.$el.find(".opt-ctn .region-node").remove();
+            }
+
+            if (AUTH_OBJ.DomesticMaporInternationalMap){
+                this.$el.find(".opt-ctn .global").on("click", $.proxy(this.onClickGlobal, this));   
+                this.$el.find(".opt-ctn .china").on("click", $.proxy(this.onClickChina, this));
+            } else {
+                this.$el.find(".opt-ctn .global").remove();
+                this.$el.find(".opt-ctn .global").remove();
+            }  
 
             this.isPaused = false;
             this.isShowNodeRegion = true;
@@ -417,22 +438,27 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             $(window).off('resize', $.proxy(this.onResizeChart, this));
             $(window).on('resize', $.proxy(this.onResizeChart, this));
 
-            this.$el.find(".opt-ctn .play").off();
-            this.$el.find(".opt-ctn .play").on("click", function(){
-                this.isPaused = false;
-                if (this.timer) clearInterval(this.timer);
-                this.timer = setInterval($.proxy(this.setNodeDetail, this), 20000);
-                this.$el.find(".opt-ctn .pause").show();
-                this.$el.find(".opt-ctn .play").hide();
-            }.bind(this));
+            if (AUTH_OBJ.AutoPlayorNot){
+                this.$el.find(".opt-ctn .play").off();
+                this.$el.find(".opt-ctn .play").on("click", function(){
+                    this.isPaused = false;
+                    if (this.timer) clearInterval(this.timer);
+                    this.timer = setInterval($.proxy(this.setNodeDetail, this), 20000);
+                    this.$el.find(".opt-ctn .pause").show();
+                    this.$el.find(".opt-ctn .play").hide();
+                }.bind(this));
 
-            this.$el.find(".opt-ctn .pause").off();
-            this.$el.find(".opt-ctn .pause").on("click", function(){
-                this.isPaused = true
-                if (this.timer) clearInterval(this.timer);
-                this.$el.find(".opt-ctn .pause").hide();
-                this.$el.find(".opt-ctn .play").show();
-            }.bind(this));
+                this.$el.find(".opt-ctn .pause").off();
+                this.$el.find(".opt-ctn .pause").on("click", function(){
+                    this.isPaused = true
+                    if (this.timer) clearInterval(this.timer);
+                    this.$el.find(".opt-ctn .pause").hide();
+                    this.$el.find(".opt-ctn .play").show();
+                }.bind(this));
+            } else {
+                this.$el.find(".opt-ctn .play").remove();
+                this.$el.find(".opt-ctn .pause").remove();
+            }
 
             this.$el.find(".opt-ctn #input-node-search").val("");
             this.$el.find(".opt-ctn #input-node-search").off();
@@ -542,7 +568,7 @@ define("coverManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.$el.show();
             this.$el.find(".opt-ctn .play").click();
             if (this.mapDataTimer) clearInterval(this.mapDataTimer);
-            this.mapDataTimer = setInterval($.proxy(this.onClickQueryButton, this), 33000);
+            //this.mapDataTimer = setInterval($.proxy(this.onClickQueryButton, this), 33000);
         },
 
         render: function(target) {

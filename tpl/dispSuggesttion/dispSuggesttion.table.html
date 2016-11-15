@@ -1,0 +1,118 @@
+<table class="table disp-table">
+    <thead> 
+      <tr>
+        <% if (!isFailed) { %>
+        <th><input type="checkbox" id="inlineCheckbox7"></th>
+        <% } %>
+        <th>调度组名称<span class="glyphicon glyphicon-question-sign" title="下发DNS时只下发已勾选的线路，未勾选的线路不下发DNS"></span></th>
+        <th>区域</th>
+        <th>节点<span class="glyphicon glyphicon-question-sign" title="节点带宽信息包含节点昨日晚高峰峰值带宽、实时带宽和上联带宽，点击节点，可查看节点24小时内的带宽图"></span></th>
+        <th>TTL</th>
+        <% if (isFailed) { %>
+        <th>失败原因</th>
+        <% } %>
+        <th>操作</th>   
+      </tr>
+    </thead>
+    <tbody>
+        <% for(var i = 0; i < data.length; i++) { %>
+            <% if (data[i].get("isDisplay")) { %>
+            <tr data-id='<%=data[i].get("id")%>'>
+              <% if (!isFailed) { %>
+              <td><input type="checkbox" id='<%=data[i].get("id")%>'></td>
+              <% } %>
+              <td><%=data[i].get("dispGroup.dispDomain")%></td>
+              <td><%=data[i].get("region.name")%>(<%=data[i].get("region.maxBandWidth")%>)</td>
+              <td class="nodes">
+                  <table class="table table-condensed table-striped">
+                      <tbody>
+                          <% for(var k = 0; k < data[i].get("listFormated").length; k++) { %>
+                              <% if(data[i].get("listFormated")[k].get("node.chName") && data[i].get("listFormated")[k].get("isDisplay")) { %>
+                              <tr data-id='<%=data[i].get("listFormated")[k].get("id")%>' 
+                                <% if (data[i].get("listFormated")[k].get("type") === 1 && isFailed) { %>
+                                    class="danger"
+                                <% } else if (data[i].get("listFormated")[k].get("type") === 1 && !isFailed) { %>
+                                    class="warning"
+                                <% } %> >
+                                <td style="width:400px">
+                                    <% if (data[i].get("listFormated")[k].get("nodeChangeType") === 1) { %>
+                                      <span class="label label-info">u</span>
+                                      <a href="javascript:void(0)" class="node-string text-primary" 
+                                      id='<%=data[i].get("listFormated")[k].get("id")%>' 
+                                      group-region-id='<%=data[i].get("id")%>'>
+                                          <%=data[i].get("listFormated")[k].get("nodeString")%>
+                                      </a>
+                                    <% } else if (data[i].get("listFormated")[k].get("nodeChangeType") === 2) { %>
+                                      <strong class="label label-danger">+</strong>
+                                      <a href="javascript:void(0)" class="node-string text-danger" 
+                                      id='<%=data[i].get("listFormated")[k].get("id")%>' 
+                                      group-region-id='<%=data[i].get("id")%>'>
+                                          <%=data[i].get("listFormated")[k].get("nodeString")%>
+                                      </a>
+                                    <% } else { %>
+                                    <a href="javascript:void(0)" class="node-string text-muted"
+                                    id='<%=data[i].get("listFormated")[k].get("id")%>' 
+                                    group-region-id='<%=data[i].get("id")%>'>
+                                        <%=data[i].get("listFormated")[k].get("nodeString")%>
+                                    </a>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if (data[i].get("listFormated")[k].get("type") !== 0) { %>
+                                    <input type="number" class="weight" 
+                                      id='<%=data[i].get("listFormated")[k].get("id")%>' 
+                                      group-region-id='<%=data[i].get("id")%>' 
+                                      max='<%=data[i].get("listFormated")[k].get("dispConfIpInfo.maxNum")%>' 
+                                      min="1" 
+                                      value='<%=data[i].get("listFormated")[k].get("dispConfIpInfo.currNum")%>'>
+                                    <% } else { %>
+                                    <span class="label label-primary">
+                                        <%=data[i].get("listFormated")[k].get("dispConfIpInfo.currNum")%>
+                                    </span>
+                                    <% } %>
+                                    <% if (data[i].get("listFormated")[k].get("dispConfIpInfo.adviceChangeNum")) { %> 
+                                    <span class="label label-default">
+                                        <%=data[i].get("listFormated")[k].get("dispConfIpInfo.adviceChangeNum")%>
+                                    </span>
+                                    <% } %>
+                                    <% if (data[i].get("listFormated")[k].get("dispConfIpInfo.pauseNum") > 0) { %>  
+                                    <span class="label label-danger">
+                                        <%=data[i].get("listFormated")[k].get("dispConfIpInfo.pauseNum")%>
+                                    </span>
+                                    <% } %>
+                                    <% if (data[i].get("listFormated")[k].get("type") !== 0) { %>
+                                    <a href="javascript:void(0)" class="edit" id='<%=data[i].get("listFormated")[k].get("id")%>' group-region-id='<%=data[i].get("id")%>' title="编辑节点">
+                                        <span class="glyphicon glyphicon-edit"></span>
+                                    </a>
+                                    <a href="javascript:void(0)" class="delete" id='<%=data[i].get("listFormated")[k].get("id")%>' group-region-id='<%=data[i].get("id")%>'  title="删除">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
+                                    <% } %>
+                                </td>
+                              </tr>
+                              <% } %> 
+                          <% } %>  
+                      </tbody>
+                  </table>
+              </td>
+              <td><%=data[i].get("dispGroup.ttl")%></td>
+              <% if (isFailed) { %>
+              <td>
+                  <a href="javascript:void(0)" class="description" remark='<%=data[i].get("region.failedReason") || "无"%>'>详情</a>
+              </td>
+              <% } %>
+              <td>
+                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="add">
+                      <span class="glyphicon glyphicon-plus"></span>添加节点
+                  </a>
+                  <% if (isFailed) { %>
+                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="skip text-danger">
+                      <span class="glyphicon glyphicon-share-alt"></span>强制跳过
+                  </a>
+                  <% } %>
+              </td>
+            </tr>
+            <% } %>
+        <% } %>  
+    </tbody>
+</table>

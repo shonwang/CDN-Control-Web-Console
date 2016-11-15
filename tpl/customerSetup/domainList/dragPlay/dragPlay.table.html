@@ -1,0 +1,32 @@
+<table class="table table-striped table-hover">
+    <caption>播放拖拽</caption>
+    <thead> 
+      <tr>
+        <th>类型</th>
+        <th>拖拽模式</th>
+        <th>suffix列表</th>
+        <th>star参数名称</th>
+        <th>end参数名称</th>
+        <th>状态</th>
+      </tr>
+    </thead>
+    <tbody>
+        <% for(var i = 0; i < data.length; i++) { %>
+        <tr data-id="<%=data[i].get('id')%>">
+            <td><%=data[i].get('videoTypeName')%></td>
+            <td><%=data[i].get('dragModeName')%></td>
+            <td><input type="text" class="form-control suffix" value="<%=data[i].get('suffix')%>" id="<%=data[i].get('id')%>" readonly="true"></td>
+            <td><input type="text" class="form-control start" value="<%=data[i].get('startParam')%>" id="<%=data[i].get('id')%>" readonly="true"></td>
+            <td><input type="text" class="form-control end" value="<%=data[i].get('endParam')%>" id="<%=data[i].get('id')%>" readonly="true"></td>
+            <td>
+                <div class="togglebutton">
+                    <label>
+                        <input type="checkbox" id="<%=data[i].get('id')%>" <% if (data[i].get('status') === 1) { %>checked="true" <% } %>>
+                        <span class="toggle"></span>
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <% } %>
+    </tbody>
+</table>

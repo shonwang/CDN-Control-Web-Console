@@ -1,0 +1,71 @@
+<form class="form-horizontal">
+    <div class="alert alert-danger text-center">
+        <strong>匹配条件</strong>
+    </div>
+    <div class="form-group">
+        <label for="match-type" class="col-sm-2 control-label">匹配类型</label>
+        <div class="col-sm-8 match-type">
+            <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-match-type" data-toggle="dropdown">
+                    <span class="cur-value">加载中...</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu"></ul>
+            </div>
+        </div>
+    </div>
+    <div class="form-group file-type" style="display:none">
+        <label for="file-type" class="col-sm-2 control-label">文件类型</label>
+        <div class="col-sm-8 file-type-ctn">
+            <div class="panel panel-default">
+                <div class="panel-body" style="max-height:180px;overflow: auto;">
+                    <div class="opt-ctn">
+                        <a href="javascript:void(0)" class="btn btn-sm btn-primary checkAll">全选</a>
+                        <a href="javascript:void(0)" class="btn btn-sm btn-default cancelAll">全不选</a>
+                    </div>
+                    <ul id="tree" class="ztree"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group file-type" style="display:none">
+        <label for="file-type" class="col-sm-2 control-label">自定义文件类型</label>
+        <div class="col-sm-8">
+            <textarea class="form-control" rows="3" id="textarea-file-type"></textarea>
+        </div>
+    </div>
+    <div class="form-group uri" style="display:none">
+        <label for="uri" class="col-sm-2 control-label">指定URI</label>
+        <div class="col-sm-8">
+            <textarea class="form-control" rows="3" id="textarea-uri"></textarea>
+        </div>
+    </div>
+    <div class="form-group dir" style="display:none">
+        <label for="dir" class="col-sm-2 control-label">指定目录</label>
+        <div class="col-sm-8">
+            <textarea class="form-control" rows="3" id="textarea-dir"></textarea>
+        </div>
+    </div>
+    <div class="form-group re" style="display:none">
+        <label for="re" class="col-sm-2 control-label">正则匹配</label>
+        <div class="col-sm-8">
+            <textarea class="form-control" rows="3" id="textarea-re"></textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="alert alert-dismissable alert-info">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            目录：<br>
+            注：以“/”开头和结尾，提供的目录地址可以是字母数字以及下划线、减号、百分号三种特殊字符的任意组合，
+            多个目录之间用分号间隔，需注意的是该配置对目录及目录下的所有文件生效，多个目录以英文半角逗号分隔。<br>
+            指定URI：<br>
+            注：禁止以http://或https://开头，仅配置URL中的URI部分。
+            如：完整URL为：http://www.baidu.com/browse/index.html,
+            则配置内容为：/browse/index.html,多条请以英文半角逗号分隔<br>
+            文件类型：<br>
+            注：可以在自定义选择，也可以输入自定义的文件类型，多个文件类型以英文半角逗号隔开。<br>
+            正则表达式<br>
+            注：请按照标准的正则格式进行填写
+        </div>
+    </div>
+</form>

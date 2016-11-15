@@ -5,9 +5,12 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
                 type       = this.get("type"),
                 typeName   = this.get("typeName"),
                 createTime = this.get("createTime");
-            if (status === 3) this.set("statusName", '<span class="text-danger">已关闭</span>');
-            if (status === 2) this.set("statusName",'<span class="text-warning">挂起</span>');
-            if (status === 1) this.set("statusName", '<span class="text-success">运行中</span>');
+            if (status === 2 || status === 4 || status === 6) this.set("statusName",'<span class="label label-warning">暂停中</span>');
+            if (status === 1) this.set("statusName", '<span class="label label-success">运行中</span>');
+            // if (status === 4) this.set("statusName", "<span class='label label-danger'>宕机</span>");
+            // if (status === 6 || status === 12 || status === 14) this.set("statusName", "暂停且宕机");
+            // if (status === 8)this.set("statusName", "<span class='label label-warning'>暂停中</span>");
+            // if (status === 10)this.set("statusName", "<span class='label label-warning'>暂停中</span>");
 
             if (!typeName && type == 12) this.set("typeName",'lvs');
             if (!typeName && type == 14) this.set("typeName",'cache');
@@ -212,6 +215,7 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
             }
             defaultParas.success = function(res){
+                console.log(res);
                 if (res)
                     this.trigger("ip.type.success", res.rows);
                 else
@@ -226,7 +230,35 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
 
             $.ajax(defaultParas);
         },
+        operatorTypeList: function(){
+            var url = BASE_URL + "/rs/metaData/continent/country/operation/list?id=401";
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+            };
+            /*defaultParas.data = args || {};
+            defaultParas.data.t = new Date().valueOf();*/
 
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                if (res)
+                    this.trigger("operator.type.success", res.rows);
+                else
+                    this.trigger("operator.type.error");
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("operator.type.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
         getNodeList: function(args){
             var url = BASE_URL + "/rs/node/list";
             var defaultParas = {
@@ -268,6 +300,7 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
         },
 
         getDeviceIpList: function(args){
+            console.log('getDeviceIpList');
             var url = BASE_URL + "/rs/device/ip/list";
             var defaultParas = {
                 type: "GET",
@@ -283,6 +316,7 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
             }
             defaultParas.success = function(res){
                 if (res){
+                    console.log(res);
                     this.trigger("get.device.ip.success", res);
                 } else {
                     this.trigger("get.device.ip.error", res); 
@@ -428,8 +462,10 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
                 }
             }.bind(this);
 
-            defaultParas.error = function(response){
-                this.trigger("get.ipInfoPause.error", response.responseText);
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.ipInfoPause.error", response); 
             }.bind(this);
 
             $.ajax(defaultParas);
@@ -455,9 +491,10 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
                 }
             }.bind(this);
 
-            defaultParas.error = function(response){
-                this.trigger("get.ipInfoStart.error", response.responseText);
-
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.ipInfoStart.error", response); 
             }.bind(this);
 
             $.ajax(defaultParas);
@@ -486,8 +523,94 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
                 }
             }.bind(this);
 
-            defaultParas.error = function(response){
-                this.trigger("get.ipInfoSubmit.error", response.responseText);
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.ipInfoSubmit.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
+        getDeviceStatusOpen: function(args){
+            var url = BASE_URL + "/rs/device/prompt/open?deviceId="+args;
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
+            };
+
+            defaultParas.success = function(res){
+                if (res){
+                    this.trigger("get.deviceOpen.success",res);
+                } else {
+                    this.trigger("get.deviceOpen.error"); 
+                }
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.deviceOpen.error", response);
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
+        getDeviceStatusPause: function(args){
+            var url = BASE_URL + "/rs/device/prompt/pause?deviceId="+args;
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
+            };
+
+            defaultParas.success = function(res){
+                if (res){
+                    this.trigger("get.devicePause.success",res);
+                } else {
+                    this.trigger("get.devicePause.error"); 
+                }
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.devicePause.error", response); 
+            }.bind(this);
+
+            $.ajax(defaultParas);
+        },
+
+        getDeviceStatusSubmit: function(args){
+            var url = BASE_URL + "/rs/device/status/update/confirm?deviceId="+args.deviceId+"&status="+args.status;
+            var defaultParas = {
+                type: "GET",
+                url: url,
+                async: true,
+                timeout: 30000,
+                contentType: "application/json",
+                processData: false
+            };
+
+            defaultParas.success = function(res){
+                if (res){
+                    this.trigger("get.deviceStatusSubmit.success",res);
+                } else {
+                    this.trigger("get.deviceStatusSubmit.error");
+                }
+            }.bind(this);
+
+            defaultParas.error = function(response, msg){
+                if (response&&response.responseText)
+                    response = JSON.parse(response.responseText)
+                this.trigger("get.deviceStatusSubmit.error", response);
             }.bind(this);
 
             $.ajax(defaultParas);

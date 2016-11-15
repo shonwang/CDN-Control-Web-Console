@@ -103,6 +103,16 @@ module.exports = function(grunt) {
         modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 7;\n');
     });
 
+    grunt.registerTask('gateway-develop-url', '', function() {
+        modifyFile("dest/js/main.js", 'DEBUG', 'window.DEBUG = 8;\n');
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 8;\n');
+    });
+
+    grunt.registerTask('wuqing-url', '', function() {
+        modifyFile("dest/js/main.js", 'DEBUG', 'window.DEBUG = 9;\n');
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 9;\n');
+    });
+
     grunt.registerTask('temp',['underscore:compile']);
     grunt.registerTask('debug',["clean", 'underscore:compile', "copy"]);
     grunt.registerTask('set',["clean", 'underscore:compile', "copy", "set-url"]);
@@ -111,4 +121,6 @@ module.exports = function(grunt) {
     grunt.registerTask('gray',["clean", 'underscore:compile', "copy", "gray-url"]);
     grunt.registerTask('develop',["clean", 'underscore:compile', "copy", "dev-url"]);
     grunt.registerTask('shanghai',["clean", 'underscore:compile', "copy", "shanghai-url"]);
+    grunt.registerTask('wuqing',["clean", 'underscore:compile', "copy", "wuqing-url"]);
+    grunt.registerTask('gatewaydevelop',["clean", 'underscore:compile', "copy", "gateway-develop-url"]);
 };

@@ -1,11 +1,29 @@
-define("ipManage.model", ['require','exports'], function(require, exports) {
+define("ipManage.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
             var status = this.get("status");
-            if (status === "1") this.set("statusName", "<span class='text-success'>运行中</span>");
-            if (status === "2") this.set("statusName", "<span class='text-warning'>暂停中</span>");
-            if (status === "4") this.set("statusName", "<span class='text-danger'>宕机</span>");
-            if (status === "6") this.set("statusName", "暂停且宕机");
+
+            if (status === "1") this.set("statusName", "<span class='label label-success'>运行中</span>");
+            if (status === "4" || status === "20" || status === "28") 
+                this.set("statusName", "<span class='label label-danger'>宕机</span>");
+            if (status === "6" || status === "12" || status === "14" || status === "22" || status === "30") 
+                this.set("statusName", "暂停且宕机");
+            if (status === "2" || status === "8" || status === "10" || status === "16" || status === "18" || status === "24" || status === "26") 
+                this.set("statusName", "<span class='label label-warning'>暂停中</span>");
+
+            this.set("id", Utility.randomStr(8));
+
+            var operatorName = this.get('operatorId');
+            if(operatorName == '0') this.set('operatorName','默认');
+            if(operatorName == '1') this.set('operatorName','联通');
+            if(operatorName == '2') this.set('operatorName','电信');
+            if(operatorName == '3') this.set('operatorName','移动');
+            if(operatorName == '4') this.set('operatorName','鹏博士');
+            if(operatorName == '5') this.set('operatorName','教育网');
+            if(operatorName == '6') this.set('operatorName','广电网');
+            if(operatorName == '7') this.set('operatorName','铁通');
+            if(operatorName == '8') this.set('operatorName','华数');
+            if(operatorName == '9') this.set('operatorName','多线');
         }
     });
 
@@ -99,7 +117,6 @@ define("ipManage.model", ['require','exports'], function(require, exports) {
                     this.trigger("get.ipInfoPause.error"); 
                 }
             }.bind(this);
-
             defaultParas.error = function(response, msg){
                 if (response&&response.responseText)
                     response = JSON.parse(response.responseText)
@@ -174,6 +191,20 @@ define("ipManage.model", ['require','exports'], function(require, exports) {
             $.ajax(defaultParas);
         },
 
+        getDispByIp: function(args){
+            var url = BASE_URL + "/rs/ip/info/getIpDisgroupMes",
+            successCallback = function(res){
+                if (res){
+                    this.trigger("get.dispByIp.success", res);
+                } else {
+                    this.trigger("get.dispByIp.error", res); 
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.dispByIp.error", response); 
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        }
     });
 
     return IPManageCollection;

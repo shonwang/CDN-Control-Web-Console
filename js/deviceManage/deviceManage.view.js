@@ -103,9 +103,13 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
         render: function(target) {
             this.$el.appendTo(target);
-            setTimeout(function(){
-                this.initUploader();
-            }.bind(this), 200)
+            if (!AUTH_OBJ.BrowseHostFile){
+                this.$el.find("#import-device-button").remove();
+            } else {
+                setTimeout(function(){
+                    this.initUploader();
+                }.bind(this), 200)
+            }
         }
     });
 
@@ -150,7 +154,10 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancelEditIP, this));
             this.$el.find(".update").on("click", $.proxy(this.onClickUpateIP, this));
-            this.$el.find(".create").on("click", $.proxy(this.onClickAddIP, this));
+            if (AUTH_OBJ.CreateIP)
+                this.$el.find(".create").on("click", $.proxy(this.onClickAddIP, this));
+            else
+                this.$el.find(".create").remove()
 
             this.$el.find(".update").hide();
             this.$el.find(".cancel").hide();
@@ -178,15 +185,27 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("ip.type.success", $.proxy(this.onGetIpTypeSuccess, this));
             this.collection.on("ip.type.error", $.proxy(this.onGetError, this));
 
+            this.collection.off("operator.type.success");
+            this.collection.off("operator.type.error");
+            this.collection.on("operator.type.success", $.proxy(this.onGetOperatorTypeSuccess, this));
+            this.collection.on("operator.type.error", $.proxy(this.onGetError, this));
+
 
             this.collection.off("get.ipInfoPause.success");
             this.collection.on("get.ipInfoPause.success", $.proxy(this.onIpInfoPauseSuccess, this));
+            this.collection.off("get.ipInfoStart.error");
+            this.collection.on("get.ipInfoStart.error", function(err){
+                this.commonPopup.$el.modal('hide');
+                this.onGetError(err);
+            }.bind(this));
             this.collection.off("get.ipInfoPause.error");
-            this.collection.on("get.ipInfoPause.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.ipInfoPause.error", function(err){
+                this.commonPopup.$el.modal('hide');
+                this.onGetError(err);
+            }.bind(this));
 
             this.collection.off("get.ipInfoSubmit.success");
             this.collection.on("get.ipInfoSubmit.success", function(res){
-                alert(res);
                 this.showIpManagePopup();
                 this.collection.ipTypeList();
             }.bind(this));
@@ -194,24 +213,54 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.ipInfoSubmit.error",  $.proxy(this.onGetError, this));
 
             this.collection.ipTypeList();
+            
+            var isMultiNode = this.model.get('multiNode');
+            //var isMultiNode = true;
+            if(isMultiNode == false){
+                this.$el.find('.ip-operator-type').remove();
+                this.operatorId = 0;
+            }else{
+                this.$el.find('.ip-operator-default').remove();
+                this.collection.operatorTypeList();
+            }
+            
         },
-
+        //点击设备管理中的名称时，请求成功后执行的函数
         onGetIpTypeSuccess: function(data){
+            console.log('onGetIpTypeSuccess');
+            //console.log(data);
             this.ipTypeList = data;
+            console.log(this.ipTypeList);
             var typeIpArray = [];
             _.each(this.ipTypeList, function(el, key, ls){
                 typeIpArray.push({name: el.name, value: el.id})
             })
+            console.log(typeIpArray);
             Utility.initDropMenu(this.$el.find(".ip-type"), typeIpArray, function(value){
                 this.ipType = parseInt(value);
             }.bind(this));
             this.ipType = data[0].id;
             this.$el.find(".ip-type .cur-value").html(data[0].name)
-
+            //console.log(this.model);
             var id = this.model.get("id");
+            console.log(id);
             this.collection.getDeviceIpList({deviceId:id})
         },
+        onGetOperatorTypeSuccess:function(data){
+            this.operatorTypeList = data;
+            var typeOperatorArray = [];
+            _.each(this.operatorTypeList,function(el,key,ls){
+                typeOperatorArray.push({name:el.name,value:el.id})
+            });
+            Utility.initDropMenu(this.$el.find('.ip-operator-type'),typeOperatorArray,function(value){
+                this.operatorId = parseInt(value);
+            }.bind(this));
+            console.log(data[0].name);
+            this.$el.find('.ip-operator-type .cur-value').html(data[0].name);
 
+            this.operatorId = data[0].id;
+
+        },
         onGetIpSuccess: function(data){
             this.ipList = data;
             this.updateIpTable();
@@ -223,23 +272,29 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.getDeviceIpList({deviceId:id});
             this.showIpManagePopup();
         },
-
+        
         updateIpTable: function(){
             if (this.ipList.length === 0){
                 this.$el.find(".ip-table-ctn").html(_.template(template['tpl/empty.html'])({data: this.ipList}));
                 return;
-            }
+            } 
+            console.log(this.ipList);
             _.each(this.ipList, function(el, index, list){
                 var ipTypeArray = _.filter(this.ipTypeList ,function(obj) {
                     return obj["id"] === parseInt(el.type);
                 })
                 if (ipTypeArray[0]) el.typeName = ipTypeArray[0].name;
                 if (el.status === 1) el.statusName = "<span class='text-success'>运行中</span>";
-                if (el.status === 2) el.statusName = "<span class='text-warning'>暂停中</span>";
+                if (el.status === 2 || el.status === 8 || el.status === 10) el.statusName = "<span class='text-warning'>暂停中</span>";
                 if (el.status === 4) el.statusName = "<span class='text-danger'>宕机</span>";
-                if (el.status === 6) el.statusName = "暂停且宕机";
+                if (el.status === 6 || el.status === 12 || el.status === 14) el.statusName = "暂停且宕机";
             }.bind(this))
-            this.table = $(_.template(template['tpl/deviceManage/deviceManage.ip.table.html'])({data: this.ipList}));
+           
+            this.table = $(_.template(template['tpl/deviceManage/deviceManage.ip.table.html'])({
+                data: this.ipList, 
+                permission: AUTH_OBJ,
+                isCreate: false
+            }));
             this.$el.find(".ip-table-ctn").html(this.table[0]);
             this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
             this.table.find("tbody .ipOperation").on("click", $.proxy(this.onClickIpOperation, this));
@@ -462,11 +517,13 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onClickAddIP: function(){
+            console.log(this.operatorId);
             var ip = this.$el.find("#input-ip").val();
             var args =  {
                 "deviceId": this.model.get("id"),
                 "ip"      : ip,
-                "ipType"  : this.ipType
+                "ipType"  : this.ipType,
+                "operatorId" : this.operatorId
              }
             this.collection.addDeviceIP(args);
         },
@@ -562,7 +619,11 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 })
                 if (ipTypeArray[0]) el.typeName = ipTypeArray[0].name;
             }.bind(this))
-            this.table = $(_.template(template['tpl/deviceManage/deviceManage.ip.table.html'])({data: this.ipList}));
+            this.table = $(_.template(template['tpl/deviceManage/deviceManage.ip.table.html'])({
+                data: this.ipList, 
+                permission: AUTH_OBJ, 
+                isCreate: true
+            }));
             this.$el.find(".ip-table-ctn").html(this.table[0]);
 
             this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
@@ -592,6 +653,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
         initIpTypeDropmenu: function(res){
             var typeArray = this.deviceTypeArray;
+            //console.log(typeArray);
             Utility.initDropMenu(this.$el.find(".dropdown-type"), typeArray, function(value){
                 this.deviceType = parseInt(value);
             }.bind(this));
@@ -610,7 +672,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             }
         },
 
-        onGetNodeSuccess: function(res){
+        onGetNodeSuccessOld: function(res){
             var nameList = [];
             _.each(res.rows, function(el, index, list){
                 nameList.push({name: el.chName, value:el.id})
@@ -633,8 +695,44 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             } 
         },
 
+        onGetNodeSuccess: function(res){
+            var nameList = [];
+            _.each(res.rows, function(el, index, list){
+                nameList.push({name: el.chName, value:el.id})
+            });
+
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-node').get(0),
+                panelID: this.$el.find('#dropdown-node').get(0),
+                isSingle: true,
+                openSearch: true,
+                onOk: function(){},
+                data: nameList,
+                callback: function(data) {
+                    this.nodeId = data.value;
+                    this.$el.find('#dropdown-node .cur-value').html(data.name);
+                }.bind(this)
+            });
+            if (this.isEdit){
+                
+                var defaultValue = _.find(nameList, function(object){
+                    return object.value === this.model.attributes.nodeId
+                }.bind(this));
+
+                this.$el.find(".dropdown-node .cur-value").html(defaultValue.name)
+                this.nodeId = defaultValue.value;
+            } else {
+                //console.log(nameList);
+                this.$el.find(".dropdown-node .cur-value").html(nameList[0].name);
+                this.nodeId = nameList[0].value;
+
+                this.collection.ipTypeList();
+            } 
+        },
+
         onGetIpTypeSuccess: function(data){
             this.ipTypeList = data;
+            console.log(this.ipTypeList);
             var typeIpArray = [];
             _.each(this.ipTypeList, function(el, key, ls){
                 typeIpArray.push({name: el.name, value: el.id})
@@ -644,8 +742,10 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             }.bind(this));
             this.ipType = data[0].id
             this.$el.find(".ip-type .cur-value").html(data[0].name)
-
-            this.$el.find(".create").on("click", $.proxy(this.onClickAddIP, this))
+            if (AUTH_OBJ.CreateIP)
+                this.$el.find(".create").on("click", $.proxy(this.onClickAddIP, this))
+            else
+                this.$el.find(".create").remove();
         },
 
         getArgs: function(){
@@ -692,6 +792,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.query      = options.query;
             this.$el = $(_.template(template['tpl/deviceManage/deviceManage.html'])());
 
+            this.noticeInfoStr = '<div class="alert alert-info"><strong>数据加载中，请耐心等待 </strong></div>';
+
             this.collection.on("get.device.success", $.proxy(this.onDeviceListSuccess, this));
             this.collection.on("get.device.error", $.proxy(this.onGetError, this));
 
@@ -717,19 +819,51 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 alert("操作成功！")
                 this.onClickQueryButton();
             }.bind(this));
+            this.collection.on("get.deviceStatusSubmit.success", function(){
+                alert('设置成功');
+                this.onClickQueryButton();
+            }.bind(this));
+            this.collection.on("get.deviceStatusSubmit.error", $.proxy(this.onGetError, this));
             this.collection.on("update.device.status.error", $.proxy(this.onGetError, this));
 
             this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
-            this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));            
+            this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
 
-            this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
-            this.$el.find(".opt-ctn .import").on("click", $.proxy(this.onClickImport, this));
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.$el.find(".opt-ctn .multi-play").on("click", $.proxy(this.onClickMultiPlay, this));
+            this.collection.on("get.deviceOpen.success", $.proxy(this.onDeviceOpenSuccess, this));
+            this.collection.on("get.deviceOpen.error", function(err){
+                this.commonPopup.$el.modal('hide');
+                this.onGetError(err);
+            }.bind(this));
+
+            this.collection.on("get.devicePause.success", $.proxy(this.onDevicePauseSuccess, this));
+            this.collection.on("get.devicePause.error", function(err){
+                this.commonPopup.$el.modal('hide');
+                this.onGetError(err);
+            }.bind(this));
+
+            if (AUTH_OBJ.CreateHost)
+                this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
+            else 
+                this.$el.find(".opt-ctn .create").remove();
+
+            if (AUTH_OBJ.ImportHostFile)
+                this.$el.find(".opt-ctn .import").on("click", $.proxy(this.onClickImport, this));
+            else
+                this.$el.find(".opt-ctn .import").remove(); 
+
+            if (AUTH_OBJ.QueryHost) {
+                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+                this.enterKeyBindQuery();
+            } else {
+                this.$el.find(".opt-ctn .query").remove();
+            }
+            if (AUTH_OBJ.EnableorPauseHost)
+                this.$el.find(".opt-ctn .multi-play").on("click", $.proxy(this.onClickMultiPlay, this));
+            else
+                this.$el.find(".opt-ctn .multi-play").remove();
+
             this.$el.find(".opt-ctn .multi-stop").on("click", $.proxy(this.onClickMultiStop, this));
             this.$el.find(".opt-ctn .multi-delete").on("click", $.proxy(this.onClickMultiDelete, this));
-
-            this.enterKeyBindQuery();
 
             if (this.query !== "none"){
                 this.query = JSON.parse(this.query);
@@ -804,12 +938,16 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     var options = importDeviceView.onClickOK();
                 }.bind(this),
                 onHiddenCallback: function(){
-                    importDeviceView.uploader.stop();
-                    importDeviceView.uploader.destroy();
-                    this.enterKeyBindQuery();
+                    if (AUTH_OBJ.BrowseHostFile){
+                        importDeviceView.uploader.stop();
+                        importDeviceView.uploader.destroy();
+                    }  
+                    if (AUTH_OBJ.QueryHost) this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.importDevicePopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyImportHostFile)
+                this.importDevicePopup.$el.find(".modal-footer .btn-primary").remove();
         },
 
         onClickCreate: function(){
@@ -831,10 +969,12 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     this.addDevicePopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){
-                    this.enterKeyBindQuery();
+                    if (AUTH_OBJ.QueryHost) this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.addDevicePopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyCreateHost)
+                this.addDevicePopup.$el.find(".modal-footer .btn-primary").remove();
         },
 
         initTable: function(){
@@ -842,7 +982,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
             this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
 
-            this.table = $(_.template(template['tpl/deviceManage/deviceManage.table.html'])({data: this.collection.models}));
+            this.table = $(_.template(template['tpl/deviceManage/deviceManage.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
             if (this.collection.models.length !== 0){
                 this.$el.find(".table-ctn").html(this.table[0]);
 
@@ -856,8 +996,125 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
                 this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
                 this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+
+                this.$el.find(".open").on("click", $.proxy(this.onClickDeviceOpen, this));
+                this.$el.find(".pause").on("click", $.proxy(this.onClickDevicePause, this));
             } else {
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+            }
+        },
+
+        commonDialog: function(){
+            if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
+            var options = {
+                title: "警告",
+                body : this.noticeInfoStr,
+                backdrop : 'static',
+                type     : 2,
+                cancelButtonText : "关闭",
+                onOKCallback:  function(){
+                    var options = {
+                        "deviceId" : this.clickDeviceId,
+                        "status" : this.clickStatus
+                    }
+                    if (!options) return;
+                    this.collection.getDeviceStatusSubmit(options);
+                    this.commonPopup.$el.modal('hide');
+                }.bind(this),
+                onCancelCallback: function(){
+                    this.commonPopup.$el.modal('hide');
+                }.bind(this)
+            }
+
+            this.commonPopup = new Modal(options);
+        },
+
+        onClickDeviceOpen: function(event){
+            var eventTarget = event.srcElement || event.target,deviceId,status,name;
+
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                deviceId = eventTarget.attr("id");
+                status = eventTarget.attr("data-status");
+                name = eventTarget.attr("data-name");
+            } else {
+                deviceId = $(eventTarget).attr("id");
+                status = $(eventTarget).attr("data-status");
+                name = $(eventTarget).attr("data-name");
+            }
+
+            this.clickDeviceId = deviceId;
+            this.clickStatus = status;
+            this.name = name;
+
+            this.collection.getDeviceStatusOpen(deviceId);
+
+            this.commonDialog();
+            this.commonPopup.$el.find('.close').hide();
+            this.commonPopup.$el.find('.commonPopup').hide();
+        },
+
+        onClickDevicePause: function(event){
+            var eventTarget = event.srcElement || event.target,deviceId,status,name;
+
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                deviceId = eventTarget.attr("id");
+                status = eventTarget.attr("data-status");
+                name = eventTarget.attr("data-name");
+            } else {
+                deviceId = $(eventTarget).attr("id");
+                status = $(eventTarget).attr("data-status");
+                name = $(eventTarget).attr("data-name");
+            }
+
+            this.clickDeviceId = deviceId;
+            this.clickStatus = status;
+            this.name = name;
+
+            this.collection.getDeviceStatusPause(deviceId);
+
+            this.commonDialog();
+            this.commonPopup.$el.find('.close').hide();
+            this.commonPopup.$el.find('.commonPopup').hide();
+
+        },
+
+        onDeviceOpenSuccess: function(res){
+            var data = res;
+            var body = '';
+            if(data.length > 0){
+                data[0].title = '设备 '+this.name+'暂停前在下列调度关系中服务，点击确定，下列调度关系将恢复，点击取消，设备状态不会变更，是否确定？';
+
+                this.table_modal = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:data}));
+                this.table_modal.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:data}));
+
+                this.commonPopup.$el.find('.modal-body').html(this.table_modal);
+            }else{
+                body = '确定要开启服务吗？';
+                this.commonPopup.$el.find('.close').show();
+                this.commonPopup.$el.find('.commonPopup').show();
+                this.commonPopup.$el.find('h4').html('恢复设备');
+                this.commonPopup.$el.find('.modal-body strong').html(body);
+            }
+        },
+
+        onDevicePauseSuccess: function(res){
+            var data = res;
+            var body = '';
+            if(data.length > 0){
+                data[0].title = '设备 '+this.name+'在下列调度关系中服务，点击确定，该设备将不对下列调度关系服务，点击取消，设备状态不会改变，是否确定？';
+                
+                this.table_modal = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:data}));
+                this.table_modal.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:data}));
+
+                this.commonPopup.$el.find('.modal-body').html(this.table_modal);
+            }else{
+                body = '确定要暂停服务吗？';
+                this.commonPopup.$el.find('.close').show();
+                this.commonPopup.$el.find('.commonPopup').show();
+                this.commonPopup.$el.find('h4').html('暂停设备');
+                this.commonPopup.$el.find('.modal-body strong').html(body);
             }
         },
 
@@ -893,10 +1150,12 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     this.editDevicePopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){
-                    this.enterKeyBindQuery();
+                    if (AUTH_OBJ.QueryHost) this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.editDevicePopup = new Modal(options);
+            if (!AUTH_OBJ.ApplyEditHost)
+                this.editDevicePopup.$el.find(".modal-footer .btn-primary").remove();
         },
 
         onClickItemDelete: function(event){
@@ -936,7 +1195,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 type     : 1,
                 onOKCallback:  function(){},
                 onHiddenCallback: function(){
-                    this.enterKeyBindQuery();
+                    if (AUTH_OBJ.QueryHost) this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.ipManagePopup = new Modal(options);
@@ -1060,12 +1319,11 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 else
                     this.queryArgs.type = null
             }.bind(this));
-
+            console.log(typeArray);
             var statusArray = [
                 {name: "全部", value: "All"},
                 {name: "运行中", value: 1},
-                {name: "挂起", value: 2},
-                {name: "已关闭", value: 3}
+                {name: "暂停中", value: 2}
             ],
             rootNode = this.$el.find(".dropdown-status");
             Utility.initDropMenu(rootNode, statusArray, function(value){
@@ -1166,7 +1424,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find("#input-node").val("");
             }
             this.onClickQueryButton();
-            this.enterKeyBindQuery();
+            if (AUTH_OBJ.QueryHost) this.enterKeyBindQuery();
         },
 
         render: function(target) {

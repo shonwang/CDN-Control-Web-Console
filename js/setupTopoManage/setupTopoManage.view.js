@@ -16,6 +16,11 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             }
             this.onClickQueryButton();
              
+             this.$el.on('keydown',function(e){
+                  if(e.keyCode == 13){
+                     this.onClickQueryButton();
+                  }
+             });
             this.collection.off("get.sendInfo.success");
             this.collection.off("get.sendInfo.error");
             this.collection.on("get.sendInfo.success", $.proxy(this.getSendInfoSuccess, this));
@@ -271,6 +276,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         initstepTable: function(data){
             /*var data = [{step:1,nodeName:'扬州电信节点、扬州联通节点、杭州'},{step:2,nodeName:'济南联通节点、惠州联通节点、天津电信节点'},{step:3,nodeName:'石家庄联通节点、襄阳电信节点、德阳电信节点、天津移动节点'}]*/
             var data = data;
+            _.each(data,function(el,index,list){
+                el.step = index+1;
+            })
             this.localTable = $(_.template(template['tpl/setupTopoManage/setupTopoManage.addStep.table.html'])({
                  data: data
             }));

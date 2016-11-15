@@ -8,14 +8,24 @@
     </thead>
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
-            <tr data-id="<%=data[i].id%>">
-              <td><%=data[i].name%></td>
-              <td><%=data[i].createTime%></td>
+            <tr data-id="<%=data[i].attributes['id']%>">
               <td>
-                  <a href="javascript:void(0)" id="<%=data[i].id%>" class="edit" title="编辑">
+                  <%=data[i].attributes["name"]%>
+                  <% if(data[i].attributes["isDefault"]){ %>
+                   &nbsp;&nbsp;&nbsp;&nbsp;默认
+                 <%}%>  
+              </td>
+              <td><%=data[i].attributes["createTime"]%></td>
+              <td>
+                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="edit" title="编辑">
                       <span class="glyphicon glyphicon-edit"></span>
                   </a>
-                  <a href="javascript:void(0)" id="<%=data[i].id%>" class="delete" title="删除">
+                   <% if(!data[i].attributes["isDefault"]){ %>
+                    <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="setDefault" title="设为默认">
+                        <span class="glyphicon glyphicon-cog"></span>
+                    </a>
+                  <%}%>  
+                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="delete" title="删除">
                       <span class="glyphicon glyphicon-trash"></span>
                   </a>
               </td>

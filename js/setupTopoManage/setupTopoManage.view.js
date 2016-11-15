@@ -219,10 +219,11 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             })
              if(flag){
                 if(this.isEdit){
-                    console.log(this.defaultParam);
+                    //console.log(this.defaultParam);
                     this.collection.topoModify(this.defaultParam);
                 }
                 else{
+                    //console.log(this.defaultParam);
                     this.collection.topoAdd(this.defaultParam);
                 }
              }

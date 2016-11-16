@@ -12,6 +12,8 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.collection.on("get.sending.channel.success", $.proxy(this.onChannelListSuccess, this));
             this.collection.on("get.sending.channel.error", $.proxy(this.onGetError, this));
+            this.collection.on("channel.terminate.success", $.proxy(this.onChannelTerminateSuccess, this));
+            this.collection.on("channel.terminate.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".mulit-next").on("click", $.proxy(this.onClickMultiNext, this));
@@ -44,6 +46,10 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
+        },
+
+        onChannelTerminateSuccess: function(){
+            alert("操作成功！")
         },
 
         onChannelListSuccess: function(){
@@ -105,6 +111,11 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
             }
 
             var model = this.collection.get(id);
+
+            this.collection.nextTask({
+                taskId: id,
+                taskStepId: model.get("taskStepId")
+            })
         },
 
         onClickItemReject: function(event){
@@ -119,7 +130,7 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
                 id = $(eventTarget).attr("id");
             }
 
-            var model = this.collection.get(id);
+            this.collection.terminateTask({taskId: id})
         },
 
         onClickItemEdit: function(event){

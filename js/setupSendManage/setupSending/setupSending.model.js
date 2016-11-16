@@ -7,7 +7,7 @@ define("setupSending.model", ['require','exports', 'utility'], function(require,
             if (status === 1) this.set("statusName", '<span class="text-info">执行中</span>');
             if (status === 2) this.set("statusName", '<span class="text-success">执行完成</span>');
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
-
+            this.set("id", this.get("taskId"))
             this.set("isChecked", false);
         }
     });
@@ -38,57 +38,27 @@ define("setupSending.model", ['require','exports', 'utility'], function(require,
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
-        getChannelDispgroup: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/get",
+        terminateTask: function(args){
+            var url = BASE_URL + "/cd/delivery/task/terminate",
             successCallback = function(res){
-                if (res){
-                    this.trigger("channel.dispgroup.success", res);
-                } else {
-                    this.trigger("channel.dispgroup.error", res); 
-                }
+                this.trigger("channel.terminate.success", res);
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("channel.dispgroup.error", response); 
+                this.trigger("channel.terminate.error", response); 
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        addDispGroupChannel: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/add",
+        nextTask: function(args){
+            var url = BASE_URL + "/cd/delivery/task/next",
             successCallback = function(res){
-                this.trigger("add.dispGroup.channel.success", res);
+                this.trigger("channel.next.success", res);
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("add.dispGroup.channel.error", response); 
+                this.trigger("channel.next.error", response); 
             }.bind(this);
 
-            Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
-        },
-
-        ipTypeList: function(args){
-            var url = BASE_URL + "/rs/metaData/ipTypeList",
-            successCallback = function(res){
-                if (res)
-                    this.trigger("ip.type.success", res.rows);
-                else
-                    this.trigger("ip.type.error");
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("ip.type.error", response);
-            }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
-        },
-
-        deleteDispGroupChannel: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/delete",
-            successCallback = function(res){
-                this.trigger("add.dispGroup.channel.success", res);
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("add.dispGroup.channel.error", response); 
-            }.bind(this);
-
-            Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
         }
     });
 

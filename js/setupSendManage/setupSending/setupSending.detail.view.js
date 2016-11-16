@@ -8,10 +8,75 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             this.options = options;
             this.collection = options.collection;
             this.model      = options.model;
-            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.editCfgFalse.html'])({
-                data: {},
-                panelId: Utility.randomStr(8)
-            }));
+
+            require(['setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeModel){
+                this.mySetupSendWaitCustomizeModel = new SetupSendWaitCustomizeModel();
+                var isUseCustomized = 1;
+
+                if (isUseCustomized === 1) {
+                    this.mySetupSendWaitCustomizeModel.off("get.all.config.success");
+                    this.mySetupSendWaitCustomizeModel.off("get.all.config.error");
+                    this.mySetupSendWaitCustomizeModel.on("get.all.config.success", $.proxy(this.initSetup, this));
+                    this.mySetupSendWaitCustomizeModel.on("get.all.config.error", $.proxy(this.onGetError, this));
+                    this.mySetupSendWaitCustomizeModel.getAllConfig({
+                        domain: "a644.cn",//this.model.get("domain"),
+                        version: "201611092006_r5",//this.model.get("version") || this.model.get("domainVersion")
+                        manuallyModifed: true
+                    })
+                } else {
+                    this.mySetupSendWaitCustomizeModel.off("get.channel.config.success");
+                    this.mySetupSendWaitCustomizeModel.off("get.channel.config.error");
+                    this.mySetupSendWaitCustomizeModel.on("get.channel.config.success", $.proxy(this.initSetup, this));
+                    this.mySetupSendWaitCustomizeModel.on("get.channel.config.error", $.proxy(this.onGetError, this));
+                    this.mySetupSendWaitCustomizeModel.getChannelConfig({
+                        domain: "a644.cn",//this.model.get("domain"),
+                        version: "201611092006_r5"//this.model.get("version") || this.model.get("domainVersion")
+                    })
+                }
+            }.bind(this));
+        },
+
+        initSetup: function(data){
+            var configObj = this.getConfigObj(data);
+
+            if (configObj.up.length === 0 && configObj.down.length === 0){
+                this.$el = $(_.template(template['tpl/empty-2.html'])({data:{message: "暂无数据！"}}));
+            } else {
+                this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.editCfgFalse.html'])({
+                    data: configObj,
+                    panelId: Utility.randomStr(8)
+                })); 
+            }
+
+            this.$el.appendTo(this.target);
+        },
+
+        getConfigObj: function(data){
+            var upArray = [], downArray = [];
+
+            _.each(data, function(el, key, ls){
+                if (key !== "applicationType"){
+                    _.each(el, function(fileObj, index, list){
+                        if (fileObj&&fileObj.topologyLevel === 1){
+                            upArray.push({
+                                id: fileObj.id,
+                                name: key,
+                                content: fileObj.content,
+                                luaOnly: fileObj.luaOnly === undefined ? true : fileObj.luaOnly
+                            })
+                        } else if (fileObj&&fileObj.topologyLevel === 2){
+                            downArray.push({
+                                id: fileObj.id,
+                                name: key,
+                                content: fileObj.content,
+                                luaOnly: fileObj.luaOnly === undefined ? true : fileObj.luaOnly
+                            })
+                        }
+                    }.bind(this))
+                }
+            }.bind(this))
+
+            return {up: upArray, down: downArray}
         },
 
         onGetError: function(error){
@@ -22,7 +87,7 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
         },
 
         render: function(target) {
-            this.$el.appendTo(target);
+            this.target = target;
         }
     });
 
@@ -35,24 +100,40 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             this.options = options;
             this.collection = options.collection;
             this.model      = options.model;
-            this.collection.off("et.task.doingdetail.success");
-            this.collection.off("et.task.doingdetail.error");
-            this.collection.on("et.task.doingdetail.success",$.proxy(this.queryDetailSuccess,this));
-            this.collection.on("et.task.doingdetail.error",$.proxy(this.queryDetailError,this));
-            this.queryArgs = {
-                "taskId":this.model.get('taskId'),//任务ID
-                "taskStepId":this.model.get('taskStepId'),//任务stepId
-                "deviceName":this.model.get('deviceName'),//设备名称
-                "nodeId":this.model.get('nodeId'),// "节点ID"
-                "status":this.model.get('status'),// "1：执行下发中 2：下发完成 3：下发失败 4:跳过 5:忽略"
-                "page"             : 1,
-                "count"            : 10
-            };
+            this.isSending  = options.isSending;
+
             this.$el = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.detail.html'])({data: {}}));
-            
 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+
+            if (this.isSending) {
+                this.collection.on("get.task.doingdetail.success",$.proxy(this.queryDetailSuccess,this));
+                this.collection.on("get.task.doingdetail.error",$.proxy(this.onGetError,this));
+                this.collection.on("get.ingoredevice.success",$.proxy(this.onSkipSuccess,this));
+                this.collection.on("get.ingoredevice.error",$.proxy(this.onGetError,this));
+
+                this.queryArgs = {
+                    "taskId" : this.model.get('taskId'),//任务ID
+                    "taskStepId" : this.model.get('taskStepId'),//任务stepId
+                    "deviceName" : null,
+                    "nodeId": null,// "节点ID"
+                    "status": null,
+                    "page": 1,
+                    "count": 10
+                };
+            } else {
+                this.collection.on("get.task.donedetail.success",$.proxy(this.queryDetailSuccess,this));
+                this.collection.on("get.task.donedetail.error",$.proxy(this.onGetError,this));
+                this.queryArgs = {
+                    "taskId" : this.model.get('taskId'),//任务ID
+                    "deviceName" : null,
+                    "nodeId": null,// "节点ID"
+                    "status": null,
+                    "page": 1,
+                    "count": 10
+                };
+            }
 
             this.initSetup();
             this.onClickQueryButton();
@@ -62,15 +143,16 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
             this.queryArgs.deviceName = this.$el.find("#input-device").val();
-            this.queryArgs.nodeId = this.$el.find("#input-node").val();
             if (this.queryArgs.deviceName == "") this.queryArgs.deviceName = null;
-            if (this.queryArgs.nodeId == "") this.queryArgs.nodeId = null;
 
             this.$el.find(".domain-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
             this.$el.find(".pagination").html("");
-            this.collection.queryTaskDoingdetail(this.queryArgs);
+            if (this.isSending)
+                this.collection.queryTaskDoingDetail(this.queryArgs);
+            else
+                this.collection.queryTaskDoneDetail(this.queryArgs);
         },  
             
         initSetup:function(){
@@ -84,57 +166,72 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             ],
             rootNode = this.$el.find(".dropdown-task-type");
             Utility.initDropMenu(rootNode, statusArray, function(value){
-                 if (value == "All"){
-                     this.queryArgs.status = null;
-                 }
-                 else{
-                     this.queryArgs.status = parseInt(value)
-                 }
+                if (value == "All")
+                    this.queryArgs.status = null;
+                else
+                    this.queryArgs.status = parseInt(value)
             }.bind(this));    
             
-
             //节点管理
-            var nodeArgs={
-                page:1,
-                count:9999
-            };
             require(['nodeManage.model'],function(NodeManageModel){
                 this.nodeManageModel = new NodeManageModel();
                 this.nodeManageModel.on("get.node.success", $.proxy(this.onGetNodeListSuccess, this))
                 this.nodeManageModel.on("get.node.error", $.proxy(this.onGetNodeListError, this))
-                this.nodeManageModel.getNodeList(nodeArgs);
+                this.nodeManageModel.getNodeList({page: 1,count: 9999});
+            }.bind(this));
+
+            var pageNum = [
+                {name: "10条", value: 10},
+                {name: "20条", value: 20},
+                {name: "50条", value: 50},
+                {name: "100条", value: 100}
+            ]
+            Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
+                this.queryArgs.count = value;
+                this.queryArgs.page = 1;
+                this.onClickQueryButton();
             }.bind(this));
         },
 
         onGetNodeListSuccess:function(){
             var nodeManageModel = this.nodeManageModel;
-            var nodeSelectList=[{name:"全部",value:"All"}];
+            var nodeSelectList = [{name:"全部",value:"All"}];
             nodeManageModel.each(function(el){
                 nodeSelectList.push({
                     name:el.get("chName"),
                     value:el.get("id")
                 });
             });
-            rootNode = this.$el.find('.dropdown-node-type');
-            Utility.initDropMenu(rootNode, nodeSelectList, function(value){
-                 if (value == "All"){
-                     this.queryArgs.nodeId = null;
-                 }
-                 else{
-                     this.queryArgs.nodeId = parseInt(value)
-                 }
-            }.bind(this));
+
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-node').get(0),
+                panelID: this.$el.find('#dropdown-node').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function(){},
+                data: nodeSelectList,
+                callback: function(data) {
+                    if (data.value == "All")
+                        this.queryArgs.nodeId = null;
+                    else
+                        this.queryArgs.nodeId = parseInt(data.value)
+                    this.$el.find('#dropdown-node .cur-value').html(data.name)
+                }.bind(this)
+            });
         },
 
         queryDetailSuccess:function(){
-            this.updatePublisDomain();
+            this.initDeviceTable();
             this.updateDomainList();
+            if (!this.isInitPaginator) this.initPaginator();
         },
 
-        updatePublisDomain: function(){
-           
-            var data = [{localLayer: "1111", upperLayer: "22222"}];
-            this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.table.html'])({
+        initDeviceTable: function(){
+            data = this.collection.models;
+
+            this.table = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.detail.table.html'])({
                 data: data, 
             }));
             if (data.length !== 0)
@@ -142,7 +239,10 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.table.find(".node-item").on("click", $.proxy(this.onClickItemDetail, this));
+            if (this.isSending)
+                this.table.find(".skip").on("click", $.proxy(this.onClickItemSkip, this));
+            else
+                this.table.find(".skip").hide();
             
         },
 
@@ -159,6 +259,26 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             this.domainList.find(".node-item").on("click", $.proxy(this.onClickItemDetail, this));
         },
 
+        onClickItemSkip: function(event){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+            //?taskStepId={任务StepID}&deviceName={设备名称}&deviceId={设备ID}
+            this.collection.ingoreDevice({
+                taskStepId: this.model.get('taskStepId'),
+                deviceName: this.collection.get(id).get("deviceName"),
+                deviceId: id
+            })
+        },
+
+        onSkipSuccess: function(){
+            alert("跳过成功")
+        },
+
         onClickItemDetail: function(event){
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
@@ -172,16 +292,38 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
                 isEdit    : true
             });
             var options = {
-                title: "配置文件详情",//model.get("chName") + "关联调度组信息",
+                title: "配置文件详情",
                 body : myConfiFileDetailView,
                 backdrop : 'static',
-                type     : 2,
+                type     : 1,
                 onOKCallback:  function(){
                     this.configFilePopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
             this.configFilePopup = new Modal(options);
+        },
+
+        initPaginator: function(){
+            this.$el.find(".total-items span").html(this.collection.total)
+            if (this.collection.total <= this.queryArgs.count) return;
+            var total = Math.ceil(this.collection.total/this.queryArgs.count);
+
+            this.$el.find(".pagination").jqPaginator({
+                totalPages: total,
+                visiblePages: 10,
+                currentPage: 1,
+                onPageChange: function (num, type) {
+                    if (type !== "init"){
+                        this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                        var args = _.extend(this.queryArgs);
+                        args.page = num;
+                        args.count = this.queryArgs.count;
+                        this.collection.querySendingChannel(args);
+                    }
+                }.bind(this)
+            });
+            this.isInitPaginator = true;
         },
 
         onClickCancelButton: function(){

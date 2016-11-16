@@ -149,6 +149,7 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
                 var mySendDetailView = new SendDetailView({
                     collection: mySetupSendDetailModel,
                     model: model,
+                    isSending: true,
                     onSaveCallback: function(){}.bind(this),
                     onCancelCallback: function(){
                         mySendDetailView.$el.remove();

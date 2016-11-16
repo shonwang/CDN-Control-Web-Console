@@ -56,6 +56,20 @@ define("setupSendWaitCustomize.model", ['require','exports', 'utility'], functio
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
+        getAllConfig: function(args){
+            var url = BASE_URL + "/cg/config/download/domain/configs",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("get.all.config.success", res);
+                else
+                    this.trigger("get.all.config.error");
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.all.config.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
         setChannelConfig: function(args){
             var url = BASE_URL + "/cg/config/download/nginx.conf",
             successCallback = function(res){

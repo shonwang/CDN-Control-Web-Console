@@ -171,7 +171,7 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         onClickRePublish: function(event){
-            var result = confirm("你确定要重新发布吗？");
+            var result = confirm("重新发布后，任务包含的频道将返回至待定制和待下发页面，可重新进行下发，是否确定重新发布？？");
             if (!result) return;
 
             var eventTarget = event.srcElement || event.target, id;

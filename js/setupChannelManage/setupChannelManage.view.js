@@ -623,8 +623,8 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 "protocol":null,
                 "cdnFactory":null,
                 "auditStatus":null,
-                "currentPage":null,
-                "pageSize":null
+                "currentPage":1,
+                "pageSize":10
             }
             this.onClickQueryButton();
         },
@@ -863,6 +863,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
 
         initPaginator: function(){
             this.$el.find(".total-items span").html(this.collection.total)
+
             if (this.collection.total <= this.queryArgs.pageSize) return;
             var total = Math.ceil(this.collection.total/this.queryArgs.pageSize);
 

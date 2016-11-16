@@ -346,7 +346,7 @@ define("utility", ['require','exports'], function(require, exports) {
             return array;
         },
 
-        postAjax: function(url, args, successCallback, errorCallback, timeout, dataType){
+        postAjax: function(url, args, successCallback, errorCallback, timeout, dataType, notJson){
             var defaultParas = {
                 type: "POST",
                 url: url,
@@ -355,9 +355,15 @@ define("utility", ['require','exports'], function(require, exports) {
                 contentType: "application/json",
                 processData: false
             };
-            defaultParas.data = JSON.stringify(args);
             
             if (dataType) defaultParas.dataType = dataType;
+            if (notJson){
+                delete defaultParas.contentType;
+                delete defaultParas.processData;
+                defaultParas.data = args;
+            } else {
+                defaultParas.data = JSON.stringify(args);
+            }
 
             defaultParas.beforeSend = function(xhr){
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");

@@ -16,7 +16,7 @@ define("setupSendDetail.model", ['require','exports', 'utility'], function(requi
 
         initialize: function(){},
 
-        queryTaskDoingdetail:function(args){
+        queryTaskDoingDetail:function(args){
             var url = BASE_URL + "/cd/delivery/task/doingdetail",
             successCallback = function(res){
                 this.reset();
@@ -34,6 +34,37 @@ define("setupSendDetail.model", ['require','exports', 'utility'], function(requi
                 this.trigger("get.task.doingdetail.error", response); 
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);        
+        },
+
+        queryTaskDoneDetail:function(args){
+            var url = BASE_URL + "/cd/delivery/task/donedetail",
+            successCallback = function(res){
+                this.reset();
+                if (res){
+                    _.each(res.rows, function(element, index, list){
+                        this.push(new Model(element));
+                    }.bind(this))
+                    this.total = res.total;
+                    this.trigger("get.task.donedetail.success");
+                } else {
+                    this.trigger("get.task.donedetail.error"); 
+                } 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.task.donedetail.error", response); 
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback); 
+        },
+
+        ingoreDevice:function(args){
+            var url = BASE_URL + "/cd/delivery/task/ingoredevice",
+            successCallback = function(res){
+                this.trigger("get.ingoredevice.error"); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.ingoredevice.error", response); 
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback); 
         }
 
     });

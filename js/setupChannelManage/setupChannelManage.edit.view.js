@@ -63,20 +63,20 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
             this.initConfigFile(data);
         },
 
-        initConfigFile: function(data){
+        getConfigObj: function(data){
             var upArray = [], downArray = [];
-            this.configInfo = data;
+
             _.each(data, function(el, key, ls){
                 if (key !== "applicationType"){
                     _.each(el, function(fileObj, index, list){
-                        if (fileObj.topologyLevel === 1){
+                        if (fileObj&&fileObj.topologyLevel === 1){
                             upArray.push({
                                 id: fileObj.id,
                                 name: key,
                                 content: fileObj.content,
                                 luaOnly: fileObj.luaOnly === undefined ? true : fileObj.luaOnly
                             })
-                        } else if (fileObj.topologyLevel === 2){
+                        } else if (fileObj&&fileObj.topologyLevel === 2){
                             downArray.push({
                                 id: fileObj.id,
                                 name: key,
@@ -88,17 +88,44 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                 }
             }.bind(this))
 
+            return {up: upArray, down: downArray}
+        },
+
+        initConfigFile: function(data){
+            this.autoConfigInfo = data;
+
+            var autoConfigObj = this.getConfigObj(data);
+
             this.configReadOnly = $(_.template(template['tpl/setupChannelManage/setupChannelManage.editCfgFalse.html'])({
-                data: {up: upArray, down: downArray},
+                data: autoConfigObj,
                 panelId: Utility.randomStr(8)
             }));
             this.configReadOnly.appendTo(this.$el.find(".automatic"))
+
+            var isUseCustomized = this.model.get("tempUseCustomized");
+            if (isUseCustomized === 1) return;
+
+            this.mySetupSendWaitCustomizeModel.off("get.all.config.success");
+            this.mySetupSendWaitCustomizeModel.off("get.all.config.error");
+            this.mySetupSendWaitCustomizeModel.on("get.all.config.success", $.proxy(this.initCustomizedSetupFile, this));
+            this.mySetupSendWaitCustomizeModel.on("get.all.config.error", $.proxy(this.onGetError, this));
+            this.mySetupSendWaitCustomizeModel.getAllConfig({
+                domain: this.model.get("domain"),
+                version: this.model.get("version") || this.model.get("domainVersion"),
+                manuallyModifed: true
+            })
+        },
+
+        initCustomizedSetupFile: function(data){
+            this.cusConfigInfo = data;
+
+            var cusConfigObj = this.getConfigObj(data);
 
             var tplPath = 'tpl/setupChannelManage/setupChannelManage.editCfgTrue.html';
             if (!this.isEdit) tplPath = 'tpl/setupChannelManage/setupChannelManage.editCfgFalse.html'
 
             this.configEdit = $(_.template(template[tplPath])({
-                data: {up: upArray, down: downArray},
+                data: cusConfigObj,
                 panelId: Utility.randomStr(8)
             }));
             this.configEdit.appendTo(this.$el.find(".customized"))
@@ -148,16 +175,18 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
 
         onClickSaveButton: function(){
             if (this.isEdit) {
-                var postParam = [], nginxInfo = this.configInfo['nginx.conf'];
+                var postParam = [], cusConfig = this.cusConfigInfo;
 
-                _.each(nginxInfo, function(el, index, ls){
-                    postParam.push({
-                        domain: this.model.get("domain"),
-                        version: this.model.get("version") || this.model.get("domainVersion"),
-                        "topologyLevel": el.topologyLevel,
-                        "manuallyModifed": true,
-                        "content": this.$el.find("#customized-file-" + el.id).val()
-                    })
+                _.each(cusConfig, function(fileObj, inx, list){
+                    _.each(fileObj, function(el, index, ls){
+                        postParam.push({
+                            domain: this.model.get("domain"),
+                            version: this.model.get("version") || this.model.get("domainVersion"),
+                            "topologyLevel": el.topologyLevel,
+                            "manuallyModifed": true,
+                            "content": this.$el.find("#customized-file-" + el.id).val()
+                        })
+                    }.bind(this))
                 }.bind(this))
 
                 this.mySetupSendWaitCustomizeModel.off("set.channel.config.success");

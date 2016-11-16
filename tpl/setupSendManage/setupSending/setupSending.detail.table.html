@@ -1,0 +1,27 @@
+<table class="table table-striped table-hover">
+    <caption>下发进展</caption>
+    <thead> 
+      <tr>
+        <th>设备</th>
+        <th>节点</th>
+        <th>下发状态</th>
+        <th>操作</th>    
+      </tr>
+    </thead>
+    <tbody>
+        <% for(var i = 0; i < data.length; i++) { %>
+            <tr data-id="<%=data[i].get('id')%>">
+              <td><%=data[i].get("deviceName")%></td>
+              <td><%=data[i].get("nodeName")%></td>
+              <td><%=data[i].get("statusName")%></td>
+              <td>
+                  <% if (data[i].get("status") !== 1 && data[i].get("status") !== 3) { %>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="skip" title="跳过">
+                      <span class="glyphicon glyphicon-share-alt"></span>
+                  </a>
+                  <% } %> 
+              </td>
+            </tr>
+        <% } %>  
+    </tbody>
+</table>

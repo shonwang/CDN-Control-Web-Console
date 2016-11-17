@@ -14,6 +14,8 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.sending.channel.error", $.proxy(this.onGetError, this));
             this.collection.on("channel.terminate.success", $.proxy(this.onChannelTerminateSuccess, this));
             this.collection.on("channel.terminate.error", $.proxy(this.onGetError, this));
+            this.collection.on("channel.next.success", $.proxy(this.onChannelTerminateSuccess, this));
+            this.collection.on("channel.next.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".mulit-next").on("click", $.proxy(this.onClickMultiNext, this));

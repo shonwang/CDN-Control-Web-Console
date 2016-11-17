@@ -6,9 +6,22 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
                 protocol     = this.get("protocol"),
                 cdnFactory   = this.get("cdnFactory");
 
-            if (status === 0) this.set("statusName", '<span class="text-default">审核中</span>');
-            if (status === 1) this.set("statusName", '<span class="text-success">审核通过</span>');
+            if (status === 0) this.set("statusName", '<span class="text-primary">审核中</span>');
+            if (status === 1) this.set("statusName", '<span class="text-success">正常运行</span>');
             if (status === -1) this.set("statusName", '<span class="text-danger">删除</span>');
+            if (status === 2) this.set("statusName", '<span class="text-danger">审核失败</span>');
+            if (status === 3) this.set("statusName", '<span class="text-danger">停止</span>');
+            if (status === 4) this.set("statusName", '<span class="text-primary">配置中</span>');
+            if (status === 6) this.set("statusName", '<span class="text-primary">编辑中</span>');
+            if (status === 14) this.set("statusName", '<span class="text-danger">配置失败</span>');
+            if (status === 7) this.set("statusName", '<span class="text-primary">待下发</span>');
+            if (status === 8) this.set("statusName", '<span class="text-primary">待定制</span>');
+            if (status === 9) this.set("statusName", '<span class="text-danger">定制化配置错误</span>');
+            if (status === 10) this.set("statusName", '<span class="text-primary">下发中</span>');
+            if (status === 11) this.set("statusName", '<span class="text-danger">下发失败</span>');
+            if (status === 12) this.set("statusName", '<span class="text-primary">下发成功</span>');
+            if (status === 13) this.set("statusName", '<span class="text-success">运行中</span>');
+
             if (businessType === 1) this.set("businessTypeName", '下载加速');
             if (businessType === 2) this.set("businessTypeName", '直播加速');
             if (protocol === 1) this.set("protocolName","http+hlv");

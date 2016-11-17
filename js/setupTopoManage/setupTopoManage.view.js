@@ -229,7 +229,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.collection.off('get.node.success');
             this.collection.on('get.node.success',$.proxy(this.onGetNodeSuccess,this));
             this.collection.on('get.node.error',$.proxy(this.onGetError,this));
-            this.collection.getNodeList();       
+            this.collection.getTopoOrigininfo(this.model.get('id'));       
             
             this.initNextStep();
 
@@ -240,9 +240,14 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find('#description').val(this.defaultParam.description);
         },
         onGetNodeSuccess: function(res){
-            this.allNodes = res; //所有的节点,会执行节点的过滤操作
+            _.each(res.allNodes,function(el,index,list){
+                 if(typeof el.chName == 'undefined'){
+                    el.chName = el.name;
+                 }
+            });
+            this.allNodes = res.allNodes; //所有的节点,会执行节点的过滤操作
             this.allNodesShow = []; //所有的节点，执行过滤操作后,此不会进行改变，从而进行回显
-            _.each(res,function(el,index,list){
+            _.each(this.allNodes,function(el,index,list){
                  this.allNodesShow.push(el);
             }.bind(this));
             this.initstepTable(this.InformationProcessing(this.defaultParam.deliveryStrategyDef));
@@ -311,6 +316,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     this.$el.find('.sendStrategy').show();
                 }.bind(this),
                 onSaveCallback: function(){
+                    console.log(this.defaultParam.deliveryStrategyDef);
                     this.initstepTable(this.InformationProcessing(this.defaultParam.deliveryStrategyDef));
                     this.allNodes = this.FilterNodes(this.allNodes);
                     myAddStepView.$el.remove();

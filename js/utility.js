@@ -19,9 +19,9 @@ define("utility", ['require','exports'], function(require, exports) {
               return fmt;
             };
 
-            String.prototype.trim = function() {
-                 return this.replace(/(^\s*)|(\s*$)/g, "");
-            }
+            // String.prototype.trim = function() {
+            //      return this.replace(/(^\s*)|(\s*$)/g, "");
+            // }
         },
 
         formatMillisecond: function(millisecond){

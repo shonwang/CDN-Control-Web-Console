@@ -15,7 +15,7 @@
               <td><%=data[i].get("nodeName")%></td>
               <td><%=data[i].get("statusName")%></td>
               <td>
-                  <% if (data[i].get("status") !== 1 && data[i].get("status") !== 3) { %>
+                  <% if (data[i].get("status") === 1 || data[i].get("status") === 3) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="skip" title="跳过">
                       <span class="glyphicon glyphicon-share-alt"></span>
                   </a>

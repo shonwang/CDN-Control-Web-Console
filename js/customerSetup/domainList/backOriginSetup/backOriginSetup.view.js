@@ -190,14 +190,14 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
 
         onBlurTextarea: function(event){
             var eventTarget = event.srcElement || event.target,
-                value = eventTarget.value;
+                value = eventTarget.value.trim();
             if (value === "") return;
             this.checkBaseOrigin();
         },
 
         onBlurAdvancedTextarea: function(event){
             var eventTarget = event.srcElement || event.target,
-                value = eventTarget.value;
+                value = eventTarget.value.trim();
             if (value === "") return;
             this.checkBaseOrigin(value, this.defaultParam.originAdvanceType);
         },
@@ -228,7 +228,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             } if (this.defaultParam.isUseAdvance === 2) {
                 var textareaNodes = this.$el.find(".advanced textarea");
                 for (var i = 0; i < textareaNodes.length; i++){
-                    var value = textareaNodes[i].value;
+                    var value = textareaNodes[i].value.trim();
                     if (value === "") continue;
                     var result = this.checkBaseOrigin(value, this.defaultParam.originAdvanceType)
                     if (!result) return;
@@ -412,7 +412,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 return;
             }
             if (this.defaultParamModifyHost.domainType === 3) {
-                var value = this.$el.find("#textarea-host-domain").val();
+                var value = this.$el.find("#textarea-host-domain").val().trim();
                 var result = this.checkBaseOrigin(value, 2)
                 if (!result) return;
             }

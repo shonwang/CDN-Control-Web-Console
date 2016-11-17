@@ -886,16 +886,21 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         initChannelDropMenu: function(){
             var statusArray = [
                 {name: "全部", value: "All"},
-                {name:"审核中", value:0},
-                {name: "审核通过", value:1},
-                {name: "审核失败", value:2},
-                {name: "测试中", value:3},
-                {name: "测试未通过", value:4},
-                {name: "编辑中", value:5},
-                {name: "待下发", value:6},
-                {name: "灰度中", value:7},
-                {name: "运行中", value:8},
                 {name: "删除", value:-1}
+                {name:"审核中", value:0},
+                {name: "正常运行", value:1},
+                {name: "审核失败", value:2},
+                {name: "停止", value:3},
+                {name: "配置中", value:4},
+                {name: "编辑中", value:6},
+                {name: "待下发", value:7},
+                {name: "待定制", value:8},
+                {name: "定制化配置错误", value:9},
+                {name: "下发中", value:10},
+                {name: "下发失败", value:11},
+                {name: "下发成功", value:12},
+                {name: "运行中", value:13},
+                {name: "配置失败", value:14}
             ],
             rootNode = this.$el.find(".dropdown-status");
             Utility.initDropMenu(rootNode, statusArray, function(value){

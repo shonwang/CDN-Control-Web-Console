@@ -7,6 +7,8 @@ define("setupSendDetail.model", ['require','exports', 'utility'], function(requi
             if (status === 3) this.set("statusName", '<span class="text-danger">下发失败</span>');
             if (status === 4) this.set("statusName", '<span class="text-info">跳过</span>');
             if (status === 5) this.set("statusName", '<span class="text-default">忽略</span>');
+
+            this.set("id", this.get("deviceId"))
         }
     });
 

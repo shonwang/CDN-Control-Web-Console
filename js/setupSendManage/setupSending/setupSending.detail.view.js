@@ -252,7 +252,7 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             this.domainList = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.detail.domain.html'])({
                 data: this.collection.deliveryDomains, 
             }));
-            if (data.length !== 0)
+            if (this.collection.deliveryDomains.length !== 0)
                 this.$el.find(".domain-ctn").html(this.domainList[0]);
             else
                 this.$el.find(".domain-ctn").html(_.template(template['tpl/empty.html'])());

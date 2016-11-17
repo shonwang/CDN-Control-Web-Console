@@ -11,16 +11,15 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
 
             require(['setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeModel){
                 this.mySetupSendWaitCustomizeModel = new SetupSendWaitCustomizeModel();
-                var isUseCustomized = 1;
 
-                if (isUseCustomized === 1) {
+                if (this.model.isCustom) {
                     this.mySetupSendWaitCustomizeModel.off("get.all.config.success");
                     this.mySetupSendWaitCustomizeModel.off("get.all.config.error");
                     this.mySetupSendWaitCustomizeModel.on("get.all.config.success", $.proxy(this.initSetup, this));
                     this.mySetupSendWaitCustomizeModel.on("get.all.config.error", $.proxy(this.onGetError, this));
                     this.mySetupSendWaitCustomizeModel.getAllConfig({
-                        domain: "a644.cn",//this.model.get("domain"),
-                        version: "201611092006_r5",//this.model.get("version") || this.model.get("domainVersion")
+                        domain: this.model.domain,
+                        version: this.model.domainVersion,
                         manuallyModifed: true
                     })
                 } else {
@@ -29,8 +28,8 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
                     this.mySetupSendWaitCustomizeModel.on("get.channel.config.success", $.proxy(this.initSetup, this));
                     this.mySetupSendWaitCustomizeModel.on("get.channel.config.error", $.proxy(this.onGetError, this));
                     this.mySetupSendWaitCustomizeModel.getChannelConfig({
-                        domain: "a644.cn",//this.model.get("domain"),
-                        version: "201611092006_r5"//this.model.get("version") || this.model.get("domainVersion")
+                        domain: this.model.domain,
+                        version: this.model.domainVersion,
                     })
                 }
             }.bind(this));
@@ -110,8 +109,6 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             if (this.isSending) {
                 this.collection.on("get.task.doingdetail.success",$.proxy(this.queryDetailSuccess,this));
                 this.collection.on("get.task.doingdetail.error",$.proxy(this.onGetError,this));
-                this.collection.on("get.ingoredevice.success",$.proxy(this.onSkipSuccess,this));
-                this.collection.on("get.ingoredevice.error",$.proxy(this.onGetError,this));
 
                 this.queryArgs = {
                     "taskId" : this.model.get('taskId'),//任务ID
@@ -125,6 +122,7 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             } else {
                 this.collection.on("get.task.donedetail.success",$.proxy(this.queryDetailSuccess,this));
                 this.collection.on("get.task.donedetail.error",$.proxy(this.onGetError,this));
+
                 this.queryArgs = {
                     "taskId" : this.model.get('taskId'),//任务ID
                     "deviceName" : null,
@@ -247,11 +245,14 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
         },
 
         updateDomainList: function(){
-            var data = [{domain: "test1.ksyun.com", id: 1}];
+            _.each(this.collection.deliveryDomains, function(el, index, ls){
+                el.id = Utility.randomStr(16)
+            }.bind(this))
+
             this.domainList = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.detail.domain.html'])({
-                data: data, 
+                data: this.collection.deliveryDomains, 
             }));
-            if (data.length !== 0)
+            if (this.collection.deliveryDomains.length !== 0)
                 this.$el.find(".domain-ctn").html(this.domainList[0]);
             else
                 this.$el.find(".domain-ctn").html(_.template(template['tpl/empty.html'])());
@@ -282,14 +283,16 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
         onClickItemDetail: function(event){
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
-            //var model = this.collection.get(id);
+
+            var clickedObj = _.find(this.collection.deliveryDomains, function(obj){
+                return obj.id === id;
+            })
 
             if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
 
             var myConfiFileDetailView = new ConfiFileDetailView({
                 collection: this.collection, 
-                //model     : model,
-                isEdit    : true
+                model     : clickedObj
             });
             var options = {
                 title: "配置文件详情",

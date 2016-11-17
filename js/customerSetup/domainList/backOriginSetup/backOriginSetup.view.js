@@ -301,7 +301,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
         },
 
         checkBaseOrigin: function(value, type){
-            var originAddress = value || this.$el.find(".base #textarea-origin-type").val();
+            var originAddress = value || this.$el.find(".base #textarea-origin-type").val().trim();
             var originType = type || this.defaultParam.originBaseType;
             var domainName = this.userInfo.domain;
             if(originType == 1){
@@ -318,7 +318,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                     return false;
                 }
                 for (var i = 0; i < ipArray.length; i++){
-                    result = Utility.isIP(ipArray[i]);
+                    result = Utility.isIP(ipArray[i].trim());
                     if (!result){
                         alert("你的IP填写有误,请检查");
                         return false;

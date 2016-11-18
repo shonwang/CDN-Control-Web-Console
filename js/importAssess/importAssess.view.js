@@ -144,7 +144,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.$el.find(".multi-modify-topology").on("click", $.proxy(this.onClickMultiModifyTopology, this))
+            this.$el.find(".add-domain").on("click", $.proxy(this.onClickAddDomain, this))
             this.enterKeyBindQuery();
 
             this.queryArgs = {

@@ -105,6 +105,9 @@ requirejs.config({
 
         "matchCondition.view": 'customerSetup/domainList/matchCondition/matchCondition.view',
         "matchCondition.model": 'customerSetup/domainList/matchCondition/matchCondition.model',
+        
+        "basicInformation.model": 'customerSetup/domainList/basicInformation/basicInformation.model',
+        "basicInformation.view": 'customerSetup/domainList/basicInformation/basicInformation.view',
 
         "domainSetup.model": 'customerSetup/domainList/domainSetup/domainSetup.model',
         "domainSetup.view": 'customerSetup/domainList/domainSetup/domainSetup.view',

@@ -1,4 +1,4 @@
-define("backOriginDetection.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+define("basicInformation.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
     var BackOriginSetupView = Backbone.View.extend({
         events: {},
@@ -6,8 +6,8 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
         initialize: function(options) {
             this.collection = options.collection;
             this.options = options;
-            this.$el = $(_.template(template['tpl/customerSetup/domainList/backOriginDetection/backOriginDetection.html'])());
-            /*var clientInfo = JSON.parse(options.query), 
+            this.$el = $(_.template(template['tpl/customerSetup/domainList/basicInformation/basicInformation.html'])());
+           /* var clientInfo = JSON.parse(options.query), 
                 domainInfo = JSON.parse(options.query2);
                 this.userInfo = {
                     clientName: clientInfo.clientName,
@@ -26,9 +26,7 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
                     myDomainSetupModel.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
                     myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
                     myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
-            }.bind(this));*/
-
-            this.$el.find("[name='my-checkbox']").bootstrapSwitch('state',true);
+            }.bind(this))*/
         },
 
         onGetDomainInfo: function(data){

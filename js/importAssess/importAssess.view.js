@@ -71,34 +71,40 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection = options.collection;
             this.domainArray = options.domainArray;
 
-            this.$el = $(_.template(template['tpl/importAssess/importAssess.select.topo.html'])());
+            this.$el = $(_.template(template['tpl/importAssess/importAssess.select.domain.html'])());
+            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
 
-            this.initDomainList();
+            this.initChannelDropMenu();
+
+            this.queryArgs = {
+                name:null,
+                page:1,
+                size:10,
+                type:null
+            }
+            this.onClickQueryButton();
+        },
+
+        onClickQueryButton: function(){
+            this.isInitPaginator = false;
+            this.queryArgs.page = 1;
+            this.queryArgs.domain = this.$el.find("#input-domain").val();
+            if (this.queryArgs.domain == "") this.queryArgs.domain = null;
+
+            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.$el.find(".pagination").html("");
+
             require(["setupTopoManage.model"], function(SetupTopoManageModel){
                 this.mySetupTopoManageModel = new SetupTopoManageModel();
                 this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.initTable, this));
                 this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this));
-                this.mySetupTopoManageModel.getTopoinfo({
-                    name:null,
-                    page:1,
-                    size:99999,
-                    type:null
-                });
+                this.mySetupTopoManageModel.getTopoinfo(this.queryArgs);
             }.bind(this))
         },
 
-        initDomainList: function(){
-            this.domainList = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.detail.domain.html'])({
-                data: this.domainArray, 
-            }));
-            if (this.domainArray.length !== 0)
-                this.$el.find(".domain-ctn").html(this.domainList[0]);
-            else
-                this.$el.find(".domain-ctn").html(_.template(template['tpl/empty.html'])());
-        },
-
         initTable: function(){
-            this.table = $(_.template(template['tpl/importAssess/importAssess.topo.table.html'])({
+            if (!this.isInitPaginator) this.initPaginator();
+            this.table = $(_.template(template['tpl/importAssess/importAssess.domain.table.html'])({
                 data: this.mySetupTopoManageModel.models, 
             }));
             if (this.mySetupTopoManageModel.models.length !== 0)
@@ -107,10 +113,48 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
         },
 
+        initPaginator: function(){
+            this.$el.find(".total-items span").html(this.mySetupTopoManageModel.total)
+            if (this.mySetupTopoManageModel.total <= this.queryArgs.size) return;
+            var total = Math.ceil(this.mySetupTopoManageModel.total/this.queryArgs.size);
+
+            this.$el.find(".pagination").jqPaginator({
+                totalPages: total,
+                visiblePages: 4,
+                currentPage: 1,
+                first: '',
+                last: '',
+                onPageChange: function (num, type) {
+                    if (type !== "init"){
+                        this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                        var args = _.extend(this.queryArgs);
+                        args.page = num;
+                        args.size = this.queryArgs.size;
+                        this.mySetupTopoManageModel.getTopoinfo(args);
+                    }
+                }.bind(this)
+            });
+            this.isInitPaginator = true;
+        },
+
+        initChannelDropMenu: function(){
+            var pageNum = [
+                {name: "10条", value: 10},
+                {name: "20条", value: 20},
+                {name: "50条", value: 50},
+                {name: "100条", value: 100}
+            ]
+            Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
+                this.queryArgs.size = value;
+                this.queryArgs.page = 1;
+                this.onClickQueryButton();
+            }.bind(this));
+        },
+
         onSure: function(){
             var selectedTopo = this.$el.find("input:checked");
             if (!selectedTopo.get(0)){
-                alert("请选择一个拓扑关系")
+                alert("请选择一个域名")
                 return false;
             }
             var topoId = selectedTopo.get(0).id,
@@ -207,7 +251,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
         },
 
-        onClickMultiModifyTopology: function(){
+        onClickAddDomain: function(){
             var checkedList = this.collection.filter(function(model) {
                 return model.get("isChecked") === true;
             });

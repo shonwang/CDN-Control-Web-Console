@@ -185,6 +185,9 @@ requirejs.config({
 
         "setupSendWaitSend.model": "setupSendManage/setupSendWaitSend/setupSendWaitSend.model",
         "setupSendWaitSend.view": "setupSendManage/setupSendWaitSend/setupSendWaitSend.view",
+
+        "importAssess.model": "importAssess/importAssess.model",
+        "importAssess.view": "importAssess/importAssess.view",
     },
     urlArgs: new Date().valueOf()
 });

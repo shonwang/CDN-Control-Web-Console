@@ -1,0 +1,93 @@
+<div class="setup-channel-manage fadeInLeft animated">
+    <div class="list-panel">
+        <h3>服务管理<small>/频道管理</small></h3>
+        <div class="alert alert-dismissable alert-info text-center">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>提示：</strong>请输入评估条件，点击“确认添加，将评估条件加入评估列表，选取评估列表中的评估条件后，点击”开始评估“进行评估
+        </div>
+        <div class="well opt-ctn">
+            <div class="form-inline">
+                <div class="form-group">
+                    <label for="input-domain">接入域名</label>
+                    <input type="text" class="form-control" id="input-domain" readonly="true">
+                </div>
+                <a href="javascript:void(0)" class="btn btn-primary query"><span class="glyphicon glyphicon-search"></span>选择接入域名</a>
+                <div class="form-group">
+                    <label for="input-cname">加速域名</label>
+                    <input type="text" class="form-control" id="input-cname">
+                </div>
+                <div class="form-group">
+                    <label for="input-client">客户名称</label>
+                    <input type="text" class="form-control" id="input-client">
+                </div>
+            </div>
+            <hr>
+            <div class="form-inline">
+                <div class="form-group">
+                    <label for="dropdown-dispgroup">调度组</label>
+                </div>
+                <div class="form-group dropdown-dispgroup">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-dispgroup" data-toggle="dropdown">
+                            <span class="cur-value">全部</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu"></ul>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="dropdown-region">区域</label>
+                </div>
+                <div class="form-group dropdown-region">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-region" data-toggle="dropdown">
+                            <span class="cur-value">全部</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu"></ul>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="dropdown-bandwidth">增量带宽</label>
+                    <input type="number" class="form-control" id="input-bandwidth" min="0">
+                </div>
+                <a href="javascript:void(0)" class="btn btn-primary query"><span class="glyphicon glyphicon-search"></span>确认添加</a>
+                <a href="javascript:void(0)" class="btn btn-success start-assess">开始评估</a>
+                <a href="javascript:void(0)" class="btn btn-danger multi-delete">批量删除</a>
+                <a href="javascript:void(0)" class="btn btn-default history">下发历史记录</a>
+            </div>
+        </div>
+        <div class="well">
+            <div class="table-ctn table-responsive"></div>
+            <div class="page-ctn row">
+                <div class="col-md-8" style="text-align:center">
+                    <div class="pagination"></div>
+                </div>
+                <div class="col-md-4" style="text-align:center">
+                    <form class="form-inline page-info">
+                        <div class="form-group">
+                            <div class="form-control-static">每页显示</div>
+                        </div>
+                        <div class="form-group page-num">
+                            <div class="drop-ctn dropup">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">
+                                    <span class="cur-value">10 条</span>
+                                    <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-control-static total-items">共<span class="text-primary">0</span>条记录</div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="edit-panel"></div>
+    <div class="strategy-panel"></div>
+    <div class="history-panel"></div>
+</div>

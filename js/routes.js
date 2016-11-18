@@ -32,22 +32,23 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             "customerSetup"       : "customerSetup",
             "domainList/:query"   : "domainList",
 
-            "domainList/:query/domainSetup/:query2"      : "domainSetup",
-            "domainList/:query/cnameSetup/:query2"       : "cnameSetup",
-            "domainList/:query/cacheRule/:query2"        : "cacheRule",
-            "domainList/:query/delMarkCache/:query2"     : "delMarkCache",
-            "domainList/:query/cacheKeySetup/:query2"    : "cacheKeySetup",
-            "domainList/:query/backOriginSetup/:query2"  : "backOriginSetup",
-            "domainList/:query/following302/:query2"     : "following302",
-            "domainList/:query/dragPlay/:query2"         : "dragPlay",
-            "domainList/:query/clientLimitSpeed/:query2" : "clientLimitSpeed",
-            "domainList/:query/httpHeaderOpt/:query2"    : "httpHeaderOpt",
-            "domainList/:query/httpHeaderCtr/:query2"    : "httpHeaderCtr",
-            "domainList/:query/requestArgsModify/:query2": "requestArgsModify",
-            "domainList/:query/ipBlackWhiteList/:query2" : "ipBlackWhiteList",
-            "domainList/:query/refererAntiLeech/:query2" : "refererAntiLeech",
-            "domainList/:query/timestamp/:query2"        : "timestamp",
-            "domainList/:query/openNgxLog/:query2"       : "openNgxLog",
+            "domainList/:query/domainSetup/:query2"          : "domainSetup",
+            "domainList/:query/cnameSetup/:query2"           : "cnameSetup",
+            "domainList/:query/cacheRule/:query2"            : "cacheRule",
+            "domainList/:query/delMarkCache/:query2"         : "delMarkCache",
+            "domainList/:query/cacheKeySetup/:query2"        : "cacheKeySetup",
+            "domainList/:query/backOriginDetection/:query2"  : "backOriginDetection",  
+            "domainList/:query/backOriginSetup/:query2"      : "backOriginSetup",
+            "domainList/:query/following302/:query2"         : "following302",
+            "domainList/:query/dragPlay/:query2"             : "dragPlay",
+            "domainList/:query/clientLimitSpeed/:query2"     : "clientLimitSpeed",
+            "domainList/:query/httpHeaderOpt/:query2"        : "httpHeaderOpt",
+            "domainList/:query/httpHeaderCtr/:query2"        : "httpHeaderCtr",
+            "domainList/:query/requestArgsModify/:query2"    : "requestArgsModify",
+            "domainList/:query/ipBlackWhiteList/:query2"     : "ipBlackWhiteList",
+            "domainList/:query/refererAntiLeech/:query2"     : "refererAntiLeech",
+            "domainList/:query/timestamp/:query2"            : "timestamp",
+            "domainList/:query/openNgxLog/:query2"           : "openNgxLog",
 
             "setupChannelManage"     : "setupChannelManage",
             "setupAppManage"         : "setupAppManage",
@@ -169,6 +170,9 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                     break;
                 case 'customerSetup-domainList-cnameSetup':
                     this.cnameSetupView.hide();
+                    break;
+                case 'customerSetup-domainList-backOriginDetection':
+                    this.backOriginDetectionView.hide();
                     break;
                 case 'customerSetup-domainList-backOriginSetup':
                     this.backOriginSetupView.hide();
@@ -387,6 +391,9 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
 
         following302: function(query, query2){
             this.navbarView.initLogin($.proxy(CustomerSetupController.following302Callback, this, query, query2))
+        },
+        backOriginDetection: function(query,query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.backOriginDetectionCallback, this, query, query2))
         },
 
         backOriginSetup: function(query, query2){

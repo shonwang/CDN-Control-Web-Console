@@ -112,6 +112,9 @@ requirejs.config({
         "cnameSetup.model": 'customerSetup/domainList/cnameSetup/cnameSetup.model',
         "cnameSetup.view": 'customerSetup/domainList/cnameSetup/cnameSetup.view',
 
+        "backOriginDetection.model": 'customerSetup/domainList/backOriginDetection/backOriginDetection.model',
+        "backOriginDetection.view": 'customerSetup/domainList/backOriginDetection/backOriginDetection.view',
+
         "backOriginSetup.model": 'customerSetup/domainList/backOriginSetup/backOriginSetup.model',
         "backOriginSetup.view": 'customerSetup/domainList/backOriginSetup/backOriginSetup.view',
 

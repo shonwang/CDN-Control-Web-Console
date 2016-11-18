@@ -125,16 +125,15 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
 
             require(["setupChannelManage.model"], function(SetupChannelManageModel){
                 this.mySetupChannelManageModel = new SetupChannelManageModel();
-                /*var postParam = [{
-                        domain: this.options.domainInfo.domain,
-                        version: res.version,
-                        description: this.$el.find(".comment #secondary").val()
-                    }]
-                    */
-                _.each(domains,function(item){
-                    item.version = item.domainVersion;
+                var postParam = []
+                    
+                _.each(domains, function(item){
+                    postParam.push({
+                        domain: item.domain,
+                        version: item.domainVersion,
+                        configReason: 1 
+                    })
                 });
-                var postParam = domains;
 
                 this.mySetupChannelManageModel.off("post.predelivery.success");
                 this.mySetupChannelManageModel.off("post.predelivery.error");

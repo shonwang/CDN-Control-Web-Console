@@ -50,7 +50,8 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             var postParam = [{
                     domain: this.model.get("domain"),
                     version: version,
-                    description: this.model.get("description")
+                    description: this.model.get("description"),
+                    configReason: 1
                 }]
 
             this.collection.off("post.predelivery.success");
@@ -349,7 +350,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                     onSaveCallback: function(){
                         //this.defaultParam = this.rule;
                         var data = this.InformationProcessing(this.defaultParam);
-                        console.log(this.defaultParam);
+
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".special-layer").show();
                         this.initRuleTable(data);
@@ -722,7 +723,8 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 postParam.push({
                     domain: el.domain,
                     version: el.version,
-                    description: el.description
+                    description: el.description,
+                    configReason: 2
                 });
             }.bind(this))
 

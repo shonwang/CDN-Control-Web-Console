@@ -12,6 +12,8 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
 
             this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
             this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+            this.collection.on("roll.back.success", $.proxy(this.onRollBackSuccess, this));
+            this.collection.on("roll.back.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".mulit-send").on("click", $.proxy(this.onClickMultiSend, this))
@@ -47,6 +49,11 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
         onChannelListSuccess: function(){
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
+        },
+
+        onRollBackSuccess: function(){
+            alert("操作成功！");
+            this.update(this.target)
         },
 
         onClickMultiSend: function(){
@@ -363,6 +370,7 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
 
         render: function(target){
             this.$el.appendTo(target);
+            this.target = target;
         }
     });
 

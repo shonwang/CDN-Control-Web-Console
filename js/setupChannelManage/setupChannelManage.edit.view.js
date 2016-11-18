@@ -35,6 +35,8 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                     mySetupTopoManageModel.on("get.topo.OriginInfo.error", $.proxy(this.onGetError, this));
                     mySetupTopoManageModel.getTopoOrigininfo(this.model.get("topologyId"))
                 }.bind(this));
+            } else {
+                this.$el.find("#input-topology").val("默认拓扑关系");
             }
 
             this.$el.find("#input-domain").val(this.model.get("domain"));

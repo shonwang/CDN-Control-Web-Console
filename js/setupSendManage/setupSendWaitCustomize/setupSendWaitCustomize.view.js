@@ -14,6 +14,8 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
             this.collection.on("set.publish.success", $.proxy(this.onPublishSuccess, this));
             this.collection.on("set.publish.error", $.proxy(this.onGetError, this));
+            this.collection.on("roll.back.success", $.proxy(this.onRollBackSuccess, this));
+            this.collection.on("roll.back.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".mulit-send").on("click", $.proxy(this.onClickMultiSend, this));
@@ -69,6 +71,11 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
         onPublishSuccess: function(){
             alert("操作成功！");
             this.selectStrategyPopup.$el.modal('hide')
+        },
+
+        onRollBackSuccess: function(){
+            alert("操作成功！");
+            this.update(this.target)
         },
 
         onClickQueryButton: function(){
@@ -312,6 +319,7 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
 
         render: function(target){
             this.$el.appendTo(target);
+            this.target = target;
         }
     });
 

@@ -15,8 +15,8 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
         initDefaultMenu: function(query, query2){
             this.menuList = [
                 {
-                    id: '',
-                    name: '基本信息',
+                    id: 'customerSetup-domainList-basicInformation',
+                    name: '添加备注',
                     hash: 'index.html#/domainList/' + query + /basicInformation/ + query2,
                     children: []  
                 },{

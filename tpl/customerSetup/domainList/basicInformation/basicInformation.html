@@ -1,24 +1,26 @@
 <div class="back-origin-panel fadeInLeft animated">
-    <h3>基本信息<small>/回源检测</small></h3>
+    <h3>添加备注</h3>
     <div class="well opt-ctn"></div>
     <div class="well" >
         <div class="row">
             <div class="col-sm-12">
                 <form role="form">
                    <div class="form-group">
-                       <label class="radio-inline">
-                        <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"> 标准配置
-                      </label>
-                      <label class="radio-inline">
-                        <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2"> 定制化
-                      </label>
+                       <div class="Remarks-type">
+                          <label class="radio-inline">
+                            <input type="radio" name="remarksRadio" id="Standard" value="1" checked> 标准配置
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="remarksRadio" id="Customization" value="2"> 定制化
+                        </label>
+                       </div>
                   </div>
                    <div class="form-group margin-top40">
-                      <label for="exampleInputEmail1">添加备注:</label>
-                      <textarea class="form-control" rows="8" id="exampleInputEmail" placeholder="请添加配置信息" style="width:50%;"></textarea>
+                      <label for="Remarks">添加备注:</label>
+                      <textarea class="form-control" rows="8" id="Remarks" placeholder="请添加配置信息" style="width:50%;"></textarea>
                   </div>
                    <div class="form-group">
-                      <button type="button" class="btn btn-primary">保存</button>
+                      <button type="button" class="btn btn-primary save">保存</button>
                   </div>
                 </form>
             </div>

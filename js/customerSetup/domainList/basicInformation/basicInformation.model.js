@@ -3,7 +3,7 @@ define("basicInformation.model", ['require','exports', 'utility'], function(requ
         initialize: function(){}
     });
 
-    var BackOriginSetupCollection = Backbone.Collection.extend({
+    var BasicInformationCollection = Backbone.Collection.extend({
         
         model: Model,
 
@@ -28,5 +28,5 @@ define("basicInformation.model", ['require','exports', 'utility'], function(requ
         },
     });
 
-    return BackOriginSetupCollection;
+    return BasicInformationCollection;
 });

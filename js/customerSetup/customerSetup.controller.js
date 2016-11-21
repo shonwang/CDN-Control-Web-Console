@@ -386,7 +386,7 @@ define("customerSetup.controller", ['require','exports'],
         },
         basicInformationCallback: function(query, query2){
             require(['basicInformation.view', 'basicInformation.model'], function(BasicInformationView, BasicInformationModel){
-                this.navbarView.select('basicInformation');
+                this.navbarView.select('customerSetup');
                 this.curPage = 'customerSetup-domainList-basicInformation';
                 this.setupDomainManageNavbar(query, query2);
                 var renderTarget = this.domainManageNavbar.$el.find('.sub-content')

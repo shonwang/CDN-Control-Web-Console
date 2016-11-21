@@ -1,13 +1,13 @@
 define("backOriginDetection.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
-    var BackOriginSetupView = Backbone.View.extend({
+    var BackOriginDetectionView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
             this.collection = options.collection;
             this.options = options;
             this.$el = $(_.template(template['tpl/customerSetup/domainList/backOriginDetection/backOriginDetection.html'])());
-            /*var clientInfo = JSON.parse(options.query), 
+            var clientInfo = JSON.parse(options.query), 
                 domainInfo = JSON.parse(options.query2);
                 this.userInfo = {
                     clientName: clientInfo.clientName,
@@ -26,7 +26,7 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
                     myDomainSetupModel.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
                     myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
                     myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
-            }.bind(this));*/
+            }.bind(this));
 
             this.$el.find("[name='my-checkbox']").bootstrapSwitch('state',true);
         },
@@ -454,7 +454,7 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
         initModifyHostDropdown: function(){
             var  domainTypeArray = [
                 {name: "加速域名", value: 1},
-                {name: "源站域名", value: 2},
+               // {name: "源站域名", value: 2},
                 {name: "自定义域名", value: 3}
             ],
             rootNode = this.$el.find(".origin-domain");
@@ -512,5 +512,5 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
         }
     });
 
-    return BackOriginSetupView;
+    return BackOriginDetectionView;
 });

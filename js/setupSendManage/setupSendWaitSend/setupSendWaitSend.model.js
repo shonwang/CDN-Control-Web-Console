@@ -47,11 +47,7 @@ define("setupSendWaitSend.model", ['require','exports', 'utility'], function(req
         createTask: function(args){
             var url = BASE_URL + "/cd/delivery/task/createtask",
             successCallback = function(res){
-                if (res){
-                    this.trigger("create.task.success", res);
-                } else {
-                    this.trigger("create.task.error", res); 
-                }
+                this.trigger("create.task.success", res);
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("create.task.error", response); 

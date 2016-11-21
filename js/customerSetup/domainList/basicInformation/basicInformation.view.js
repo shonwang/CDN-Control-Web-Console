@@ -21,23 +21,77 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"));
             
+            this.collection.off("modify.DomainBasic.success");
+            this.collection.off("modify.DomainBasic.error");
+            this.collection.on("modify.DomainBasic.success", $.proxy(this.addDomainBasicSuccess, this));
+            this.collection.on("modify.DomainBasic.error", $.proxy(this.onGetError, this));
+
+            require(["domainSetup.model"], function(DomainSetupModel){
+                var myDomainSetupModel = new DomainSetupModel();
+                    myDomainSetupModel.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
+                    myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
+                    myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
+            }.bind(this))
+        },
+        onGetDomainInfo: function(data){
+            this.defaultParam = {
+                originId:this.domainInfo.id,
+                confCustomType:1,
+                description:""
+            }
+
+            if(data.domainConf.confCustomType !== null && data.domainConf.confCustomType !== undefined){
+                this.defaultParam.confCustomType = data.domainConf.confCustomType;
+                this.firstconfCustomType = this.defaultParam.confCustomType;
+            }
+            if(data.originDomain.description !== null && data.originDomain.description !== undefined){
+                this.defaultParam.description = data.originDomain.description;
+            }
+
+            this.initSetup();
+        },
+        initSetup: function(){
+            var confCustomType = this.$el.find(".Remarks-type");
+            var Standard = this.$el.find(".Remarks-type #Standard");
+            var Customization = this.$el.find(".Remarks-type #Customization");
+            var description = this.$el.find('#Remarks');
+            if(this.defaultParam.confCustomType == 1){
+                Standard.get(0).checked = true;
+                Customization.get(0).checked = false;
+            }else if(this.defaultParam.confCustomType == 3){
+                Standard.get(0).checked = false;
+                Customization.get(0).checked = true;
+            }
+            
+            description.val(this.defaultParam.description);
+
             this.$el.find(".Remarks-type").on('click',$.proxy(this.onClickRadio,this));
             this.$el.find(".save").on('click',$.proxy(this.onClickSaveButton,this));
-            this.defaultParam = {
-                way : 1,
-                remarks : null
-            }
 
         },
         onClickRadio: function(event){
             var target = event.target || event.srcElement;
             if(target.tagName != 'INPUT') return;
             
-            this.defaultParam.way = parseInt($(target).val());
+            var description = this.$el.find('#Remarks');
+            var value = parseInt($(target).val());
+            
+            if(value == this.firstconfCustomType){
+                description.val(this.defaultParam.description);
+            }else{
+                description.val('');
+            }
+
+            this.defaultParam.confCustomType = value;
         },
         onClickSaveButton: function(){
-            this.defaultParam.remarks = this.$el.find("#Remarks").val();
-            console.log(this.defaultParam);
+            this.defaultParam.description = this.$el.find("#Remarks").val();
+            this.collection.modifyDomainBasic(this.defaultParam);
+            
+        },
+        addDomainBasicSuccess: function(res){
+            alert('保存成功');
+            this.update(this.options.query, this.options.query2, this.target);
         },
         onGetError: function(error){
             if (error&&error.message)

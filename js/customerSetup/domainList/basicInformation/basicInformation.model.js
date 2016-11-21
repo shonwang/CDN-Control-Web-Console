@@ -9,23 +9,16 @@ define("basicInformation.model", ['require','exports', 'utility'], function(requ
 
         initialize: function(){},
 
-        setBackSourceConfig: function(args){
-            var url = BASE_URL + "/channelManager/domain/setBackSourceConfig";
-            Utility.postAjax(url, args, function(res){
-                this.trigger("set.backSourceConfig.success");
-            }.bind(this),function(res){
-                this.trigger("set.backSourceConfig.error", res);
-            }.bind(this));
-        },
-
-        setHostHeaderConfig: function(args){
-            var url = BASE_URL + "/channelManager/domain/setHostHeaderConfig";
-            Utility.getAjax(url, args, function(res){
-                this.trigger("set.hostConfig.success");
-            }.bind(this),function(res){
-                this.trigger("set.hostConfig.error", res);
-            }.bind(this));
-        },
+        modifyDomainBasic:function(args){
+            var url = BASE_URL + "/channelManager/domain/modifyDomainBasic",
+            successCallback = function(res){
+                this.trigger('modify.DomainBasic.success',res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('modify.DomainBasic.error',response)
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        }
     });
 
     return BasicInformationCollection;

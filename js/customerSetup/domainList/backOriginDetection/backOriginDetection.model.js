@@ -9,22 +9,25 @@ define("backOriginDetection.model", ['require','exports', 'utility'], function(r
 
         initialize: function(){},
 
-        setBackSourceConfig: function(args){
-            var url = BASE_URL + "/channelManager/domain/setBackSourceConfig";
-            Utility.postAjax(url, args, function(res){
-                this.trigger("set.backSourceConfig.success");
-            }.bind(this),function(res){
-                this.trigger("set.backSourceConfig.error", res);
-            }.bind(this));
+        getDetectInfo:function(args){
+            var url = BASE_URL + "/channelManager/detect/getDetectInfo?originId="+args,
+            successCallback = function(res){
+                this.trigger('get.DetectInfo.success',res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('get.DetectInfo.error',response)
+            }.bind(this);
+            Utility.getAjax(url, '', successCallback, errorCallback);
         },
-
-        setHostHeaderConfig: function(args){
-            var url = BASE_URL + "/channelManager/domain/setHostHeaderConfig";
-            Utility.getAjax(url, args, function(res){
-                this.trigger("set.hostConfig.success");
-            }.bind(this),function(res){
-                this.trigger("set.hostConfig.error", res);
-            }.bind(this));
+        addDetectInfo:function(args){
+            var url = BASE_URL + "/channelManager/detect/setDetectInfo",
+            successCallback = function(res){
+                this.trigger('add.DetectInfo.success',res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('add.DetectInfo.error',response)
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         },
     });
 

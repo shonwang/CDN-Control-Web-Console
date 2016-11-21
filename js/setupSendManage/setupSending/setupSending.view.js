@@ -14,7 +14,7 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.sending.channel.error", $.proxy(this.onGetError, this));
             this.collection.on("channel.terminate.success", $.proxy(this.onChannelTerminateSuccess, this));
             this.collection.on("channel.terminate.error", $.proxy(this.onGetError, this));
-            this.collection.on("channel.next.success", $.proxy(this.onChannelTerminateSuccess, this));
+            this.collection.on("channel.next.success", $.proxy(this.onChannelNextSuccess, this));
             this.collection.on("channel.next.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
@@ -51,6 +51,11 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onChannelTerminateSuccess: function(){
+            alert("操作成功！")
+            this.update(this.target)
+        },
+
+        onChannelNextSuccess: function(){
             alert("操作成功！")
         },
 
@@ -361,6 +366,7 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
 
         render: function(target){
             this.$el.appendTo(target);
+            this.target = target
         }
     });
 

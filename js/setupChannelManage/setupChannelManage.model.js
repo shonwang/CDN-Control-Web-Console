@@ -7,7 +7,7 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
                 cdnFactory   = this.get("cdnFactory");
 
             if (status === 0) this.set("statusName", '<span class="text-primary">审核中</span>');
-            if (status === 1) this.set("statusName", '<span class="text-success">正常运行</span>');
+            if (status === 1) this.set("statusName", '<span class="text-success">审核通过</span>');
             if (status === -1) this.set("statusName", '<span class="text-danger">删除</span>');
             if (status === 2) this.set("statusName", '<span class="text-danger">审核失败</span>');
             if (status === 3) this.set("statusName", '<span class="text-danger">停止</span>');

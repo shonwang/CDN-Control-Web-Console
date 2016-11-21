@@ -351,7 +351,7 @@ define("utility", ['require','exports'], function(require, exports) {
                 type: "POST",
                 url: url,
                 async: true,
-                timeout: timeout || 30000,
+                timeout: timeout || 300000,
                 contentType: "application/json",
                 processData: false
             };
@@ -390,7 +390,7 @@ define("utility", ['require','exports'], function(require, exports) {
                 type: "GET",
                 url: url,
                 async: true,
-                timeout: timeout || 30000,
+                timeout: timeout || 300000,
             };
             defaultParas.data = args || {t: new Date().valueOf()};
 
@@ -418,7 +418,7 @@ define("utility", ['require','exports'], function(require, exports) {
                 type: "DELETE",
                 url: url,
                 async: true,
-                timeout: timeout || 30000,
+                timeout: timeout || 300000,
             };
             defaultParas.data = args || {t: new Date().valueOf()};
 

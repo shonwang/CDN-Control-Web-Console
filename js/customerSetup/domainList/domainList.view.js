@@ -132,7 +132,7 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
                 domain: model.get("domain")
             })
 
-            window.location.hash = '#/domainList/' + args + "/domainSetup/" + args2
+            window.location.hash = '#/domainList/' + args + "/basicInformation/" + args2
         },
 
         setNoData:function(msg){

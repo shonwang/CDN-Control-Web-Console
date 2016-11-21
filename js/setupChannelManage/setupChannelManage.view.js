@@ -624,6 +624,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 "protocol":null,
                 "cdnFactory":null,
                 "auditStatus":null,
+                "topologyId": null,
                 "currentPage":1,
                 "pageSize":10
             }
@@ -963,6 +964,37 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 this.queryArgs.pageSize = value;
                 this.queryArgs.currentPage = 1;
                 this.onClickQueryButton();
+            }.bind(this));
+
+            require(["setupTopoManage.model"], function(SetupTopoManageModel){
+                this.mySetupTopoManageModel = new SetupTopoManageModel();
+                this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.onGetTopoSuccess, this))
+                this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this))
+                var postParam = {
+                    "name" : null,
+                    "type" : null,
+                    "page" : 1,
+                    "size" : 99999
+                 }
+                this.mySetupTopoManageModel.getTopoinfo(postParam);
+            }.bind(this))
+        },
+
+        onGetTopoSuccess: function(){
+            var topoArray = [{name: "全部", value: "All"}]
+            this.mySetupTopoManageModel.each(function(el, index, lst){
+                topoArray.push({
+                    name: el.get('name'),
+                    value: el.get('id')
+                })
+            }.bind(this))
+
+            rootNode = this.$el.find(".dropdown-topo");
+            Utility.initDropMenu(rootNode, topoArray, function(value){
+                if (value == "All")
+                    this.queryArgs.topologyId = null;
+                else
+                    this.queryArgs.topologyId = parseInt(value)
             }.bind(this));
         },
 

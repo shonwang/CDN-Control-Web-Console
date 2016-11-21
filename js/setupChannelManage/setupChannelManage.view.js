@@ -892,7 +892,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 {name: "全部", value: "All"},
                 {name: "删除", value:-1},
                 {name:"审核中", value:0},
-                {name: "正常运行", value:1},
+                {name: "审核通过", value:1},
                 {name: "审核失败", value:2},
                 {name: "停止", value:3},
                 {name: "配置中", value:4},

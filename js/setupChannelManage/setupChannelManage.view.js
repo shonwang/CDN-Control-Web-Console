@@ -957,7 +957,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 {name: "10条", value: 10},
                 {name: "20条", value: 20},
                 {name: "50条", value: 50},
-                {name: "100条", value: 100}
+                {name: "3000条", value: 3000}
             ]
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
                 this.queryArgs.pageSize = value;

@@ -63,7 +63,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
         }
     });
 
-    var SelectTopoView = Backbone.View.extend({
+    var SelectDomainView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
@@ -77,10 +77,9 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             this.initChannelDropMenu();
 
             this.queryArgs = {
-                name:null,
+                domain: null,
                 page:1,
-                size:10,
-                type:null
+                count:10
             }
             this.onClickQueryButton();
         },
@@ -88,39 +87,39 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
         onClickQueryButton: function(){
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
-            this.queryArgs.domain = this.$el.find("#input-domain").val();
+            this.queryArgs.domain = this.$el.find("#input-cname").val();
             if (this.queryArgs.domain == "") this.queryArgs.domain = null;
 
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
 
-            require(["setupTopoManage.model"], function(SetupTopoManageModel){
-                this.mySetupTopoManageModel = new SetupTopoManageModel();
-                this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.initTable, this));
-                this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this));
-                this.mySetupTopoManageModel.getTopoinfo(this.queryArgs);
+            require(["setupChannelManage.model"], function(SetupChannelManageModel){
+                this.mySetupChannelManageModel = new SetupChannelManageModel();
+                this.mySetupChannelManageModel.on("get.channel.success", $.proxy(this.initTable, this));
+                this.mySetupChannelManageModel.on("get.channel.error", $.proxy(this.onGetError, this));
+                this.mySetupChannelManageModel.queryChannel(this.queryArgs);
             }.bind(this))
         },
 
         initTable: function(){
             if (!this.isInitPaginator) this.initPaginator();
             this.table = $(_.template(template['tpl/importAssess/importAssess.domain.table.html'])({
-                data: this.mySetupTopoManageModel.models, 
+                data: this.mySetupChannelManageModel.models, 
             }));
-            if (this.mySetupTopoManageModel.models.length !== 0)
+            if (this.mySetupChannelManageModel.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
         },
 
         initPaginator: function(){
-            this.$el.find(".total-items span").html(this.mySetupTopoManageModel.total)
-            if (this.mySetupTopoManageModel.total <= this.queryArgs.size) return;
-            var total = Math.ceil(this.mySetupTopoManageModel.total/this.queryArgs.size);
+            this.$el.find(".total-items span").html(this.mySetupChannelManageModel.total)
+            if (this.mySetupChannelManageModel.total <= this.queryArgs.count) return;
+            var total = Math.ceil(this.mySetupChannelManageModel.total/this.queryArgs.count);
 
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
-                visiblePages: 4,
+                visiblePages: 10,
                 currentPage: 1,
                 first: '',
                 last: '',
@@ -129,8 +128,8 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                         this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                         var args = _.extend(this.queryArgs);
                         args.page = num;
-                        args.size = this.queryArgs.size;
-                        this.mySetupTopoManageModel.getTopoinfo(args);
+                        args.count = this.queryArgs.count;
+                        this.mySetupChannelManageModel.getTopoinfo(args);
                     }
                 }.bind(this)
             });
@@ -145,20 +144,20 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                 {name: "100条", value: 100}
             ]
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
-                this.queryArgs.size = value;
+                this.queryArgs.count = value;
                 this.queryArgs.page = 1;
                 this.onClickQueryButton();
             }.bind(this));
         },
 
         onSure: function(){
-            var selectedTopo = this.$el.find("input:checked");
-            if (!selectedTopo.get(0)){
+            var selectedDomain = this.$el.find("input:checked");
+            if (!selectedDomain.get(0)){
                 alert("请选择一个域名")
                 return false;
             }
-            var topoId = selectedTopo.get(0).id,
-                model = this.mySetupTopoManageModel.get(topoId);
+            var id = selectedDomain.get(0).id,
+                model = this.mySetupChannelManageModel.get(id);
 
             return model;   
         },
@@ -226,7 +225,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
         onClickQueryButton: function(){
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
-            this.queryArgs.domain = this.$el.find("#input-domain").val();
+            this.queryArgs.domain = this.$el.find("#input-cname").val();
             this.queryArgs.clientName = this.$el.find("#input-client").val();
             if (this.queryArgs.domain == "") this.queryArgs.domain = null;
             if (this.queryArgs.clientName == "") this.queryArgs.clientName = null;
@@ -264,27 +263,28 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                 });
             }.bind(this))
 
-            if (this.selectTopoPopup) $("#" + this.selectTopoPopup.modalId).remove();
+            if (this.selectDomain) $("#" + this.selectDomain.modalId).remove();
 
-            var mySelectTopoView = new SelectTopoView({
+            var mySelectDomainView = new SelectDomainView({
                 collection: this.collection, 
                 domainArray : domainArray
             });
             var options = {
-                title: "选择拓扑关系",
-                body : mySelectTopoView,
+                title: "选择接入域名",
+                body : mySelectDomainView,
                 backdrop : 'static',
                 type     : 2,
                 onOKCallback:  function(){
-                    var result  = mySelectTopoView.onSure();
+                    var result  = mySelectDomainView.onSure();
                     if (!result) return;
-                    this.selectTopoPopup.$el.modal("hide");
+                    this.$el.find("#input-cname").val(result.get("cname"))
+                    this.selectDomain.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){
                     this.enterKeyBindQuery();
                 }.bind(this)
             }
-            this.selectTopoPopup = new Modal(options);
+            this.selectDomain = new Modal(options);
         },
 
         onClickItemHistory: function(event){

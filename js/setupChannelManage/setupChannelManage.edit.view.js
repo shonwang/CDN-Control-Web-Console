@@ -186,10 +186,12 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                             version: this.model.get("version") || this.model.get("domainVersion"),
                             "topologyLevel": el.topologyLevel,
                             "manuallyModifed": true,
-                            "content": this.$el.find("#customized-file-" + el.id).val()
+                            "content": this.$el.find("#customized-file-" + el.id).val() || ""
                         })
                     }.bind(this))
                 }.bind(this))
+
+                console.log(postParam)
 
                 this.mySetupSendWaitCustomizeModel.off("set.channel.config.success");
                 this.mySetupSendWaitCustomizeModel.off("set.channel.config.error");

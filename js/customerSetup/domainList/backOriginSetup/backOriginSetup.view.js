@@ -452,7 +452,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
         initModifyHostDropdown: function(){
             var  domainTypeArray = [
                 {name: "加速域名", value: 1},
-                {name: "源站域名", value: 2},
+              //  {name: "源站域名", value: 2},
                 {name: "自定义域名", value: 3}
             ],
             rootNode = this.$el.find(".origin-domain");

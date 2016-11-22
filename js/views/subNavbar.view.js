@@ -15,6 +15,11 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
         initDefaultMenu: function(query, query2){
             this.menuList = [
                 {
+                    id: 'customerSetup-domainList-basicInformation',
+                    name: '添加备注',
+                    hash: 'index.html#/domainList/' + query + /basicInformation/ + query2,
+                    children: []  
+                },{
                     id: '',
                     name: '域名设置',
                     hash: 'javascript:void(0)',
@@ -36,6 +41,12 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     name: '源站配置',
                     hash: 'javascript:void(0)',
                     children: [{
+                        id: 'customerSetup-domainList-backOriginDetection',
+                        name: '回源检测',
+                        hash: 'index.html#/domainList/' + query + /backOriginDetection/ + query2,
+                        active: false,
+                        children: []
+                    },{
                         id: 'customerSetup-domainList-backOriginSetup',
                         name: '回源配置',
                         hash: 'index.html#/domainList/' + query + /backOriginSetup/ + query2,

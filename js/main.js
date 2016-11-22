@@ -105,12 +105,18 @@ requirejs.config({
 
         "matchCondition.view": 'customerSetup/domainList/matchCondition/matchCondition.view',
         "matchCondition.model": 'customerSetup/domainList/matchCondition/matchCondition.model',
+        
+        "basicInformation.model": 'customerSetup/domainList/basicInformation/basicInformation.model',
+        "basicInformation.view": 'customerSetup/domainList/basicInformation/basicInformation.view',
 
         "domainSetup.model": 'customerSetup/domainList/domainSetup/domainSetup.model',
         "domainSetup.view": 'customerSetup/domainList/domainSetup/domainSetup.view',
 
         "cnameSetup.model": 'customerSetup/domainList/cnameSetup/cnameSetup.model',
         "cnameSetup.view": 'customerSetup/domainList/cnameSetup/cnameSetup.view',
+
+        "backOriginDetection.model": 'customerSetup/domainList/backOriginDetection/backOriginDetection.model',
+        "backOriginDetection.view": 'customerSetup/domainList/backOriginDetection/backOriginDetection.view',
 
         "backOriginSetup.model": 'customerSetup/domainList/backOriginSetup/backOriginSetup.model',
         "backOriginSetup.view": 'customerSetup/domainList/backOriginSetup/backOriginSetup.view',

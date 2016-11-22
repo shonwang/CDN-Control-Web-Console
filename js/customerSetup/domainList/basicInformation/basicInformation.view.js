@@ -23,7 +23,7 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
             
             this.collection.off("modify.DomainBasic.success");
             this.collection.off("modify.DomainBasic.error");
-            this.collection.on("modify.DomainBasic.success", $.proxy(this.addDomainBasicSuccess, this));
+            this.collection.on("modify.DomainBasic.success", $.proxy(this.launchSendPopup, this));
             this.collection.on("modify.DomainBasic.error", $.proxy(this.onGetError, this));
 
             require(["domainSetup.model"], function(DomainSetupModel){
@@ -89,10 +89,35 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
             this.collection.modifyDomainBasic(this.defaultParam);
             
         },
-        addDomainBasicSuccess: function(res){
+        launchSendPopup: function(){
+            require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
+                var mySaveThenSendView = new SaveThenSendView({
+                    collection: new SaveThenSendModel(),
+                    domainInfo: this.domainInfo,
+                    onSendSuccess: function() {
+                        this.sendPopup.$el.modal("hide");
+                    }.bind(this)
+                });
+                var options = {
+                    title: "发布",
+                    body : mySaveThenSendView,
+                    backdrop : 'static',
+                    type     : 2,
+                    onOKCallback:  function(){
+                        mySaveThenSendView.sendConfig();
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();
+                        this.update(this.options.query, this.options.query2, this.target);
+                    }.bind(this)
+                }
+                this.sendPopup = new Modal(options);
+            }.bind(this))
+        },
+        /*addDomainBasicSuccess: function(res){
             alert('保存成功');
             this.update(this.options.query, this.options.query2, this.target);
-        },
+        },*/
         onGetError: function(error){
             if (error&&error.message)
                 alert(error.message)

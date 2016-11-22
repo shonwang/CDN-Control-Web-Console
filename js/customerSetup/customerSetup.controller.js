@@ -242,7 +242,29 @@ define("customerSetup.controller", ['require','exports'],
                 }
             }.bind(this));
         },
+        backOriginDetectionCallback: function(query, query2) {
+            require(['backOriginDetection.view', 'backOriginDetection.model'], function(BackOriginDetectionView, BackOriginDetectionModel){
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-backOriginDetection';
+                this.setupDomainManageNavbar(query, query2);
+                var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
 
+                if (!this.backOriginDetectionModel)
+                    this.backOriginDetectionModel = new BackOriginDetectionModel();
+                if (!this.backOriginDetectionView ){
+                    var options = {
+                        collection: this.backOriginDetectionModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.backOriginDetectionView = new BackOriginDetectionView(options);
+                    this.backOriginDetectionView.render(renderTarget);
+                } else {
+                    this.domainManageNavbar.select(this.curPage);
+                    this.backOriginDetectionView.update(query, query2, renderTarget);
+                }
+            }.bind(this));
+        },
         backOriginSetupCallback: function(query, query2) {
             require(['backOriginSetup.view', 'backOriginSetup.model'], function(BackOriginSetupView, BackOriginSetupModel){
                 this.navbarView.select('customerSetup');
@@ -362,7 +384,29 @@ define("customerSetup.controller", ['require','exports'],
                 }
             }.bind(this));
         },
+        basicInformationCallback: function(query, query2){
+            require(['basicInformation.view', 'basicInformation.model'], function(BasicInformationView, BasicInformationModel){
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-basicInformation';
+                this.setupDomainManageNavbar(query, query2);
+                var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
 
+                if (!this.basicInformationModel)
+                    this.basicInformationModel = new BasicInformationModel();
+                if (!this.basicInformationView ){
+                    var options = {
+                        collection: this.basicInformationModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.basicInformationView = new BasicInformationView(options);
+                    this.basicInformationView.render(renderTarget);
+                } else {
+                    this.domainManageNavbar.select(this.curPage);
+                    this.basicInformationView.update(query, query2, renderTarget);
+                }
+            }.bind(this));
+        },
         domainSetupCallback: function(query, query2) {
             require(['domainSetup.view', 'domainSetup.model'], function(DomainSetupView, DomainSetupModel){
                 this.navbarView.select('customerSetup');
@@ -386,7 +430,7 @@ define("customerSetup.controller", ['require','exports'],
                 }
             }.bind(this));
         },
-
+        
         domainListCallback: function(query) {
             require(['domainList.view', 'domainList.model', 'subNavbar.view'], function(DomainListView, DomainListModel, SubNavbar){
                 this.curPage = 'customerSetup-domainList';

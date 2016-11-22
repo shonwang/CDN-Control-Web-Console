@@ -71,12 +71,6 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            //this.table.find("tbody .detail").on("click", $.proxy(this.onClickItemEdit, this));
-            //this.table.find("tbody .send").on("click", $.proxy(this.onClickItemSend, this));
-            //this.table.find("tbody .reject").on("click", $.proxy(this.onClickItemReject, this));
-
-            //this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
-            //this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
             this.table.find("tbody .repeat").on("click", $.proxy(this.onClickRePublish, this));
             this.table.find("tbody .detail").on("click", $.proxy(this.onShowDetail, this));
         },
@@ -91,19 +85,7 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
             }
 
             var model = this.collection.get(id);
-            /*
-            var mySendedDetailView = new SendedDetailView({
-                collection: this.collection,
-                model: model,
-                onSaveCallback: function(){}.bind(this),
-                onCancelCallback: function(){
-                    mySendedDetailView.$el.remove();
-                    this.$el.find(".list-panel").show();
-                }.bind(this)
-            })*/
-
-            //this.$el.find(".list-panel").hide();
-            //mySendedDetailView.render(this.$el.find(".edit-panel"))
+            
             require(["setupSendDetail.view", "setupSendDetail.model"], function(SendDetailView, SetupSendDetailModel){
                 var mySetupSendDetailModel = new SetupSendDetailModel();
                 var mySendDetailView = new SendDetailView({
@@ -271,8 +253,8 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
         initChannelDropMenu: function(){
             var statusArray = [
                 {name: "全部", value: "All"},
-                {name:"下发完成", value:1},
-                {name: "被终止", value:2},
+                {name:"下发完成", value: 2},
+                {name: "被终止", value: 3},
             ],
             rootNode = this.$el.find(".dropdown-done-type");
             Utility.initDropMenu(rootNode, statusArray, function(value){

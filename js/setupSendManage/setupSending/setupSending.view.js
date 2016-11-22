@@ -28,7 +28,7 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
               "topologyId": null, 
               "deliveryStrategyDefId": null, 
               "configReason": null, //"1：用户配置变更 2：拓扑变更",
-              "status": null, //"1：执行中 2：执行完成",
+              "status": null, //"1：执行中 2：执行完成 3:任务被终止 4：等待下一步",
               "page": 1,
               "count": 10
             }
@@ -229,8 +229,10 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
         initChannelDropMenu: function(){
             var statusArray = [
                 {name: "全部", value: "All"},
-                {name:"执行中", value:1},
+                {name: "执行中", value:1},
                 {name: "执行完成", value:2},
+                {name: "任务被终止", value:3},
+                {name: "等待下一步", value:4}
             ],
             rootNode = this.$el.find(".dropdown-status");
             Utility.initDropMenu(rootNode, statusArray, function(value){

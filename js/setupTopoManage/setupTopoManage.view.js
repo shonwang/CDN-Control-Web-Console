@@ -10,6 +10,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.initNumberDrop();
             
             this.queryArgs = {
+                "topologyId":this.model.get('id'),
                 "name" : null,
                 "page" : 1,
                 "count" : 10
@@ -48,6 +49,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             if (this.queryArgs.name == "") this.queryArgs.name = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
+            
             this.collection.getSendinfo(this.queryArgs);
         },
         onClickCancelButton: function(){

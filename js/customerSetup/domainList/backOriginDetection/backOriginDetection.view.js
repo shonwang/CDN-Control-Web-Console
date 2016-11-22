@@ -31,7 +31,7 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
 
             this.collection.off("add.DetectInfo.success");
             this.collection.off("add.DetectInfo.error");
-            this.collection.on("add.DetectInfo.success", $.proxy(this.addDetecInfoSuccess, this));
+            this.collection.on("add.DetectInfo.success", $.proxy(this.launchSendPopup, this));
             this.collection.on("add.DetectInfo.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".setup .backOriginSetupType").bootstrapSwitch('state',true);
@@ -155,9 +155,30 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
             
             this.collection.addDetectInfo(this.defaultParam);
         },
-        addDetecInfoSuccess: function(res){
-            alert('保存成功');
-            this.update(this.options.query, this.options.query2, this.target)
+        launchSendPopup: function(){
+            require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
+                var mySaveThenSendView = new SaveThenSendView({
+                    collection: new SaveThenSendModel(),
+                    domainInfo: this.domainInfo,
+                    onSendSuccess: function() {
+                        this.sendPopup.$el.modal("hide");
+                    }.bind(this)
+                });
+                var options = {
+                    title: "发布",
+                    body : mySaveThenSendView,
+                    backdrop : 'static',
+                    type     : 2,
+                    onOKCallback:  function(){
+                        mySaveThenSendView.sendConfig();
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();
+                        this.update(this.options.query, this.options.query2, this.target);
+                    }.bind(this)
+                }
+                this.sendPopup = new Modal(options);
+            }.bind(this))
         },
         onGetError: function(error){
             if (error&&error.message)

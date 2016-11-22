@@ -47,7 +47,7 @@
                     <div id="down-layer-<%=data.down[i].id%>-<%=panelId%>" class="panel-collapse collapse">
                         <div class="panel-body">
                             <textarea class="form-control" rows="10" id="customized-file-<%=data.down[i].id%>" 
-                            <% if (data.up[i].name !== "nginx.conf") { %> readonly="true" <% } %>>>
+                            <% if (data.up[i].name !== "nginx.conf") { %> readonly="true" <% } %>>
                                 <%=data.down[i].content%>
                             </textarea>
                         </div>

@@ -142,7 +142,22 @@ define("setupTopoManageSendStrategy.model", ['require','exports', 'utility'], fu
             }.bind(this);
             
             Utility.postAjax(url, '',successCallback, errorCallback);
-        }
+        },
+        getTopoOrigininfo:function(args){
+            var url = BASE_URL + "/resource/topo/origin/info?id="+args,
+            successCallback = function(res){
+                if(res){
+                    this.total = res.total;
+                    this.trigger("get.node.success",res);
+                }else{
+                    this.trigger("get.node.error");
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger('get.node.error',response)
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
 
     });
 

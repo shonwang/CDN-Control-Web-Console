@@ -9,8 +9,8 @@ define("setupSendDone.model", ['require','exports', 'utility'], function(require
                 endTime = this.get("endTime");
             this.set("id",taskId);
 
-            if (status === 2) this.set("statusName", '<span class="text-danger">被终止</span>');
-            if (status === 1) this.set("statusName", '<span class="text-success">下发完成</span>');
+            if (status === 3) this.set("statusName", '<span class="text-danger">被终止</span>');
+            if (status === 2) this.set("statusName", '<span class="text-success">下发完成</span>');
             if (createTime) this.set("startTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
             if (endTime) this.set("endTimeFormated", new Date(endTime).format("yyyy/MM/dd hh:mm"));
         }

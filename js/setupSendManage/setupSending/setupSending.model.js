@@ -6,6 +6,8 @@ define("setupSending.model", ['require','exports', 'utility'], function(require,
 
             if (status === 1) this.set("statusName", '<span class="text-info">执行中</span>');
             if (status === 2) this.set("statusName", '<span class="text-success">执行完成</span>');
+            if (status === 3) this.set("statusName", '<span class="text-danger">任务被终止</span>');
+            if (status === 4) this.set("statusName", '<span class="text-warning">等待下一步</span>');
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
             this.set("id", this.get("taskId"))
             this.set("isChecked", false);

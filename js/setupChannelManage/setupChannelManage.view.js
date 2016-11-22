@@ -350,7 +350,6 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                     onSaveCallback: function(){
                         //this.defaultParam = this.rule;
                         var data = this.InformationProcessing(this.defaultParam);
-
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".special-layer").show();
                         this.initRuleTable(data);
@@ -389,7 +388,6 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 }
             })
              if(flag){
-                console.log(this.defaultParam);
                 _.each(this.defaultParam,function(el,index,list){
                     if(!el.NoEdit){
                          el.id = 0;

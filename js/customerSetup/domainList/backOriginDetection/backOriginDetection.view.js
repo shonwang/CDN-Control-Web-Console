@@ -26,7 +26,8 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
             this.collection.off("get.DetectInfo.error");
             this.collection.on("get.DetectInfo.success", $.proxy(this.getDetecInfoSuccess, this));
             this.collection.on("get.DetectInfo.error", $.proxy(this.onGetError, this));
-            
+            console.log(this.collection);
+            console.log(this.collection._events);
             this.collection.getDetectInfo(this.domainInfo.id);
 
             this.collection.off("add.DetectInfo.success");

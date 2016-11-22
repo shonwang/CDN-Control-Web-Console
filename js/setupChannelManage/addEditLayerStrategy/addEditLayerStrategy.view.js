@@ -405,7 +405,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             if(!this.isEdit){
                 _.each(rootNodes,function(el){
                     _.each(this.ruleContent.upper,function(key){
-                        if(el.id == key.nodeId && el.ipCorporation == 0){
+                        if(el.id == key.nodeId && key.ipCorporation == 0){
                             key.ipCorporation = 1;
                         }
                     }.bind(this))

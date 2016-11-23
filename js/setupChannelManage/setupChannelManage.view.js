@@ -637,6 +637,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         },
 
         onGetError: function(error){
+            this.disablePopup&&this.disablePopup.$el.modal('hide');
             if (error&&error.message)
                 alert(error.message)
             else
@@ -708,12 +709,26 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                     this.collection.on("add.channel.topology.success", $.proxy(this.onAddChannelTopologySuccess, this));
                     this.collection.on("add.channel.topology.error", $.proxy(this.onGetError, this));
                     this.collection.addTopologyList(result)
+                    this.selectTopoPopup.$el.modal("hide");
+                    this.showDisablePopup("服务器正在努力处理中...")
                 }.bind(this),
                 onHiddenCallback: function(){
                     this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.selectTopoPopup = new Modal(options);
+        },
+
+        showDisablePopup: function(msg) {
+            if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
+            var options = {
+                title    : "警告",
+                body     : '<div class="alert alert-danger"><strong>' + msg +'</strong></div>',
+                backdrop : 'static',
+                type     : 0,
+            }
+            this.disablePopup = new Modal(options);
+            this.disablePopup.$el.find(".close").remove();
         },
 
         onAddChannelTopologySuccess: function(){
@@ -735,7 +750,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         },
 
         onPostPredelivery: function(){
-            this.selectTopoPopup.$el.modal("hide");
+            this.disablePopup&&this.disablePopup.$el.modal('hide');
             alert("批量更换拓扑关系成功！")
 
             window.location.hash = '#/setupSendWaitSend';

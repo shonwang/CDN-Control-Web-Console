@@ -40,6 +40,7 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
         },
 
         onGetError: function(error){
+            this.disablePopup&&this.disablePopup.$el.modal('hide');
             if (error&&error.message)
                 alert(error.message)
             else
@@ -72,6 +73,18 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
             this.showSelectStrategyPopup();
         },
 
+        showDisablePopup: function(msg) {
+            if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
+            var options = {
+                title    : "警告",
+                body     : '<div class="alert alert-danger"><strong>' + msg +'</strong></div>',
+                backdrop : 'static',
+                type     : 0,
+            }
+            this.disablePopup = new Modal(options);
+            this.disablePopup.$el.find(".close").remove();
+        },
+
         showSelectStrategyPopup: function(){
             if (this.selectStrategyPopup) $("#" + this.selectStrategyPopup.modalId).remove();
 
@@ -92,7 +105,9 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
                         this.collection.off("create.task.error");
                         this.collection.on("create.task.success", $.proxy(this.onCreatTaskSuccess, this));
                         this.collection.on("create.task.error", $.proxy(this.onGetError, this));
-                        this.collection.createTask(result)
+                        this.collection.createTask(result);
+                        this.selectStrategyPopup.$el.modal('hide')
+                        this.showDisablePopup("服务器正在努力处理中...")
                     }.bind(this),
                     onHiddenCallback: function(){
                         this.enterKeyBindQuery();
@@ -103,8 +118,9 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
         },
 
         onCreatTaskSuccess: function(){
+            this.disablePopup&&this.disablePopup.$el.modal('hide');
             alert("创建任务成功！");
-            this.selectStrategyPopup.$el.modal('hide')
+            this.update(this.target)
         },
 
         onClickQueryButton: function(){

@@ -381,6 +381,11 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 alert("你选择了高级设置，需要填写主享秘钥！");
                 return;
             }
+            var atuthDivisor = this.$el.find(".advanced-setup #atuth-divisor").val();
+            if (this.defaultParam.isBaseSetup === 2 &&  atuthDivisor === ""){
+                alert("你选择了高级设置，需要填写鉴权因子！");
+                return;
+            }
             var spliceMd5Min = this.$el.find("#md5-start").val(),
                 spliceMd5Max = this.$el.find("#md5-end").val();
             if (this.defaultParam.spliceMd5 === 2 && 

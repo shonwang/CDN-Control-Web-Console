@@ -42,6 +42,7 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
         },
 
         onGetError: function(error){
+            this.disablePopup&&this.disablePopup.$el.modal('hide');
             if (error&&error.message)
                 alert(error.message)
             else
@@ -51,6 +52,18 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
         onChannelListSuccess: function(){
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
+        },
+
+        showDisablePopup: function(msg) {
+            if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
+            var options = {
+                title    : "警告",
+                body     : '<div class="alert alert-danger"><strong>' + msg +'</strong></div>',
+                backdrop : 'static',
+                type     : 0,
+            }
+            this.disablePopup = new Modal(options);
+            this.disablePopup.$el.find(".close").remove();
         },
 
         onClickMultiSend: function(){
@@ -66,11 +79,13 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             }.bind(this))
 
             this.collection.publish(this.domainArray)
+            this.showDisablePopup("服务器正在努力处理中...")
         },
 
         onPublishSuccess: function(){
+            this.disablePopup&&this.disablePopup.$el.modal('hide');
             alert("操作成功！");
-            this.selectStrategyPopup.$el.modal('hide')
+            this.update(this.target)
         },
 
         onRollBackSuccess: function(){

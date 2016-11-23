@@ -27,7 +27,9 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 }
 
             }else{
-                this.ruleContent = this.rule[this.id];
+             
+              //this.ruleContent = this.rule[this.id];
+                this.ruleContent = this.deepClone(this.rule[this.id]);//深度克隆
                 this.defaultParam = {
                     "local":this.ruleContent.local,
                     "localType":this.ruleContent.localType,
@@ -563,7 +565,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 id = $(eventTarget).attr("id");
             }
             if(this.isEdit){
-                var upper = this.rule[this.id].upper;
+                var upper = this.ruleContent.upper;
                 for(var i=0;i<upper.length;i++){
                      if(upper[i].nodeId == id){
                         upper.splice(i,1);
@@ -608,7 +610,21 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             else
                 this.$el.find("#dropdown-operator .cur-value").html(this.statusArray[0].name);
         },
-
+        deepClone: function(obj){
+            var str, newobj = obj.constructor === Array ? [] : {};
+            if(typeof obj !== 'object'){
+                return;
+            } else if(window.JSON){
+                str = JSON.stringify(obj), //系列化对象
+                newobj = JSON.parse(str); //还原
+            } else {
+                for(var i in obj){
+                    newobj[i] = typeof obj[i] === 'object' ? 
+                    cloneObj(obj[i]) : obj[i]; 
+                }
+            }
+            return newobj;
+        },
         render: function(target) {
             this.$el.appendTo(target)
         }

@@ -646,6 +646,12 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         initialize: function(options) {
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/dispGroup/dispGroup.html'])());
+            
+            this.collection.off('GropDomain.list.error');
+            this.collection.off('GropDomain.list.success');
+            this.collection.on('GropDomain.list.success',$.proxy(this.initGroupDomainList, this));
+            this.collection.on('GropDomain.list.error',$.proxy(this.onGetError, this));
+            this.collection.GroupDomainList();
 
             this.initDispGroupDropMenu();
 
@@ -1135,7 +1141,23 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             });
             this.isInitPaginator = true;
         },
-
+        initGroupDomainList: function(res){
+            var typeArray = [
+                {name: "全部", value: "All"},
+                {name: "L0", value: 0},
+                {name: "L1", value: 1},
+                {name: "L2", value: 2},
+                {name: "L3", value: 3},
+                {name: "L4", value: 4}
+            ],
+            rootNode = this.$el.find(".dropdown-rootDomains");
+            Utility.initDropMenu(rootNode, typeArray, function(value){
+                if (value !== "All")
+                    this.queryArgs.level = parseInt(value);
+                else
+                    this.queryArgs.level = null;
+            }.bind(this));
+        },
         initDispGroupDropMenu: function(){
             var typeArray = [
                 {name: "全部", value: "All"},

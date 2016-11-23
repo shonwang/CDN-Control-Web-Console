@@ -183,23 +183,15 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.initChannelDropMenu();
 
-            this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
-            this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.client.success", $.proxy(this.onGetClientMessage, this));
+            this.collection.on("get.client.error", $.proxy(this.onGetError, this));
+            this.collection.on("update.client", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".add-domain").on("click", $.proxy(this.onClickAddDomain, this))
             this.enterKeyBindQuery();
 
-            this.queryArgs = {
-                "domain"           : null,
-                "accelerateDomain" : null,
-                "businessType"     : null,
-                "clientName"       : null,
-                "status"           : null,
-                "page"             : 1,
-                "count"            : 10
-             }
-            this.onClickQueryButton();
+            //this.onClickQueryButton();
         },
         
         enterKeyBindQuery:function(){
@@ -250,6 +242,20 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
         },
 
+        onGetClientMessage: function(res){
+            this.currentModel = new this.collection.model(res);
+            this.collection.trigger("update.client");
+        },
+
+        updateUserInfoView: function(){
+            this.$el.find("#input-cname").val(this.currentModel.get(cname));
+            this.$el.find("#input-client").val(this.currentModel.get(clientName));
+            this.$el.find("#input-domain").val(this.currentModel.get(clientName));
+            this.$el.find(".dropdown-dispgroup .cur-value").html(this.currentModel.get(groupName));
+            this.$el.find(".dropdown-region .cur-value").html(this.currentModel.get(regionName));
+            this.$el.find("#input-bandwidth").html(this.currentModel.get(increBandwidth));
+        },
+
         onClickAddDomain: function(){
             var checkedList = this.collection.filter(function(model) {
                 return model.get("isChecked") === true;
@@ -278,6 +284,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                     var result  = mySelectDomainView.onSure();
                     if (!result) return;
                     this.$el.find("#input-cname").val(result.get("cname"))
+                    this.collection.getClientMessage({cname: result.get("cname")})
                     this.selectDomain.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){
@@ -310,58 +317,6 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.$el.find(".list-panel").hide();
             myHistoryView.render(this.$el.find(".history-panel"))
-        },
-
-        onClickItemSpecialLayer: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
-
-            var model = this.collection.get(id);
-
-            var mySpecialLayerManageView = new SpecialLayerManageView({
-                collection: this.collection,
-                model: model,
-                onSaveCallback: function(){}.bind(this),
-                onCancelCallback: function(){
-                    mySpecialLayerManageView.$el.remove();
-                    this.$el.find(".list-panel").show();
-                }.bind(this)
-            })
-
-            this.$el.find(".list-panel").hide();
-            mySpecialLayerManageView.render(this.$el.find(".strategy-panel"))
-        },
-
-        onClickItemEdit: function(event){
-            require(['importAssess.edit.view'], function(EditChannelView){
-                var eventTarget = event.srcElement || event.target, id;
-                if (eventTarget.tagName == "SPAN"){
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-
-                var model = this.collection.get(id);
-
-                var myEditChannelView = new EditChannelView({
-                    collection: this.collection,
-                    model: model,
-                    onSaveCallback: function(){}.bind(this),
-                    onCancelCallback: function(){
-                        myEditChannelView.$el.remove();
-                        this.$el.find(".list-panel").show();
-                    }.bind(this)
-                })
-
-                this.$el.find(".list-panel").hide();
-                myEditChannelView.render(this.$el.find(".edit-panel"))
-            }.bind(this));
         },
 
         onItemCheckedUpdated: function(event){
@@ -422,78 +377,55 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initChannelDropMenu: function(){
-            var statusArray = [
-                {name: "全部", value: "All"},
-                {name:"审核中", value:0},
-                {name: "审核通过", value:1},
-                {name: "审核失败", value:2},
-                {name: "测试中", value:3},
-                {name: "测试未通过", value:4},
-                {name: "编辑中", value:5},
-                {name: "待下发", value:6},
-                {name: "灰度中", value:7},
-                {name: "运行中", value:8},
-                {name: "删除", value:9}
-            ],
-            rootNode = this.$el.find(".dropdown-status");
-            Utility.initDropMenu(rootNode, statusArray, function(value){
-                if (value == "All")
-                    this.queryArgs.status = null;
-                else
-                    this.queryArgs.status = parseInt(value)
-            }.bind(this));
+            require(["dispGroup.model"], function(DispGroupModel){
+                this.myDispGroupModel = new DispGroupModel();
+                this.myDispGroupModel.on("get.dispGroup.success", $.proxy(this.onGetDispGroupList, this));
+                this.myDispGroupModel.on("get.dispGroup.error", $.proxy(this.onGetError, this));
+                this.myDispGroupModel.getDispGroupList({
+                    "name"  : null,//调度组名称
+                    "status": null,//调度组状态
+                    "level" : null,//覆盖级别
+                    "page"  : 1,
+                    "count" : 99999
+                });
+            }.bind(this))
+        },
 
-            var protocolArray = [
-                {name: "全部", value: "All"},
-                {name:"http+hlv", value:0},
-                {name: "hls", value:1},
-                {name: "rtmp", value:2}
-            ],
-            rootNode = this.$el.find(".dropdown-protocol");
-            Utility.initDropMenu(rootNode, protocolArray, function(value){
-                if (value == "All")
-                    this.queryArgs.status = null;
-                else
-                    this.queryArgs.status = parseInt(value)
-            }.bind(this));
+        onGetDispGroupList: function(){
+            var dispGroupArray = []
+            this.myDispGroupModel.each(function(el, index, lst){
+                dispGroupArray.push({
+                    name: el.get('dispDomain'),
+                    value: el.get('id')
+                })
+            }.bind(this))
 
-            var companyArray = [
-                {name: "全部", value: "All"},
-                {name:"自建", value:0},
-                {name: "网宿", value:1}
-            ],
-            rootNode = this.$el.find(".dropdown-company");
-            Utility.initDropMenu(rootNode, companyArray, function(value){
-                if (value == "All")
-                    this.queryArgs.status = null;
-                else
-                    this.queryArgs.status = parseInt(value)
-            }.bind(this));
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-dispgroup').get(0),
+                panelID: this.$el.find('#dropdown-dispgroup').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function(){},
+                data: dispGroupArray,
+                callback: function(data) {
+                    var defaultParam = {
+                        "cnameId": 0,
+                        "cname": "",
+                        "accelerateName": "",
+                        "clientName": "",
+                        "groupId": data.value,
+                        "groupName": data.name,
+                        "regionId": 0,
+                        "regionName": "",
+                        "increBandwidth": ""
+                    }
+                    this.currentModel = new this.collection.model(defaultParam)
 
-            var typeArray = [
-                {name: "全部", value: "All"},
-                {name:"下载加速", value:0},
-                {name: "直播加速", value:1}
-            ],
-            rootNode = this.$el.find(".dropdown-type");
-            Utility.initDropMenu(rootNode, typeArray, function(value){
-                if (value == "All")
-                    this.queryArgs.status = null;
-                else
-                    this.queryArgs.status = parseInt(value)
-            }.bind(this));
-
-            var pageNum = [
-                {name: "10条", value: 10},
-                {name: "20条", value: 20},
-                {name: "50条", value: 50},
-                {name: "100条", value: 100}
-            ]
-            Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
-                this.queryArgs.count = value;
-                this.queryArgs.page = 1;
-                this.onClickQueryButton();
-            }.bind(this));
+                    this.collection.trigger("update.client")
+                }.bind(this)
+            });
         },
 
         hide: function(){

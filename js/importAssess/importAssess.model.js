@@ -1,6 +1,9 @@
 define("importAssess.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
-        initialize: function(){}
+        initialize: function(){
+            this.set("id", Utility.randomStr(16));
+            this.set("isChecked", false);
+        }
     });
 
     var ImportAssessCollection = Backbone.Collection.extend({
@@ -12,6 +15,7 @@ define("importAssess.model", ['require','exports', 'utility'], function(require,
         getClientMessage: function(args){
             var url = BASE_URL + "/rs/evaluation/getClientMessage",
             successCallback = function(res){
+                console.log(res)
                 if (res)
                     this.trigger("get.client.success", res);
                 else

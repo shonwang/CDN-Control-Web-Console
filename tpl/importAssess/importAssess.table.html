@@ -3,13 +3,12 @@
       <tr>
         <th><input type="checkbox" id="inlineCheckbox6"></th>
         <th>接入域名</th>
-        <th>客户域名</th>
-        <th>CDN厂商</th>
-        <th>业务类型</th>
+        <th>加速域名</th>
         <th>客户名称</th>
-        <th>状态</th>   
-<!--         <th>开始服务时间</th>   -->
-        <th>关联调度组</th>
+        <th>调度组</th>
+        <th>区域</th>
+        <th>增量带宽（Gbps)</th>   
+        <th>添加时间</th>  
         <th>操作</th>    
       </tr>
     </thead>
@@ -18,23 +17,16 @@
             <tr data-id="<%=data[i].attributes.id%>">
               <td><input type="checkbox" id="<%=data[i].id%>"></td>
               <td><%=data[i].attributes["cname"]%></td>
-              <td><%=data[i].attributes["domain"]%></td>
-              <td><%=data[i].attributes["cdnFactoryName"]%></td>
-              <td><%=data[i].attributes["businessTypeName"]%></td>
+              <td><%=data[i].attributes["accelerateName"]%></td>
               <td><%=data[i].attributes["clientName"]%></td>
-              <td><%=data[i].attributes["statusName"]%></td>
-<!--               <td><%=data[i].attributes["startTimeFormated"]%></td> -->
-              <td><%=data[i].attributes["dispName"]%></td>
+              <td><%=data[i].attributes["groupName"]%></td>
+              <td><%=data[i].attributes["regionName"]%></td>
+              <td><%=data[i].attributes["increBandwidth"]%></td>
+              <td><%=data[i].attributes["createTime"]%></td>
               <td>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="edit" title="编辑">
-                      <span class="glyphicon glyphicon-edit"></span>
-                  </a>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="strategy" title="特殊分层策略管理">
-                      <span class="glyphicon glyphicon-tasks"></span>
-                  </a>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="history" title="历史记录">
-                      <span class="glyphicon glyphicon-time"></span>
-                  </a>
+                <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="delete" title="删除">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </a>
               </td>
             </tr>
         <% } %>  

@@ -72,7 +72,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             this.domainArray = options.domainArray;
 
             this.$el = $(_.template(template['tpl/importAssess/importAssess.select.domain.html'])());
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickConfirmButton, this));
 
             this.initChannelDropMenu();
 
@@ -81,10 +81,10 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                 page:1,
                 count:10
             }
-            this.onClickQueryButton();
+            this.onClickConfirmButton();
         },
 
-        onClickQueryButton: function(){
+        onClickConfirmButton: function(){
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
             this.queryArgs.domain = this.$el.find("#input-cname").val();
@@ -129,7 +129,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                         var args = _.extend(this.queryArgs);
                         args.page = num;
                         args.count = this.queryArgs.count;
-                        this.mySetupChannelManageModel.getTopoinfo(args);
+                        this.mySetupChannelManageModel.queryChannel(args);
                     }
                 }.bind(this)
             });
@@ -146,7 +146,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
                 this.queryArgs.count = value;
                 this.queryArgs.page = 1;
-                this.onClickQueryButton();
+                this.onClickConfirmButton();
             }.bind(this));
         },
 
@@ -185,19 +185,22 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.collection.on("get.client.success", $.proxy(this.onGetClientMessage, this));
             this.collection.on("get.client.error", $.proxy(this.onGetError, this));
-            this.collection.on("update.client", $.proxy(this.onGetError, this));
+            this.collection.on("update.client", $.proxy(this.updateUserInfoView, this));
+            this.collection.on("update.assess.table", $.proxy(this.initTable, this));
 
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.$el.find(".add-domain").on("click", $.proxy(this.onClickAddDomain, this))
+            this.$el.find(".opt-ctn .confirm").on("click", $.proxy(this.onClickConfirmButton, this));
+            this.$el.find(".add-domain").on("click", $.proxy(this.onClickAddDomain, this));
+            this.$el.find(".start-assess").on("click", $.proxy(this.onClickStartAssess, this));
+            this.$el.find(".multi-delete").on("click", $.proxy(this.onClickMultiDelete, this));
             this.enterKeyBindQuery();
 
-            //this.onClickQueryButton();
+            this.collection.trigger("update.assess.table");
         },
         
         enterKeyBindQuery:function(){
             $(document).on('keydown', function(e){
                 if(e.keyCode == 13){
-                    this.onClickQueryButton();
+                    this.onClickConfirmButton();
                 }
             }.bind(this));
         },
@@ -209,34 +212,64 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                 alert("网络阻塞，请刷新重试！")
         },
 
-        onChannelListSuccess: function(){
-            this.initTable();
-            if (!this.isInitPaginator) this.initPaginator();
+        onClickConfirmButton: function(){
+            if (!this.currentModel){
+                alert("请填写相关信息!");
+                return
+            }
+            if (!this.currentModel.get("groupName")){
+                alert("请选择调度组!");
+                return
+            }
+            // if (!this.currentModel.get("regionName")){
+            //     alert("请选择区域!");
+            //     return
+            // }
+            // if (!this.$el.find("#input-bandwidth").val()){
+            //     alert("请填写带宽!");
+            //     return
+            // }
+            this.currentModel.set("createTime", new Date().format("yyyy/mm/dd hh:MM:ss"));
+            this.currentModel.set("increBandwidth", this.$el.find("#input-bandwidth").val());
+            this.collection.push(this.currentModel);
+            this.collection.trigger("update.assess.table");
         },
 
-        onClickQueryButton: function(){
-            this.isInitPaginator = false;
-            this.queryArgs.page = 1;
-            this.queryArgs.domain = this.$el.find("#input-cname").val();
-            this.queryArgs.clientName = this.$el.find("#input-client").val();
-            if (this.queryArgs.domain == "") this.queryArgs.domain = null;
-            if (this.queryArgs.clientName == "") this.queryArgs.clientName = null;
-            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.$el.find(".pagination").html("");
-            this.collection.queryChannel(this.queryArgs);
+        onClickStartAssess: function(){
+            var checkedList = this.collection.filter(function(obj){
+                return obj.get("isChecked") === true;
+            }.bind(this))
+
+            if (checkedList.length === 0){
+                alert("至少添加并选择一条信息!")
+                return;
+            }
+
+            var records = [];
+            _.each(checkedList, function(el, index, ls){
+                records.push({
+                    "groupId": el.get("groupId"),
+                    "bandwidth": el.get("increBandwidth"),
+                    "regionId": el.get("regionId")
+                })
+            }.bind(this))
+
+            var postParam = {
+                records: records
+            }
+
+            console.log(postParam)
         },
 
         initTable: function(){
-            this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
+            this.$el.find(".multi-delete").attr("disabled", "disabled");
             this.table = $(_.template(template['tpl/importAssess/importAssess.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-            this.table.find("tbody .strategy").on("click", $.proxy(this.onClickItemSpecialLayer, this));
-            this.table.find("tbody .history").on("click", $.proxy(this.onClickItemHistory, this));
+            this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
 
             this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
@@ -248,12 +281,12 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         updateUserInfoView: function(){
-            this.$el.find("#input-cname").val(this.currentModel.get(cname));
-            this.$el.find("#input-client").val(this.currentModel.get(clientName));
-            this.$el.find("#input-domain").val(this.currentModel.get(clientName));
-            this.$el.find(".dropdown-dispgroup .cur-value").html(this.currentModel.get(groupName));
-            this.$el.find(".dropdown-region .cur-value").html(this.currentModel.get(regionName));
-            this.$el.find("#input-bandwidth").html(this.currentModel.get(increBandwidth));
+            this.$el.find("#input-cname").val(this.currentModel.get("cname"));
+            this.$el.find("#input-client").val(this.currentModel.get("clientName"));
+            this.$el.find("#input-domain").val(this.currentModel.get("accelerateName"));
+            this.$el.find(".dropdown-dispgroup .cur-value").html(this.currentModel.get("groupName") || "请选择");
+            // this.$el.find(".dropdown-region .cur-value").html(this.currentModel.get("regionName") || "请选择");
+            // this.$el.find("#input-bandwidth").html(this.currentModel.get("increBandwidth"));
         },
 
         onClickAddDomain: function(){
@@ -284,7 +317,8 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                     var result  = mySelectDomainView.onSure();
                     if (!result) return;
                     this.$el.find("#input-cname").val(result.get("cname"))
-                    this.collection.getClientMessage({cname: result.get("cname")})
+                    //this.collection.getClientMessage({cname: result.get("cname")})
+                    this.collection.getClientMessage({cname: "mt.huluxia.com.download.ks-cdn.com"})
                     this.selectDomain.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){
@@ -292,6 +326,29 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                 }.bind(this)
             }
             this.selectDomain = new Modal(options);
+        },
+
+        onClickItemDelete: function(event){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+
+            var model = this.collection.get(id);
+            this.collection.remove(model);
+            this.collection.trigger("update.assess.table");
+        },
+
+        onClickMultiDelete: function(){
+            var checkedList = this.collection.filter(function(obj){
+                return obj.get("isChecked") === true;
+            }.bind(this))
+
+            this.collection.remove(checkedList);
+            this.collection.trigger("update.assess.table");
         },
 
         onClickItemHistory: function(event){
@@ -334,9 +391,9 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             if (checkedList.length !== this.collection.models.length)
                 this.table.find("thead input").get(0).checked = false;
             if (checkedList.length === 0) {
-                this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
+                this.$el.find(".multi-delete").attr("disabled", "disabled");
             } else {
-                this.$el.find(".multi-modify-topology").removeAttr("disabled", "disabled");
+                this.$el.find(".multi-delete").removeAttr("disabled", "disabled");
             }
         },
 
@@ -348,9 +405,9 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             }.bind(this))
             this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
             if (eventTarget.checked){
-                this.$el.find(".multi-modify-topology").removeAttr("disabled", "disabled");
+                this.$el.find(".multi-delete").removeAttr("disabled", "disabled");
             } else {
-                this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
+                this.$el.find(".multi-delete").attr("disabled", "disabled");
             }
         },
 

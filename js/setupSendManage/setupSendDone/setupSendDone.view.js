@@ -372,6 +372,7 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
 
         hide: function(){
             this.$el.hide();
+            $(document).off('keydown');
         },
 
         update: function(target){

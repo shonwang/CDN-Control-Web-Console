@@ -322,6 +322,7 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
 
         hide: function(){
             this.$el.hide();
+            $(document).off('keydown');
         },
 
         update: function(target){

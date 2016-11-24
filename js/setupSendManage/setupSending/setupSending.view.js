@@ -356,6 +356,7 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
 
         hide: function(){
             this.$el.hide();
+            $(document).off('keydown');
         },
 
         update: function(target){

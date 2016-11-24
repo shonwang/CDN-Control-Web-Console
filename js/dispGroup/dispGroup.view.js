@@ -457,11 +457,8 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     return obj["name"] === this.model.get("kdnsDomainIddomainName");
                 }.bind(this))
                 if (aIpTypeArray[0]){
-                    console.log(aIpTypeArray[0]);
                     this.$el.find(".dropdown-firstDomain .cur-value").html(aIpTypeArray[0].name)
                     this.kdnsDomainId = aIpTypeArray[0].value;
-                    console.log(aIpTypeArray[0].value);
-
                 }
                 this.$el.find(".dropdown-firstDomain #dropdown-GropDomain-list").attr("disabled", "disabled")
             }
@@ -611,7 +608,6 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         getArgs: function(){
-            console.log(this.kdnsDomainId);
             var options = {
                 "id"           : this.model ? this.model.get("id") : 0,
                 "dispDomain"   : this.$el.find("#input-name").val(),
@@ -801,10 +797,14 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         onGetIpTypeSuccess: function(data){
             _.each(this.collection.models, function(el, inx, list){
+                var flag = false;
                 var ipObj = _.find(data, function(obj){
-                    return obj.id === el.get("resolveIpType")
+                    return obj.id == el.get("resolveIpType");
+                    flag = true;
                 }.bind(this))
-                el.set("resolveIpTypeName", ipObj.name)
+                if(flag){
+                  el.set("resolveIpTypeName", ipObj.name)
+                }
             }.bind(this))
 
             this.initTable();
@@ -1045,9 +1045,8 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.PromptPopup = new Modal(options);
             } else {
                 var result = confirm("是否确定本次编辑？");
-                if (result)
-                {    console.log(args);
-                    this.collection.updateDispGroup(args);}
+                if (result)  
+                    this.collection.updateDispGroup(args);
                 else
                     this.editDispGroupPopup.$el.modal("show");
             }

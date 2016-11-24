@@ -146,24 +146,9 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         },
         getTopologyRoleError: function(error){
              if (error&&error.message){
-                alert(error.message);
+                console.log(error.message);
                 if(error.status == 404){
                      this.defaultParam = [];
-                    /*_.each(res,function(el,index,list){
-                        this.defaultParam.push({
-                            "id":el.id,
-                            "NoEdit":true,
-                            "local":el.local,
-                            "localType":el.localType,
-                            "upper":el.upper
-                        })
-                    }.bind(this));*/
-                    /* this.NoEditNodes = [];
-                     _.each(this.defaultParam,function(el,index,list){
-                          this.NoEditNodes.push(el.id);
-                     }.bind(this));
-                     var data = this.analyticFunction(this.defaultParam);
-                     this.defaultParam = this. analyticRuleFunction(this.defaultParam);*/
                      this.initRuleTable(this.defaultParam);   
                 }
              }
@@ -715,7 +700,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             var model = this.collection.get(id);
             
             if(model.get('topologyId') == null){
-                alert('出现错误');
+                alert('该域名未指定拓扑关系，无法添加特殊分层策略');
                 return;
             }
             var mySpecialLayerManageView = new SpecialLayerManageView({

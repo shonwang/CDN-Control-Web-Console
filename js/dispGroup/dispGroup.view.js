@@ -404,6 +404,13 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.collection.on("get.node.error", $.proxy(this.onGetError, this));
                 this.crossLevel = 0;
             }
+
+            this.collection.off("GropDomain.list.success");
+            this.collection.off("GropDomain.list.error");
+            this.collection.on("GropDomain.list.success", $.proxy(this.onGetGroupDomainListSuccess, this));
+            this.collection.on("GropDomain.list.error", $.proxy(this.onGetError, this));
+            this.collection.GroupDomainList();
+
             this.collection.off("ip.type.success");
             this.collection.off("ip.type.error");
             this.collection.on("ip.type.success", $.proxy(this.onGetIpTypeSuccess, this));
@@ -432,7 +439,30 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             else
                 this.table.find("#inlineCheckbox5").hide();
         },
-
+        onGetGroupDomainListSuccess: function(data){
+            this.GroupDomainList = data;
+            var typeIpArray = [];
+            _.each(this.GroupDomainList, function(el, key, ls){
+                typeIpArray.push({name: el.name, value: el.id})
+            })
+            Utility.initDropMenu(this.$el.find(".dropdown-firstDomain"), typeIpArray, function(value){
+                this.kdnsDomainId = parseInt(value);
+            }.bind(this));
+            this.domainList = typeIpArray;
+            if (!this.isEdit){
+                this.kdnsDomainId = data[0].id;
+                this.$el.find(".dropdown-firstDomain .cur-value").html(data[0].name)
+            } else {
+                var aIpTypeArray = _.filter(this.domainList,function(obj) {
+                    return obj["name"] === this.model.get("kdnsDomainIddomainName");
+                }.bind(this))
+                if (aIpTypeArray[0]){
+                    this.$el.find(".dropdown-firstDomain .cur-value").html(aIpTypeArray[0].name)
+                    this.kdnsDomainId = aIpTypeArray[0].value;
+                }
+                this.$el.find(".dropdown-firstDomain #dropdown-GropDomain-list").attr("disabled", "disabled")
+            }
+        },
         onGetIpTypeSuccess: function(data){
             this.ipTypeList = data;
             var typeIpArray = [];
@@ -585,6 +615,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 "ttl"          : this.$el.find("#input-ttl").val(),
                 "remark"       : this.$el.find("#textarea-comment").val(),
                 "resolveIpType": this.ipType,
+                "kdnsDomainId" : this.kdnsDomainId
             };
             var ttl = this.$el.find("#input-ttl").val(), re = /^\d+$/;
             if (!re.test(ttl)){
@@ -646,6 +677,12 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         initialize: function(options) {
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/dispGroup/dispGroup.html'])());
+            
+            this.collection.off('GropDomain.list.error');
+            this.collection.off('GropDomain.list.success');
+            this.collection.on('GropDomain.list.success',$.proxy(this.initGroupDomainList, this));
+            this.collection.on('GropDomain.list.error',$.proxy(this.onGetError, this));
+            this.collection.GroupDomainList();
 
             this.initDispGroupDropMenu();
 
@@ -706,11 +743,12 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             }
 
             this.queryArgs = {
-                "name"  : null,//调度组名称
-                "status": null,//调度组状态
-                "level" : null,//覆盖级别
-                "page"  :1,
-                "count" :10
+                "name"         : null,//调度组名称
+                "kdnsDomainId" : null, //调度组所属根域
+                "status"       : null,//调度组状态
+                "level"        : null,//覆盖级别
+                "page"         :1,
+                "count"        :10
             }
             this.onClickQueryButton();
         }, 
@@ -759,10 +797,14 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         onGetIpTypeSuccess: function(data){
             _.each(this.collection.models, function(el, inx, list){
+                var flag = false;
                 var ipObj = _.find(data, function(obj){
-                    return obj.id === el.get("resolveIpType")
+                    return obj.id == el.get("resolveIpType");
+                    flag = true;
                 }.bind(this))
-                el.set("resolveIpTypeName", ipObj.name)
+                if(flag){
+                  el.set("resolveIpTypeName", ipObj.name)
+                }
             }.bind(this))
 
             this.initTable();
@@ -775,6 +817,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
             this.queryArgs.name = this.$el.find("#input-domain").val() || null
+            
             this.collection.getDispGroupList(this.queryArgs);
         },
 
@@ -910,6 +953,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 type     : 2,
                 onOKCallback:  function(){
                     var options = copyDispGroupView.getArgs();
+                    console.log(options);
                     if (!options) return
                     this.collection.copyDispGroup(options);
                     this.copyDispGroupPopup.$el.modal("hide");
@@ -1001,7 +1045,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.PromptPopup = new Modal(options);
             } else {
                 var result = confirm("是否确定本次编辑？");
-                if (result)
+                if (result)  
                     this.collection.updateDispGroup(args);
                 else
                     this.editDispGroupPopup.$el.modal("show");
@@ -1135,7 +1179,20 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             });
             this.isInitPaginator = true;
         },
-
+        initGroupDomainList: function(data){
+            this.GropDomainList = data;
+            var typeArray = [{name:'全部',value:'All'}];
+            _.each(this.GropDomainList,function(el,index,list){
+                typeArray.push({name:el.name,value:el.id});
+            }.bind(this))
+            rootNode = this.$el.find(".dropdown-rootDomains");
+            Utility.initDropMenu(rootNode, typeArray, function(value){
+                if (value !== "All")
+                    this.queryArgs.kdnsDomainId = parseInt(value);
+                else
+                    this.queryArgs.kdnsDomainId = null;
+            }.bind(this));
+        },
         initDispGroupDropMenu: function(){
             var typeArray = [
                 {name: "全部", value: "All"},

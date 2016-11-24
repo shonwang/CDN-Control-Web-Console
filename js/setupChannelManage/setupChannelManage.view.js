@@ -170,7 +170,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         },
         getTopologyRoleError: function(error){
              
-             if(error && error.status == 404 ){
+            if(error && error.status == 404 ){
                 this.defaultParam = [];
                 this.initRuleTable(this.defaultParam);
                 console.log(error.message);   

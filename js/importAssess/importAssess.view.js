@@ -11,14 +11,68 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             this.model      = options.model;
 
             this.$el = $(_.template(template['tpl/importAssess/importAssess.history.html'])({data: {}}));
-
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
+            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickSearchButton, this));
 
-            this.initSetup()
+            this.startTime = new Date().format("yyyy/MM/dd") + " 00:00:00";
+            this.endTime = new Date().valueOf();
+            this.startTime = new Date(this.startTime).valueOf();
+
+            this.initChargeDatePicker();
+
+            this.defaultParam = {
+                "page" : 1,
+                "count": 99999,
+                "startIssueTime": this.startTime,
+                "endIssueTime": this.endTime
+            }
+
+            this.collection.off("get.history.success");
+            this.collection.off("get.history.error");
+            this.collection.on("get.history.success", $.proxy(this.initSetup, this));
+            this.collection.on("get.history.error", $.proxy(this.onGetError, this))
+            this.collection.getHistoryList(this.defaultParam);
         },
 
-        initSetup: function(){
-            var data = [{localLayer: "1111", upperLayer: "22222"}];
+        initChargeDatePicker: function(){
+            var startVal = null, endVal = null;
+            if (this.startTime)
+                startVal = new Date(this.startTime).format("yyyy/MM/dd hh:mm");
+            var startOption = {
+                lang:'ch',
+                timepicker: true,
+                scrollInput: false,
+                format:'Y/m/d H:i', 
+                value: startVal, 
+                onChangeDateTime: function(){
+                    this.startTime = new Date(arguments[0]).valueOf();
+                }.bind(this)
+            };
+            this.$el.find("#input-start").datetimepicker(startOption);
+            if (this.endTime)
+                endVal = new Date(this.endTime).format("yyyy/MM/dd hh:mm");
+            var endOption = {
+                lang:'ch',
+                timepicker: true,
+                scrollInput: false,
+                format:'Y/m/d H:i', 
+                value: endVal, 
+                onChangeDateTime: function(){
+                    this.endTime = new Date(arguments[0]).valueOf();
+                }.bind(this)
+            };
+            this.$el.find("#input-end").datetimepicker(endOption);
+        },
+
+        initSetup: function(data){
+            //if (!this.isInitPaginator) this.initPaginator();
+
+            this.historyList = data;
+
+            _.each(data, function(el, index, ls){
+                el.createTimeFormated = new Date(el.createTime).format("yyyy/mm/dd hh:MM:ss")
+            }.bind(this))
+
             this.table = $(_.template(template['tpl/importAssess/importAssess.history.table.html'])({
                 data: data, 
             }));
@@ -26,25 +80,38 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-
-            this.table.find("tbody .bill").on("click", $.proxy(this.onClickItemBill, this));
         },
 
-        onClickItemBill: function(event){
-            require(['setupBill.view', 'setupBill.model'], function(SetupBillView, SetupBillModel){
-                var mySetupBillModel = new SetupBillModel();
-                var mySetupBillView = new SetupBillView({
-                    collection: mySetupBillModel,
-                    onSaveCallback: function(){}.bind(this),
-                    onCancelCallback: function(){
-                        mySetupBillView.$el.remove();
-                        this.$el.find(".history-panel").show();
-                    }.bind(this)
-                })
+        initPaginator: function(){
+            this.$el.find(".total-items span").html(this.historyList.total)
+            if (this.historyList.total <= this.defaultParam.count) return;
+            var total = Math.ceil(this.historyList.total/this.defaultParam.count);
 
-                this.$el.find(".history-panel").hide();
-                mySetupBillView.render(this.$el.find(".bill-panel"));
-            }.bind(this))
+            this.$el.find(".pagination").jqPaginator({
+                totalPages: total,
+                visiblePages: 10,
+                currentPage: 1,
+                onPageChange: function (num, type) {
+                    if (type !== "init"){
+                        this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                        var args = _.extend(this.defaultParam);
+                        args.page = num;
+                        args.count = this.defaultParam.count;
+                        this.collection.getHistoryList(args);
+                    }
+                }.bind(this)
+            });
+            this.isInitPaginator = true;
+        },
+
+        onClickSearchButton: function(){
+            this.isInitPaginator = false;
+            this.defaultParam.page = 1;
+            this.defaultParam.startIssueTime = this.startTime;
+            this.defaultParam.endIssueTime = this.endTime;
+            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.$el.find(".pagination").html("");
+            this.collection.getHistoryList(this.defaultParam);
         },
 
         onClickCancelButton: function(){
@@ -192,6 +259,8 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.find(".add-domain").on("click", $.proxy(this.onClickAddDomain, this));
             this.$el.find(".start-assess").on("click", $.proxy(this.onClickStartAssess, this));
             this.$el.find(".multi-delete").on("click", $.proxy(this.onClickMultiDelete, this));
+            this.$el.find(".history").on("click", $.proxy(this.onClickItemHistory, this));
+
             this.enterKeyBindQuery();
 
             this.collection.trigger("update.assess.table");
@@ -221,15 +290,17 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                 alert("请选择调度组!");
                 return
             }
-            // if (!this.currentModel.get("regionName")){
-            //     alert("请选择区域!");
-            //     return
-            // }
+            if (!this.regionId){
+                alert("请选择区域!");
+                return
+            }
             // if (!this.$el.find("#input-bandwidth").val()){
             //     alert("请填写带宽!");
             //     return
             // }
             this.currentModel.set("createTime", new Date().format("yyyy/mm/dd hh:MM:ss"));
+            this.currentModel.set("regionId", this.regionId);
+            this.currentModel.set("regionName", this.regionName);
             this.currentModel.set("increBandwidth", this.$el.find("#input-bandwidth").val());
             this.collection.push(this.currentModel);
             this.collection.trigger("update.assess.table");
@@ -351,20 +422,9 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.trigger("update.assess.table");
         },
 
-        onClickItemHistory: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
-
-            var model = this.collection.get(id);
-
+        onClickItemHistory: function(){
             var myHistoryView = new HistoryView({
                 collection: this.collection,
-                model: model,
                 onSaveCallback: function(){}.bind(this),
                 onCancelCallback: function(){
                     myHistoryView.$el.remove();
@@ -411,28 +471,6 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             }
         },
 
-        initPaginator: function(){
-            this.$el.find(".total-items span").html(this.collection.total)
-            if (this.collection.total <= this.queryArgs.count) return;
-            var total = Math.ceil(this.collection.total/this.queryArgs.count);
-
-            this.$el.find(".pagination").jqPaginator({
-                totalPages: total,
-                visiblePages: 10,
-                currentPage: 1,
-                onPageChange: function (num, type) {
-                    if (type !== "init"){
-                        this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                        var args = _.extend(this.queryArgs);
-                        args.page = num;
-                        args.count = this.queryArgs.count;
-                        this.collection.queryChannel(args);
-                    }
-                }.bind(this)
-            });
-            this.isInitPaginator = true;
-        },
-
         initChannelDropMenu: function(){
             require(["dispGroup.model"], function(DispGroupModel){
                 this.myDispGroupModel = new DispGroupModel();
@@ -446,6 +484,40 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                     "count" : 99999
                 });
             }.bind(this))
+
+            this.collection.on("get.region.success", $.proxy(this.onGetRegionList, this));
+            this.collection.on("get.region.error", $.proxy(this.onGetError, this));
+            this.collection.selectRegionList({
+               "page": 1,
+               "count": 10,
+               "name": null
+            });
+        },
+
+        onGetRegionList: function(res){
+            var regionArray = []
+            _.each(res.rows, function(el, index, lst){
+                regionArray.push({
+                    name: el.name,
+                    value: el.id
+                })
+            }.bind(this))
+
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-region').get(0),
+                panelID: this.$el.find('#dropdown-region').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function(){},
+                data: regionArray,
+                callback: function(data) {
+                    this.$el.find(".dropdown-region .cur-value").html(data.name || "请选择");
+                    this.regionId = data.value;
+                    this.regionName = data.name;
+                }.bind(this)
+            });
         },
 
         onGetDispGroupList: function(){

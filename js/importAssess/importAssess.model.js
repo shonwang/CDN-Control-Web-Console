@@ -15,7 +15,6 @@ define("importAssess.model", ['require','exports', 'utility'], function(require,
         getClientMessage: function(args){
             var url = BASE_URL + "/rs/evaluation/getClientMessage",
             successCallback = function(res){
-                console.log(res)
                 if (res)
                     this.trigger("get.client.success", res);
                 else
@@ -27,31 +26,33 @@ define("importAssess.model", ['require','exports', 'utility'], function(require,
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        getChannelDispgroup: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/get",
+        getHistoryList: function(args){
+            var url = BASE_URL + "/rs/evaluation/getList",
             successCallback = function(res){
-                if (res){
-                    this.trigger("channel.dispgroup.success", res);
-                } else {
-                    this.trigger("channel.dispgroup.error", res); 
-                }
+                if (res)
+                    this.trigger("get.history.success", res);
+                else
+                    this.trigger("get.history.error", res); 
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("channel.dispgroup.error", response); 
+                this.trigger("get.history.error", response); 
             }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
-        addDispGroupChannel: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/add",
+        selectRegionList: function(args){
+            var url = BASE_URL + "/rs/region/selectRegionList",
             successCallback = function(res){
-                this.trigger("add.dispGroup.channel.success", res);
+                if (res)
+                    this.trigger("get.region.success", res);
+                else
+                    this.trigger("get.region.error", res); 
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("add.dispGroup.channel.error", response); 
+                this.trigger("get.region.error", response); 
             }.bind(this);
 
-            Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
+            Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
         ipTypeList: function(args){

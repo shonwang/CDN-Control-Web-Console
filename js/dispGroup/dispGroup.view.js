@@ -448,16 +448,20 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             Utility.initDropMenu(this.$el.find(".dropdown-firstDomain"), typeIpArray, function(value){
                 this.kdnsDomainId = parseInt(value);
             }.bind(this));
+            this.domainList = typeIpArray;
             if (!this.isEdit){
                 this.kdnsDomainId = data[0].id;
                 this.$el.find(".dropdown-firstDomain .cur-value").html(data[0].name)
             } else {
-                var aIpTypeArray = _.filter(this.GroupDomainList ,function(obj) {
+                var aIpTypeArray = _.filter(this.domainList,function(obj) {
                     return obj["name"] === this.model.get("kdnsDomainIddomainName");
                 }.bind(this))
                 if (aIpTypeArray[0]){
+                    console.log(aIpTypeArray[0]);
                     this.$el.find(".dropdown-firstDomain .cur-value").html(aIpTypeArray[0].name)
-                    this.kdnsDomainId = aIpTypeArray.value;
+                    this.kdnsDomainId = aIpTypeArray[0].value;
+                    console.log(aIpTypeArray[0].value);
+
                 }
                 this.$el.find(".dropdown-firstDomain #dropdown-GropDomain-list").attr("disabled", "disabled")
             }
@@ -607,6 +611,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         getArgs: function(){
+            console.log(this.kdnsDomainId);
             var options = {
                 "id"           : this.model ? this.model.get("id") : 0,
                 "dispDomain"   : this.$el.find("#input-name").val(),
@@ -948,6 +953,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 type     : 2,
                 onOKCallback:  function(){
                     var options = copyDispGroupView.getArgs();
+                    console.log(options);
                     if (!options) return
                     this.collection.copyDispGroup(options);
                     this.copyDispGroupPopup.$el.modal("hide");
@@ -1040,7 +1046,8 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             } else {
                 var result = confirm("是否确定本次编辑？");
                 if (result)
-                    this.collection.updateDispGroup(args);
+                {    console.log(args);
+                    this.collection.updateDispGroup(args);}
                 else
                     this.editDispGroupPopup.$el.modal("show");
             }

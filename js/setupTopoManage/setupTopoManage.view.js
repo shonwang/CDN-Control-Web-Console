@@ -486,7 +486,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             }else{
                 this.Step = options.CurrentStep;
             }
-            this.defaultParam = this.parameterProcessing(this.deliveryStrategyDef);//每一条的步骤参数
+            this.defaultParam = this.deepClone(this.parameterProcessing(this.deliveryStrategyDef));//每一条的步骤参数
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.addStep.html'])({data:this.Step}));
             this.$el.find('.opt-ctn .save').on('click', $.proxy(this.onClickSaveButton, this));
             this.$el.find('.opt-ctn .cancel').on('click', $.proxy(this.onClickCancelButton, this));
@@ -504,6 +504,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             var param = _.filter(data,function(el,index,list){
                  return el.step == this.Step;
             }.bind(this));
+            
             if(param.length == 0){
                 return {"step":this.Step,"nodeId":[],"shell":""};
 
@@ -676,8 +677,29 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             }
             if(!this.isEdit){
                 this.deliveryStrategyDef.push(this.defaultParam);
+            }else{
+                _.each(this.deliveryStrategyDef,function(el,index,list){
+                    if(el.step == this.Step){
+                          this.deliveryStrategyDef[index] = this.defaultParam;
+                    } 
+                }.bind(this))
             }
             this.options.onSaveCallback && this.options.onSaveCallback();
+        },
+        deepClone: function(obj){
+            var str, newobj = obj.constructor === Array ? [] : {};
+            if(typeof obj !== 'object'){
+                return;
+            } else if(window.JSON){
+                str = JSON.stringify(obj), //系列化对象
+                newobj = JSON.parse(str); //还原
+            } else {
+                for(var i in obj){
+                    newobj[i] = typeof obj[i] === 'object' ? 
+                    cloneObj(obj[i]) : obj[i]; 
+                }
+            }
+            return newobj;
         },
         render: function(target){
             this.$el.appendTo(target);

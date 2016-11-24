@@ -486,21 +486,27 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             }else{
                 this.Step = options.CurrentStep;
             }
-            this.defaultParam = this.parameterProcessing(this.deliveryStrategyDef);//每一条的步骤参数
+            this.defaultParam = this.deepClone(this.parameterProcessing(this.deliveryStrategyDef));//每一条的步骤参数
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.addStep.html'])({data:this.Step}));
             this.$el.find('.opt-ctn .save').on('click', $.proxy(this.onClickSaveButton, this));
             this.$el.find('.opt-ctn .cancel').on('click', $.proxy(this.onClickCancelButton, this));
             this.$el.find('.other-all-node').on('click',$.proxy(this.onClickOtherNodeButton,this));
+            this.$el.find('.script').on('click',$.proxy(this.onClickScriptButton,this));
+            
+            if(this.defaultParam.shell != "" && this.defaultParam.shell !== null && this.defaultParam.shell !== undefined){
+                this.$el.find(".script").trigger('click');
+                this.$el.find(".scriptContent").val(this.defaultParam.shell);
+            }
             
             this.onGetNodeSuccess(this.allNodes);  
-
         },
         parameterProcessing: function(data){
             var param = _.filter(data,function(el,index,list){
                  return el.step == this.Step;
             }.bind(this));
+            
             if(param.length == 0){
-                return {"step":this.Step,"nodeId":[],"shell":"ls;pwd;"};
+                return {"step":this.Step,"nodeId":[],"shell":""};
 
             }else{
                 return param[0];
@@ -655,18 +661,45 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
 
             this.$el.find('.all').hide();
         },
+        onClickScriptButton: function(){
+            this.$el.find('.scriptContent').toggle("fast"); 
+        },
         onClickCancelButton: function(){
            this.options.onCancelCallback && this.options.onCancelCallback();
         },
         onClickSaveButton: function(){
+            
+            this.defaultParam.shell = $(".scriptContent").val();
+            
             if(this.defaultParam.nodeId.length == 0){
                 alert('您还未选择节点');
                 return;
             }
             if(!this.isEdit){
                 this.deliveryStrategyDef.push(this.defaultParam);
+            }else{
+                _.each(this.deliveryStrategyDef,function(el,index,list){
+                    if(el.step == this.Step){
+                          this.deliveryStrategyDef[index] = this.defaultParam;
+                    } 
+                }.bind(this))
             }
             this.options.onSaveCallback && this.options.onSaveCallback();
+        },
+        deepClone: function(obj){
+            var str, newobj = obj.constructor === Array ? [] : {};
+            if(typeof obj !== 'object'){
+                return;
+            } else if(window.JSON){
+                str = JSON.stringify(obj), //系列化对象
+                newobj = JSON.parse(str); //还原
+            } else {
+                for(var i in obj){
+                    newobj[i] = typeof obj[i] === 'object' ? 
+                    cloneObj(obj[i]) : obj[i]; 
+                }
+            }
+            return newobj;
         },
         render: function(target){
             this.$el.appendTo(target);

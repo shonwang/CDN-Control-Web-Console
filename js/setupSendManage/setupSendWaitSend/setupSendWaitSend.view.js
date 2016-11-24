@@ -374,6 +374,7 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
 
         hide: function(){
             this.$el.hide();
+            $(document).off('keydown');
         },
 
         update: function(target){

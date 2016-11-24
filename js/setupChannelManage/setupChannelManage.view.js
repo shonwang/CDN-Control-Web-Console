@@ -288,7 +288,6 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                     isEdit    : true,
                     onSaveCallback: function(){
                        var data = this.InformationProcessing(this.defaultParam);
-                        console.log(this.defaultParam);
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".special-layer").show();
                         this.initRuleTable(data);
@@ -591,6 +590,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         events: {},
 
         initialize: function(options) {
+            this.options = options;
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.html'])());
 
@@ -639,7 +639,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
 
         onClickQueryButton: function(){
             this.isInitPaginator = false;
-            this.queryArgs.page = 1;
+            this.queryArgs.currentPage = 1;
             this.queryArgs.domain = this.$el.find("#input-domain").val();
             if (this.queryArgs.domain == "") this.queryArgs.domain = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
@@ -1003,13 +1003,17 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             $(document).off('keydown');
         },
 
-        update: function(){
-            this.$el.show();
-            this.enterKeyBindQuery();
+        update: function(target){
+            this.collection.off();
+            this.collection.reset();
+            this.$el.remove();
+            this.initialize(this.options);
+            this.render(target || this.target);
         },
 
         render: function(target) {
-            this.$el.appendTo(target)
+            this.$el.appendTo(target);
+            this.target = target;
         }
     });
 

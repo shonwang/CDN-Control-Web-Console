@@ -128,8 +128,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                     this.templateManageView.hide();
                     break;
                 case 'setupChannelManage':
-                    this.setupChannelManageView.remove();
-                    this.setupChannelManageView = null;
+                    this.setupChannelManageView.hide();
                     break;
                 case 'setupAppManage':
                     this.setupAppManageView.remove();

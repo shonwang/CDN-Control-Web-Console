@@ -477,7 +477,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.$el.find(".ip-type .cur-value").html(data[0].name)
             } else {
                 var aIpTypeArray = _.filter(this.ipTypeList ,function(obj) {
-                    return obj["id"] === this.model.get("resolveIpType");
+                    return obj["id"] == this.model.get("resolveIpType");
                 }.bind(this))
                 if (aIpTypeArray[0]){
                     this.$el.find(".ip-type .cur-value").html(aIpTypeArray[0].name)
@@ -797,11 +797,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         onGetIpTypeSuccess: function(data){
             _.each(this.collection.models, function(el, inx, list){
-                console.log(el.get("resolveIpType"));
                 var ipObj = _.find(data, function(obj){
                     return obj.id == el.get("resolveIpType");
                 }.bind(this))
-                console.log(ipObj);
                 el.set("resolveIpTypeName", ipObj.name)
             }.bind(this))
 

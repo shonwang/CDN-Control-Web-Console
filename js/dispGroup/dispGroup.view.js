@@ -742,11 +742,12 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             }
 
             this.queryArgs = {
-                "name"  : null,//调度组名称
-                "status": null,//调度组状态
-                "level" : null,//覆盖级别
-                "page"  :1,
-                "count" :10
+                "name"         : null,//调度组名称
+                "kdnsDomainId" : null, //调度组所属根域
+                "status"       : null,//调度组状态
+                "level"        : null,//覆盖级别
+                "page"         :1,
+                "count"        :10
             }
             this.onClickQueryButton();
         }, 
@@ -811,6 +812,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
             this.queryArgs.name = this.$el.find("#input-domain").val() || null
+            
             this.collection.getDispGroupList(this.queryArgs);
         },
 
@@ -1173,16 +1175,16 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
         initGroupDomainList: function(data){
             this.GropDomainList = data;
-            var typeArray = [];
+            var typeArray = [{name:'全部',value:'All'}];
             _.each(this.GropDomainList,function(el,index,list){
                 typeArray.push({name:el.name,value:el.id});
             }.bind(this))
             rootNode = this.$el.find(".dropdown-rootDomains");
             Utility.initDropMenu(rootNode, typeArray, function(value){
                 if (value !== "All")
-                    this.queryArgs.level = parseInt(value);
+                    this.queryArgs.kdnsDomainId = parseInt(value);
                 else
-                    this.queryArgs.level = null;
+                    this.queryArgs.kdnsDomainId = null;
             }.bind(this));
         },
         initDispGroupDropMenu: function(){

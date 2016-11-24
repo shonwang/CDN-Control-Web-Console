@@ -489,20 +489,36 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.defaultParam = this.parameterProcessing(this.deliveryStrategyDef);//每一条的步骤参数
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.addStep.html'])({data:this.Step}));
             
+            /*console.log(this.defaultParam);
+            if(this.defaultParam.shell !== null && this.defaultParam.shell != undefined && this.defaultParam != ""){
+                this.$el.find(".script").trigger();
+                $("#scriptContent").val(this.defaultParam.shell);
+            } */
+            
+            console.log(this.defaultParam);
+            if(this.defaultParam.shell != ""){
+               // this.$el.find(".script").trigger();
+                $("#scriptContent").val(this.defaultParam.shell);
+            }
             this.$el.find('.opt-ctn .save').on('click', $.proxy(this.onClickSaveButton, this));
             this.$el.find('.opt-ctn .cancel').on('click', $.proxy(this.onClickCancelButton, this));
             this.$el.find('.other-all-node').on('click',$.proxy(this.onClickOtherNodeButton,this));
-            this.$el.find('.script').toggle();
+            this.$el.find('.script').on('click',$.proxy(this.onClickScriptButton,this));
             
             this.onGetNodeSuccess(this.allNodes);  
-
         },
+        /*initScriptTable: function(defaultParam){
+            if(defaultParam.shell !== null && defaultParam.shell != undefined && defaultParam != ""){
+                this.$el.find(".script").trigger();
+                $("#scriptContent").val(defaultParam.shell);
+            } 
+        },*/
         parameterProcessing: function(data){
             var param = _.filter(data,function(el,index,list){
                  return el.step == this.Step;
             }.bind(this));
             if(param.length == 0){
-                return {"step":this.Step,"nodeId":[],"shell":"ls;pwd;"};
+                return {"step":this.Step,"nodeId":[],"shell":""};
 
             }else{
                 return param[0];
@@ -658,16 +674,20 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find('.all').hide();
         },
         onClickScriptButton: function(){
-            
+            $('.scriptContent').toggle("fast");
         },
         onClickCancelButton: function(){
            this.options.onCancelCallback && this.options.onCancelCallback();
         },
         onClickSaveButton: function(){
+            
+            this.defaultParam.shell = $(".scriptContent").val();
+            
             if(this.defaultParam.nodeId.length == 0){
                 alert('您还未选择节点');
                 return;
             }
+            console.log(this.defaultParam);
             if(!this.isEdit){
                 this.deliveryStrategyDef.push(this.defaultParam);
             }

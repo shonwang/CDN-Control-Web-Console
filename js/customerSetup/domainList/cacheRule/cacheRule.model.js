@@ -5,9 +5,9 @@ define("cacheRule.model", ['require','exports', 'utility'], function(require, ex
             var type = this.get('type');
             if (type === 0) this.set("typeName", "文件类型");
             if (type === 1) this.set("typeName", "指定目录");
-            if (type === 2) this.set("typeName", "指定URL");
+            if (type === 2) this.set("typeName", "指定URI");
             if (type === 3) this.set("typeName", "正则匹配");
-            if (type === 4) this.set("typeName", "url包含指定参数");
+            if (type === 4) this.set("typeName", "urI包含指定参数");
             if (type === 9) this.set("typeName", "全部文件");
 
             var hasOriginPolicy = this.get('hasOriginPolicy'),

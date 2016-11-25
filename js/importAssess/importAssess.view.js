@@ -21,8 +21,8 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             this.initChargeDatePicker();
 
             this.defaultParam = {
-                "page" : 1,
-                "count": 99999,
+                // "page" : 1,
+                // "count": 99999,
                 "startIssueTime": this.startTime,
                 "endIssueTime": this.endTime
             }
@@ -160,12 +160,14 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
 
-            require(["setupChannelManage.model"], function(SetupChannelManageModel){
-                this.mySetupChannelManageModel = new SetupChannelManageModel();
-                this.mySetupChannelManageModel.on("get.channel.success", $.proxy(this.initTable, this));
-                this.mySetupChannelManageModel.on("get.channel.error", $.proxy(this.onGetError, this));
-                this.mySetupChannelManageModel.queryChannel(this.queryArgs);
-            }.bind(this))
+            // require(["setupChannelManage.model"], function(SetupChannelManageModel){
+            //     this.mySetupChannelManageModel = new SetupChannelManageModel();
+            //     this.mySetupChannelManageModel.on("get.channel.success", $.proxy(this.initTable, this));
+            //     this.mySetupChannelManageModel.on("get.channel.error", $.proxy(this.onGetError, this));
+            //     this.mySetupChannelManageModel.queryChannel(this.queryArgs);
+            // }.bind(this))
+
+            this.collection.getCnameList(this.queryArgs)
         },
 
         initTable: function(){

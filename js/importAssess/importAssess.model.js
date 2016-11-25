@@ -55,16 +55,16 @@ define("importAssess.model", ['require','exports', 'utility'], function(require,
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
-        ipTypeList: function(args){
-            var url = BASE_URL + "/rs/metaData/ipTypeList",
+        getCnameList: function(args){
+            var url = BASE_URL + "/rs/evaluation/getCnameList",
             successCallback = function(res){
                 if (res)
-                    this.trigger("ip.type.success", res.rows);
+                    this.trigger("get.cname.success", res.rows);
                 else
-                    this.trigger("ip.type.error");
+                    this.trigger("get.cname.error");
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("ip.type.error", response);
+                this.trigger("get.cname.error", response);
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },

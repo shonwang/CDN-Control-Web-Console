@@ -448,10 +448,15 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             Utility.initDropMenu(this.$el.find(".dropdown-firstDomain"), typeIpArray, function(value){
                 this.kdnsDomainId = parseInt(value);
             }.bind(this));
+            
             this.domainList = typeIpArray;
+            
             if (!this.isEdit){
                 this.kdnsDomainId = data[0].id;
-                this.$el.find(".dropdown-firstDomain .cur-value").html(data[0].name)
+                this.$el.find(".dropdown-firstDomain .cur-value").html(data[0].name);
+                if(!AUTH_OBJ.ChooseGtld){
+                    this.$el.find(".dropdown-firstDomain #dropdown-GropDomain-list").attr("disabled", "disabled")
+                }
             } else {
                 var aIpTypeArray = _.filter(this.domainList,function(obj) {
                     return obj["name"] === this.model.get("kdnsDomainIddomainName");

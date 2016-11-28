@@ -2,14 +2,30 @@ define("domainList.model", ['require','exports','utility'], function(require, ex
     var Model = Backbone.Model.extend({
         initialize: function(){
             var auditStatus = this.get("auditStatus");
-            /**审核状态，0审核中，1正常运行，2审核失败，3停止，-1删除，4配置中，5配置失败 */
-            if (auditStatus === 0) this.set("statusName", '<span class="text-info">审核中</span>');
-            if (auditStatus === 1) this.set("statusName", '<span class="text-success">正常</span>');
-            if (auditStatus === 2) this.set("statusName", '<span class="text-warning">审核失败</span>');
-            if (auditStatus === 3) this.set("statusName", '<span class="text-danger">停止</span>');
-            if (auditStatus === 4) this.set("statusName", '<span class="text-default">配置中</span>');
-            if (auditStatus === 5) this.set("statusName", '<span class="text-warning">配置失败</span>');
+            // /**审核状态，0审核中，1正常运行，2审核失败，3停止，-1删除，4配置中，5配置失败 */
+            // if (auditStatus === 0) this.set("statusName", '<span class="text-info">审核中</span>');
+            // if (auditStatus === 1) this.set("statusName", '<span class="text-success">正常</span>');
+            // if (auditStatus === 2) this.set("statusName", '<span class="text-warning">审核失败</span>');
+            // if (auditStatus === 3) this.set("statusName", '<span class="text-danger">停止</span>');
+            // if (auditStatus === 4) this.set("statusName", '<span class="text-default">配置中</span>');
+            // if (auditStatus === 5) this.set("statusName", '<span class="text-warning">配置失败</span>');
+            // if (auditStatus === -1) this.set("statusName", '<span class="text-danger">删除</span>');
+
+            if (auditStatus === 0) this.set("statusName", '<span class="text-primary">审核中</span>');
+            if (auditStatus === 1) this.set("statusName", '<span class="text-success">审核通过</span>');
             if (auditStatus === -1) this.set("statusName", '<span class="text-danger">删除</span>');
+            if (auditStatus === 2) this.set("statusName", '<span class="text-danger">审核失败</span>');
+            if (auditStatus === 3) this.set("statusName", '<span class="text-danger">停止</span>');
+            if (auditStatus === 4) this.set("statusName", '<span class="text-primary">配置中</span>');
+            if (auditStatus === 6) this.set("statusName", '<span class="text-primary">编辑中</span>');
+            if (auditStatus === 14) this.set("statusName", '<span class="text-danger">配置失败</span>');
+            if (auditStatus === 7) this.set("statusName", '<span class="text-primary">待下发</span>');
+            if (auditStatus === 8) this.set("statusName", '<span class="text-primary">待定制</span>');
+            if (auditStatus === 9) this.set("statusName", '<span class="text-danger">定制化配置错误</span>');
+            if (auditStatus === 10) this.set("statusName", '<span class="text-primary">下发中</span>');
+            if (auditStatus === 11) this.set("statusName", '<span class="text-danger">下发失败</span>');
+            if (auditStatus === 12) this.set("statusName", '<span class="text-primary">下发成功</span>');
+            if (auditStatus === 13) this.set("statusName", '<span class="text-success">运行中</span>');
 
             var type = this.get("type");
             /**2016/10/9 15:07:18 type    是   Integer     业务类型 1下载 2 直播 */

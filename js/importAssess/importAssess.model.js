@@ -59,23 +59,26 @@ define("importAssess.model", ['require','exports', 'utility'], function(require,
             var url = BASE_URL + "/rs/evaluation/getCnameList",
             successCallback = function(res){
                 if (res)
-                    this.trigger("get.cname.success", res.rows);
+                    this.trigger("get.cname.success", res);
                 else
                     this.trigger("get.cname.error");
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("get.cname.error", response);
             }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
-        deleteDispGroupChannel: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/delete",
+        getEvaluationFlag: function(args){
+            var url = BASE_URL + "/rs/advice/getEvaluationFlag",
             successCallback = function(res){
-                this.trigger("add.dispGroup.channel.success", res);
+                if (res)
+                    this.trigger("get.evaluationFlag.success", res);
+                else
+                    this.trigger("get.evaluationFlag.error");
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("add.dispGroup.channel.error", response); 
+                this.trigger("get.evaluationFlag.error", response); 
             }.bind(this);
 
             Utility.postAjax(url, args, successCallback, errorCallback, null, "text");

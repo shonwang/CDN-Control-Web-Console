@@ -144,18 +144,18 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             this.initChannelDropMenu();
 
             this.queryArgs = {
-                domain: null,
-                page:1,
-                count:10
+                cname: null,
+                currentPage:1,
+                pageSize:10
             }
             this.onClickConfirmButton();
         },
 
         onClickConfirmButton: function(){
             this.isInitPaginator = false;
-            this.queryArgs.page = 1;
-            this.queryArgs.domain = this.$el.find("#input-cname").val();
-            if (this.queryArgs.domain == "") this.queryArgs.domain = null;
+            this.queryArgs.currentPage = 1;
+            this.queryArgs.cname = this.$el.find("#input-cname").val();
+            if (this.queryArgs.cname == "") this.queryArgs.cname = null;
 
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
@@ -166,25 +166,30 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             //     this.mySetupChannelManageModel.on("get.channel.error", $.proxy(this.onGetError, this));
             //     this.mySetupChannelManageModel.queryChannel(this.queryArgs);
             // }.bind(this))
-
+            this.collection.on("get.cname.success", $.proxy(this.initTable, this));
+            this.collection.on("get.cname.error", $.proxy(this.onGetError, this));
             this.collection.getCnameList(this.queryArgs)
         },
 
-        initTable: function(){
+        initTable: function(data){
+            this.collection.total = data.total;
+            this.cnameList = data.rows;
+
             if (!this.isInitPaginator) this.initPaginator();
+
             this.table = $(_.template(template['tpl/importAssess/importAssess.domain.table.html'])({
-                data: this.mySetupChannelManageModel.models, 
+                data: this.cnameList, 
             }));
-            if (this.mySetupChannelManageModel.models.length !== 0)
+            if (this.cnameList.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
         },
 
         initPaginator: function(){
-            this.$el.find(".total-items span").html(this.mySetupChannelManageModel.total)
-            if (this.mySetupChannelManageModel.total <= this.queryArgs.count) return;
-            var total = Math.ceil(this.mySetupChannelManageModel.total/this.queryArgs.count);
+            this.$el.find(".total-items span").html(this.collection.total)
+            if (this.collection.total <= this.queryArgs.pageSize) return;
+            var total = Math.ceil(this.collection.total/this.queryArgs.pageSize);
 
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
@@ -196,9 +201,9 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                     if (type !== "init"){
                         this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                         var args = _.extend(this.queryArgs);
-                        args.page = num;
-                        args.count = this.queryArgs.count;
-                        this.mySetupChannelManageModel.queryChannel(args);
+                        args.currentPage = num;
+                        args.pageSize = this.queryArgs.pageSize;
+                        this.collection.queryChannel(args);
                     }
                 }.bind(this)
             });
@@ -213,8 +218,8 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                 {name: "100条", value: 100}
             ]
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
-                this.queryArgs.count = value;
-                this.queryArgs.page = 1;
+                this.queryArgs.pageSize = value;
+                this.queryArgs.currentPage = 1;
                 this.onClickConfirmButton();
             }.bind(this));
         },
@@ -226,7 +231,9 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                 return false;
             }
             var id = selectedDomain.get(0).id,
-                model = this.mySetupChannelManageModel.get(id);
+                model = _.find(this.cnameList, function(obj){
+                    return obj.id === parseInt(id)
+                }.bind(this));
 
             return model;   
         },
@@ -296,10 +303,10 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                 alert("请选择区域!");
                 return
             }
-            // if (!this.$el.find("#input-bandwidth").val()){
-            //     alert("请填写带宽!");
-            //     return
-            // }
+            if (!this.$el.find("#input-bandwidth").val()){
+                alert("请填写带宽!");
+                return
+            }
             this.currentModel.set("createTime", new Date().format("yyyy/mm/dd hh:MM:ss"));
             this.currentModel.set("regionId", this.regionId);
             this.currentModel.set("regionName", this.regionName);
@@ -327,10 +334,9 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                 })
             }.bind(this))
 
-            var postParam = {
-                records: records
-            }
+            var postParam = 
 
+            this.collection.getEvaluationFlag(postParam)
             console.log(postParam)
         },
 
@@ -389,9 +395,9 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                 onOKCallback:  function(){
                     var result  = mySelectDomainView.onSure();
                     if (!result) return;
-                    this.$el.find("#input-cname").val(result.get("cname"))
-                    //this.collection.getClientMessage({cname: result.get("cname")})
-                    this.collection.getClientMessage({cname: "mt.huluxia.com.download.ks-cdn.com"})
+                    this.$el.find("#input-cname").val(result.name)
+                    this.collection.getClientMessage({cnameId: result.id})
+                    //this.collection.getClientMessage({cname: "mt.huluxia.com.download.ks-cdn.com"})
                     this.selectDomain.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function(){

@@ -1,12 +1,12 @@
 <table class="table table-striped table-hover">
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
-            <tr data-id="<%=data[i].get('id')%>">
+            <tr data-id="<%=data[i].id%>">
               <td>
                   <div class="radio">
                       <label>
-                        <input type="radio" name="options-topo" id=<%=data[i].get('id')%>>
-                        <%=data[i].get("cname")%>
+                        <input type="radio" name="options-topo" id=<%=data[i].id%>>
+                        <%=data[i].name%>
                       </label>
                   </div>
               </td>

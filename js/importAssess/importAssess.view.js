@@ -263,6 +263,8 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.client.error", $.proxy(this.onGetError, this));
             this.collection.on("update.client", $.proxy(this.updateUserInfoView, this));
             this.collection.on("update.assess.table", $.proxy(this.initTable, this));
+            this.collection.on("get.evaluationFlag.success", $.proxy(this.onGetEvaluationSuccess, this));
+            this.collection.on("get.evaluationFlag.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .confirm").on("click", $.proxy(this.onClickConfirmButton, this));
             this.$el.find(".add-domain").on("click", $.proxy(this.onClickAddDomain, this));
@@ -307,11 +309,20 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                 alert("请填写带宽!");
                 return
             }
-            this.currentModel.set("createTime", new Date().format("yyyy/mm/dd hh:MM:ss"));
-            this.currentModel.set("regionId", this.regionId);
-            this.currentModel.set("regionName", this.regionName);
-            this.currentModel.set("increBandwidth", this.$el.find("#input-bandwidth").val());
-            this.collection.push(this.currentModel);
+            var defaultParam = {
+                "cnameId": this.currentModel.get("cnameId"),
+                "cname": this.currentModel.get("cname"),
+                "accelerateName": this.currentModel.get("accelerateName"),
+                "clientName": this.currentModel.get("clientName"),
+                "groupId": this.currentModel.get("groupId"),
+                "groupName": this.currentModel.get("groupName"),
+                "regionId": this.regionId,
+                "regionName": this.regionName,
+                "increBandwidth": this.$el.find("#input-bandwidth").val()
+            }
+            var newModel = new this.collection.model(defaultParam)
+            newModel.set("createTime", new Date().format("yyyy/mm/dd hh:MM:ss"));
+            this.collection.push(newModel);
             this.collection.trigger("update.assess.table");
         },
 
@@ -325,19 +336,20 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                 return;
             }
 
-            var records = [];
+            var postParam = [];
             _.each(checkedList, function(el, index, ls){
-                records.push({
+                postParam.push({
                     "groupId": el.get("groupId"),
                     "bandwidth": el.get("increBandwidth"),
                     "regionId": el.get("regionId")
                 })
             }.bind(this))
 
-            var postParam = 
-
             this.collection.getEvaluationFlag(postParam)
-            console.log(postParam)
+        },
+
+        onGetEvaluationSuccess: function(){
+
         },
 
         initTable: function(){

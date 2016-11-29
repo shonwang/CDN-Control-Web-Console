@@ -454,6 +454,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (!this.isEdit){
                 this.kdnsDomainId = data[0].id;
                 this.$el.find(".dropdown-firstDomain .cur-value").html(data[0].name);
+               // AUTH_OBJ.ChooseGtld = true;
                 if(!AUTH_OBJ.ChooseGtld){
                     this.$el.find(".dropdown-firstDomain #dropdown-GropDomain-list").attr("disabled", "disabled")
                 }
@@ -466,7 +467,11 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.kdnsDomainId = aIpTypeArray[0].value;
                 }
                 if(! this.isCopy){
-                  this.$el.find(".dropdown-firstDomain #dropdown-GropDomain-list").attr("disabled", "disabled")
+                   this.$el.find(".dropdown-firstDomain #dropdown-GropDomain-list").attr("disabled", "disabled")
+                }else{
+                   if(!AUTH_OBJ.ChooseGtld){
+                      this.$el.find(".dropdown-firstDomain #dropdown-GropDomain-list").attr("disabled", "disabled")
+                   }
                 }
             }
         },

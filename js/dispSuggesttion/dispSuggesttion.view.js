@@ -529,7 +529,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
 
             if (this.collection.issuedFlag && this.assessInfo) 
                 this.$el.find(".opt-ctn .sending").show();
-            else
+            else if (!this.isPlanning && !this.nodeId)
                 this.$el.find(".opt-ctn .sending").hide();
         },
 

@@ -450,7 +450,6 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             }.bind(this));
             
             this.domainList = typeIpArray;
-            
             if (!this.isEdit){
                 this.kdnsDomainId = data[0].id;
                 this.$el.find(".dropdown-firstDomain .cur-value").html(data[0].name);
@@ -468,9 +467,11 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 }
                 if(! this.isCopy){
                    this.$el.find(".dropdown-firstDomain #dropdown-GropDomain-list").attr("disabled", "disabled")
-                }else{
+                }else {
                    if(!AUTH_OBJ.ChooseGtld){
-                      this.$el.find(".dropdown-firstDomain #dropdown-GropDomain-list").attr("disabled", "disabled")
+                      this.$el.find(".dropdown-firstDomain #dropdown-GropDomain-list").attr("disabled", "disabled");
+                      this.$el.find(".dropdown-firstDomain .cur-value").html(data[0].name);
+                      this.kdnsDomainId = data[0].id;
                    }
                 }
             }

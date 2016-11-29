@@ -36,17 +36,6 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
         },
 
         initChart: function(res){
-            // var base = +new Date(1968, 9, 3);
-            // var oneDay = 24 * 3600 * 1000;
-            // var date = [];
-
-            // var data = [Math.random() * 300];
-
-            // for (var i = 1; i < 20000; i++) {
-            //     var now = new Date(base += oneDay);
-            //     date.push([now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'));
-            //     data.push(Math.round((Math.random() - 0.5) * 20 + data[i - 1]));
-            // }
             var nodeChName       = this.selectNode["node.chName"],
                 nodeMaxBWLastNight = this.selectNode["node.maxBWLastNight"],
                 nodeCurrBW = this.selectNode["node.currBW"],
@@ -378,6 +367,8 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
 
         initialize: function(options) {
             this.nodeId = options.nodeId;
+            this.assessInfo = options.assessInfo;
+            this.isPlanning = options.isPlanning;
             this.collection = options.collection;
             this.backCallback = options.backCallback;
 
@@ -408,7 +399,13 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".opt-ctn .show-node-change").on("click", $.proxy(this.onClickShowRemark, this));
             this.$el.find(".opt-ctn .hide-node-change").on("click", $.proxy(this.onClickHideRemark, this));
 
-            if (this.nodeId) this.collection.getDisconfAdvice({nodeId: this.nodeId, t: new Date().valueOf()})
+            this.$el.find(".opt-ctn .sending").hide();
+
+            if (this.nodeId) this.collection.getDisconfAdvice({nodeId: this.nodeId, t: new Date().valueOf()});
+
+            if (this.assessInfo) this.collection.getEvaluationAdvice(this.assessInfo);
+
+            if (this.isPlanning) this.collection.getPeakAdvice({t: new Date().valueOf()});
         },
 
         onClickBack: function(){
@@ -529,6 +526,11 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find("#disp-config-filter").val("");
             this.$el.find("#disp-config-filter").off("keyup");
             this.$el.find("#disp-config-filter").on("keyup", $.proxy(this.onKeyupDispConfigListFilter, this));
+
+            if (this.collection.issuedFlag && this.assessInfo) 
+                this.$el.find(".opt-ctn .sending").show();
+            else
+                this.$el.find(".opt-ctn .sending").hide();
         },
 
         initNodeChangeTable: function(data){
@@ -697,7 +699,18 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             var result = confirm("你确定要下发吗？")
             if (!result) return;
             var args = this.getSendData();
-            this.collection.adviceDispDns(args, this.nodeId, this.requestId, this.cc)
+
+            if (this.assessInfo){
+                var postParam = {
+                    adviceDnsList: args,
+                    evaluationList: this.assessInfo
+                }
+                this.collection.evalAdviceDispDns(postParam, this.requestId, this.cc)
+            } else if (this.nodeId){
+                this.collection.adviceDispDns(args, this.nodeId, this.requestId, this.cc)
+            } else if (this.isPlanning){
+                this.collection.peakAdviceDispDns(args, this.requestId, this.cc)
+            }
             this.showDisablePopup("下发中，请耐心等待...")
         },
 

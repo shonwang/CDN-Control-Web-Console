@@ -465,7 +465,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.$el.find(".dropdown-firstDomain .cur-value").html(aIpTypeArray[0].name)
                     this.kdnsDomainId = aIpTypeArray[0].value;
                 }
-                this.$el.find(".dropdown-firstDomain #dropdown-GropDomain-list").attr("disabled", "disabled")
+                if(! this.isCopy){
+                  this.$el.find(".dropdown-firstDomain #dropdown-GropDomain-list").attr("disabled", "disabled")
+                }
             }
         },
         onGetIpTypeSuccess: function(data){

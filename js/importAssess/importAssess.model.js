@@ -72,10 +72,7 @@ define("importAssess.model", ['require','exports', 'utility'], function(require,
         getEvaluationFlag: function(args){
             var url = BASE_URL + "/rs/advice/getEvaluationFlag",
             successCallback = function(res){
-                if (res)
-                    this.trigger("get.evaluationFlag.success", res);
-                else
-                    this.trigger("get.evaluationFlag.error");
+                this.trigger("get.evaluationFlag.success", res);
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("get.evaluationFlag.error", response); 

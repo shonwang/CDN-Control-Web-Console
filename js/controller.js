@@ -6,7 +6,7 @@ define("controller", ['require','exports'],
         importAssessCallback: function(){
             require(['importAssess.view', 'importAssess.model'], function(ImportAssessView, ImportAssessModel){
                 this.curPage = 'importAssess';
-                
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
                 if (!this.importAssessModel)
                     this.importAssessModel = new ImportAssessModel();
                 if (!this.importAssessView ){

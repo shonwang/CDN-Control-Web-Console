@@ -160,12 +160,6 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
 
-            // require(["setupChannelManage.model"], function(SetupChannelManageModel){
-            //     this.mySetupChannelManageModel = new SetupChannelManageModel();
-            //     this.mySetupChannelManageModel.on("get.channel.success", $.proxy(this.initTable, this));
-            //     this.mySetupChannelManageModel.on("get.channel.error", $.proxy(this.onGetError, this));
-            //     this.mySetupChannelManageModel.queryChannel(this.queryArgs);
-            // }.bind(this))
             this.collection.on("get.cname.success", $.proxy(this.initTable, this));
             this.collection.on("get.cname.error", $.proxy(this.onGetError, this));
             this.collection.getCnameList(this.queryArgs)
@@ -203,7 +197,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                         var args = _.extend(this.queryArgs);
                         args.currentPage = num;
                         args.pageSize = this.queryArgs.pageSize;
-                        this.collection.queryChannel(args);
+                        this.collection.getCnameList(args);
                     }
                 }.bind(this)
             });
@@ -339,17 +333,60 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             var postParam = [];
             _.each(checkedList, function(el, index, ls){
                 postParam.push({
-                    "groupId": el.get("groupId"),
-                    "bandwidth": el.get("increBandwidth"),
-                    "regionId": el.get("regionId")
+                    "cnameId": 0,
+                    "cname": null,
+                    "accelerateName": null,
+                    "clientName": null,
+                    "groupId": 58,//el.get("groupId"),
+                    "groupName": null,
+                    "regionId": 75,//el.get("regionId"),
+                    "regionName": null,
+                    "increBandwidth": 200,//el.get("increBandwidth"),
+                    "createTime": null,
+                    "issuedTime": null,
+                    "orgId": null,
+                    "evalState": 0
                 })
             }.bind(this))
+
+            this.currentInfo = postParam
 
             this.collection.getEvaluationFlag(postParam)
         },
 
-        onGetEvaluationSuccess: function(){
+        onGetEvaluationSuccess: function(res){
+            var result = false;
 
+            if (res === "true")
+                result = confirm("客户带宽可以接入！点击确定查看评估详情！");
+            else
+                result = confirm("客户带宽接入将导致部分区域的节点不足以承载服务，具体信息请点击确定查看评估详情！");
+
+            if (result){
+                require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel){
+                    this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, this.currentPauseNodeId)
+                }.bind(this))
+            }
+        },
+
+        onRequireDispSuggesttionModule: function(DispSuggesttionViews, DispSuggesttionModel, nodeId){//
+            if (!this.dispSuggesttionFailModel)
+                this.dispSuggesttionFailModel = new DispSuggesttionModel();
+            this.hide();
+            var options = {
+                assessInfo: this.currentInfo,
+                collection: this.dispSuggesttionFailModel,
+                backCallback: $.proxy(this.backFromDispSuggesttion, this)
+            };
+            this.dispSuggesttionView = new DispSuggesttionViews.DispSuggesttionView(options);
+            this.dispSuggesttionView.render($('.ksc-content'));
+        },
+
+        backFromDispSuggesttion: function(){
+            this.dispSuggesttionView.remove();
+            this.dispSuggesttionView = null;
+            this.dispSuggesttionFailModel = null;
+            this.update();
         },
 
         initTable: function(){

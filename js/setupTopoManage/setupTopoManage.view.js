@@ -416,7 +416,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                         }
                     }.bind(this))
                 }.bind(this));
-                data_save_content.nodeName = data_save_content.nodeName.join('<br>');
+                 data_save_content.nodeName = data_save_content.nodeName.join('<br>');
                 data_save_content.step = el.step;
                 data_save.push(data_save_content);
 

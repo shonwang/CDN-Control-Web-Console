@@ -1085,3 +1085,18 @@ td .table {
     overflow: auto;
 }
 
+.pin-sidebar {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 19px;
+    height: 49px;
+    margin-top: -25px;
+    background: url(../images/sidebar.png) -63px -5px no-repeat;
+    cursor: pointer;
+}
+
+.pin-sidebar.closed {
+    transform: scale(-1);
+    right: -19px;
+}

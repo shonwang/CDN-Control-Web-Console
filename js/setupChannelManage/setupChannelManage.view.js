@@ -163,6 +163,12 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             
             this.collection.getOperatorList();
 
+            //推送到待下发中
+            this.collection.off("set.publish.success");
+            this.collection.off("set.publish.error");
+            this.collection.on("set.publish.success", $.proxy(this.onPublishSuccess, this));
+            this.collection.on("set.publish.error", $.proxy(this.onGetError, this));
+
         },
         //获取特殊规则的rulesID成功
         getTopologyRoleSuccess: function(res){
@@ -181,10 +187,28 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 alert("网络阻塞，请刷新重试！")
              }
         },
+        onClickItemSend: function(event){
+            var result = confirm("你确定要发布到待下发吗？");
+            if (!result) return;
+            var model = this.model;
+
+            this.domainArray = [{
+                predeliveryId: model.get("id")
+            }];
+        
+            this.collection.publish(this.domainArray)
+        },
+        onPublishSuccess:function(res){
+            alert('操作成功');
+            this.options.onSaveCallback && this.options.onSaveCallback();
+
+        },
         //保存特殊策略成功之后保存特殊策略的域名ID和特殊规则的id成功
         addTopologyRoleSuccess: function(res){
-            alert('保存成功');
-            this.options.onSaveCallback && this.options.onSaveCallback();
+            //alert('保存成功');
+            console.log(this.model);
+            this.onClickItemSend();
+            //this.options.onSaveCallback && this.options.onSaveCallback();
         },
         //保存特殊策略成功
         addSpecialSuccess: function(res){
@@ -275,6 +299,8 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 id = $(eventTarget).attr("data-id");
             }
             this.id = id;
+            console.log(this.id);
+            console.log(this.model);
             require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel){
                 var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                 var options = myAddEditLayerStrategyModel;  
@@ -496,13 +522,13 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             return data_save;
         },
         onGetError: function(error){
+            console.log('错误');
             if (error&&error.message)
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
 
         },
-
         render: function(target) {
             this.$el.appendTo(target);
         }

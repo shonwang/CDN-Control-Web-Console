@@ -216,6 +216,22 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
             this.$el = $(_.template(template['tpl/subSidebar.html'])({data: this.menuList, backHash: this.backHash}));
             this.$el.appendTo($('.ksc-content'));
             this.$el.find("#sub-jquery-accordion-menu").jqueryAccordionMenu();
+
+            this.$el.find(".pin-sidebar").on("click", function(){
+                if (this.$el.find(".pin-sidebar").hasClass("closed")){
+                    this.$el.find(".pin-sidebar").removeClass("closed");
+                    this.$el.find("#sub-jquery-accordion-menu").css("max-width", "200px")
+                    this.$el.find("#sub-jquery-accordion-menu").css("min-width", "50px")
+                    this.$el.find("#demo-list").show();
+                    this.$el.find(".sub-content").css("padding", "0 0 0 215px")
+                } else {
+                    this.$el.find(".pin-sidebar").addClass("closed");
+                    this.$el.find("#sub-jquery-accordion-menu").css("max-width", "0px")
+                    this.$el.find("#sub-jquery-accordion-menu").css("min-width", "0px")
+                    this.$el.find("#demo-list").hide();
+                    this.$el.find(".sub-content").css("padding", "0 0 0 15px")
+                }
+            }.bind(this))
         }
 
     });

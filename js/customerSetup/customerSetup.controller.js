@@ -388,6 +388,11 @@ define("customerSetup.controller", ['require','exports'],
             require(['basicInformation.view', 'basicInformation.model'], function(BasicInformationView, BasicInformationModel){
                 this.navbarView.select('customerSetup');
                 this.curPage = 'customerSetup-domainList-basicInformation';
+                if (this.customerSetupNavbar){
+                    this.customerSetupNavbar.$el.remove();
+                    this.customerSetupNavbar = null;
+                }
+                
                 this.setupDomainManageNavbar(query, query2);
                 var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
 
@@ -411,6 +416,7 @@ define("customerSetup.controller", ['require','exports'],
             require(['domainSetup.view', 'domainSetup.model'], function(DomainSetupView, DomainSetupModel){
                 this.navbarView.select('customerSetup');
                 this.curPage = 'customerSetup-domainList-domainSetup';
+
                 this.setupDomainManageNavbar(query, query2);
                 var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
 

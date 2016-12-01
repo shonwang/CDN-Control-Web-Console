@@ -3,6 +3,7 @@
       <tr>
         <th>名称</th>
         <th>创建时间</th>  
+        <th>备注</th>
         <th>操作</th>    
       </tr>
     </thead>
@@ -16,6 +17,7 @@
                  <%}%>  
               </td>
               <td><%=data[i].attributes["createTime"]%></td>
+              <td><%=data[i].attributes["description"]%></td>
               <td>
                   <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="edit" title="编辑">
                       <span class="glyphicon glyphicon-edit"></span>

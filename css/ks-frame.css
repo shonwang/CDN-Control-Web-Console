@@ -14,6 +14,10 @@
 }
 
 /*===================控制台顶部导航栏===================*/
+.invisible, .ksyun-logo a * {
+    visibility: visible;
+}
+
 .ctrl-nav-container{
 	width: 100%;
 	min-width: 1007px;

@@ -15,6 +15,7 @@ define("setupSendWaitSend.model", ['require','exports', 'utility'], function(req
 
             this.set("tempUseCustomized", 2);
             this.set("isChecked", false);
+            this.set("isDisplay", true);
         }
     });
 

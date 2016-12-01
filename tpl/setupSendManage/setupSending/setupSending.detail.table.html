@@ -5,7 +5,8 @@
         <th>设备</th>
         <th>节点</th>
         <th>下发状态</th>
-        <th>操作</th>    
+        <th>失败原因</th>
+        <th>跳过本设备</th>    
       </tr>
     </thead>
     <tbody>
@@ -14,6 +15,7 @@
               <td><%=data[i].get("deviceName")%></td>
               <td><%=data[i].get("nodeName")%></td>
               <td><%=data[i].get("statusName")%></td>
+              <td><%=data[i].get("errorMsg")%></td>
               <td>
                   <% if (data[i].get("status") === 1 || data[i].get("status") === 3) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="skip" title="跳过">

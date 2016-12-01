@@ -199,6 +199,17 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
             }.bind(this);
             
             Utility.getAjax(url, args, successCallback, errorCallback); 
+        },
+
+        publish: function(args){
+            var url = BASE_URL + "/cd/predelivery/publish",
+            successCallback = function(res){
+                this.trigger("set.publish.success", res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("set.publish.error", response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         }
 
     });

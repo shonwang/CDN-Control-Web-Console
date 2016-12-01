@@ -260,7 +260,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
            this.$el.find('#selectNextTime').css('visibility','hidden');
         },
         initstepTable: function(data){
-            /*var data = [{step:1,nodeName:'扬州电信节点、扬州联通节点、杭州'},{step:2,nodeName:'济南联通节点、惠州联通节点、天津电信节点'},{step:3,nodeName:'石家庄联通节点、襄阳电信节点、德阳电信节点、天津移动节点'}]*/
+           // var data = [{step:1,nodeName:'扬州电信节点<br>扬州联通节点<br>杭州'},{step:2,nodeName:'济南联通节点<br>惠州联通节点<br>天津电信节点'},{step:3,nodeName:'石家庄联通节点<br>襄阳电信节点<br>德阳电信节点<br>天津移动节点'}]
             var data = data;
             _.each(data,function(el,index,list){
                 el.step = index+1;
@@ -416,7 +416,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                         }
                     }.bind(this))
                 }.bind(this));
-                data_save_content.nodeName = data_save_content.nodeName.join('、');
+                 data_save_content.nodeName = data_save_content.nodeName.join('<br>');
                 data_save_content.step = el.step;
                 data_save.push(data_save_content);
 

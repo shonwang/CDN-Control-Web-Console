@@ -47,7 +47,7 @@ body .jumbotron,
   background-color: #fff;
   padding: 19px;
   margin-bottom: 20px;
-  box-shadow: 0 8px 17px 0 rgba(0, 0, 0, .2), 0 6px 20px 0 rgba(0, 0, 0, .19);
+  /*box-shadow: 0 8px 17px 0 rgba(0, 0, 0, .2), 0 6px 20px 0 rgba(0, 0, 0, .19);*/
   border-radius: 4px;
   border: 0;
 }
@@ -416,7 +416,7 @@ td .table {
 
 .user-info,
 .ctrl-nav-container {
-    box-shadow: 0 8px 17px 0 rgba(0, 0, 0, .2), 0 6px 20px 0 rgba(0, 0, 0, .19);
+    /*box-shadow: 0 8px 17px 0 rgba(0, 0, 0, .2), 0 6px 20px 0 rgba(0, 0, 0, .19);*/
 }
 
 .jquery-accordion-menu {
@@ -429,7 +429,7 @@ td .table {
   min-width: 50px;
   bottom: 0;
   top: 0;
-  box-shadow: 0 0px 20px #333;
+  /*box-shadow: 0 0px 20px #333;*/
   background-color: #222;
 }
 

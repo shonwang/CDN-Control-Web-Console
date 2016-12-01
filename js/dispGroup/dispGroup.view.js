@@ -450,10 +450,10 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             }.bind(this));
             
             this.domainList = typeIpArray;
-            
             if (!this.isEdit){
                 this.kdnsDomainId = data[0].id;
                 this.$el.find(".dropdown-firstDomain .cur-value").html(data[0].name);
+               // AUTH_OBJ.ChooseGtld = true;
                 if(!AUTH_OBJ.ChooseGtld){
                     this.$el.find(".dropdown-firstDomain #dropdown-GropDomain-list").attr("disabled", "disabled")
                 }
@@ -465,7 +465,15 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.$el.find(".dropdown-firstDomain .cur-value").html(aIpTypeArray[0].name)
                     this.kdnsDomainId = aIpTypeArray[0].value;
                 }
-                this.$el.find(".dropdown-firstDomain #dropdown-GropDomain-list").attr("disabled", "disabled")
+                if(! this.isCopy){
+                   this.$el.find(".dropdown-firstDomain #dropdown-GropDomain-list").attr("disabled", "disabled")
+                }else {
+                   if(!AUTH_OBJ.ChooseGtld){
+                      this.$el.find(".dropdown-firstDomain #dropdown-GropDomain-list").attr("disabled", "disabled");
+                      this.$el.find(".dropdown-firstDomain .cur-value").html(data[0].name);
+                      this.kdnsDomainId = data[0].id;
+                   }
+                }
             }
         },
         onGetIpTypeSuccess: function(data){

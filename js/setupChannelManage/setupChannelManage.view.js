@@ -168,6 +168,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         getTopologyRoleSuccess: function(res){
             this.collection.getRuleOrigin(res);
         },
+
         getTopologyRoleError: function(error){
              
             if(error && error.status == 404 ){

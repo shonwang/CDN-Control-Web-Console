@@ -315,18 +315,18 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
                 this.onClickQueryButton();
             }.bind(this));
 
-            // require(["setupTopoManage.model"], function(SetupTopoManageModel){
-            //     this.mySetupTopoManageModel = new SetupTopoManageModel();
-            //     this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.onGetTopoSuccess, this))
-            //     this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this))
-            //     var postParam = {
-            //         "name" : null,
-            //         "type" : null,
-            //         "page" : 1,
-            //         "size" : 99999
-            //      }
-            //     this.mySetupTopoManageModel.getTopoinfo(postParam);
-            // }.bind(this))
+            require(["setupTopoManage.model"], function(SetupTopoManageModel){
+                this.mySetupTopoManageModel = new SetupTopoManageModel();
+                this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.onGetTopoSuccess, this))
+                this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this))
+                var postParam = {
+                    "name" : null,
+                    "type" : null,
+                    "page" : 1,
+                    "size" : 99999
+                 }
+                this.mySetupTopoManageModel.getTopoinfo(postParam);
+            }.bind(this))
 
             require(["setupAppManage.model"], function(SetupAppManageModel){
                 this.mySetupAppManageModel = new SetupAppManageModel();
@@ -337,7 +337,7 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
         },
 
         onGetTopoSuccess: function(){
-            var topoArray = []
+            var topoArray = [{name: "全部", value: "All"}, {name: "默认拓扑", value: "default"}]
             this.mySetupTopoManageModel.each(function(el, index, lst){
                 topoArray.push({
                     name: el.get('name'),
@@ -347,11 +347,35 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
 
             rootNode = this.$el.find(".dropdown-topo");
             Utility.initDropMenu(rootNode, topoArray, function(value){
-                // if (value == "All")
-                //     this.queryArgs.status = null;
-                // else
-                //     this.queryArgs.status = parseInt(value)
+                if (value == "All"){
+                    this.collection.each(function(el){
+                        el.set("isDisplay", true)
+                    }.bind(this))
+                } else {
+                    this.collection.each(function(el){
+                        el.set("isDisplay", false)
+                    }.bind(this))
+                    this.filterByTopo(value)
+                }
+                this.initTable();
             }.bind(this));
+        },
+
+        filterByTopo: function(topoId){
+            var topoDomainArray = [];
+            if (topoId !== "default"){
+                topoDomainArray = this.collection.filter(function(obj){
+                    return parseInt(obj.get("topologyId")) === parseInt(topoId)
+                }.bind(this));
+            } else {
+                topoDomainArray = this.collection.filter(function(obj){
+                    return !obj.get("topologyId")
+                }.bind(this));
+            }
+
+            _.each(topoDomainArray, function(el){
+                el.set("isDisplay", true)
+            }.bind(this))
         },
 
         onGetAppSuccess: function(){

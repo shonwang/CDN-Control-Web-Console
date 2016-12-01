@@ -164,6 +164,8 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.collection.getOperatorList();
 
             //推送到待下发中
+            this.collection.off("set.publish.success");
+            this.collection.off("set.publish.error");
             this.collection.on("set.publish.success", $.proxy(this.onPublishSuccess, this));
             this.collection.on("set.publish.error", $.proxy(this.onGetError, this));
 
@@ -193,7 +195,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.domainArray = [{
                 predeliveryId: model.get("id")
             }];
-
+        
             this.collection.publish(this.domainArray)
         },
         onPublishSuccess:function(res){

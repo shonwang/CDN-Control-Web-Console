@@ -191,20 +191,31 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                     }.bind(this))
                 }.bind(this))
 
-                console.log(postParam)
-
                 this.mySetupSendWaitCustomizeModel.off("set.channel.config.success");
                 this.mySetupSendWaitCustomizeModel.off("set.channel.config.error");
-                this.mySetupSendWaitCustomizeModel.on("set.channel.config.success", $.proxy(this.onSaveConfigSuccess, this));
+                this.mySetupSendWaitCustomizeModel.on("set.channel.config.success", $.proxy(this.onSaveComment, this));
                 this.mySetupSendWaitCustomizeModel.on("set.channel.config.error", $.proxy(this.onGetError, this));
                 this.mySetupSendWaitCustomizeModel.setChannelConfig(postParam)
             } else {
-                this.onClickCancelButton();
+                this.onSaveComment();
             }
         },
 
+        onSaveComment: function(){
+            require(['basicInformation.model'], function(BasicInformationModel){
+                this.myBasicInformationModel = new BasicInformationModel();
+                this.myBasicInformationModel.off("modify.DomainBasic.success");
+                this.myBasicInformationModel.off("modify.DomainBasic.error");
+                this.myBasicInformationModel.on("modify.DomainBasic.success", $.proxy(this.onSaveConfigSuccess, this));
+                this.myBasicInformationModel.on("modify.DomainBasic.error", $.proxy(this.onGetError, this));
+                this.myBasicInformationModel.modifyDomainBasic({
+                    originId: this.model.get("id"),
+                    description: this.$el.find("#text-comment").val()
+                })
+            }.bind(this));
+        },
+
         onSaveConfigSuccess: function(){
-            alert("保存成功！")
             this.onClickCancelButton();
         },
 

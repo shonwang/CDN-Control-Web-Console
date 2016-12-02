@@ -195,6 +195,9 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
              }
         },
         onClickItemPublish: function(){
+            var result = confirm("你确定要发布到待下发吗？");
+            if (!result) return;
+            
             var postParam = [{
                     domain: this.model.get("domain"),
                     version: this.version,
@@ -209,8 +212,9 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.collection.predelivery(postParam)
         },
         onPostPredelivery:function(res){
-            alert('操作成功');
             this.options.onSaveCallback && this.options.onSaveCallback();
+            alert('操作成功');
+            window.location.hash = '#/setupSendWaitSend';
 
         },
         //保存特殊策略成功之后保存特殊策略的域名ID和特殊规则的id成功

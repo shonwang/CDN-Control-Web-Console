@@ -6,6 +6,7 @@ define("setupSendWaitCustomize.stratety.view", ['require','exports', 'template',
             this.options = options;
             this.collection = options.collection;
             this.domainArray = options.domainArray;
+            this.model = options.model;
 
             this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({data: {name: "下发策略"}}));
 
@@ -15,9 +16,9 @@ define("setupSendWaitCustomize.stratety.view", ['require','exports', 'template',
                 this.mySetupTopoManageSendStrategy.on("get.sendInfo.success", $.proxy(this.initTable, this));
                 this.mySetupTopoManageSendStrategy.on("get.sendInfo.error", $.proxy(this.onGetError, this));
                 this.mySetupTopoManageSendStrategy.getSendinfo({
-                    name:null,
+                    topologyId: this.model.get("topologyId"),
                     page:1,
-                    size:99999
+                    count:99999
                 });
             }.bind(this))
         },

@@ -68,7 +68,7 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
                     domain: el.get("domain"),
                     id: el.get("id")
                 });
-            }.bind(this))
+            }.bind(this));
 
             this.showSelectStrategyPopup();
         },
@@ -91,7 +91,8 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
             require(["setupSendWaitCustomize.stratety.view"], function(SelectStrategyView){
                 var mySelectStrategyView = new SelectStrategyView({
                     collection: this.collection, 
-                    domainArray : this.domainArray
+                    domainArray : this.domainArray,
+                    model: this.currentModel
                 });
                 var options = {
                     title: "生成下发任务",
@@ -171,6 +172,8 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
                 domain: model.get("domain"),
                 id: model.get("id")
             }];
+
+            this.currentModel = this.collection.get(id)
 
             this.showSelectStrategyPopup();
         },

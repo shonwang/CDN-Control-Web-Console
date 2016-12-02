@@ -201,7 +201,14 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
              }
         },
         onClickItemPublish: function(){
-            var result = this.confCustomType == 1 ? confirm("确定将域名放入待下发吗？") : confirm("确定将域名放入待定制吗？");
+            //var result = this.confCustomType == 1 ? confirm("确定将域名放入待下发吗？") : confirm("确定将域名放入待定制吗？");
+            if(this.confCustomType === 1){
+                var result = confirm("确定将域名放入待下发吗？");
+            }else if(this.confCustomType === 3){
+                var result = confirm("确定将域名放入待定制吗？");
+            }else{
+                alert('此域名的confCustomType为'+this.confCustomType+'无法待下发或者是待定制');
+            }
             if (!result) return;
             
             var postParam = [{
@@ -323,8 +330,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 id = $(eventTarget).attr("data-id");
             }
             this.id = id;
-            console.log(this.id);
-            console.log(this.model);
+            
             require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel){
                 var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                 var options = myAddEditLayerStrategyModel;  

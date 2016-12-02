@@ -164,10 +164,17 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.collection.getOperatorList();
 
             //推送到待下发中
-            this.collection.off("set.publish.success");
-            this.collection.off("set.publish.error");
-            this.collection.on("set.publish.success", $.proxy(this.onPublishSuccess, this));
-            this.collection.on("set.publish.error", $.proxy(this.onGetError, this));
+            this.collection.off("post.predelivery.success");
+            this.collection.off("post.predelivery.error");
+            this.collection.on("post.predelivery.success", $.proxy(this.onPublishSuccess, this));
+            this.collection.on("post.predelivery.error", $.proxy(this.onGetError, this));
+
+            //获取到version
+            this.collection.off("get.channel.history.success");
+            this.collection.off("get.channel.history.error");
+            this.collection.on("get.channel.history.success",$.proxy(function(res){this.version = res[0].version;},this));
+            this.collection.on("get.channel.history.error", $.proxy(this.onGetError, this));
+            this.collection.getVersionList({"originId": this.model.get("id")})
 
         },
         //获取特殊规则的rulesID成功
@@ -187,27 +194,34 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 alert("网络阻塞，请刷新重试！")
              }
         },
-        onClickItemSend: function(event){
+        onClickItemPublish: function(){
             var result = confirm("你确定要发布到待下发吗？");
             if (!result) return;
-            var model = this.model;
+            
+            var postParam = [{
+                    domain: this.model.get("domain"),
+                    version: this.version,
+                    description: this.model.get("description"),
+                    configReason: 1
+                }]
 
-            this.domainArray = [{
-                predeliveryId: model.get("id")
-            }];
-        
-            this.collection.publish(this.domainArray)
+            this.collection.off("post.predelivery.success");
+            this.collection.off("post.predelivery.error");
+            this.collection.on("post.predelivery.success", $.proxy(this.onPostPredelivery, this));
+            this.collection.on("post.predelivery.error", $.proxy(this.onGetError, this));
+            this.collection.predelivery(postParam)
         },
-        onPublishSuccess:function(res){
-            alert('操作成功');
+        onPostPredelivery:function(res){
             this.options.onSaveCallback && this.options.onSaveCallback();
+            alert('操作成功');
+            window.location.hash = '#/setupSendWaitSend';
 
         },
         //保存特殊策略成功之后保存特殊策略的域名ID和特殊规则的id成功
         addTopologyRoleSuccess: function(res){
             //alert('保存成功');
             console.log(this.model);
-            this.onClickItemSend();
+            this.onClickItemPublish();
             //this.options.onSaveCallback && this.options.onSaveCallback();
         },
         //保存特殊策略成功

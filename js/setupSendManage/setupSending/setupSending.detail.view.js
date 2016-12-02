@@ -109,6 +109,8 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             if (this.isSending) {
                 this.collection.on("get.task.doingdetail.success",$.proxy(this.queryDetailSuccess,this));
                 this.collection.on("get.task.doingdetail.error",$.proxy(this.onGetError,this));
+                this.collection.on("get.ingoredevice.success",$.proxy(this.onSkipSuccess,this));
+                this.collection.on("get.ingoredevice.error",$.proxy(this.onGetError,this));
 
                 this.queryArgs = {
                     "taskId" : this.model.get('taskId'),//任务ID
@@ -277,6 +279,7 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onSkipSuccess: function(){
+            this.onClickQueryButton();
             alert("跳过成功")
         },
 

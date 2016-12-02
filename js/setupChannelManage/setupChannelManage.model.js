@@ -199,6 +199,21 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
             }.bind(this);
             
             Utility.getAjax(url, args, successCallback, errorCallback); 
+        },
+        getDomainInfo: function(args){
+            var url = BASE_URL + "/channelManager/domain/getDomainInfo",
+            successCallback = function(res){
+                if (res){
+                    this.trigger("get.domainInfo.success", res);
+                } else {
+                    this.trigger("get.domainInfo.error"); 
+                } 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.domainInfo.error", response);  
+            }.bind(this);
+            args.t = new Date().valueOf();
+            Utility.getAjax(url, args, successCallback, errorCallback);
         }
 
     });

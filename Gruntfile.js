@@ -14,7 +14,7 @@ module.exports = function(grunt) {
         cssmin: {
             target: {
                 files: {
-                    'dest/css/main.css': [
+                    'dest/css/all.css': [
                                     "css/bootstrap.min.css",
                                     "css/jquery.datetimepicker.css",
                                     "css/jquery-accordion-menu.css",
@@ -46,7 +46,7 @@ module.exports = function(grunt) {
                 length: 16
             },
             css: {
-                src: ['dest/css/main.css']
+                src: ['dest/css/all.css']
             },
             js: {
                 src: ['dest/js/main.js']

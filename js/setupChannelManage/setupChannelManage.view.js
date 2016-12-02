@@ -172,10 +172,16 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             //获取到version
             this.collection.off("get.channel.history.success");
             this.collection.off("get.channel.history.error");
-            this.collection.on("get.channel.history.success",$.proxy(function(res){this.version = res[0].version;},this));
+            this.collection.on("get.channel.history.success",$.proxy(function(res){this.version = res[0].version},this));
             this.collection.on("get.channel.history.error", $.proxy(this.onGetError, this));
-            this.collection.getVersionList({"originId": this.model.get("id")})
+            this.collection.getVersionList({"originId": this.model.get("id")});
 
+            //获取域名的基本信息
+            this.collection.off("get.domainInfo.success");
+            this.collection.off("get.domainInfo.error");
+            this.collection.on("get.domainInfo.success", $.proxy(function(res){this.confCustomType = res.domainConf.confCustomType;}, this));
+            this.collection.on("get.domainInfo.error", $.proxy(this.onGetError, this));
+            this.collection.getDomainInfo({originId: this.model.get("id")});
         },
         //获取特殊规则的rulesID成功
         getTopologyRoleSuccess: function(res){
@@ -197,7 +203,14 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
              }
         },
         onClickItemPublish: function(){
-            var result = confirm("你确定要发布到待下发吗？");
+            //var result = this.confCustomType == 1 ? confirm("确定将域名放入待下发吗？") : confirm("确定将域名放入待定制吗？");
+            if(this.confCustomType === 1){
+                var result = confirm("确定将域名放入待下发吗？");
+            }else if(this.confCustomType === 3){
+                var result = confirm("确定将域名放入待定制吗？");
+            }else{
+                alert('此域名的confCustomType为'+this.confCustomType+'无法待下发或者是待定制');
+            }
             if (!result) return;
             
             var postParam = [{
@@ -216,7 +229,11 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         onPostPredelivery:function(res){
             this.options.onSaveCallback && this.options.onSaveCallback();
             alert('操作成功');
-            window.location.hash = '#/setupSendWaitSend';
+            console.log(this.confCustomType);
+            if(this.confCustomType === 1)
+               window.location.hash = '#/setupSendWaitSend';
+            else if(this.confCustomType === 3)
+               window.location.hash = '#/setupSendWaitCustomize';
 
         },
         //保存特殊策略成功之后保存特殊策略的域名ID和特殊规则的id成功
@@ -315,8 +332,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 id = $(eventTarget).attr("data-id");
             }
             this.id = id;
-            console.log(this.id);
-            console.log(this.model);
+            
             require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel){
                 var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                 var options = myAddEditLayerStrategyModel;  

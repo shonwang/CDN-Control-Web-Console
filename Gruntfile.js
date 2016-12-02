@@ -11,13 +11,60 @@ module.exports = function(grunt) {
                 files: {"js/template.js": ['tpl/**/*.html', 'tpl/*.html']}
             }
         },
+        cssmin: {
+            target: {
+                files: {
+                    'dest/css/main.css': [
+                                    "css/bootstrap.min.css",
+                                    "css/jquery.datetimepicker.css",
+                                    "css/jquery-accordion-menu.css",
+                                    "css/monokai_sublime.min.css",
+                                    "css/animate.css",
+                                    "css/loaders.css",
+                                    "css/ks-frame.css",
+                                    "css/ks-fonts.css",
+                                    "css/zTreeStyle.css",
+                                    "css/domainList.css",
+                                    "css/bootstrap-switch.css",
+                                    "css/main.css"
+                                ]
+                }
+            }
+        },
+        processhtml: {
+            options: {},
+            dist: {
+                files: {
+                    'dest/index.html': ['dest/index.html'],
+                    'dest/map.html': ['dest/map.html']
+                }
+            }
+        },
+        filerev: {
+            options: {
+                algorithm: 'md5',
+                length: 16
+            },
+            css: {
+                src: ['dest/css/main.css']
+            },
+            js: {
+                src: ['dest/js/main.js']
+            }
+        },
+        usemin: {
+            html:['dest/index.html', 'dest/map.html'],
+            options:{
+                assetsDirs: ['dest'],
+            }
+        },
         copy: {
             main: {
                 files: [
                 {
                     expand: true,
                     cwd: '',
-                    src: ['css/*', 'css/**/*'],
+                    src: ['css/img/*', 'css/img/**/*'],
                     dest: 'dest/'
                 },
                 {
@@ -54,6 +101,10 @@ module.exports = function(grunt) {
         }
     });
 
+    grunt.loadNpmTasks('grunt-processhtml');
+    grunt.loadNpmTasks('grunt-contrib-cssmin');    
+    grunt.loadNpmTasks('grunt-filerev');
+    grunt.loadNpmTasks('grunt-usemin');
     grunt.loadNpmTasks('grunt-underscore-compiler');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
@@ -114,13 +165,13 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('temp',['underscore:compile']);
-    grunt.registerTask('debug',["clean", 'underscore:compile', "copy"]);
-    grunt.registerTask('set',["clean", 'underscore:compile', "copy", "set-url"]);
-    grunt.registerTask('test',["clean", 'underscore:compile', "copy", "test-url"]);
-    grunt.registerTask('online',["clean", 'underscore:compile', "copy", "online-url"]);
-    grunt.registerTask('gray',["clean", 'underscore:compile', "copy", "gray-url"]);
-    grunt.registerTask('develop',["clean", 'underscore:compile', "copy", "dev-url"]);
-    grunt.registerTask('shanghai',["clean", 'underscore:compile', "copy", "shanghai-url"]);
-    grunt.registerTask('wuqing',["clean", 'underscore:compile', "copy", "wuqing-url"]);
-    grunt.registerTask('gatewaydevelop',["clean", 'underscore:compile', "copy", "gateway-develop-url"]);
+    grunt.registerTask('debug',["clean", 'underscore:compile', "copy", "cssmin", 'processhtml', 'filerev', 'usemin']);
+    grunt.registerTask('set',["clean", 'underscore:compile', "copy", "set-url", "cssmin", 'processhtml', 'filerev', 'usemin']);
+    grunt.registerTask('test',["clean", 'underscore:compile', "copy", "test-url", "cssmin", 'processhtml', 'filerev', 'usemin']);
+    grunt.registerTask('online',["clean", 'underscore:compile', "copy", "online-url", "cssmin", 'processhtml', 'filerev', 'usemin']);
+    grunt.registerTask('gray',["clean", 'underscore:compile', "copy", "gray-url", "cssmin", 'processhtml', 'filerev', 'usemin']);
+    grunt.registerTask('develop',["clean", 'underscore:compile', "copy", "dev-url", "cssmin", 'processhtml', 'filerev', 'usemin']);
+    grunt.registerTask('shanghai',["clean", 'underscore:compile', "copy", "shanghai-url", "cssmin", 'processhtml', 'filerev', 'usemin']);
+    grunt.registerTask('wuqing',["clean", 'underscore:compile', "copy", "wuqing-url", "cssmin", 'processhtml', 'filerev', 'usemin']);
+    grunt.registerTask('gatewaydevelop',["clean", 'underscore:compile', "copy", "gateway-develop-url", "cssmin", 'processhtml', 'filerev', 'usemin']);
 };

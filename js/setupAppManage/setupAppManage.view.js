@@ -81,7 +81,6 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.options = options;
             this.collection = options.collection;
             this.model      = options.model;
-            console.log(this.model);
             this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.detail.html'])({data: {}}));
             
             this.collection.off('get.template.info.success');
@@ -91,7 +90,7 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.collection.getTemplateinfo(this.model.get('type'));
 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-            this.initSetup()
+            //this.initSetup()
         },
         getTemplateSuccess: function(res){
             var domain = this.$el.find('#domain'),

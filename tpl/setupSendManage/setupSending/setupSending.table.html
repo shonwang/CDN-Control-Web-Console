@@ -30,15 +30,21 @@
               <td><%=data[i].get("statusName")%></td>
               <td><%=data[i].get("createTimeFormated")%></td>
               <td>
+                  <% if(permission.ViewSendDetails) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="detail" title="详情">
                       <span class="glyphicon glyphicon-tasks"></span>
                   </a>
+                  <% } %>
+                  <% if(permission.SendToNextStep) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="send" title="进入下一步">
                       <span class="glyphicon glyphicon-circle-arrow-right"></span>
                   </a>
+                  <% } %>
+                  <% if(permission.StopSending) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="reject" title="终止">
                       <span class="glyphicon glyphicon-remove-circle"></span>
                   </a>
+                  <% } %>
               </td>
             </tr>
         <% } %>  

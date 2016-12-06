@@ -27,15 +27,21 @@
               <td><%=data[i].get("createTimeFormated")%></td>
               <td><%=data[i].get("description")%></td>
               <td>
+                  <% if(permission.ViewConfigDetails) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit" title="查看详情">
                       <span class="glyphicon glyphicon-edit"></span>
                   </a>
+                  <% } %>
+                  <% if(permission.SendToSending) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="send" title="下发">
                       <span class="glyphicon glyphicon-send"></span>
                   </a>
+                  <% } %>
+                  <% if(permission.SendBackInWS) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="reject" title="打回">
                       <span class="glyphicon glyphicon-remove-circle"></span>
                   </a>
+                  <% } %>
               </td>
             </tr>
             <% } %> 

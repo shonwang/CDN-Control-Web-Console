@@ -24,13 +24,19 @@
               <td><%=data[i].get("createTimeFormated")%></td>
               <td><%=data[i].get("description")%></td>
               <td>
+                  <% if(permission.EditCustomize) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit" title="编辑">
                       <span class="glyphicon glyphicon-edit"></span>
                   </a>
+                  <% } %>
+                  <% if(permission.SendToWaitSend) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="send">发布到待下发</a>
+                  <% } %>
+                  <% if(permission.SendBackInWC) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="reject" title="打回">
                       <span class="glyphicon glyphicon-remove-circle"></span>
                   </a>
+                  <% } %>
               </td>
             </tr>
         <% } %>  

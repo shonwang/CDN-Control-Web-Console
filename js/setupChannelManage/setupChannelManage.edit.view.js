@@ -92,14 +92,14 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                     _.each(el, function(fileObj, index, list){
                         if (fileObj&&fileObj.topologyLevel === 1){
                             upArray.push({
-                                id: fileObj.id,
+                                id: fileObj.id || Utility.randomStr(8),
                                 name: key,
                                 content: fileObj.content,
                                 luaOnly: fileObj.luaOnly === undefined ? true : fileObj.luaOnly
                             })
                         } else if (fileObj&&fileObj.topologyLevel === 2){
                             downArray.push({
-                                id: fileObj.id,
+                                id: fileObj.id || Utility.randomStr(8),
                                 name: key,
                                 content: fileObj.content,
                                 luaOnly: fileObj.luaOnly === undefined ? true : fileObj.luaOnly

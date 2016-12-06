@@ -81,14 +81,25 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.options = options;
             this.collection = options.collection;
             this.model      = options.model;
-
             this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.detail.html'])({data: {}}));
+            
+            this.collection.off('get.template.info.success');
+            this.collection.off('get.template.info.error');
+            this.collection.on('get.template.info.success',$.proxy(this.getTemplateSuccess,this));
+            this.collection.on('get.template.error',$.proxy(this.onGetError,this));
+            this.collection.getTemplateinfo(this.model.get('type'));
 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-            this.initSetup()
+            //this.initSetup()
         },
-        onOriginInfo:function(){
-            this.$el.find('#name').val
+        getTemplateSuccess: function(res){
+            var domain = this.$el.find('#domain'),
+                lua = this.$el.find('#lua'),
+                nginx = this.$el.find('#nginx');
+
+            domain.val(res['domain.conf']);
+            lua.val(res['lua.conf']);
+            nginx.val(res['nginx.conf']);
         },
         initSetup: function(){
             var tempData = [{
@@ -149,18 +160,14 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
         initialize: function(options) {
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.html'])());
-
+            
+            this.collection.off("get.app.info.success");
+            this.collection.off("get.app.info.error");
             this.collection.on("get.app.info.success", $.proxy(this.onappListSuccess, this));
             this.collection.on("get.app.info.error", $.proxy(this.onGetError, this));
 
             this.queryArgs = {
-                "count"     : 10,
-                "id"        : null,
-                "name"      : null,
-                "createTime": null,
-                "type"      : null,
-                "topoId"    : null,
-                "typeName"  : null
+                "count"     : 10
              }
             this.onClickQueryButton();
         },
@@ -179,11 +186,6 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
 
         onClickQueryButton: function(){
             this.isInitPaginator = false;
-            /*this.queryArgs.page = 1;
-            this.queryArgs.domain = this.$el.find("#input-domain").val();
-            this.queryArgs.clientName = this.$el.find("#input-client").val();
-            if (this.queryArgs.domain == "") this.queryArgs.domain = null;
-            if (this.queryArgs.clientName == "") this.queryArgs.clientName = null;*/
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
             this.collection.getAppInfo(this.queryArgs);
@@ -223,7 +225,7 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
                 title:"拓扑关系",
                 body : myLookOverTopoView,
                 backdrop : 'static',
-                type     : 2,
+                type     : 1,
                 onOKCallback:  function(){}.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
@@ -240,7 +242,7 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             }
 
             var model = this.collection.get(id);
-
+              
             var myAppDetailView = new AppDetailView({
                 collection: this.collection,
                 model: model,

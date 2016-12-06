@@ -215,7 +215,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                     domain: this.model.get("domain"),
                     version: this.version,
                     description: this.model.get("description"),
-                    configReason: 1
+                    configReason: 2
                 }]
 
             this.collection.off("post.predelivery.success");

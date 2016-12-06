@@ -8,6 +8,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
             this.collection = options.collection;
             this.model      = options.model;
             this.isEdit = options.isEdit;
+            this.isFromSend = options.isFromSend;
 
             this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.edit.html'])({data: {}}));
 
@@ -208,10 +209,23 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                 this.myBasicInformationModel.off("modify.DomainBasic.error");
                 this.myBasicInformationModel.on("modify.DomainBasic.success", $.proxy(this.onSaveConfigSuccess, this));
                 this.myBasicInformationModel.on("modify.DomainBasic.error", $.proxy(this.onGetError, this));
-                this.myBasicInformationModel.modifyDomainBasic({
-                    originId: this.model.get("id"),
-                    description: this.$el.find("#text-comment").val()
-                })
+                if (!this.isFromSend){
+                    this.myBasicInformationModel.modifyDomainBasic({
+                        originId: this.model.get("id"),
+                        description: this.$el.find("#text-comment").val()
+                    })
+                } else {
+                    this.collection.off("get.originDomain.success");
+                    this.collection.off("get.originDomain.error");
+                    this.collection.on("get.originDomain.success", function(res){
+                        this.myBasicInformationModel.modifyDomainBasic({
+                            originId: res.id,
+                            description: this.$el.find("#text-comment").val()
+                        })
+                    }.bind(this));
+                    this.collection.on("get.originDomain.error", $.proxy(this.onGetError, this));
+                    this.collection.getOriginDomain({domain: this.model.get("domain")});
+                }
             }.bind(this));
         },
 

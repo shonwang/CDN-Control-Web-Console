@@ -102,6 +102,22 @@ define("setupSendWaitCustomize.model", ['require','exports', 'utility'], functio
                 this.trigger("set.publish.error", response);
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+        getOriginDomain: function(args){
+            var url = BASE_URL + "/channelManager/domain/getOriginDomain",
+            successCallback = function(res){
+                if (res){
+                    this.trigger("get.originDomain.success", res);
+                } else {
+                    this.trigger("get.originDomain.error"); 
+                } 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.originDomain.error", response);  
+            }.bind(this);
+            args.t = new Date().valueOf();
+            Utility.getAjax(url, args, successCallback, errorCallback);
         }
     });
 

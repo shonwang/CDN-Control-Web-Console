@@ -225,7 +225,7 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
                 title:"拓扑关系",
                 body : myLookOverTopoView,
                 backdrop : 'static',
-                type     : 2,
+                type     : 1,
                 onOKCallback:  function(){}.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }

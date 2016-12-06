@@ -3,6 +3,7 @@ define("setupSendWaitSend.model", ['require','exports', 'utility'], function(req
         initialize: function(){
             var operType = this.get("operType"),
                 isCustom = this.get("isCustom"),
+                configReason = this.get("configReason"),
                 createTime = this.get("createTime");
 
             if (operType === 0) this.set("operTypeName", '新建');
@@ -10,6 +11,8 @@ define("setupSendWaitSend.model", ['require','exports', 'utility'], function(req
             if (operType === 1) this.set("operTypeName", '更新');
             if (isCustom === true) this.set("isCustomName", '是');
             if (isCustom === false) this.set("isCustomName", '否');
+            if (configReason === 1) this.set("configReasonName", '用户配置变更');
+            if (configReason === 2) this.set("configReasonName", '拓扑变更');
 
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
 

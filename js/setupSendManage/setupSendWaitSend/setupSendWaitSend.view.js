@@ -24,6 +24,7 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
                 "domain" : null,
                 "operateType": null,
                 "platformId" : null,
+                "configReason": null,
                 "status" : 1,
                 "count": 10,
                 "page": 1
@@ -220,6 +221,7 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
                     collection: this.collection,
                     model: model,
                     isEdit: false,
+                    isFromSend: true,
                     onSaveCallback: function(){}.bind(this),
                     onCancelCallback: function(){
                         myEditChannelView.$el.remove();
@@ -303,6 +305,20 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
                 else
                     this.queryArgs.operateType = parseInt(value)
             }.bind(this));
+
+            //"1：用户配置变更 2：拓扑变更",
+            var taskType = [
+                {name: "全部", value: "All"},
+                {name:"用户配置变更", value:1},
+                {name: "拓扑变更", value:2},
+            ],
+            rootNode = this.$el.find(".dropdown-task-type");
+            Utility.initDropMenu(rootNode, taskType, function(value){
+                if (value == "All")
+                    this.queryArgs.configReason = null;
+                else
+                    this.queryArgs.configReason = parseInt(value)
+            }.bind(this));  
 
             var isCustomizeArray = [
                 {name: "全部", value: "All"},
@@ -396,8 +412,8 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
             var appArray = [{name: "全部", value: "All"}]
             this.mySetupAppManageModel.each(function(el, index, lst){
                 appArray.push({
-                    name: el.get('name'),
-                    value: el.get('id')
+                    name: el.get('typeName'),
+                    value: el.get('type')
                 })
             }.bind(this))
 

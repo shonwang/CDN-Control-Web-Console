@@ -44,6 +44,9 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
             this.$el.find("#input-type").val(this.model.get("businessTypeName") || this.model.get("platformName"));
             this.$el.find("#input-protocol").val(this.model.get("protocolName"));
             this.$el.find("#text-comment").val(this.model.get("description"));
+
+            if (this.isFromSend)
+                this.$el.find("#text-comment").attr("readonly", true)
         },
 
         onGetTopoInfo: function(data){
@@ -203,6 +206,10 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
         },
 
         onSaveComment: function(){
+            if (this.isFromSend) {
+                this.onSaveConfigSuccess();
+                return;
+            }
             require(['basicInformation.model'], function(BasicInformationModel){
                 this.myBasicInformationModel = new BasicInformationModel();
                 this.myBasicInformationModel.off("modify.DomainBasic.success");

@@ -354,8 +354,8 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
             var appArray = [{name:"全部",value:"All"}]
             this.mySetupAppManageModel.each(function(el, index, lst){
                 appArray.push({
-                    name: el.get('name'),
-                    value: el.get('id')
+                    name: el.get('typeName'),
+                    value: el.get('type')
                 })
             }.bind(this))
 
@@ -363,8 +363,7 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
             Utility.initDropMenu(rootNode, appArray, function(value){
                 if (value == "All"){
                     this.queryArgs.platformId = null;
-                }
-                else{
+                } else {
                     this.queryArgs.platformId = parseInt(value)
                 }
             }.bind(this));

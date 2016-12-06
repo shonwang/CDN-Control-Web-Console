@@ -329,7 +329,7 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
                         var args = _.extend(this.queryArgs);
                         args.page = num;
                         args.count = this.queryArgs.count;
-                        this.collection.querySendingChannel(args);
+                        this.collection.queryTaskDoingDetail(args);
                     }
                 }.bind(this)
             });

@@ -103,27 +103,31 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
             }.bind(this))
         },        
 
-        rePublish:function(domains){
-
-            require(["setupChannelManage.model"], function(SetupChannelManageModel){
-                this.mySetupChannelManageModel = new SetupChannelManageModel();
-                var postParam = []
+        rePublish:function(taskId){
+            // require(["setupChannelManage.model"], function(SetupChannelManageModel){
+            //     this.mySetupChannelManageModel = new SetupChannelManageModel();
+            //     var postParam = []
                     
-                _.each(domains, function(item){
-                    postParam.push({
-                        domain: item.domain,
-                        version: item.domainVersion,
-                        configReason: 1 
-                    })
-                });
+            //     _.each(domains, function(item){
+            //         postParam.push({
+            //             domain: item.domain,
+            //             version: item.domainVersion,
+            //             configReason: 1 
+            //         })
+            //     });
 
-                this.mySetupChannelManageModel.off("post.predelivery.success");
-                this.mySetupChannelManageModel.off("post.predelivery.error");
-                this.mySetupChannelManageModel.on("post.predelivery.success", $.proxy(this.rePublishSuccess, this));
-                this.mySetupChannelManageModel.on("post.predelivery.error", $.proxy(this.rePublishError, this));
-                this.mySetupChannelManageModel.predelivery(postParam);
-            }.bind(this))
+            //     this.mySetupChannelManageModel.off("post.predelivery.success");
+            //     this.mySetupChannelManageModel.off("post.predelivery.error");
+            //     this.mySetupChannelManageModel.on("post.predelivery.success", $.proxy(this.rePublishSuccess, this));
+            //     this.mySetupChannelManageModel.on("post.predelivery.error", $.proxy(this.rePublishError, this));
+            //     this.mySetupChannelManageModel.predelivery(postParam);
+            // }.bind(this))
 
+            this.collection.off("get.retrytask.success");
+            this.collection.off("get.retrytask.error");
+            this.collection.on("get.retrytask.success", $.proxy(this.rePublishSuccess, this));
+            this.collection.on("get.retrytask.error", $.proxy(this.rePublishError, this));
+            this.collection.retryTask({taskId: taskId});
         },
 
         rePublishSuccess:function(){
@@ -165,7 +169,7 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
 
             var model = this.collection.get(id);
             var domains = model.get("domains");
-            this.rePublish(domains);
+            this.rePublish(id);
         },
 
         onClickItemEdit: function(event){

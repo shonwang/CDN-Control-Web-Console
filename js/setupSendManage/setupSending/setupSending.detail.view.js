@@ -263,6 +263,10 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onClickItemSkip: function(event){
+            var result = confirm("跳过后设备的配置下发状态将不会统计在下发结果内，不再影响下发进度，是否确定跳过？")
+
+            if (!result) return
+
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();

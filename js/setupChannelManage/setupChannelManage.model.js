@@ -200,6 +200,7 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
             
             Utility.getAjax(url, args, successCallback, errorCallback); 
         },
+
         getDomainInfo: function(args){
             var url = BASE_URL + "/channelManager/domain/getDomainInfo",
             successCallback = function(res){

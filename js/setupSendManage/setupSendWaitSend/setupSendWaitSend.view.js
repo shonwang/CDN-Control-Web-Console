@@ -70,6 +70,17 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
                 });
             }.bind(this));
 
+            var tempArray = _.filter(checkedList, function(obj){
+                return obj.get("topologyId") === checkedList[0].get("topologyId")
+            }.bind(this))
+
+            if (tempArray.length !== checkedList.length){
+                alert("你选择了不同的拓扑！")
+                return;
+            } else {
+                this.currentModel = checkedList[0];
+            }
+
             this.showSelectStrategyPopup();
         },
 

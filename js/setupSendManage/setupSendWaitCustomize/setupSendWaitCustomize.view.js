@@ -167,6 +167,7 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
                     collection: this.collection,
                     model: model,
                     isEdit: true,
+                    isFromSend: true,
                     onSaveCallback: function(){}.bind(this),
                     onCancelCallback: function(){
                         myEditChannelView.$el.remove();

@@ -3,11 +3,14 @@ define("setupSendWaitCustomize.model", ['require','exports', 'utility'], functio
         initialize: function(){
             var operType = this.get("operType"),
                 status       = this.get("status"),
+                configReason = this.get("configReason"),
                 createTime    = this.get("createTime");
 
             if (operType === 0) this.set("operTypeName", '新建');
             if (operType === 2) this.set("operTypeName", '删除');
             if (operType === 1) this.set("operTypeName", '更新');
+            if (configReason === 1) this.set("configReasonName", '用户配置变更');
+            if (configReason === 2) this.set("configReasonName", '拓扑变更');
 
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
 

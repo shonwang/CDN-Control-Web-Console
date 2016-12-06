@@ -17,17 +17,16 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
             this.$el.find(".use-customized .togglebutton input").on("click", $.proxy(this.onClickIsUseCustomizedBtn, this));
             this.$el.find(".view-setup-list").on("click", $.proxy(this.onClickViewSetupBillBtn, this))
 
-            require(['setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeModel){
-                this.mySetupSendWaitCustomizeModel = new SetupSendWaitCustomizeModel();
-                this.mySetupSendWaitCustomizeModel.off("get.channel.config.success");
-                this.mySetupSendWaitCustomizeModel.off("get.channel.config.error");
-                this.mySetupSendWaitCustomizeModel.on("get.channel.config.success", $.proxy(this.initSetup, this));
-                this.mySetupSendWaitCustomizeModel.on("get.channel.config.error", $.proxy(this.onGetError, this));
-                this.mySetupSendWaitCustomizeModel.getChannelConfig({
-                    domain: this.model.get("domain"),
-                    version: this.model.get("version") || this.model.get("domainVersion")
-                })
-            }.bind(this));
+            if (this.isFromSend){
+                this.$el.find("#text-comment").attr("readonly", true)
+                this.collection.off("get.originDomain.success");
+                this.collection.off("get.originDomain.error");
+                this.collection.on("get.originDomain.success", $.proxy(this.onGetOriginId, this));
+                this.collection.on("get.originDomain.error", $.proxy(this.onGetError, this));
+                this.collection.getOriginDomain({domain: this.model.get("domain")});
+            } else {
+                this.requirySetupSendWaitCustomizeModel();
+            }
 
             if (this.model.get("topologyId")) {
                 require(['setupTopoManage.model'], function(SetupTopoManageModel){
@@ -44,9 +43,25 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
             this.$el.find("#input-type").val(this.model.get("businessTypeName") || this.model.get("platformName"));
             this.$el.find("#input-protocol").val(this.model.get("protocolName"));
             this.$el.find("#text-comment").val(this.model.get("description"));
+        },
 
-            if (this.isFromSend)
-                this.$el.find("#text-comment").attr("readonly", true)
+        onGetOriginId: function(res){
+            this.originId = res.id;
+            this.requirySetupSendWaitCustomizeModel();
+        },
+
+        requirySetupSendWaitCustomizeModel: function(){
+            require(['setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeModel){
+                this.mySetupSendWaitCustomizeModel = new SetupSendWaitCustomizeModel();
+                this.mySetupSendWaitCustomizeModel.off("get.channel.config.success");
+                this.mySetupSendWaitCustomizeModel.off("get.channel.config.error");
+                this.mySetupSendWaitCustomizeModel.on("get.channel.config.success", $.proxy(this.initSetup, this));
+                this.mySetupSendWaitCustomizeModel.on("get.channel.config.error", $.proxy(this.onGetError, this));
+                this.mySetupSendWaitCustomizeModel.getChannelConfig({
+                    domain: this.model.get("domain"),
+                    version: this.model.get("version") || this.model.get("domainVersion")
+                })
+            }.bind(this));
         },
 
         onGetTopoInfo: function(data){
@@ -166,7 +181,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                 var mySetupBillModel = new SetupBillModel();
                 var mySetupBillView = new SetupBillView({
                     collection: mySetupBillModel,
-                    originId: this.model.get("id"),
+                    originId: this.originId || this.model.get("id"),
                     onSaveCallback: function(){}.bind(this),
                     onCancelCallback: function(){
                         mySetupBillView.$el.remove();
@@ -216,23 +231,10 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                 this.myBasicInformationModel.off("modify.DomainBasic.error");
                 this.myBasicInformationModel.on("modify.DomainBasic.success", $.proxy(this.onSaveConfigSuccess, this));
                 this.myBasicInformationModel.on("modify.DomainBasic.error", $.proxy(this.onGetError, this));
-                if (!this.isFromSend){
-                    this.myBasicInformationModel.modifyDomainBasic({
-                        originId: this.model.get("id"),
-                        description: this.$el.find("#text-comment").val()
-                    })
-                } else {
-                    this.collection.off("get.originDomain.success");
-                    this.collection.off("get.originDomain.error");
-                    this.collection.on("get.originDomain.success", function(res){
-                        this.myBasicInformationModel.modifyDomainBasic({
-                            originId: res.id,
-                            description: this.$el.find("#text-comment").val()
-                        })
-                    }.bind(this));
-                    this.collection.on("get.originDomain.error", $.proxy(this.onGetError, this));
-                    this.collection.getOriginDomain({domain: this.model.get("domain")});
-                }
+                this.myBasicInformationModel.modifyDomainBasic({
+                    originId: this.model.get("id"),
+                    description: this.$el.find("#text-comment").val()
+                })
             }.bind(this));
         },
 

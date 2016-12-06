@@ -7,7 +7,9 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
             this.options = options
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/setupSendManage/setupSendWaitSend/setupSendWaitSend.html'])());
-
+            if(!AUTH_OBJ.BatchSendToSending){
+                this.$el.find('.mulit-send').remove();
+            }
             this.initChannelDropMenu();
 
             this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
@@ -106,11 +108,12 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
                     domainArray : this.domainArray,
                     model: this.currentModel
                 });
+                var type = AUTH_OBJ.ApplySendMission ? 2 : 1;
                 var options = {
                     title: "生成下发任务",
                     body : mySelectStrategyView,
                     backdrop : 'static',
-                    type     : 2,
+                    type     : type,
                     onOKCallback:  function(){
                         var result  = mySelectStrategyView.onSure();
                         if (!result) return;
@@ -169,7 +172,11 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
         onClickItemSend: function(event){
             var result = confirm("你确定要下发吗？");
             if (!result) return;
-
+    
+            if(!AUTH_OBJ.ApplySendMission){
+                alert('没有权限');
+                return;
+            }
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();

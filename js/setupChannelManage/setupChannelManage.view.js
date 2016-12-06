@@ -34,6 +34,10 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.table.html'])({
                 data: data, 
             }));
+
+            if(!AUTH_OBJ.SendHistoryConfig){
+                this.table.find('.publish').remove();
+            }
             if (data.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
@@ -115,11 +119,15 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.model      = options.model;
             this.rule = [];
             this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.specialLayer.html'])({data: this.model.attributes}));
-
+            
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
             this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
             this.$el.find(".add-role").on("click", $.proxy(this.onClickAddRuleButton, this));
-
+            
+            if(!AUTH_OBJ.ApplySpecialUpstreamStrategy){
+                this.$el.find('.save').attr('disabled','disabled');
+                this.$el.find('.save').off("click");
+            }
             //添加特殊策略
             this.collection.off('add.special.success');
             this.collection.off('add.special.error');
@@ -651,7 +659,14 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             this.options = options;
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.html'])());
-
+            
+            if(!AUTH_OBJ.QueryDomain){
+                this.$el.find('.query').remove();
+            }
+            if(!AUTH_OBJ.ChangeTopo){
+                this.$el.find(".multi-modify-topology").remove();
+            }
+            
             this.initChannelDropMenu();
 
             this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
@@ -708,6 +723,17 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
         initTable: function(){
             this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
             this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
+            
+            if(!AUTH_OBJ.EditDomain){
+                this.table.find('.edit').remove();
+            }
+            if(!AUTH_OBJ.ManageSpecialUpstreamStrategy){
+                this.table.find('.strategy').remove();
+            }
+            if(!AUTH_OBJ.DomainConfigHistory){
+                this.table.find('.history').remove();
+            }
+            
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
@@ -737,7 +763,8 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
             }.bind(this))
 
             if (this.selectTopoPopup) $("#" + this.selectTopoPopup.modalId).remove();
-
+            
+            var type = AUTH_OBJ.ApplyChangeTopo ? 2 : 1;
             var mySelectTopoView = new SelectTopoView({
                 collection: this.collection, 
                 domainArray : this.domainArray
@@ -746,7 +773,7 @@ define("setupChannelManage.view", ['require','exports', 'template', 'modal.view'
                 title: "选择拓扑关系",
                 body : mySelectTopoView,
                 backdrop : 'static',
-                type     : 2,
+                type     : type,
                 onOKCallback:  function(){
                     var result  = mySelectTopoView.onSure();
                     if (!result) return;

@@ -78,8 +78,12 @@
     <% if (permission.SendConfigs) { %>
     <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-cloud-download"></i>配置下发</a>
         <ul class="submenu">
+            <% if (permission.ManageDomain) { %>
             <li id="setupChannelManage"><a href="index.html#/setupChannelManage"><i class="icon icon-monit-20"></i>频道管理</a></li>
+            <% } %>
+            <% if (permission.ManageSendConfigs) { %>
             <li id="setupSendManage"><a href="index.html#/setupSendWaitCustomize"><i class="glyphicon glyphicon-send"></i>下发管理</a></li>
+            <% } %>
         </ul>
     </li>
     <% } %>

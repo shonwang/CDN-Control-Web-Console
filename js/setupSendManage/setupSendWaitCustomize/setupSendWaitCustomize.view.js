@@ -7,7 +7,9 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             this.options = options
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.html'])());
-
+            if(!AUTH_OBJ.BatchSendToWaitSend){
+                this.$el.find('.mulit-send').remove();
+            }
             this.initChannelDropMenu();
 
             this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
@@ -176,6 +178,9 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
                     }.bind(this)
                 })
 
+                if(!AUTH_OBJ.ApplyEditCustomize){
+                    myEditChannelView.$el.find('.save').remove();
+                }
                 this.$el.find(".list-panel").hide();
                 myEditChannelView.render(this.$el.find(".edit-panel"))
             }.bind(this));

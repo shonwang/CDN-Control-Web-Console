@@ -268,6 +268,18 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             if (!this.setupSendNavbar){
                 this.setupSendNavbar = new SubNavbar(menuOptions);
                 this.setupSendNavbar.$el.find(".back").remove();
+                if(!AUTH_OBJ.WaitCustomize){
+                    this.setupSendNavbar.$el.find('#setupSendWaitCustomize').remove();
+                }
+                if(!AUTH_OBJ.WaitSend){
+                    this.setupSendNavbar.$el.find('#setupSendWaitSend').remove();
+                }
+                if(!AUTH_OBJ.Sending){
+                    this.setupSendNavbar.$el.find('#setupSending').remove();
+                }
+                if(!AUTH_OBJ.SendDone){
+                    this.setupSendNavbar.$el.find('#setupSendDone').remove();
+                }
                 this.setupSendNavbar.select(this.curPage);
             }
         },

@@ -390,6 +390,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initTable: function(){
+            this.collection.models.reverse();
             this.$el.find(".multi-delete").attr("disabled", "disabled");
             this.table = $(_.template(template['tpl/importAssess/importAssess.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
             if (this.collection.models.length !== 0)

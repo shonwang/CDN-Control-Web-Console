@@ -266,7 +266,8 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             this.collection.each(function(model){
-                model.set("isChecked", eventTarget.checked);
+                if (model.get("isDisplay"))
+                    model.set("isChecked", eventTarget.checked);
             }.bind(this))
             this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
             if (eventTarget.checked){
@@ -387,10 +388,12 @@ define("setupSendWaitSend.view", ['require','exports', 'template', 'modal.view',
                 if (value == "All"){
                     this.collection.each(function(el){
                         el.set("isDisplay", true)
+                        el.set("isChecked", false)
                     }.bind(this))
                 } else {
                     this.collection.each(function(el){
                         el.set("isDisplay", false)
+                        el.set("isChecked", false)
                     }.bind(this))
                     this.filterByTopo(value)
                 }

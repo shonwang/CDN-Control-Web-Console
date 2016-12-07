@@ -316,7 +316,11 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             }
             var newModel = new this.collection.model(defaultParam)
             newModel.set("createTime", new Date().format("yyyy/mm/dd hh:MM:ss"));
+            this.collection.models.reverse();
             this.collection.push(newModel);
+            this.collection.each(function(el){
+                el.set("isChecked", false);
+            }.bind(this))
             this.collection.trigger("update.assess.table");
         },
 

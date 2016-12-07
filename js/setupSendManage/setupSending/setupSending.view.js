@@ -44,10 +44,23 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onGetError: function(error){
+            this.disablePopup&&this.disablePopup.$el.modal('hide');
             if (error&&error.message)
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
+        },
+
+        showDisablePopup: function(msg) {
+            if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
+            var options = {
+                title    : "警告",
+                body     : '<div class="alert alert-danger"><strong>' + msg +'</strong></div>',
+                backdrop : 'static',
+                type     : 0,
+            }
+            this.disablePopup = new Modal(options);
+            this.disablePopup.$el.find(".close").remove();
         },
 
         onChannelTerminateSuccess: function(){
@@ -56,7 +69,9 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onChannelNextSuccess: function(){
+            this.disablePopup&&this.disablePopup.$el.modal('hide');
             alert("操作成功！")
+            this.update(this.target)
         },
 
         onChannelListSuccess: function(){
@@ -123,6 +138,8 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
                 taskId: id,
                 taskStepId: model.get("taskStepId")
             })
+
+            this.showDisablePopup("服务器正在努力处理中...")
         },
 
         onClickItemReject: function(event){

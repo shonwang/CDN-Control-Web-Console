@@ -58,6 +58,7 @@ define("controller", ['require','exports'],
         },
 
         setupChannelManageCallback: function(){
+            if(!AUTH_OBJ.ManageDomain) return;
             require(['setupChannelManage.view', 'setupChannelManage.model'], function(SetupChannelManageView, SetupChannelManageModel){
                 this.curPage = 'setupChannelManage';
                 this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));

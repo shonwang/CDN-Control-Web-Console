@@ -551,7 +551,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.region.error", $.proxy(this.onGetError, this));
             this.collection.selectRegionList({
                "page": 1,
-               "count": 10,
+               "count": 99999,
                "name": null
             });
         },

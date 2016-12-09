@@ -92,14 +92,14 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                     _.each(el, function(fileObj, index, list){
                         if (fileObj&&fileObj.topologyLevel === 1){
                             upArray.push({
-                                id: fileObj.id || Utility.randomStr(8),
+                                id: fileObj.id,
                                 name: key,
                                 content: fileObj.content,
                                 luaOnly: fileObj.luaOnly === undefined ? true : fileObj.luaOnly
                             })
                         } else if (fileObj&&fileObj.topologyLevel === 2){
                             downArray.push({
-                                id: fileObj.id || Utility.randomStr(8),
+                                id: fileObj.id,
                                 name: key,
                                 content: fileObj.content,
                                 luaOnly: fileObj.luaOnly === undefined ? true : fileObj.luaOnly
@@ -140,7 +140,13 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
         initCustomizedSetupFile: function(data){
             this.cusConfigInfo = data;
 
-            var cusConfigObj = this.getConfigObj(data);
+            _.each(this.cusConfigInfo, function(fileObj, inx, list){
+                _.each(fileObj, function(el, index, ls){
+                    if (!el.id) el.id = Utility.randomStr(8);
+                }.bind(this))
+            }.bind(this))
+
+            var cusConfigObj = this.getConfigObj(this.cusConfigInfo);
 
             var tplPath = 'tpl/setupChannelManage/setupChannelManage.editCfgTrue.html';
             if (!this.isEdit) tplPath = 'tpl/setupChannelManage/setupChannelManage.editCfgFalse.html'
@@ -239,6 +245,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
         },
 
         onSaveConfigSuccess: function(){
+            alert("操作成功！")
             this.onClickCancelButton();
         },
 

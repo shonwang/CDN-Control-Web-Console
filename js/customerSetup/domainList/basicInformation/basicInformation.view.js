@@ -94,6 +94,7 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
                 var mySaveThenSendView = new SaveThenSendView({
                     collection: new SaveThenSendModel(),
                     domainInfo: this.domainInfo,
+                    description: this.$el.find("#Remarks").val(),
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
                     }.bind(this)

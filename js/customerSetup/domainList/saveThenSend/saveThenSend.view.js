@@ -19,8 +19,8 @@ define("saveThenSend.view", ['require','exports', 'template', 'modal.view', 'uti
                 var postParam = [{
                         domain: this.options.domainInfo.domain,
                         version: res.version,
-                        description: this.$el.find(".comment #secondary").val(),
-                        configReason: 1
+                        configReason: 1,
+                        description: this.options.description
                     }]
 
                 this.mySetupChannelManageModel.off("post.predelivery.success");

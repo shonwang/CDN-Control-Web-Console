@@ -179,6 +179,12 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 this.onClickQueryButton();
             }.bind(this));
         },
+        onGetError: function(error){
+            if (error&&error.message)
+                alert(error.message)
+            else
+                alert("网络阻塞，请刷新重试！")
+        },
         render:function(target){
             this.$el.appendTo(target);
         }

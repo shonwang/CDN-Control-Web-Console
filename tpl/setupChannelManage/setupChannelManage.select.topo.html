@@ -8,6 +8,11 @@
             </div>
         </div>
     </div>
+    <% } else { %>
+    <div class="alert alert-dismissable alert-info">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <strong>提示：</strong>更换拓扑关系会删除域名原有的特殊分层策略，如有需要，请在更换拓扑后重新添加
+    </div>
     <% } %>
     <div class="long-dropdown-menu">
         <p>涉及的域名</p>

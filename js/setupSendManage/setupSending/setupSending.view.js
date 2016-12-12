@@ -310,7 +310,7 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.mySetupTopoManageSendStrategy.on("get.sendInfo.success", $.proxy(this.onGetStrategySuccess, this));
                 this.mySetupTopoManageSendStrategy.on("get.sendInfo.error", $.proxy(this.onGetError, this));
                 this.mySetupTopoManageSendStrategy.getSendinfo({
-                    name:null,
+                    topologyId:null,
                     page:1,
                     size:99999
                 });

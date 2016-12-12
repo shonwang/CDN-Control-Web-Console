@@ -13,10 +13,15 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
             this.collection.on("get.donlist.success", $.proxy(this.onChannelListSuccess, this));
             this.collection.on("get.donlist.error", $.proxy(this.onGetError, this));
 
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+            this.$el.find(".opt-ctn .query").on("click", function(){
+                this.curPage = 1;
+                this.onClickQueryButton();
+            }.bind(this));
             this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
 
             this.enterKeyBindQuery();
+
+            this.curPage = 1;
 
              this.queryArgs = {
                 "name"           : null,//任务名称
@@ -53,7 +58,7 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
 
         onClickQueryButton: function(){
             this.isInitPaginator = false;
-            this.queryArgs.page = 1;
+            this.queryArgs.page = this.curPage;
             this.queryArgs.name = this.$el.find("#input-task-name").val();
             if (this.queryArgs.name == "") this.queryArgs.domain = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
@@ -240,12 +245,13 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
                 visiblePages: 10,
-                currentPage: 1,
+                currentPage: this.curPage,
                 onPageChange: function (num, type) {
                     if (type !== "init"){
                         this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                         var args = _.extend(this.queryArgs);
                         args.page = num;
+                        this.curPage = num;
                         args.count = this.queryArgs.count;
                         this.collection.queryTaskDonelist(args);
                     }
@@ -278,7 +284,7 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
             ]
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
                 this.queryArgs.count = value;
-                this.queryArgs.page = 1;
+                this.curPage = 1;
                 this.onClickQueryButton();
             }.bind(this));
 

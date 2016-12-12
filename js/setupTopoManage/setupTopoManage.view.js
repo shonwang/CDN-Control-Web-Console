@@ -514,7 +514,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             }.bind(this));
             
             if(param.length == 0){
-                return {"step":this.Step,"nodeId":[],"shell":""};
+                return {"name":'第'+this.Step+'步',"step":this.Step,"nodeId":[],"shell":""};
 
             }else{
                 return param[0];

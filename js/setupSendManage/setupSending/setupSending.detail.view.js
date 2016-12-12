@@ -104,7 +104,12 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             this.$el = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.detail.html'])({data: {}}));
 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+            this.$el.find(".opt-ctn .query").on("click", function(){
+                this.curPage = 1;
+                this.onClickQueryButton();
+            }.bind(this));
+
+            this.curPage = 1;
 
             if (this.isSending) {
                 this.collection.on("get.task.doingdetail.success",$.proxy(this.queryDetailSuccess,this));
@@ -118,7 +123,7 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
                     "deviceName" : null,
                     "nodeId": null,// "节点ID"
                     "status": null,
-                    "page": 1,
+                    "page": this.curPage,
                     "count": 10
                 };
             } else {
@@ -130,7 +135,7 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
                     "deviceName" : null,
                     "nodeId": null,// "节点ID"
                     "status": null,
-                    "page": 1,
+                    "page": this.curPage,
                     "count": 10
                 };
             }
@@ -141,7 +146,7 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
 
         onClickQueryButton: function(){
             this.isInitPaginator = false;
-            this.queryArgs.page = 1;
+            this.queryArgs.page = this.curPage;
             this.queryArgs.deviceName = this.$el.find("#input-device").val();
             if (this.queryArgs.deviceName == "") this.queryArgs.deviceName = null;
 
@@ -188,7 +193,7 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             ]
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
                 this.queryArgs.count = value;
-                this.queryArgs.page = 1;
+                this.curPage = 1;
                 this.onClickQueryButton();
             }.bind(this));
         },
@@ -322,12 +327,13 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
                 visiblePages: 10,
-                currentPage: 1,
+                currentPage: this.curPage,
                 onPageChange: function (num, type) {
                     if (type !== "init"){
                         this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                         var args = _.extend(this.queryArgs);
                         args.page = num;
+                        this.curPage = num;
                         args.count = this.queryArgs.count;
                         this.collection.queryTaskDoingDetail(args);
                     }

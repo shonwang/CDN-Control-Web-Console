@@ -313,7 +313,11 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
                 this.mySetupTopoManageSendStrategyModel = new SetupTopoManageSendStrategyModel();
                 this.mySetupTopoManageSendStrategyModel.on("get.sendInfo.success", $.proxy(this.onGetSendStrategySuccess, this))
                 this.mySetupTopoManageSendStrategyModel.on("get.sendInfo.error", $.proxy(this.onGetSendStrategyError, this))
-                this.mySetupTopoManageSendStrategyModel.getSendinfo();
+                this.mySetupTopoManageSendStrategyModel.getSendinfo({
+                    topologyId:null,
+                    page:1,
+                    count:99999
+                });
             }.bind(this));
         },
 

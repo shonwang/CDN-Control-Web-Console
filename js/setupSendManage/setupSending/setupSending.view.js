@@ -312,7 +312,7 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.mySetupTopoManageSendStrategy.getSendinfo({
                     topologyId:null,
                     page:1,
-                    size:99999
+                    count:99999
                 });
             }.bind(this))
         },

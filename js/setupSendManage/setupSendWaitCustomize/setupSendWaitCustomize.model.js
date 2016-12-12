@@ -121,6 +121,18 @@ define("setupSendWaitCustomize.model", ['require','exports', 'utility'], functio
             }.bind(this);
             args.t = new Date().valueOf();
             Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        modifyDomainDescription: function(args){
+            var url = BASE_URL + "/channelManager/domain/modifyDomainDescription",
+            successCallback = function(res){
+                this.trigger("modify.domainDescription.success", res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("modify.domainDescription.error", response);  
+            }.bind(this);
+            args.t = new Date().valueOf();
+            Utility.getAjax(url, args, successCallback, errorCallback);
         }
     });
 

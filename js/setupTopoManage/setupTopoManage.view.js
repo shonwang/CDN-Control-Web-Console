@@ -268,9 +268,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
         initstepTable: function(data){
            // var data = [{step:1,nodeName:'扬州电信节点<br>扬州联通节点<br>杭州'},{step:2,nodeName:'济南联通节点<br>惠州联通节点<br>天津电信节点'},{step:3,nodeName:'石家庄联通节点<br>襄阳电信节点<br>德阳电信节点<br>天津移动节点'}]
             var data = data;
-            _.each(data,function(el,index,list){
-                el.step = index+1;
-            })
             this.localTable = $(_.template(template['tpl/setupTopoManage/setupTopoManage.addStep.table.html'])({
                  data: data
             }));
@@ -301,15 +298,18 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             } else {
                 id = $(eventTarget).attr("id");
             }
-            this.RestoreNodes(this.allNodesShow,id);
             var length = this.defaultParam.deliveryStrategyDef.length;
             for (var i = 0; i < length; i++){ 
                 if (parseInt(this.defaultParam.deliveryStrategyDef[i].step) === parseInt(id)){
                     this.defaultParam.deliveryStrategyDef.splice(i, 1);
+                    _.each(this.defaultParam.deliveryStrategyDef,function(el,index,list){
+                        el.step = index+1;
+                    })
                     this.initstepTable(this.InformationProcessing(this.defaultParam.deliveryStrategyDef));
                     return;
                 }
             }
+            this.RestoreNodes(this.allNodesShow,id);
         },
         onClickAddStepButton: function(){
             this.allNodes = this.FilterNodes(this.allNodes);
@@ -492,7 +492,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             }else{
                 this.Step = options.CurrentStep;
             }
+            console.log(this.deliveryStrategyDef);
             this.defaultParam = this.deepClone(this.parameterProcessing(this.deliveryStrategyDef));//每一条的步骤参数
+            console.log(this.defaultParam);
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.addStep.html'])({data:this.Step}));
             this.$el.find('.opt-ctn .save').on('click', $.proxy(this.onClickSaveButton, this));
             this.$el.find('.opt-ctn .cancel').on('click', $.proxy(this.onClickCancelButton, this));
@@ -512,7 +514,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             }.bind(this));
             
             if(param.length == 0){
-                return {"step":this.Step,"nodeId":[],"shell":""};
+                return {"name":'第'+this.Step+'步',"step":this.Step,"nodeId":[],"shell":""};
 
             }else{
                 return param[0];
@@ -674,7 +676,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
            this.options.onCancelCallback && this.options.onCancelCallback();
         },
         onClickSaveButton: function(){
-            
+
             this.defaultParam.shell = $(".scriptContent").val();
             
             if(this.defaultParam.nodeId.length == 0){

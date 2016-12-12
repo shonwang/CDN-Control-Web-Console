@@ -18,7 +18,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
             this.$el.find(".view-setup-list").on("click", $.proxy(this.onClickViewSetupBillBtn, this))
 
             if (this.isFromSend){
-                //this.$el.find("#text-comment").attr("readonly", true)
+                this.$el.find("#text-comment").attr("readonly", true)
                 this.collection.off("get.originDomain.success");
                 this.collection.off("get.originDomain.error");
                 this.collection.on("get.originDomain.success", $.proxy(this.onGetOriginId, this));
@@ -228,15 +228,18 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
 
         onSaveComment: function(){
             if (this.isFromSend) {
-                this.collection.off("modify.domainDescription.success");
-                this.collection.off("modify.domainDescription.error");
-                this.collection.on("modify.domainDescription.success", $.proxy(this.onSaveConfigSuccess, this));
-                this.collection.on("modify.domainDescription.error", $.proxy(this.onGetError, this));
-                this.collection.modifyDomainDescription({
-                    originId: this.originId,
-                    description: this.$el.find("#text-comment").val()
-                });
+                this.onSaveConfigSuccess();
                 return;
+
+                // this.collection.off("modify.domainDescription.success");
+                // this.collection.off("modify.domainDescription.error");
+                // this.collection.on("modify.domainDescription.success", $.proxy(this.onSaveConfigSuccess, this));
+                // this.collection.on("modify.domainDescription.error", $.proxy(this.onGetError, this));
+                // this.collection.modifyDomainDescription({
+                //     originId: this.originId,
+                //     description: this.$el.find("#text-comment").val()
+                // });
+                // return;
             }
             require(['basicInformation.model'], function(BasicInformationModel){
                 this.myBasicInformationModel = new BasicInformationModel();

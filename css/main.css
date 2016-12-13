@@ -827,6 +827,7 @@ td .table {
   width: 100%;
   box-sizing: border-box;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .select-value-layer li.hide {

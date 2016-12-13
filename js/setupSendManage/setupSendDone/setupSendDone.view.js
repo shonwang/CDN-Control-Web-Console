@@ -331,15 +331,32 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
                     value:el.get('id')
                 });
             }.bind(this));
-            rootNode = this.$el.find('.dropdown-strategy');
-            Utility.initDropMenu(rootNode, dendStrategyArr, function(value){
-                 if (value == "All"){
-                     this.queryArgs.deliveryStrategyDefId = null;
-                 }
-                 else{
-                     this.queryArgs.deliveryStrategyDefId = parseInt(value)
-                 }
-            }.bind(this));
+            // rootNode = this.$el.find('.dropdown-strategy');
+            // Utility.initDropMenu(rootNode, dendStrategyArr, function(value){
+            //      if (value == "All"){
+            //          this.queryArgs.deliveryStrategyDefId = null;
+            //      }
+            //      else{
+            //          this.queryArgs.deliveryStrategyDefId = parseInt(value)
+            //      }
+            // }.bind(this));
+
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-strategy').get(0),
+                panelID: this.$el.find('#dropdown-strategy').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function(){},
+                data: dendStrategyArr,
+                callback: function(data) {
+                     if (value == "All")
+                        this.queryArgs.deliveryStrategyDefId = null;
+                     else
+                        this.queryArgs.deliveryStrategyDefId = parseInt(value)
+                }.bind(this)
+            });
         },
 
         onGetTopoSuccess: function(){

@@ -362,13 +362,30 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
                 })
             }.bind(this))
 
-            rootNode = this.$el.find(".dropdown-strategy");
-            Utility.initDropMenu(rootNode, strategyArray, function(value){
-                if (value == "All")
-                    this.queryArgs.deliveryStrategyDefId = null;
-                else
-                    this.queryArgs.deliveryStrategyDefId = parseInt(value)
-            }.bind(this));
+            // rootNode = this.$el.find(".dropdown-strategy");
+            // Utility.initDropMenu(rootNode, strategyArray, function(value){
+            //     if (value == "All")
+            //         this.queryArgs.deliveryStrategyDefId = null;
+            //     else
+            //         this.queryArgs.deliveryStrategyDefId = parseInt(value)
+            // }.bind(this));
+
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-strategy').get(0),
+                panelID: this.$el.find('#dropdown-strategy').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function(){},
+                data: strategyArray,
+                callback: function(data) {
+                    if (value == "All")
+                        this.queryArgs.deliveryStrategyDefId = null;
+                    else
+                        this.queryArgs.deliveryStrategyDefId = parseInt(data.value)
+                }.bind(this)
+            });
         },
 
         hide: function(){

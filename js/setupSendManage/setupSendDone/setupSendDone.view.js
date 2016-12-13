@@ -326,8 +326,9 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
             var mySetupTopoManageSendStrategyModel=this.mySetupTopoManageSendStrategyModel;
             var dendStrategyArr = [{name:"全部",value:"All"}];
             mySetupTopoManageSendStrategyModel.each(function(el,index,lst){
+                var tempName = el.get('name').replace(/</g, "&lt;").replace(/>/g, "&gt;")
                 dendStrategyArr.push({
-                    name:el.get('name'),
+                    name:tempName,
                     value:el.get('id')
                 });
             }.bind(this));

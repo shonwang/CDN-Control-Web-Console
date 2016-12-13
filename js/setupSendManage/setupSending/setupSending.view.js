@@ -356,8 +356,9 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
         onGetStrategySuccess: function(){
             var strategyArray = [{name: "全部", value: "All"}]
             this.mySetupTopoManageSendStrategy.each(function(el, index, lst){
+                var tempName = el.get('name').replace(/</g, "&lt;").replace(/>/g, "&gt;")
                 strategyArray.push({
-                    name: el.get('name'),
+                    name: tempName,
                     value: el.get('id')
                 })
             }.bind(this))

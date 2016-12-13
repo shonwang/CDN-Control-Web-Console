@@ -381,10 +381,11 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
                 onOk: function(){},
                 data: strategyArray,
                 callback: function(data) {
-                    if (value == "All")
+                    if (data.value == "All")
                         this.queryArgs.deliveryStrategyDefId = null;
                     else
                         this.queryArgs.deliveryStrategyDefId = parseInt(data.value)
+                    this.$el.find('#dropdown-strategy .cur-value').html(data.name);
                 }.bind(this)
             });
         },

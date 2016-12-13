@@ -352,10 +352,11 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
                 onOk: function(){},
                 data: dendStrategyArr,
                 callback: function(data) {
-                     if (value == "All")
+                     if (data.value == "All")
                         this.queryArgs.deliveryStrategyDefId = null;
                      else
-                        this.queryArgs.deliveryStrategyDefId = parseInt(value)
+                        this.queryArgs.deliveryStrategyDefId = parseInt(data.value)
+                    this.$el.find('#dropdown-strategy .cur-value').html(data.name);
                 }.bind(this)
             });
         },

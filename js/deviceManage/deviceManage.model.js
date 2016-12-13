@@ -147,7 +147,7 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
         },
 
         addIp: function(args){
-            var url = BASE_URL + "/rs/ip/add"
+            var url = BASE_URL + "/resource/rs/ip/add"
             var defaultParas = {
                 type: "POST",
                 url: url,

@@ -343,7 +343,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
         },
 
         getAllCityAndBigArea: function(args){
-            var url = BASE_URL + "/rs/provCity/getAllCityAndBigArea",
+            var url = BASE_URL + "/resource/rs/provCity/getAllCityAndBigArea",
             successCallback = function(res){
                 if (res)
                     this.trigger("get.cityByProvince.success", res);

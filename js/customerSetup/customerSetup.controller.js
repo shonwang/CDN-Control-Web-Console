@@ -4,6 +4,7 @@ define("customerSetup.controller", ['require','exports'],
     var CustomerSetupController = Backbone.Router.extend({
 
         openNgxLogCallback: function(query, query2) {
+            if(!AUTH_OBJ.LogServer) return;
             require(['openNgxLog.view', 'openNgxLog.model'], function(OpenNgxLogView, OpenNgxLogModel){
                 this.navbarView.select('customerSetup');
                 this.curPage = 'customerSetup-domainList-openNgxLog';
@@ -438,6 +439,7 @@ define("customerSetup.controller", ['require','exports'],
         },
         
         domainListCallback: function(query) {
+            if(!AUTH_OBJ.DomainLists || !AUTH_OBJ.ManageCustomer) return;
             require(['domainList.view', 'domainList.model', 'subNavbar.view'], function(DomainListView, DomainListModel, SubNavbar){
                 this.curPage = 'customerSetup-domainList';
                 this.navbarView.select('customerSetup', $.proxy(this.removeSubSideBar, this));

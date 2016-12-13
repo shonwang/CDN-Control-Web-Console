@@ -66,8 +66,11 @@ define("customerSetup.view", ['require','exports', 'template', 'modal.view', 'ut
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-
+            
             this.table.find("tbody .manage").on("click", $.proxy(this.onClickItemNodeName, this));
+            if(!AUTH_OBJ.ManageCustomer){
+                this.table.find("tbody .manage").remove();
+            }
         },
 
         onClickItemNodeName: function(event){

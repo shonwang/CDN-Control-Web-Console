@@ -10,7 +10,7 @@ define("addEditLayerStrategy.model", ['require','exports', 'utility'], function(
         initialize: function(){},
 
         getOperatorList: function(args){
-            var url = BASE_URL + "/rs/metaData/operatorList?" + new Date().valueOf(),
+            var url = BASE_URL + "/resource/rs/metaData/operator/list?" + new Date().valueOf(),
             successCallback = function(res){
                 if (res)
                     this.trigger("get.operator.success", res); 
@@ -86,7 +86,7 @@ define("addEditLayerStrategy.model", ['require','exports', 'utility'], function(
         },
 
         ipTypeList: function(args){
-            var url = BASE_URL + "/rs/metaData/ipTypeList",
+            var url = BASE_URL + "/resource/rs/metaData/ipTypeList",
             successCallback = function(res){
                 if (res)
                     this.trigger("ip.type.success", res.rows);

@@ -71,7 +71,7 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
         },
 
         ipTypeList: function(args){
-            var url = BASE_URL + "/rs/metaData/ipTypeList",
+            var url = BASE_URL + "/resource/rs/metaData/ipTypeList",
             successCallback = function(res){
                 if (res)
                     this.trigger("ip.type.success", res.rows);

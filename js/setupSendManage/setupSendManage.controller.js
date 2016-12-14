@@ -3,6 +3,7 @@ define("setupSendManage.controller", ['require','exports'],
     var SetupSendManageController = Backbone.Router.extend({
 
         setupSendDoneCallback: function(){
+            if(!AUTH_OBJ.SendDone) return;
             require(['setupSendDone.view', 'setupSendDone.model'], function(SetupSendDoneView, SetupSendDoneModel){
                 this.curPage = 'setupSendDone';
                 this.navbarView.select('setupSendManage', $.proxy(this.removeSubSideBar, this));
@@ -26,6 +27,7 @@ define("setupSendManage.controller", ['require','exports'],
         },
 
         setupSendingCallback: function(){
+            if(!AUTH_OBJ.Sending) return;
             require(['setupSending.view', 'setupSending.model'], function(SetupSendingView, SetupSendingModel){
                 this.curPage = 'setupSending';
                 this.navbarView.select('setupSendManage', $.proxy(this.removeSubSideBar, this));
@@ -49,6 +51,7 @@ define("setupSendManage.controller", ['require','exports'],
         },
 
         setupSendWaitCustomizeCallback: function(){
+            if(!AUTH_OBJ.WaitCustomize) return;
             require(['setupSendWaitCustomize.view', 'setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeView, SetupSendWaitCustomizeModel){
                 this.curPage = 'setupSendWaitCustomize';
                 this.navbarView.select('setupSendManage', $.proxy(this.removeSubSideBar, this));
@@ -72,6 +75,7 @@ define("setupSendManage.controller", ['require','exports'],
         },
 
         setupSendWaitSendCallback: function(){
+            if(!AUTH_OBJ.WaitSend) return;
             require(['setupSendWaitSend.view', 'setupSendWaitSend.model'], function(SetupSendWaitSendView, SetupSendWaitSendModel){
                 this.curPage = 'setupSendWaitSend';
                 this.navbarView.select('setupSendManage', $.proxy(this.removeSubSideBar, this));

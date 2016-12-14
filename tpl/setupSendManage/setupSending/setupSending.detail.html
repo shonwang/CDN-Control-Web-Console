@@ -1,6 +1,6 @@
 <div class="setup-topo-manage fadeInLeft animated">
     <div class="list-panel">
-        <h3>下发管理<small>/下发详情</small></h3>
+        <h4>下发管理<small>/下发详情</small></h4>
         <div class="well opt-ctn">
             <div class="form-inline">
                 <a href="javascript:void(0)" class="btn btn-default cancel">返回</a>
@@ -10,7 +10,14 @@
                 </div>
                 <div class="form-group">
                     <label for="input-node">节点</label>
-                    <input type="text" class="form-control" id="input-node">
+                </div>
+                <div class="form-group">
+                    <div class="dropdown dropdown-node">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-node" data-toggle="dropdown">
+                            <span class="cur-value">全部</span>
+                            <span class="caret"></span>
+                        </button>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="dropdown-task-type">下发状态</label>

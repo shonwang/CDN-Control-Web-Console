@@ -9,7 +9,7 @@
         <th>下发策略</th>
         <th>当前步骤</th>   
         <th>进度</th>  
-        <th>下发概况</th>
+        <th>下发概况<span class="glyphicon glyphicon-question-sign" title="下发概况包括：异常设备数/已完成设备数/设备总数；详情请参考下发详情"></span></th>
         <th>下发状态</th>
         <th>下发开始时间</th>
         <th>操作</th>    
@@ -19,26 +19,32 @@
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].attributes.id%>">
               <td><input type="checkbox" id="<%=data[i].id%>"></td>
-              <td><%=data[i].get("cname")%></td>
-              <td><%=data[i].get("domain")%></td>
-              <td><%=data[i].get("domain")%></td>
-              <td><%=data[i].get("cdnFactoryName")%></td>
-              <td><%=data[i].get("businessTypeName")%></td>
-              <td><%=data[i].get("clientName")%></td>
+              <td><%=data[i].get("taskName")%></td>
+              <td><%=data[i].get("taskTypeName")%></td>
+              <td><%=data[i].get("platformName")%></td>
+              <td><%=data[i].get("topologyName")%></td>
+              <td><%=data[i].get("deliveryStrategyDefName")%></td>
+              <td><%=data[i].get("currStepName")%></td>
+              <td><%=data[i].get("taskProgress")%></td>
+              <td><%=data[i].get("stepProgress")%></td>
               <td><%=data[i].get("statusName")%></td>
-              <td><%=data[i].get("startTimeFormated")%></td>
-              <td><%=data[i].get("dispName")%></td>
-              <td><%=data[i].get("dispName")%></td>
+              <td><%=data[i].get("createTimeFormated")%></td>
               <td>
+                  <% if(permission.ViewSendDetails) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="detail" title="详情">
                       <span class="glyphicon glyphicon-tasks"></span>
                   </a>
+                  <% } %>
+                  <% if(permission.SendToNextStep) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="send" title="进入下一步">
                       <span class="glyphicon glyphicon-circle-arrow-right"></span>
                   </a>
+                  <% } %>
+                  <% if(permission.StopSending) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="reject" title="终止">
                       <span class="glyphicon glyphicon-remove-circle"></span>
                   </a>
+                  <% } %>
               </td>
             </tr>
         <% } %>  

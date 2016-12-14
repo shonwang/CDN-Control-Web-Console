@@ -1,0 +1,62 @@
+<div class="back-Detection-panel fadeInLeft animated">
+    <h4>源站配置<small>/回源检测</small></h4>
+    <div class="well opt-ctn"></div>
+    <div class="well" >
+        <div class="row">
+            <div class="col-sm-12">
+                <form class="form-horizontal" role="form">
+                  <div class="form-group setup">
+                    <label for="inputEmail3" class="col-sm-2 control-label">回源配置:</label>
+                    <div class="col-sm-6 backOriginDetectiontype">
+                        <!-- <a href="javascript:void(0)" class="btn btn-default btn-raised addCacheRule">添加缓存规则</a> -->
+                        <div class="backOriginDetection">
+                            <input type="checkbox" name="my-checkbox" data-size="small" class='backOriginSetupType' checked>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="form-group way">
+                    <label for="inputPassword3" class="col-sm-2 control-label">请求方式:</label>
+                    <div class="col-sm-5">
+                        <div class="row">
+                          <div class="col-sm-3 way-type">
+                             <div class="dropdown pull-left">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="requestWay" data-toggle="dropdown">
+                                  <span class="cur-value">加载中...</span>
+                                  <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu"></ul>
+                              </div>
+                          </div>
+                          <div class="col-sm-9">
+                              <input type="text" class="form-control pull-right" id="detectionFile" placeholder="请输入探测文件" style="margin-right:0px !important">     
+                          </div>
+                        </div>
+                    </div>
+                    <p class="pull-left" style="margin-top:5px;color:red;">探测文件以"/"开头,例如:/test.txt</p>                   
+                  </div>
+                  <div class="form-group host">
+                    <label for="inputPassword3" class="col-sm-2 control-label">设置请求HOST头:</label>
+                    <div class="col-sm-5">
+                      <input type="text" class="form-control" id="setupHost" placeholder="">
+                    </div>
+                  </div>
+                  <div class="form-group state">
+                    <label for="inputPassword3" class="col-sm-2 control-label">正常响应状态:</label>
+                    <div class="col-sm-5">
+                      <input type="text" class="form-control" id="responseState" placeholder="" readonly="readonly">
+                    </div>
+                  </div>
+                  <div class="form-group frequency">
+                    <label for="inputPassword3" class="col-sm-2 control-label">探测频率:</label>
+                    <div class="col-sm-5">
+                       <input type="text" class="form-control" id="detectionFrequency" placeholder="">
+                    </div>
+                  </div>
+                   <div class="form-group">
+                     <a href="javascript:void(0)" class="btn btn-primary save" style="margin-left:5%;"><span class="glyphicon glyphicon-save"></span>保存</a>
+                  </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

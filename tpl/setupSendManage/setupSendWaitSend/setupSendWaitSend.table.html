@@ -3,45 +3,48 @@
       <tr>
         <th><input type="checkbox" id="inlineCheckbox6"></th>
         <th>加速域名</th>
-        <th>操作目的</th>
+        <th>下发类型</th>
         <th>是否定制化</th>
         <th>应用</th>
+        <th>拓扑关系</th>
         <th>版本号</th>
-        <th>客户名称</th>
         <th>发布时间</th>   
-        <th>开始服务时间</th>  
         <th>备注</th>
         <th>操作</th>    
       </tr>
     </thead>
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
+            <% if (data[i].get("isDisplay")) { %>
             <tr data-id="<%=data[i].attributes.id%>">
               <td><input type="checkbox" id="<%=data[i].id%>"></td>
-              <td><%=data[i].get("cname")%></td>
               <td><%=data[i].get("domain")%></td>
-              <td><%=data[i].get("domain")%></td>
-              <td><%=data[i].get("cdnFactoryName")%></td>
-              <td><%=data[i].get("businessTypeName")%></td>
-              <td><%=data[i].get("clientName")%></td>
-              <td><%=data[i].get("statusName")%></td>
-              <td><%=data[i].get("startTimeFormated")%></td>
-              <td><%=data[i].get("dispName")%></td>
+              <td><%=data[i].get("configReasonName")%></td>
+              <td><%=data[i].get("isCustomName")%></td>
+              <td><%=data[i].get("platformName")%></td>
+              <td><%=data[i].get("topologyName")%></td>
+              <td><%=data[i].get("domainVersion")%></td>
+              <td><%=data[i].get("createTimeFormated")%></td>
+              <td><%=data[i].get("description")%></td>
               <td>
-                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit" title="编辑">
+                  <% if(permission.ViewConfigDetails) { %>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit" title="查看详情">
                       <span class="glyphicon glyphicon-edit"></span>
                   </a>
-                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="detail" title="详情">
-                      <span class="glyphicon glyphicon-tasks"></span>
-                  </a>
+                  <% } %>
+                  <% if(permission.SendToSending) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="send" title="下发">
                       <span class="glyphicon glyphicon-send"></span>
                   </a>
+                  <% } %>
+                  <% if(permission.SendBackInWS) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="reject" title="打回">
                       <span class="glyphicon glyphicon-remove-circle"></span>
                   </a>
+                  <% } %>
               </td>
             </tr>
+            <% } %> 
         <% } %>  
     </tbody>
 </table>

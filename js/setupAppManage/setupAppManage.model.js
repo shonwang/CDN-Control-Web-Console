@@ -1,6 +1,7 @@
 define("setupAppManage.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
-        initialize: function(){}
+        initialize: function(){
+        }
     });
 
     var SetupAppManageCollection = Backbone.Collection.extend({
@@ -43,58 +44,21 @@ define("setupAppManage.model", ['require','exports', 'utility'], function(requir
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
-        getChannelDispgroup: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/get",
+        getTemplateinfo:function(args){
+            var url = BASE_URL + "/cg/config/template?type="+args,
             successCallback = function(res){
                 if (res){
-                    this.trigger("channel.dispgroup.success", res);
+                    this.trigger("get.template.info.success",res);
                 } else {
-                    this.trigger("channel.dispgroup.error", res); 
-                }
+                    this.trigger("get.template.info.error"); 
+                } 
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("channel.dispgroup.error", response); 
+                this.trigger("get.template.info.error", response); 
             }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
-        },
-
-        addDispGroupChannel: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/add",
-            successCallback = function(res){
-                this.trigger("add.dispGroup.channel.success", res);
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("add.dispGroup.channel.error", response); 
-            }.bind(this);
-
-            Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
-        },
-
-        ipTypeList: function(args){
-            var url = BASE_URL + "/rs/metaData/ipTypeList",
-            successCallback = function(res){
-                if (res)
-                    this.trigger("ip.type.success", res.rows);
-                else
-                    this.trigger("ip.type.error");
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("ip.type.error", response);
-            }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
-        },
-
-        deleteDispGroupChannel: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/delete",
-            successCallback = function(res){
-                this.trigger("add.dispGroup.channel.success", res);
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("add.dispGroup.channel.error", response); 
-            }.bind(this);
-
-            Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
+            Utility.getAjax(url, '', successCallback, errorCallback);
         }
+
     });
 
     return SetupAppManageCollection;

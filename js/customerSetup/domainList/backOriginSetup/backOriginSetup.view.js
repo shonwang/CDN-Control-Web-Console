@@ -190,14 +190,14 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
 
         onBlurTextarea: function(event){
             var eventTarget = event.srcElement || event.target,
-                value = eventTarget.value;
+                value = eventTarget.value.trim();
             if (value === "") return;
             this.checkBaseOrigin();
         },
 
         onBlurAdvancedTextarea: function(event){
             var eventTarget = event.srcElement || event.target,
-                value = eventTarget.value;
+                value = eventTarget.value.trim();
             if (value === "") return;
             this.checkBaseOrigin(value, this.defaultParam.originAdvanceType);
         },
@@ -228,7 +228,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             } if (this.defaultParam.isUseAdvance === 2) {
                 var textareaNodes = this.$el.find(".advanced textarea");
                 for (var i = 0; i < textareaNodes.length; i++){
-                    var value = textareaNodes[i].value;
+                    var value = textareaNodes[i].value.trim();
                     if (value === "") continue;
                     var result = this.checkBaseOrigin(value, this.defaultParam.originAdvanceType)
                     if (!result) return;
@@ -278,7 +278,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
                 var mySaveThenSendView = new SaveThenSendView({
                     collection: new SaveThenSendModel(),
-                    originId: this.domainInfo.id,
+                    domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
                     }.bind(this)
@@ -301,7 +301,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
         },
 
         checkBaseOrigin: function(value, type){
-            var originAddress = value || this.$el.find(".base #textarea-origin-type").val();
+            var originAddress = value || this.$el.find(".base #textarea-origin-type").val().trim();
             var originType = type || this.defaultParam.originBaseType;
             var domainName = this.userInfo.domain;
             if(originType == 1){
@@ -318,7 +318,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                     return false;
                 }
                 for (var i = 0; i < ipArray.length; i++){
-                    result = Utility.isIP(ipArray[i]);
+                    result = Utility.isIP(ipArray[i].trim());
                     if (!result){
                         alert("你的IP填写有误,请检查");
                         return false;
@@ -412,7 +412,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 return;
             }
             if (this.defaultParamModifyHost.domainType === 3) {
-                var value = this.$el.find("#textarea-host-domain").val();
+                var value = this.$el.find("#textarea-host-domain").val().trim();
                 var result = this.checkBaseOrigin(value, 2)
                 if (!result) return;
             }
@@ -452,7 +452,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
         initModifyHostDropdown: function(){
             var  domainTypeArray = [
                 {name: "加速域名", value: 1},
-                {name: "源站域名", value: 2},
+              //  {name: "源站域名", value: 2},
                 {name: "自定义域名", value: 3}
             ],
             rootNode = this.$el.find(".origin-domain");

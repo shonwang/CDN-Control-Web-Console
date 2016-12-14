@@ -105,12 +105,18 @@ requirejs.config({
 
         "matchCondition.view": 'customerSetup/domainList/matchCondition/matchCondition.view',
         "matchCondition.model": 'customerSetup/domainList/matchCondition/matchCondition.model',
+        
+        "basicInformation.model": 'customerSetup/domainList/basicInformation/basicInformation.model',
+        "basicInformation.view": 'customerSetup/domainList/basicInformation/basicInformation.view',
 
         "domainSetup.model": 'customerSetup/domainList/domainSetup/domainSetup.model',
         "domainSetup.view": 'customerSetup/domainList/domainSetup/domainSetup.view',
 
         "cnameSetup.model": 'customerSetup/domainList/cnameSetup/cnameSetup.model',
         "cnameSetup.view": 'customerSetup/domainList/cnameSetup/cnameSetup.view',
+
+        "backOriginDetection.model": 'customerSetup/domainList/backOriginDetection/backOriginDetection.model',
+        "backOriginDetection.view": 'customerSetup/domainList/backOriginDetection/backOriginDetection.view',
 
         "backOriginSetup.model": 'customerSetup/domainList/backOriginSetup/backOriginSetup.model',
         "backOriginSetup.view": 'customerSetup/domainList/backOriginSetup/backOriginSetup.view',
@@ -172,6 +178,7 @@ requirejs.config({
 
         "setupTopoManage.model": "setupTopoManage/setupTopoManage.model",
         "setupTopoManage.view": "setupTopoManage/setupTopoManage.view",
+        "setupTopoManageSendStrategy.model": "setupTopoManage/setupTopoManageSendStrategy.model",
 
         "setupSendManage.controller": "setupSendManage/setupSendManage.controller",
         "setupSendDone.model": "setupSendManage/setupSendDone/setupSendDone.model",
@@ -179,9 +186,12 @@ requirejs.config({
 
         "setupSending.model": "setupSendManage/setupSending/setupSending.model",
         "setupSending.view": "setupSendManage/setupSending/setupSending.view",
+        "setupSendDetail.model": "setupSendManage/setupSending/setupSending.detail.model",
+        "setupSendDetail.view": "setupSendManage/setupSending/setupSending.detail.view",
 
         "setupSendWaitCustomize.model": "setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.model",
         "setupSendWaitCustomize.view": "setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.view",
+        "setupSendWaitCustomize.stratety.view": "setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.stratety.view",
 
         "setupSendWaitSend.model": "setupSendManage/setupSendWaitSend/setupSendWaitSend.model",
         "setupSendWaitSend.view": "setupSendManage/setupSendWaitSend/setupSendWaitSend.view",

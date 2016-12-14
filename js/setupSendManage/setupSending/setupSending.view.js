@@ -1,117 +1,5 @@
 define("setupSending.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
     
-    var ConfiFileDetailView = Backbone.View.extend({
-        events: {
-            //"click .search-btn":"onClickSearch"
-        },
-
-        initialize: function(options) {
-            this.options = options;
-            this.collection = options.collection;
-            this.model      = options.model;
-            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.editCfgFalse.html'])({
-                data: {},
-                panelId: Utility.randomStr(8)
-            }));
-        },
-
-        onGetError: function(error){
-            if (error&&error.message)
-                alert(error.message)
-            else
-                alert("网络阻塞，请刷新重试！")
-        },
-
-        render: function(target) {
-            this.$el.appendTo(target);
-        }
-    });
-
-    var SendDetailView = Backbone.View.extend({
-        events: {
-            //"click .search-btn":"onClickSearch"
-        },
-
-        initialize: function(options) {
-            this.options = options;
-            this.collection = options.collection;
-            this.model      = options.model;
-
-            this.$el = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.detail.html'])({data: {}}));
-
-            this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-
-            this.initSetup()
-        },
-
-        initSetup: function(){
-            var data = [{localLayer: "1111", upperLayer: "22222"}];
-            this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.table.html'])({
-                data: data, 
-            }));
-            if (data.length !== 0)
-                this.$el.find(".table-ctn").html(this.table[0]);
-            else
-                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-
-            //this.table.find(".node-item").on("click", $.proxy(this.onClickItemDetail, this));
-            this.initDomainList();
-        },
-
-        initDomainList: function(){
-            var data = [{domain: "test1.ksyun.com", id: 1}];
-            this.domainList = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.detail.domain.html'])({
-                data: data, 
-            }));
-            if (data.length !== 0)
-                this.$el.find(".domain-ctn").html(this.domainList[0]);
-            else
-                this.$el.find(".domain-ctn").html(_.template(template['tpl/empty.html'])());
-
-            this.domainList.find(".node-item").on("click", $.proxy(this.onClickItemDetail, this));
-        },
-
-        onClickItemDetail: function(event){
-            var eventTarget = event.srcElement || event.target,
-                id = $(eventTarget).attr("id");
-            //var model = this.collection.get(id);
-
-            if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
-
-            var myConfiFileDetailView = new ConfiFileDetailView({
-                collection: this.collection, 
-                //model     : model,
-                isEdit    : true
-            });
-            var options = {
-                title: "配置文件详情",//model.get("chName") + "关联调度组信息",
-                body : myConfiFileDetailView,
-                backdrop : 'static',
-                type     : 2,
-                onOKCallback:  function(){
-                    this.configFilePopup.$el.modal("hide");
-                }.bind(this),
-                onHiddenCallback: function(){}.bind(this)
-            }
-            this.configFilePopup = new Modal(options);
-        },
-
-        onClickCancelButton: function(){
-            this.options.onCancelCallback && this.options.onCancelCallback();
-        },
-
-        onGetError: function(error){
-            if (error&&error.message)
-                alert(error.message)
-            else
-                alert("网络阻塞，请刷新重试！")
-        },
-
-        render: function(target) {
-            this.$el.appendTo(target);
-        }
-    });
-
     var SetupSendingView = Backbone.View.extend({
         events: {},
 
@@ -122,23 +10,28 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.initChannelDropMenu();
 
-            this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
-            this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.sending.channel.success", $.proxy(this.onChannelListSuccess, this));
+            this.collection.on("get.sending.channel.error", $.proxy(this.onGetError, this));
+            this.collection.on("channel.terminate.success", $.proxy(this.onChannelTerminateSuccess, this));
+            this.collection.on("channel.terminate.error", $.proxy(this.onGetError, this));
+            this.collection.on("channel.next.success", $.proxy(this.onChannelNextSuccess, this));
+            this.collection.on("channel.next.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
+            this.$el.find(".mulit-next").on("click", $.proxy(this.onClickMultiNext, this));
 
             this.enterKeyBindQuery();
 
             this.queryArgs = {
-                "domain"           : null,
-                "accelerateDomain" : null,
-                "businessType"     : null,
-                "clientName"       : null,
-                "status"           : null,
-                "page"             : 1,
-                "count"            : 10
-             }
+              "name": null, 
+              "platformId": null, 
+              "topologyId": null, 
+              "deliveryStrategyDefId": null, 
+              "configReason": null, //"1：用户配置变更 2：拓扑变更",
+              "status": null, //"1：执行中 2：执行完成 3:任务被终止 4：等待下一步",
+              "page": 1,
+              "count": 10
+            }
             this.onClickQueryButton();
         },
         
@@ -151,10 +44,34 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onGetError: function(error){
+            this.disablePopup&&this.disablePopup.$el.modal('hide');
             if (error&&error.message)
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
+        },
+
+        showDisablePopup: function(msg) {
+            if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
+            var options = {
+                title    : "警告",
+                body     : '<div class="alert alert-danger"><strong>' + msg +'</strong></div>',
+                backdrop : 'static',
+                type     : 0,
+            }
+            this.disablePopup = new Modal(options);
+            this.disablePopup.$el.find(".close").remove();
+        },
+
+        onChannelTerminateSuccess: function(){
+            alert("操作成功！")
+            this.update(this.target)
+        },
+
+        onChannelNextSuccess: function(){
+            this.disablePopup&&this.disablePopup.$el.modal('hide');
+            alert("操作成功！")
+            this.update(this.target)
         },
 
         onChannelListSuccess: function(){
@@ -162,16 +79,27 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
             if (!this.isInitPaginator) this.initPaginator();
         },
 
+        onClickMultiNext: function(){
+            var checkedList = this.collection.filter(function(model) {
+                return model.get("isChecked") === true;
+            });
+
+            this.domainArray = [];
+            _.each(checkedList, function(el, index, ls){
+                this.domainArray.push({
+                    predeliveryId: el.get("id")
+                });
+            }.bind(this))
+        },
+
         onClickQueryButton: function(){
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
-            this.queryArgs.domain = this.$el.find("#input-domain").val();
-            this.queryArgs.clientName = this.$el.find("#input-client").val();
-            if (this.queryArgs.domain == "") this.queryArgs.domain = null;
-            if (this.queryArgs.clientName == "") this.queryArgs.clientName = null;
+            this.queryArgs.name = this.$el.find("#input-task-name").val();
+            if (this.queryArgs.name == "") this.queryArgs.name = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
-            this.collection.queryChannel(this.queryArgs);
+            this.collection.querySendingChannel(this.queryArgs);
         },
 
         initTable: function(){
@@ -193,7 +121,7 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onClickItemSend: function(event){
-            var result = confirm("你确定要下发吗？");
+            var result = confirm("你确定要进入下一步吗？");
             if (!result) return;
 
             var eventTarget = event.srcElement || event.target, id;
@@ -205,10 +133,17 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
             }
 
             var model = this.collection.get(id);
+
+            this.collection.nextTask({
+                taskId: id,
+                taskStepId: model.get("taskStepId")
+            })
+
+            this.showDisablePopup("服务器正在努力处理中...")
         },
 
         onClickItemReject: function(event){
-            var result = confirm("你确定要打回吗？");
+            var result = confirm("你确定要终止吗？");
             if (!result) return;
 
             var eventTarget = event.srcElement || event.target, id;
@@ -219,7 +154,7 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
                 id = $(eventTarget).attr("id");
             }
 
-            var model = this.collection.get(id);
+            this.collection.terminateTask({taskId: id})
         },
 
         onClickItemEdit: function(event){
@@ -233,18 +168,22 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
 
             var model = this.collection.get(id);
 
-            var mySendDetailView = new SendDetailView({
-                collection: this.collection,
-                model: model,
-                onSaveCallback: function(){}.bind(this),
-                onCancelCallback: function(){
-                    mySendDetailView.$el.remove();
-                    this.$el.find(".list-panel").show();
-                }.bind(this)
-            })
+            require(["setupSendDetail.view", "setupSendDetail.model"], function(SendDetailView, SetupSendDetailModel){
+                var mySetupSendDetailModel = new SetupSendDetailModel();
+                var mySendDetailView = new SendDetailView({
+                    collection: mySetupSendDetailModel,
+                    model: model,
+                    isSending: true,
+                    onSaveCallback: function(){}.bind(this),
+                    onCancelCallback: function(){
+                        mySendDetailView.$el.remove();
+                        this.$el.find(".list-panel").show();
+                    }.bind(this)
+                })
 
-            this.$el.find(".list-panel").hide();
-            mySendDetailView.render(this.$el.find(".edit-panel"))
+                this.$el.find(".list-panel").hide();
+                mySendDetailView.render(this.$el.find(".edit-panel"))
+            }.bind(this))
         },
 
         onItemCheckedUpdated: function(event){
@@ -297,7 +236,7 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
                         var args = _.extend(this.queryArgs);
                         args.page = num;
                         args.count = this.queryArgs.count;
-                        this.collection.queryChannel(args);
+                        this.collection.querySendingChannel(args);
                     }
                 }.bind(this)
             });
@@ -307,16 +246,32 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
         initChannelDropMenu: function(){
             var statusArray = [
                 {name: "全部", value: "All"},
-                {name:"新增", value:0},
-                {name: "修改", value:2},
+                {name: "执行中", value:1},
+                {name: "执行完成", value:2},
+                {name: "任务被终止", value:3},
+                {name: "等待下一步", value:4}
             ],
-            rootNode = this.$el.find(".dropdown-oper");
+            rootNode = this.$el.find(".dropdown-status");
             Utility.initDropMenu(rootNode, statusArray, function(value){
-                // if (value == "All")
-                //     this.queryArgs.status = null;
-                // else
-                //     this.queryArgs.status = parseInt(value)
+                if (value == "All")
+                    this.queryArgs.status = null;
+                else
+                    this.queryArgs.status = parseInt(value)
             }.bind(this));
+
+            //"1：用户配置变更 2：拓扑变更",
+            var taskType = [
+                {name: "全部", value: "All"},
+                {name:"用户配置变更", value:1},
+                {name: "拓扑变更", value:2},
+            ],
+            rootNode = this.$el.find(".dropdown-task-type");
+            Utility.initDropMenu(rootNode, taskType, function(value){
+                if (value == "All")
+                    this.queryArgs.configReason = null;
+                else
+                    this.queryArgs.configReason = parseInt(value)
+            }.bind(this));            
 
             var pageNum = [
                 {name: "10条", value: 10},
@@ -349,10 +304,21 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.mySetupAppManageModel.on("get.app.info.error", $.proxy(this.onGetError, this))
                 this.mySetupAppManageModel.getAppInfo();
             }.bind(this))
+
+            require(["setupTopoManageSendStrategy.model"], function(SetupTopoManageSendStrategy){
+                this.mySetupTopoManageSendStrategy = new SetupTopoManageSendStrategy();
+                this.mySetupTopoManageSendStrategy.on("get.sendInfo.success", $.proxy(this.onGetStrategySuccess, this));
+                this.mySetupTopoManageSendStrategy.on("get.sendInfo.error", $.proxy(this.onGetError, this));
+                this.mySetupTopoManageSendStrategy.getSendinfo({
+                    topologyId:null,
+                    page:1,
+                    count:99999
+                });
+            }.bind(this))
         },
 
         onGetTopoSuccess: function(){
-            var topoArray = []
+            var topoArray = [{name: "全部", value: "All"}]
             this.mySetupTopoManageModel.each(function(el, index, lst){
                 topoArray.push({
                     name: el.get('name'),
@@ -362,33 +328,71 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
 
             rootNode = this.$el.find(".dropdown-topo");
             Utility.initDropMenu(rootNode, topoArray, function(value){
-                // if (value == "All")
-                //     this.queryArgs.status = null;
-                // else
-                //     this.queryArgs.status = parseInt(value)
+                if (value == "All")
+                    this.queryArgs.topologyId = null;
+                else
+                    this.queryArgs.topologyId = parseInt(value)
             }.bind(this));
         },
 
         onGetAppSuccess: function(){
-            var appArray = []
+            var appArray = [{name: "全部", value: "All"}]
             this.mySetupAppManageModel.each(function(el, index, lst){
                 appArray.push({
-                    name: el.get('name'),
-                    value: el.get('id')
+                    name: el.get('typeName'),
+                    value: el.get('type')
                 })
             }.bind(this))
 
             rootNode = this.$el.find(".dropdown-app");
             Utility.initDropMenu(rootNode, appArray, function(value){
-                // if (value == "All")
-                //     this.queryArgs.status = null;
-                // else
-                //     this.queryArgs.status = parseInt(value)
+                if (value == "All")
+                    this.queryArgs.platformId = null;
+                else
+                    this.queryArgs.platformId = parseInt(value)
             }.bind(this));
+        },
+
+        onGetStrategySuccess: function(){
+            var strategyArray = [{name: "全部", value: "All"}]
+            this.mySetupTopoManageSendStrategy.each(function(el, index, lst){
+                var tempName = el.get('name').replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                strategyArray.push({
+                    name: tempName,
+                    value: el.get('id')
+                })
+            }.bind(this))
+
+            // rootNode = this.$el.find(".dropdown-strategy");
+            // Utility.initDropMenu(rootNode, strategyArray, function(value){
+            //     if (value == "All")
+            //         this.queryArgs.deliveryStrategyDefId = null;
+            //     else
+            //         this.queryArgs.deliveryStrategyDefId = parseInt(value)
+            // }.bind(this));
+
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-strategy').get(0),
+                panelID: this.$el.find('#dropdown-strategy').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function(){},
+                data: strategyArray,
+                callback: function(data) {
+                    if (data.value == "All")
+                        this.queryArgs.deliveryStrategyDefId = null;
+                    else
+                        this.queryArgs.deliveryStrategyDefId = parseInt(data.value)
+                    this.$el.find('#dropdown-strategy .cur-value').html(data.name);
+                }.bind(this)
+            });
         },
 
         hide: function(){
             this.$el.hide();
+            $(document).off('keydown');
         },
 
         update: function(target){
@@ -401,6 +405,7 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
 
         render: function(target){
             this.$el.appendTo(target);
+            this.target = target
         }
     });
 

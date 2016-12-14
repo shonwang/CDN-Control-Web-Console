@@ -45,7 +45,7 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
             require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
                 var mySaveThenSendView = new SaveThenSendView({
                     collection: new SaveThenSendModel(),
-                    originId: this.domainInfo.id,
+                    domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
                     }.bind(this)
@@ -85,7 +85,7 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
             var result = this.checkDomainName();
             if (!result) return
             var postParam = {
-                originId: this.domainInfo.id,
+                originId:this.domainInfo.id,
                 cname: this.$el.find("#cname-set").val().trim(),
             };
             this.collection.modifyDomainCname(postParam);

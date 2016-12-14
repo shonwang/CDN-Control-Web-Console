@@ -23,7 +23,9 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
 
             this.$el.find("#cdn-search-btn").bind('click',$.proxy(this.onClickSearchBtn,this));
             this.$el.find(".add-domain").bind('click',$.proxy(this.onClickAddDomain,this));
-
+            if(!AUTH_OBJ.CreateCustomerDomain) {
+                this.$el.find('.add-domain').remove();
+            }
             this.showLoading();
             this.args = {
                 pageSize: 10,//每页N条数据
@@ -90,7 +92,13 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
                 this.tbodyList = $(_.template(template['tpl/customerSetup/domainList/domainList.table.tbody.html'])({data:this.collection.models}));
                 this.$el.find(".ks-table tbody").html(this.tbodyList);
                 this.$el.find(".ks-table tbody .manage").on("click", $.proxy(this.onClickItemManage, this));
+                if(!AUTH_OBJ.SetupCustomerDomain){
+                    this.$el.find(".ks-table tbody .manage").remove();
+                }
                 this.$el.find(".ks-table tbody .setup-bill").on("click", $.proxy(this.onClickViewSetupBillBtn, this));  
+                if(!AUTH_OBJ.ViewSetupDetails){
+                    this.$el.find(".ks-table tbody .setup-bill").remove();
+                }
             }
 
             if(!this.isInitPaginator){
@@ -132,7 +140,7 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
                 domain: model.get("domain")
             })
 
-            window.location.hash = '#/domainList/' + args + "/domainSetup/" + args2
+            window.location.hash = '#/domainList/' + args + "/basicInformation/" + args2
         },
 
         setNoData:function(msg){

@@ -36,6 +36,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     customHostHeader : this.model.get("customHostHeader"),
                     wsUsed : this.model.get("wsUsed"),
                     ipVisitContent : this.model.get("ipVisitContent"),
+                    configRole:this.model.get('configRole'),
                     policys:[]
                 }
             }else{
@@ -45,7 +46,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     userId:"",
                     cname:"",
                     type:1,
-                    auditStatus:null,
+                    auditStatus:1,
                     testUrl:"",
                     description:"",
                     originType:1,
@@ -71,7 +72,71 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             }
 
             this.$el = $(_.template(template['tpl/domainManage/domainManage.add&edit.html'])({data:this.args}));
-
+            //如果点击编辑表单按钮，则将表单字段设置为不可编辑
+            if(this.isEdit){
+                var inputName = this.$el.find("#input-name");
+                var inputUserId = this.$el.find("#input-userId");
+                var cname = this.$el.find("#input-cname");
+                var dropdownType = this.$el.find("#dropdown-type");
+                var dropdownProtocol = this.$el.find("#dropdown-protocol");
+                inputName.attr('readonly',true);
+                inputUserId.attr('readonly',true);
+                cname.attr('readonly',true);
+                dropdownType.attr('disabled','disabled');
+                dropdownProtocol.attr('disabled','disabled');
+                //触发开关按钮
+                this.$el.find("[name='my-checkbox']").bootstrapSwitch('state',true);
+                this.configurationFiletype = {
+                    domain:true,
+                    origdomain:true,
+                    lua:true
+                };
+                //console.log(this.args.configRole);
+                var self = this;
+                //1.生成domain,2.生成originDomain,3.生成lua.conf
+                if(this.args.configRole != null){
+                    var configRole = this.args.configRole.split(',');
+                    var s = ['1','2','3'];
+                    s.forEach(function(item,index){
+                        var flag = false;
+                        for(var i = 0;i<configRole.length;i++){
+                            if(item == configRole[i]){
+                               flag = true;
+                               return;
+                            }
+                        }
+                        if(flag == false){
+                            if(item == '1'){
+                               self.$el.find(".domain").bootstrapSwitch('state',false);
+                               self.configurationFiletype.domain = false;
+                            }else if(item == '2'){
+                                self.$el.find(".origdomain").bootstrapSwitch('state',false)
+                                self.configurationFiletype.origdomain = false;
+                            }else if(item == '3'){
+                                self.$el.find('.lua').bootstrapSwitch('state',false);
+                                self.configurationFiletype.lua = false;
+                            }
+                        }
+                    })
+                }
+                this.$el.find('.configurationFiletype').on('switchChange.bootstrapSwitch',function(event,state){
+                    var target = event.target;
+                   switch(target.className){
+                      case 'origdomain':
+                        self.configurationFiletype.origdomain = state;
+                        //console.log(self.configurationFiletype);
+                        break;
+                      case 'domain':
+                        self.configurationFiletype.domain = state;
+                        //console.log(self.configurationFiletype);
+                        break;
+                      case 'lua':
+                        self.configurationFiletype.lua = state;
+                        //console.log(self.configurationFiletype);
+                        break;
+                    }
+                })
+            }
             this.collection.off("get.cacheRuleList.success");
             this.collection.on("get.cacheRuleList.success", $.proxy(this.onGetCacheRuleListSuccess, this));
             this.collection.off("get.cacheRuleList.error");
@@ -83,8 +148,6 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 this.$el.find('#dropdown-protocol').attr('disabled','disabled');
                 this.$el.find("#dropdown-protocol .cur-value").html('无');
                 this.args.protocol = null;
-            }else{
-                this.$el.find('#dropdown-protocol').removeAttr('disabled');
             }
 
         },
@@ -123,13 +186,36 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     this.args.protocol = 1;
                 }
             }.bind(this));
+            if(this.args.type == null){
+               this.args.type = typeList[0].value;
+            }
             if(this.isEdit){
                 $.each(typeList,function(k,v){
+
                     if(v.value == this.model.get("type")){
                         this.$el.find("#dropdown-type .cur-value").html(v.name);
                     }
                 }.bind(this));
             }
+
+            //审核状态
+            /*
+            var auditStatusList = [
+                {name: "审核通过", value: 1},
+                {name: "审核中", value: 0}
+            ];
+            Utility.initDropMenu(this.$el.find(".dropdown-auditStatus"), auditStatusList, function(value){
+                this.args.auditStatus = parseInt(value);
+            }.bind(this));
+            if(this.isEdit){
+                $.each(auditStatusList,function(k,v){
+                    if(v.value == this.model.get("auditStatus")){
+                        this.$el.find("#dropdown-auditStatus .cur-value").html(v.name);
+                    }
+                }.bind(this));
+            }
+            */
+
             //过滤参数
             var confParamNewList = [
                 {name: "是", value: 1},
@@ -137,6 +223,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "带?自定义域名", value: 2},
                 {name: "不带?自定义域名", value: 3}
             ];
+            if(this.args.confParamNew == null){
+              this.args.confParamNew = confParamNewList[1].value;
+            }
             Utility.initDropMenu(this.$el.find(".dropdown-confParamNew"), confParamNewList, function(value){
                 this.args.confParamNew = parseInt($.trim(value));
                 if(this.args.confParamNew > 1){
@@ -162,6 +251,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "源站域名", value: 2},
                 {name: "OSS域名", value: 3}
             ];
+            if(this.args.originType == null){
+              this.args.originType = originTypeList[0].value;
+            }
             Utility.initDropMenu(this.$el.find(".dropdown-originType"), originTypeList, function(value){
                 this.args.originType = parseInt($.trim(value));
             }.bind(this));
@@ -180,6 +272,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             Utility.initDropMenu(this.$el.find(".dropdown-confRange"), confRangeList, function(value){
                 this.args.confRange = parseInt($.trim(value));
             }.bind(this));
+            if(this.args.confRange == null){
+              this.args.confRange = confRangeList[1].value;
+            }
             if(this.isEdit){
                 $.each(confRangeList,function(k,v){
                     if(v.value == this.model.get("confRange")){
@@ -192,6 +287,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "是", value: 1},
                 {name: "否", value: 0}
             ];
+            if(this.args.referNullable == null){
+               this.args.referNullable = referNullableList[0].value;
+            }
             Utility.initDropMenu(this.$el.find(".dropdown-referNullable"), referNullableList, function(value){
                 this.args.referNullable = parseInt($.trim(value));
             }.bind(this));
@@ -208,6 +306,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "白名单", value: 1},
                 {name: "黑名单", value: 2}
             ];
+            if(this.args.referVisitControl == null){
+               this.args.referVisitControl = referVisitControlList[0].value;
+            }
             Utility.initDropMenu(this.$el.find(".dropdown-referVisitControl"), referVisitControlList, function(value){
                 this.args.referVisitControl = parseInt($.trim(value));
             }.bind(this));
@@ -224,6 +325,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "白名单", value: 1},
                 {name: "黑名单", value: 2}
             ];
+            if(this.args.ipVisitControl == null){
+               this.args.ipVisitControl = ipVisitControlList[0].value;
+            }
             Utility.initDropMenu(this.$el.find(".dropdown-ipVisitControl"), ipVisitControlList, function(value){
                 this.args.ipVisitControl = parseInt($.trim(value));
             }.bind(this));
@@ -239,6 +343,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "普通域名", value: 1},
                 {name: "泛域名", value: 2}
             ];
+            if(this.args.wildcard == null){
+               this.args.wildcard = wildcardList[0].value;
+            }
             Utility.initDropMenu(this.$el.find(".dropdown-wildcard"), wildcardList, function(value){
                 this.args.wildcard = parseInt($.trim(value));
             }.bind(this));
@@ -254,6 +361,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "加速域名", value: 1},
                 {name: "回源域名", value: 2}
             ];
+            if(this.args.hostType == null){
+               this.args.hostType = hostTypeList[0].value;
+           }
             Utility.initDropMenu(this.$el.find(".dropdown-hostType"), hostTypeList, function(value){
                 this.args.hostType = parseInt($.trim(value));
             }.bind(this));
@@ -270,6 +380,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 {name: "hls", value: 2},
                 {name: "rtmp", value: 3}
             ];
+            this.protocolList = null;
             Utility.initDropMenu(this.$el.find(".dropdown-protocol"), protocolList, function(value){
                 this.args.protocol = parseInt($.trim(value));
             }.bind(this));
@@ -375,6 +486,32 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             this.args.confDomain = $.trim(this.$el.find("#input-confDomain").val());
             this.args.urlContent = $.trim(this.$el.find("#textarea-urlContent").val());
             this.args.description = $.trim(this.$el.find("#textarea-description").val());
+            //开关的值处理函数
+            var configRoleType = '';
+            for(var key in this.configurationFiletype){
+                if(key == 'domain' && this.configurationFiletype.domain){
+                     if(configRoleType != ''){
+                      configRoleType = configRoleType + ',' +1;
+                    }else{
+                        configRoleType = 1;
+                    }
+                }else if(key == 'origdomain' && this.configurationFiletype.origdomain){
+                    //console.log('originDomain');
+                    if(configRoleType != ''){
+                      configRoleType = configRoleType + ',' +2;
+                    }else{
+                        configRoleType = 2;
+                    }
+                }else if(key == 'lua' && this.configurationFiletype.lua){
+                    //console.log('lua.conf');
+                    if(configRoleType != ''){
+                        configRoleType = configRoleType+ ',' +3;
+                    }else{
+                        configRoleType = 3;
+                    }
+                }
+            }
+            this.args.configRole = configRoleType;
 
             //收集缓存规则
             var trLen = this.$el.find(".table-ctn tbody").children().length;
@@ -387,7 +524,20 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 }
                 this.args.policys.push(json);
             }
+            if(!this.args.domain || this.args.domain == ""){
+                alert("请填写加速域名");
+                return false;
+            }
 
+            if(!this.args.userId || this.args.userId == ""){
+                alert("请填写用户ID");
+                return false;
+            }
+
+            if(!this.args.cname || this.args.cname == ""){
+                alert("请填写cname");
+                return false;
+            }
             return this.args;
         },
 
@@ -465,6 +615,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
 
             this.getPageArgs = {
                 domain: "",
+                factory:"",
+                type:"",
+                protocol:"",
                 page: 1,
                 count: 10
             };
@@ -475,6 +628,8 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             this.collection.on("get.domainList.error", $.proxy(this.onGetError,this));
             this.collection.on("delete.domain.success", $.proxy(this.onDeleteDomainSuccess, this));
             this.collection.on("delete.domain.error", $.proxy(this.onGetError,this));
+            this.collection.on("delete.configuration.success", $.proxy(this.onDeleteConfigurationSuccess, this));
+            this.collection.on("delete.configuration.err", $.proxy(this.onDeleteConfigurationError, this));
             this.collection.on("send.domain.success", $.proxy(this.onSendDomainSuccess, this));
             this.collection.on("send.domain.error", $.proxy(this.onGetError,this));
             this.collection.on("add.domain.success", $.proxy(this.onAddDomainSuccess, this));
@@ -538,12 +693,16 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 this.$el.find(".table-ctn .delete").on("click", $.proxy(this.onClickDelete, this));
             else
                 this.$el.find(".table-ctn .delete").remove();
-
             if(AUTH_OBJ.DomainManagerSend)
                 this.$el.find(".table-ctn .send").on("click", $.proxy(this.onClickSend, this));
             else
                 this.$el.find(".table-ctn .send").remove();
 
+            if(AUTH_OBJ.DomainManagerDeleteConfig)
+                this.$el.find(".table-ctn .deleteConfiguration").on("click", $.proxy(this.onClickDeleteConfiguration, this));
+            else
+                this.$el.find(".table-ctn .deleteConfiguration").remove();
+            
             this.table.find("tbody .description").tooltip({
                 animation  : false,
                 "placement": "top", 
@@ -562,7 +721,10 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             alert("域名删除成功");
             this.onClickQueryButton();
         },
-
+        onDeleteConfigurationSuccess:function(res){
+            alert("一键删除域名的所有配置成功");
+            this.onClickQueryButton();
+        },
         onSendDomainSuccess:function(res){
             alert("域名下发成功");
             this.onClickQueryButton();
@@ -631,10 +793,11 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 title:"编辑域名",
                 body : editDomainView,
                 backdrop : 'static',
-                type     : 2,
+                type     : 2, 
                 height   : 500,
                 onOKCallback:  function(){
                     var options = editDomainView.getArgs();
+                    //console.log(options);
                     if (!options) return;
                     this.collection.editDomain(options);
                     this.editDomainPopup.$el.modal("hide");
@@ -658,7 +821,20 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
             //请求删除接口
             this.collection.deleteDomain(id);
         },
+        onClickDeleteConfiguration:function(e){
+            var eTarget = e.srcElement || e.target,id;
 
+            if(eTarget.tagName == "SPAN") {
+                domains = $(eTarget).parent().attr("domain");
+            }else {
+                domains = $(eTarget).attr("domain");
+            }
+            var result = confirm("是否确定一键删除域名的所有配置？");
+            if(!result) return;
+            //请求一键删除域名的所有配置接口
+            this.collection.deleteConfiguration(domains);
+
+        },
         onClickSend:function(e){
             var eTarget = e.srcElement || e.target,id;
 
@@ -708,6 +884,38 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 this.getPageArgs.page = 1;
                 this.onClickQueryButton();
             }.bind(this));
+
+
+            var factoryList = [
+                {name:"全部",value:""},
+                {name:"自建",value:"1"},
+                {name:"网宿",value:"2"}
+            ];
+            Utility.initDropMenu(this.$el.find(".dropdown-cdn-factory"), factoryList, function(value){
+                this.getPageArgs.factory = value || null;
+            }.bind(this));
+
+
+            var typeList = [
+                {name:"全部",value:""},
+                {name:"下载",value:"1"},
+                {name:"直播",value:"2"}
+            ];
+            Utility.initDropMenu(this.$el.find(".dropdown-speed-type"), typeList, function(value){
+                this.getPageArgs.type = value || null;
+            }.bind(this));
+
+
+            var protocolList = [
+                {name:"全部",value:""},
+                {name:"http+flv",value:"1"},
+                {name:"hls",value:"2"},
+                {name:"rtmp",value:"3"}
+            ];
+            Utility.initDropMenu(this.$el.find(".dropdown-use-protocol"), protocolList, function(value){
+                this.getPageArgs.protocol = value || null;
+            }.bind(this));
+
         },
 
         onGetError: function(error) {

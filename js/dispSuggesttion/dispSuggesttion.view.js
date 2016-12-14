@@ -628,7 +628,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 }.bind(this))
                 for (var i = 0; i < failedSkipCheckedList.length; i++) {
                     var currentNode = _.find(failedSkipCheckedList[i].get("listFormated"), function(obj){
-                        return obj.get("node.id") === parseInt(this.nodeId) && obj.get("dispConfIpInfo.currNum") !== 0;
+                        return obj.get("node.id") === parseInt(this.nodeId) && obj.get("dispConfIpInfo.currNum") !== 0 && obj.get("type") === 1;
                     }.bind(this))
                     if (currentNode) {
                         var pauseNode = {
@@ -694,6 +694,8 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onSureSending: function(){
+            var result = confirm("你确定要下发吗？")
+            if (!result) return;
             var args = this.getSendData();
             this.collection.adviceDispDns(args, this.nodeId, this.requestId, this.cc)
             this.showDisablePopup("下发中，请耐心等待...")
@@ -872,7 +874,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 $(eventTarget).val("1");
                 return
             }
-            if (parseInt(value) > parseInt(maxValue)){
+            if (parseInt(value) > parseInt(maxValue) || parseInt(value) === 0){
                 $(eventTarget).val("1")
             }
         },

@@ -580,6 +580,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         events: {},
 
         initialize: function(options) {
+            this.options = options;
             this.collection = options.collection;
             console.log(this.collection);
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.html'])());
@@ -613,7 +614,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
 
             this.collection.on("operate.node.success", $.proxy(this.onOperateNodeSuccess, this));
             this.collection.on("operate.node.error", function(res){
-                this.disablePopup.$el.modal('hide');
+                this.disablePopup&&this.disablePopup.$el.modal('hide');
                 this.onGetError(res)
             }.bind(this));
 
@@ -1103,12 +1104,16 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         update: function(){
-            this.$el.show();
-            if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
+            this.collection.off();
+            this.collection.reset();
+            this.$el.remove();
+            this.initialize(this.options);
+            this.render(this.target);
         },
 
         render: function(target) {
             this.$el.appendTo(target)
+            this.target = target
         }
     });
 

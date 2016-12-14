@@ -20,7 +20,7 @@ define("dispSuggesttion.model", ['require','exports', 'utility'], function(requi
                 var nodeString = nodeChName + "(" + nodeMaxBWLastNight + "/" + nodeCurrBW + "/" + nodeMaxBandwidth + ")L" + crossLevel
                 this.set("nodeString", nodeString);
             }
-            this.set("isChecked", false);
+            this.set("isChecked", true);
             this.set("isDisplay", true);
         }
     });

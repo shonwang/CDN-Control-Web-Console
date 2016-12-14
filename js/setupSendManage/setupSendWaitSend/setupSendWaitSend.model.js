@@ -16,7 +16,8 @@ define("setupSendWaitSend.model", ['require','exports', 'utility'], function(req
 
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
 
-            this.set("tempUseCustomized", 2);
+            if (isCustom === true) this.set("tempUseCustomized", 2);
+            if (isCustom === false) this.set("tempUseCustomized", 1);
             this.set("isChecked", false);
             this.set("isDisplay", true);
         }

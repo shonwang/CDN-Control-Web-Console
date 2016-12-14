@@ -286,10 +286,7 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onSkipSuccess: function(){
-<<<<<<< HEAD
-=======
             this.onClickQueryButton();
->>>>>>> vCustomerSetup
             alert("跳过成功")
         },
 
@@ -328,24 +325,15 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
                 visiblePages: 10,
-<<<<<<< HEAD
-                currentPage: 1,
-=======
                 currentPage: this.curPage,
->>>>>>> vCustomerSetup
                 onPageChange: function (num, type) {
                     if (type !== "init"){
                         this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                         var args = _.extend(this.queryArgs);
                         args.page = num;
-<<<<<<< HEAD
-                        args.count = this.queryArgs.count;
-                        this.collection.querySendingChannel(args);
-=======
                         this.curPage = num;
                         args.count = this.queryArgs.count;
                         this.collection.queryTaskDoingDetail(args);
->>>>>>> vCustomerSetup
                     }
                 }.bind(this)
             });

@@ -237,7 +237,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.collection.off('get.node.success');
             this.collection.on('get.node.success',$.proxy(this.onGetNodeSuccess,this));
             this.collection.on('get.node.error',$.proxy(this.onGetError,this));
-            this.collection.getTopoOrigininfo(this.model.get('id'));       
+          //  this.collection.getTopoOrigininfo(this.model.get('id'));       
             
             this.initNextStep();
 
@@ -246,6 +246,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.defaultParam = res; 
             this.$el.find('#input-Name').val(this.defaultParam.name); 
             this.$el.find('#description').val(this.defaultParam.description);
+            this.collection.getTopoOrigininfo(this.model.get('id'));
         },
         onGetNodeSuccess: function(res){
             _.each(res.allNodes,function(el,index,list){

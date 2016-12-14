@@ -165,7 +165,7 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                         children: []
                     }]
                 },{
-                    id: '',
+                    id: 'customerSetup-domainList-logServer',
                     name: '日志服务',
                     hash: 'javascript:void(0)',
                     children: [{
@@ -177,6 +177,7 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     }]
                 }
             ]
+
             this.backHash = 'index.html#/domainList/' + query;
         },
 
@@ -215,6 +216,12 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
             if (!this.menuList && !this.backHash) this.initDefaultMenu(this.query, this.query2);
             this.$el = $(_.template(template['tpl/subSidebar.html'])({data: this.menuList, backHash: this.backHash}));
             this.$el.appendTo($('.ksc-content'));
+            if(!AUTH_OBJ.LogServer){
+                this.$el.find('#customerSetup-domainList-logServer').remove();
+            }
+            if(!AUTH_OBJ.DomainLists){
+                this.$el.find('#customerSetup-domainList').remove();
+            }
             this.$el.find("#sub-jquery-accordion-menu").jqueryAccordionMenu();
 
             this.$el.find(".pin-sidebar").on("click", function(){

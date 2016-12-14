@@ -533,6 +533,9 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
             this.setDropdownMenu();
 
             this.$el.find("#add-domain-btnSubmit").on("click",$.proxy(this.onSubmit,this));
+            if(!AUTH_OBJ.ApplyCreateCustomerDomain) {
+                this.$el.find("#add-domain-btnSubmit").remove();
+            }
             this.$el.find("#add-domain-btnCancle").on("click",$.proxy(this.onCancel,this));
 
             this.collection.off("get.region.success");

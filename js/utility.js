@@ -19,9 +19,9 @@ define("utility", ['require','exports'], function(require, exports) {
               return fmt;
             };
 
-            String.prototype.trim = function() {
-                 return this.replace(/(^\s*)|(\s*$)/g, "");
-            }
+            // String.prototype.trim = function() {
+            //      return this.replace(/(^\s*)|(\s*$)/g, "");
+            // }
         },
 
         formatMillisecond: function(millisecond){
@@ -346,18 +346,24 @@ define("utility", ['require','exports'], function(require, exports) {
             return array;
         },
 
-        postAjax: function(url, args, successCallback, errorCallback, timeout, dataType){
+        postAjax: function(url, args, successCallback, errorCallback, timeout, dataType, notJson){
             var defaultParas = {
                 type: "POST",
                 url: url,
                 async: true,
-                timeout: timeout || 30000,
+                timeout: timeout || 40 * 60 * 1000,
                 contentType: "application/json",
                 processData: false
             };
-            defaultParas.data = JSON.stringify(args);
             
             if (dataType) defaultParas.dataType = dataType;
+            if (notJson){
+                delete defaultParas.contentType;
+                delete defaultParas.processData;
+                defaultParas.data = args;
+            } else {
+                defaultParas.data = JSON.stringify(args);
+            }
 
             defaultParas.beforeSend = function(xhr){
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
@@ -384,7 +390,35 @@ define("utility", ['require','exports'], function(require, exports) {
                 type: "GET",
                 url: url,
                 async: true,
-                timeout: timeout || 30000,
+                timeout: timeout || 40 * 60 * 1000,
+            };
+            defaultParas.data = args || {t: new Date().valueOf()};
+
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                successCallback && successCallback(res)
+            };
+
+            defaultParas.error = function(response, msg){
+                try{
+                    if (response&&response.responseText)
+                        response = JSON.parse(response.responseText)
+                    errorCallback && errorCallback(response)
+                } catch(e){
+                    errorCallback && errorCallback(response)
+                } 
+            };
+
+            $.ajax(defaultParas);
+        },
+        deleteAjax: function(url, args, successCallback, errorCallback, timeout){
+            var defaultParas = {
+                type: "DELETE",
+                url: url,
+                async: true,
+                timeout: timeout || 40 * 60 * 1000,
             };
             defaultParas.data = args || {t: new Date().valueOf()};
 

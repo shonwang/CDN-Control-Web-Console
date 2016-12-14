@@ -15,6 +15,11 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
         initDefaultMenu: function(query, query2){
             this.menuList = [
                 {
+                    id: 'customerSetup-domainList-basicInformation',
+                    name: '基本信息',
+                    hash: 'index.html#/domainList/' + query + /basicInformation/ + query2,
+                    children: []  
+                },{
                     id: '',
                     name: '域名设置',
                     hash: 'javascript:void(0)',
@@ -36,6 +41,12 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     name: '源站配置',
                     hash: 'javascript:void(0)',
                     children: [{
+                        id: 'customerSetup-domainList-backOriginDetection',
+                        name: '回源检测',
+                        hash: 'index.html#/domainList/' + query + /backOriginDetection/ + query2,
+                        active: false,
+                        children: []
+                    },{
                         id: 'customerSetup-domainList-backOriginSetup',
                         name: '回源配置',
                         hash: 'index.html#/domainList/' + query + /backOriginSetup/ + query2,
@@ -154,7 +165,7 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                         children: []
                     }]
                 },{
-                    id: '',
+                    id: 'customerSetup-domainList-logServer',
                     name: '日志服务',
                     hash: 'javascript:void(0)',
                     children: [{
@@ -166,6 +177,7 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     }]
                 }
             ]
+
             this.backHash = 'index.html#/domainList/' + query;
         },
 
@@ -204,7 +216,29 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
             if (!this.menuList && !this.backHash) this.initDefaultMenu(this.query, this.query2);
             this.$el = $(_.template(template['tpl/subSidebar.html'])({data: this.menuList, backHash: this.backHash}));
             this.$el.appendTo($('.ksc-content'));
+            if(!AUTH_OBJ.LogServer){
+                this.$el.find('#customerSetup-domainList-logServer').remove();
+            }
+            if(!AUTH_OBJ.DomainLists){
+                this.$el.find('#customerSetup-domainList').remove();
+            }
             this.$el.find("#sub-jquery-accordion-menu").jqueryAccordionMenu();
+
+            this.$el.find(".pin-sidebar").on("click", function(){
+                if (this.$el.find(".pin-sidebar").hasClass("closed")){
+                    this.$el.find(".pin-sidebar").removeClass("closed");
+                    this.$el.find("#sub-jquery-accordion-menu").css("max-width", "200px")
+                    this.$el.find("#sub-jquery-accordion-menu").css("min-width", "50px")
+                    this.$el.find("#demo-list").show();
+                    this.$el.find(".sub-content").css("padding", "0 0 0 215px")
+                } else {
+                    this.$el.find(".pin-sidebar").addClass("closed");
+                    this.$el.find("#sub-jquery-accordion-menu").css("max-width", "0px")
+                    this.$el.find("#sub-jquery-accordion-menu").css("min-width", "0px")
+                    this.$el.find("#demo-list").hide();
+                    this.$el.find(".sub-content").css("padding", "0 0 0 15px")
+                }
+            }.bind(this))
         }
 
     });

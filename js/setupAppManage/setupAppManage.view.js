@@ -19,7 +19,7 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.collection.on('get.topo.OriginInfo.success',$.proxy(this.onOriginInfo, this));
             this.collection.on('get.topo.OriginInfo.error',$.proxy(this.onGetError, this));
             
-            this.collection.getTopoOrigininfo(this.model.get('id'));
+            this.collection.getTopoOrigininfo(this.model.get('topoId'));
             
             //this.initSetup()
         },
@@ -39,8 +39,6 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-
-            this.table.find("tbody .view").on("click", $.proxy(this.onClickItemEdit, this));
         },
 
         onClickCancelButton: function(){
@@ -58,7 +56,22 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.$el.appendTo(target);
         }
     });
+    var FuncDetailView = Backbone.View.extend({
+            events: {
+            },
 
+            initialize: function(options) {
+                this.options = options;
+                this.collection = options.collection;
+                this.model      = options.model;
+
+                this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.func.table.detail.html'])({data: {}}));
+            },
+            render: function(target) {
+                this.$el.appendTo(target);
+            }
+    });
+   
     var AppDetailView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
@@ -68,16 +81,25 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.options = options;
             this.collection = options.collection;
             this.model      = options.model;
-
             this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.detail.html'])({data: {}}));
+            
+            this.collection.off('get.template.info.success');
+            this.collection.off('get.template.info.error');
+            this.collection.on('get.template.info.success',$.proxy(this.getTemplateSuccess,this));
+            this.collection.on('get.template.error',$.proxy(this.onGetError,this));
+            this.collection.getTemplateinfo(this.model.get('type'));
 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-            
-            
-           // this.initSetup()
+            //this.initSetup()
         },
-        onOriginInfo:function(){
-            this.$el.find('#name').val
+        getTemplateSuccess: function(res){
+            var domain = this.$el.find('#domain'),
+                lua = this.$el.find('#lua'),
+                nginx = this.$el.find('#nginx');
+
+            domain.val(res['domain.conf']);
+            lua.val(res['lua.conf']);
+            nginx.val(res['nginx.conf']);
         },
         initSetup: function(){
             var tempData = [{
@@ -92,9 +114,30 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.table.find("tbody .view").on("click", $.proxy(this.onClickItemEdit, this));
+            this.table.find("tbody .detail").on("click", $.proxy(this.onClickDetail, this));
         },
+        onClickDetail: function(event){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+            
+            var myFuncDetailView = new FuncDetailView({});
+            var options = {
+                title:'时间戳+共享秘钥防盗链',
+                body:myFuncDetailView,
+                width:1000,
+                height:300,
+                type:1,
+                onOKCallback:  function(){}.bind(this),
+                onHiddenCallback: function(){}.bind(this)
+            }
+            this.FuncDetailViewPopup = new Modal(options);
 
+        },
         onClickCancelButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
@@ -110,31 +153,21 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.$el.appendTo(target);
         }
     });
-
+    
     var SetupAppManageView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.html'])());
-
+            
+            this.collection.off("get.app.info.success");
+            this.collection.off("get.app.info.error");
             this.collection.on("get.app.info.success", $.proxy(this.onappListSuccess, this));
             this.collection.on("get.app.info.error", $.proxy(this.onGetError, this));
 
             this.queryArgs = {
-                /*"domain"           : null,
-                "accelerateDomain" : null,
-                "businessType"     : null,
-                "clientName"       : null,
-                "status"           : null,
-                "page"             : 1,*/
-                "count"     : 10,
-                "id"        : null,
-                "name"      : null,
-                "createTime": null,
-                "type"      : null,
-                "topoId"    : null,
-                "typeName"  : null
+                "count"     : 10
              }
             this.onClickQueryButton();
         },
@@ -153,11 +186,6 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
 
         onClickQueryButton: function(){
             this.isInitPaginator = false;
-            /*this.queryArgs.page = 1;
-            this.queryArgs.domain = this.$el.find("#input-domain").val();
-            this.queryArgs.clientName = this.$el.find("#input-client").val();
-            if (this.queryArgs.domain == "") this.queryArgs.domain = null;
-            if (this.queryArgs.clientName == "") this.queryArgs.clientName = null;*/
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
             this.collection.getAppInfo(this.queryArgs);
@@ -197,7 +225,7 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
                 title:"拓扑关系",
                 body : myLookOverTopoView,
                 backdrop : 'static',
-                type     : 2,
+                type     : 1,
                 onOKCallback:  function(){}.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
@@ -214,7 +242,7 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             }
 
             var model = this.collection.get(id);
-
+              
             var myAppDetailView = new AppDetailView({
                 collection: this.collection,
                 model: model,

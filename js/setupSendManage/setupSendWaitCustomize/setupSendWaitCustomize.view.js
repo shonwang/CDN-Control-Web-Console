@@ -1,5 +1,5 @@
 define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
-    
+ 
     var SetupSendWaitCustomizeView = Backbone.View.extend({
         events: {},
 
@@ -7,25 +7,31 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             this.options = options
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.html'])());
-
+            if(!AUTH_OBJ.BatchSendToWaitSend){
+                this.$el.find('.mulit-send').remove();
+            }
             this.initChannelDropMenu();
 
             this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
             this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.publish.success", $.proxy(this.onPublishSuccess, this));
+            this.collection.on("set.publish.error", $.proxy(this.onGetError, this));
+            this.collection.on("roll.back.success", $.proxy(this.onRollBackSuccess, this));
+            this.collection.on("roll.back.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
+            this.$el.find(".mulit-send").on("click", $.proxy(this.onClickMultiSend, this));
 
             this.enterKeyBindQuery();
 
             this.queryArgs = {
-                "domain"           : null,
-                "accelerateDomain" : null,
-                "businessType"     : null,
-                "clientName"       : null,
-                "status"           : null,
-                "page"             : 1,
-                "count"            : 10
+                "domain" : null,
+                "operateType": null,
+                "platformId" : null,
+                "configReason": null,
+                "status" : 0,
+                "count": 10,
+                "page": 1
              }
             this.onClickQueryButton();
         },
@@ -39,6 +45,7 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
         },
 
         onGetError: function(error){
+            this.disablePopup&&this.disablePopup.$el.modal('hide');
             if (error&&error.message)
                 alert(error.message)
             else
@@ -50,13 +57,50 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             if (!this.isInitPaginator) this.initPaginator();
         },
 
+        showDisablePopup: function(msg) {
+            if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
+            var options = {
+                title    : "警告",
+                body     : '<div class="alert alert-danger"><strong>' + msg +'</strong></div>',
+                backdrop : 'static',
+                type     : 0,
+            }
+            this.disablePopup = new Modal(options);
+            this.disablePopup.$el.find(".close").remove();
+        },
+
+        onClickMultiSend: function(){
+            var checkedList = this.collection.filter(function(model) {
+                return model.get("isChecked") === true;
+            });
+
+            this.domainArray = [];
+            _.each(checkedList, function(el, index, ls){
+                this.domainArray.push({
+                    predeliveryId: el.get("id")
+                });
+            }.bind(this))
+
+            this.collection.publish(this.domainArray)
+            this.showDisablePopup("服务器正在努力处理中...")
+        },
+
+        onPublishSuccess: function(){
+            this.disablePopup&&this.disablePopup.$el.modal('hide');
+            alert("操作成功！");
+            this.update(this.target)
+        },
+
+        onRollBackSuccess: function(){
+            alert("操作成功！");
+            this.update(this.target)
+        },
+
         onClickQueryButton: function(){
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
             this.queryArgs.domain = this.$el.find("#input-domain").val();
-            this.queryArgs.clientName = this.$el.find("#input-client").val();
             if (this.queryArgs.domain == "") this.queryArgs.domain = null;
-            if (this.queryArgs.clientName == "") this.queryArgs.clientName = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
             this.collection.queryChannel(this.queryArgs);
@@ -81,18 +125,18 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
         },
 
         onClickItemSend: function(event){
-            var result = confirm("你确定要下发吗？");
+            var result = confirm("你确定要发布到待下发吗？");
             if (!result) return;
 
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
+            var eventTarget = event.srcElement || event.target, 
                 id = $(eventTarget).attr("id");
-            }
-
             var model = this.collection.get(id);
+
+            this.domainArray = [{
+                predeliveryId: model.get("id")
+            }];
+
+            this.collection.publish(this.domainArray)
         },
 
         onClickItemReject: function(event){
@@ -107,7 +151,7 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
                 id = $(eventTarget).attr("id");
             }
 
-            var model = this.collection.get(id);
+            this.collection.rollBack({predeliveryId: id})
         },
 
         onClickItemEdit: function(event){
@@ -125,6 +169,8 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
                 var myEditChannelView = new EditChannelView({
                     collection: this.collection,
                     model: model,
+                    isEdit: true,
+                    isFromSend: true,
                     onSaveCallback: function(){}.bind(this),
                     onCancelCallback: function(){
                         myEditChannelView.$el.remove();
@@ -132,6 +178,9 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
                     }.bind(this)
                 })
 
+                if(!AUTH_OBJ.ApplyEditCustomize){
+                    myEditChannelView.$el.find('.save').remove();
+                }
                 this.$el.find(".list-panel").hide();
                 myEditChannelView.render(this.$el.find(".edit-panel"))
             }.bind(this));
@@ -198,21 +247,36 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             var statusArray = [
                 {name: "全部", value: "All"},
                 {name:"新增", value:0},
-                {name: "修改", value:2},
+                {name: "更新", value:1},
+                {name: "删除", value:2},
             ],
             rootNode = this.$el.find(".dropdown-oper");
             Utility.initDropMenu(rootNode, statusArray, function(value){
-                // if (value == "All")
-                //     this.queryArgs.status = null;
-                // else
-                //     this.queryArgs.status = parseInt(value)
+                if (value == "All")
+                    this.queryArgs.operateType = null;
+                else
+                    this.queryArgs.operateType = parseInt(value)
             }.bind(this));
+
+            //"1：用户配置变更 2：拓扑变更",
+            var taskType = [
+                {name: "全部", value: "All"},
+                {name:"用户配置变更", value:1},
+                {name: "拓扑变更", value:2},
+            ],
+            rootNode = this.$el.find(".dropdown-task-type");
+            Utility.initDropMenu(rootNode, taskType, function(value){
+                if (value == "All")
+                    this.queryArgs.configReason = null;
+                else
+                    this.queryArgs.configReason = parseInt(value)
+            }.bind(this));  
 
             var pageNum = [
                 {name: "10条", value: 10},
                 {name: "20条", value: 20},
                 {name: "50条", value: 50},
-                {name: "100条", value: 100}
+                {name: "3000条", value: 3000}
             ]
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
                 this.queryArgs.count = value;
@@ -220,18 +284,18 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
                 this.onClickQueryButton();
             }.bind(this));
  
-             require(["setupTopoManage.model"], function(SetupTopoManageModel){
-                this.mySetupTopoManageModel = new SetupTopoManageModel();
-                this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.onGetTopoSuccess, this))
-                this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this))
-                var postParam = {
-                    "name" : null,
-                    "type" : null,
-                    "page" : 1,
-                    "size" : 99999
-                 }
-                this.mySetupTopoManageModel.getTopoinfo(postParam);
-            }.bind(this))
+            //  require(["setupTopoManage.model"], function(SetupTopoManageModel){
+            //     this.mySetupTopoManageModel = new SetupTopoManageModel();
+            //     this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.onGetTopoSuccess, this))
+            //     this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this))
+            //     var postParam = {
+            //         "name" : null,
+            //         "type" : null,
+            //         "page" : 1,
+            //         "size" : 99999
+            //      }
+            //     this.mySetupTopoManageModel.getTopoinfo(postParam);
+            // }.bind(this))
 
             require(["setupAppManage.model"], function(SetupAppManageModel){
                 this.mySetupAppManageModel = new SetupAppManageModel();
@@ -260,25 +324,26 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
         },
 
         onGetAppSuccess: function(){
-            var appArray = []
+            var appArray = [{name: "全部", value: "All"},]
             this.mySetupAppManageModel.each(function(el, index, lst){
                 appArray.push({
-                    name: el.get('name'),
-                    value: el.get('id')
+                    name: el.get('typeName'),
+                    value: el.get('type')
                 })
             }.bind(this))
 
             rootNode = this.$el.find(".dropdown-app");
             Utility.initDropMenu(rootNode, appArray, function(value){
-                // if (value == "All")
-                //     this.queryArgs.status = null;
-                // else
-                //     this.queryArgs.status = parseInt(value)
+                if (value == "All")
+                    this.queryArgs.platformId = null;
+                else
+                    this.queryArgs.platformId = parseInt(value)
             }.bind(this));
         },
 
         hide: function(){
             this.$el.hide();
+            $(document).off('keydown');
         },
 
         update: function(target){
@@ -291,6 +356,7 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
 
         render: function(target){
             this.$el.appendTo(target);
+            this.target = target;
         }
     });
 

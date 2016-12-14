@@ -114,6 +114,8 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
                         window.AUTH_OBJ = {};
                         _.each(res.purviewList.list, function(el, index, list){
                             window.AUTH_OBJ[el.value] = el.auth === -1 ? false : true;
+                            if (DEBUG === 1 || DEBUG === 1.1 || DEBUG === 1.2)
+                                window.AUTH_OBJ[el.value] === true;
                         })
                         console.log(AUTH_OBJ)
                         callback&&callback();

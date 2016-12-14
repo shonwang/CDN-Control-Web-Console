@@ -130,7 +130,7 @@ define("delMarkCache.view", ['require','exports', 'template', 'modal.view', 'uti
             require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
                 var mySaveThenSendView = new SaveThenSendView({
                     collection: new SaveThenSendModel(),
-                    originId: this.domainInfo.id,
+                    domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
                     }.bind(this)

@@ -104,11 +104,18 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             this.$el = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.detail.html'])({data: {}}));
 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+            this.$el.find(".opt-ctn .query").on("click", function(){
+                this.curPage = 1;
+                this.onClickQueryButton();
+            }.bind(this));
+
+            this.curPage = 1;
 
             if (this.isSending) {
                 this.collection.on("get.task.doingdetail.success",$.proxy(this.queryDetailSuccess,this));
                 this.collection.on("get.task.doingdetail.error",$.proxy(this.onGetError,this));
+                this.collection.on("get.ingoredevice.success",$.proxy(this.onSkipSuccess,this));
+                this.collection.on("get.ingoredevice.error",$.proxy(this.onGetError,this));
 
                 this.queryArgs = {
                     "taskId" : this.model.get('taskId'),//任务ID
@@ -116,7 +123,7 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
                     "deviceName" : null,
                     "nodeId": null,// "节点ID"
                     "status": null,
-                    "page": 1,
+                    "page": this.curPage,
                     "count": 10
                 };
             } else {
@@ -128,7 +135,7 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
                     "deviceName" : null,
                     "nodeId": null,// "节点ID"
                     "status": null,
-                    "page": 1,
+                    "page": this.curPage,
                     "count": 10
                 };
             }
@@ -139,7 +146,7 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
 
         onClickQueryButton: function(){
             this.isInitPaginator = false;
-            this.queryArgs.page = 1;
+            this.queryArgs.page = this.curPage;
             this.queryArgs.deviceName = this.$el.find("#input-device").val();
             if (this.queryArgs.deviceName == "") this.queryArgs.deviceName = null;
 
@@ -186,7 +193,7 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             ]
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
                 this.queryArgs.count = value;
-                this.queryArgs.page = 1;
+                this.curPage = 1;
                 this.onClickQueryButton();
             }.bind(this));
         },
@@ -261,6 +268,8 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onClickItemSkip: function(event){
+            var result = confirm("跳过后设备的配置下发状态将不会统计在下发结果内，不再影响下发进度，是否确定跳过？")
+            if (!result) return
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();
@@ -277,6 +286,10 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onSkipSuccess: function(){
+<<<<<<< HEAD
+=======
+            this.onClickQueryButton();
+>>>>>>> vCustomerSetup
             alert("跳过成功")
         },
 
@@ -315,14 +328,24 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
                 visiblePages: 10,
+<<<<<<< HEAD
                 currentPage: 1,
+=======
+                currentPage: this.curPage,
+>>>>>>> vCustomerSetup
                 onPageChange: function (num, type) {
                     if (type !== "init"){
                         this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                         var args = _.extend(this.queryArgs);
                         args.page = num;
+<<<<<<< HEAD
                         args.count = this.queryArgs.count;
                         this.collection.querySendingChannel(args);
+=======
+                        this.curPage = num;
+                        args.count = this.queryArgs.count;
+                        this.collection.queryTaskDoingDetail(args);
+>>>>>>> vCustomerSetup
                     }
                 }.bind(this)
             });

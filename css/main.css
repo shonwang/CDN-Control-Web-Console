@@ -47,7 +47,7 @@ body .jumbotron,
   background-color: #fff;
   padding: 19px;
   margin-bottom: 20px;
-  box-shadow: 0 8px 17px 0 rgba(0, 0, 0, .2), 0 6px 20px 0 rgba(0, 0, 0, .19);
+  /*box-shadow: 0 8px 17px 0 rgba(0, 0, 0, .2), 0 6px 20px 0 rgba(0, 0, 0, .19);*/
   border-radius: 4px;
   border: 0;
 }
@@ -416,7 +416,7 @@ td .table {
 
 .user-info,
 .ctrl-nav-container {
-    box-shadow: 0 8px 17px 0 rgba(0, 0, 0, .2), 0 6px 20px 0 rgba(0, 0, 0, .19);
+    /*box-shadow: 0 8px 17px 0 rgba(0, 0, 0, .2), 0 6px 20px 0 rgba(0, 0, 0, .19);*/
 }
 
 .jquery-accordion-menu {
@@ -429,7 +429,7 @@ td .table {
   min-width: 50px;
   bottom: 0;
   top: 0;
-  box-shadow: 0 0px 20px #333;
+  /*box-shadow: 0 0px 20px #333;*/
   background-color: #222;
 }
 
@@ -827,6 +827,7 @@ td .table {
   width: 100%;
   box-sizing: border-box;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .select-value-layer li.hide {
@@ -1084,7 +1085,27 @@ td .table {
   width:90%;margin:0px auto 10px;
 }
 
+.templateManage .dropdown-area {
+	position:relative;
+}
+.grayscaleSetup-tips {width:90%;margin:0px auto 10px;}
 .setup-channel-manage-edit .panel-collapse .panel-body{
     height: 245px;
     overflow: auto;
+}
+
+.pin-sidebar {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 19px;
+    height: 49px;
+    margin-top: -25px;
+    background: url(../images/sidebar.png) -63px -5px no-repeat;
+    cursor: pointer;
+}
+
+.pin-sidebar.closed {
+    transform: scale(-1);
+    right: -19px;
 }

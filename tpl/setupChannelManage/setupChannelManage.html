@@ -1,16 +1,16 @@
 <div class="setup-channel-manage fadeInLeft animated">
     <div class="list-panel">
-        <h3>配置下发<small>/频道管理</small></h3>
+        <h4>配置下发<small>/频道管理</small></h4>
         <div class="well opt-ctn">
             <div class="form-inline">
                 <div class="form-group">
                     <label for="input-domain">频道</label>
                     <input type="text" class="form-control" id="input-domain">
                 </div>
-                <div class="form-group">
+<!--                 <div class="form-group">
                     <label for="input-client">客户</label>
                     <input type="text" class="form-control" id="input-client">
-                </div>
+                </div> -->
                 <div class="form-group">
                     <label for="dropdown-status">状态</label>
                 </div>
@@ -21,6 +21,18 @@
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu"></ul>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="dropdown-topo">拓扑关系</label>
+                </div>
+                <div class="form-group dropdown-topo">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-topo" data-toggle="dropdown">
+                            <span class="cur-value">全部</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu long-dropdown-menu"></ul>
                     </div>
                 </div>
             </div>

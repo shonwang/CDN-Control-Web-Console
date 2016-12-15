@@ -29,7 +29,7 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
         initialize: function(){},
 
         getDeviceList: function(args){
-            var url = BASE_URL + "/rs/device/pagelist";
+            var url = BASE_URL + "/resource/rs/device/pagelist";
             var defaultParas = {
                 type: "POST",
                 url: url,
@@ -66,7 +66,7 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
         },
 
         addDevice: function(args){
-            var url = BASE_URL + "/rs/device/addDevice"
+            var url = BASE_URL + "/resource/rs/device/addDevice"
             var defaultParas = {
                 type: "POST",
                 url: url,
@@ -93,7 +93,7 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
         },
 
         deleteDevice: function(args){
-            var url = BASE_URL + "/rs/device/deleteDevice"
+            var url = BASE_URL + "/resource/rs/device/deleteDevice"
             var defaultParas = {
                 type: "GET",
                 url: url,
@@ -120,7 +120,7 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
         },
 
         updateDevice: function(args){
-            var url = BASE_URL + "/rs/device/modifyDevice"
+            var url = BASE_URL + "/resource/rs/device/modifyDevice"
             var defaultParas = {
                 type: "POST",
                 url: url,
@@ -147,7 +147,7 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
         },
 
         addIp: function(args){
-            var url = BASE_URL + "/rs/ip/add"
+            var url = BASE_URL + "/resource/rs/ip/add"
             var defaultParas = {
                 type: "POST",
                 url: url,
@@ -201,7 +201,7 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
         },
 
         ipTypeList: function(args){
-            var url = BASE_URL + "/rs/metaData/ipTypeList";
+            var url = BASE_URL + "/resource/rs/metaData/ipTypeList";
             var defaultParas = {
                 type: "GET",
                 url: url,
@@ -231,7 +231,7 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
             $.ajax(defaultParas);
         },
         operatorTypeList: function(){
-            var url = BASE_URL + "/rs/metaData/continent/country/operation/list?id=401";
+            var url = BASE_URL + "/resource/rs/metaData/continent/country/operation/list?id=401";
             var defaultParas = {
                 type: "GET",
                 url: url,
@@ -260,7 +260,7 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
             $.ajax(defaultParas);
         },
         getNodeList: function(args){
-            var url = BASE_URL + "/rs/node/list";
+            var url = BASE_URL + "/resource/rs/node/list";
             var defaultParas = {
                 type: "POST",
                 url: url,
@@ -301,7 +301,7 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
 
         getDeviceIpList: function(args){
             console.log('getDeviceIpList');
-            var url = BASE_URL + "/rs/device/ip/list";
+            var url = BASE_URL + "/resource/rs/device/ip/list";
             var defaultParas = {
                 type: "GET",
                 url: url,

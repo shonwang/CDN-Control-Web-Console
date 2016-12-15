@@ -34,7 +34,7 @@ define("ipManage.model", ['require','exports', 'utility'], function(require, exp
         initialize: function(){},
 
         getIpInfoList: function(args){
-            var url = BASE_URL + "/rs/ip/info/list";
+            var url = BASE_URL + "/resource/rs/ip/device/node/info/list";
             var defaultParas = {
                 type: "POST",
                 url: url,

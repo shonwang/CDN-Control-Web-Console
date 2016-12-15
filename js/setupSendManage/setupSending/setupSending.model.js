@@ -60,6 +60,20 @@ define("setupSending.model", ['require','exports', 'utility'], function(require,
                 this.trigger("channel.next.error", response); 
             }.bind(this);
 
+            Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
+        },
+
+        ipTypeList: function(args){
+            var url = BASE_URL + "/resource/rs/metaData/ipTypeList",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("ip.type.success", res.rows);
+                else
+                    this.trigger("ip.type.error");
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("ip.type.error", response);
+            }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         }
     });

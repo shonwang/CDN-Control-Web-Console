@@ -972,7 +972,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 idArray.push(el.id);
             }.bind(this))
 
-            this.nodeDeviceArray = []
+            this.nodeDeviceArray = [];
 
             _.each(this.nodeGroupList, function(el, key, ls){
                 this.nodeDeviceArray.push({id: el.id, name: el.name})

@@ -52,6 +52,7 @@ define("setupAppManage.model", ['require','exports', 'utility'], function(requir
                 } else {
                     this.trigger("get.template.info.error"); 
                 } 
+
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("get.template.info.error", response); 

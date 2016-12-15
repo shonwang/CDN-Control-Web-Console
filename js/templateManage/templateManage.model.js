@@ -110,7 +110,7 @@ define("templateManage.model", ['require','exports'], function(require, exports)
         },
 
         getOperatorList: function(args){
-            var url = BASE_URL + "/rs/metaData/operatorList?" + new Date().valueOf(); 
+            var url = BASE_URL + "/resource/rs/metaData/operator/list?" + new Date().valueOf(); 
             var defaultParas = {
                 type: "GET",
                 url: url,

@@ -67,7 +67,7 @@ define("dispGroup.model", ['require','exports', 'utility'], function(require, ex
         },
 
         getNodeList: function(args){
-            var url = BASE_URL + "/rs/node/list";
+            var url = BASE_URL + "/resource/rs/node/list";
             var defaultParas = {
                 type: "POST",
                 url: url,
@@ -369,7 +369,7 @@ define("dispGroup.model", ['require','exports', 'utility'], function(require, ex
         },
 
         ipTypeList: function(args){
-            var url = BASE_URL + "/rs/metaData/ipTypeList";
+            var url = BASE_URL + "/resource/rs/metaData/ipTypeList";
             var defaultParas = {
                 type: "GET",
                 url: url,
@@ -429,36 +429,7 @@ define("dispGroup.model", ['require','exports', 'utility'], function(require, ex
             }.bind(this);
 
             $.ajax(defaultParas);
-        },
-        GroupDomainList: function(args){
-            var url = BASE_URL + "/rs/metaData/getGroupDomainList";
-            var defaultParas = {
-                type: "GET",
-                url: url,
-                async: true,
-                timeout: 30000,
-            };
-            defaultParas.data = args || {};
-            defaultParas.data.t = new Date().valueOf();
-
-            defaultParas.beforeSend = function(xhr){
-                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
-            }
-            defaultParas.success = function(res){
-                if (res)
-                    this.trigger("GropDomain.list.success", res.rows);
-                else
-                    this.trigger("GropDomain.list.error");
-            }.bind(this);
-
-            defaultParas.error = function(response, msg){
-                if (response&&response.responseText)
-                    response = JSON.parse(response.responseText)
-                this.trigger("GropDomain.list.error", response); 
-            }.bind(this);
-
-            $.ajax(defaultParas);
-        },
+        }
     });
 
     return DispGroupCollection;

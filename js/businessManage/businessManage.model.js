@@ -91,7 +91,7 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
         },
 
         getIpList: function(){
-            var url = BASE_URL + "/rs/metaData/ipTypeList";
+            var url = BASE_URL + "/resource/rs/metaData/ipTypeList";
             var defaultParas = {
                 type: "GET",
                 url: url,

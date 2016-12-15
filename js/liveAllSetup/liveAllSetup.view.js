@@ -727,6 +727,8 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         onGetNodeTreeDataSuccess:function(res){
             this.nodeTreeLists = res;  //返回所有节点组节点以及设备
 
+            console.log("返回所有节点组的节点以及设备：", this.nodeTreeLists)
+
             _.each(this.nodeTreeLists, function(el, inx, ls){
                 _.each(el, function(elSub, inxSub, lsSub){
                     if (elSub.pId !== -1){
@@ -736,39 +738,50 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             }.bind(this))
 
             var nodeGroupIdList = Object.keys(this.nodeTreeLists);
-            _.each(nodeGroupIdList, function(itemNodeGroupDevices, key, list){
-                var aNode = "",deviceId = [],nodeId = "",deviceName = [],nodeDeviceJson = {};
-                _.each(this.nodeTreeLists[itemNodeGroupDevices], function(deviceObj, objKey, l){
-                    this.nodeTreeLists[itemNodeGroupDevices][objKey].checked = true;
-                    if(deviceObj.pId === -1){
-                        aNode += '<li class="node-item" data-nodeid="'+deviceObj.id+'"><span class="label label-primary">'+ deviceObj.name + '</span></li>';
-                        var arr = [];
-                        arr.push(deviceObj);
-                        this.nodeDeviceArray[key].nodes = arr;
+
+            console.log("返回所有节点组的ID：", nodeGroupIdList)
+
+            _.each(nodeGroupIdList, function(nodeGroupId, nodeGroupIdArrayIndex){
+                var nodesTpl = "", nodeId = "", nodesObj = [],
+                    nodeDeviceJson = {}, devsObj = [];
+
+                _.each(this.nodeTreeLists[nodeGroupId], function(deviceObj, objKey, l){
+                    deviceObj.checked = true;
+
+                    if(deviceObj.pId === -1) {
+                        nodesTpl += '<li class="node-item" data-nodeid="'+deviceObj.id+'"><span class="label label-primary">'+ deviceObj.name + '</span></li>';
+                        nodesObj.push(deviceObj);
+
+                        _.find(this.nodeDeviceArray, function(obj){
+                            return obj.id === parseInt(nodeGroupId);
+                        }).nodes = nodesObj;
 
                         nodeId = deviceObj.id;
                         nodeDeviceJson[deviceObj.id] = {
                             deviceId : [],
                             deviceName : []
                         };
-                    }else{
-                        var ar = [];
-                        ar.push(deviceObj);
-                        this.nodeDeviceArray[key].devices = ar;
+                    } else{
+                        devsObj.push(deviceObj);
+                        _.find(this.nodeDeviceArray, function(obj){
+                            return obj.id === parseInt(nodeGroupId);
+                        }).devices = devsObj;
 
                         nodeDeviceJson[nodeId].deviceId.push(deviceObj.deviceId);
                         nodeDeviceJson[nodeId].deviceName.push(deviceObj.name);
                     }
                 }.bind(this));
 
-                this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn").append(aNode);
+                this.$el.find("#panel-" + nodeGroupId + " .node-ctn").append(nodesTpl);
 
                 _.each(Object.keys(nodeDeviceJson),function(v,k,l){
-                    this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn li[data-nodeid="+v+"]").attr("data-deviceId",nodeDeviceJson[v].deviceId.join(","));
-                    this.$el.find("#panel-" + itemNodeGroupDevices + " .node-ctn li[data-nodeid="+v+"]").attr("data-deviceName",nodeDeviceJson[v].deviceName.join(","));
+                    this.$el.find("#panel-" + nodeGroupId + " .node-ctn li[data-nodeid="+v+"]").attr("data-deviceId",nodeDeviceJson[v].deviceId.join(","));
+                    this.$el.find("#panel-" + nodeGroupId + " .node-ctn li[data-nodeid="+v+"]").attr("data-deviceName",nodeDeviceJson[v].deviceName.join(","));
                 }.bind(this));
                 
             }.bind(this));
+
+            console.log("格式化后的所有节点组下的节点和设备：", this.nodeDeviceArray)
         },
 
         onClickShellCmdInput: function(event){
@@ -959,12 +972,13 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 idArray.push(el.id);
             }.bind(this))
 
-            this.collection.getNodeTreeData(idArray);
-
             this.nodeDeviceArray = [];
+            
             _.each(this.nodeGroupList, function(el, key, ls){
                 this.nodeDeviceArray.push({id: el.id, name: el.name})
             }.bind(this))
+
+            this.collection.getNodeTreeData(idArray);
 
             if (AUTH_OBJ.AddNodeListandHostList)
                 this.$el.find(".edit-name").on("click", $.proxy(this.onClickSelectDevice, this))

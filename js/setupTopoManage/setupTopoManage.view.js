@@ -328,7 +328,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     this.$el.find('.sendStrategy').show();
                 }.bind(this),
                 onSaveCallback: function(){
-                    console.log(this.defaultParam.deliveryStrategyDef);
                     this.initstepTable(this.InformationProcessing(this.defaultParam.deliveryStrategyDef));
                     this.allNodes = this.FilterNodes(this.allNodes);
                     myAddStepView.$el.remove();
@@ -497,7 +496,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 this.Step = options.CurrentStep;
             }
             this.defaultParam = this.deepClone(this.parameterProcessing(this.deliveryStrategyDef));//每一条的步骤参数
-            console.log(this.defaultParam);
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.addStep.html'])({data:this.Step}));
             this.$el.find('.opt-ctn .save').on('click', $.proxy(this.onClickSaveButton, this));
             this.$el.find('.opt-ctn .cancel').on('click', $.proxy(this.onClickCancelButton, this));

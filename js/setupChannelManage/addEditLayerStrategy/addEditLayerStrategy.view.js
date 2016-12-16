@@ -400,7 +400,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
         },
         initOperatorUpperList:function(data){
             var statusArray = [];
-            _.each(data, function(el, key, list){
+            _.each(data.rows, function(el, key, list){
                 statusArray.push({name: el.name, value: el.id})
             }.bind(this))
             rootNodes = this.upperTable.find(".ipOperator .dropdown");
@@ -600,7 +600,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
         initDropMenu: function(data){
             this.statusArray = [],
             rootNode = this.$el.find(".operator");
-            _.each(data, function(el, key, list){
+            _.each(data.rows, function(el, key, list){
                 this.statusArray.push({name: el.name, value: el.id})
             }.bind(this))
             Utility.initDropMenu(rootNode, this.statusArray, function(value){

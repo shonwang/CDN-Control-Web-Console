@@ -60,7 +60,7 @@ define("setupSending.model", ['require','exports', 'utility'], function(require,
                 this.trigger("channel.next.error", response); 
             }.bind(this);
 
-            Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
+            Utility.getAjax(url, args, successCallback, errorCallback, null, "text");
         },
 
         ipTypeList: function(args){

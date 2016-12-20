@@ -144,13 +144,13 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     name: '访问控制',
                     hash: 'javascript:void(0)',
                     children: [
-                    // {
-                    //     id: 'customerSetup-domainList-ipBlackWhiteList',
-                    //     name: 'IP黑白名单',
-                    //     hash: 'index.html#/domainList/' + query + /ipBlackWhiteList/ + query2,
-                    //     active: false,
-                    //     children: []
-                    // },
+                    {
+                        id: 'customerSetup-domainList-ipBlackWhiteList',
+                        name: 'IP黑白名单',
+                        hash: 'index.html#/domainList/' + query + /ipBlackWhiteList/ + query2,
+                        active: false,
+                        children: []
+                    },
                     {
                         id: 'customerSetup-domainList-refererAntiLeech',
                         name: 'Referer防盗链',

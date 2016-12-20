@@ -174,9 +174,6 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (this.model)
                 this.$el.find(".deadline-time #deadline-time").val(this.model.get("expirationTime"))
 
-            console.log(this.$el.find(".deadline-time #deadline-time").get(0))
-            console.log(this.model.get("expirationTime"))
-
             if (this.defaultParam.md5Truncate.indexOf(",") !== -1){
                 this.$el.find("#md5-start").val(this.defaultParam.md5Truncate.split(",")[0])
                 this.$el.find("#md5-end").val(this.defaultParam.md5Truncate.split(",")[1])

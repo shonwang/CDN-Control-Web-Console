@@ -109,6 +109,9 @@ requirejs.config({
         "basicInformation.model": 'customerSetup/domainList/basicInformation/basicInformation.model',
         "basicInformation.view": 'customerSetup/domainList/basicInformation/basicInformation.view',
 
+        "urlBlackList.model": 'customerSetup/domainList/urlBlackList/urlBlackList.model',
+        "urlBlackList.view": 'customerSetup/domainList/urlBlackList/urlBlackList.view',
+
         "domainSetup.model": 'customerSetup/domainList/domainSetup/domainSetup.model',
         "domainSetup.view": 'customerSetup/domainList/domainSetup/domainSetup.view',
 

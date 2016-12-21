@@ -173,7 +173,7 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
             var whiteIpValue = this.ConversionFormat(this.$el.find("#white-IP").val(),1),
                 blackIpValue = this.ConversionFormat(this.$el.find("#black-IP").val(),1);
             var ips = this.defaultParam.refererType === 1 ? whiteIpValue : blackIpValue;
-            var summary = typeName + "控制动作：禁止<br>"
+            var summary = typeName;
 
             var postParam = {
                 type: type,

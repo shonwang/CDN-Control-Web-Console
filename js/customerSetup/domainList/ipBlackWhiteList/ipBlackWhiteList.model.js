@@ -13,7 +13,7 @@ define("ipBlackWhiteList.model", ['require','exports', 'utility'], function(requ
             if (type === 1) typeName = "IP：白名单<br>";
             if (type === 2) typeName = "IP：黑名单<br>";
 
-            var summary = typeName + "控制动作：禁止<br>"
+            var summary = typeName;
             this.set("summary", summary)
         }
     });

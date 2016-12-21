@@ -13,15 +13,7 @@ define("ipBlackWhiteList.model", ['require','exports', 'utility'], function(requ
             if (type === 1) typeName = "IP：白名单<br>";
             if (type === 2) typeName = "IP：黑名单<br>";
 
-            var domains = this.get('domains'), domainsName;
-            if (domains) domainsName = "合法域名：" + domains + "<br>";
-
-            var nullReferer = this.get('nullReferer'), nullRefererName;
-            if (nullReferer === 0) nullRefererName = "是否允许空引用：否<br>";
-            if (nullReferer === 1) nullRefererName = "是否允许空引用：是<br>";
-
-            // var summary = typeName + domainsName + nullRefererName;
-            var summary = typeName + "控制动作：禁止<br>"
+            var summary = typeName;
             this.set("summary", summary)
         }
     });
@@ -33,7 +25,7 @@ define("ipBlackWhiteList.model", ['require','exports', 'utility'], function(requ
         initialize: function(){},
 
         getIPSafetyChainList: function(args){
-           var url = BASE_URL + "/channelManager/safety/getReferSafetyChainList",
+           var url = BASE_URL + "/channelManager/safety/getIPSafetyChainList",
             successCallback = function(res){
                 this.reset();
                 if (res){
@@ -51,20 +43,15 @@ define("ipBlackWhiteList.model", ['require','exports', 'utility'], function(requ
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
-
-        getChannelDispgroup: function(args){
-            var url = BASE_URL + "/rs/channel/dispgroup/get",
+        setIPSafetyChain: function(args){
+            var url = BASE_URL + "/channelManager/safety/setIPSafetyChain",
             successCallback = function(res){
-                if (res){
-                    this.trigger("channel.dispgroup.success", res);
-                } else {
-                    this.trigger("channel.dispgroup.error", res); 
-                }
+                this.trigger("set.IPSafetyChain.success", res)
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("channel.dispgroup.error", response); 
+                this.trigger("set.IPSafetyChain.error", response)
             }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         }
     });
 

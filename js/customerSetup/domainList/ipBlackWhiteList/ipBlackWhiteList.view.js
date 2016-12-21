@@ -244,6 +244,20 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
         },
 
         initTable: function(){
+            var allFileArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 9;
+            }.bind(this));
+
+            var specifiedUrlArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') === 2;
+            }.bind(this));
+
+            var otherArray = this.collection.filter(function(obj){
+                return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
+            }.bind(this));
+
+            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
+
             this.table = $(_.template(template['tpl/customerSetup/domainList/ipBlackWhiteList/ipBlackWhiteList.table.html'])({
                 data: this.collection.models,
                 hideAction: false

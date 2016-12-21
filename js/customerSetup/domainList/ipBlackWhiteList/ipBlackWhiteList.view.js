@@ -12,16 +12,17 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
 
             this.defaultParam = {
                 refererType: 1,
-                domains: "",
+                ips: "",
                 type: 9,
                 policy: ""
             };
 
             if (this.isEdit){
+                var ips = this.ConversionFormat(this.model.get("ips"),2);
                 this.defaultParam.type = this.model.get("matchingType");
                 this.defaultParam.policy = this.model.get("matchingValue") || "";
                 this.defaultParam.refererType = this.model.get("type");
-                this.defaultParam.domains = this.model.get("domains") || "";
+                this.defaultParam.ips = ips || "";
             }
 
             require(['matchCondition.view', 'matchCondition.model'], function(MatchConditionView, MatchConditionModel){
@@ -42,10 +43,10 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
                 
                 if (this.defaultParam.refererType === 1) {
                     this.$el.find(".black-list").hide();
-                    this.$el.find("#white-IP").val(this.defaultParam.domains)
+                    this.$el.find("#white-IP").val(this.defaultParam.ips)
                 } else if (this.defaultParam.refererType === 2){
                     this.$el.find(".white-list").hide();
-                    this.$el.find("#black-IP").val(this.defaultParam.domains)
+                    this.$el.find("#black-IP").val(this.defaultParam.ips)
                 }
 
                 this.initTypeDropdown();
@@ -94,19 +95,28 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
             this.$el.find("#dropdown-contorl-action-type .cur-value").html(controlArray[0].name);
             
         },
+        ConversionFormat: function(data,type){
+            if(type == 1){
+                data = data.split("\n")
+                if(data[data.length - 1] === "") data.splice(data.length - 1,1);
+                data = data.join(',')
+            }else if(type == 2){
+                data = data.split(',');
+                data = data.join('\n');
+            }
+            return data;
+        },
         onBlurIPInput: function(event){
             var eventTarget = event.srcElement || event.target,
-                value = eventTarget.value, domains = [], error;
+                value = eventTarget.value, ips = [], error;
             
             if (value === "") return false; 
-            value = value.split("\n")
-            if(value[value.length - 1] === "") value.splice(value.length - 1,1);
-            value = value.join(',')
-           
+            value = this.ConversionFormat(value,1);
+        
             if (value.indexOf(",") > -1){
-                domains = value.split(",");
-                for (var i = 0; i < domains.length; i++){
-                    if (!Utility.isIP(domains[i])){
+                ips = value.split(",");
+                for (var i = 0; i < ips.length; i++){
+                    if (!Utility.isIP(ips[i])){
                         error = {message: "第" + (i + 1) + "个IP输错了！"};
                         alert(error.message)
                         return false;
@@ -122,26 +132,22 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
             return true;
         },
         checkEverything: function(){
-            var whiteDomain = this.$el.find("#white-IP").val(),
-                whiteUrl    = "暂时隐藏"//this.$el.find("#white-url").val(),
-                balckDomain = this.$el.find("#black-IP").val(),
-                blackUrl    = "暂时隐藏"//this.$el.find("#black-url").val();
+            var whiteIP = this.$el.find("#white-IP").val(),
+                balckIP = this.$el.find("#black-IP").val();
 
-            if (this.defaultParam.refererType === 1 && (whiteDomain === "" || whiteUrl === "")){
-                alert("请输入合法域名、URL！")
+            if (this.defaultParam.refererType === 1 && whiteIP === "" ){
+                alert("请输入合法IP！")
                 return false;
             }
-            else if (this.defaultParam.refererType === 2 && (balckDomain === "" || blackUrl === "")){
-                alert("请输入非法域名、URL！")
+            else if (this.defaultParam.refererType === 2 && balckIP === ""){
+                alert("请输入非法IP！")
                 return false;
             }
             var result = true;
             if (this.defaultParam.refererType === 1){
                 result = this.onBlurIPInput({target: this.$el.find("#white-IP").get(0)});
-                //result = this.onBlurUrlInput({target: this.$el.find("#white-url").get(0)});
             } else if (this.defaultParam.refererType === 2) {
                 result = this.onBlurIPInput({target: this.$el.find("#black-IP").get(0)});
-                //result = this.onBlurUrlInput({target: this.$el.find("#black-url").get(0)})
             }
             return result;
         },
@@ -161,23 +167,17 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
             if (matchingType === 9) matchingTypeName = "全部文件";
 
             var type = this.defaultParam.refererType, typeName;
-            if (type === 1) typeName = "Referer类型：白名单<br>";
-            if (type === 2) typeName = "Referer类型：黑名单<br>";
-
-            var domains = this.defaultParam.refererType === 1 ? this.$el.find("#white-IP").val() : this.$el.find("#black-IP").val(), 
-                domainsName;
-            if (domains) domainsName = "合法域名：" + domains + "<br>";
-
-            var nullReferer = this.defaultParam.nullReferer, nullRefererName;
-            if (nullReferer === 0) nullRefererName = "是否允许空引用：否<br>";
-            if (nullReferer === 1) nullRefererName = "是否允许空引用：是<br>";
-
-            var summary = typeName + domainsName + nullRefererName;
+            if (type === 1) typeName = "IP：白名单<br>";
+            if (type === 2) typeName = "IP：黑名单<br>";
+            
+            var whiteIpValue = this.ConversionFormat(this.$el.find("#white-IP").val(),1),
+                blackIpValue = this.ConversionFormat(this.$el.find("#black-IP").val(),1);
+            var ips = this.defaultParam.refererType === 1 ? whiteIpValue : blackIpValue;
+            var summary = typeName + "控制动作：禁止<br>"
 
             var postParam = {
                 type: type,
-                domains: domains,
-                nullReferer: this.defaultParam.nullReferer,
+                ips: ips,
                 id: this.isEdit ? this.model.get("id") : new Date().valueOf(),
                 matchingType: matchingType,
                 matchingValue: matchConditionParam.policy,
@@ -223,8 +223,34 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
             this.$el.find(".add").on("click", $.proxy(this.onClickAddRole, this))
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this)); 
             this.onClickQueryButton();
-        },
 
+            this.collection.on("set.IPSafetyChain.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.IPSafetyChain.error", $.proxy(this.onGetError, this));
+        },
+        launchSendPopup: function(){
+            require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
+                var mySaveThenSendView = new SaveThenSendView({
+                    collection: new SaveThenSendModel(),
+                    domainInfo: this.domainInfo,
+                    onSendSuccess: function() {
+                        this.sendPopup.$el.modal("hide");
+                    }.bind(this)
+                });
+                var options = {
+                    title: "发布",
+                    body : mySaveThenSendView,
+                    backdrop : 'static',
+                    type     : 2,
+                    onOKCallback:  function(){
+                        mySaveThenSendView.sendConfig();
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();
+                    }.bind(this)
+                }
+                this.sendPopup = new Modal(options);
+            }.bind(this))
+        },
         onGetError: function(error){
             if (error&&error.message)
                 alert(error.message)
@@ -386,17 +412,15 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
                     "matchingType": obj.get('matchingType'),
                     "matchingValue": obj.get('matchingValue'),
                     type: obj.get('type'),
-                    domains: obj.get('domains'),
-                    nullReferer: obj.get('nullReferer'),
+                    ips: obj.get('ips'),
                 })
             }.bind(this))
-
             var postParam = {
                 "originId": this.domainInfo.id,
                 "list": list
             }
-
             console.log(postParam);
+            this.collection.setIPSafetyChain(postParam);
         },
         onClickItemDelete: function(event){
             var result = confirm("你确定要删除吗？");
@@ -411,17 +435,7 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
                 }
             }
         },
-        onClickItemNodeName: function(event){
-            var eventTarget = event.srcElement || event.target,
-                id = $(eventTarget).attr("id");
-
-            var model = this.collection.get(id), args = JSON.stringify({
-                domain: model.get("domain")
-            })
-            //var clientName = JSON.parse(this.options.query)
-            window.location.hash = '#/domainList/' + clientName + "/domainSetup/" + args;
-        },
-
+        
         hide: function(){
             this.$el.hide();
         },

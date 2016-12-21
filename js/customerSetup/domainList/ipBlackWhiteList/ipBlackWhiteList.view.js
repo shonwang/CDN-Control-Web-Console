@@ -84,7 +84,7 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
             else
                 this.$el.find("#dropdown-referer-type .cur-value").html(timeArray[0].name);
 
-            var controlArray = [
+            /*var controlArray = [
                {name:"直接禁止", value: null},
                {name:"设置友好界面",value: null}
             ];
@@ -92,7 +92,7 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
             Utility.initDropMenu(rootNode, controlArray, function(value){
                
             }.bind(this));
-            this.$el.find("#dropdown-contorl-action-type .cur-value").html(controlArray[0].name);
+            this.$el.find("#dropdown-contorl-action-type .cur-value").html(controlArray[0].name);*/
             
         },
         ConversionFormat: function(data,type){

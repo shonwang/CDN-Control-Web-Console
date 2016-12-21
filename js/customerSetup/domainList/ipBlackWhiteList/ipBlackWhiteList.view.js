@@ -420,7 +420,6 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
                 "originId": this.domainInfo.id,
                 "list": list
             }
-            console.log(postParam);
             this.collection.setIPSafetyChain(postParam);
         },
         onClickItemDelete: function(event){

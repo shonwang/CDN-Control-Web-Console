@@ -228,6 +228,7 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
             this.collection.on("set.IPSafetyChain.success", $.proxy(this.launchSendPopup, this));
             this.collection.on("set.IPSafetyChain.error", $.proxy(this.onGetError, this));
         },
+        
         launchSendPopup: function(){
             require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
                 var mySaveThenSendView = new SaveThenSendView({
@@ -299,6 +300,7 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
             this.table.find("tbody .down").on("click", $.proxy(this.onClickItemDown, this));
             this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
         },
+
         onClickItemEdit: function(event){
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
@@ -332,6 +334,7 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
             }
             this.addRolePopup = new Modal(options);
         },
+
         onClickAddRole: function(event){
              if (this.addRolePopup) $("#" + this.addRolePopup.modalId).remove();
 
@@ -406,6 +409,7 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
 
             this.collection.trigger("get.IPSafetyChainList.success")
         },
+
         onClickSaveBtn: function(){
             var list = [];
             this.collection.each(function(obj){
@@ -420,9 +424,9 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
                 "originId": this.domainInfo.id,
                 "list": list
             }
-            console.log(postParam);
             this.collection.setIPSafetyChain(postParam);
         },
+
         onClickItemDelete: function(event){
             var result = confirm("你确定要删除吗？");
             if (!result) return;

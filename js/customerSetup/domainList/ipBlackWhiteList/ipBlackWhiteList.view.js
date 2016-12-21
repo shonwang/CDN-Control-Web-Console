@@ -206,7 +206,8 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
                 domainInfo = JSON.parse(options.query2),
                 userInfo = {
                     clientName: clientInfo.clientName,
-                    domain: domainInfo.domain
+                    domain: domainInfo.domain,
+                     uid: clientInfo.uid
                 }
             this.domainInfo = domainInfo;
             this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({

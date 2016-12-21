@@ -385,6 +385,7 @@ define("customerSetup.controller", ['require','exports'],
                 }
             }.bind(this));
         },
+
         basicInformationCallback: function(query, query2){
             require(['basicInformation.view', 'basicInformation.model'], function(BasicInformationView, BasicInformationModel){
                 this.navbarView.select('customerSetup');
@@ -413,6 +414,36 @@ define("customerSetup.controller", ['require','exports'],
                 }
             }.bind(this));
         },
+
+        urlBlackListCallback: function(query, query2){
+            require(['urlBlackList.view', 'urlBlackList.model'], function(UrlBlackListView, UrlBlackListModel){
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-urlBlackList';
+                if (this.customerSetupNavbar){
+                    this.customerSetupNavbar.$el.remove();
+                    this.customerSetupNavbar = null;
+                }
+                
+                this.setupDomainManageNavbar(query, query2);
+                var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                if (!this.urlBlackListModel)
+                    this.urlBlackListModel = new UrlBlackListModel();
+                if (!this.urlBlackListView ){
+                    var options = {
+                        collection: this.urlBlackListModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.urlBlackListView = new UrlBlackListView(options);
+                    this.urlBlackListView.render(renderTarget);
+                } else {
+                    this.domainManageNavbar.select(this.curPage);
+                    this.urlBlackListView.update(query, query2, renderTarget);
+                }
+            }.bind(this));
+        },
+
         domainSetupCallback: function(query, query2) {
             require(['domainSetup.view', 'domainSetup.model'], function(DomainSetupView, DomainSetupModel){
                 this.navbarView.select('customerSetup');

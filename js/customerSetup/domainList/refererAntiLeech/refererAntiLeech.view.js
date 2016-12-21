@@ -110,6 +110,10 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
             if (value === "") return false; 
             if (value.indexOf(",") > -1){
                 domains = value.split(",");
+                if (domains.length > 100){
+                    alert("超过100条")
+                    return;
+                }
                 for (var i = 0; i < domains.length; i++){
                     if (!Utility.isAntileechDomain(domains[i])){
                         error = {message: "第" + (i + 1) + "个域名输错了！"};

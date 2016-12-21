@@ -58,10 +58,10 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
 
                 this.initTypeDropdown();
 
-                this.$el.find("#white-domain").on("blur", $.proxy(this.onBlurDomainInput, this));
-                this.$el.find("#white-url").on("blur", $.proxy(this.onBlurUrlInput, this));
-                this.$el.find("#black-domain").on("blur", $.proxy(this.onBlurDomainInput, this));
-                this.$el.find("#black-url").on("blur", $.proxy(this.onBlurUrlInput, this));
+                // this.$el.find("#white-domain").on("blur", $.proxy(this.onBlurDomainInput, this));
+                // this.$el.find("#white-url").on("blur", $.proxy(this.onBlurUrlInput, this));
+                // this.$el.find("#black-domain").on("blur", $.proxy(this.onBlurDomainInput, this));
+                // this.$el.find("#black-url").on("blur", $.proxy(this.onBlurUrlInput, this));
                 this.$el.find(".null-referer .togglebutton input").on("click", $.proxy(this.onClickIsNullReferer, this));
             }.bind(this))
         },
@@ -170,13 +170,13 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
                 return false;
             }
             var result = true;
-            if (this.defaultParam.refererType === 1){
-                result = this.onBlurDomainInput({target: this.$el.find("#white-domain").get(0)});
-                //result = this.onBlurUrlInput({target: this.$el.find("#white-url").get(0)});
-            } else if (this.defaultParam.refererType === 2) {
-                result = this.onBlurDomainInput({target: this.$el.find("#black-domain").get(0)});
-                //result = this.onBlurUrlInput({target: this.$el.find("#black-url").get(0)})
-            }
+            // if (this.defaultParam.refererType === 1){
+            //     result = this.onBlurDomainInput({target: this.$el.find("#white-domain").get(0)});
+            //     //result = this.onBlurUrlInput({target: this.$el.find("#white-url").get(0)});
+            // } else if (this.defaultParam.refererType === 2) {
+            //     result = this.onBlurDomainInput({target: this.$el.find("#black-domain").get(0)});
+            //     //result = this.onBlurUrlInput({target: this.$el.find("#black-url").get(0)})
+            // }
             return result;
         },
 

@@ -19,12 +19,14 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     name: '基本信息',
                     hash: 'index.html#/domainList/' + query + /basicInformation/ + query2,
                     children: []  
-                }, {
-                    id: 'customerSetup-domainList-urlBlackList',
-                    name: 'url黑名单列表',
-                    hash: 'index.html#/domainList/' + query + /urlBlackList/ + query2,
-                    children: []  
-                },{
+                }, 
+                // {
+                //     id: 'customerSetup-domainList-urlBlackList',
+                //     name: 'url黑名单列表',
+                //     hash: 'index.html#/domainList/' + query + /urlBlackList/ + query2,
+                //     children: []  
+                // },
+                {
                     id: '',
                     name: '域名设置',
                     hash: 'javascript:void(0)',

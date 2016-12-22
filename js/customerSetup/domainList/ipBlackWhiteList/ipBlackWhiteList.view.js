@@ -98,6 +98,7 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
         ConversionFormat: function(data,type){
             if(type == 1){
                 data = data.split("\n")
+                if(data.length > 100) { alert('已超过最大限制100条'); return false;}
                 if(data[data.length - 1] === "") data.splice(data.length - 1,1);
                 data = data.join(',')
             }else if(type == 2){

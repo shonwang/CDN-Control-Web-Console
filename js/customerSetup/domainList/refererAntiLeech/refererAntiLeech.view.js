@@ -169,6 +169,20 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
                 alert("请输入非法域名、URL！")
                 return false;
             }
+            if (this.defaultParam.refererType === 1 && whiteDomain.indexOf(",") > -1){
+                var domains = whiteDomain.split(",");
+                if (domains.length > 100){
+                    alert("超过100条")
+                    return false;
+                }
+            }
+            if (this.defaultParam.refererType === 2 && balckDomain.indexOf(",") > -1){
+                var domains = whiteDomain.split(",");
+                if (domains.length > 100){
+                    alert("超过100条")
+                    return false;
+                }
+            }
             var result = true;
             // if (this.defaultParam.refererType === 1){
             //     result = this.onBlurDomainInput({target: this.$el.find("#white-domain").get(0)});

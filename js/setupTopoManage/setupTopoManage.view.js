@@ -205,7 +205,9 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find('.nextStep').on('click',$.proxy(this.onClickNextStepButton,this));
             this.$el.find('.opt-ctn .cancel').on('click',$.proxy(this.onClickCancelButton, this));
             this.$el.find('.opt-ctn .save').on('click',$.proxy(this.onClickSaveButton, this));
-
+            
+            this.$el.find('.add-step').css('display','none');
+            
             if(this.isEdit){
                 this.collection.getSendViewDetail(this.id);
             }else{
@@ -215,6 +217,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     "description":null,
                     "deliveryStrategyDef":[]
                 }
+                this.collection.getTopoOrigininfo(this.model.get('id'));
             }
 
             //新建下发策略
@@ -237,8 +240,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.collection.off('get.node.success');
             this.collection.on('get.node.success',$.proxy(this.onGetNodeSuccess,this));
             this.collection.on('get.node.error',$.proxy(this.onGetError,this));
-            this.collection.getTopoOrigininfo(this.model.get('id'));       
-            
+                   
             this.initNextStep();
 
         },
@@ -249,6 +251,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             this.collection.getTopoOrigininfo(this.model.get('id'));
         },
         onGetNodeSuccess: function(res){
+            this.$el.find('.add-step').css('display','inline-block');
             _.each(res.allNodes,function(el,index,list){
                  if(typeof el.chName == 'undefined'){
                     el.chName = el.name;
@@ -325,7 +328,6 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                     this.$el.find('.sendStrategy').show();
                 }.bind(this),
                 onSaveCallback: function(){
-                    console.log(this.defaultParam.deliveryStrategyDef);
                     this.initstepTable(this.InformationProcessing(this.defaultParam.deliveryStrategyDef));
                     this.allNodes = this.FilterNodes(this.allNodes);
                     myAddStepView.$el.remove();
@@ -493,9 +495,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             }else{
                 this.Step = options.CurrentStep;
             }
-            console.log(this.deliveryStrategyDef);
             this.defaultParam = this.deepClone(this.parameterProcessing(this.deliveryStrategyDef));//每一条的步骤参数
-            console.log(this.defaultParam);
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.addStep.html'])({data:this.Step}));
             this.$el.find('.opt-ctn .save').on('click', $.proxy(this.onClickSaveButton, this));
             this.$el.find('.opt-ctn .cancel').on('click', $.proxy(this.onClickCancelButton, this));
@@ -934,10 +934,11 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
             })
              if(flag){
                 if(this.isEdit){
-                    console.log(this.defaultParam);
+                    //console.log(this.defaultParam);
                     this.collection.topoModify(this.defaultParam);
                 }
                 else{
+                    //console.log(this.defaultParam);
                     this.collection.topoAdd(this.defaultParam);
                 }
              }

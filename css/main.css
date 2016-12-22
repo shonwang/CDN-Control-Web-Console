@@ -1109,3 +1109,8 @@ td .table {
     transform: scale(-1);
     right: -19px;
 }
+
+.sub-sidebar .bar-content{
+    border: 1px solid #dfdfdf;
+    overflow-y: auto;
+}

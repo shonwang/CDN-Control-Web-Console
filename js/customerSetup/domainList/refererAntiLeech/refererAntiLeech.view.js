@@ -58,10 +58,10 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
 
                 this.initTypeDropdown();
 
-                this.$el.find("#white-domain").on("blur", $.proxy(this.onBlurDomainInput, this));
-                this.$el.find("#white-url").on("blur", $.proxy(this.onBlurUrlInput, this));
-                this.$el.find("#black-domain").on("blur", $.proxy(this.onBlurDomainInput, this));
-                this.$el.find("#black-url").on("blur", $.proxy(this.onBlurUrlInput, this));
+                // this.$el.find("#white-domain").on("blur", $.proxy(this.onBlurDomainInput, this));
+                // this.$el.find("#white-url").on("blur", $.proxy(this.onBlurUrlInput, this));
+                // this.$el.find("#black-domain").on("blur", $.proxy(this.onBlurDomainInput, this));
+                // this.$el.find("#black-url").on("blur", $.proxy(this.onBlurUrlInput, this));
                 this.$el.find(".null-referer .togglebutton input").on("click", $.proxy(this.onClickIsNullReferer, this));
             }.bind(this))
         },
@@ -110,6 +110,10 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
             if (value === "") return false; 
             if (value.indexOf(",") > -1){
                 domains = value.split(",");
+                if (domains.length > 100){
+                    alert("超过100条")
+                    return;
+                }
                 for (var i = 0; i < domains.length; i++){
                     if (!Utility.isAntileechDomain(domains[i])){
                         error = {message: "第" + (i + 1) + "个域名输错了！"};
@@ -165,14 +169,28 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
                 alert("请输入非法域名、URL！")
                 return false;
             }
-            var result = true;
-            if (this.defaultParam.refererType === 1){
-                result = this.onBlurDomainInput({target: this.$el.find("#white-domain").get(0)});
-                //result = this.onBlurUrlInput({target: this.$el.find("#white-url").get(0)});
-            } else if (this.defaultParam.refererType === 2) {
-                result = this.onBlurDomainInput({target: this.$el.find("#black-domain").get(0)});
-                //result = this.onBlurUrlInput({target: this.$el.find("#black-url").get(0)})
+            if (this.defaultParam.refererType === 1 && whiteDomain.indexOf(",") > -1){
+                var domains = whiteDomain.split(",");
+                if (domains.length > 100){
+                    alert("超过100条")
+                    return false;
+                }
             }
+            if (this.defaultParam.refererType === 2 && balckDomain.indexOf(",") > -1){
+                var domains = whiteDomain.split(",");
+                if (domains.length > 100){
+                    alert("超过100条")
+                    return false;
+                }
+            }
+            var result = true;
+            // if (this.defaultParam.refererType === 1){
+            //     result = this.onBlurDomainInput({target: this.$el.find("#white-domain").get(0)});
+            //     //result = this.onBlurUrlInput({target: this.$el.find("#white-url").get(0)});
+            // } else if (this.defaultParam.refererType === 2) {
+            //     result = this.onBlurDomainInput({target: this.$el.find("#black-domain").get(0)});
+            //     //result = this.onBlurUrlInput({target: this.$el.find("#black-url").get(0)})
+            // }
             return result;
         },
 

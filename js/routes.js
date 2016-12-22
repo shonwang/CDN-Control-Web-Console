@@ -33,6 +33,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             "domainList/:query"   : "domainList",
             
             "domainList/:query/basicInformation/:query2"          : "basicInformation",
+            "domainList/:query/urlBlackList/:query2"              : "urlBlackList",
             "domainList/:query/domainSetup/:query2"               : "domainSetup",
             "domainList/:query/cnameSetup/:query2"                : "cnameSetup",
             "domainList/:query/cacheRule/:query2"                 : "cacheRule",
@@ -158,6 +159,9 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                     break;
                 case 'customerSetup-domainList-basicInformation':
                     this.basicInformationView.hide();
+                    break;
+                case 'customerSetup-domainList-urlBlackList':
+                    this.urlBlackListView.hide();
                     break;
                 case 'customerSetup-domainList-domainSetup':
                     this.domainSetupView.hide();
@@ -430,9 +434,15 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
         cacheRule: function(query, query2){
             this.navbarView.initLogin($.proxy(CustomerSetupController.cacheRuleCallback, this, query, query2))
         },
+
         basicInformation: function(query ,query2){
             this.navbarView.initLogin($.proxy(CustomerSetupController.basicInformationCallback, this, query, query2))
         },
+
+        urlBlackList: function(query ,query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.urlBlackListCallback, this, query, query2))
+        },
+        
         domainSetup: function(query, query2){
             this.navbarView.initLogin($.proxy(CustomerSetupController.domainSetupCallback, this, query, query2))
         },

@@ -114,7 +114,7 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
             
             if (value === "") return false; 
             value = this.ConversionFormat(value,1);
-        
+            if(value == false) return;
             if (value.indexOf(",") > -1){
                 ips = value.split(",");
                 for (var i = 0; i < ips.length; i++){

@@ -564,6 +564,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.deviceType = this.model.attributes.type;
                 this.$el.find("#textarea-comment").val(this.model.attributes.remark);
                 this.$el.find(".ip-ctn").hide();
+                this.$el.find("#dropdown-node").attr('disabled','disabled');
             } else {
                 this.ipList = [];
                 this.collection.off("ip.type.success");

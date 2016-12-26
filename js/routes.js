@@ -31,6 +31,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             "templateManage"      : "templateManage",
             "customerSetup"       : "customerSetup",
             "domainList/:query"   : "domainList",
+            "blockUrl/:query"     : "blockUrl",
             
             "domainList/:query/basicInformation/:query2"          : "basicInformation",
             "domainList/:query/urlBlackList/:query2"              : "urlBlackList",
@@ -162,6 +163,9 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                     break;
                 case 'customerSetup-domainList-urlBlackList':
                     this.urlBlackListView.hide();
+                    break;
+                case 'customerSetup-blockUrl':
+                    this.blockUrlView.hide();
                     break;
                 case 'customerSetup-domainList-domainSetup':
                     this.domainSetupView.hide();
@@ -450,6 +454,10 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
         domainList: function(query){
             this.navbarView.initLogin($.proxy(CustomerSetupController.domainListCallback, this, query))
         },
+        
+        blockUrl: function(query){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.blockUrlCallback, this, query))
+        },
 
         setupDomainManageNavbar: function(query, query2){
             if (!this.domainManageNavbar){
@@ -476,6 +484,12 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                     name: '域名列表',
                     hash: 'index.html#/domainList/' + query,
                     active: true,
+                    children: []
+                },{
+                    id: 'customerSetup-blockUrl',
+                    name: '一键屏蔽URL',
+                    hash: 'index.html#/blockUrl/' + query,
+                    active: false,
                     children: []
                 }]
             }], menuOptions = {

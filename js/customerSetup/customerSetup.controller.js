@@ -492,7 +492,26 @@ define("customerSetup.controller", ['require','exports'],
                 }
             }.bind(this));
         },
+        blockUrlCallback: function(query){
+            require(['blockUrl.view','blockUrl.model'],function(BlockUrlView,BlockUrlModel){
+                 this.curPage = 'customerSetup-blockUrl';
+                 this.navbarView.select('customerSetup', $.proxy(this.removeSubSideBar, this));
+                 this.setupCustomerSetupNavbar(query);
+                 var renderTarget = this.customerSetupNavbar.$el.find('.sub-content');
 
+                if(!this.blockUrlModel)
+                    this.blockUrlModel = new BlockUrlModel();
+                if(!this.BlockUrlView){
+                    var options = {
+                        collection: this.blockUrlModel,
+                        query     : query
+                    };
+                    this.blockUrlView = new BlockUrlView(options);
+                    this.blockUrlView.render(renderTarget);
+                } 
+
+            }.bind(this));
+        },
         customerSetupCallback: function(){
             require(['customerSetup.view', 'customerSetup.model'], function(CustomerSetupView, CustomerSetupModel){
                 this.curPage = 'customerSetup';

@@ -1121,3 +1121,7 @@ td .table {
   margin-bottom: 5px;
 }
 
+.sub-sidebar .bar-content{
+    border: 1px solid #dfdfdf;
+    overflow-y: auto;
+}

@@ -100,6 +100,8 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
                 data = data.split("\n")
                 if(data[data.length - 1] === "") data.splice(data.length - 1,1);
                 data = data.join(',')
+                var lengthcontrol = data;
+                if(lengthcontrol.split(',').length > 100) {alert('已超出最大限制100条');return false;}
             }else if(type == 2){
                 data = data.split(',');
                 data = data.join('\n');
@@ -112,7 +114,7 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
             
             if (value === "") return false; 
             value = this.ConversionFormat(value,1);
-        
+            if(value == false) return;
             if (value.indexOf(",") > -1){
                 ips = value.split(",");
                 for (var i = 0; i < ips.length; i++){

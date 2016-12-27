@@ -10,9 +10,8 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.collection.off('get.GuestQuotaCount.error');
             this.collection.on('get.GuestQuotaCount.success',$.proxy(this.getCountSuccess,this));
             this.collection.on('get.GuestQuotaCount.error',$.proxy(this.onGetError,this));
-          //  this.collection.getGuestQuotaCount({userId:this.userInfo.uid});
-            this.collection.getGuestQuotaCount({userId:1});
-            
+            //this.collection.getGuestQuotaCount({userId:this.userInfo.uid});
+            this.getCountSuccess();
             this.collection.off('blockUrls.success');
             this.collection.off('blockUrls.error');
             this.collection.on('blockUrls.success',$.proxy(this.blockUrlsSuccess,this));
@@ -22,11 +21,16 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         
         },
         getCountSuccess: function(res){
-            res = JSON.parse(res);
-            if(res.result != null){
-                this.$el.find('.quotaCount').text(res.result.quotaCount);
-                this.$el.find('.quotaEffecitveCount').text(res.result.quotaEffecitveCount);
+            var res = {
+               "status" :200,
+               "result" : {
+                    "userId" : 20,
+                    "quotaCount": 10,
+                    "quotaEffecitveCount" : 10
+               }
             }
+            this.$el.find('.quotaCount').text(res.result.quotaCount);
+            this.$el.find('.quotaEffecitveCount').text(res.result.quotaEffecitveCount);
         },
         blockUrlsSuccess: function(){
              $('a[data-target="#blockUrlList"]').click();
@@ -92,7 +96,6 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         events:{},
         initialize: function(options){
         	this.collection = options.collection;
-            this.userInfo = options.userInfo;
             this.$el = $(_.template(template['tpl/customerSetup/blockUrl/TabCurrentBlockList.html'])());
             this.initblockListDropmenu();
             
@@ -107,20 +110,27 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.collection.on('get.blockList.success',$.proxy(this.getblockListSuccess,this));
             this.collection.on('get.blockList.error',$.proxy(this.onGetError,this));
             
-            console.log(this.userInfo);
-            this.queryArgs = {
+           /* this.queryArgs = {
 	            page:1,
 	            rows:10,
-	            opStatus: "",
-	            searchUrl: "",
-	           // userId:this.userInfo.uid
-                userId:1
+	            opStatus: null,
+	            searchUrl:null,
+	            userId:options.userId
+            }*/
+            this.queryArgs = {
+            	domainName: "", 
+                userId: "", 
+                email: "", 
+                companyName: "", 
+                currentPage: 1, 
+                pageSize: 10
             }
+            
             this.blockUrlParam = {
                 taskId: "",
                 isNeedFresh: false
             }
-
+            
             this.onClickQueryButton();
         },
         onClickQueryButton: function(){

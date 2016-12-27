@@ -75,7 +75,6 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             //console.log(this.urlsvalidation(urls));
         	if(this.urlsvalidation(urls)){
                urls = urls.split(';');
-               urls = urls.join(',');
                var args = {
                    userId: this.userInfo.uid,
                    urls:urls
@@ -107,11 +106,10 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.collection.on('get.blockList.success',$.proxy(this.getblockListSuccess,this));
             this.collection.on('get.blockList.error',$.proxy(this.onGetError,this));
             
-            console.log(this.userInfo);
             this.queryArgs = {
 	            page:1,
 	            rows:10,
-	            opStatus: "",
+	            op: 0,
 	            searchUrl: "",
 	           // userId:this.userInfo.uid
                 userId:1
@@ -187,7 +185,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         },
         initblockListDropmenu: function(){
             var statusArray = [
-               {name:'全部',value:null},
+               {name:'全部',value:0},
                {name:'屏蔽成功',value:1},
                {name:'屏蔽失败',value:2},
                {name:'屏蔽中',value:3},
@@ -196,7 +194,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             ];
             rootNode = this.$el.find('.dropdown-state');
             Utility.initDropMenu(rootNode,statusArray,function(value){
-                this.queryArgs = parseInt(value);
+                this.queryArgs.op = parseInt(value);
             }.bind(this));
 
             var pageNum = [
@@ -207,7 +205,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             ];
             rootNode = this.$el.find('.page-num');
             Utility.initDropMenu(rootNode,pageNum,function(value){
-                 this.queryArgs.pageSize = value;
+                 this.queryArgs.rows = parseInt(value);
                  this.onClickQueryButton();
             }.bind(this));
 

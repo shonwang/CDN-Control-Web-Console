@@ -1,8 +1,8 @@
 <% for(var i=0;i < data.length;i++) { %>
 	<tr id="<%= data[i].get('id') %>">
-	   <td><input type="checkbox" value="<%= data[i].get('email')%>" id="<%= data[i].get('id')%>"><%= data[i].get('email') %></td>
+	   <td><input type="checkbox" value="<%= data[i].get('url')%>" id="<%= data[i].get('id')%>"><%= data[i].get('url') %></td>
 	   <td><%= data[i].get('createTimeFormated') %></td>
-	   <td><%= data[i].get('statusName') %></td>
+	   <td><%= data[i].get('status') %></td>
 	   <td><%= data.length %></td>
 	</tr>
 <% } %>	

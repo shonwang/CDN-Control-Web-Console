@@ -19,12 +19,14 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     name: '基本信息',
                     hash: 'index.html#/domainList/' + query + /basicInformation/ + query2,
                     children: []  
-                }, {
-                    id: 'customerSetup-domainList-urlBlackList',
-                    name: 'url黑名单列表',
-                    hash: 'index.html#/domainList/' + query + /urlBlackList/ + query2,
-                    children: []  
-                },{
+                }, 
+                // {
+                //     id: 'customerSetup-domainList-urlBlackList',
+                //     name: 'url黑名单列表',
+                //     hash: 'index.html#/domainList/' + query + /urlBlackList/ + query2,
+                //     children: []  
+                // },
+                {
                     id: '',
                     name: '域名设置',
                     hash: 'javascript:void(0)',
@@ -234,6 +236,8 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     this.$el.find(".pin-sidebar").removeClass("closed");
                     this.$el.find("#sub-jquery-accordion-menu").css("max-width", "200px")
                     this.$el.find("#sub-jquery-accordion-menu").css("min-width", "50px")
+                    this.$el.find(".pin-container .pin-sidebar").hide();
+                    this.$el.find(".pin-container").css("width", "200px");
                     this.$el.find("#demo-list").show();
                     this.$el.find(".sub-content").css("padding", "0 0 0 215px")
                 } else {
@@ -241,6 +245,8 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     this.$el.find("#sub-jquery-accordion-menu").css("max-width", "0px")
                     this.$el.find("#sub-jquery-accordion-menu").css("min-width", "0px")
                     this.$el.find("#demo-list").hide();
+                    this.$el.find(".pin-container .pin-sidebar").show();
+                    this.$el.find(".pin-container").css("width", "0px");
                     this.$el.find(".sub-content").css("padding", "0 0 0 15px")
                 }
             }.bind(this))

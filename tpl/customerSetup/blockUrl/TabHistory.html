@@ -1,0 +1,74 @@
+ <div class="container-fluid">
+	<form class="form-inline" style="margin-bottom:30px;" onsubmit="return false;">
+	    <div class="form-group">
+	        <label for="dropdown-time">时间</label>
+	    </div>
+	    <div class="form-group dropdown-time">
+	        <div class="dropdown">
+	            <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-time" data-toggle="dropdown">
+	                <span class="cur-value">最近七天</span>
+	                <span class="caret"></span>
+	            </button>
+	            <ul class="dropdown-menu long-dropdown-menu"></ul>
+	        </div>
+	    </div>
+
+	    <div class="form-group">
+	        <label for="dropdown-operator">操作</label>
+	    </div>
+	    <div class="form-group dropdown-operator">
+	        <div class="dropdown">
+	            <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-speed-operator" data-toggle="dropdown">
+	                <span class="cur-value">屏蔽</span>
+	                <span class="caret"></span>
+	            </button>
+	            <ul class="dropdown-menu long-dropdown-menu"></ul>
+	        </div>
+	    </div>
+	    <div class="form-group">
+	        <label for="input-domain">URL</label>
+	        <input type="text" class="form-control" id="input-url" placeholder="请输入关键字">
+	    </div>
+	    <a href="javascript:void(0)" class="btn btn-primary btn-raised query"><span class="glyphicon glyphicon-search"></span>查询</a>
+    </form>
+    <div class="horizontal-slip">
+	    <div class="table-ctn table-responsive">
+	    	<table class="ks-table">
+				<thead>
+					<tr>
+						<th>URL</th>
+						<th>操作</th>
+						<th>操作时间</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+	    </div>
+	    <div class="page-ctn row" style="margin-top:30px;">
+	        <div class="col-md-8" style="text-align:center">
+	            <div class="pagination"></div>
+	        </div>
+	        <div class="col-md-4" style="text-align:center">
+	            <form class="form-inline page-info">
+	                <div class="form-group">
+	                    <div class="form-control-static">每页显示</div>
+	                </div>
+	                <div class="form-group page-num">
+	                    <div class="drop-ctn dropup">
+	                        <div class="btn-group">
+	                            <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">
+	                            <span class="cur-value">10 条</span>
+	                            <span class="caret"></span>
+	                            </button>
+	                            <ul class="dropdown-menu"></ul>
+	                        </div>
+	                    </div>
+	                </div>
+	                <div class="form-group">
+	                    <div class="form-control-static total-items">共<span class="text-primary">0</span>条记录</div>
+	                </div>
+	            </form>
+	        </div>
+	    </div>
+    </div>
+</div>

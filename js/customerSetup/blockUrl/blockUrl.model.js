@@ -25,7 +25,7 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             var url = BASE_URL + "/cdn/getGuestQuotaCount",
             successCallback = function(res){
                 if(res){
-                    this.trigger('get.GuestQuotaCount.success');
+                    this.trigger('get.GuestQuotaCount.success',res);
                 }else{
                     this.trigger('get.GuestQuotaCount.error');
                 }
@@ -50,7 +50,7 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
         showCurrentBlockUrls: function(args){
-            var url = BASE_URL + "/channelManager/user/getUserList",
+            var url = BASE_URL + "/cdn/showCurrentBlockUrls",
             successCallback = function(res){
                 this.reset();
                 if (res){

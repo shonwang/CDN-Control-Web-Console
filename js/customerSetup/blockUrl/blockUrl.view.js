@@ -10,8 +10,8 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.collection.off('get.GuestQuotaCount.error');
             this.collection.on('get.GuestQuotaCount.success',$.proxy(this.getCountSuccess,this));
             this.collection.on('get.GuestQuotaCount.error',$.proxy(this.onGetError,this));
-          //  this.collection.getGuestQuotaCount({userId:this.userInfo.uid});
-            this.collection.getGuestQuotaCount({userId:1});
+            this.collection.getGuestQuotaCount({userId:this.userInfo.uid});
+          //  this.collection.getGuestQuotaCount({userId:1});
             
             this.collection.off('blockUrls.success');
             this.collection.off('blockUrls.error');
@@ -41,29 +41,42 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         },
         urlsvalidation: function(urls){
             var urls = urls;
+            var strRegex = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w\?!]+@)?[A-Za-z0-9.-\?!]+|(?:www.|[-;:&=\+\$,\w]+@\?!)[A-Za-z0-9.-\?!]+)((?:\/[\+~%\/.\w-_\?!]*)?\??(?:[-\+=&;%@.\w_\?!]*)#?(?:[\w]*))?)$/;
             var quotaEffecitveCount = this.$el.find('.quotaEffecitveCount').text();
             if(urls.substr(urls.length-1,urls.length) == ';')  //若最后一个字符为分号,则去掉
                 urls = urls.substr(0,urls.length-1); 
+    
+        
             if(urls === "") {
                 alert('URL不能为空');
                 return false;
             }else{
                 if(urls.indexOf(';') > -1){
                     url = urls.split(';');
+                    var urlrepeat = [];
+                   
                     if(url.length > parseInt(quotaEffecitveCount)){
                         alert('已超过最大提交数量');
                         return false;
                     }
                     for(var i = 0; i<url.length; i++){
-                        var urlEvery = url[i];
-                        var urlEveryLength = url[i].length;
-                        if(urlEvery.substr(0,1)=='\n') urlEvery=urlEvery.substr(1);
-                        if(!Utility.isURL(urlEvery)){
+                        if(url[i].substr(0,1)=='\n') url[i]=url[i].substr(1);
+                        
+                        if(urlrepeat.indexOf(url[i]) >= 0){
+                            alert(url[i]+'重复,请重新填写');
+                            return false;
+                        }else {
+                           //console.log('没有找到');
+                           urlrepeat.push(url[i]);
+                        }
+                    }
+                    for(var i = 0; i<url.length; i++){
+                        if(!Utility.isURL(url[i])){
                             alert('第'+ (i+1) +'个URL输入有误');
                             return false;
                         }
                     }
-                }else if(!Utility.isURL(urls)){
+                }else if(!strRegex.test(urls)){
                     alert('URL输入有误');
                     return false;
                 }
@@ -77,6 +90,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                urls = urls.split(';');
                var args = {
                    userId: this.userInfo.uid,
+                   //userId:1,
                    urls:urls
                 }
                 this.collection.blockUrls(args);
@@ -92,30 +106,45 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         initialize: function(options){
         	this.collection = options.collection;
             this.userInfo = options.userInfo;
+            this.numberControl = 30; 
             this.$el = $(_.template(template['tpl/customerSetup/blockUrl/TabCurrentBlockList.html'])());
             this.initblockListDropmenu();
             
-            $(document).on('keydown',$.proxy(this.onKeydownEnter,this));
+            this.UnblockButton = this.$el.find('.unblock');
+            this.RefreshUrlButton = this.$el.find('.RefreshUrl')
             
+            $(document).on('keydown',$.proxy(this.onKeydownEnter,this));
             this.$el.find('.query').on('click',$.proxy(this.onClickQueryButton,this));
             this.$el.find('.ks-table').on('change',$.proxy(this.onClickOptions,this));
-            this.$el.find('.RefreshUrl').on('click',$.proxy(this.onClickRefresh,this));
+            this.RefreshUrlButton.on('click',$.proxy(this.onClickRefresh,this));
             
+            this.collection.off('remove.blockUrl.success');
+            this.collection.off('remove.blockUrl.error');
+            this.collection.on('remove.blockUrl.success',$.proxy(this.removeblockUrlSuccess,this));
+            this.collection.on('remove.blockUrl.error',$.proxy(this.onGetError,this));
+          
             this.collection.off('get.blockList.success');
             this.collection.off('get.blockList.error');
             this.collection.on('get.blockList.success',$.proxy(this.getblockListSuccess,this));
             this.collection.on('get.blockList.error',$.proxy(this.onGetError,this));
+            
+            this.collection.off('retry.blockTas.success');
+            this.collection.off('retry.blockTas.error');
+            this.collection.on('retry.blockTas.success',$.proxy(this.retryblockTasSuccess,this));
+            this.collection.on('retry.blockTas.error',$.proxy(this.onGetError,this));
             
             this.queryArgs = {
 	            page:1,
 	            rows:10,
 	            op: 0,
 	            searchUrl: "",
-	           // userId:this.userInfo.uid
-                userId:1
+	            userId:this.userInfo.uid
+                //userId:1
             }
             this.blockUrlParam = {
-                taskId: "",
+                userId:this.userInfo.uid,
+                //userId:1,
+                ids: "",
                 isNeedFresh: false
             }
 
@@ -125,6 +154,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.isInitPaginator = false;
             this.showloading();
             this.$el.find('thead input').prop('checked',false);
+            this.queryArgs.searchUrl = $.trim(this.$el.find('#input-url').val());
             this.collection.showCurrentBlockUrls(this.queryArgs);
         },
         onKeydownEnter: function(event){
@@ -136,61 +166,78 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         },
         onClickOptions: function(event){
              var eventTarget = event.target || event.srcElement;
-             var id = $(eventTarget).attr("id"),
+             var length = 0,
+                 id = $(eventTarget).attr("id"),
                  model = this.collection.get(id),
                  AllChecked =  this.$el.find('thead input');
-                 UnblockButton = this.$el.find('.unblock');
-                 RefreshUrl = this.$el.find('.RefreshUrl');
-             
              if(eventTarget.value == AllChecked.val()){
-                this.table.find('input').prop('checked',eventTarget.checked);
-                this.collection.each(function(model){
-                    model.set("isChecked", eventTarget.checked);
-                }.bind(this))
+                    var inputs = this.table.find('input');
+                    this.collection.each(function(model,index){
+                        if(!model.get('isDisabled')){
+                          model.set("isChecked", eventTarget.checked);
+                          $(inputs[index]).prop('checked',eventTarget.checked);
+                        }
+                    }.bind(this));
+
              }else{
                 model.set('isChecked',eventTarget.checked);
              }
-
+             
              var checkedList = this.collection.filter(function(model){
+                if(!model.get('isDisabled')) length++;
                 return model.get('isChecked') === true;
              })
-             
-             if(checkedList.length > 0){
-               if(checkedList.length == this.collection.models.length){
+             if(checkedList.length >= 0){
+               if(checkedList.length == length){
                   AllChecked.prop('checked',true);
                }else{
                   AllChecked.prop('checked',false);
                }
-               UnblockButton.removeAttr('disabled');
-               RefreshUrl.removeAttr('disabled');
-               UnblockButton.off('click');
-               UnblockButton.on('click',$.proxy(this.unblock,this));
+               this.UnblockButton.removeAttr('disabled');
+               this.RefreshUrlButton.removeAttr('disabled');
+               this.UnblockButton.off('click');
+               this.UnblockButton.on('click',$.proxy(this.unblock,this));
              }else{
-               UnblockButton.attr('disabled','disabled');            
-               RefreshUrl.attr('disabled','disabled');
-               UnblockButton.off('click');
+               this.UnblockButton.attr('disabled','disabled');            
+               this.RefreshUrlButton.attr('disabled','disabled');
+               this.UnblockButton.off('click');
              }
         },
         unblock: function(){
-            var taskIdArray = [],taskId;
+            var idsArray = [];
              _.each(this.collection.models,function(el,index,list){
                 if(el.get('isChecked') == true){
-                   taskIdArray.push(el.id);
+                   idsArray.push(el.id);
                 }
             })
-            taskId = taskIdArray.join(',');
-            this.blockUrlParam.taskId = taskId;
-            
-            alert('解除屏蔽');
+            if(idsArray.length > this.numberControl)
+            {  
+               alert('已超出可提交的最大条数限制');
+               return false;
+            }
+            this.blockUrlParam.ids = idsArray;
+            this.collection.removeBlockUrl(this.blockUrlParam);  
+        },
+        removeblockUrlSuccess: function(){
+            alert('操作成功');
+            this.UnblockButton.attr('disabled','disabled');            
+            this.RefreshUrlButton.attr('disabled','disabled');
+            this.UnblockButton.off('click');
+            this.onClickQueryButton();   
+        },
+        retryblockTasSuccess: function(){
+            alert('操作成功');
+            this.onClickQueryButton();
         },
         initblockListDropmenu: function(){
             var statusArray = [
                {name:'全部',value:0},
-               {name:'屏蔽成功',value:1},
-               {name:'屏蔽失败',value:2},
-               {name:'屏蔽中',value:3},
-               {name:'解除屏蔽中',value:4},
-               {name:'解除屏蔽失败',value:5}
+               {name:'屏蔽成功',value:3},
+               {name:'屏蔽失败',value:4},
+               {name:'屏蔽中',value:1},
+               {name:'解除屏蔽中',value:2},
+              // {name:'解除屏蔽成功',value:5},
+               {name:'解除屏蔽失败',value:6}
             ];
             rootNode = this.$el.find('.dropdown-state');
             Utility.initDropMenu(rootNode,statusArray,function(value){
@@ -200,8 +247,8 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             var pageNum = [
                 {name: "10条", value: 10},
                 {name: "20条", value: 20},
-                {name: "50条", value: 50},
-                {name: "100条", value: 100}
+                {name: this.numberControl+"条", value: this.numberControl}
+                //{name: "100条", value: 100}
             ];
             rootNode = this.$el.find('.page-num');
             Utility.initDropMenu(rootNode,pageNum,function(value){
@@ -221,17 +268,56 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         initTable: function(){
              var data = this.collection.models;
              this.table = $(_.template(template['tpl/customerSetup/blockUrl/TabCurrentBlockList.table.html'])({data:data}));
+             _.each(this.table,function(el,index){
+                var DisabledState = ['屏蔽中','屏蔽失败','解除屏蔽中','刷新中'];
+                if( ( DisabledState.indexOf(data[index].get('status'))>=0 ) || (data[index].get('isRefreshSuccess') == 1) ){
+                    $(el).find('input').attr('disabled','disabled');
+                    data[index].set('isDisabled',true);
+                }
+             })
              if(data.length == 0){
-                this.isInitPaginator = true;
-                this.$el.find('.table-ctn').html(_.template(template['tpl/empty.html'])())
+                //this.isInitPaginator = true;
+                this.setNoData("未查到符合条件的数据，请重新查询");
              }else{
                 this.$el.find('.ks-table tbody').html(this.table);
              }
+
+             var Reunblock = this.table.find('.Reunblock');
+             var Rescreen = this.table.find('.Rescreen');
+             var Refresh = this.table.find('.Refresh');
+             if(Reunblock) Reunblock.on('click',$.proxy(this.onclickReunblockButton,this));
+             if(Rescreen)  Rescreen.on('click',$.proxy(this.onclickRescreenOrRefreshButton,this));
+             if(Refresh) Refresh.on('click',$.proxy(this.onclickRescreenOrRefreshButton,this));
+        },
+        onclickRescreenOrRefreshButton: function(event){
+            var eventTarget = event.target || event.srcElement;
+            var id = $(eventTarget).parent().attr('id'),ids = [],type;
+            ids.push(parseInt(id));
+            
+            eventTarget.className.indexOf('Rescreen') > 0 ? type = 1 : type = 2;
+            var defaultParam = {
+                userId:this.userInfo.uid,
+                //userId:1,
+                taskId:ids,
+                type:type
+            } 
+            this.collection.retryBlockTas(defaultParam);
+
+        },
+        onclickReunblockButton: function(event){
+             var eventTarget = event.target || event.srcElement;
+             var id = $(eventTarget).parent().attr('id'),ids = [];
+             ids.push(id);
+             this.blockUrlParam.ids = ids;
+             this.collection.removeBlockUrl(this.blockUrlParam);
+        },
+        setNoData:function(msg){
+            this.$el.find(".ks-table tbody").html('<tr><td  colspan="8" class="text-center"><p class="text-muted text-center">'+msg+'</p></td></tr>');
         },
         initPaginator: function(){
             this.$el.find(".total-items span").html(this.collection.total)
-            if (this.collection.total <= this.queryArgs.pageSize) return;
-            var total = Math.ceil(this.collection.total/this.queryArgs.pageSize);
+            if (this.collection.total <= this.queryArgs.rows) return;
+            var total = Math.ceil(this.collection.total/this.queryArgs.rows);
 
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
@@ -241,9 +327,9 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                     if (type !== "init"){
                         this.$el.find(".ks-table tbody").html('<tr><td  colspan="6" class="text-center"><div class="domain-spinner">正在加载...</div></td></tr>');
                         var args = _.extend(this.queryArgs);
-                        args.currentPage = num;
-                        args.count = this.queryArgs.pageSize;
-                        this.collection.queryChannel(args);
+                        args.page = num;
+                        args.rows = this.queryArgs.rows;
+                        this.collection.showCurrentBlockUrls(args);
                         this.$el.find('thead input').prop('checked',false);
                     }
                 }.bind(this)
@@ -265,41 +351,43 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
 	var TabHistoryView = Backbone.View.extend({
         events:{},
         initialize: function(options){
+            this.userInfo = options.userInfo;
         	this.$el = $(_.template(template['tpl/customerSetup/blockUrl/TabHistory.html'])());
-            this.initHistoryDropMenu();
             this.$el.find('.query').on('click',$.proxy(this.onClickQueryButton,this));
             this.collection.off('get.history.success');
             this.collection.off('get.history.error');
             this.collection.on('get.history.success',$.proxy(this.gethistorySuccess,this));
             this.collection.on('get.history.error',$.proxy(this.onGetError,this));
+             this.initHistoryDropMenu();
             this.queryArgs = {
-                domainName: "", 
-                userId: "", 
-                email: "", 
-                companyName: "", 
-                currentPage: 1, 
-                pageSize: 10
+                userId:this.userInfo.uid,
+                //userId:1,
+                date:7,
+                op:1,
+                searchUrl:"",
+                page:1,
+                rows:10
             };
             this.onClickQueryButton();
 
         },
         initHistoryDropMenu: function(){
             var timeArray = [
-              {name:'最近7天',value:null},
-              {name:'最近30天',value:null}
+              {name:'最近7天',value:7},
+              {name:'最近30天',value:30}
             ]
             rootNode = this.$el.find('.dropdown-time');
-            Utility.initDropMenu(rootNode,timeArray,function(){
-
+            Utility.initDropMenu(rootNode,timeArray,function(value){
+                this.queryArgs.date = parseInt(value);
             }.bind(this));
 
             var operatorArray = [
-               {name:'屏蔽',value:null},
-               {name:'解除屏蔽',value:null}
+               {name:'屏蔽',value:1},
+               {name:'解除屏蔽',value:2}
             ]
             rootNode = this.$el.find('.dropdown-operator');
-            Utility.initDropMenu(rootNode,operatorArray,function(){
-
+            Utility.initDropMenu(rootNode,operatorArray,function(value){
+               this.queryArgs.op = parseInt(value);
             }.bind(this));
 
             var pageNum = [
@@ -310,13 +398,14 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             ]
             rootNode = this.$el.find('.page-num');
             Utility.initDropMenu(rootNode,pageNum,function(value){
-               this.queryArgs.pageSize = value;
+               this.queryArgs.rows = value;
                this.onClickQueryButton();
             }.bind(this));
         },
         onClickQueryButton: function(){
             this.showloading();
             this.isInitPaginator = false;
+            this.queryArgs.searchUrl = $.trim(this.$el.find('#input-url').val());
             this.collection.queryHistory(this.queryArgs);
         },
         gethistorySuccess: function(){
@@ -327,15 +416,18 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
            var data = this.collection.models;
            this.table = $(_.template(template['tpl/customerSetup/blockUrl/TabHistory.table.html'])({data:data}));
            if(data.length == 0){
-             this.$el.find('.table-ctn').html(_.template(template['tpl/empty.html']));
+             this.setNoData("未查到符合条件的数据，请重新查询");
            }else{
              this.$el.find('.ks-table tbody').html(this.table);
            }
         },
+        setNoData:function(msg){
+            this.$el.find(".ks-table tbody").html('<tr><td  colspan="8" class="text-center"><p class="text-muted text-center">'+msg+'</p></td></tr>');
+        },
         initPaginator: function(){
            this.$el.find('.text-primary').html(this.collection.total);
-           if(this.collection.total < this.queryArgs.pageSize) return;
-           var total = Math.ceil(this.collection.total/this.queryArgs.pageSize);
+           if(this.collection.total < this.queryArgs.rows) return;
+           var total = Math.ceil(this.collection.total/this.queryArgs.rows);
 
            this.$el.find('.pagination').jqPaginator({
                 totalPages: total,
@@ -345,8 +437,8 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                     if (type !== "init"){
                         this.$el.find(".ks-table tbody").html('<tr><td  colspan="6" class="text-center"><div class="domain-spinner">正在加载...</div></td></tr>');
                         var args = _.extend(this.queryArgs);
-                        args.currentPage = num;
-                        args.count = this.queryArgs.pageSize;
+                        args.page = num;
+                        args.rows = this.queryArgs.rows;
                         this.collection.queryHistory(args);
                     }
                 }.bind(this)

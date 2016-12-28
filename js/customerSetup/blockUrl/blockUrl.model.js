@@ -1,19 +1,6 @@
 define("blockUrl.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
-        initialize: function(){
-            var createTime = this.get("date"),
-                status = this.get("status");
-                op = this.get("op");
-            if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
-            /*if (status === 1) this.set("statusName", '屏蔽成功');
-            if (status === 2) this.set("statusName", '屏蔽失败');
-            if (status === 3) this.set("statusName", '屏蔽中');
-            if (status === 4) this.set("statusName", '解除屏蔽中');
-            if (status === 5) this.set("statusName", '解除屏蔽失败');
-            if (op === 1) this.set("opName", '屏蔽');
-            if (op === 2) this.set("opName", '解除屏蔽');
-            if (op === 3) this.set("opName", '自动解除屏蔽')*/
-        }
+        initialize: function(){}
     });
 
     var BlockUrlCollection = Backbone.Collection.extend({
@@ -39,7 +26,13 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             var url = BASE_URL + "/blockurl/blockUrls",
             successCallback = function(res){
                 if(res){
-                     this.trigger('blockUrls.success',res);
+                     res = JSON.parse(res);
+                     if(res.status == 401) {
+                        alert('该域名不属于此客户,请重新输入');
+                        return;
+                     }else{
+                       this.trigger('blockUrls.success',res);
+                     }
                 }else{
                     this.trigger('blockUrls.error',response);
                 }
@@ -69,27 +62,8 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             }.bind(this);
             Utility.postAjax(url, '', successCallback, errorCallback);
         },
-        queryHistory: function(args){
-            var url = BASE_URL + "/channelManager/user/getUserList",
-            successCallback = function(res){
-                this.reset();
-                if (res){
-                    _.each(res.data, function(element, index, list){
-                        this.push(new Model(element));
-                    }.bind(this))
-                    this.total = res.totalCount;
-                    this.trigger("get.history.success");
-                } else {
-                    this.trigger("get.history.error"); 
-                } 
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("get.history.error", response); 
-            }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
-        },
         removeBlockUrl: function(args){
-            var url = BASE_URL + "/cdn/removeBlockUrl",
+            var url = BASE_URL + "/blockurl/removeBlockUrl",
             successCallback = function(res){
                 if(res){
                     this.trigger('remove.blockUrl.success');
@@ -100,8 +74,43 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             errorCallback = function(response){
                 this.trigger("remove.blockUrl.error", response);
             }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+        retryBlockTas: function(args){
+            var url = BASE_URL + "/blockurl/retryBlockTas",
+            successCallback = function(res){
+                if(res){
+                    this.trigger('retry.blockTas.success');
+                }else{
+                    this.trigger('retry.blockTas.error');
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("retry.blockTas.error", response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+        queryHistory: function(args){
+            var url = BASE_URL + "/blockurl/searchBlockHistory?userId="+args.userId+'&date='+args.date+'&op='+args.op+'&searchUrl='+args.searchUrl+'&page='+args.page+'&rows='+args.rows,
+            successCallback = function(res){
+                this.reset();
+                if (res){
+                    res = JSON.parse(res);
+                    _.each(res.taskBlockResult.resultList, function(element, index, list){
+                        this.push(new Model(element));
+                    }.bind(this))
+                    this.total = res.taskBlockResult.totalNumber;
+                    this.trigger("get.history.success");
+                } else {
+                    this.trigger("get.history.error"); 
+                } 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.history.error", response); 
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         }
+        
     });
 
     return BlockUrlCollection;

@@ -22,14 +22,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         
         },
         getCountSuccess: function(res){
-            var res = {
-               "status" :200,
-               "result" : {
-                    "userId" : 20,
-                    "quotaCount": 10,
-                    "quotaEffecitveCount" : 10
-               }
-            }
+            res = JSON.parse(res);
             this.$el.find('.quotaCount').text(res.result.quotaCount);
             this.$el.find('.quotaEffecitveCount').text(res.result.quotaEffecitveCount);
         },

@@ -92,7 +92,6 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         },
         onClickSubmitBlockButton: function(){
           var urls = this.$el.find('#urls').val();
-          this.urlsvalidation(urls);
         	if(this.urlsvalidation(urls)){
                if(urls.substr(urls.length-1,urls.length) == ';')  //若最后一个字符为分号,则去掉
                  urls = urls.substr(0,urls.length-1); 

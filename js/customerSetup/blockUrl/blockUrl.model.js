@@ -12,7 +12,7 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             var url = BASE_URL + "/blockurl/getGuestQuotaCount",
             successCallback = function(res){
                 if(res){
-                    this.trigger('get.GuestQuotaCount.success');
+                    this.trigger('get.GuestQuotaCount.success',res);
                 }else{
                     this.trigger('get.GuestQuotaCount.error');
                 }

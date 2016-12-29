@@ -23,8 +23,10 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         },
         getCountSuccess: function(res){
             res = JSON.parse(res);
-            this.$el.find('.quotaCount').text(res.result.quotaCount);
-            this.$el.find('.quotaEffecitveCount').text(res.result.quotaEffecitveCount);
+            if(res.result != null){
+                this.$el.find('.quotaCount').text(res.result.quotaCount);
+                this.$el.find('.quotaEffecitveCount').text(res.result.quotaEffecitveCount);
+            }
         },
         blockUrlsSuccess: function(){
              $('a[data-target="#blockUrlList"]').click();

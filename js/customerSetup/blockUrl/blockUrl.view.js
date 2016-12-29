@@ -77,6 +77,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                         }
                     }
                 }else if(!strRegex.test(urls)){
+
                     alert('URL输入有误');
                     return false;
                 }
@@ -89,8 +90,8 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         	if(this.urlsvalidation(urls)){
                urls = urls.split(';');
                var args = {
-                   userId: this.userInfo.uid,
-                   //userId:1,
+                  // userId: this.userInfo.uid,
+                   userId:1,
                    urls:urls
                 }
                 this.collection.blockUrls(args);
@@ -460,17 +461,12 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
 			this.collection = options.collection;
             this.$el = $(_.template(template['tpl/customerSetup/blockUrl/blockUrl.html'])());
             this.$el.find('a[data-toggle="tab"]').on('shown.bs.tab', $.proxy(this.onShownTab, this));
-		    
+		    this.Control = false;
 		    var clientInfo = JSON.parse(options.query);
             this.userInfo = {
                 clientName: clientInfo.clientName,
                 uid: clientInfo.uid
             }
-
-		    this.myTabBlockView = new TabBlockUrlView({
-		    	collection:this.collection,
-		    	userInfo:this.userInfo
-		    }); 
 		},
 		onShownTab: function(event){
 			var target = event.target || event.srcElement;
@@ -503,7 +499,19 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
 		hide: function(){
             this.$el.remove();
 		},
+        renderload: function(target){
+            this.$elload = $(_.template('<div class="domain-spinner">正在进行客户权限验证,请稍候...</div>')());
+            this.$elload.appendTo(target);
+        },
+        renderError: function(target){
+            this.$el = $(_.template(template['tpl/customerSetup/blockUrl/NoControl.html'])());
+            this.$el.appendTo(target);
+        },
 		render: function(target){
+            this.myTabBlockView = new TabBlockUrlView({
+                collection:this.collection,
+                userInfo:this.userInfo
+            }); 
 			this.$el.appendTo(target);
             this.myTabBlockView.render(this.$el.find('#blockUrl'));
 		}

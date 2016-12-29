@@ -22,13 +22,27 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
+        permissionsControl : function(args){
+            var url = BASE_URL + "/blockurl/getGuestQuotaCount",
+            successCallback = function(res){
+                if(res){
+                    this.trigger('permissionsControl.success',res);
+                }else{
+                    this.trigger('permissionsControl.error');
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.GuestQuotaCount.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
         blockUrls : function(args){
             var url = BASE_URL + "/blockurl/blockUrls",
             successCallback = function(res){
                 if(res){
                      res = JSON.parse(res);
                      if(res.status == 401) {
-                        alert('该域名不属于此客户,请重新输入');
+                        alert(res.message+'不属于此客户,请重新输入');
                         return;
                      }else{
                        this.trigger('blockUrls.success',res);

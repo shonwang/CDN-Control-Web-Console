@@ -1,10 +1,10 @@
 define('blockUrl.view',['utility','template'],function(Utility,template){
-	var TabBlockUrlView = Backbone.View.extend({
+    var TabBlockUrlView = Backbone.View.extend({
         events:{},
         initialize: function(options){
-        	this.collection = options.collection;
-        	this.userInfo = options.userInfo;
-        	this.$el = $(_.template(template['tpl/customerSetup/blockUrl/TabBlockUrl.html'])());
+            this.collection = options.collection;
+            this.userInfo = options.userInfo;
+            this.$el = $(_.template(template['tpl/customerSetup/blockUrl/TabBlockUrl.html'])());
             
             this.collection.off('get.GuestQuotaCount.success');
             this.collection.off('get.GuestQuotaCount.error');
@@ -34,9 +34,9 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         },
         onGetError: function(error){
              if(error && error.message){
-             	alert(error.message);
+                alert(error.message);
              }else{
-             	alert('网络阻塞，请刷新重试！')
+                alert('网络阻塞，请刷新重试！')
              }    
         },
         urlsvalidation: function(urls){
@@ -87,7 +87,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         onClickSubmitBlockButton: function(){
             var urls = this.$el.find('#urls').val();
             //console.log(this.urlsvalidation(urls));
-        	if(this.urlsvalidation(urls)){
+            if(this.urlsvalidation(urls)){
                urls = urls.split(';');
                var args = {
                    userId: this.userInfo.uid,
@@ -100,15 +100,14 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         render: function(target){
            this.$el.appendTo(target);
         }
-	});
+    });
 
     var TabCurrentBlockListView = Backbone.View.extend({
         events:{},
         initialize: function(options){
-        	this.collection = options.collection;
+            this.collection = options.collection;
             this.userInfo = options.userInfo;
             this.numberControl = 30; 
-
             this.$el = $(_.template(template['tpl/customerSetup/blockUrl/TabCurrentBlockList.html'])());
             this.initblockListDropmenu();
             
@@ -130,28 +129,26 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.collection.on('get.blockList.success',$.proxy(this.getblockListSuccess,this));
             this.collection.on('get.blockList.error',$.proxy(this.onGetError,this));
             
-
             this.collection.off('retry.blockTas.success');
             this.collection.off('retry.blockTas.error');
             this.collection.on('retry.blockTas.success',$.proxy(this.retryblockTasSuccess,this));
             this.collection.on('retry.blockTas.error',$.proxy(this.onGetError,this));
             
             this.queryArgs = {
-	            page:1,
-	            rows:10,
-	            op: 0,
-	            searchUrl: "",
-	            userId:this.userInfo.uid
+                page:1,
+                rows:10,
+                op: 0,
+                searchUrl: "",
+                userId:this.userInfo.uid
                 //userId:1
             }
-            
             this.blockUrlParam = {
                 userId:this.userInfo.uid,
                 //userId:1,
                 ids: "",
                 isNeedFresh: false
             }
-            
+
             this.onClickQueryButton();
         },
         onClickQueryButton: function(){
@@ -351,12 +348,12 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.$el.appendTo(target);
         }
     });
-	
-	var TabHistoryView = Backbone.View.extend({
+    
+    var TabHistoryView = Backbone.View.extend({
         events:{},
         initialize: function(options){
             this.userInfo = options.userInfo;
-        	this.$el = $(_.template(template['tpl/customerSetup/blockUrl/TabHistory.html'])());
+            this.$el = $(_.template(template['tpl/customerSetup/blockUrl/TabHistory.html'])());
             this.$el.find('.query').on('click',$.proxy(this.onClickQueryButton,this));
             this.collection.off('get.history.success');
             this.collection.off('get.history.error');
@@ -454,54 +451,54 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.$el.find(".ks-table tbody").html('<tr><td  colspan="6" class="text-center"><div class="domain-spinner">正在加载...</div></td></tr>');
         },
         render: function(target){
-        	this.$el.appendTo(target);
+            this.$el.appendTo(target);
         }
-	});
-	
-	var BlockUrlView = Backbone.View.extend({
-		events:{},
-		initialize: function(options){
-			this.collection = options.collection;
+    });
+    
+    var BlockUrlView = Backbone.View.extend({
+        events:{},
+        initialize: function(options){
+            this.collection = options.collection;
             this.$el = $(_.template(template['tpl/customerSetup/blockUrl/blockUrl.html'])());
             this.$el.find('a[data-toggle="tab"]').on('shown.bs.tab', $.proxy(this.onShownTab, this));
-		    this.Control = false;
-		    var clientInfo = JSON.parse(options.query);
+            this.Control = false;
+            var clientInfo = JSON.parse(options.query);
             this.userInfo = {
                 clientName: clientInfo.clientName,
                 uid: clientInfo.uid
             }
-		},
-		onShownTab: function(event){
-			var target = event.target || event.srcElement;
-			var id = $(target).attr('data-target');
+        },
+        onShownTab: function(event){
+            var target = event.target || event.srcElement;
+            var id = $(target).attr('data-target');
             switch(id){
-            	case '#blockUrlList':
-            	  if(this.myTabCurrentBlockListView){
+                case '#blockUrlList':
+                  if(this.myTabCurrentBlockListView){
                       this.myTabCurrentBlockListView.onClickQueryButton();
-            	  	  return;
-            	  }
-            	  this.myTabCurrentBlockListView = new TabCurrentBlockListView({
-            	  	collection:this.collection,
-            	  	userInfo:this.userInfo
-            	  });
-            	  this.myTabCurrentBlockListView.render(this.$el.find('#blockUrlList'));
+                      return;
+                  }
+                  this.myTabCurrentBlockListView = new TabCurrentBlockListView({
+                    collection:this.collection,
+                    userInfo:this.userInfo
+                  });
+                  this.myTabCurrentBlockListView.render(this.$el.find('#blockUrlList'));
                 break;
                 case '#history':
                   if(this.myTabHistoryView){
                       this.myTabHistoryView.onClickQueryButton();
-                  	  return;
+                      return;
                   }
                   this.myTabHistoryView = new TabHistoryView({
-                  	collection:this.collection,
-                  	userInfo:this.userInfo
+                    collection:this.collection,
+                    userInfo:this.userInfo
                   });
                   this.myTabHistoryView.render(this.$el.find('#history'));
                 break;
             }           
-		},
-		hide: function(){
+        },
+        hide: function(){
             this.$el.remove();
-		},
+        },
         renderload: function(target){
             this.$elload = $(_.template('<div class="domain-spinner">正在进行客户权限验证,请稍候...</div>')());
             this.$elload.appendTo(target);
@@ -510,15 +507,15 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.$el = $(_.template(template['tpl/customerSetup/blockUrl/NoControl.html'])());
             this.$el.appendTo(target);
         },
-		render: function(target){
+        render: function(target){
             this.myTabBlockView = new TabBlockUrlView({
                 collection:this.collection,
                 userInfo:this.userInfo
             }); 
-			this.$el.appendTo(target);
+            this.$el.appendTo(target);
             this.myTabBlockView.render(this.$el.find('#blockUrl'));
-		}
-	});
+        }
+    });
     
-	return BlockUrlView;
+    return BlockUrlView;
 })

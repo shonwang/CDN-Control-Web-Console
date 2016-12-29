@@ -721,10 +721,14 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.collection.on("delete.dispGroup.error", $.proxy(this.onGetError, this));
 
             this.collection.on("copy.dispGroup.success", function(){
+                this.disablePopup&&this.disablePopup.$el.modal('hide');
                 alert("复制成功！")
                 this.onClickQueryButton();
             }.bind(this));
-            this.collection.on("copy.dispGroup.error", $.proxy(this.onGetError, this));
+            this.collection.on("copy.dispGroup.error", function(res){
+                this.disablePopup&&this.disablePopup.$el.modal('hide');
+                this.onGetError(res)
+            }.bind(this));
 
             this.collection.on("update.dispGroup.status.success", function(){
                 alert("操作成功！")
@@ -765,6 +769,18 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             }
             this.onClickQueryButton();
         }, 
+
+        showDisablePopup: function(msg) {
+            if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
+            var options = {
+                title    : "警告",
+                body     : '<div class="alert alert-danger"><strong>' + msg +'</strong></div>',
+                backdrop : 'static',
+                type     : 0,
+            }
+            this.disablePopup = new Modal(options);
+            this.disablePopup.$el.find(".close").remove();
+        },
 
         onRequireDispSuggesttionModule: function(DispSuggesttionViews, DispSuggesttionModel){
             if (!this.dispSuggesttionModel)
@@ -962,10 +978,12 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 type     : 2,
                 onOKCallback:  function(){
                     var options = copyDispGroupView.getArgs();
-                    console.log(options);
                     if (!options) return
                     this.collection.copyDispGroup(options);
                     this.copyDispGroupPopup.$el.modal("hide");
+                    setTimeout(function(){
+                        this.showDisablePopup("服务端正在努力复制中...")
+                    }.bind(this), 500)
                 }.bind(this),
                 onHiddenCallback: function(){
                     if (AUTH_OBJ.QueryGslbGroup) this.enterKeyBindQuery();

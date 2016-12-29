@@ -90,8 +90,8 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         	if(this.urlsvalidation(urls)){
                urls = urls.split(';');
                var args = {
-                  // userId: this.userInfo.uid,
-                   userId:1,
+                   userId: this.userInfo.uid,
+                  // userId:1,
                    urls:urls
                 }
                 this.collection.blockUrls(args);

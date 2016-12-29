@@ -45,7 +45,6 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             var quotaEffecitveCount = this.$el.find('.quotaEffecitveCount').text();
             if(urls.substr(urls.length-1,urls.length) == ';')  //若最后一个字符为分号,则去掉
                 urls = urls.substr(0,urls.length-1); 
-    
         
             if(urls === "") {
                 alert('URL不能为空');
@@ -77,7 +76,6 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                         }
                     }
                 }else if(!strRegex.test(urls)){
-
                     alert('URL输入有误');
                     return false;
                 }
@@ -85,10 +83,12 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             return true;
         },
         onClickSubmitBlockButton: function(){
-            var urls = this.$el.find('#urls').val();
-            //console.log(this.urlsvalidation(urls));
-            if(this.urlsvalidation(urls)){
+          var urls = this.$el.find('#urls').val();
+        	if(this.urlsvalidation(urls)){
                urls = urls.split(';');
+               for(var i = 0;i<urls.length;i++){
+                  if(urls[i].substr(0,1)=='\n') urls[i]=urls[i].substr(1);
+               }
                var args = {
                    userId: this.userInfo.uid,
                   // userId:1,
@@ -188,7 +188,8 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 if(!model.get('isDisabled')) length++;
                 return model.get('isChecked') === true;
              })
-             if(checkedList.length >= 0){
+             if(checkedList.length == 0 && length == 0) return false;
+             if(checkedList.length > 0){
                if(checkedList.length == length){
                   AllChecked.prop('checked',true);
                }else{

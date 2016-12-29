@@ -1,9 +1,21 @@
 <% for(var i=0;i < data.length;i++) { %>
 	<tr id="<%= data[i].get('id') %>">
-	   <td><input type="checkbox" value="<%= data[i].get('email')%>" id="<%= data[i].get('id')%>"><%= data[i].get('email') %></td>
-	   <td><%= data[i].get('createTimeFormated') %></td>
-	   <td><%= data[i].get('statusName') %></td>
-	   <td><%= data.length %></td>
+	   <td>
+	      <input type="checkbox" value="<%= data[i].get('url')%>" id="<%= data[i].get('id')%>"><%= data[i].get('url') %>
+	   </td>
+	   <td><%= data[i].get('date') %></td>
+	   <td><%= data[i].get('status') %></td>
+	   <td id="<%= data[i].get('id') %>">
+           <% if(data[i].get('status') === '屏蔽失败'){ %>
+          	  <button type="button" class="btn btn-default btn-sm Rescreen">重新屏蔽</button>
+           <%} else if(data[i].get('status') === '解除屏蔽失败') { %>
+              <button type="button" class="btn btn-default btn-sm Reunblock">重新解除屏蔽</button>
+           <%} else if(data[i].get('isRefreshSuccess') === 1 ) { %>
+              <button type="button" class="btn btn-default btn-sm Refresh">重新刷新</button>
+           <%}%>
+       </td>
+	  
+	   
 	</tr>
 <% } %>	
 	

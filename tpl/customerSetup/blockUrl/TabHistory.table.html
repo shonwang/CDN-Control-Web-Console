@@ -1,8 +1,8 @@
 <% for(var i=0;i < data.length;i++){ %>
-	<tr>
-	   <td><%= data[i].get('email') %></td>
-	   <td>操作状态</td>
-	   <td><%= data[i].get('createTimeFormated') %></td>
+	<tr id="<%= data[i].get('id') %>">
+	   <td><%= data[i].get('url') %></td>
+	   <td><%= data[i].get('op') %></td>
+	   <td><%= data[i].get('date') %></td>
 	</tr>
 <% } %>
 		

@@ -506,8 +506,27 @@ define("customerSetup.controller", ['require','exports'],
                         collection: this.blockUrlModel,
                         query     : query
                     };
+
                     this.blockUrlView = new BlockUrlView(options);
-                    this.blockUrlView.render(renderTarget);
+                    this.blockUrlView.renderload(renderTarget);
+
+                    this.permissionsControlSuccess = function(res){
+                        res = JSON.parse(res);
+                        if(res.result == null){
+                           this.blockUrlView.$elload.remove();
+                           this.blockUrlView.renderError(renderTarget);
+                        }
+                        else{
+                           this.blockUrlView.$elload.remove();
+                           this.blockUrlView.render(renderTarget);
+                        }
+                    }         
+                    query = JSON.parse(query);
+                    this.blockUrlModel.off('permissionsControl.success');
+                    this.blockUrlModel.off('permissionsControl.error');
+                    this.blockUrlModel.on('permissionsControl.success',$.proxy(this.permissionsControlSuccess,this));
+                    this.blockUrlModel.on('permissionsControl.error',$.proxy(this.onGetError,this));
+                    this.blockUrlModel.permissionsControl({userId:query.uid}); 
                 } 
 
             }.bind(this));

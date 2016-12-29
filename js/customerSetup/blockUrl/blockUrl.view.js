@@ -41,7 +41,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         },
         urlsvalidation: function(urls){
             var urls = urls;
-            var strRegex = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w\?!]+@)?[A-Za-z0-9.-\?!]+|(?:www.|[-;:&=\+\$,\w]+@\?!)[A-Za-z0-9.-\?!]+)((?:\/[\+~%\/.\w-_\?!]*)?\??(?:[-\+=&;%@.\w_\?!]*)#?(?:[\w]*))?)$/;
+            var protocolRegex = /https|http|ftp|rtsp|igmp|file|rtspt|rtspu/;
             var quotaEffecitveCount = this.$el.find('.quotaEffecitveCount').text();
             if(urls.substr(urls.length-1,urls.length) == ';')  //若最后一个字符为分号,则去掉
                 urls = urls.substr(0,urls.length-1); 
@@ -65,17 +65,25 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                             alert(url[i]+'重复,请重新填写');
                             return false;
                         }else {
-                           //console.log('没有找到');
                            urlrepeat.push(url[i]);
                         }
                     }
                     for(var i = 0; i<url.length; i++){
+                        if(!protocolRegex.test(url[i].substr(0,4))){
+                            alert('第'+ (i+1) +'个URL请以协议开头');
+                            return false;
+                        }
                         if(!Utility.isURL(url[i])){
                             alert('第'+ (i+1) +'个URL输入有误');
                             return false;
                         }
                     }
-                }else if(!strRegex.test(urls)){
+                }
+                else if(!protocolRegex.test(urls)){
+                    alert('请以协议开头');
+                    return false;
+                }
+                else if(!Utility.isURL(urls)){
                     alert('URL输入有误');
                     return false;
                 }
@@ -84,7 +92,10 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         },
         onClickSubmitBlockButton: function(){
           var urls = this.$el.find('#urls').val();
+          this.urlsvalidation(urls);
         	if(this.urlsvalidation(urls)){
+               if(urls.substr(urls.length-1,urls.length) == ';')  //若最后一个字符为分号,则去掉
+                 urls = urls.substr(0,urls.length-1); 
                urls = urls.split(';');
                for(var i = 0;i<urls.length;i++){
                   if(urls[i].substr(0,1)=='\n') urls[i]=urls[i].substr(1);

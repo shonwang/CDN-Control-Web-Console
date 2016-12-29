@@ -2,6 +2,7 @@
 <thead> 
   <tr>
     <th>名称</th>
+    <th>一级域名</th>
     <th>配置</th>
     <th>TTL</th>
     <th>Level</th>
@@ -24,6 +25,7 @@
                   <%=data[i].attributes["dispDomain"]%>
               <% } %>
           </td>
+          <td><%=data[i].attributes["kdnsDomainIddomainName"]%></td>
           <td><%=data[i].attributes["priorityName"]%></td>
           <td><%=data[i].attributes["ttl"]%></td>
           <td><%=data[i].attributes["crossLevelName"]%></td>

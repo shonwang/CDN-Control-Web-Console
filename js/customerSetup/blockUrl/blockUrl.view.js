@@ -94,7 +94,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                     alert('请以协议开头');
                     return false;
                 }
-                
+
             }
             return true;
         },

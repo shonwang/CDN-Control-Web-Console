@@ -45,7 +45,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             var quotaEffecitveCount = this.$el.find('.quotaEffecitveCount').text();
             if(urls.substr(urls.length-1,urls.length) == ';')  //若最后一个字符为分号,则去掉
                 urls = urls.substr(0,urls.length-1); 
-        
+           
             if(urls === "") {
                 alert('URL不能为空');
                 return false;
@@ -53,11 +53,27 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 if(urls.indexOf(';') > -1){
                     url = urls.split(';');
                     var urlrepeat = [];
-                   
+                    //修复第一个字符是回车符的情况
+                    for(var i = 0;i<url.length;i++){
+                      if(url[i].substr(0,1)=='\n') url[i]=url[i].substr(1);
+                    }
+                    //数量验证
                     if(url.length > parseInt(quotaEffecitveCount)){
                         alert('已超过最大提交数量');
                         return false;
                     }
+                    //格式正则表达式验证
+                    for(var i = 0; i<url.length; i++){
+                        if(!Utility.isURL(url[i])){
+                            alert('第'+ (i+1) +'个URL输入有误');
+                            return false;
+                        }
+                        if(!protocolRegex.test(url[i].substr(0,4))){
+                            alert('第'+ (i+1) +'个URL请以协议开头');
+                            return false;
+                        }
+                    }
+                    //重复性验证
                     for(var i = 0; i<url.length; i++){
                         if(url[i].substr(0,1)=='\n') url[i]=url[i].substr(1);
                         
@@ -68,25 +84,17 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                            urlrepeat.push(url[i]);
                         }
                     }
-                    for(var i = 0; i<url.length; i++){
-                        if(!protocolRegex.test(url[i].substr(0,4))){
-                            alert('第'+ (i+1) +'个URL请以协议开头');
-                            return false;
-                        }
-                        if(!Utility.isURL(url[i])){
-                            alert('第'+ (i+1) +'个URL输入有误');
-                            return false;
-                        }
-                    }
+                }
+                //单条URL的情况
+                else if(!Utility.isURL(urls)){
+                    alert('URL输入有误');
+                    return false;
                 }
                 else if(!protocolRegex.test(urls)){
                     alert('请以协议开头');
                     return false;
                 }
-                else if(!Utility.isURL(urls)){
-                    alert('URL输入有误');
-                    return false;
-                }
+                
             }
             return true;
         },

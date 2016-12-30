@@ -246,7 +246,9 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                {name:'屏蔽中',value:1},
                {name:'解除屏蔽中',value:2},
               // {name:'解除屏蔽成功',value:5},
-               {name:'解除屏蔽失败',value:6}
+               {name:'解除屏蔽失败',value:6},
+               {name:'刷新中',value:7},
+               {name:'刷新失败',value:8}
             ];
             rootNode = this.$el.find('.dropdown-state');
             Utility.initDropMenu(rootNode,statusArray,function(value){

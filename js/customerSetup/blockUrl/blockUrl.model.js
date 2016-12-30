@@ -91,7 +91,7 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
         retryBlockTas: function(args){
-            var url = BASE_URL + "/blockurl/retryBlockTas",
+            var url = BASE_URL + "/blockurl/retryBlockTas?userId="+args.userId+'&id='+args.id+'&type='+args.type,
             successCallback = function(res){
                 if(res){
                     this.trigger('retry.blockTas.success');

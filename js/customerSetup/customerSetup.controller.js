@@ -520,7 +520,15 @@ define("customerSetup.controller", ['require','exports'],
                            this.blockUrlView.$elload.remove();
                            this.blockUrlView.render(renderTarget);
                         }
-                    }         
+                    }  
+                    this.onGetError = function(error){
+                        this.blockUrlView.view.$elload.remove();
+                        if(error && error.message){
+                            alert(error.message);
+                        }else{
+                            alert('网络阻塞,请刷新重试');
+                        }
+                    }       
                     query = JSON.parse(query);
                     this.blockUrlModel.off('permissionsControl.success');
                     this.blockUrlModel.off('permissionsControl.error');

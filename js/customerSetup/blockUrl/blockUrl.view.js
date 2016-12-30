@@ -306,7 +306,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             var defaultParam = {
                 userId:this.userInfo.uid,
                 //userId:1,
-                taskId:id,
+                id:parseInt(id),
                 type:type
             } 
             this.collection.retryBlockTas(defaultParam);

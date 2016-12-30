@@ -156,7 +156,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 userId:this.userInfo.uid,
                 //userId:1,
                 ids: "",
-                isNeedFresh: false
+                isNeedFresh: true
             }
 
             this.onClickQueryButton();
@@ -206,12 +206,10 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                   AllChecked.prop('checked',false);
                }
                this.UnblockButton.removeAttr('disabled');
-               this.RefreshUrlButton.removeAttr('disabled');
                this.UnblockButton.off('click');
                this.UnblockButton.on('click',$.proxy(this.unblock,this));
              }else{
                this.UnblockButton.attr('disabled','disabled');            
-               this.RefreshUrlButton.attr('disabled','disabled');
                this.UnblockButton.off('click');
              }
         },
@@ -233,7 +231,6 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         removeblockUrlSuccess: function(){
             alert('操作成功');
             this.UnblockButton.attr('disabled','disabled');            
-            this.RefreshUrlButton.attr('disabled','disabled');
             this.UnblockButton.off('click');
             this.onClickQueryButton();   
         },
@@ -303,14 +300,13 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         },
         onclickRescreenOrRefreshButton: function(event){
             var eventTarget = event.target || event.srcElement;
-            var id = $(eventTarget).parent().attr('id'),ids = [],type;
-            ids.push(parseInt(id));
+            var id = $(eventTarget).parent().attr('id'),type;
             
-            eventTarget.className.indexOf('Rescreen') > 0 ? type = 1 : type = 2;
+            eventTarget.className.indexOf('Rescreen') > 0 ? type = 2 : type = 1;
             var defaultParam = {
                 userId:this.userInfo.uid,
                 //userId:1,
-                taskId:ids,
+                taskId:id,
                 type:type
             } 
             this.collection.retryBlockTas(defaultParam);
@@ -365,6 +361,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         initialize: function(options){
             this.userInfo = options.userInfo;
         	this.$el = $(_.template(template['tpl/customerSetup/blockUrl/TabHistory.html'])());
+            $(document).on('keydown',$.proxy(this.onKeydownEnter,this));
             this.$el.find('.query').on('click',$.proxy(this.onClickQueryButton,this));
             this.collection.off('get.history.success');
             this.collection.off('get.history.error');
@@ -382,6 +379,9 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             };
             this.onClickQueryButton();
 
+        },
+        onKeydownEnter: function(event){
+            if(event.keyCode == 13) this.onClickQueryButton();
         },
         initHistoryDropMenu: function(){
             var timeArray = [

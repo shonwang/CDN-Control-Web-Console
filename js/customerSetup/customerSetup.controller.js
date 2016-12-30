@@ -522,7 +522,7 @@ define("customerSetup.controller", ['require','exports'],
                         }
                     }  
                     this.onGetError = function(error){
-                        this.blockUrlView.view.$elload.remove();
+                        this.blockUrlView.$elload.remove();
                         if(error && error.message){
                             alert(error.message);
                         }else{

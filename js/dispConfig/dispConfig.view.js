@@ -380,7 +380,14 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.dispSuggesttionView = new DispSuggesttionViews.DispSuggesttionView(options);
             this.dispSuggesttionView.render($('.ksc-content'));
         },
-         
+        
+        backFromDispSuggesttion: function(){
+            this.dispSuggesttionView.remove();
+            this.dispSuggesttionView = null;
+            this.dispSuggesttionFailModel = null;
+            this.update();
+        },
+
         onClickHistory: function(){
             if (this.historyPopup) $("#" + this.historyPopup.modalId).remove();
 

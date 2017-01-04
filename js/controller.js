@@ -2,6 +2,25 @@ define("controller", ['require','exports'],
     function(require, exports) {
 
     var Controller = Backbone.Router.extend({
+
+        importAssessCallback: function(){
+            require(['importAssess.view', 'importAssess.model'], function(ImportAssessView, ImportAssessModel){
+                this.curPage = 'importAssess';
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                if (!this.importAssessModel)
+                    this.importAssessModel = new ImportAssessModel();
+                if (!this.importAssessView ){
+                    var options = {
+                        collection: this.importAssessModel
+                    };
+                    this.importAssessView = new ImportAssessView(options);
+                    this.importAssessView.render($('.ksc-content'));
+                } else {
+                    this.importAssessView.update();
+                }
+            }.bind(this));
+        },
+        
         setupTopoManageCallback: function(){
             require(['setupTopoManage.view', 'setupTopoManage.model'], function(SetupTopoManageView, SetupTopoManageModel){
                 this.curPage = 'setupTopoManage';

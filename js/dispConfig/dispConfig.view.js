@@ -357,10 +357,30 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
             this.$el.find(".opt-ctn .histroy").on("click", $.proxy(this.onClickHistory, this));
             this.$el.find(".opt-ctn .vs").on("click", $.proxy(this.onClickSelectVS, this));
-
+            this.$el.find(".opt-ctn .planning").on("click", $.proxy(this.onClickPlanningButton, this));
+            
             this.$el.find(".page-ctn").hide();
         },
 
+        onClickPlanningButton: function(){
+            require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel){
+                this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, this.currentPauseNodeId)
+            }.bind(this))
+        },
+
+        onRequireDispSuggesttionModule: function(DispSuggesttionViews, DispSuggesttionModel, nodeId){//
+            if (!this.dispSuggesttionFailModel)
+                this.dispSuggesttionFailModel = new DispSuggesttionModel();
+            this.hide();
+            var options = {
+                isPlanning: true,
+                collection: this.dispSuggesttionFailModel,
+                backCallback: $.proxy(this.backFromDispSuggesttion, this)
+            };
+            this.dispSuggesttionView = new DispSuggesttionViews.DispSuggesttionView(options);
+            this.dispSuggesttionView.render($('.ksc-content'));
+        },
+         
         onClickHistory: function(){
             if (this.historyPopup) $("#" + this.historyPopup.modalId).remove();
 

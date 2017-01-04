@@ -1,0 +1,63 @@
+<div class="assess-manage fadeInLeft animated">
+    <div class="list-panel">
+        <h3>服务管理<small>/接入评估</small></h3>
+        <div class="alert alert-dismissable alert-info text-center">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>提示：</strong>请输入评估条件，点击“确认添加，将评估条件加入评估列表，选取评估列表中的评估条件后，点击”开始评估“进行评估
+        </div>
+        <div class="well opt-ctn">
+            <div class="form-inline">
+                <div class="form-group">
+                    <label for="input-cname">接入域名</label>
+                    <input type="text" class="form-control" id="input-cname" readonly="true">
+                </div>
+                <a href="javascript:void(0)" class="btn btn-primary add-domain"><span class="glyphicon glyphicon-search"></span>选择接入域名</a>
+                <div class="form-group">
+                    <label for="input-domain">加速域名</label>
+                    <input type="text" class="form-control" id="input-domain" readonly="true">
+                </div>
+                <div class="form-group">
+                    <label for="input-client">客户名称</label>
+                    <input type="text" class="form-control" id="input-client" readonly="true">
+                </div>
+            </div>
+            <hr>
+            <div class="form-inline">
+                <div class="form-group">
+                    <label for="dropdown-dispgroup">调度组</label>
+                </div>
+                <div class="form-group">
+                    <div class="dropdown dropdown-dispgroup">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-dispgroup" data-toggle="dropdown">
+                            <span class="cur-value">请选择</span>
+                            <span class="caret"></span>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="dropdown-region">区域</label>
+                </div>
+                <div class="form-group">
+                    <div class="dropdown dropdown-region">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-region" data-toggle="dropdown">
+                            <span class="cur-value">请选择</span>
+                            <span class="caret"></span>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="dropdown-bandwidth">增量带宽</label>
+                    <input type="number" class="form-control" id="input-bandwidth" min="0" placeholder="输入数字，单位Gbps">
+                </div>
+                <a href="javascript:void(0)" class="btn btn-primary confirm"><span class="glyphicon glyphicon-plus"></span>确认添加</a>
+                <a href="javascript:void(0)" class="btn btn-success start-assess">开始评估</a>
+                <a href="javascript:void(0)" class="btn btn-danger multi-delete">批量删除</a>
+                <a href="javascript:void(0)" class="btn btn-default history">下发历史记录</a>
+            </div>
+        </div>
+        <div class="well">
+            <div class="table-ctn table-responsive"></div>
+        </div>
+    </div>
+    <div class="history-panel"></div>
+</div>

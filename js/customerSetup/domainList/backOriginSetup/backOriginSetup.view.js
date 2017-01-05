@@ -90,7 +90,9 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".use-advance .togglebutton input").on("click", $.proxy(this.onClickIsUseAdvanceBtn, this));
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
 
-            this.collection.on("set.backSourceConfig.success", $.proxy(this.launchSendPopup, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
+            this.collection.on("set.backSourceConfig.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.backSourceConfig.error", $.proxy(this.onGetError, this));
 
             this.initModifyHost(data);
@@ -274,6 +276,10 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             this.collection.setBackSourceConfig(postParam)
         },
 
+        onSaveSuccess: function(){
+            alert("保存成功！")
+        },
+
         launchSendPopup: function(){
             require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
                 var mySaveThenSendView = new SaveThenSendView({
@@ -281,6 +287,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                     domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
                     }.bind(this)
                 });
                 var options = {
@@ -288,6 +295,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
+                    width: 800,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),
@@ -401,7 +409,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".modify-host .togglebutton input").on("click", $.proxy(this.onClickIsModifyHostBtn, this));
             this.$el.find(".host-save").on("click", $.proxy(this.onClickHostSaveBtn, this));
 
-            this.collection.on("set.hostConfig.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.hostConfig.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.hostConfig.error", $.proxy(this.onGetError, this));
         },
 

@@ -20,8 +20,8 @@ define("clientLimitSpeed.model", ['require','exports', 'utility'], function(requ
 
             var timeLimit = this.get("timeLimit");
             _.each(timeLimit, function(el, index, ls){
-                var startTime = new Date(el.startTime).format("hh:mm:ss"),
-                    endTime = new Date(el.endTime).format("hh:mm:ss"),
+                var startTime = el.startTime,
+                    endTime = el.endTime,
                     speedLimit2 = el.speedLimit + "kb/s<br>"
                 var timeStr = "限速时间段：" + startTime + "至" + endTime + "，限速字节数：" + speedLimit2;
                 summary = summary + timeStr

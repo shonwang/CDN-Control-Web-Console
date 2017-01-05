@@ -103,6 +103,9 @@ requirejs.config({
         "domainList.view": 'customerSetup/domainList/domainList.view',
         "domainList.addDomain.view": 'customerSetup/domainList/domainList.addDomain.view',
 
+        "blockUrl.view": 'customerSetup/blockUrl/blockUrl.view',
+        "blockUrl.model": 'customerSetup/blockUrl/blockUrl.model',
+
         "matchCondition.view": 'customerSetup/domainList/matchCondition/matchCondition.view',
         "matchCondition.model": 'customerSetup/domainList/matchCondition/matchCondition.model',
         

@@ -7,6 +7,7 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
             this.options = options;
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/customerSetup/domainList/matchCondition.html'])({}));
+            this.$hint = this.$el.find('.hint');
             this.initDropdown();
 
             this.collection.on("get.fileType.success", $.proxy(this.onGetFileType, this))
@@ -17,7 +18,7 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
             rootNode = this.$el.find(".match-type");
             Utility.initDropMenu(rootNode, this.options.matchConditionArray, function(value){
                 this.options.defaultCondition = parseInt(value);
-                this.initMatchCondition(value)
+                this.initMatchCondition(value);
             }.bind(this));
 
             var defaultValue = _.find(this.options.matchConditionArray, function(object){
@@ -42,22 +43,35 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
             this.allFileType = data;
             this.initFileType()
         },
+        
 
         initMatchCondition: function(value){
+
+            var allfilehint  = `目录：<br/>注：以“/”开头和结尾，提供的目录地址可以是字母数字以及下划线、减号、百分号三种特殊字符的任意组合，多个目录之间用分号间隔，需注意的是该配置对目录及目录下的所有文件生效，多个目录以英文半角逗号分隔。<br>指定URI：<br>注：禁止以http://或https://开头，仅配置URL中的URI部分。如：完整URL为：http://www.baidu.com/browse/index.html,则配置内容为：/browse/index.html,不支持输入多条<br>文件类型：<br>注：可以在自定义选择，也可以输入自定义的文件类型，多个文件类型以英文半角逗号隔开。<br>正则表达式<br>注：请按照标准的正则格式进行填写`,
+                typefilehint = `注:可以自定义选择,也可以输入自定义的文件类型,多个文件类型以英文半角逗号分隔`,
+                urihint      = `注:禁止以http://或https://开头,仅配置URL中的URI部分。如：完整URL为:http://www.baidu.com/browse/index.html,则配置内容为:/browse/index.html,不支持输入多条`,
+                dirhint      = `注:以"/"开头和结尾,提供的目录地址可以使字母数字以及下划线、减号、百分号三种特殊字符的任意组合，多个目录之间用分号分隔,需注意的是该配置对目录及目录下的所有文件生效，多个目录以英文半角逗号分隔。`,
+                rehint       = `正则表达式<br>注:请按照标准的正则格式进行填写`;
+            
             this.hideAllOptions();
             switch(parseInt(value)){
                 case 9:
+                    this.$hint.html(allfilehint);
                     break;
                 case 0:
+                    this.$hint.html(typefilehint);
                     this.collection.getFileType();
                     break;
                 case 2:
+                    this.$hint.html(urihint);
                     this.initUri();
                     break;
                 case 1:
+                    this.$hint.html(dirhint);
                     this.initDir();
                     break;
                 case 3:
+                    this.$hint.html(rehint);
                     this.initRe();
                     break;
                 default:

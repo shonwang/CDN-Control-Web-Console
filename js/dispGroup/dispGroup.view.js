@@ -827,9 +827,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         onGetIpTypeSuccess: function(data){
             _.each(this.collection.models, function(el, inx, list){
                 var ipObj = _.find(data, function(obj){
-                    return obj.id == el.get("resolveIpType");
+                    return parseInt(obj.id) === parseInt(el.get("resolveIpType"))
                 }.bind(this))
-                el.set("resolveIpTypeName", ipObj.name)
+                if (ipObj) el.set("resolveIpTypeName", ipObj.name)
             }.bind(this))
 
             this.initTable();

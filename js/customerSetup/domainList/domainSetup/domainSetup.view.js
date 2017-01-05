@@ -15,6 +15,7 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
                     uid: clientInfo.uid
                 }
             this.domainInfo = domainInfo;
+            this.clientInfo = clientInfo;
             this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
                 data: userInfo,
                 notShowBtn: true
@@ -130,6 +131,7 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
             }
             var postParam =  {
                 "originId": this.domainInfo.id,
+                "userId" : this.clientInfo.uid,
                 "originPort": this.$el.find("#server-port").val(),
                 "region": this.getRegion().join(",")
             }

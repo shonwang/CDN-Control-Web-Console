@@ -76,16 +76,16 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
             if (this.isEdit){
                 this.defaultParam.type = this.model.get("matchingType") || 0;
                 this.defaultParam.policy = this.model.get("matchingValue") || "";
-                this.defaultParam.byteNotLimit = this.model.get("preUnlimit") === 0 ? 1 : 2;
+                this.defaultParam.byteNotLimit = this.model.get("preFlag") === 0 ? 1 : 2;
                 this.defaultParam.byteNotLimitUnit = this.model.get("preUnlimit") >= 1024 ? 2 : 1;
                 this.defaultParam.preUnlimit = this.model.get("preUnlimit") || 0;
-                this.defaultParam.limitSpeedToggle = this.model.get("speedLimit") === 0 ? 1 : 2;
+                this.defaultParam.limitSpeedToggle = this.model.get("speedFlag") === 0 ? 1 : 2;
                 this.defaultParam.limitSpeed = this.model.get("speedLimit") || 0;
                 _.each(this.model.get("timeLimit"), function(el, index, ls){
                     this.defaultParam.timeLimitList.push({
                         id: el.id,
-                        start: new Date(el.startTime).format("hh:mm:ss"),
-                        end: new Date(el.endTime).format("hh:mm:ss"),
+                        start: el.startTime,
+                        end: el.endTime,
                         limitSpeed: el.speedLimit
                     })
                 }.bind(this))
@@ -246,12 +246,12 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
 
             if (this.defaultParam.byteNotLimitUnit === 2)
                 preUnlimit = preUnlimit * 1024
-            if (this.defaultParam.byteNotLimit === 1) preUnlimit = 0;
+            //if (this.defaultParam.byteNotLimit === 1) preUnlimit = 0;
 
             var speedLimit = parseInt(this.$el.find("#set-limit").val()), 
             summary = '', timeLimit = [], nowDate = new Date().format("yyyy/MM/dd");
 
-            if (this.defaultParam.limitSpeedToggle === 1) speedLimit = 0;
+            //if (this.defaultParam.limitSpeedToggle === 1) speedLimit = 0;
 
             if (preUnlimit === 0) summary = "指定不限速字节数：关闭。" ;
             if (preUnlimit !== 0) summary = "指定不限速字节数：" + preUnlimit + "kb。" 
@@ -266,8 +266,8 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
                 summary = summary + timeStr;
                 timeLimit.push({
                     "id": el.id,
-                    "startTime" : new Date(nowDate + " " + el.start).valueOf(),
-                    "endTime" : new Date(nowDate + " " + el.end).valueOf(),
+                    "startTime" : el.start,
+                    "endTime" : el.end,
                     "speedLimit": el.limitSpeed
                 })
             })
@@ -280,7 +280,9 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
                 "preUnlimit": preUnlimit,
                 "speedLimit": speedLimit,
                 "timeLimit": timeLimit,
-                "summary": summary
+                "summary": summary,
+                "preFlag": this.defaultParam.byteNotLimit === 1 ? 0 : 1,
+                "speedFlag": this.defaultParam.limitSpeedToggle === 1 ? 0 : 1,
             }
             return postParam
         },
@@ -365,6 +367,8 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
                     "preUnlimit": obj.get('preUnlimit'),
                     "speedLimit": obj.get('speedLimit'),
                     "timeLimit": obj.get('timeLimit'),
+                    "preFlag": obj.get('preFlag'),
+                    "speedFlag": obj.get('speedFlag')
                 })
             }.bind(this))
 

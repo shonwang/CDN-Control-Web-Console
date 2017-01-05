@@ -1011,7 +1011,9 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.onClickQueryButton();
             this.$el.find(".content-ctn #textarea-comment").html(temp[0].remark || "无");
             this.$el.find(".content-ctn .channel-table-ctn").html(_.template(template['tpl/loading.html'])({}));
-
+            
+            this.dispGroupCollection.off("get.channel.success");
+            this.dispGroupCollection.off("get.channel.error");
             this.dispGroupCollection.on("get.channel.success", $.proxy(this.onGetChannelSuccess, this));
             this.dispGroupCollection.on("get.channel.error", $.proxy(this.onGetError, this));
             this.dispGroupCollection.getChannelList({groupId: temp[0].value});

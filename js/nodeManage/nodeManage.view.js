@@ -904,7 +904,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
 
             this.currentPauseNodeId = id;
             this.collection.operateNode({nodeId: id, operator: -1, t: new Date().valueOf()})
-            this.showDisablePopup("服务端正在努力暂停中，你可以先去上个厕所...")
+            this.showDisablePopup("服务端正在努力暂停中...")
             // require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel){
             //     this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, id)
             // }.bind(this))        

@@ -10,6 +10,18 @@ define("saveThenSend.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.collection.on("get.send.success", $.proxy(this.onSendSuccess, this));
             this.collection.on("get.send.error", $.proxy(this.onGetError, this));
+
+            require(['setupBill.view', 'setupBill.model'], function(SetupBillView, SetupBillModel){
+                var mySetupBillModel = new SetupBillModel();
+                var mySetupBillView = new SetupBillView({
+                    collection: mySetupBillModel,
+                    originId: this.options.domainInfo.id,
+                    onSaveCallback: function(){}.bind(this),
+                    onCancelCallback: function(){}.bind(this)
+                })
+                mySetupBillView.render(this.$el.find(".bill-ctn"));
+                mySetupBillView.$el.find(".opt-ctn").remove();
+            }.bind(this))
         },
 
         onSendSuccess: function(res) {
@@ -32,7 +44,7 @@ define("saveThenSend.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onPostPredelivery: function(){
-            alert("发布成功！")
+            alert("配置已发布，生成配置文件后将进入待下发阶段!")
             this.options.onSendSuccess && this.options.onSendSuccess();
         },
 
@@ -63,8 +75,8 @@ define("saveThenSend.view", ['require','exports', 'template', 'modal.view', 'uti
 
         render: function(target, modalRoot) {
             this.$el.appendTo(target)
-            modalRoot.find(".ok").removeClass("btn-primary").addClass("btn-default").html("发布");
-            modalRoot.find(".cancel").removeClass("btn-default").addClass("btn-primary").html("暂不发布，继续编辑");
+            // modalRoot.find(".ok").removeClass("btn-primary").addClass("btn-default").html("发布");
+            // modalRoot.find(".cancel").removeClass("btn-default").addClass("btn-primary").html("暂不发布，继续编辑");
             this.modalRoot = modalRoot;
         }
     });

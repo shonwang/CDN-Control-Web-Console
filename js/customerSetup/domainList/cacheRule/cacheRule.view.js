@@ -203,11 +203,16 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
 
             this.$el.find(".add").on("click", $.proxy(this.onClickAddRole, this))
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this))
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
 
             this.onClickQueryButton();
 
-            this.collection.on("set.policy.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.policy.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.policy.error", $.proxy(this.onGetError, this));
+        },
+
+        onSaveSuccess: function(){
+            alert("保存成功！")
         },
 
         launchSendPopup: function(){
@@ -217,6 +222,7 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
                     domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
                     }.bind(this)
                 });
                 var options = {
@@ -224,6 +230,7 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
+                    width: 800,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

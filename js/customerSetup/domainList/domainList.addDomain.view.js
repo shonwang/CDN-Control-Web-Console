@@ -616,9 +616,10 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
                   "backSourceProtocol": protocols[result.OriginProtocol],
                   "region":result.Regions,
                   "originType": originTypes[result.OriginType],
-                  "originAddress": result.Origin,
+                  "originAddress": _.uniq(result.Origin.split(',')).join(','),
                   "originPort": result.OriginPort
             }
+
             this.collection.submitDomain(postParam);
             this.$el.find("#add-domain-btnSubmit").attr("disabled", "disabled");
         },

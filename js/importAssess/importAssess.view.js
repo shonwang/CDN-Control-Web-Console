@@ -315,7 +315,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                 "increBandwidth": this.$el.find("#input-bandwidth").val()
             }
             var newModel = new this.collection.model(defaultParam)
-            newModel.set("createTime", new Date().format("yyyy/mm/dd hh:MM:ss"));
+            newModel.set("createTime", new Date().format("yyyy/MM/dd hh:mm:ss"));
             this.collection.models.reverse();
             this.collection.push(newModel);
             this.collection.each(function(el){
@@ -472,6 +472,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
 
             var model = this.collection.get(id);
             this.collection.remove(model);
+            this.collection.models.reverse();
             this.collection.trigger("update.assess.table");
         },
 
@@ -481,6 +482,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             }.bind(this))
 
             this.collection.remove(checkedList);
+            this.collection.models.reverse();
             this.collection.trigger("update.assess.table");
         },
 

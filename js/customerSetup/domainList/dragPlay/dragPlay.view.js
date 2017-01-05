@@ -31,8 +31,13 @@ define("dragPlay.view", ['require','exports', 'template', 'modal.view', 'utility
             this.collection.getDragConfList({originId: this.domainInfo.id})
 
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
-            this.collection.on("set.drag.success", $.proxy(this.launchSendPopup, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.drag.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.drag.error", $.proxy(this.onGetError, this));
+        },
+
+        onSaveSuccess: function(){
+            alert("保存成功！")
         },
 
         launchSendPopup: function(){
@@ -42,6 +47,7 @@ define("dragPlay.view", ['require','exports', 'template', 'modal.view', 'utility
                     domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
                     }.bind(this)
                 });
                 var options = {
@@ -49,6 +55,7 @@ define("dragPlay.view", ['require','exports', 'template', 'modal.view', 'utility
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
+                    width: 800,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

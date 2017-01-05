@@ -90,7 +90,9 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".use-advance .togglebutton input").on("click", $.proxy(this.onClickIsUseAdvanceBtn, this));
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
 
-            this.collection.on("set.backSourceConfig.success", $.proxy(this.launchSendPopup, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
+            this.collection.on("set.backSourceConfig.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.backSourceConfig.error", $.proxy(this.onGetError, this));
 
             this.initModifyHost(data);
@@ -250,28 +252,32 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 "domain" : this.domainInfo.domain,
                 "backsourceFlag": this.defaultParam.isUseAdvance === 1 ? 0 : 1, //配置高级回源策略的开启或关闭,0:关闭 1:开启
                 "originType": this.defaultParam.isUseAdvance === 1 ? this.defaultParam.originBaseType : this.defaultParam.originAdvanceType,
-                "originAddress": this.$el.find(".base #textarea-origin-type").val(),
+                "originAddress": _.uniq(this.$el.find(".base #textarea-origin-type").val().split(',')).join(','),
                 "backsourcePolicy": this.defaultParam.originStrategy,
                 "backsourceBestcount": parseInt(this.$el.find("#ip-num").val()),
                 "advanceConfigList":[{
                     "originLine": 1, //1:default默认源； 2:un联通源; 3:ct电信源; 4:cm移动源
-                    "originAddress": this.$el.find(".default #primary").val(),
-                    "addressBackup": this.$el.find(".default #secondary").val()
+                    "originAddress": _.uniq(this.$el.find(".default #primary").val().split(',')).join(','),
+                    "addressBackup": _.uniq(this.$el.find(".default #secondary").val().split(',')).join(',')
                 },{
                     "originLine": 2,
-                    "originAddress": this.$el.find(".unicom #primary").val(),
-                    "addressBackup": this.$el.find(".unicom #secondary").val() 
+                    "originAddress": _.uniq(this.$el.find(".unicom #primary").val().split(',')).join(','),
+                    "addressBackup": _.uniq(this.$el.find(".unicom #secondary").val().split(',')).join(',') 
                 },{
                     "originLine": 3,
-                    "originAddress": this.$el.find(".telecom #primary").val(),
-                    "addressBackup": this.$el.find(".telecom #secondary").val() 
+                    "originAddress": _.uniq(this.$el.find(".telecom #primary").val().split(',')).join(','),
+                    "addressBackup": _.uniq(this.$el.find(".telecom #secondary").val().split(',')).join(',') 
                 },{
                     "originLine": 4,
-                    "originAddress": this.$el.find(".mobile #primary").val(),
-                    "addressBackup": this.$el.find(".mobile #secondary").val() 
+                    "originAddress": _.uniq(this.$el.find(".mobile #primary").val().split(',')).join(','),
+                    "addressBackup": _.uniq(this.$el.find(".mobile #secondary").val().split(',')).join(',') 
                 }]
             }
             this.collection.setBackSourceConfig(postParam)
+        },
+
+        onSaveSuccess: function(){
+            alert("保存成功！")
         },
 
         launchSendPopup: function(){
@@ -281,6 +287,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                     domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
                     }.bind(this)
                 });
                 var options = {
@@ -288,6 +295,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
+                    width: 800,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),
@@ -401,7 +409,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".modify-host .togglebutton input").on("click", $.proxy(this.onClickIsModifyHostBtn, this));
             this.$el.find(".host-save").on("click", $.proxy(this.onClickHostSaveBtn, this));
 
-            this.collection.on("set.hostConfig.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.hostConfig.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.hostConfig.error", $.proxy(this.onGetError, this));
         },
 

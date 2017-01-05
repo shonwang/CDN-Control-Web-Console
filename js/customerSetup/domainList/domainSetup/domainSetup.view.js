@@ -21,9 +21,10 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"));
 
-            this.$el.find(".save").on("click", $.proxy(this.onClickSaveButton, this))
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveButton, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
 
-            this.collection.on("modify.domain.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("modify.domain.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("modify.domain.error", $.proxy(this.onGetError, this));
             this.collection.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
             this.collection.on("get.domainInfo.error", $.proxy(this.onGetError, this));
@@ -135,6 +136,10 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
             this.collection.modifyDomainBasic(postParam);
         },
 
+        onSaveSuccess: function(){
+            alert("保存成功！")
+        },
+
         launchSendPopup: function(){
             require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
                 var mySaveThenSendView = new SaveThenSendView({
@@ -142,6 +147,7 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
                     domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
                     }.bind(this)
                 });
                 var options = {
@@ -149,6 +155,7 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
+                    width: 800,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

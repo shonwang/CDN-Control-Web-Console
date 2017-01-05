@@ -67,7 +67,7 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
         onClickSaveBtn: function (argument) {
             var list = [{
                 "parameterKey": "",
-                "parameterValue": this.$el.find("#delete-args").val(),
+                "parameterValue": _.uniq(this.$el.find("#delete-args").val().split(',')).join(','),
                 "type": 0,
                 "status": this.defaultParam.deleteParam === 1 ? 0 : 1
             }];

@@ -252,25 +252,25 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 "domain" : this.domainInfo.domain,
                 "backsourceFlag": this.defaultParam.isUseAdvance === 1 ? 0 : 1, //配置高级回源策略的开启或关闭,0:关闭 1:开启
                 "originType": this.defaultParam.isUseAdvance === 1 ? this.defaultParam.originBaseType : this.defaultParam.originAdvanceType,
-                "originAddress": this.$el.find(".base #textarea-origin-type").val(),
+                "originAddress": _.uniq(this.$el.find(".base #textarea-origin-type").val().split(',')).join(','),
                 "backsourcePolicy": this.defaultParam.originStrategy,
                 "backsourceBestcount": parseInt(this.$el.find("#ip-num").val()),
                 "advanceConfigList":[{
                     "originLine": 1, //1:default默认源； 2:un联通源; 3:ct电信源; 4:cm移动源
-                    "originAddress": this.$el.find(".default #primary").val(),
-                    "addressBackup": this.$el.find(".default #secondary").val()
+                    "originAddress": _.uniq(this.$el.find(".default #primary").val().split(',')).join(','),
+                    "addressBackup": _.uniq(this.$el.find(".default #secondary").val().split(',')).join(',')
                 },{
                     "originLine": 2,
-                    "originAddress": this.$el.find(".unicom #primary").val(),
-                    "addressBackup": this.$el.find(".unicom #secondary").val() 
+                    "originAddress": _.uniq(this.$el.find(".unicom #primary").val().split(',')).join(','),
+                    "addressBackup": _.uniq(this.$el.find(".unicom #secondary").val().split(',')).join(',') 
                 },{
                     "originLine": 3,
-                    "originAddress": this.$el.find(".telecom #primary").val(),
-                    "addressBackup": this.$el.find(".telecom #secondary").val() 
+                    "originAddress": _.uniq(this.$el.find(".telecom #primary").val().split(',')).join(','),
+                    "addressBackup": _.uniq(this.$el.find(".telecom #secondary").val().split(',')).join(',') 
                 },{
                     "originLine": 4,
-                    "originAddress": this.$el.find(".mobile #primary").val(),
-                    "addressBackup": this.$el.find(".mobile #secondary").val() 
+                    "originAddress": _.uniq(this.$el.find(".mobile #primary").val().split(',')).join(','),
+                    "addressBackup": _.uniq(this.$el.find(".mobile #secondary").val().split(',')).join(',') 
                 }]
             }
             this.collection.setBackSourceConfig(postParam)

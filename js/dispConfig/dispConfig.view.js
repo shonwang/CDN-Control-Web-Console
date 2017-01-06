@@ -1037,6 +1037,11 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         remove: function(){
+            if (this.dispSuggesttionView){
+                this.dispSuggesttionView.remove();
+                this.dispSuggesttionView = null;
+                this.dispSuggesttionFailModel = null;
+            }
             if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
             if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
             this.disablePopup = null;

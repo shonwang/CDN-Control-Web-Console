@@ -312,11 +312,15 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                 alert("请填写带宽!");
                 return
             }
+            if (parseInt(this.$el.find("#input-bandwidth").val()) <= 0){
+                alert("带宽必须大于零!");
+                return
+            }
             var defaultParam = {
                 "cnameId": this.currentModel.get("cnameId"),
                 "cname": this.currentModel.get("cname"),
-                "accelerateName": this.currentModel.get("accelerateName"),
-                "clientName": this.currentModel.get("clientName"),
+                "accelerateName": this.currentModel.get("accelerateName").replace(/\|/g, '<br>'),
+                "clientName": this.currentModel.get("clientName").replace(/\|/g, '<br>'),
                 "groupId": this.currentModel.get("groupId"),
                 "groupName": this.currentModel.get("groupName"),
                 "regionId": this.regionId,
@@ -346,19 +350,19 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             var postParam = [];
             _.each(checkedList, function(el, index, ls){
                 postParam.push({
-                    "cnameId": 0,
-                    "cname": null,
-                    "accelerateName": null,
-                    "clientName": null,
+                    "cnameId": el.get("cnameId"),
+                    "cname": el.get("cname"),
+                    "accelerateName": el.get("accelerateName").replace(/<br>/g, '|'),
+                    "clientName": el.get("clientName").replace(/<br>/g, '|'),
                     "groupId": el.get("groupId"),
-                    "groupName": null,
+                    "groupName": el.get("groupName"),
                     "regionId": el.get("regionId"),
-                    "regionName": null,
+                    "regionName": el.get("regionName"),
                     "increBandwidth": el.get("increBandwidth"),
-                    "createTime": null,
-                    "issuedTime": null,
-                    "orgId": null,
-                    "evalState": 0
+                    "createTime": new Date(el.get("createTime")).valueOf(),
+                    "issuedTime": el.get("issuedTime"),
+                    "orgId": el.get("orgId"),
+                    "evalState": el.get("evalState")
                 })
             }.bind(this))
 
@@ -415,6 +419,8 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+
+            this.table.find("[data-toggle='popover']").popover();
         },
 
         onGetClientMessage: function(res){

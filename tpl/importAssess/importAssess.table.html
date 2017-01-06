@@ -17,8 +17,22 @@
             <tr data-id="<%=data[i].attributes.id%>">
               <td><input type="checkbox" id="<%=data[i].id%>"></td>
               <td><%=data[i].attributes["cname"]%></td>
-              <td><%=data[i].attributes["accelerateName"]%></td>
-              <td><%=data[i].attributes["clientName"]%></td>
+              <td>
+                  <% if (data[i].attributes["accelerateName"].split("<br>").length > 1) { %>
+                    <%=data[i].attributes["accelerateName"].split("<br>")[0]%>
+                    <a href="javascript:void(0)" data-container="body" data-toggle="popover" data-placement="left" data-content='<%=data[i].attributes["accelerateName"]%>' data-html="true">...更多</a>
+                  <% } else { %>
+                    <%=data[i].attributes["accelerateName"]%>
+                  <% } %>
+              </td>
+              <td>
+                  <% if (data[i].attributes["clientName"].split("<br>").length > 1) { %>
+                    <%=data[i].attributes["clientName"].split("<br>")[0]%>
+                    <a href="javascript:void(0)" data-container="body" data-toggle="popover" data-placement="right" data-content='<%=data[i].attributes["clientName"]%>' data-html="true">...更多</a>
+                  <% } else { %>
+                    <%=data[i].attributes["clientName"]%>
+                  <% } %>
+              </td>
               <td><%=data[i].attributes["groupName"]%></td>
               <td><%=data[i].attributes["regionName"]%></td>
               <td><%=data[i].attributes["increBandwidth"]%></td>

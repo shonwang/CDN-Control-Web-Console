@@ -312,6 +312,10 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                 alert("请填写带宽!");
                 return
             }
+            if (parseInt(this.$el.find("#input-bandwidth").val()) <= 0){
+                alert("带宽必须大于零!");
+                return
+            }
             var defaultParam = {
                 "cnameId": this.currentModel.get("cnameId"),
                 "cname": this.currentModel.get("cname"),
@@ -355,7 +359,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                     "regionId": el.get("regionId"),
                     "regionName": el.get("regionName"),
                     "increBandwidth": el.get("increBandwidth"),
-                    "createTime": el.get("createTime"),
+                    "createTime": new Date(el.get("createTime")).valueOf(),
                     "issuedTime": el.get("issuedTime"),
                     "orgId": el.get("orgId"),
                     "evalState": el.get("evalState")
@@ -415,6 +419,8 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+
+            this.table.find("[data-toggle='popover']").popover();
         },
 
         onGetClientMessage: function(res){

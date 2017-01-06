@@ -67,6 +67,8 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 this.defaultParam.ipNum = data.domainConf.backsourceBestcount;
 
             this.hostType = data.domainConf.hostType;
+            this.busnessType = data.originDomain.type;
+            this.protocol = data.domainConf.protocol;
 
             if (data.advanceConfigList){
                 _.each(data.advanceConfigList, function(el, index, ls) {
@@ -136,9 +138,15 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             var  baseArray = [
                 {name: "域名回源", value: 2},
                 {name: "IP回源", value: 1},
-                {name: "KS3回源", value: 3}
+                // {name: "KS3回源", value: 3}
             ],
             rootNode = this.$el.find(".base .origin-type");
+
+            if (this.busnessType === 2 && this.protocol === 2)
+                baseArray.push({name: "视频云回源", value: 3})
+            else
+                baseArray.push({name: "KS3回源", value: 3})
+
             Utility.initDropMenu(rootNode, baseArray, function(value){
                 this.defaultParam.originBaseType = parseInt(value)
             }.bind(this));

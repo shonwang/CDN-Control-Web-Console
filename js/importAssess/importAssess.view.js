@@ -151,6 +151,14 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             this.onClickConfirmButton();
         },
 
+        enterKeyBindQuery: function(){
+            $(document).on('keydown', function(e){
+                if(e.keyCode == 13){
+                    this.onClickConfirmButton();
+                }
+            }.bind(this));
+        },
+
         onClickConfirmButton: function(){
             this.isInitPaginator = false;
             this.queryArgs.currentPage = 1;
@@ -241,6 +249,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
 
         render: function(target) {
             this.$el.appendTo(target);
+            this.enterKeyBindQuery();
         }
     }); 
 

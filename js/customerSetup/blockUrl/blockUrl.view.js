@@ -163,7 +163,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 userId:this.userInfo.uid,
                 //userId:1,
                 ids: "",
-                isNeedFresh: true
+                needFresh: true
             }
 
             this.onClickQueryButton();
@@ -180,7 +180,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         },
         onClickRefresh: function(event){
             var eventTarget = event.target || event.srcElement;
-            this.blockUrlParam.isNeedFresh = eventTarget.checked;
+            this.blockUrlParam.needFresh = eventTarget.checked;
         },
         onClickOptions: function(event){
              var eventTarget = event.target || event.srcElement;

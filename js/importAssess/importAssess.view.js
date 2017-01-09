@@ -12,7 +12,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.$el = $(_.template(template['tpl/importAssess/importAssess.history.html'])({data: {}}));
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickSearchButton, this));
+            this.$el.find(".query").on("click", $.proxy(this.onClickSearchButton, this));
 
             this.startTime = new Date().format("yyyy/MM/dd") + " 00:00:00";
             this.endTime = new Date().valueOf();

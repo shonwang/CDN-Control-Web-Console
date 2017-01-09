@@ -28,7 +28,7 @@
               <td>
                   <% if (data[i].attributes["clientName"].split("<br>").length > 1) { %>
                     <%=data[i].attributes["clientName"].split("<br>")[0]%>
-                    <a href="javascript:void(0)" data-container="body" data-toggle="popover" data-placement="right" data-content='<%=data[i].attributes["clientName"]%>' data-html="true">...更多</a>
+                    <a href="javascript:void(0)" data-container="body" data-toggle="popover" data-placement="left" data-content='<%=data[i].attributes["clientName"]%>' data-html="true">...更多</a>
                   <% } else { %>
                     <%=data[i].attributes["clientName"]%>
                   <% } %>

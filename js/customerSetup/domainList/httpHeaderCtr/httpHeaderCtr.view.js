@@ -53,7 +53,7 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
             if (data.domainConf && data.domainConf.removeKs3 !== null && data.domainConf.removeKs3 !== undefined)
                   this.defaultParam.removeKs3 = data.domainConf.removeKs3
 
-            this.collection.on("set.headerCtr.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.headerCtr.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.headerCtr.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".get-client-ip .togglebutton input").on("click", $.proxy(this.onClickGetIpToggle, this));
@@ -61,7 +61,13 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
             this.$el.find(".delete-cookie-header .togglebutton input").on("click", $.proxy(this.onClickDelCookieToggle, this));
             this.$el.find(".header-ctr-save").on("click", $.proxy(this.onClickSaveBtn, this));
 
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
             this.initSetup();
+        },
+
+        onSaveSuccess: function(){
+            alert("保存成功！")
         },
 
         launchSendPopup: function(){
@@ -71,6 +77,7 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
                     domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
                     }.bind(this)
                 });
                 var options = {
@@ -78,6 +85,7 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
+                    width: 800,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

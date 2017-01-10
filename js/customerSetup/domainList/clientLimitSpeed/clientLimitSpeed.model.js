@@ -13,13 +13,15 @@ define("clientLimitSpeed.model", ['require','exports', 'utility'], function(requ
             var preUnlimit = this.get('preUnlimit'),
                 speedLimit = this.get('speedLimit'), summary = '';
 
-            if (preUnlimit === 0) summary = "指定不限速字节数：关闭。限速字节数：" + speedLimit + "kb/s<br>";
-            if (preUnlimit !== 0) summary = "指定不限速字节数：" + preUnlimit + "kb。限速字节数：" + speedLimit + "kb/s<br>";
+            if (preUnlimit === 0) summary = "指定不限速字节数：关闭。" ;
+            if (preUnlimit !== 0) summary = "指定不限速字节数：" + preUnlimit + "kb。" 
+            if (speedLimit === 0) summary = summary + "限速字节数：关闭<br>";
+            if (speedLimit !== 0) summary = summary + "限速字节数：" + speedLimit + "kb/s<br>";
 
             var timeLimit = this.get("timeLimit");
             _.each(timeLimit, function(el, index, ls){
-                var startTime = new Date(el.startTime).format("hh:mm:ss"),
-                    endTime = new Date(el.endTime).format("hh:mm:ss"),
+                var startTime = el.startTime,
+                    endTime = el.endTime,
                     speedLimit2 = el.speedLimit + "kb/s<br>"
                 var timeStr = "限速时间段：" + startTime + "至" + endTime + "，限速字节数：" + speedLimit2;
                 summary = summary + timeStr

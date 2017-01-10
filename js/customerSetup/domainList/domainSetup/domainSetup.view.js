@@ -15,15 +15,17 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
                     uid: clientInfo.uid
                 }
             this.domainInfo = domainInfo;
+            this.clientInfo = clientInfo;
             this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
                 data: userInfo,
                 notShowBtn: true
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"));
 
-            this.$el.find(".save").on("click", $.proxy(this.onClickSaveButton, this))
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveButton, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
 
-            this.collection.on("modify.domain.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("modify.domain.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("modify.domain.error", $.proxy(this.onGetError, this));
             this.collection.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
             this.collection.on("get.domainInfo.error", $.proxy(this.onGetError, this));
@@ -129,10 +131,15 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
             }
             var postParam =  {
                 "originId": this.domainInfo.id,
+                "userId" : this.clientInfo.uid,
                 "originPort": this.$el.find("#server-port").val(),
                 "region": this.getRegion().join(",")
             }
             this.collection.modifyDomainBasic(postParam);
+        },
+
+        onSaveSuccess: function(){
+            alert("保存成功！")
         },
 
         launchSendPopup: function(){
@@ -142,6 +149,7 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
                     domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
                     }.bind(this)
                 });
                 var options = {
@@ -149,6 +157,7 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
+                    width: 800,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

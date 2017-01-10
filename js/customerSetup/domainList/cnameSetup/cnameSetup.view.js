@@ -30,15 +30,21 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         onGetDomainInfo: function(data){
-            this.$el.find(".save").on("click", $.proxy(this.onClickSaveButton, this))
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveButton, this));
 
-            this.collection.on("modify.cname.success", $.proxy(this.launchSendPopup, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
+            this.collection.on("modify.cname.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("modify.cname.error", $.proxy(this.onGetError, this));
             
             var cname = _.find(data.originDomain.cnameData, function(obj) {
                 return obj.type === 1
             }.bind(this))
             if (cname) this.$el.find("#cname-set").val(cname.name);
+        },
+
+        onSaveSuccess: function(){
+            alert("保存成功！")
         },
 
         launchSendPopup: function(){
@@ -48,6 +54,7 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
                     domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
                     }.bind(this)
                 });
                 var options = {
@@ -55,6 +62,7 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
+                    width: 800,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

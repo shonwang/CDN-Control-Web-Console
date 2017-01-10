@@ -26,13 +26,12 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
             this.collection.off("get.DetectInfo.error");
             this.collection.on("get.DetectInfo.success", $.proxy(this.getDetecInfoSuccess, this));
             this.collection.on("get.DetectInfo.error", $.proxy(this.onGetError, this));
-            console.log(this.collection);
-            console.log(this.collection._events);
+
             this.collection.getDetectInfo(this.domainInfo.id);
 
             this.collection.off("add.DetectInfo.success");
             this.collection.off("add.DetectInfo.error");
-            this.collection.on("add.DetectInfo.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("add.DetectInfo.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("add.DetectInfo.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".setup .backOriginSetupType").bootstrapSwitch('state',true);
@@ -69,6 +68,8 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
             
             this.$el.find(".setup .backOriginDetectiontype").on("switchChange.bootstrapSwitch", $.proxy(this.onClickIsUseDetectionBtn, this));
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
+
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
         },
         
         initOriginSetup: function(){
@@ -156,6 +157,11 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
             
             this.collection.addDetectInfo(this.defaultParam);
         },
+
+        onSaveSuccess: function(){
+            alert("保存成功！")
+        },
+
         launchSendPopup: function(){
             require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
                 var mySaveThenSendView = new SaveThenSendView({
@@ -163,6 +169,7 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
                     domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
                     }.bind(this)
                 });
                 var options = {
@@ -170,6 +177,7 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
+                    width: 800,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

@@ -64,7 +64,8 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
 
             this.defaultParam = {
                 byteNotLimit: 1,
-                byteNotLimitUnit: 1, 
+                byteNotLimitUnit: 1,
+                limitSpeedToggle: 1,  
                 limitSpeed: 0,
                 preUnlimit: 0,
                 timeLimitList: [],
@@ -75,15 +76,16 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
             if (this.isEdit){
                 this.defaultParam.type = this.model.get("matchingType") || 0;
                 this.defaultParam.policy = this.model.get("matchingValue") || "";
-                this.defaultParam.byteNotLimit = this.model.get("preUnlimit") === 0 ? 1 : 2;
+                this.defaultParam.byteNotLimit = this.model.get("preFlag") === 0 ? 1 : 2;
                 this.defaultParam.byteNotLimitUnit = this.model.get("preUnlimit") >= 1024 ? 2 : 1;
                 this.defaultParam.preUnlimit = this.model.get("preUnlimit") || 0;
+                this.defaultParam.limitSpeedToggle = this.model.get("speedFlag") === 0 ? 1 : 2;
                 this.defaultParam.limitSpeed = this.model.get("speedLimit") || 0;
                 _.each(this.model.get("timeLimit"), function(el, index, ls){
                     this.defaultParam.timeLimitList.push({
                         id: el.id,
-                        start: new Date(el.startTime).format("hh:mm:ss"),
-                        end: new Date(el.endTime).format("hh:mm:ss"),
+                        start: el.startTime,
+                        end: el.endTime,
                         limitSpeed: el.speedLimit
                     })
                 }.bind(this))
@@ -109,6 +111,7 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
             }.bind(this))
 
             this.$el.find(".byte-limit-toggle .togglebutton input").on("click", $.proxy(this.onClickByteLimitToggle, this));
+            this.$el.find(".set-limit-toggle .togglebutton input").on("click", $.proxy(this.onClickSetLimitToggle, this));
             this.$el.find(".add-time-limit").on("click", $.proxy(this.onClickAddTimeLimit, this));
         },
 
@@ -125,6 +128,13 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
                 this.$el.find("#byte-limit").val(this.defaultParam.preUnlimit);
             } else {
                 this.$el.find("#byte-limit").val(this.defaultParam.preUnlimit / 1024);
+            }
+            if (this.defaultParam.limitSpeedToggle === 1){
+                this.$el.find(".set-limit-toggle .togglebutton input").get(0).checked = false;
+                this.$el.find(".set-limit").hide();
+            } else if (this.defaultParam.limitSpeedToggle === 2){
+                this.$el.find(".set-limit-toggle .togglebutton input").get(0).checked = true;
+                this.$el.find(".set-limit").show();
             }
             this.$el.find("#set-limit").val(this.defaultParam.limitSpeed);
             this.updateTimeLimitTable();
@@ -216,6 +226,18 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
             }
         },
 
+        onClickSetLimitToggle: function(){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            if (eventTarget.checked){
+                this.$el.find(".set-limit").show();
+                this.defaultParam.limitSpeedToggle = 2;
+            } else {
+                this.$el.find(".set-limit").hide();
+                this.defaultParam.limitSpeedToggle = 1;
+            }
+        },
+
         onSure: function(){
             var matchConditionParam = this.matchConditionView.getMatchConditionParam();
             if (!matchConditionParam) return false;
@@ -224,13 +246,17 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
 
             if (this.defaultParam.byteNotLimitUnit === 2)
                 preUnlimit = preUnlimit * 1024
-            if (this.defaultParam.byteNotLimit === 1) preUnlimit = 0;
+            //if (this.defaultParam.byteNotLimit === 1) preUnlimit = 0;
 
-            speedLimit = this.$el.find("#set-limit").val(), 
+            var speedLimit = parseInt(this.$el.find("#set-limit").val()), 
             summary = '', timeLimit = [], nowDate = new Date().format("yyyy/MM/dd");
 
-            if (preUnlimit === 0) summary = "指定不限速字节数：关闭。限速字节数：" + speedLimit + "kb/s<br>";
-            if (preUnlimit !== 0) summary = "指定不限速字节数：" + preUnlimit + "kb。限速字节数：" + speedLimit + "kb/s<br>";
+            //if (this.defaultParam.limitSpeedToggle === 1) speedLimit = 0;
+
+            if (preUnlimit === 0) summary = "指定不限速字节数：关闭。" ;
+            if (preUnlimit !== 0) summary = "指定不限速字节数：" + preUnlimit + "kb。" 
+            if (speedLimit === 0) summary = summary + "限速字节数：关闭";
+            if (speedLimit !== 0) summary = summary + "限速字节数：" + speedLimit + "kb/s<br>";
 
             _.each(this.defaultParam.timeLimitList, function(el, index, ls){
                 var startTime = el.start,
@@ -240,8 +266,8 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
                 summary = summary + timeStr;
                 timeLimit.push({
                     "id": el.id,
-                    "startTime" : new Date(nowDate + " " + el.start).valueOf(),
-                    "endTime" : new Date(nowDate + " " + el.end).valueOf(),
+                    "startTime" : el.start,
+                    "endTime" : el.end,
                     "speedLimit": el.limitSpeed
                 })
             })
@@ -254,7 +280,9 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
                 "preUnlimit": preUnlimit,
                 "speedLimit": speedLimit,
                 "timeLimit": timeLimit,
-                "summary": summary
+                "summary": summary,
+                "preFlag": this.defaultParam.byteNotLimit === 1 ? 0 : 1,
+                "speedFlag": this.defaultParam.limitSpeedToggle === 1 ? 0 : 1,
             }
             return postParam
         },
@@ -292,9 +320,15 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
             this.$el.find(".add").on("click", $.proxy(this.onClickAddRule, this))
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
 
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
             this.onClickQueryButton();
-            this.collection.on("set.speed.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.speed.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.speed.error", $.proxy(this.onGetError, this));
+        },
+
+        onSaveSuccess: function(){
+            alert("保存成功！")
         },
 
         launchSendPopup: function(){
@@ -304,6 +338,7 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
                     domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
                     }.bind(this)
                 });
                 var options = {
@@ -311,6 +346,7 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
+                    width: 800,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),
@@ -331,6 +367,8 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
                     "preUnlimit": obj.get('preUnlimit'),
                     "speedLimit": obj.get('speedLimit'),
                     "timeLimit": obj.get('timeLimit'),
+                    "preFlag": obj.get('preFlag'),
+                    "speedFlag": obj.get('speedFlag')
                 })
             }.bind(this))
 

@@ -16,6 +16,7 @@ define("saveThenSend.view", ['require','exports', 'template', 'modal.view', 'uti
                 var mySetupBillView = new SetupBillView({
                     collection: mySetupBillModel,
                     originId: this.options.domainInfo.id,
+                    isFromPublish: true,
                     onSaveCallback: function(){}.bind(this),
                     onCancelCallback: function(){}.bind(this)
                 })

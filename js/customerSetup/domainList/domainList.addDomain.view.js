@@ -543,7 +543,7 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
             this.collection.on("get.region.success", $.proxy(this.onGetRegionSuccess, this))
             this.collection.on("get.region.error", $.proxy(this.onGetError, this))
 
-            this.collection.getRegionBilling({userId: userInfo.uid});
+            this.collection.getRegionBillingByUserId({userId: userInfo.uid});
 
             this.$el.find("#text-domainName").on("focus",$.proxy(this.onDomainNameFocus,this));
 

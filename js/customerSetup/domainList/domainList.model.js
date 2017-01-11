@@ -85,10 +85,10 @@ define("domainList.model", ['require','exports','utility'], function(require, ex
         },
 
         getRegionBilling: function(args){
-            var url = BASE_URL + "/channelManager/region/getRegionBillingByUserId",
+            var url = BASE_URL + "/channelManager/http/getRegionBilling",
             successCallback = function(res){
-                if (res&&res.regions)
-                    this.trigger("get.region.success", res.regions);
+                if (res&&res.data)
+                    this.trigger("get.region.success", res.data);
                 else
                     this.trigger("get.region.error"); 
             }.bind(this),

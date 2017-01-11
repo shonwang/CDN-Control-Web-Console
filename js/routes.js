@@ -14,6 +14,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             "deviceManage/:query" : "deviceManage",
             "nodeManage"          : "nodeManage",
             "dispGroup"           : "dispGroup",
+            "importAssess"        : "importAssess",
             "dispConfig"          : "dispConfig",
             "importAssess"        : "importAssess",
             "coverRegion"         : "coverRegion",

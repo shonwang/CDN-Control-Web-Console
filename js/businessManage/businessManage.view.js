@@ -458,13 +458,13 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                 onOKCallback: function() {
                     var options = editBusinessView.getArgs(this.editBusinessPopup);
                     if (!options) return;
-                    var len = this.editBusinessPopup.$el.find('.addOrEdit').children().length;
-                    if(len < 1){
-                        alert('请添加节点');
-                    }else{
+                    //var len = this.editBusinessPopup.$el.find('.addOrEdit').children().length;
+                    // if(len < 1){
+                    //     alert('请添加节点');
+                    // }else{
                         this.collection.editNode(options);
                         this.editBusinessPopup.$el.modal("hide");
-                    }
+                    // }
                 }.bind(this),
                 onHiddenCallback: function() {}
             }

@@ -197,6 +197,7 @@ define("liveCurentSetup.view", ['require','exports', 'template', 'modal.view', '
                 this.queryArgs.page = 1;
                 this.$el.find(".pagination").html("");
                 this.queryArgs.bisTypeId = parseInt(value)
+                this.$el.find(".origin-list .table-ctn").html(_.template(template['tpl/loading.html'])({}));
                 this.collection.getConfList(this.queryArgs)
             }.bind(this));
             this.isInitPaginator = false;

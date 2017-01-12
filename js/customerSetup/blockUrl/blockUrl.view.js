@@ -409,7 +409,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             ]
             rootNode = this.$el.find('.dropdown-operator');
             Utility.initDropMenu(rootNode,operatorArray,function(value){
-               this.queryArgs.op = value === 'null' ? null : parseInt(value);
+               this.queryArgs.op = parseInt(value);
             }.bind(this));
 
             var pageNum = [

@@ -30,6 +30,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         },
         blockUrlsSuccess: function(){
              $('a[data-target="#blockUrlList"]').click();
+             this.collection.getGuestQuotaCount({userId:this.userInfo.uid});
              alert('操作成功');
         },
         onGetError: function(error){

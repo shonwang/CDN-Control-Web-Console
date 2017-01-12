@@ -403,8 +403,10 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             }.bind(this));
 
             var operatorArray = [
+               {name:'全部',value:0},
                {name:'屏蔽',value:1},
-               {name:'解除屏蔽',value:2}
+               {name:'解除屏蔽',value:2},
+               {name:'自动解除屏蔽',value:3}
             ]
             rootNode = this.$el.find('.dropdown-operator');
             Utility.initDropMenu(rootNode,operatorArray,function(value){
@@ -492,6 +494,9 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
 			var target = event.target || event.srcElement;
 			var id = $(target).attr('data-target');
             switch(id){
+                case '#blockUrl':
+                  if(this.myTabBlockView) this.myTabBlockView.collection.getGuestQuotaCount({userId:this.userInfo.uid});
+                  break;
             	case '#blockUrlList':
             	  if(this.myTabCurrentBlockListView){
                       this.myTabCurrentBlockListView.onClickQueryButton();

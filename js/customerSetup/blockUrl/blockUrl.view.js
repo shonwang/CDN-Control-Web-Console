@@ -405,7 +405,8 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             var operatorArray = [
                {name:'全部',value:0},
                {name:'屏蔽',value:1},
-               {name:'解除屏蔽',value:2}
+               {name:'解除屏蔽',value:2},
+               {name:'自动解除屏蔽',value:3}
             ]
             rootNode = this.$el.find('.dropdown-operator');
             Utility.initDropMenu(rootNode,operatorArray,function(value){

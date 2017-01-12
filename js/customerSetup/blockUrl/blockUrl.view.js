@@ -30,7 +30,6 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         },
         blockUrlsSuccess: function(){
              $('a[data-target="#blockUrlList"]').click();
-             this.collection.getGuestQuotaCount({userId:this.userInfo.uid});
              alert('操作成功');
         },
         onGetError: function(error){
@@ -495,6 +494,9 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
 			var target = event.target || event.srcElement;
 			var id = $(target).attr('data-target');
             switch(id){
+                case 'blockUrl':
+                  if(this.myTabBlockView) this.myTabBlockView.collection.getGuestQuotaCount({userId:this.userInfo.uid});
+                  break;
             	case '#blockUrlList':
             	  if(this.myTabCurrentBlockListView){
                       this.myTabCurrentBlockListView.onClickQueryButton();

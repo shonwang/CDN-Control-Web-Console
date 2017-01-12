@@ -92,6 +92,51 @@ define("dispSuggesttion.model", ['require','exports', 'utility'], function(requi
                 this.trigger("get.disconfAdvice.error", response);
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        getEvaluationAdvice: function(args){
+            var url = BASE_URL + "/rs/advice/getEvaluationAdvice",
+            successCallback = function(res){
+                this.issuedFlag = res.issuedFlag;
+                this.trigger("get.disconfAdvice.success", res.adviceVo);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.disconfAdvice.error", response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+        evalAdviceDispDns: function(args, requestId, cc){
+            var url = BASE_URL + "/rs/advice/evalAdviceDispDns?" + "&requestId=" + requestId + "&cc=" + cc,
+            successCallback = function(res){
+                this.trigger("advice.dispDns.success"); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("advice.dispDns.error", response); 
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback, 1000 * 60 * 5);
+        },
+
+        getPeakAdvice: function(args){
+            var url = BASE_URL + "/rs/advice/getPeakAdvice",
+            successCallback = function(res){
+                this.trigger("get.disconfAdvice.success", res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.disconfAdvice.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        peakAdviceDispDns: function(args, requestId, cc){
+            var url = BASE_URL + "/rs/advice/peakAdviceDispDns?" + "&requestId=" + requestId + "&cc=" + cc,
+            successCallback = function(res){
+                this.trigger("advice.dispDns.success"); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("advice.dispDns.error", response); 
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback, 1000 * 60 * 5);
         }
     });
 

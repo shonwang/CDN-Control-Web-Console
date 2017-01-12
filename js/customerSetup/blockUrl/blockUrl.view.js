@@ -403,6 +403,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             }.bind(this));
 
             var operatorArray = [
+               {name:'全部',value:null},
                {name:'屏蔽',value:1},
                {name:'解除屏蔽',value:2}
             ]

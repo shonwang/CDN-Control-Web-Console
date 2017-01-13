@@ -246,17 +246,22 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
 
             if (this.defaultParam.byteNotLimitUnit === 2)
                 preUnlimit = preUnlimit * 1024
-            //if (this.defaultParam.byteNotLimit === 1) preUnlimit = 0;
 
             var speedLimit = parseInt(this.$el.find("#set-limit").val()), 
             summary = '', timeLimit = [], nowDate = new Date().format("yyyy/MM/dd");
 
-            //if (this.defaultParam.limitSpeedToggle === 1) speedLimit = 0;
-
             if (preUnlimit === 0) summary = "指定不限速字节数：关闭。" ;
             if (preUnlimit !== 0) summary = "指定不限速字节数：" + preUnlimit + "kb。" 
-            if (speedLimit === 0) summary = summary + "限速字节数：关闭";
-            if (speedLimit !== 0) summary = summary + "限速字节数：" + speedLimit + "kb/s<br>";
+            if (this.defaultParam.byteNotLimit === 1) summary = "指定不限速字节数：关闭。" ;
+
+
+            if (this.defaultParam.limitSpeedToggle === 1) {
+                summary = summary + "限速字节数：关闭<br>";
+            } else {
+                if (speedLimit === 0) summary = summary + "限速字节数：关闭<br>";
+                if (speedLimit !== 0) summary = summary + "限速字节数：" + speedLimit + "kb/s<br>";
+            }
+
 
             _.each(this.defaultParam.timeLimitList, function(el, index, ls){
                 var startTime = el.start,

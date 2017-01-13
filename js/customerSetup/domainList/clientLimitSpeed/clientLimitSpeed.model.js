@@ -11,12 +11,20 @@ define("clientLimitSpeed.model", ['require','exports', 'utility'], function(requ
             if (type === 9) this.set("typeName", "全部文件");
 
             var preUnlimit = this.get('preUnlimit'),
-                speedLimit = this.get('speedLimit'), summary = '';
+                speedLimit = this.get('speedLimit'), summary = '',
+                preFlag = this.get('preFlag'),
+                speedFlag = this.get('speedFlag');
 
             if (preUnlimit === 0) summary = "指定不限速字节数：关闭。" ;
-            if (preUnlimit !== 0) summary = "指定不限速字节数：" + preUnlimit + "kb。" 
-            if (speedLimit === 0) summary = summary + "限速字节数：关闭<br>";
-            if (speedLimit !== 0) summary = summary + "限速字节数：" + speedLimit + "kb/s<br>";
+            if (preUnlimit !== 0) summary = "指定不限速字节数：" + preUnlimit + "kb。";
+            if (preFlag === 0) summary = "指定不限速字节数：关闭。" ;
+
+            if (speedFlag === 0) {
+                summary = summary + "限速字节数：关闭<br>";
+            } else {
+                if (speedLimit === 0) summary = summary + "限速字节数：关闭<br>";
+                if (speedLimit !== 0) summary = summary + "限速字节数：" + speedLimit + "kb/s<br>";
+            }
 
             var timeLimit = this.get("timeLimit");
             _.each(timeLimit, function(el, index, ls){

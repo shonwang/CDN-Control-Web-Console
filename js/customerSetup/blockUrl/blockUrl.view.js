@@ -50,6 +50,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 alert('URL不能为空');
                 return false;
             }else{
+                if(urls.indexOf(',') > -1 || urls.indexOf('；') > -1 || urls.indexOf('，') > -1) {alert('请以英文半角分号对URL进行分隔'); return false;}
                 if(urls.indexOf(';') > -1){
                     url = urls.split(';');
                     var urlrepeat = [];
@@ -404,8 +405,10 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             }.bind(this));
 
             var operatorArray = [
+               {name:'全部',value:0},
                {name:'屏蔽',value:1},
-               {name:'解除屏蔽',value:2}
+               {name:'解除屏蔽',value:2},
+               {name:'自动解除屏蔽',value:3}
             ]
             rootNode = this.$el.find('.dropdown-operator');
             Utility.initDropMenu(rootNode,operatorArray,function(value){
@@ -493,8 +496,11 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             var target = event.target || event.srcElement;
             var id = $(target).attr('data-target');
             switch(id){
-                case '#blockUrlList':
-                  if(this.myTabCurrentBlockListView){
+                case '#blockUrl':
+                  if(this.myTabBlockView) this.myTabBlockView.collection.getGuestQuotaCount({userId:this.userInfo.uid});
+                  break;
+            	case '#blockUrlList':
+            	  if(this.myTabCurrentBlockListView){
                       this.myTabCurrentBlockListView.onClickQueryButton();
                       return;
                   }

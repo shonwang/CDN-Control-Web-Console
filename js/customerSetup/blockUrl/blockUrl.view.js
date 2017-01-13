@@ -50,7 +50,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 alert('URL不能为空');
                 return false;
             }else{
-                if(urls.indexOf(',') > -1 || urls.indexOf('；') > -1) {alert('请以英文半角分号对URL进行分隔'); return false;}
+                if(urls.indexOf(',') > -1 || urls.indexOf('；') > -1 || urls.indexOf('，') > -1) {alert('请以英文半角分号对URL进行分隔'); return false;}
                 if(urls.indexOf(';') > -1){
                     url = urls.split(';');
                     var urlrepeat = [];

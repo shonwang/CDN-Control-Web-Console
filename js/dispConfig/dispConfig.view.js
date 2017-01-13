@@ -963,7 +963,31 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 return;
             }
 
-            rootNode = this.$el.find(".dropdown-disp");
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.SelectContainer').get(0),
+                panelID: this.$el.find('#dropdown-disp').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function(){},
+                data: temp,
+                callback: function(data) {
+                    this.$el.find('#dropdown-disp .cur-value').html(data.name);
+
+                     this.queryArgs.groupId = parseInt(data.value);
+                    var curGroup = _.find(temp, function(obj){
+                        return obj.value === parseInt(data.value)
+                    }.bind(this))
+                    this.$el.find(".content-ctn #textarea-comment").html(curGroup.remark || "无");
+                    this.$el.find(".content-ctn .channel-table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                    this.dispGroupCollection.getChannelList({groupId: this.queryArgs.groupId});
+                    this.onClickQueryButton();
+                    
+                }.bind(this)
+            });
+
+           /* rootNode = this.$el.find(".dropdown-disp");
             Utility.initDropMenu(rootNode, temp, function(value){
                 this.queryArgs.groupId = parseInt(value);
                 var curGroup = _.find(temp, function(obj){
@@ -973,7 +997,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.$el.find(".content-ctn .channel-table-ctn").html(_.template(template['tpl/loading.html'])({}));
                 this.dispGroupCollection.getChannelList({groupId: this.queryArgs.groupId});
                 this.onClickQueryButton();
-            }.bind(this));
+            }.bind(this));*/
 
             this.$el.find(".dropdown-disp .cur-value").html(temp[0].name)
             this.queryArgs = {

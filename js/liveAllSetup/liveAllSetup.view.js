@@ -1076,6 +1076,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             rootNode = this.$el.find(".dropdown-bustype");
             Utility.initDropMenu(rootNode, typeArray, function(value){
                 this.buisnessType = parseInt(value)
+                this.$el.find(".list .table-ctn").html(_.template(template['tpl/loading.html'])({}));
                 this.collection.getAllFileList({bisTypeId: this.buisnessType});
                 var businessTpye = _.find(res, function(obj){
                     return obj.id === value;

@@ -68,7 +68,7 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
             var value = this.$el.find("#cdn-search-text").val().trim();
             this.args.domain = value || '';
             this.isInitPaginator = false;
-            this.args.currentPage = 1;
+         //   this.args.currentPage = 1;
             this.toQueryDomain();
         },
 
@@ -218,12 +218,13 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
                 visiblePages: 10,
-                currentPage: 1,
+                currentPage: this.args.currentPage,
                 onPageChange: function (num, type) {
                     if (type !== "init"){
                         this.args.currentPage = num;
                         this.toQueryDomain();
                     }
+                    this.args.currentPage = num;
                 }.bind(this)
             });
             this.isInitPaginator = true;

@@ -33,7 +33,7 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
                 type: "POST",
                 url: url,
                 async: true,
-                timeout: 30000,
+                timeout: 10 * 60 * 1000,
                 contentType: "application/json",
                 processData: false
             };
@@ -96,7 +96,7 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
                 type: "GET",
                 url: url,
                 async: true,
-                timeout: 30000
+                timeout: 10 * 60 * 1000
             };
             defaultParas.data = args;
             defaultParas.data.t = new Date().valueOf();
@@ -123,7 +123,7 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
                 type: "POST",
                 url: url,
                 async: true,
-                timeout: 30000,
+                timeout: 10 * 60 * 1000,
                 contentType: "application/json",
                 processData: false
             };
@@ -154,7 +154,7 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
                 type: "GET",
                 url: url,
                 async: true,
-                timeout: 30000
+                timeout: 10 * 60 * 1000
             };
             defaultParas.data = args || {};
             defaultParas.data.t = new Date().valueOf();
@@ -184,7 +184,7 @@ define("liveCurentSetup.model", ['require','exports', 'utility'], function(requi
                 type: "GET",
                 url: url,
                 async: true,
-                timeout: 30000
+                timeout: 10 * 60 * 1000
             };
             defaultParas.data = args || {};
             defaultParas.data.t = new Date().valueOf();

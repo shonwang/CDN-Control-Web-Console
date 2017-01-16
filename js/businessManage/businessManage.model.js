@@ -16,7 +16,7 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
                 type: "GET",
                 url: url,
                 async: true,
-                timeout: 30000,
+                timeout: 10 * 60 * 1000,
                 contentType: "application/json",
                 processData: false
             };
@@ -48,7 +48,7 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
                 type: "GET",
                 url: url,
                 async: true,
-                timeout: 30000,
+                timeout: 10 * 60 * 1000,
                 contentType: "application/json",
                 processData: false
             };
@@ -72,7 +72,7 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
                 type: "GET",
                 url: url,
                 async: true,
-                timeout: 30000,
+                timeout: 10 * 60 * 1000,
                 contentType: "application/json",
                 processData: false
             };
@@ -96,7 +96,7 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
                 type: "GET",
                 url: url,
                 async: true,
-                timeout: 30000,
+                timeout: 10 * 60 * 1000,
                 contentType: "application/json",
                 processData: false
             };
@@ -120,7 +120,7 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
                 type: "POST",
                 url: url,
                 async: true,
-                timeout: 30000,
+                timeout: 10 * 60 * 1000,
                 contentType: "application/json",
                 processData: false
             };
@@ -166,7 +166,7 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
                 type: "POST",
                 url: url,
                 async: true,
-                timeout: 30000,
+                timeout: 10 * 60 * 1000,
                 contentType: "application/json",
                 processData: false
             };
@@ -191,7 +191,7 @@ define("businessManage.model", ['require','exports', 'utility'], function(requir
                 type: "POST",
                 url: url,
                 async: true,
-                timeout: 30000,
+                timeout: 10 * 60 * 1000,
                 contentType: "application/json",
                 processData: false
             };

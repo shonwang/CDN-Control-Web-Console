@@ -144,7 +144,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
         },
 
         getOperatorList: function(args){
-            var url = BASE_URL + "/rs/metaData/operator/list?" + new Date().valueOf(); 
+            var url = BASE_URL + "/rs/metaData/operatorList?" + new Date().valueOf(); 
             var defaultParas = {
                 type: "GET",
                 url: url,

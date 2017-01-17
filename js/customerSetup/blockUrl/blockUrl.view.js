@@ -509,7 +509,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                   break;
             	case '#blockUrlList':
             	  if(this.myTabCurrentBlockListView){
-                      this.myTabCurrentBlockListView.onClickQueryButton(tab);
+                      this.myTabCurrentBlockListView.onClickQueryButton();
             	  	  return;
             	  }
             	  this.myTabCurrentBlockListView = new TabCurrentBlockListView({
@@ -520,7 +520,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 break;
                 case '#history':
                   if(this.myTabHistoryView){
-                      this.myTabHistoryView.onClickQueryButton(tab);
+                      this.myTabHistoryView.onClickQueryButton();
                   	  return;
                   }
                   this.myTabHistoryView = new TabHistoryView({

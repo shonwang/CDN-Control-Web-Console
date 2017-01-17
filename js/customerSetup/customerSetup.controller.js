@@ -509,7 +509,7 @@ define("customerSetup.controller", ['require','exports'],
 
                     this.blockUrlView = new BlockUrlView(options);
                     this.blockUrlView.renderload(renderTarget);
-
+                    
                     this.permissionsControlSuccess = function(res){
                         res = JSON.parse(res);
                         if(res.result == null){

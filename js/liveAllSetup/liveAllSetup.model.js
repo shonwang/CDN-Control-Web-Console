@@ -22,7 +22,7 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
                 type: "GET",
                 url: url,
                 async: true,
-                timeout: 30000
+                timeout: 10 * 60 * 1000
             };
             defaultParas.data = args || {};
             defaultParas.data.t = new Date().valueOf();
@@ -62,7 +62,7 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
                 type: "GET",
                 url: url,
                 async: true,
-                timeout: 30000
+                timeout: 10 * 60 * 1000
             };
             defaultParas.data = args;
             defaultParas.data.t = new Date().valueOf();
@@ -93,7 +93,7 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
                 type: "GET",
                 url: url,
                 async: true,
-                timeout: 30000
+                timeout: 10 * 60 * 1000
             };
             defaultParas.data = args || {};
             defaultParas.data.t = new Date().valueOf();
@@ -124,7 +124,7 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
                 type: "POST",
                 url: url,
                 async: true,
-                timeout: 30000,
+                timeout: 10 * 60 * 1000,
                 contentType: "application/json",
                 processData: false
             };
@@ -152,7 +152,7 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
                 type: "POST",
                 url: url,
                 async: true,
-                timeout: 30000,
+                timeout: 10 * 60 * 1000,
                 contentType: "application/json",
                 processData: false
             };
@@ -180,7 +180,7 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
                 type: "GET",
                 url: url,
                 async: true,
-                timeout: 30000
+                timeout: 10 * 60 * 1000
             };
             defaultParas.data = {};
             defaultParas.data.t = new Date().valueOf();
@@ -211,7 +211,7 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
                 type: "POST",
                 url: url,
                 async: true,
-                timeout: 30000,
+                timeout: 10 * 60 * 1000,
                 contentType: "application/json",
                 processData: false
             };
@@ -242,7 +242,7 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
                 type: "GET",
                 url: url,
                 async: true,
-                timeout: 30000
+                timeout: 10 * 60 * 1000
             };
             defaultParas.data = {};
             defaultParas.data.t = new Date().valueOf();
@@ -276,7 +276,7 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
                 type: "GET",
                 url: url,
                 async: true,
-                timeout: 30000
+                timeout: 10 * 60 * 1000
             };
             //defaultParas.data = args;
             //defaultParas.data.t = new Date().valueOf();
@@ -307,7 +307,7 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
                 type: "POST",
                 url: url,
                 async: true,
-                timeout: 30000,
+                timeout: 10 * 60 * 1000,
                 contentType: "application/json",
                 processData: false
             };
@@ -335,7 +335,7 @@ define("liveAllSetup.model", ['require','exports', 'utility'], function(require,
                 type: "GET",
                 url: url,
                 async: true,
-                timeout: 30000
+                timeout: 10 * 60 * 1000
             };
             defaultParas.data = args || {};
             defaultParas.data.t = new Date().valueOf();

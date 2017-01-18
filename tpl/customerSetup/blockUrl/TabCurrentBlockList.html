@@ -1,0 +1,74 @@
+<div class="container-fluid">
+    <form class="form-inline" onsubmit="return false;">
+	    <div class="form-group">
+	        <label for="dropdown-operator">操作状态</label>
+	    </div>
+	    <div class="form-group dropdown-state">
+	        <div class="dropdown">
+	            <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-state" data-toggle="dropdown">
+	                <span class="cur-value">全部</span>
+	                <span class="caret"></span>
+	            </button>
+	            <ul class="dropdown-menu long-dropdown-menu"></ul>
+	        </div>
+	    </div>
+	    <div class="form-group">
+	        <label for="input-domain">URL</label>
+	        <input type="text" class="form-control" id="input-url" placeholder="请输入关键字">
+	    </div>
+	    <a href="javascript:void(0)" class="btn btn-primary btn-raised query"><span class="glyphicon glyphicon-search"></span>查询</a>
+    </form>
+    <form class="form-inline" style="margin:20px 0 25px 0;">
+	    <a href="javascript:void(0)" class="btn btn-success btn-raised unblock" disabled="disabled">解除屏蔽</a>
+	    <div class="checkbox" style="margin-left:30px;">
+		    <label>
+		      <input type="checkbox" class="RefreshUrl" checked> 屏蔽解除后，对边缘节点的URL进行刷新
+		    </label>
+		</div>
+  </form>
+  <p style="margin-bottom:25px;">注意：解除屏蔽URL，一次提交不得超过30条;</p>
+  <div class="horizontal-slip">
+    <div class="table-ctn table-responsive">
+       <table class="ks-table">
+          <thead>
+            <tr>
+              <th>
+                <input type="checkbox" value="URL">
+                URL
+              </th>
+              <th>操作时间</th>
+              <th>操作状态</th>
+              <th>操作</th>
+            </tr>
+            <tbody></tbody>
+          </thead>
+        </table>
+    </div>
+    <div class="page-ctn row" style="margin-top:30px;">
+        <div class="col-md-8" style="text-align:center">
+            <div class="pagination"></div>
+        </div>
+        <div class="col-md-4" style="text-align:center">
+            <form class="form-inline page-info">
+                <div class="form-group">
+                    <div class="form-control-static">每页显示</div>
+                </div>
+                <div class="form-group page-num">
+                    <div class="drop-ctn dropup">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">
+                            <span class="cur-value">10 条</span>
+                            <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu"></ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-control-static total-items">共<span class="text-primary">0</span>条记录</div>
+                </div>
+            </form>
+        </div>
+     </div>
+  </div>
+</div>

@@ -44,14 +44,13 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
             
-            require(['deviceManage.model'],function(deviceManageModel){
-                var mydeviceManageModel = new deviceManageModel();
-                mydeviceManageModel.operatorTypeList();
-                mydeviceManageModel.off("operator.type.success");
-                mydeviceManageModel.off("operator.type.error");
-                mydeviceManageModel.on("operator.type.success", $.proxy(this.initDropMenu, this));
-                mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
-            }.bind(this));
+        
+            this.collection.getOperatorList();
+            this.collection.off("get.operator.success");
+            this.collection.off("get.operator.error");
+            this.collection.on("get.operator.success", $.proxy(this.initDropMenu, this));
+            this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
+            
 
             this.initSetup();
 
@@ -611,7 +610,6 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
         },
 
         initDropMenu: function(data){
-            console.log(data);
             this.statusArray = [],
             rootNode = this.$el.find(".operator");
             _.each(data, function(el, key, list){

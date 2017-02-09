@@ -3,11 +3,10 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
         initialize: function(){}
     });
 
-    var BlockUrlCollection = Backbone.Collection.extend({
-        
+    var BlockUrlCollection = Backbone.Collection.extend({ 
         model: Model,
-
         initialize: function(){},
+        //获取配额信息接口
         getGuestQuotaCount : function(args){
             var url = BASE_URL + "/blockurl/getGuestQuotaCount",
             successCallback = function(res){
@@ -22,6 +21,7 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
+        //权限验证接口
         permissionsControl : function(args){
             var url = BASE_URL + "/blockurl/getGuestQuotaCount",
             successCallback = function(res){
@@ -36,6 +36,7 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
+        //一键屏蔽URL接口
         blockUrls : function(args){
             var url = BASE_URL + "/blockurl/blockUrls",
             successCallback = function(res){
@@ -61,6 +62,7 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+        //当前屏蔽列表接口
         showCurrentBlockUrls: function(args){
             var url = BASE_URL + "/blockurl/showCurrentBlockUrls?userId="+args.userId+'&op='+args.op+'&searchUrl='+args.searchUrl+'&page='+args.page+'&rows='+args.rows,
             successCallback = function(res){
@@ -81,6 +83,7 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             }.bind(this);
             Utility.postAjax(url, '', successCallback, errorCallback);
         },
+        //解除屏蔽接口
         removeBlockUrl: function(args){
             var url = BASE_URL + "/blockurl/removeBlockUrl",
             successCallback = function(res){
@@ -95,6 +98,7 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+        //重新刷新或者重新屏蔽接口
         retryBlockTas: function(args){
             var url = BASE_URL + "/blockurl/retryBlockTas?userId="+args.userId+'&id='+args.id+'&type='+args.type,
             successCallback = function(res){
@@ -109,6 +113,7 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+        //历史记录接口
         queryHistory: function(args){
             var url = BASE_URL + "/blockurl/searchBlockHistory?userId="+args.userId+'&date='+args.date+'&op='+args.op+'&searchUrl='+args.searchUrl+'&page='+args.page+'&rows='+args.rows,
             successCallback = function(res){

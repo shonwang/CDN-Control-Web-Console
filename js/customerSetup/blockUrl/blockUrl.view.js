@@ -1,4 +1,5 @@
 define('blockUrl.view',['utility','template'],function(Utility,template){
+    //屏蔽URL组件
 	var TabBlockUrlView = Backbone.View.extend({
         events:{},
         initialize: function(options){
@@ -10,17 +11,18 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.collection.off('get.GuestQuotaCount.error');
             this.collection.on('get.GuestQuotaCount.success',$.proxy(this.getCountSuccess,this));
             this.collection.on('get.GuestQuotaCount.error',$.proxy(this.onGetError,this));
+            //获取用户配额信息的接口，客户可屏蔽...条
             this.collection.getGuestQuotaCount({userId:this.userInfo.uid});
-          //  this.collection.getGuestQuotaCount({userId:1});
             
             this.collection.off('blockUrls.success');
             this.collection.off('blockUrls.error');
             this.collection.on('blockUrls.success',$.proxy(this.blockUrlsSuccess,this));
             this.collection.on('blockUrls.error',$.proxy(this.onGetError,this));
-
+            //给提交屏蔽按钮添加点击事件
             this.$el.find('#submitBlock').on('click',$.proxy(this.onClickSubmitBlockButton,this));        
         
         },
+        //获取配额信息成功
         getCountSuccess: function(res){
             res = JSON.parse(res);
             if(res.result != null){
@@ -28,8 +30,9 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 this.$el.find('.quotaEffecitveCount').text(res.result.quotaEffecitveCount);
             }
         },
+        //屏蔽URL成功
         blockUrlsSuccess: function(){
-             $('a[data-target="#blockUrlList"]').click();
+             $('a[data-target="#blockUrlList"]').click(); //屏蔽成功后，切换到当前屏蔽列表
              alert('操作成功');
         },
         onGetError: function(error){
@@ -39,18 +42,21 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
              	alert('网络阻塞，请刷新重试！')
              }    
         },
+        //url合法性校验函数
         urlsvalidation: function(urls){
             var urls = urls;
-            var protocolRegex = /https|http|ftp|rtsp|igmp|file|rtspt|rtspu/;
-            var quotaEffecitveCount = this.$el.find('.quotaEffecitveCount').text();
+            var protocolRegex = /https|http|ftp|rtsp|igmp|file|rtspt|rtspu/; //单独添加的协议校验
+            var quotaEffecitveCount = this.$el.find('.quotaEffecitveCount').text();//从界面获取配额信息
             if(urls.substr(urls.length-1,urls.length) == ';')  //若最后一个字符为分号,则去掉
                 urls = urls.substr(0,urls.length-1); 
-        
-            if(urls === "") {
+            if(urls === "") {  //URL为空的情况 
                 alert('URL不能为空');
                 return false;
-            }else{
-                if(urls.indexOf(',') > -1 || urls.indexOf('；') > -1 || urls.indexOf('，') > -1) {alert('请以英文半角分号对URL进行分隔'); return false;}
+            }else{  
+                if(urls.indexOf(',') > -1 || urls.indexOf('；') > -1 || urls.indexOf('，') > -1) { 
+                    alert('请以英文半角分号对URL进行分隔'); 
+                    return false;
+                }
                 if(urls.indexOf(';') > -1){
                     url = urls.split(';');
                     var urlrepeat = [];
@@ -98,17 +104,20 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             }
             return true;
         },
+        //点击提交屏蔽按钮的事件
         onClickSubmitBlockButton: function(){
+            //最大提交数量的验证
             var quotaEffecitveCount = this.$el.find('.quotaEffecitveCount').text();
             if (quotaEffecitveCount == 0) {
                 alert('已达到最大提交数量，暂时无法进行提交');
                 return false;
             }
             var urls = this.$el.find('#urls').val();
+            //url合法性验证
         	if(this.urlsvalidation(urls)){
                if(urls.substr(urls.length-1,urls.length) == ';')  //若最后一个字符为分号,则去掉
                  urls = urls.substr(0,urls.length-1); 
-               urls = urls.split(';');
+               urls = urls.split(';'); 
                for(var i = 0;i<urls.length;i++){
                   if(urls[i].substr(0,1)=='\n') urls[i]=urls[i].substr(1);
                }
@@ -124,7 +133,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
            this.$el.appendTo(target);
         }
 	});
-
+    //当前屏蔽列表组件
     var TabCurrentBlockListView = Backbone.View.extend({
         events:{},
         initialize: function(options){
@@ -135,13 +144,13 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.$el = $(_.template(template['tpl/customerSetup/blockUrl/TabCurrentBlockList.html'])());
             this.initblockListDropmenu();
             
-            this.UnblockButton = this.$el.find('.unblock');
-            this.RefreshUrlButton = this.$el.find('.RefreshUrl')
+            this.UnblockButton = this.$el.find('.unblock'); //获取解除屏蔽按钮DOM
+            this.RefreshUrlButton = this.$el.find('.RefreshUrl') //获取对边缘节点的URL进行刷新的单选框
             
-            $(document).on('keydown',$.proxy(this.onKeydownEnter,this));
-            this.$el.find('.query').on('click',$.proxy(this.onClickQueryButton,this));
-            this.$el.find('.ks-table').on('change',$.proxy(this.onClickOptions,this));
-            this.RefreshUrlButton.on('click',$.proxy(this.onClickRefresh,this));
+            $(document).on('keydown',$.proxy(this.onKeydownEnter,this)); //Enter键查询事件
+            this.$el.find('.query').on('click',$.proxy(this.onClickQueryButton,this)); //按钮点击查询事件
+            this.$el.find('.ks-table').on('change',$.proxy(this.onClickOptions,this)); //当前屏蔽列表单选框选中事件
+            this.RefreshUrlButton.on('click',$.proxy(this.onClickRefresh,this)); //勾选对边缘节点进行刷新的单选框
             
             this.collection.off('remove.blockUrl.success');
             this.collection.off('remove.blockUrl.error');
@@ -158,6 +167,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.collection.on('retry.blockTas.success',$.proxy(this.retryblockTasSuccess,this));
             this.collection.on('retry.blockTas.error',$.proxy(this.onGetError,this));
             
+            //当前屏蔽列表请求参数
             this.queryArgs = {
 	            page:1,
 	            rows:10,
@@ -166,12 +176,13 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
 	            userId:this.userInfo.uid
                 //userId:1
             }
+            //解除屏蔽请求参数
             this.blockUrlParam = {
                 userId:this.userInfo.uid,
-                //userId:1,
                 ids: "",
                 needFresh: true
             }
+            //获取当前屏蔽列表
             this.onClickQueryButton();
         },
         onClickQueryButton: function(){
@@ -191,23 +202,27 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         },
         onClickOptions: function(event){
              var eventTarget = event.target || event.srcElement;
+             //设置变量，长度为0，id为选中url的id，获取全选框的dom
              var length = 0,
                  id = $(eventTarget).attr("id"),
                  model = this.collection.get(id),
                  AllChecked =  this.$el.find('thead input');
+             //点击全选框的情况    
              if(eventTarget.value == AllChecked.val()){
-                    var inputs = this.table.find('input');
+                    var inputs = this.table.find('input'); //获取该全选框下全部的inputs
+                    //遍历数据结构
                     this.collection.each(function(model,index){
+                        //某些状态是禁选的，在数据结构里添加了isDisabled字段
                         if(!model.get('isDisabled')){
-                          model.set("isChecked", eventTarget.checked);
-                          $(inputs[index]).prop('checked',eventTarget.checked);
+                          model.set("isChecked", eventTarget.checked); //重置数据结构里面的字段状态
+                          $(inputs[index]).prop('checked',eventTarget.checked); //把相应的单选框置为选中状态
                         }
                     }.bind(this));
 
-             }else{
+             }else{ //点击非全选框的情况
                 model.set('isChecked',eventTarget.checked);
              }
-             
+             //获取所有选中的url列表
              var checkedList = this.collection.filter(function(model){
                 if(!model.get('isDisabled')) length++;
                 return model.get('isChecked') === true;
@@ -296,7 +311,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
              var data = this.collection.models;
              this.table = $(_.template(template['tpl/customerSetup/blockUrl/TabCurrentBlockList.table.html'])({data:data}));
              _.each(this.table,function(el,index){
-                var DisabledState = ['屏蔽中','屏蔽失败','解除屏蔽中','刷新中'];
+                var DisabledState = ['屏蔽中','屏蔽失败','解除屏蔽中','刷新中'];//禁用勾选框的几种状态
                 if( ( DisabledState.indexOf(data[index].get('status'))>=0 ) || (data[index].get('isRefreshSuccess') == 1) ){
                     $(el).find('input').attr('disabled','disabled');
                     data[index].set('isDisabled',true);
@@ -373,7 +388,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.$el.appendTo(target);
         }
     });
-	
+	//历史记录列表组件
 	var TabHistoryView = Backbone.View.extend({
         events:{},
         initialize: function(options){
@@ -385,7 +400,8 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.collection.off('get.history.error');
             this.collection.on('get.history.success',$.proxy(this.gethistorySuccess,this));
             this.collection.on('get.history.error',$.proxy(this.onGetError,this));
-             this.initHistoryDropMenu();
+            this.initHistoryDropMenu();
+            //默认的请求参数
             this.queryArgs = {
                 userId:this.userInfo.uid,
                 //userId:1,

@@ -498,6 +498,7 @@ define("customerSetup.controller", ['require','exports'],
                  this.navbarView.select('customerSetup', $.proxy(this.removeSubSideBar, this));
                  this.setupCustomerSetupNavbar(query);
                  var renderTarget = this.customerSetupNavbar.$el.find('.sub-content');
+                
 
                 if(!this.blockUrlModel)
                     this.blockUrlModel = new BlockUrlModel();
@@ -508,14 +509,17 @@ define("customerSetup.controller", ['require','exports'],
                     };
 
                     this.blockUrlView = new BlockUrlView(options);
-                    this.blockUrlView.renderload(renderTarget);
-                    
+                    //一键屏蔽URL权限验证
+                    this.blockUrlView.renderload(renderTarget); //界面的加载按钮显示
+                    //权限验证函数
                     this.permissionsControlSuccess = function(res){
                         res = JSON.parse(res);
+                        //如果验证不成功，移除加载按钮，显示没有权限
                         if(res.result == null){
-                           this.blockUrlView.$elload.remove();
+                           this.blockUrlView.$elload.remove();  
                            this.blockUrlView.renderError(renderTarget);
                         }
+                        //如果验证成功，移除加载按钮，进入一键屏蔽URL界面
                         else{
                            this.blockUrlView.$elload.remove();
                            this.blockUrlView.render(renderTarget);
@@ -534,6 +538,7 @@ define("customerSetup.controller", ['require','exports'],
                     this.blockUrlModel.off('permissionsControl.error');
                     this.blockUrlModel.on('permissionsControl.success',$.proxy(this.permissionsControlSuccess,this));
                     this.blockUrlModel.on('permissionsControl.error',$.proxy(this.onGetError,this));
+                    //发起权限验证的后台请求
                     this.blockUrlModel.permissionsControl({userId:query.uid}); 
                 } 
 

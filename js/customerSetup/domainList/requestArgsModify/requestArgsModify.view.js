@@ -81,6 +81,23 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
             })
             }.bind(this))
 
+            var isContinue = true;
+
+            _.each(list, function(el, index, ls){
+                if (isContinue) {
+                    var tempObj = _.find(list, function(obj){
+                        return el.parameterKey === obj.parameterKey && el.type === obj.type;
+                    })
+
+                    if (tempObj) {
+                        isContinue = false
+                        alert("添加了重复参数！")
+                    }
+                }
+            }.bind(this)) 
+
+            if (isContinue === false) return;         
+
             var postParam = {
                 "originId": this.domainInfo.id,
                 "list": list

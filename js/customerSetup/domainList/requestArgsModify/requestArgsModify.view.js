@@ -86,11 +86,11 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
 
                 _.each(list, function(el, index, ls){
                     if (isContinue) {
-                        var tempObj = _.find(list, function(obj){
+                        var tempObj = _.filter(list, function(obj){
                             return el.parameterKey === obj.parameterKey && el.type === obj.type;
                         })
 
-                        if (tempObj) {
+                        if (tempObj.length > 1) {
                             isContinue = false
                             alert("添加了重复参数！")
                         }

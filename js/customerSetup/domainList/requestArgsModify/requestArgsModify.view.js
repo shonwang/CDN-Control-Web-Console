@@ -81,22 +81,24 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
             })
             }.bind(this))
 
-            var isContinue = true;
+            if (list.length > 2) {
+                var isContinue = true;
 
-            _.each(list, function(el, index, ls){
-                if (isContinue) {
-                    var tempObj = _.find(list, function(obj){
-                        return el.parameterKey === obj.parameterKey && el.type === obj.type;
-                    })
+                _.each(list, function(el, index, ls){
+                    if (isContinue) {
+                        var tempObj = _.find(list, function(obj){
+                            return el.parameterKey === obj.parameterKey && el.type === obj.type;
+                        })
 
-                    if (tempObj) {
-                        isContinue = false
-                        alert("添加了重复参数！")
+                        if (tempObj) {
+                            isContinue = false
+                            alert("添加了重复参数！")
+                        }
                     }
-                }
-            }.bind(this)) 
+                }.bind(this)) 
 
-            if (isContinue === false) return;         
+                if (isContinue === false) return;
+            }         
 
             var postParam = {
                 "originId": this.domainInfo.id,

@@ -174,8 +174,8 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             }
             this.onClickQueryButton();
         },
-        onClickQueryButton: function(tab){
-            if(tab === 1) this.queryArgs.page = 1;
+        onClickQueryButton: function(){
+            this.queryArgs.page = 1;
             this.isInitPaginator = false;
             this.showloading();
             this.$el.find('thead input').prop('checked',false);
@@ -348,7 +348,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
                 visiblePages: 10,
-                currentPage: this.queryArgs.page,
+                currentPage: 1,
                 onPageChange: function (num, type) {
                     if (type !== "init"){
                         this.$el.find(".ks-table tbody").html('<tr><td  colspan="6" class="text-center"><div class="domain-spinner">正在加载...</div></td></tr>');
@@ -357,7 +357,6 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                         args.rows = this.queryArgs.rows;
                         this.collection.showCurrentBlockUrls(args);
                         this.$el.find('thead input').prop('checked',false);
-                        this.queryArgs.page = num;
                     }
                 }.bind(this)
             });
@@ -435,8 +434,8 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                this.onClickQueryButton();
             }.bind(this));
         },
-        onClickQueryButton: function(tab){
-            if(tab === 1) this.queryArgs.page = 1;
+        onClickQueryButton: function(){
+            this.queryArgs.page = 1;
             this.showloading();
             this.isInitPaginator = false;
             this.queryArgs.searchUrl = $.trim(this.$el.find('#input-url').val());
@@ -466,7 +465,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
            this.$el.find('.pagination').jqPaginator({
                 totalPages: total,
                 visiblePages: 10,
-                currentPage: this.queryArgs.page,
+                currentPage: 1,
                 onPageChange: function (num, type) {
                     if (type !== "init"){
                         this.$el.find(".ks-table tbody").html('<tr><td  colspan="6" class="text-center"><div class="domain-spinner">正在加载...</div></td></tr>');
@@ -474,7 +473,6 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                         args.page = num;
                         args.rows = this.queryArgs.rows;
                         this.collection.queryHistory(args);
-                        this.queryArgs.page = num;
                     }
                 }.bind(this)
            });
@@ -511,8 +509,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                   break;
             	case '#blockUrlList':
             	  if(this.myTabCurrentBlockListView){
-                      var tab = 1;
-                      this.myTabCurrentBlockListView.onClickQueryButton(tab);
+                      this.myTabCurrentBlockListView.onClickQueryButton();
             	  	  return;
             	  }
             	  this.myTabCurrentBlockListView = new TabCurrentBlockListView({
@@ -523,8 +520,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 break;
                 case '#history':
                   if(this.myTabHistoryView){
-                      var tab = 1;
-                      this.myTabHistoryView.onClickQueryButton(tab);
+                      this.myTabHistoryView.onClickQueryButton();
                   	  return;
                   }
                   this.myTabHistoryView = new TabHistoryView({

@@ -61,7 +61,8 @@ define("routes", ['require', 'exports', 'utility',
             "domainList/:query/timestamp/:query2"                 : "timestamp",
             "domainList/:query/openNgxLog/:query2"                : "openNgxLog",
 
-            "domainList/:query/liveBasicInformation/:query2"          : "liveBasicInformation",
+            "domainList/:query/liveBasicInformation/:query2"      : "liveBasicInformation",
+            "domainList/:query/liveBusOptimize/:query2"           : "liveBusOptimize",
 
             "setupChannelManage"     : "setupChannelManage",
             "setupAppManage"         : "setupAppManage",
@@ -233,6 +234,9 @@ define("routes", ['require', 'exports', 'utility',
                     break;
                 case 'customerSetup-domainList-liveBasicInformation':
                     this.liveBasicInformationView.hide();
+                    break;
+                case 'customerSetup-domainList-liveBusOptimize':
+                    this.liveBusOptimizeView.hide();
                     break;
                 default:
             }
@@ -488,6 +492,10 @@ define("routes", ['require', 'exports', 'utility',
             this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveBasicInformationCallback, this, query, query2))
         },
 
+        liveBusOptimize: function(query ,query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveBusOptimizeCallback, this, query, query2))
+        },
+
         setupDomainManageNavbar: function(query, query2){
             if (!this.domainManageNavbar){
                 var menuOptions = {
@@ -504,16 +512,16 @@ define("routes", ['require', 'exports', 'utility',
                 {
                     id: 'customerSetup-domainList-liveBasicInformation',
                     name: '基本信息',
-                    hash: 'index.html#/domainList/' + query + /basicInformation/ + query2,
+                    hash: 'index.html#/domainList/' + query + '/liveBasicInformation/' + query2,
                     children: []  
                 }, {
                     id: 'customerSetup-domainList-liveOptimize',
                     name: '直播业务优化',
                     hash: 'javascript:void(0)',
                     children: [{
-                        id: 'customerSetup-domainList-busOptimize',
+                        id: 'customerSetup-domainList-liveBusOptimize',
                         name: '业务优化配置',
-                        hash: 'index.html#/domainList/' + query + /busOptimize/ + query2,
+                        hash: 'index.html#/domainList/' + query + '/liveBusOptimize/' + query2,
                         active: false,
                         children: []
                     }]

@@ -177,6 +177,8 @@ requirejs.config({
         "liveBasicInformation.model": 'customerSetup/domainList/liveBasicInformation/liveBasicInformation.model',
         "liveBasicInformation.view": 'customerSetup/domainList/liveBasicInformation/liveBasicInformation.view',
 
+        "liveBusOptimize.model": 'customerSetup/domainList/liveBusOptimize/liveBusOptimize.model',
+        "liveBusOptimize.view": 'customerSetup/domainList/liveBusOptimize/liveBusOptimize.view',
         /*配置下发*/
         "setupChannelManage.model": "setupChannelManage/setupChannelManage.model",
         "setupChannelManage.view": "setupChannelManage/setupChannelManage.view",

@@ -33,7 +33,32 @@ define("customerSetup.live.controller", ['require','exports'],
                     this.liveBasicInformationView.update(query, query2, renderTarget);
                 }
             }.bind(this));
+        },
+
+        liveBusOptimizeCallback: function(query, query2){
+            require(['liveBusOptimize.view', 'liveBusOptimize.model'], function(LiveBusOptimizeView, LiveBusOptimizeModel){
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-liveBusOptimize';
+                this.setupLiveDomainManageNavbar(query, query2);
+                var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                if (!this.liveBusOptimizeModel)
+                    this.liveBusOptimizeModel = new LiveBusOptimizeModel();
+                if (!this.liveBusOptimizeView ){
+                    var options = {
+                        collection: this.liveBusOptimizeModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.liveBusOptimizeView = new LiveBusOptimizeView(options);
+                    this.liveBusOptimizeView.render(renderTarget);
+                } else {
+                    this.domainManageNavbar.select(this.curPage);
+                    this.liveBusOptimizeView.update(query, query2, renderTarget);
+                }
+            }.bind(this));
         }
+
     });
     return new CustomerSetupLiveController();
 });

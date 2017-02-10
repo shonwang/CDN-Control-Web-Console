@@ -53,6 +53,9 @@ requirejs.config({
         "dispSuggesttion.view": "dispSuggesttion/dispSuggesttion.view",
         "dispSuggesttion.model": "dispSuggesttion/dispSuggesttion.model",
 
+        "importAssess.model": "importAssess/importAssess.model",
+        "importAssess.view": "importAssess/importAssess.view",
+
         "coverRegion.view": 'coverRegion/coverRegion.view',
         "coverRegion.model": 'coverRegion/coverRegion.model',
 
@@ -94,7 +97,7 @@ requirejs.config({
 
         "templateManage.model": 'templateManage/templateManage.model',
         "templateManage.view": 'templateManage/templateManage.view',
-
+        /*客户域名配置*/
         "customerSetup.model": 'customerSetup/customerSetup.model',
         "customerSetup.view": 'customerSetup/customerSetup.view',
         "customerSetup.controller": 'customerSetup/customerSetup.controller',
@@ -108,7 +111,7 @@ requirejs.config({
 
         "matchCondition.view": 'customerSetup/domainList/matchCondition/matchCondition.view',
         "matchCondition.model": 'customerSetup/domainList/matchCondition/matchCondition.model',
-        
+        /*客户域名配置： 点播，伪直播*/
         "basicInformation.model": 'customerSetup/domainList/basicInformation/basicInformation.model',
         "basicInformation.view": 'customerSetup/domainList/basicInformation/basicInformation.view',
 
@@ -168,7 +171,13 @@ requirejs.config({
 
         "saveThenSend.model": 'customerSetup/domainList/saveThenSend/saveThenSend.model',
         "saveThenSend.view": 'customerSetup/domainList/saveThenSend/saveThenSend.view',
+        /*客户域名配置： 真直播*/
+        "customerSetup.live.controller": 'customerSetup/customerSetup.live.controller',
 
+        "liveBasicInformation.model": 'customerSetup/domainList/liveBasicInformation/liveBasicInformation.model',
+        "liveBasicInformation.view": 'customerSetup/domainList/liveBasicInformation/liveBasicInformation.view',
+
+        /*配置下发*/
         "setupChannelManage.model": "setupChannelManage/setupChannelManage.model",
         "setupChannelManage.view": "setupChannelManage/setupChannelManage.view",
         "setupChannelManage.edit.view": "setupChannelManage/setupChannelManage.edit.view",
@@ -201,9 +210,6 @@ requirejs.config({
 
         "setupSendWaitSend.model": "setupSendManage/setupSendWaitSend/setupSendWaitSend.model",
         "setupSendWaitSend.view": "setupSendManage/setupSendWaitSend/setupSendWaitSend.view",
-
-        "importAssess.model": "importAssess/importAssess.model",
-        "importAssess.view": "importAssess/importAssess.view",
     },
     urlArgs: new Date().valueOf()
 });

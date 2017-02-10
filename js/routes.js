@@ -1,5 +1,12 @@
-define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.view', 'controller', 'customerSetup.controller', 'setupSendManage.controller'], 
-    function(require, exports, Utility, NavbarView, SubNavbar, Controller, CustomerSetupController, SetupSendManageController) {
+define("routes", ['require', 'exports', 'utility', 
+                  'navbar.view', 'subNavbar.view', 'controller', 
+                  'customerSetup.controller', 
+                  'setupSendManage.controller', 
+                  'customerSetup.live.controller'], 
+    function(require, exports, Utility, NavbarView, SubNavbar, Controller, 
+        CustomerSetupController, 
+        SetupSendManageController, 
+        CustomerSetupLiveController) {
 
     var Workspace = Backbone.Router.extend({
 
@@ -53,6 +60,8 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             "domainList/:query/refererAntiLeech/:query2"          : "refererAntiLeech",
             "domainList/:query/timestamp/:query2"                 : "timestamp",
             "domainList/:query/openNgxLog/:query2"                : "openNgxLog",
+
+            "domainList/:query/liveBasicInformation/:query2"          : "liveBasicInformation",
 
             "setupChannelManage"     : "setupChannelManage",
             "setupAppManage"         : "setupAppManage",
@@ -221,6 +230,9 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                     break;
                 case 'customerSetup-domainList-openNgxLog':
                     this.openNgxLogView.hide();
+                    break;
+                case 'customerSetup-domainList-liveBasicInformation':
+                    this.liveBasicInformationView.hide();
                     break;
                 default:
             }
@@ -467,6 +479,15 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             this.navbarView.initLogin($.proxy(CustomerSetupController.blockUrlCallback, this, query))
         },
 
+        customerSetup: function(){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.customerSetupCallback, this))
+        },
+
+        //直播域名管理
+        liveBasicInformation: function(query ,query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveBasicInformationCallback, this, query, query2))
+        },
+
         setupDomainManageNavbar: function(query, query2){
             if (!this.domainManageNavbar){
                 var menuOptions = {
@@ -478,8 +499,37 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             }
         },
 
-        customerSetup: function(){
-            this.navbarView.initLogin($.proxy(CustomerSetupController.customerSetupCallback, this))
+        setupLiveDomainManageNavbar: function(query, query2){
+            var menu = [
+                {
+                    id: 'customerSetup-domainList-liveBasicInformation',
+                    name: '基本信息',
+                    hash: 'index.html#/domainList/' + query + /basicInformation/ + query2,
+                    children: []  
+                }, {
+                    id: 'customerSetup-domainList-liveOptimize',
+                    name: '直播业务优化',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'customerSetup-domainList-busOptimize',
+                        name: '业务优化配置',
+                        hash: 'index.html#/domainList/' + query + /busOptimize/ + query2,
+                        active: false,
+                        children: []
+                    }]
+                }
+            ];
+
+            if (!this.domainManageNavbar){
+                var menuOptions = {
+                    query: query,
+                    query2: query2,
+                    menuList: menu,
+                    backHash: 'index.html#/domainList/' + query
+                }
+                this.domainManageNavbar = new SubNavbar(menuOptions);
+                this.domainManageNavbar.select(this.curPage);
+            }
         },
 
         setupCustomerSetupNavbar: function(query){

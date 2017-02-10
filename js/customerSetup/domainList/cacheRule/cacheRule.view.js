@@ -117,6 +117,11 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         timeFormatWithUnit: function(input, curEl, curInputEl) {
             var num = parseInt(input);
+            if (num !== 60 * 60 * 24 * 30){
+                curInputEl.val(num);
+                curEl.html('秒');
+                return;
+            }
             if (input >= 60 && input < 60 * 60) {
                 num = Math.ceil(input / 60)
                 curEl.html('分');
@@ -152,11 +157,13 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
             } else if (cacheTimeType === 2){
                 hasOriginPolicy = 0
                 expireTime = this.defaultParam.cacheTime,
-                summary = "缓存时间：" + Utility.timeFormat(expireTime);
+                //summary = "缓存时间：" + Utility.timeFormat(expireTime);
+                summary = "缓存时间：" + expireTime + "秒";
             } else if(cacheTimeType === 3){
                 expireTime = this.defaultParam.cacheOriginTime,
                 hasOriginPolicy = 1
-                summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + Utility.timeFormat(expireTime);
+                //summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + Utility.timeFormat(expireTime);
+                summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + expireTime + "秒";
             }
 
             var postParam = {
@@ -331,6 +338,7 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
                 onOKCallback: function(){
                     var postParam = myAddEditRoleView.onSure();
                     if (!postParam) return;
+                    console.log(postParam)
                     _.each(postParam, function(value, key, ls){
                         model.set(key, value);
                     }.bind(this))

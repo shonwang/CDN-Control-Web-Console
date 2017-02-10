@@ -157,13 +157,13 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
             } else if (cacheTimeType === 2){
                 hasOriginPolicy = 0
                 expireTime = this.defaultParam.cacheTime,
-                //summary = "缓存时间：" + Utility.timeFormat(expireTime);
-                summary = "缓存时间：" + expireTime + "秒";
+                summary = "缓存时间：" + Utility.timeFormat2(expireTime);
+                //summary = "缓存时间：" + expireTime + "秒";
             } else if(cacheTimeType === 3){
                 expireTime = this.defaultParam.cacheOriginTime,
                 hasOriginPolicy = 1
-                //summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + Utility.timeFormat(expireTime);
-                summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + expireTime + "秒";
+                summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + Utility.timeFormat2(expireTime);
+                //summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + expireTime + "秒";
             }
 
             var postParam = {

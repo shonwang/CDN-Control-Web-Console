@@ -184,12 +184,18 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
             this.collection.on("get.header.success", $.proxy(this.onChannelListSuccess, this));
             this.collection.on("get.header.error", $.proxy(this.onGetError, this));
 
-            this.$el.find(".add").on("click", $.proxy(this.onClickAddRule, this))
+            this.$el.find(".add").on("click", $.proxy(this.onClickAddRule, this));
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
 
-             this.onClickQueryButton();
-            this.collection.on("set.header.success", $.proxy(this.launchSendPopup, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
+            this.onClickQueryButton();
+            this.collection.on("set.header.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.header.error", $.proxy(this.onGetError, this));
+        },
+
+        onSaveSuccess: function(){
+            alert("保存成功！")
         },
 
         launchSendPopup: function(){
@@ -199,6 +205,7 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
                     domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
                     }.bind(this)
                 });
                 var options = {
@@ -206,6 +213,7 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
+                    width: 800,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

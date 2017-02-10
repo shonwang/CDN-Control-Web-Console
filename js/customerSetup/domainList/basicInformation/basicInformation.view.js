@@ -23,7 +23,7 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
             
             this.collection.off("modify.DomainBasic.success");
             this.collection.off("modify.DomainBasic.error");
-            this.collection.on("modify.DomainBasic.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("modify.DomainBasic.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("modify.DomainBasic.error", $.proxy(this.onGetError, this));
 
             require(["domainSetup.model"], function(DomainSetupModel){
@@ -68,6 +68,7 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
             this.$el.find(".Remarks-type").on('click',$.proxy(this.onClickRadio,this));
             this.$el.find(".save").on('click',$.proxy(this.onClickSaveButton,this));
 
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
         },
         onClickRadio: function(event){
             var target = event.target || event.srcElement;
@@ -87,8 +88,12 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
         onClickSaveButton: function(){
             this.defaultParam.description = this.$el.find("#Remarks").val();
             this.collection.modifyDomainBasic(this.defaultParam);
-            
         },
+
+        onSaveSuccess: function(){
+            alert("保存成功！")
+        },
+
         launchSendPopup: function(){
             require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
                 var mySaveThenSendView = new SaveThenSendView({
@@ -97,6 +102,7 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
                     description: this.$el.find("#Remarks").val(),
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
                     }.bind(this)
                 });
                 var options = {
@@ -104,6 +110,7 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
+                    width: 800,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

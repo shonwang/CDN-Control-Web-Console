@@ -212,8 +212,13 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
             if (type === 1) typeName = "Referer类型：白名单<br>";
             if (type === 2) typeName = "Referer类型：黑名单<br>";
 
-            var domains = this.defaultParam.refererType === 1 ? this.$el.find("#white-domain").val() : this.$el.find("#black-domain").val(), 
-                domainsName;
+            var domains = '', domainsName;
+            
+            if (this.defaultParam.refererType === 1) 
+                domains = _.uniq(this.$el.find("#white-domain").val().split(',')).join(',')
+            else
+                domains = _.uniq(this.$el.find("#black-domain").val().split(',')).join(',')
+
             if (domains) domainsName = "合法域名：" + domains + "<br>";
 
             var nullReferer = this.defaultParam.nullReferer, nullRefererName;
@@ -267,12 +272,18 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
             this.collection.on("get.refer.success", $.proxy(this.onChannelListSuccess, this));
             this.collection.on("get.refer.error", $.proxy(this.onGetError, this));
 
-            this.$el.find(".add").on("click", $.proxy(this.onClickAddRule, this))
+            this.$el.find(".add").on("click", $.proxy(this.onClickAddRule, this));
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
 
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
             this.onClickQueryButton();
-            this.collection.on("set.refer.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.refer.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.refer.error", $.proxy(this.onGetError, this));
+        },
+
+        onSaveSuccess: function(){
+            alert("保存成功！")
         },
 
         launchSendPopup: function(){
@@ -282,6 +293,7 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
                     domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
                     }.bind(this)
                 });
                 var options = {
@@ -289,6 +301,7 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
+                    width: 800,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

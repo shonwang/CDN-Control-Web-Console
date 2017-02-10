@@ -42,7 +42,9 @@ define("openNgxLog.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".charging-open .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
 
-            this.collection.on("set.chargingOpen.success", $.proxy(this.launchSendPopup, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
+            this.collection.on("set.chargingOpen.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.chargingOpen.error", $.proxy(this.onGetError, this));
         },
 
@@ -53,6 +55,10 @@ define("openNgxLog.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.$el.find(".charging-open .togglebutton input").get(0).checked = true;
         },
 
+        onSaveSuccess: function(){
+            alert("保存成功！")
+        },
+
         launchSendPopup: function(){
             require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
                 var mySaveThenSendView = new SaveThenSendView({
@@ -60,6 +66,7 @@ define("openNgxLog.view", ['require','exports', 'template', 'modal.view', 'utili
                     domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
                     }.bind(this)
                 });
                 var options = {
@@ -67,6 +74,7 @@ define("openNgxLog.view", ['require','exports', 'template', 'modal.view', 'utili
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
+                    width: 800,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

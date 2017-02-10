@@ -1,12 +1,12 @@
-define("liveBasicInformation.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
-    var LiveBasicInformationView = Backbone.View.extend({
+    var LiveBusOptimizeView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
             this.collection = options.collection;
             this.options = options;
-            this.$el = $(_.template(template['tpl/customerSetup/domainList/basicInformation/basicInformation.html'])());
+            this.$el = $(_.template(template['tpl/customerSetup/domainList/liveBusOptimize/liveBusOptimize.main.html'])());
             var clientInfo = JSON.parse(options.query), 
                 domainInfo = JSON.parse(options.query2);
                 this.userInfo = {
@@ -21,10 +21,10 @@ define("liveBasicInformation.view", ['require','exports', 'template', 'modal.vie
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"));
             
-            this.collection.off("modify.DomainBasic.success");
-            this.collection.off("modify.DomainBasic.error");
-            this.collection.on("modify.DomainBasic.success", $.proxy(this.onSaveSuccess, this));
-            this.collection.on("modify.DomainBasic.error", $.proxy(this.onGetError, this));
+            // this.collection.off("modify.DomainBasic.success");
+            // this.collection.off("modify.DomainBasic.error");
+            // this.collection.on("modify.DomainBasic.success", $.proxy(this.onSaveSuccess, this));
+            // this.collection.on("modify.DomainBasic.error", $.proxy(this.onGetError, this));
 
             require(["domainSetup.model"], function(DomainSetupModel){
                 var myDomainSetupModel = new DomainSetupModel();
@@ -34,41 +34,35 @@ define("liveBasicInformation.view", ['require','exports', 'template', 'modal.vie
             }.bind(this))
         },
         onGetDomainInfo: function(data){
-            this.defaultParam = {
+            this.defaultParamGop = {
                 originId:this.domainInfo.id,
                 confCustomType:1,
                 description:""
             }
 
-            if(data.domainConf.confCustomType !== null && data.domainConf.confCustomType !== undefined){
-                this.defaultParam.confCustomType = data.domainConf.confCustomType;
-                this.firstconfCustomType = this.defaultParam.confCustomType;
-            }
-            if(data.originDomain.description !== null && data.originDomain.description !== undefined){
-                this.defaultParam.description = data.originDomain.description;
-            }
-
             this.initSetup();
         },
         initSetup: function(){
-            var confCustomType = this.$el.find(".Remarks-type");
-            var Standard = this.$el.find(".Remarks-type #Standard");
-            var Customization = this.$el.find(".Remarks-type #Customization");
-            var description = this.$el.find('#Remarks');
-            if(this.defaultParam.confCustomType == 1){
-                Standard.get(0).checked = true;
-                Customization.get(0).checked = false;
-            }else if(this.defaultParam.confCustomType == 3){
-                Standard.get(0).checked = false;
-                Customization.get(0).checked = true;
-            }
+            this.gopEl = $(_.template(template['tpl/customerSetup/domainList/liveBusOptimize/liveBusOptimize.gop.html'])());
+            this.gopEl.appendTo(this.$el.find(".optimize-content"))
+            // var confCustomType = this.$el.find(".Remarks-type");
+            // var Standard = this.$el.find(".Remarks-type #Standard");
+            // var Customization = this.$el.find(".Remarks-type #Customization");
+            // var description = this.$el.find('#Remarks');
+            // if(this.defaultParam.confCustomType == 1){
+            //     Standard.get(0).checked = true;
+            //     Customization.get(0).checked = false;
+            // }else if(this.defaultParam.confCustomType == 3){
+            //     Standard.get(0).checked = false;
+            //     Customization.get(0).checked = true;
+            // }
             
-            description.val(this.defaultParam.description);
+            // description.val(this.defaultParam.description);
 
-            this.$el.find(".Remarks-type").on('click',$.proxy(this.onClickRadio,this));
-            this.$el.find(".save").on('click',$.proxy(this.onClickSaveButton,this));
+            // this.$el.find(".Remarks-type").on('click',$.proxy(this.onClickRadio,this));
+            // this.$el.find(".save").on('click',$.proxy(this.onClickSaveButton,this));
 
-            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+            // this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
         },
         onClickRadio: function(event){
             var target = event.target || event.srcElement;
@@ -153,5 +147,5 @@ define("liveBasicInformation.view", ['require','exports', 'template', 'modal.vie
         }
     });
 
-    return LiveBasicInformationView;
+    return LiveBusOptimizeView;
 });

@@ -83,6 +83,34 @@ define("utility", ['require','exports'], function(require, exports) {
             }
         },
 
+        timeFormat2: function(input) {
+            var input = input || 0, num = parseInt(input), str = '';
+            if (input >= 60 && input < 60 * 60) {
+                num = Math.floor(input / 60)
+                str = this.timeFormat2(input % 60);
+                str = num + '分' + str;
+            } else if (input >= 60 * 60 && input < 60 * 60 * 24) {
+                num = Math.floor(input / 60 / 60);
+                str = this.timeFormat2(input % (60 * 60))
+                str =  num + '小时' + str;
+            } else if (input >= 60 * 60 * 24 && input < 60 * 60 * 24 * 30) {
+                num = Math.floor(input / 60 / 60 / 24);
+                str = this.timeFormat2(input % (60 * 60 * 24))
+                str =  num + '天' + str;
+            } else if (input >= 60 * 60 * 24 * 30 && input < 60 * 60 * 24 * 30 * 12) {
+                num = Math.floor(input / 60 / 60 / 24 / 30);
+                str = this.timeFormat2(input % (60 * 60 * 24 * 30))
+                str =  num + '个月' + str;
+            } else if (input >= 60 * 60 * 24 * 30 * 12) {
+                num = Math.floor(input / 60 / 60 / 24 / 30 / 12);
+                str = this.timeFormat2(input % (60 * 60 * 24 * 30 * 12));
+                str =  num + '年' + str;
+            } else {
+                if (num > 0) str = num + '秒'
+            }
+            return str;
+        },
+
         //产品说必须按1000算，不按1024算
         handlerToBps: function(input) {
             var input = input || 0;

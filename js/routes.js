@@ -69,7 +69,7 @@ define("routes", ['require', 'exports', 'utility',
             "domainList/:query/liveHttpFlvOptimize/:query2"       : "liveHttpFlvOptimize",
             "domainList/:query/liveRtmpOptimize/:query2"          : "liveRtmpOptimize",
             "domainList/:query/liveSLAStatistics/:query2"         : "liveSLAStatistics",
-            "domainList/:query/liveFrequencyLog/:query2"         : "liveFrequencyLog",
+            "domainList/:query/liveFrequencyLog/:query2"          : "liveFrequencyLog",
 
             "setupChannelManage"     : "setupChannelManage",
             "setupAppManage"         : "setupAppManage",

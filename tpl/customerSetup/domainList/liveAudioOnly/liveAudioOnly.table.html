@@ -1,0 +1,25 @@
+<table class="table table-striped table-hover">
+    <thead> 
+      <tr>
+        <th>类型</th>
+        <th>参数名称</th>
+        <th>状态</th>
+      </tr>
+    </thead>
+    <tbody>
+        <% for(var i = 0; i < data.length; i++) { %>
+        <tr data-id="<%=data[i].get('id')%>">
+            <td><%=data[i].get('videoTypeName')%></td>
+            <td><input type="text" class="form-control end" value="<%=data[i].get('endParam')%>" id="<%=data[i].get('id')%>" readonly="true"></td>
+            <td>
+                <div class="togglebutton">
+                    <label>
+                        <input type="checkbox" id="<%=data[i].get('id')%>" <% if (data[i].get('status') === 1) { %>checked="true" <% } %>>
+                        <span class="toggle"></span>
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <% } %>
+    </tbody>
+</table>

@@ -190,6 +190,28 @@ requirejs.config({
 
         "liveBusOptimize.model": 'customerSetup/domainList/liveBusOptimize/liveBusOptimize.model',
         "liveBusOptimize.view": 'customerSetup/domainList/liveBusOptimize/liveBusOptimize.view',
+
+        "liveH265Setup.model": 'customerSetup/domainList/liveH265Setup/liveH265Setup.model',
+        "liveH265Setup.view": 'customerSetup/domainList/liveH265Setup/liveH265Setup.view',
+
+        "liveAudioOnly.model": 'customerSetup/domainList/liveAudioOnly/liveAudioOnly.model',
+        "liveAudioOnly.view": 'customerSetup/domainList/liveAudioOnly/liveAudioOnly.view',
+
+        "liveEdge302.model": 'customerSetup/domainList/liveEdge302/liveEdge302.model',
+        "liveEdge302.view": 'customerSetup/domainList/liveEdge302/liveEdge302.view',
+
+        "liveHttpFlvOptimize.model": 'customerSetup/domainList/liveHttpFlvOptimize/liveHttpFlvOptimize.model',
+        "liveHttpFlvOptimize.view": 'customerSetup/domainList/liveHttpFlvOptimize/liveHttpFlvOptimize.view',
+
+        "liveRtmpOptimize.model": 'customerSetup/domainList/liveRtmpOptimize/liveRtmpOptimize.model',
+        "liveRtmpOptimize.view": 'customerSetup/domainList/liveRtmpOptimize/liveRtmpOptimize.view', 
+
+        "liveSLAStatistics.model": 'customerSetup/domainList/liveSLAStatistics/liveSLAStatistics.model',
+        "liveSLAStatistics.view": 'customerSetup/domainList/liveSLAStatistics/liveSLAStatistics.view',
+
+        "liveFrequencyLog.model": 'customerSetup/domainList/liveFrequencyLog/liveFrequencyLog.model',
+        "liveFrequencyLog.view": 'customerSetup/domainList/liveFrequencyLog/liveFrequencyLog.view',                 
+
         /*配置下发*/
         "setupChannelManage.model": "setupChannelManage/setupChannelManage.model",
         "setupChannelManage.view": "setupChannelManage/setupChannelManage.view",

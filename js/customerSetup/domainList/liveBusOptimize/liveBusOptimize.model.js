@@ -1,9 +1,9 @@
-define("liveBasicInformation.model", ['require','exports', 'utility'], function(require, exports, Utility) {
+define("liveBusOptimize.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){}
     });
 
-    var LiveBasicInformationCollection = Backbone.Collection.extend({
+    var LiveBusOptimizeCollection = Backbone.Collection.extend({
         
         model: Model,
 
@@ -21,5 +21,5 @@ define("liveBasicInformation.model", ['require','exports', 'utility'], function(
         }
     });
 
-    return LiveBasicInformationCollection;
+    return LiveBusOptimizeCollection;
 });

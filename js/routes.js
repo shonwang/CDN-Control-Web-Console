@@ -69,9 +69,16 @@ define("routes", ['require', 'exports', 'utility',
             "domainList/:query/liveBackOriginSetup/:query2"      : "liveBackOriginSetup",
             "domainList/:query/liveBackOriginDetection/:query2"      : "liveBackOriginDetection",
             "domainList/:query/liveRefererAntiLeech/:query2":"liveRefererAntiLeech",
-            "domainList/:query/LiveTimestamp/:query2":"LiveTimestamp",
+            "domainList/:query/LiveTimestamp/:query2":"liveTimestamp",
             
             "domainList/:query/liveBusOptimize/:query2"           : "liveBusOptimize",
+            "domainList/:query/liveH265Setup/:query2"             : "liveH265Setup",
+            "domainList/:query/liveAudioOnly/:query2"             : "liveAudioOnly",
+            "domainList/:query/liveEdge302/:query2"               : "liveEdge302",
+            "domainList/:query/liveHttpFlvOptimize/:query2"       : "liveHttpFlvOptimize",
+            "domainList/:query/liveRtmpOptimize/:query2"          : "liveRtmpOptimize",
+            "domainList/:query/liveSLAStatistics/:query2"         : "liveSLAStatistics",
+            "domainList/:query/liveFrequencyLog/:query2"         : "liveFrequencyLog",
 
             "setupChannelManage"     : "setupChannelManage",
             "setupAppManage"         : "setupAppManage",
@@ -262,11 +269,32 @@ define("routes", ['require', 'exports', 'utility',
                 case 'customerSetup-domainList-liveBackOriginDetection':
                     this.liveBackOriginDetectionView.hide();
                     break;
-                case 'liveRefererAntiLeech':
+                case 'customerSetup-domainList-liveRefererAntiLeech':
                     this.liveRefererAntiLeechView.hide();
                     break;
-                case 'liveTimestamp':
+                case 'customerSetup-domainList-liveTimestamp':
                     this.liveTimestampView.hide();
+                    break;
+                case 'customerSetup-domainList-liveH265Setup':
+                    this.liveH265SetupView.hide();
+                    break;
+                case 'customerSetup-domainList-liveAudioOnly':
+                    this.liveAudioOnlyView.hide();
+                    break;
+                case 'customerSetup-domainList-liveEdge302':
+                    this.liveEdge302View.hide();
+                    break;
+                case 'customerSetup-domainList-liveHttpFlvOptimize':
+                    this.liveHttpFlvOptimizeView.hide();
+                    break;
+                case 'customerSetup-domainList-liveRtmpOptimize':
+                    this.liveRtmpOptimizeView.hide();
+                    break;
+                case 'customerSetup-domainList-liveSLAStatistics':
+                    this.liveSLAStatisticsView.hide();
+                    break;
+                case 'customerSetup-domainList-liveFrequencyLog':
+                    this.liveFrequencyLogView.hide();
                     break;
                 default:
             }
@@ -556,6 +584,34 @@ define("routes", ['require', 'exports', 'utility',
             this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveBusOptimizeCallback, this, query, query2))
         },
 
+        liveH265Setup: function(query ,query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveH265SetupCallback, this, query, query2))
+        },
+
+        liveAudioOnly: function(query ,query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveAudioOnlyCallback, this, query, query2))
+        },
+
+        liveEdge302: function(query ,query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveEdge302Callback, this, query, query2))
+        },
+
+        liveHttpFlvOptimize: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveHttpFlvOptimizeCallback, this, query, query2))
+        },
+
+        liveRtmpOptimize: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveRtmpOptimizeCallback, this, query, query2))
+        },
+
+        liveSLAStatistics: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveSLAStatisticsCallback, this, query, query2))
+        },
+
+        liveFrequencyLog: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveFrequencyLogCallback, this, query, query2))
+        },
+
         setupDomainManageNavbar: function(query, query2){
             if (!this.domainManageNavbar){
                 var menuOptions = {
@@ -645,6 +701,58 @@ define("routes", ['require', 'exports', 'utility',
                         id: 'customerSetup-domainList-liveBusOptimize',
                         name: '业务优化配置',
                         hash: 'index.html#/domainList/' + query + '/liveBusOptimize/' + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'customerSetup-domainList-liveH265Setup',
+                        name: 'H265配置',
+                        hash: 'index.html#/domainList/' + query + '/liveH265Setup/' + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'customerSetup-domainList-liveAudioOnly',
+                        name: '纯音频拉流',
+                        hash: 'index.html#/domainList/' + query + '/liveAudioOnly/' + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'customerSetup-domainList-liveEdge302',
+                        name: '边缘302',
+                        hash: 'index.html#/domainList/' + query + '/liveEdge302/' + query2,
+                        active: false,
+                        children: []
+                    }]
+                },{
+                    id: 'customerSetup-domainList-livePKOptimize',
+                    name: 'PK优化配置',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'customerSetup-domainList-liveHttpFlvOptimize',
+                        name: 'Http+Flv调优配置',
+                        hash: 'index.html#/domainList/' + query + '/liveHttpFlvOptimize/' + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'customerSetup-domainList-liveRtmpOptimize',
+                        name: 'Rtmp调优配置',
+                        hash: 'index.html#/domainList/' + query + '/liveRtmpOptimize/' + query2,
+                        active: false,
+                        children: []
+                    }]
+                },{
+                    id: 'customerSetup-domainList-liveSLASetup',
+                    name: '日志配置',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'customerSetup-domainList-liveSLAStatistics',
+                        name: 'SLA统计配置',
+                        hash: 'index.html#/domainList/' + query + '/liveSLAStatistics/' + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'customerSetup-domainList-liveFrequencyLog',
+                        name: '变频日志配置',
+                        hash: 'index.html#/domainList/' + query + '/liveFrequencyLog/' + query2,
                         active: false,
                         children: []
                     }]

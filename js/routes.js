@@ -63,6 +63,11 @@ define("routes", ['require', 'exports', 'utility',
 
             "domainList/:query/liveBasicInformation/:query2"      : "liveBasicInformation",
             "domainList/:query/liveBusOptimize/:query2"           : "liveBusOptimize",
+            "domainList/:query/liveH265Setup/:query2"             : "liveH265Setup",
+            "domainList/:query/liveAudioOnly/:query2"             : "liveAudioOnly",
+            "domainList/:query/liveEdge302/:query2"               : "liveEdge302",
+            "domainList/:query/liveHttpFlvOptimize/:query2"       : "liveHttpFlvOptimize",
+            "domainList/:query/liveRtmpOptimize/:query2"          : "liveRtmpOptimize",
 
             "setupChannelManage"     : "setupChannelManage",
             "setupAppManage"         : "setupAppManage",
@@ -237,6 +242,21 @@ define("routes", ['require', 'exports', 'utility',
                     break;
                 case 'customerSetup-domainList-liveBusOptimize':
                     this.liveBusOptimizeView.hide();
+                    break;
+                case 'customerSetup-domainList-liveH265Setup':
+                    this.liveH265SetupView.hide();
+                    break;
+                case 'customerSetup-domainList-liveAudioOnly':
+                    this.liveAudioOnlyView.hide();
+                    break;
+                case 'customerSetup-domainList-liveEdge302':
+                    this.liveEdge302View.hide();
+                    break;
+                case 'customerSetup-domainList-liveHttpFlvOptimize':
+                    this.liveHttpFlvOptimizeView.hide();
+                    break;
+                case 'customerSetup-domainList-liveRtmpOptimize':
+                    this.liveRtmpOptimizeView.hide();
                     break;
                 default:
             }
@@ -496,6 +516,26 @@ define("routes", ['require', 'exports', 'utility',
             this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveBusOptimizeCallback, this, query, query2))
         },
 
+        liveH265Setup: function(query ,query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveH265SetupCallback, this, query, query2))
+        },
+
+        liveAudioOnly: function(query ,query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveAudioOnlyCallback, this, query, query2))
+        },
+
+        liveEdge302: function(query ,query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveEdge302Callback, this, query, query2))
+        },
+
+        liveHttpFlvOptimize: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveHttpFlvOptimizeCallback, this, query, query2))
+        },
+
+        liveRtmpOptimize: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveRtmpOptimizeCallback, this, query, query2))
+        },
+
         setupDomainManageNavbar: function(query, query2){
             if (!this.domainManageNavbar){
                 var menuOptions = {
@@ -514,7 +554,7 @@ define("routes", ['require', 'exports', 'utility',
                     name: '基本信息',
                     hash: 'index.html#/domainList/' + query + '/liveBasicInformation/' + query2,
                     children: []  
-                }, {
+                },{
                     id: 'customerSetup-domainList-liveOptimize',
                     name: '直播业务优化',
                     hash: 'javascript:void(0)',
@@ -522,6 +562,41 @@ define("routes", ['require', 'exports', 'utility',
                         id: 'customerSetup-domainList-liveBusOptimize',
                         name: '业务优化配置',
                         hash: 'index.html#/domainList/' + query + '/liveBusOptimize/' + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'customerSetup-domainList-liveH265Setup',
+                        name: 'H265配置',
+                        hash: 'index.html#/domainList/' + query + '/liveH265Setup/' + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'customerSetup-domainList-liveAudioOnly',
+                        name: '纯音频拉流',
+                        hash: 'index.html#/domainList/' + query + '/liveAudioOnly/' + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'customerSetup-domainList-liveEdge302',
+                        name: '边缘302',
+                        hash: 'index.html#/domainList/' + query + '/liveEdge302/' + query2,
+                        active: false,
+                        children: []
+                    }]
+                },{
+                    id: 'customerSetup-domainList-livePKOptimize',
+                    name: 'PK优化配置',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'customerSetup-domainList-liveHttpFlvOptimize',
+                        name: 'Http+Flv调优配置',
+                        hash: 'index.html#/domainList/' + query + '/liveHttpFlvOptimize/' + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'customerSetup-domainList-liveRtmpOptimize',
+                        name: 'Rtmp调优配置',
+                        hash: 'index.html#/domainList/' + query + '/liveRtmpOptimize/' + query2,
                         active: false,
                         children: []
                     }]

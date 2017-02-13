@@ -193,7 +193,13 @@ requirejs.config({
         "liveHttpFlvOptimize.view": 'customerSetup/domainList/liveHttpFlvOptimize/liveHttpFlvOptimize.view',
 
         "liveRtmpOptimize.model": 'customerSetup/domainList/liveRtmpOptimize/liveRtmpOptimize.model',
-        "liveRtmpOptimize.view": 'customerSetup/domainList/liveRtmpOptimize/liveRtmpOptimize.view',                
+        "liveRtmpOptimize.view": 'customerSetup/domainList/liveRtmpOptimize/liveRtmpOptimize.view', 
+
+        "liveSLAStatistics.model": 'customerSetup/domainList/liveSLAStatistics/liveSLAStatistics.model',
+        "liveSLAStatistics.view": 'customerSetup/domainList/liveSLAStatistics/liveSLAStatistics.view',
+
+        "liveFrequencyLog.model": 'customerSetup/domainList/liveFrequencyLog/liveFrequencyLog.model',
+        "liveFrequencyLog.view": 'customerSetup/domainList/liveFrequencyLog/liveFrequencyLog.view',                 
 
         /*配置下发*/
         "setupChannelManage.model": "setupChannelManage/setupChannelManage.model",

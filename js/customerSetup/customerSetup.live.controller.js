@@ -178,6 +178,54 @@ define("customerSetup.live.controller", ['require','exports'],
                 }
             }.bind(this));
         },
+
+        liveSLAStatisticsCallback: function(query, query2){
+            require(['liveSLAStatistics.view', 'liveSLAStatistics.model'], function(LiveSLAStatisticsView, LiveSLAStatisticsModel){
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-liveSLAStatistics';
+                this.setupLiveDomainManageNavbar(query, query2);
+                var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                if (!this.liveSLAStatisticsModel)
+                    this.liveSLAStatisticsModel = new LiveSLAStatisticsModel();
+                if (!this.liveSLAStatisticsView ){
+                    var options = {
+                        collection: this.liveSLAStatisticsModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.liveSLAStatisticsView = new LiveSLAStatisticsView(options);
+                    this.liveSLAStatisticsView.render(renderTarget);
+                } else {
+                    this.domainManageNavbar.select(this.curPage);
+                    this.liveSLAStatisticsView.update(query, query2, renderTarget);
+                }
+            }.bind(this));
+        },
+
+        liveFrequencyLogCallback: function(query, query2){
+            require(['liveFrequencyLog.view', 'liveFrequencyLog.model'], function(LiveFrequencyLogView, LiveFrequencyLogModel){
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-liveFrequencyLog';
+                this.setupLiveDomainManageNavbar(query, query2);
+                var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                if (!this.liveFrequencyLogModel)
+                    this.liveFrequencyLogModel = new LiveFrequencyLogModel();
+                if (!this.liveFrequencyLogView ){
+                    var options = {
+                        collection: this.liveFrequencyLogModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.liveFrequencyLogView = new LiveFrequencyLogView(options);
+                    this.liveFrequencyLogView.render(renderTarget);
+                } else {
+                    this.domainManageNavbar.select(this.curPage);
+                    this.liveFrequencyLogView.update(query, query2, renderTarget);
+                }
+            }.bind(this));
+        },
     });
     return new CustomerSetupLiveController();
 });

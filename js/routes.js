@@ -68,6 +68,8 @@ define("routes", ['require', 'exports', 'utility',
             "domainList/:query/liveEdge302/:query2"               : "liveEdge302",
             "domainList/:query/liveHttpFlvOptimize/:query2"       : "liveHttpFlvOptimize",
             "domainList/:query/liveRtmpOptimize/:query2"          : "liveRtmpOptimize",
+            "domainList/:query/liveSLAStatistics/:query2"         : "liveSLAStatistics",
+            "domainList/:query/liveFrequencyLog/:query2"         : "liveFrequencyLog",
 
             "setupChannelManage"     : "setupChannelManage",
             "setupAppManage"         : "setupAppManage",
@@ -257,6 +259,12 @@ define("routes", ['require', 'exports', 'utility',
                     break;
                 case 'customerSetup-domainList-liveRtmpOptimize':
                     this.liveRtmpOptimizeView.hide();
+                    break;
+                case 'customerSetup-domainList-liveSLAStatistics':
+                    this.liveSLAStatisticsView.hide();
+                    break;
+                case 'customerSetup-domainList-liveFrequencyLog':
+                    this.liveFrequencyLogView.hide();
                     break;
                 default:
             }
@@ -536,6 +544,14 @@ define("routes", ['require', 'exports', 'utility',
             this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveRtmpOptimizeCallback, this, query, query2))
         },
 
+        liveSLAStatistics: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveSLAStatisticsCallback, this, query, query2))
+        },
+
+        liveFrequencyLog: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveFrequencyLogCallback, this, query, query2))
+        },
+
         setupDomainManageNavbar: function(query, query2){
             if (!this.domainManageNavbar){
                 var menuOptions = {
@@ -597,6 +613,23 @@ define("routes", ['require', 'exports', 'utility',
                         id: 'customerSetup-domainList-liveRtmpOptimize',
                         name: 'Rtmp调优配置',
                         hash: 'index.html#/domainList/' + query + '/liveRtmpOptimize/' + query2,
+                        active: false,
+                        children: []
+                    }]
+                },{
+                    id: 'customerSetup-domainList-liveSLASetup',
+                    name: '日志配置',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'customerSetup-domainList-liveSLAStatistics',
+                        name: 'SLA统计配置',
+                        hash: 'index.html#/domainList/' + query + '/liveSLAStatistics/' + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'customerSetup-domainList-liveFrequencyLog',
+                        name: '变频日志配置',
+                        hash: 'index.html#/domainList/' + query + '/liveFrequencyLog/' + query2,
                         active: false,
                         children: []
                     }]

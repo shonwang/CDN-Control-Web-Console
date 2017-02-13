@@ -3,8 +3,8 @@
     <div class="panel-body">
         <div class="form-horizontal">
             <div class="form-group">
-                <div class="col-sm-1">
-                    <div class="radio">
+                <div class="col-sm-2">
+                    <div class="radio pull-right">
                       <label>
                           <input type="radio" name="gopCacheType" id="gopCacheType1" checked>按时长
                       </label>
@@ -14,13 +14,13 @@
                 <div class="col-sm-2">
                     <input type="number" class="form-control" id="gopduration" value="5" min="2" max="30">
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-5">
                     <p class="form-control-static">秒<span class="text-danger">（填写内容为正整数，默认为5秒，最小值为2秒，最大值为30秒）</span></p>
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-1">
-                    <div class="radio">
+                <div class="col-sm-2">
+                    <div class="radio  pull-right">
                       <label>
                           <input type="radio" name="gopCacheType" id="gopCacheType2" checked>按个数
                       </label>
@@ -30,13 +30,13 @@
                 <div class="col-sm-2">
                     <input type="number" class="form-control" id="gopnum" value="2" min="1" max="15">
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-5">
                     <p class="form-control-static">个<span class="text-danger">（填写内容为正整数，默认为2个，最小值为1个，最大值为15个）</span></p>
                 </div>
             </div>
             <hr>
             <div class="form-group">
-                <label for="gopmaxduration" class="col-sm-2 control-label">最大gop缓存时长：</label>
+                <label for="gopmaxduration" class="col-sm-3 control-label">最大gop缓存时长：</label>
                 <div class="col-sm-2">
                     <input type="number" class="form-control" id="gopmaxduration" value="30" min="1" max="30">
                 </div>
@@ -46,19 +46,19 @@
                     </p>
                 </div>
             </div>
-            <div class="form-group">
-                <label for="gopmaxduration" class="col-sm-2 control-label">gop最小发送长度：</label>
-                <div class="col-sm-1">
+            <div class="form-group gopminlength">
+                <label for="gopminlength" class="col-sm-3 control-label">gop最小发送长度：</label>
+                <div class="col-sm-2">
                     <div class="togglebutton">
                         <label>
                             <input type="checkbox"><span class="toggle"></span>
                         </label>
                     </div>
                 </div>
-                <div class="col-sm-2">
-                    <input type="number" class="form-control" id="gopmaxduration" value="1" min="1" max="30">
+                <div class="col-sm-2 gopminlengthinput">
+                    <input type="number" class="form-control" id="gopminlength" value="1" min="1" max="30">
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-4 gopminlengthinput">
                     <p class="form-control-static">秒
                         <span class="text-danger">（填写内容为正整数，默认为1秒，最小值为1，最大值为30秒）</span>
                     </p>

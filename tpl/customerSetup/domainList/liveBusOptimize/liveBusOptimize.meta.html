@@ -1,0 +1,27 @@
+<div class="panel panel-default">
+    <div class="panel-heading">meta配置</div>
+    <div class="panel-body">
+        <div class="form-horizontal">
+            <div class="alert alert-dismissable alert-info">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>温馨提示：</strong>修改对直播流中的meta处理方式<br>
+                1、append：在原有的metadata基础上，再追加一些信息<br>
+                2、on：直播CDN自己基于原有的metadata自己构建一个，会丢失部分原始的metadata信息<br>
+                3、copy：转发源的metadata<br>
+                4、off：不发送任何metadata
+            </div>
+            <div class="form-group">
+                <label for="meta-type" class="col-sm-3 control-label">选择meta处理方式</label>
+                <div class="col-sm-7 meta-type">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-meta-type" data-toggle="dropdown">
+                            <span class="cur-value">加载中...</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -62,6 +62,15 @@ define("routes", ['require', 'exports', 'utility',
             "domainList/:query/openNgxLog/:query2"                : "openNgxLog",
 
             "domainList/:query/liveBasicInformation/:query2"      : "liveBasicInformation",
+
+            "domainList/:query/liveDomainSetup/:query2"      : "liveDomainSetup",
+            "domainList/:query/liveCnameSetup/:query2"      : "liveCnameSetup",
+            "domainList/:query/liveHttpsSetup/:query2"      : "liveHttpsSetup",
+            "domainList/:query/liveBackOriginSetup/:query2"      : "liveBackOriginSetup",
+            "domainList/:query/liveBackOriginDetection/:query2"      : "liveBackOriginDetection",
+            "domainList/:query/liveRefererAntiLeech/:query2":"liveRefererAntiLeech",
+            "domainList/:query/LiveTimestamp/:query2":"LiveTimestamp",
+            
             "domainList/:query/liveBusOptimize/:query2"           : "liveBusOptimize",
 
             "setupChannelManage"     : "setupChannelManage",
@@ -235,8 +244,29 @@ define("routes", ['require', 'exports', 'utility',
                 case 'customerSetup-domainList-liveBasicInformation':
                     this.liveBasicInformationView.hide();
                     break;
+                case 'customerSetup-domainList-liveDomainSetup':
+                    this.liveDomainSetupView.hide();
+                    break;
+                case 'customerSetup-domainList-liveCnameSetup':
+                    this.liveCnameSetupView.hide();
+                    break;
+                case 'customerSetup-domainList-liveHttpsSetup':
+                    this.liveHttpsSetupView.hide();
+                    break;
                 case 'customerSetup-domainList-liveBusOptimize':
                     this.liveBusOptimizeView.hide();
+                    break;
+                case 'customerSetup-domainList-liveBackOriginSetup':
+                    this.liveBackOriginSetupView.hide();
+                    break;
+                case 'customerSetup-domainList-liveBackOriginDetection':
+                    this.liveBackOriginDetectionView.hide();
+                    break;
+                case 'liveRefererAntiLeech':
+                    this.liveRefererAntiLeechView.hide();
+                    break;
+                case 'liveTimestamp':
+                    this.liveTimestampView.hide();
                     break;
                 default:
             }
@@ -492,6 +522,36 @@ define("routes", ['require', 'exports', 'utility',
             this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveBasicInformationCallback, this, query, query2))
         },
 
+        //域名基础设置
+        liveDomainSetup:function(query ,query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveBasicDomainSetupCallback, this, query, query2))
+        },
+        
+        //CNAME设置
+        liveCnameSetup:function(query ,query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveCnameSetupCallback, this, query, query2))
+        },
+
+        liveHttpsSetup:function(query ,query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveHttpsSetupCallback, this, query, query2))
+        },
+        
+        liveBackOriginSetup:function(query,query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveBackOriginSetupCallback, this, query, query2))
+        },
+
+        liveBackOriginDetection:function(query,query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveBackOriginDetectionCallback, this, query, query2))
+        },
+        
+        liveRefererAntiLeech:function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveRefererAntiLeechCallback, this, query, query2))
+        },
+
+        liveTimestamp:function(){
+            this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveTimestampCallback, this, query, query2))
+        },
+
         liveBusOptimize: function(query ,query2){
             this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveBusOptimizeCallback, this, query, query2))
         },
@@ -515,6 +575,69 @@ define("routes", ['require', 'exports', 'utility',
                     hash: 'index.html#/domainList/' + query + '/liveBasicInformation/' + query2,
                     children: []  
                 }, {
+                    id: '',
+                    name: '域名设置',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'customerSetup-domainList-liveDomainSetup',
+                        name: '域名基础配置',
+                        hash: 'index.html#/domainList/' + query + '/liveDomainSetup/' + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'customerSetup-domainList-liveCnameSetup',
+                        name: 'CNAME设置',
+                        hash: 'index.html#/domainList/' + query + '/liveCnameSetup/' + query2,
+                        active: false,
+                        children: []
+                    },{
+                        id: 'customerSetup-domainList-liveHttpsSetup',
+                        name: 'https配置',
+                        hash: 'index.html#/domainList/' + query + '/liveHttpsSetup/' + query2,
+                        active: false,
+                        children: []
+                    }]
+                },{
+                    id:'',
+                    name:'源站配置',
+                    hash:'javascript:void(0)',
+                    children:[
+                        {
+                            id: 'customerSetup-domainList-liveBackOriginSetup',
+                            name: '回源配置',
+                            hash: 'index.html#/domainList/' + query + '/liveBackOriginSetup/' + query2,
+                            active: false,
+                            children: []
+                        },
+                        {
+                            id: 'customerSetup-domainList-liveBackOriginDetection',
+                            name: '回源检测',
+                            hash: 'index.html#/domainList/' + query + '/liveBackOriginDetection/' + query2,
+                            active: false,
+                            children: []
+                        }
+                    ]
+                },{
+                    id:'',
+                    name:'访问控制',
+                    hash:'javascript:void(0)',
+                    children:[
+                        {
+                            id: 'customerSetup-domainList-liveRefererAntiLeech',
+                            name: 'Referer防盗链',
+                            hash: 'index.html#/domainList/' + query + '/liveRefererAntiLeech/' + query2,
+                            active: false,
+                            children: []
+                        },
+                        {
+                            id: 'customerSetup-domainList-liveTimestamp',
+                            name: '时间戳+共享秘钥防盗链',
+                            hash: 'index.html#/domainList/' + query + '/liveTimestamp/' + query2,
+                            active: false,
+                            children: []
+                        }
+                    ]
+                },{
                     id: 'customerSetup-domainList-liveOptimize',
                     name: '直播业务优化',
                     hash: 'javascript:void(0)',

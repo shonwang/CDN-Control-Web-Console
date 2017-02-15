@@ -40,19 +40,19 @@ define("controller", ['require','exports'],
         },
 
         kdmDomainListCallback: function(){
-            require(['importAssess.view', 'importAssess.model'], function(ImportAssessView, ImportAssessModel){
-                this.curPage = 'importAssess';
+            require(['kdmDomainList.view', 'kdmDomainList.model'], function(KdmDomainListView, KdmDomainListModel){
+                this.curPage = 'kdmDomainList';
                 this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                if (!this.importAssessModel)
-                    this.importAssessModel = new ImportAssessModel();
-                if (!this.importAssessView ){
+                if (!this.kdmDomainListModel)
+                    this.kdmDomainListModel = new KdmDomainListModel();
+                if (!this.kdmDomainListView ){
                     var options = {
-                        collection: this.importAssessModel
+                        collection: this.kdmDomainListModel
                     };
-                    this.importAssessView = new ImportAssessView(options);
-                    this.importAssessView.render($('.ksc-content'));
+                    this.kdmDomainListView = new KdmDomainListView(options);
+                    this.kdmDomainListView.render($('.ksc-content'));
                 } else {
-                    this.importAssessView.update();
+                    this.kdmDomainListView.update();
                 }
             }.bind(this));
         },

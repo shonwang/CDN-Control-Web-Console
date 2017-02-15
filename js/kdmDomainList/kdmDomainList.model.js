@@ -1,4 +1,4 @@
-define("importAssess.model", ['require','exports', 'utility'], function(require, exports, Utility) {
+define("kdmDomainList.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
             this.set("id", Utility.randomStr(16));
@@ -6,7 +6,7 @@ define("importAssess.model", ['require','exports', 'utility'], function(require,
         }
     });
 
-    var ImportAssessCollection = Backbone.Collection.extend({
+    var KdmDomainListCollection = Backbone.Collection.extend({
         
         model: Model,
 
@@ -82,5 +82,5 @@ define("importAssess.model", ['require','exports', 'utility'], function(require,
         }
     });
 
-    return ImportAssessCollection;
+    return KdmDomainListCollection;
 });

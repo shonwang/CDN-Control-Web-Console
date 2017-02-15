@@ -1,0 +1,216 @@
+<div class="assess-manage-history">
+    <h4>KDM域名列表<small>/新增域名</small></h4>
+    <div class="well history-panel">
+        <div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-horizontal">
+                        <div class="form-group input-domain">
+                            <label for="input-domain" class=" col-sm-3 control-label">域名</label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" id="input-domain">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="domain-toggle" class="col-sm-3 control-label">启用</label>
+                            <div class="col-sm-2 domain-toggle">
+                                <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                    <label>
+                                        <input type="checkbox"><span class="toggle"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group template">
+                            <label class="col-sm-3 control-label">配置模版</label>
+                            <div class="dropdown col-sm-7">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-template" data-toggle="dropdown">
+                                    <span class="cur-value">加载中...</span>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu"></ul>
+                            </div>
+                        </div>
+                        <div class="form-group white-list">
+                            <label for="white-list" class=" col-sm-3 control-label">域名白名单</label>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" id="white-list-start" placeholder="开始">
+                            </div>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" id="white-list-end" placeholder="结束">
+                            </div>
+                            <div class="col-sm-2">
+                                <a href="javascript:void(0)" class="btn btn-success add-white-list">
+                                    <span class="glyphicon glyphicon-plus"></span>新增
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group white-list">
+                            <div class="col-sm-offset-3 col-sm-6 white-list-table">
+                                <div class="table-ctn table-responsive"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="limit-speed-toggle" class="col-sm-3 control-label">全网限速</label>
+                            <div class="col-sm-2 limit-speed-toggle">
+                                <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                    <label>
+                                        <input type="checkbox"><span class="toggle"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="limit-bandwidth" class="col-sm-3 control-label">全网限速带宽</label>
+                            <div class="col-sm-2 limit-bandwidth">
+                                <input class="form-control" type="number" id="limit-bandwidth" min="0">
+                            </div>
+                            <div class="col-sm-2 limit-bandwidth limit-bandwidth-unit">
+                                <div class="dropdown">
+                                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-limit-bandwidth" data-toggle="dropdown">
+                                        <span class="cur-value">加载中...</span>
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="flow-copy-toggle" class="col-sm-3 control-label">流量拷贝</label>
+                            <div class="col-sm-2 flow-copy-toggle">
+                                <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                    <label>
+                                        <input type="checkbox"><span class="toggle"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="args-copy-toggle" class="col-sm-3 control-label">全参数拷贝</label>
+                            <div class="col-sm-2 args-copy-toggle">
+                                <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                    <label>
+                                        <input type="checkbox"><span class="toggle"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="copy-interval" class="col-sm-3 control-label">流量拷贝间隔</label>
+                            <div class="col-sm-2 copy-interval">
+                                <input class="form-control" type="number" id="copy-interval" min="0" value="5">
+                            </div>
+                            <p class="col-sm-2 form-control-static">秒</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="max-request" class="col-sm-3 control-label">最大请求</label>
+                            <div class="col-sm-2 max-request">
+                                <input class="form-control" type="number" id="max-request" min="0" value="10000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="max-length" class="col-sm-3 control-label">最大长度</label>
+                            <div class="col-sm-2 max-length">
+                                <input class="form-control" type="number" id="max-length" min="0" value="120000">
+                            </div>
+                            <p class="col-sm-2 form-control-static">字节</p>
+                        </div>
+                        <div class="form-group request-args">
+                            <label for="request-args" class=" col-sm-3 control-label">请求参数</label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" id="request-args">
+                            </div>
+                            <div class="col-sm-2">
+                                <a href="javascript:void(0)" class="btn btn-success add-args">
+                                    <span class="glyphicon glyphicon-plus"></span>新增
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group request-args">
+                            <div class="col-sm-offset-3 col-sm-6 request-args-table">
+                                <div class="table-ctn table-responsive"></div>
+                            </div>
+                        </div>
+                        <div class="form-group request-cookies">
+                            <label for="request-cookies" class=" col-sm-3 control-label">请求Cookies</label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" id="request-cookies">
+                            </div>
+                            <div class="col-sm-2">
+                                <a href="javascript:void(0)" class="btn btn-success add-cookies">
+                                    <span class="glyphicon glyphicon-plus"></span>新增
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group request-cookies">
+                            <div class="col-sm-offset-3 col-sm-6 request-cookies-table">
+                                <div class="table-ctn table-responsive"></div>
+                            </div>
+                        </div>
+                        <div class="form-group request-header">
+                            <label for="request-header" class=" col-sm-3 control-label">请求Header</label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" id="request-header">
+                            </div>
+                            <div class="col-sm-2">
+                                <a href="javascript:void(0)" class="btn btn-success add-header">
+                                    <span class="glyphicon glyphicon-plus"></span>新增
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group request-header">
+                            <div class="col-sm-offset-3 col-sm-6 request-header-table">
+                                <div class="table-ctn table-responsive"></div>
+                            </div>
+                        </div>
+                        <div class="form-group static-black-list">
+                            <label for="static-black-list" class="col-sm-3 control-label">静态黑名单</label>
+                            <div class="col-sm-2">
+                                <a href="javascript:void(0)" class="btn btn-success add-static-black-list">
+                                    <span class="glyphicon glyphicon-plus"></span>新增
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group static-black-list">
+                            <div class="col-sm-offset-1 col-sm-10 static-black-list-table">
+                                <div class="table-ctn table-responsive"></div>
+                            </div>
+                        </div>
+                        <div class="form-group ddos-rule">
+                            <label for="ddos-rule" class="col-sm-3 control-label">域名DDos规则</label>
+                            <div class="col-sm-2">
+                                <a href="javascript:void(0)" class="btn btn-success add-ddos-rule">
+                                    <span class="glyphicon glyphicon-plus"></span>新增
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group ddos-rule">
+                            <div class="col-sm-offset-3 col-sm-6 ddos-rule-table">
+                                <div class="table-ctn table-responsive"></div>
+                            </div>
+                        </div>
+                        <div class="form-group dynamic-black-list">
+                            <label for="dynamic-black-list" class="col-sm-3 control-label">动态黑名单</label>
+                            <div class="col-sm-2">
+                                <a href="javascript:void(0)" class="btn btn-success add-dynamic-black-list">
+                                    <span class="glyphicon glyphicon-plus"></span>新增
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group dynamic-black-list">
+                            <div class="col-sm-offset-3 col-sm-6 dynamic-black-list-table">
+                                <div class="table-ctn table-responsive"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="opt-ctn text-center">
+                <a href="javascript:void(0)" class="btn btn-primary ok">确定</a>
+                <a href="javascript:void(0)" class="btn btn-default cancel">取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+

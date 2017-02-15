@@ -1,0 +1,12 @@
+<table class="table table-striped table-hover table-bordered">
+    <tbody>
+        <% for(var i = 0; i < data.length; i++) { %>
+            <tr data-id="<%=data[i].id%>">
+              <td><%=data[i].value%></td>
+              <td>
+                <a href="javascript:void(0)" id="<%=data[i].id%>" class="delete" title="删除">删除</a>
+              </td>
+            </tr>
+        <% } %>  
+    </tbody>
+</table>

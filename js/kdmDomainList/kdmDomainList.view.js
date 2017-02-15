@@ -1,6 +1,6 @@
-define("importAssess.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+define("kdmDomainList.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
-    var HistoryView = Backbone.View.extend({
+    var AddEditDomainView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
         },
@@ -10,108 +10,379 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection = options.collection;
             this.model      = options.model;
 
-            this.$el = $(_.template(template['tpl/importAssess/importAssess.history.html'])({data: {}}));
+            this.$el = $(_.template(template['tpl/kdmDomainList/kdmDomainList.addEdit.html'])({data: {}}));
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-            this.$el.find(".query").on("click", $.proxy(this.onClickSearchButton, this));
+            // this.$el.find(".query").on("click", $.proxy(this.onClickSearchButton, this));
 
-            this.startTime = new Date().format("yyyy/MM/dd") + " 00:00:00";
-            this.endTime = new Date().valueOf();
-            this.startTime = new Date(this.startTime).valueOf();
+            //假数据
+            var blackObj = {
+                "method":2,              //增加还是删除黑名单，2为增加，1为删除
+                "type": 1,               //黑名单类型，1为 ip，2为cookie, 3为 arg，4为 header
+                "start": "3.0.0.0",      //当黑名单类型为1时生效，start 和 end 分别表示 ip 段的起始和结束ip
+                "end": "3.4.5.6",
+                "ip" : "192.168.123.22",  //当黑名单类型为1时生效，为单个黑名单地址，当改字段设置后，start 和 end 中的值会被忽略
+                "key": "host",           //当黑名单类型为非1时生效，表示黑名单的 key
+                "value": "test.com",     //当黑民丹类型为非1时生效，表示黑名单的 value
+                "measure": 2,            //对该黑名单执行的动作，1为 challenge， 2为captcha，3为 wait，4为 deny，5为 close
+                "expired": 1499876383,   //黑名单的过期时间，该时间为 unix 时间，如果过期时间小于当前时间，则该条黑名单会被忽略
+                "owner" : 'mc'          //黑名单标签
+            };
 
-            this.initChargeDatePicker();
+            var exprObj = {
+                "interval": 10,                       //表达式执行间隔
+                "ttl": 300,                           //生成黑名单的有效时间
+                "expr": '\"count\" \u003e 10',        //表达式形式
+                "action": "captcha",                  //生成黑名单要执行的动作，包括 challenge/captcha/wait/deny/close
+                "black": [                            //要生成的黑名单 key，必须包括一个，可以有多个
+                  "ip"
+                ],
+               "early_check": true,                   //是否提前检测黑名单的生成
+               "owner": "default",                    //生成的黑名单的标签
+               "test": false                          //是否为观察模式，true 则为观察模式
+            };
 
-            this.defaultParam = {
-                // "page" : 1,
-                // "count": 99999,
-                "startIssueTime": this.startTime,
-                "endIssueTime": this.endTime
+            var uriObj = {
+                "path": "^/",                          //uri 路径，里边的表达式只会对匹配到该路径的请求生效。支持=(完全匹配）、^（前缀匹配）、~（正则匹配）三种方式。匹配优先级依次递减。
+                "blacklist": true,                     //是否生成黑名单，如果为 false，则表达式无效                    
+                "exprs": [exprObj],                    //上述的表达式，可以为空，也可以有多个
+                "qps": {                               //qps 限流配置
+                  "test": false,                       //是否开启观察模式，true 为观察模式
+                  "qps" : 5                            //qps 限流阈值，如果为0或者空则表示不限流
+                }
             }
 
-            this.collection.off("get.history.success");
-            this.collection.off("get.history.error");
-            this.collection.on("get.history.success", $.proxy(this.initSetup, this));
-            this.collection.on("get.history.error", $.proxy(this.onGetError, this))
-            this.collection.getHistoryList(this.defaultParam);
-        },
+            this.defaultParam = {
+               "enable": true,                    //域名开关
+               "name": "hard",                    //域名名称
+               "source_ip": [                     //executor 处理域名配置时获取源 ip 所使用的头部，可以有多个，也可以为空
+                 "x-forwarded-for"
+               ],
+               "whitelist": [ //全局白名单列表，可以有多个，也可以为空
+                    {
+                        "start": "10.0.0.0", //白名单段起始 ip
+                        "end": "10.255.255.255" //白名单段结束 ip
+                    }, {
+                        "start": "11.11.11.11",
+                        "end": "11.11.255.255"
+                    }
+                ],    //与全局白名单中 wihitelist 含义相同,可以为空
+               "blacklist": [blackObj],    //静态黑名单，只支持 type=1 而且 ip 为空的（ip 段类型）黑名单
+               "snapshot_ttl": 60,                //动态黑名单快照保存时间
+               "template": "hard",                //使用的模板名称
+               "blacklist_domain": "test",        //使用的黑名单集合名称
+               "uri": [uriObj],                //配置的 uris，可以为空或者多个
+               "copy_request": {
+                   "enable": true,                       //是否允许 copyrequet
+                   "args": false,                        //匹配 url时否包含参数匹配
+                   "interval": 3,                        //copyrequet 的最大时间间隔
+                   "max_packet": 10000,                  //copyrequet 的最大请求数
+                   "max_packet_size": 131072,            //copyrequest 的最大包大小
+                   "arg": ["name","time"],               //copyrequest 包含哪些 arg，可以为空或者多个
+                   "cookie": ["code"],                   //copyrequest 包含哪些 cookie，可以为空或者多个
+                   "header": ["xff"]                     //copyrequest 包含哪些 header，可以为空或者多个
+                 }        //copyrequet 格式，具体如上
+             }
+             console.log(this.model)
+             console.log(this.defaultParam)
 
-        initChargeDatePicker: function(){
-            var startVal = null, endVal = null;
-            if (this.startTime)
-                startVal = new Date(this.startTime).format("yyyy/MM/dd hh:mm");
-            var startOption = {
-                lang:'ch',
-                timepicker: true,
-                scrollInput: false,
-                format:'Y/m/d H:i', 
-                value: startVal, 
-                onChangeDateTime: function(){
-                    this.startTime = new Date(arguments[0]).valueOf();
-                }.bind(this)
-            };
-            this.$el.find("#input-start").datetimepicker(startOption);
-            if (this.endTime)
-                endVal = new Date(this.endTime).format("yyyy/MM/dd hh:mm");
-            var endOption = {
-                lang:'ch',
-                timepicker: true,
-                scrollInput: false,
-                format:'Y/m/d H:i', 
-                value: endVal, 
-                onChangeDateTime: function(){
-                    this.endTime = new Date(arguments[0]).valueOf();
-                }.bind(this)
-            };
-            this.$el.find("#input-end").datetimepicker(endOption);
+             this.initSetup();
+
+            // this.collection.off("get.history.success");
+            // this.collection.off("get.history.error");
+            // this.collection.on("get.history.success", $.proxy(this.initSetup, this));
+            // this.collection.on("get.history.error", $.proxy(this.onGetError, this))
+            // this.collection.getHistoryList(this.defaultParam);
         },
 
         initSetup: function(data){
-            //if (!this.isInitPaginator) this.initPaginator();
+            this.$el.find("#input-domain").val(this.defaultParam.name);
+            this.$el.find(".domain-toggle .togglebutton input").get(0).checked = this.defaultParam.enable;
 
-            this.historyList = data;
+            this.initDropDropdown();
 
-            _.each(data, function(el, index, ls){
-                el.createTimeFormated = new Date(el.createTime).format("yyyy/mm/dd hh:MM:ss")
+            this.$el.find(".add-white-list").on("click", $.proxy(this.onClickAddWhiteList, this))
+            this.convertWhiteListArray();    
+            this.updateWhiteListTable();
+
+            this.$el.find(".flow-copy-toggle .togglebutton input").get(0).checked = this.defaultParam.copy_request.enable;
+            this.$el.find(".args-copy-toggle .togglebutton input").get(0).checked = this.defaultParam.copy_request.args;
+            this.$el.find("#max-request").val(this.defaultParam.copy_request.max_packet);
+            this.$el.find("#max-length").val(this.defaultParam.copy_request.max_packet_size);
+            this.$el.find("#copy-interval").val(this.defaultParam.copy_request.interval);
+
+            this.convertRequestArray();
+            this.$el.find(".add-args").on("click", $.proxy(this.onClickAddRequestArgs, this))
+            this.updateRequestArgsTable();
+            this.$el.find(".add-cookies").on("click", $.proxy(this.onClickAddRequestCookie, this))
+            this.updateRequestCookieTable();
+            this.$el.find(".add-header").on("click", $.proxy(this.onClickAddRequestHeader, this))
+            this.updateRequestHeaderTable();
+
+            this.convertBlackListArray();
+            this.updateBlackListTable();
+        },
+
+        convertBlackListArray: function(){
+            this.blackListArray = [];
+            _.each(this.defaultParam.blacklist, function(el, index, ls){
+                var temp = _.extend({}, el)
+                temp.id = Utility.randomStr(8);
+                if (el.method === 2) temp.methodName = "增加";
+                if (el.method === 1) temp.methodName = "删除";
+                if (el.type === 1 && el.ip !== "") temp.typeName = "ip";
+                if (el.type === 2) temp.typeName = "cookie";
+                if (el.type === 3) temp.typeName = "参数";
+                if (el.type === 4) temp.typeName = "header";
+                if (el.measure === 1) temp.measureName = "challenge";
+                if (el.measure === 2) temp.measureName = "captcha";
+                if (el.measure === 3) temp.measureName = "wait";
+                if (el.measure === 4) temp.measureName = "deny";
+                if (el.measure === 5) temp.measureName = "close";
+                if (el.type !== 1)
+                    temp.valueStr = el.value;
+                else if (el.ip !== "")
+                    temp.valueStr = el.ip;
+                else if (el.start !== "" && el.end !== "")
+                    temp.valueStr = el.start + "-" + el.end
+                if ((el.expired + "").length < 13)
+                    temp.expiredFormated = new Date(el.expired * 1000).format("yyyy/MM/dd hh:mm:ss");
+                else
+                    temp.expiredFormated = new Date().format("yyyy/MM/dd hh:mm:ss");
+                this.blackListArray.push(temp)
+            }.bind(this))
+        },
+
+        updateBlackListTable: function(){
+            this.$el.find(".static-black-list-table").find(".table").remove()
+            this.blackListTable = $(_.template(template['tpl/kdmDomainList/kdmDomainList.blackList.table.html'])({
+                data: this.blackListArray
+            }))
+            this.$el.find(".static-black-list-table .table-ctn").html(this.blackListTable.get(0));
+            this.blackListTable.find(".delete").on("click", $.proxy(this.onClickBlackListTableItemDelete, this));
+        },
+
+
+        //流量拷贝
+        convertRequestArray: function(){
+            this.requestArgsArray = [];
+            _.each(this.defaultParam.copy_request.arg, function(el, index, ls){
+                this.requestArgsArray.push({
+                    id: Utility.randomStr(8),
+                    value: el
+                })
             }.bind(this))
 
-            this.table = $(_.template(template['tpl/importAssess/importAssess.history.table.html'])({
-                data: data, 
-            }));
-            if (data.length !== 0)
-                this.$el.find(".table-ctn").html(this.table[0]);
-            else
-                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+            this.requestCookieArray = [];
+            _.each(this.defaultParam.copy_request.cookie, function(el, index, ls){
+                this.requestCookieArray.push({
+                    id: Utility.randomStr(8),
+                    value: el
+                })
+            }.bind(this))
+
+            this.requestHeaderArray = [];
+            _.each(this.defaultParam.copy_request.header, function(el, index, ls){
+                this.requestHeaderArray.push({
+                    id: Utility.randomStr(8),
+                    value: el
+                })
+            }.bind(this))
         },
 
-        initPaginator: function(){
-            this.$el.find(".total-items span").html(this.historyList.total)
-            if (this.historyList.total <= this.defaultParam.count) return;
-            var total = Math.ceil(this.historyList.total/this.defaultParam.count);
+        updateRequestHeaderTable: function(){
+            this.$el.find(".request-header-table").find(".table").remove()
+            this.requestHeaderTable = $(_.template(template['tpl/kdmGlobleSetup/kdmGlobleSetup.sourceIp.table.html'])({
+                data: this.requestHeaderArray
+            }))
+            this.$el.find(".request-header-table .table-ctn").html(this.requestHeaderTable.get(0));
+            this.requestHeaderTable.find(".delete").on("click", $.proxy(this.onClickRequestHeaderTableItemDelete, this));
+        },
 
-            this.$el.find(".pagination").jqPaginator({
-                totalPages: total,
-                visiblePages: 10,
-                currentPage: 1,
-                onPageChange: function (num, type) {
-                    if (type !== "init"){
-                        this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                        var args = _.extend(this.defaultParam);
-                        args.page = num;
-                        args.count = this.defaultParam.count;
-                        this.collection.getHistoryList(args);
-                    }
-                }.bind(this)
+        onClickRequestHeaderTableItemDelete: function(event){
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+
+            var filterArray = _.filter(this.requestHeaderArray, function(obj){
+                return obj.id !== id
+            }.bind(this))
+
+            this.requestHeaderArray = filterArray;
+            this.updateRequestHeaderTable();
+        },
+        
+        onClickAddRequestHeader: function(event){
+            var eventTarget = event.srcElement || event.target;
+
+            var newKey = this.$el.find("#request-header").val();
+
+            if (newKey === ""){
+                alert("你什么都没填")
+                return;
+            }
+
+            this.requestHeaderArray.push({
+                id: Utility.randomStr(8),
+                value: newKey
             });
-            this.isInitPaginator = true;
+            this.updateRequestHeaderTable();
+
+            this.$el.find("#request-header").val("")
         },
 
-        onClickSearchButton: function(){
-            this.isInitPaginator = false;
-            this.defaultParam.page = 1;
-            this.defaultParam.startIssueTime = this.startTime;
-            this.defaultParam.endIssueTime = this.endTime;
-            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.$el.find(".pagination").html("");
-            this.collection.getHistoryList(this.defaultParam);
+        //请求cookies
+        updateRequestCookieTable: function(){
+            this.$el.find(".request-cookies-table").find(".table").remove()
+            this.requestCookieTable = $(_.template(template['tpl/kdmGlobleSetup/kdmGlobleSetup.sourceIp.table.html'])({
+                data: this.requestCookieArray
+            }))
+            this.$el.find(".request-cookies-table .table-ctn").html(this.requestCookieTable.get(0));
+            this.requestCookieTable.find(".delete").on("click", $.proxy(this.onClickRequestCookieTableItemDelete, this));
+        },
+
+        onClickRequestCookieTableItemDelete: function(event){
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+
+            var filterArray = _.filter(this.requestCookieArray, function(obj){
+                return obj.id !== id
+            }.bind(this))
+
+            this.requestCookieArray = filterArray;
+            this.updateRequestCookieTable();
+        },
+        
+        onClickAddRequestCookie: function(event){
+            var eventTarget = event.srcElement || event.target;
+
+            var newKey = this.$el.find("#request-cookies").val();
+
+            if (newKey === ""){
+                alert("你什么都没填")
+                return;
+            }
+
+            this.requestCookieArray.push({
+                id: Utility.randomStr(8),
+                value: newKey
+            });
+            this.updateRequestCookieTable();
+
+            this.$el.find("#request-cookies").val("")
+        },
+
+        //请求参数
+        updateRequestArgsTable: function(){
+            this.$el.find(".request-args-table").find(".table").remove()
+            this.requestArgsTable = $(_.template(template['tpl/kdmGlobleSetup/kdmGlobleSetup.sourceIp.table.html'])({
+                data: this.requestArgsArray
+            }))
+            this.$el.find(".request-args-table .table-ctn").html(this.requestArgsTable.get(0));
+            this.requestArgsTable.find(".delete").on("click", $.proxy(this.onClickRequestArgsTableItemDelete, this));
+        },
+
+        onClickRequestArgsTableItemDelete: function(event){
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+
+            var filterArray = _.filter(this.requestArgsArray, function(obj){
+                return obj.id !== id
+            }.bind(this))
+
+            this.requestArgsArray = filterArray;
+            this.updateRequestArgsTable();
+        },
+        
+        onClickAddRequestArgs: function(event){
+            var eventTarget = event.srcElement || event.target;
+
+            var newKey = this.$el.find("#request-args").val();
+
+            if (newKey === ""){
+                alert("你什么都没填")
+                return;
+            }
+
+            this.requestArgsArray.push({
+                id: Utility.randomStr(8),
+                value: newKey
+            });
+            this.updateRequestArgsTable();
+
+            this.$el.find("#request-args").val("")
+        },
+
+        //白名单
+        convertWhiteListArray: function(){
+            this.whiteListObjArray = [];
+            _.each(this.defaultParam.whitelist, function(el, index, ls){
+                this.whiteListObjArray.push({
+                    id: Utility.randomStr(8),
+                    start: el.start,
+                    end: el.start
+                })
+            }.bind(this))
+        },
+
+        updateWhiteListTable: function(){
+            this.$el.find(".white-list").find(".table").remove()
+            this.whiteListTable = $(_.template(template['tpl/kdmGlobleSetup/kdmGlobleSetup.whiteList.table.html'])({
+                data: this.whiteListObjArray
+            }))
+            this.$el.find(".white-list .table-ctn").html(this.whiteListTable.get(0));
+            this.whiteListTable.find(".delete").on("click", $.proxy(this.onClickWhiteListTableItemDelete, this));
+        },
+
+        onClickWhiteListTableItemDelete: function(event){
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+
+            var filterArray = _.filter(this.whiteListObjArray, function(obj){
+                return obj.id !== id
+            }.bind(this))
+
+            this.whiteListObjArray = filterArray;
+            this.updateWhiteListTable();
+        },
+
+        onClickAddWhiteList: function(event){
+            var eventTarget = event.srcElement || event.target;
+
+            var newStart = this.$el.find("#white-list-start").val(),
+                newEnd = this.$el.find("#white-list-end").val();
+
+            if (newStart === "" || newEnd === ""){
+                alert("开始和结束都需要填写")
+                return;
+            }
+
+            this.whiteListObjArray.push({
+                id: Utility.randomStr(8),
+                start: newStart,
+                end: newEnd
+            });
+            this.updateWhiteListTable();
+
+            this.$el.find("#white-list-start").val("");
+            this.$el.find("#white-list-end").val("");
+        },
+
+        initDropDropdown: function(){
+            var  templateArray = [
+                {name: "不使用模版", value: ""}
+            ],
+            rootOtherNode = this.$el.find(".template");
+            Utility.initDropMenu(rootOtherNode, templateArray, function(value){
+                this.defaultParam.template = value
+            }.bind(this));
+
+            var defaultOtherValue = _.find(templateArray, function(object){
+                return object.value === this.defaultParam.template;
+            }.bind(this));
+
+            if (defaultOtherValue)
+                this.$el.find("#dropdown-template .cur-value").html(defaultOtherValue.name);
+            else
+                this.$el.find("#dropdown-template .cur-value").html(templateArray[0].name);
         },
 
         onClickCancelButton: function(){
@@ -130,350 +401,68 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
         }
     });
 
-    var SelectDomainView = Backbone.View.extend({
-        events: {},
-
-        initialize: function(options) {
-            this.options = options;
-            this.collection = options.collection;
-            this.domainArray = options.domainArray;
-
-            this.$el = $(_.template(template['tpl/importAssess/importAssess.select.domain.html'])());
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickConfirmButton, this));
-
-            this.initChannelDropMenu();
-
-            this.queryArgs = {
-                cname: null,
-                currentPage:1,
-                pageSize:10
-            }
-            this.onClickConfirmButton();
-        },
-
-        enterKeyBindQuery: function(){
-            $(document).on('keydown', function(e){
-                if(e.keyCode == 13){
-                    this.onClickConfirmButton();
-                }
-            }.bind(this));
-        },
-
-        onClickConfirmButton: function(){
-            this.isInitPaginator = false;
-            this.queryArgs.currentPage = 1;
-            this.queryArgs.cname = this.$el.find("#input-cname").val();
-            if (this.queryArgs.cname == "") this.queryArgs.cname = null;
-
-            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.$el.find(".pagination").html("");
-
-            this.collection.on("get.cname.success", $.proxy(this.initTable, this));
-            this.collection.on("get.cname.error", $.proxy(this.onGetError, this));
-            this.collection.getCnameList(this.queryArgs)
-        },
-
-        initTable: function(data){
-            this.collection.total = data.total;
-            this.cnameList = data.rows;
-
-            if (!this.isInitPaginator) this.initPaginator();
-
-            this.table = $(_.template(template['tpl/importAssess/importAssess.domain.table.html'])({
-                data: this.cnameList, 
-            }));
-            if (this.cnameList.length !== 0)
-                this.$el.find(".table-ctn").html(this.table[0]);
-            else
-                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-        },
-
-        initPaginator: function(){
-            this.$el.find(".total-items span").html(this.collection.total)
-            if (this.collection.total <= this.queryArgs.pageSize) return;
-            var total = Math.ceil(this.collection.total/this.queryArgs.pageSize);
-
-            this.$el.find(".pagination").jqPaginator({
-                totalPages: total,
-                visiblePages: 10,
-                currentPage: 1,
-                first: '',
-                last: '',
-                onPageChange: function (num, type) {
-                    if (type !== "init"){
-                        this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                        var args = _.extend(this.queryArgs);
-                        args.currentPage = num;
-                        args.pageSize = this.queryArgs.pageSize;
-                        this.collection.getCnameList(args);
-                    }
-                }.bind(this)
-            });
-            this.isInitPaginator = true;
-        },
-
-        initChannelDropMenu: function(){
-            var pageNum = [
-                {name: "10条", value: 10},
-                {name: "20条", value: 20},
-                {name: "50条", value: 50},
-                {name: "100条", value: 100}
-            ]
-            Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
-                this.queryArgs.pageSize = value;
-                this.queryArgs.currentPage = 1;
-                this.onClickConfirmButton();
-            }.bind(this));
-        },
-
-        onSure: function(){
-            var selectedDomain = this.$el.find("input:checked");
-            if (!selectedDomain.get(0)){
-                alert("请选择一个域名")
-                return false;
-            }
-            var id = selectedDomain.get(0).id,
-                model = _.find(this.cnameList, function(obj){
-                    return obj.id === parseInt(id)
-                }.bind(this));
-
-            return model;   
-        },
-
-        onGetError: function(error){
-            if (error&&error.message)
-                alert(error.message)
-            else
-                alert("网络阻塞，请刷新重试！")
-        },
-
-        render: function(target) {
-            this.$el.appendTo(target);
-            this.enterKeyBindQuery();
-        }
-    }); 
-
-    var ImportAssessView = Backbone.View.extend({
+    var KdmDomainListView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
             this.collection = options.collection;
-            this.$el = $(_.template(template['tpl/importAssess/importAssess.html'])());
+            this.$el = $(_.template(template['tpl/kdmDomainList/kdmDomainList.html'])());
 
-            this.initChannelDropMenu();
+            // this.initChannelDropMenu();
 
-            this.collection.on("get.client.success", $.proxy(this.onGetClientMessage, this));
-            this.collection.on("get.client.error", $.proxy(this.onGetError, this));
-            this.collection.on("update.client", $.proxy(this.updateUserInfoView, this));
-            this.collection.on("update.assess.table", $.proxy(this.initTable, this));
-            this.collection.on("get.evaluationFlag.success", $.proxy(this.onGetEvaluationSuccess, this));
-            this.collection.on("get.evaluationFlag.error", $.proxy(this.onGetError, this));
+            // this.collection.on("get.client.success", $.proxy(this.onGetClientMessage, this));
+            // this.collection.on("get.client.error", $.proxy(this.onGetError, this));
+            // this.collection.on("update.client", $.proxy(this.updateUserInfoView, this));
+            this.collection.on("update.domain.table", $.proxy(this.initTable, this));
+            // this.collection.on("get.evaluationFlag.success", $.proxy(this.onGetEvaluationSuccess, this));
+            // this.collection.on("get.evaluationFlag.error", $.proxy(this.onGetError, this));
 
-            this.$el.find(".opt-ctn .confirm").on("click", $.proxy(this.onClickConfirmButton, this));
-            this.$el.find(".add-domain").on("click", $.proxy(this.onClickAddDomain, this));
-            this.$el.find(".start-assess").on("click", $.proxy(this.onClickStartAssess, this));
-            this.$el.find(".multi-delete").on("click", $.proxy(this.onClickMultiDelete, this));
-            this.$el.find(".history").on("click", $.proxy(this.onClickItemHistory, this));
+            // this.$el.find(".opt-ctn .confirm").on("click", $.proxy(this.onClickConfirmButton, this));
+            this.$el.find(".create").on("click", $.proxy(this.onClickAddDomain, this));
+            // this.$el.find(".start-assess").on("click", $.proxy(this.onClickStartAssess, this));
+            // this.$el.find(".multi-delete").on("click", $.proxy(this.onClickMultiDelete, this));
+            // this.$el.find(".history").on("click", $.proxy(this.onClickItemHistory, this));
 
-            this.enterKeyBindQuery();
-
-            this.collection.trigger("update.assess.table");
+            // this.enterKeyBindQuery();
+            //假数据
+            this.collection.push(new this.collection.model({
+               "enable": true,    //域名开关
+               "name": "hard",    //域名名称
+               "source_ip": [                     //executor 处理域名配置时获取源 ip 所使用的头部，可以有多个，也可以为空
+                 "x-forwarded-for"
+               ],
+               "whitelist": [],        //与全局白名单中 wihitelist 含义相同,可以为空
+               "blacklist": [],    //静态黑名单，只支持 type=1 而且 ip 为空的（ip 段类型）黑名单
+               "snapshot_ttl": 60,                //动态黑名单快照保存时间
+               "template": "hard",                //使用的模板名称
+               "blacklist_domain": "test",        //使用的黑名单集合名称
+               "uri": [],                //配置的 uris，可以为空或者多个
+               "copy_request": {}        //copyrequet 格式，具体如上
+            }))
+            this.collection.trigger("update.domain.table");
         },
         
-        enterKeyBindQuery:function(){
-            $(document).on('keydown', function(e){
-                if(e.keyCode == 13){
-                    this.onClickConfirmButton();
-                }
-            }.bind(this));
-        },
-
         onGetError: function(error){
             if (error&&error.message)
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
-        },
-
-        onClickConfirmButton: function(){
-            if (!this.currentModel){
-                alert("请填写相关信息!");
-                return
-            }
-            if (!this.currentModel.get("groupName")){
-                alert("请选择调度组!");
-                return
-            }
-            if (!this.regionId){
-                alert("请选择区域!");
-                return
-            }
-            if (!this.$el.find("#input-bandwidth").val()){
-                alert("请填写带宽!");
-                return
-            }
-            if (parseInt(this.$el.find("#input-bandwidth").val()) <= 0){
-                alert("带宽必须大于零!");
-                return
-            }
-            var defaultParam = {
-                "cnameId": this.currentModel.get("cnameId"),
-                "cname": this.currentModel.get("cname"),
-                "accelerateName": this.currentModel.get("accelerateName").replace(/\|/g, '<br>'),
-                "clientName": this.currentModel.get("clientName").replace(/\|/g, '<br>'),
-                "groupId": this.currentModel.get("groupId"),
-                "groupName": this.currentModel.get("groupName"),
-                "regionId": this.regionId,
-                "regionName": this.regionName,
-                "increBandwidth": this.$el.find("#input-bandwidth").val()
-            }
-            var newModel = new this.collection.model(defaultParam)
-            newModel.set("createTime", new Date().format("yyyy/MM/dd hh:mm:ss"));
-            this.collection.models.reverse();
-            this.collection.push(newModel);
-            this.collection.each(function(el){
-                el.set("isChecked", false);
-            }.bind(this))
-            this.collection.trigger("update.assess.table");
-        },
-
-        onClickStartAssess: function(){
-            var checkedList = this.collection.filter(function(obj){
-                return obj.get("isChecked") === true;
-            }.bind(this))
-
-            if (checkedList.length === 0){
-                alert("至少添加并选择一条信息!")
-                return;
-            }
-
-            var postParam = [];
-            _.each(checkedList, function(el, index, ls){
-                postParam.push({
-                    "cnameId": el.get("cnameId"),
-                    "cname": el.get("cname"),
-                    "accelerateName": el.get("accelerateName").replace(/<br>/g, '|'),
-                    "clientName": el.get("clientName").replace(/<br>/g, '|'),
-                    "groupId": el.get("groupId"),
-                    "groupName": el.get("groupName"),
-                    "regionId": el.get("regionId"),
-                    "regionName": el.get("regionName"),
-                    "increBandwidth": el.get("increBandwidth"),
-                    "createTime": new Date(el.get("createTime")).valueOf(),
-                    "issuedTime": el.get("issuedTime"),
-                    "orgId": el.get("orgId"),
-                    "evalState": el.get("evalState")
-                })
-            }.bind(this))
-
-            this.currentInfo = postParam
-
-            this.collection.getEvaluationFlag(postParam)
-        },
-
-        onGetEvaluationSuccess: function(res){
-            var result = false;
-
-            if (res === "true")
-                result = confirm("客户带宽可以接入！点击确定查看评估详情！");
-            else
-                result = confirm("客户带宽接入将导致部分区域的节点不足以承载服务，具体信息请点击确定查看评估详情！");
-
-            if (result){
-                require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel){
-                    this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, this.currentPauseNodeId)
-                }.bind(this))
-            }
-        },
-
-        onRequireDispSuggesttionModule: function(DispSuggesttionViews, DispSuggesttionModel, nodeId){//
-            if (!this.dispSuggesttionFailModel)
-                this.dispSuggesttionFailModel = new DispSuggesttionModel();
-            this.hide();
-            var options = {
-                assessInfo: this.currentInfo,
-                collection: this.dispSuggesttionFailModel,
-                backCallback: $.proxy(this.backFromDispSuggesttion, this)
-            };
-            this.dispSuggesttionView = new DispSuggesttionViews.DispSuggesttionView(options);
-            this.dispSuggesttionView.render($('.ksc-content'));
-        },
-
-        backFromDispSuggesttion: function(){
-            this.dispSuggesttionView.remove();
-            this.dispSuggesttionView = null;
-            this.dispSuggesttionFailModel = null;
-            this.update();
         },
 
         initTable: function(){
-            this.collection.models.reverse();
-            this.$el.find(".multi-delete").attr("disabled", "disabled");
-            this.table = $(_.template(template['tpl/importAssess/importAssess.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
+            this.table = $(_.template(template['tpl/kdmDomainList/kdmDomainList.table.html'])({
+                data: this.collection.models
+            }));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+            this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemDelete, this));
 
-            this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
-            this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
-
-            this.table.find("[data-toggle='popover']").popover();
-        },
-
-        onGetClientMessage: function(res){
-            this.currentModel = new this.collection.model(res);
-            this.collection.trigger("update.client");
-        },
-
-        updateUserInfoView: function(){
-            this.$el.find("#input-cname").val(this.currentModel.get("cname"));
-            this.$el.find("#input-client").val(this.currentModel.get("clientName"));
-            this.$el.find("#input-domain").val(this.currentModel.get("accelerateName"));
-            this.$el.find(".dropdown-dispgroup .cur-value").html(this.currentModel.get("groupName") || "请选择");
-            // this.$el.find(".dropdown-region .cur-value").html(this.currentModel.get("regionName") || "请选择");
-            // this.$el.find("#input-bandwidth").html(this.currentModel.get("increBandwidth"));
-        },
-
-        onClickAddDomain: function(){
-            var checkedList = this.collection.filter(function(model) {
-                return model.get("isChecked") === true;
-            });
-
-            var domainArray = [];
-            _.each(checkedList, function(el, index, ls){
-                domainArray.push({
-                    domain: el.get("domain"), 
-                    id: el.get("id")
-                });
-            }.bind(this))
-
-            if (this.selectDomain) $("#" + this.selectDomain.modalId).remove();
-
-            var mySelectDomainView = new SelectDomainView({
-                collection: this.collection, 
-                domainArray : domainArray
-            });
-            var options = {
-                title: "选择接入域名",
-                body : mySelectDomainView,
-                backdrop : 'static',
-                type     : 2,
-                onOKCallback:  function(){
-                    var result  = mySelectDomainView.onSure();
-                    if (!result) return;
-                    this.$el.find("#input-cname").val(result.name)
-                    this.collection.getClientMessage({cnameId: result.id})
-                    //this.collection.getClientMessage({cname: "mt.huluxia.com.download.ks-cdn.com"})
-                    this.selectDomain.$el.modal("hide");
-                }.bind(this),
-                onHiddenCallback: function(){
-                    this.enterKeyBindQuery();
-                }.bind(this)
-            }
-            this.selectDomain = new Modal(options);
+            // this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
+            // this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
         },
 
         onClickItemDelete: function(event){
@@ -487,8 +476,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
 
             var model = this.collection.get(id);
             this.collection.remove(model);
-            this.collection.models.reverse();
-            this.collection.trigger("update.assess.table");
+            this.collection.trigger("update.domain.table");
         },
 
         onClickMultiDelete: function(){
@@ -501,18 +489,18 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.trigger("update.assess.table");
         },
 
-        onClickItemHistory: function(){
-            var myHistoryView = new HistoryView({
+        onClickAddDomain: function(){
+            var myAddEditDomainView = new AddEditDomainView({
                 collection: this.collection,
                 onSaveCallback: function(){}.bind(this),
                 onCancelCallback: function(){
-                    myHistoryView.$el.remove();
+                    myAddEditDomainView.$el.remove();
                     this.$el.find(".list-panel").show();
                 }.bind(this)
             })
 
             this.$el.find(".list-panel").hide();
-            myHistoryView.render(this.$el.find(".history-panel"))
+            myAddEditDomainView.render(this.$el.find(".edit-panel"))
         },
 
         onItemCheckedUpdated: function(event){
@@ -550,100 +538,12 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             }
         },
 
-        initChannelDropMenu: function(){
-            require(["dispGroup.model"], function(DispGroupModel){
-                this.myDispGroupModel = new DispGroupModel();
-                this.myDispGroupModel.on("get.dispGroup.success", $.proxy(this.onGetDispGroupList, this));
-                this.myDispGroupModel.on("get.dispGroup.error", $.proxy(this.onGetError, this));
-                this.myDispGroupModel.getDispGroupList({
-                    "name"  : null,//调度组名称
-                    "status": null,//调度组状态
-                    "level" : null,//覆盖级别
-                    "page"  : 1,
-                    "count" : 99999
-                });
-            }.bind(this))
-
-            this.collection.on("get.region.success", $.proxy(this.onGetRegionList, this));
-            this.collection.on("get.region.error", $.proxy(this.onGetError, this));
-            this.collection.selectRegionList({
-               "page": 1,
-               "count": 99999,
-               "name": null
-            });
-        },
-
-        onGetRegionList: function(res){
-            var regionArray = []
-            _.each(res.rows, function(el, index, lst){
-                regionArray.push({
-                    name: el.name,
-                    value: el.id
-                })
-            }.bind(this))
-
-            var searchSelect = new SearchSelect({
-                containerID: this.$el.find('.dropdown-region').get(0),
-                panelID: this.$el.find('#dropdown-region').get(0),
-                isSingle: true,
-                openSearch: true,
-                selectWidth: 200,
-                isDataVisible: false,
-                onOk: function(){},
-                data: regionArray,
-                callback: function(data) {
-                    this.$el.find(".dropdown-region .cur-value").html(data.name || "请选择");
-                    this.regionId = data.value;
-                    this.regionName = data.name;
-                }.bind(this)
-            });
-        },
-
-        onGetDispGroupList: function(){
-            var dispGroupArray = []
-            this.myDispGroupModel.each(function(el, index, lst){
-                dispGroupArray.push({
-                    name: el.get('dispDomain'),
-                    value: el.get('id')
-                })
-            }.bind(this))
-
-            var searchSelect = new SearchSelect({
-                containerID: this.$el.find('.dropdown-dispgroup').get(0),
-                panelID: this.$el.find('#dropdown-dispgroup').get(0),
-                isSingle: true,
-                openSearch: true,
-                selectWidth: 200,
-                isDataVisible: false,
-                onOk: function(){},
-                data: dispGroupArray,
-                callback: function(data) {
-                    var defaultParam = {
-                        "cnameId": 0,
-                        "cname": "",
-                        "accelerateName": "",
-                        "clientName": "",
-                        "groupId": data.value,
-                        "groupName": data.name,
-                        "regionId": 0,
-                        "regionName": "",
-                        "increBandwidth": ""
-                    }
-                    this.currentModel = new this.collection.model(defaultParam)
-
-                    this.collection.trigger("update.client")
-                }.bind(this)
-            });
-        },
-
         hide: function(){
             this.$el.hide();
-            $(document).off('keydown');
         },
 
         update: function(){
             this.$el.show();
-            this.enterKeyBindQuery();
         },
 
         render: function(target) {
@@ -651,5 +551,5 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
         }
     });
 
-    return ImportAssessView;
+    return KdmDomainListView;
 });

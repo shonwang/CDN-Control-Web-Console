@@ -204,6 +204,15 @@ requirejs.config({
 
         "importAssess.model": "importAssess/importAssess.model",
         "importAssess.view": "importAssess/importAssess.view",
+
+        "kdmGlobleSetup.model": "kdmGlobleSetup/kdmGlobleSetup.model",
+        "kdmGlobleSetup.view": "kdmGlobleSetup/kdmGlobleSetup.view",
+
+        "kdmDomainList.model": "kdmDomainList/kdmDomainList.model",
+        "kdmDomainList.view": "kdmDomainList/kdmDomainList.view",
+
+        "kdmTemplateList.model": "kdmTemplateList/kdmTemplateList.model",
+        "kdmTemplateList.view": "kdmTemplateList/kdmTemplateList.view",
     },
     urlArgs: new Date().valueOf()
 });

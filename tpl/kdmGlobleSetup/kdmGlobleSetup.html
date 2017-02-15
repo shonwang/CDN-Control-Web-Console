@@ -1,0 +1,74 @@
+<div class="kdm-globle-setup fadeInLeft animated">
+    <h4>KDM配置管理<small>/KDM全局配置</small></h4>
+    <div class="well">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="kdm-toggle" class="col-sm-2 control-label">启用KDM</label>
+                        <div class="col-sm-2 kdm-toggle">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group origin-ip">
+                        <label for="origin-ip" class=" col-sm-2 control-label">源IP获取来源</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="origin-ip">
+                        </div>
+                        <div class="col-sm-2">
+                            <a href="javascript:void(0)" class="btn btn-success add-ip"><span class="glyphicon glyphicon-plus"></span>新增</a>
+                        </div>
+                    </div>
+                    <div class="form-group origin-ip">
+                        <div class="col-sm-offset-2 col-sm-6 origin-ip-table">
+                            <div class="table-ctn table-responsive"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-cors-header" class="col-sm-2 control-label">增加CORS头</label>
+                        <div class="col-sm-2 add-cors-header">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            开启后增加以下http head：Access-Control-Allow-Origin: *
+                        </div>
+                    </div>
+                    <div class="form-group" style="display:none">
+                        <label for="delete-cookie-header" class="col-sm-2 control-label">去除Cookie头</label>
+                        <div class="col-sm-2 delete-cookie-header">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+<!--                     <div class="form-group">
+                        <label for="delete-ks3-header" class="col-sm-2 control-label">去除KS3头</label>
+                        <div class="col-sm-2 delete-ks3-header">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div> -->
+                    <hr>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2">
+                            <a href="javascript:void(0)" class="btn btn-primary header-ctr-save"><span class="glyphicon glyphicon-save"></span>保存</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

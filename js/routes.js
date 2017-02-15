@@ -33,6 +33,9 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             "customerSetup"       : "customerSetup",
             "domainList/:query"   : "domainList",
             "blockUrl/:query"     : "blockUrl",
+            "kdmGlobleSetup"      : "kdmGlobleSetup",
+            "kdmDomainList"       : "kdmDomainList",
+            "kdmTemplateList"     : "kdmTemplateList",
             
             "domainList/:query/basicInformation/:query2"          : "basicInformation",
             "domainList/:query/urlBlackList/:query2"              : "urlBlackList",
@@ -80,6 +83,15 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                     break;
                 case 'importAssess':
                     this.importAssessView.hide();
+                    break;
+                case 'kdmGlobleSetup':
+                    this.kdmGlobleSetupView.hide();
+                    break;
+                case 'kdmDomainList':
+                    this.kdmDomainListView.hide();
+                    break;
+                case 'kdmTemplateList':
+                    this.kdmTemplateListView.hide();
                     break;
                 case 'dispConfig':
                     this.dispConfigView.remove();
@@ -342,6 +354,18 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
 
         importAssess: function(){
             this.navbarView.initLogin($.proxy(Controller.importAssessCallback, this))
+        },
+
+        kdmGlobleSetup: function(){
+            this.navbarView.initLogin($.proxy(Controller.kdmGlobleSetupCallback, this))
+        },
+
+        kdmDomainList: function(){
+            this.navbarView.initLogin($.proxy(Controller.kdmDomainListCallback, this))
+        },
+
+        kdmTemplateList: function(){
+            this.navbarView.initLogin($.proxy(Controller.kdmTemplateListCallback, this))
         },
 
         dispGroup: function(){

@@ -21,6 +21,60 @@ define("controller", ['require','exports'],
             }.bind(this));
         },
 
+        kdmGlobleSetupCallback: function(){
+            require(['kdmGlobleSetup.view', 'kdmGlobleSetup.model'], function(KdmGlobleSetupView, KdmGlobleSetupModel){
+                this.curPage = 'kdmGlobleSetup';
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                if (!this.kdmGlobleSetupModel)
+                    this.kdmGlobleSetupModel = new KdmGlobleSetupModel();
+                if (!this.kdmGlobleSetupView ){
+                    var options = {
+                        collection: this.kdmGlobleSetupModel
+                    };
+                    this.kdmGlobleSetupView = new KdmGlobleSetupView(options);
+                    this.kdmGlobleSetupView.render($('.ksc-content'));
+                } else {
+                    this.kdmGlobleSetupView.update();
+                }
+            }.bind(this));
+        },
+
+        kdmDomainListCallback: function(){
+            require(['importAssess.view', 'importAssess.model'], function(ImportAssessView, ImportAssessModel){
+                this.curPage = 'importAssess';
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                if (!this.importAssessModel)
+                    this.importAssessModel = new ImportAssessModel();
+                if (!this.importAssessView ){
+                    var options = {
+                        collection: this.importAssessModel
+                    };
+                    this.importAssessView = new ImportAssessView(options);
+                    this.importAssessView.render($('.ksc-content'));
+                } else {
+                    this.importAssessView.update();
+                }
+            }.bind(this));
+        },
+
+        kdmTemplateListCallback: function(){
+            require(['importAssess.view', 'importAssess.model'], function(ImportAssessView, ImportAssessModel){
+                this.curPage = 'importAssess';
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                if (!this.importAssessModel)
+                    this.importAssessModel = new ImportAssessModel();
+                if (!this.importAssessView ){
+                    var options = {
+                        collection: this.importAssessModel
+                    };
+                    this.importAssessView = new ImportAssessView(options);
+                    this.importAssessView.render($('.ksc-content'));
+                } else {
+                    this.importAssessView.update();
+                }
+            }.bind(this));
+        },
+
         setupTopoManageCallback: function(){
             require(['setupTopoManage.view', 'setupTopoManage.model'], function(SetupTopoManageView, SetupTopoManageModel){
                 this.curPage = 'setupTopoManage';

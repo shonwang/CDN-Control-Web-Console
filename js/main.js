@@ -176,14 +176,21 @@ requirejs.config({
 
         "liveDomainSetup.model":"customerSetup/domainList/liveDomainSetup/liveDomainSetup.model",
         "liveDomainSetup.view":"customerSetup/domainList/liveDomainSetup/liveDomainSetup.view",
+        
         "liveCnameSetup.model":"customerSetup/domainList/liveCnameSetup/liveCnameSetup.model",
         "liveCnameSetup.view":"customerSetup/domainList/liveCnameSetup/liveCnameSetup.view",
+
         "liveHttpsSetup.model":"customerSetup/domainList/liveHttpsSetup/liveHttpsSetup.model",
         "liveHttpsSetup.view":"customerSetup/domainList/liveHttpsSetup/liveHttpsSetup.view",
+
         "liveBackOriginSetup.model":"customerSetup/domainList/liveBackOriginSetup/liveBackOriginSetup.model",
         "liveBackOriginSetup.view":"customerSetup/domainList/liveBackOriginSetup/liveBackOriginSetup.view",
+
         "liveBackOriginDetection.model":"customerSetup/domainList/liveBackOriginDetection/liveBackOriginDetection.model",
         "liveBackOriginDetection.view":"customerSetup/domainList/liveBackOriginDetection/liveBackOriginDetection.view",
+
+        "liveTimestamp.model":"customerSetup/domainList/liveTimestamp/liveTimestamp.model",
+        "liveTimestamp.view":"customerSetup/domainList/liveTimestamp/liveTimestamp.view",
         
         "liveBasicInformation.model": 'customerSetup/domainList/liveBasicInformation/liveBasicInformation.model',
         "liveBasicInformation.view": 'customerSetup/domainList/liveBasicInformation/liveBasicInformation.view',

@@ -129,6 +129,30 @@ define("customerSetup.live.controller", ['require','exports'],
             
         },
 
+        liveTimestampCallback:function(query, query2){
+            require(['liveTimestamp.view', 'liveTimestamp.model'], function(LiveTimestampView, LiveTimestampModel){
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-liveTimestamp';
+                this.setupLiveDomainManageNavbar(query, query2);
+                var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                if (!this.liveTimestampModel)
+                    this.liveTimestampModel = new LiveTimestampModel();
+                if (!this.liveBackOriginSetupView ){
+                    var options = {
+                        collection: this.liveTimestampModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.liveTimestampView = new LiveTimestampView(options);
+                    this.liveTimestampView.render(renderTarget);
+                } else {
+                    this.domainManageNavbar.select(this.curPage);
+                    this.liveTimestampView.update(query, query2, renderTarget);
+                }
+            }.bind(this));                
+        },
+
         liveBasicInformationCallback: function(query, query2){
             require(['liveBasicInformation.view', 'liveBasicInformation.model'], function(LiveBasicInformationView, LiveInformationModel){
                 //一级菜单选中域名配置

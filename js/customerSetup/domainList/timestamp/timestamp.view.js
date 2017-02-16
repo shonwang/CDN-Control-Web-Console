@@ -227,13 +227,15 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
 
             var  atuthDivisorArray = [
                 {value: 1, name: "host:用户请求域名"},
-                {value: 2, name: "uri：路径，用户请求的uri，不带参数和域名"},
-                {value: 3, name: "url：不带参数，如果防盗链因子在path中，则为去掉因子后的url"},
-                {value: 4, name: "param_key:请求url中的参数名称"},
-                {value: 5, name: "time：请求url中是时间戳"},
-                {value: 6, name: "key：秘钥"},
-                {value: 7, name: "filename：文件名称，带后缀"},
-                {value: 8, name: "filenameno：文件名称，不带后缀"}
+                {value: 2, name: "method：用户请求方法"},
+                {value: 13, name: "uri：用户请求的uri"},
+                {value: 14, name: "url：不带参数"},
+                {value: 15, name: "arg&name:请求url中的参数名称"},
+                {value: 16, name: "hdr&name：请求头中的header名称"},
+                {value: 17, name: "time：请求url中是时间戳"},
+                {value: 18, name: "key：秘钥"},
+                {value: 19, name: "filename：文件名称，带后缀"},
+                {value: 10, name: "filenameno：文件名称，不带后缀"}
             ],
             atuthDivisorRootNode = this.$el.find(".atuth-divisor");
             Utility.initDropMenu(atuthDivisorRootNode, atuthDivisorArray, function(value){
@@ -314,6 +316,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 backupKey: newKey
             });
             this.updateBaseKeyTable();
+            this.$el.find(".base-setup #new-backup-key").val("")
         },
 
         onClickAntiLeechRadio: function(event){
@@ -365,6 +368,11 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 return;
             }
 
+            if (this.defaultParam.atuthDivisorArray.length >= 6) {
+                alert("最大可以设置6个");
+                return;
+            }
+
             this.defaultParam.atuthDivisorArray.push({
                 id: new Date().valueOf(),
                 divisorName: this.$el.find("#dropdown-atuth-divisor .cur-value").html(),
@@ -391,6 +399,11 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             var filterArray = _.filter(this.defaultParam.atuthDivisorArray, function(obj){
                 return obj.id !== parseInt(id)
             }.bind(this))
+
+            if (filterArray.length <= 1) {
+                alert("最少不能少于2个");
+                return;
+            }
 
             this.defaultParam.atuthDivisorArray = filterArray;
             this.updateAtuthDivisorTable();
@@ -431,6 +444,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 backupKey: newKey
             });
             this.updateAdvancedKeyTable();
+            this.$el.find(".advanced-setup #new-backup-key").val("");
         },
 
         checkBalabala: function(){

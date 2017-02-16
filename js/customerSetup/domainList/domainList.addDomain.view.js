@@ -543,7 +543,7 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
             this.collection.on("get.region.success", $.proxy(this.onGetRegionSuccess, this))
             this.collection.on("get.region.error", $.proxy(this.onGetError, this))
 
-            this.collection.getRegionBilling({userId: userInfo.uid});
+            this.collection.getRegionBillingByUserId({userId: userInfo.uid});
 
             this.$el.find("#text-domainName").on("focus",$.proxy(this.onDomainNameFocus,this));
 
@@ -616,9 +616,10 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
                   "backSourceProtocol": protocols[result.OriginProtocol],
                   "region":result.Regions,
                   "originType": originTypes[result.OriginType],
-                  "originAddress": result.Origin,
+                  "originAddress": _.uniq(result.Origin.split(',')).join(','),
                   "originPort": result.OriginPort
             }
+
             this.collection.submitDomain(postParam);
             this.$el.find("#add-domain-btnSubmit").attr("disabled", "disabled");
         },

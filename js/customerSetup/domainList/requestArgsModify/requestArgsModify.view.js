@@ -24,7 +24,7 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
 
             this.collection.on("get.parameter.success", $.proxy(this.onUrlParameterSuccess, this));
             this.collection.on("get.parameter.error", $.proxy(this.onGetError, this));
-            this.collection.on("set.parameter.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.parameter.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.parameter.error", $.proxy(this.onGetError, this));
             this.collection.getUrlParameter({originId: this.domainInfo.id})
         },
@@ -58,6 +58,8 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
             this.$el.find(".add-args .togglebutton input").on("click", $.proxy(this.onClickAddToggle, this));
             this.$el.find(".add-args .add").on("click", $.proxy(this.onClickNewArgs, this));
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
+
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
             
             this.initSetup();
         },
@@ -65,7 +67,7 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
         onClickSaveBtn: function (argument) {
             var list = [{
                 "parameterKey": "",
-                "parameterValue": this.$el.find("#delete-args").val(),
+                "parameterValue": _.uniq(this.$el.find("#delete-args").val().split(',')).join(','),
                 "type": 0,
                 "status": this.defaultParam.deleteParam === 1 ? 0 : 1
             }];
@@ -79,12 +81,35 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
             })
             }.bind(this))
 
+            if (list.length > 2) {
+                var isContinue = true;
+
+                _.each(list, function(el, index, ls){
+                    if (isContinue) {
+                        var tempObj = _.filter(list, function(obj){
+                            return el.parameterKey === obj.parameterKey && el.type === obj.type;
+                        })
+
+                        if (tempObj.length > 1) {
+                            isContinue = false
+                            alert("添加了重复参数！")
+                        }
+                    }
+                }.bind(this)) 
+
+                if (isContinue === false) return;
+            }         
+
             var postParam = {
                 "originId": this.domainInfo.id,
                 "list": list
             }
 
             this.collection.setUrlParameter(postParam)
+        },
+
+        onSaveSuccess: function(){
+            alert("保存成功！")
         },
 
         launchSendPopup: function(){
@@ -94,6 +119,7 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
                     domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
                     }.bind(this)
                 });
                 var options = {
@@ -101,6 +127,7 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
+                    width: 800,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

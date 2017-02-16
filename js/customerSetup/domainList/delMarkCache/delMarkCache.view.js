@@ -120,10 +120,16 @@ define("delMarkCache.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.find(".add").on("click", $.proxy(this.onClickAddRule, this));
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
 
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
             this.onClickQueryButton();
 
-            this.collection.on("set.mark.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.mark.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.mark.error", $.proxy(this.onGetError, this));
+        },
+
+        onSaveSuccess: function(){
+            alert("保存成功！")
         },
 
         launchSendPopup: function(){
@@ -133,6 +139,7 @@ define("delMarkCache.view", ['require','exports', 'template', 'modal.view', 'uti
                     domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
                     }.bind(this)
                 });
                 var options = {
@@ -140,6 +147,7 @@ define("delMarkCache.view", ['require','exports', 'template', 'modal.view', 'uti
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
+                    width: 800,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

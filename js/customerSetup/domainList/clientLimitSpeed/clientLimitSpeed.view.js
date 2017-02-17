@@ -251,7 +251,7 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
             summary = '', timeLimit = [], nowDate = new Date().format("yyyy/MM/dd");
 
             if (preUnlimit === 0) summary = "指定不限速字节数：关闭。" ;
-            if (preUnlimit !== 0) summary = "指定不限速字节数：" + preUnlimit + "kb。" 
+            if (preUnlimit !== 0) summary = "指定不限速字节数：" + preUnlimit + "KB。" 
             if (this.defaultParam.byteNotLimit === 1) summary = "指定不限速字节数：关闭。" ;
 
 
@@ -259,14 +259,14 @@ define("clientLimitSpeed.view", ['require','exports', 'template', 'modal.view', 
                 summary = summary + "限速字节数：关闭<br>";
             } else {
                 if (speedLimit === 0) summary = summary + "限速字节数：关闭<br>";
-                if (speedLimit !== 0) summary = summary + "限速字节数：" + speedLimit + "kb/s<br>";
+                if (speedLimit !== 0) summary = summary + "限速字节数：" + speedLimit + "KB/s<br>";
             }
 
 
             _.each(this.defaultParam.timeLimitList, function(el, index, ls){
                 var startTime = el.start,
                     endTime = el.end,
-                    speedLimit2 = el.limitSpeed + "kb/s<br>"
+                    speedLimit2 = el.limitSpeed + "KB/s<br>"
                 var timeStr = "限速时间段：" + startTime + "至" + endTime + "，限速字节数：" + speedLimit2;
                 summary = summary + timeStr;
                 timeLimit.push({

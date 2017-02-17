@@ -179,7 +179,7 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
 
             var postParam = {
                 type: type,
-                ips: ips,
+                ips: _.uniq(ips.split(',')).join(','),
                 id: this.isEdit ? this.model.get("id") : new Date().valueOf(),
                 matchingType: matchingType,
                 matchingValue: matchConditionParam.policy,

@@ -26,7 +26,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
         initialize: function(){},
 
         getNodeList: function(args){
-            var url = BASE_URL + "/resource/rs/node/list";
+            var url = BASE_URL + "/rs/node/list";
             var defaultParas = {
                 type: "POST",
                 url: url,
@@ -63,7 +63,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
         },
 
         addNode: function(args){
-            var url = BASE_URL + "/resource/rs/node/addNode"
+            var url = BASE_URL + "/rs/node/addNode"
             var defaultParas = {
                 type: "POST",
                 url: url,
@@ -90,7 +90,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
         },
 
         updateNode: function(args){
-            var url = BASE_URL + "/resource/rs/node/modifyNode"
+            var url = BASE_URL + "/rs/node/modifyNode"
             var defaultParas = {
                 type: "POST",
                 url: url,
@@ -144,7 +144,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
         },
 
         getOperatorList: function(args){
-            var url = BASE_URL + "/resource/rs/metaData/operator/list?" + new Date().valueOf(); 
+            var url = BASE_URL + "/rs/metaData/operatorList?" + new Date().valueOf(); 
             var defaultParas = {
                 type: "GET",
                 url: url,
@@ -194,7 +194,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
         },
 
         getLocation: function(args){
-            var url = BASE_URL + "/resource/rs/location/query"; 
+            var url = BASE_URL + "/rs/location/query"; 
             var defaultParas = {
                 type: "GET",
                 url: url,
@@ -287,7 +287,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
         },
 
         getAllContinent: function(args){
-            var url = BASE_URL + "/resource/rs/metaData/continent/list",
+            var url = BASE_URL + "/rs/metaData/continent/list",
             successCallback = function(res){
                 if (res)
                     this.trigger("get.continent.success", res);
@@ -301,7 +301,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
         },
 
         getCountryByContinent: function(args){
-            var url = BASE_URL + "/resource/rs/metaData/continent/country/list",
+            var url = BASE_URL + "/rs/metaData/continent/country/list",
             successCallback = function(res){
                 if (res)
                     this.trigger("get.countryByContinent.success", res);
@@ -315,7 +315,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
         },
 
         getOperationByCountry: function(args){
-            var url = BASE_URL + "/resource/rs/metaData/continent/country/operation/list",
+            var url = BASE_URL + "/rs/metaData/continent/country/operation/list",
             successCallback = function(res){
                 if (res)
                     this.trigger("get.operationByCountry.success", res);
@@ -329,7 +329,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
         },
 
         getAllProvince: function(args){
-            var url = BASE_URL + "/resource/rs/provCity/getAllProv",
+            var url = BASE_URL + "/rs/provCity/getAllProv",
             successCallback = function(res){
                 if (res)
                     this.trigger("get.province.success", res);
@@ -343,7 +343,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
         },
 
         getAllCityAndBigArea: function(args){
-            var url = BASE_URL + "/resource/rs/provCity/getAllCityAndBigArea",
+            var url = BASE_URL + "/rs/provCity/getAllCityAndBigArea",
             successCallback = function(res){
                 if (res)
                     this.trigger("get.cityByProvince.success", res);

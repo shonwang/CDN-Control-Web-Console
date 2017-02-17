@@ -67,7 +67,7 @@ define("dispGroup.model", ['require','exports', 'utility'], function(require, ex
         },
 
         getNodeList: function(args){
-            var url = BASE_URL + "/resource/rs/node/list";
+            var url = BASE_URL + "/rs/node/list";
             var defaultParas = {
                 type: "POST",
                 url: url,
@@ -369,7 +369,7 @@ define("dispGroup.model", ['require','exports', 'utility'], function(require, ex
         },
 
         ipTypeList: function(args){
-            var url = BASE_URL + "/resource/rs/metaData/ipTypeList";
+            var url = BASE_URL + "/rs/metaData/ipTypeList";
             var defaultParas = {
                 type: "GET",
                 url: url,

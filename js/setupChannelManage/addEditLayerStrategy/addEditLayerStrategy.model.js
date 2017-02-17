@@ -10,7 +10,7 @@ define("addEditLayerStrategy.model", ['require','exports', 'utility'], function(
         initialize: function(){},
 
          getOperatorList:function(args){
-            var url = BASE_URL + "/resource/rs/metaData/operator/list",
+            var url = BASE_URL + "/rs/metaData/operatorList",
             successCallback = function(res) {
                 if(res){
                     this.trigger("get.operator.success",res);

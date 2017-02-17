@@ -43,15 +43,16 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
             }
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
-            
-        
-            this.collection.getOperatorList();
-            this.collection.off("get.operator.success");
-            this.collection.off("get.operator.error");
-            this.collection.on("get.operator.success", $.proxy(this.initDropMenu, this));
-            this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
-            
 
+            require(['deviceManage.model'],function(deviceManageModel){
+                var mydeviceManageModel = new deviceManageModel();
+                mydeviceManageModel.operatorTypeList();
+                mydeviceManageModel.off("operator.type.success");
+                mydeviceManageModel.off("operator.type.error");
+                mydeviceManageModel.on("operator.type.success", $.proxy(this.initDropMenu, this));
+                mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
+            }.bind(this));
+            
             this.initSetup();
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
@@ -394,11 +395,6 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
 
             this.upperTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperDelete, this));
             
-           /* this.collection.off("get.operatorUpper.success");
-            this.collection.off("get.operatorUpper.error");
-            this.collection.on("get.operatorUpper.success",$.proxy(this.initOperatorUpperList,this));
-            this.collection.on("get.operatorUpper.error",$.proxy(this.onGetError, this));
-            this.collection.getOperatorUpperList();*/
 
             require(['deviceManage.model'],function(deviceManageModel){
                 var mydeviceManageModel = new deviceManageModel();
@@ -408,7 +404,6 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 mydeviceManageModel.on("operator.type.success", $.proxy(this.initOperatorUpperList, this));
                 mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
             }.bind(this));
-
         },
         initOperatorUpperList:function(data){
             var statusArray = [];
@@ -612,7 +607,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
         initDropMenu: function(data){
             this.statusArray = [],
             rootNode = this.$el.find(".operator");
-            _.each(data.rows, function(el, key, list){
+            _.each(data, function(el, key, list){
                 this.statusArray.push({name: el.name, value: el.id})
             }.bind(this))
             Utility.initDropMenu(rootNode, this.statusArray, function(value){

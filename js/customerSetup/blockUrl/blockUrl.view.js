@@ -50,6 +50,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 alert('URL不能为空');
                 return false;
             }else{
+                if(urls.indexOf(',') > -1 || urls.indexOf('；') > -1 || urls.indexOf('，') > -1) {alert('请以英文半角分号对URL进行分隔'); return false;}
                 if(urls.indexOf(';') > -1){
                     url = urls.split(';');
                     var urlrepeat = [];
@@ -99,7 +100,12 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             return true;
         },
         onClickSubmitBlockButton: function(){
-          var urls = this.$el.find('#urls').val();
+            var quotaEffecitveCount = this.$el.find('.quotaEffecitveCount').text();
+            if (quotaEffecitveCount == 0) {
+                alert('已达到最大提交数量，暂时无法进行提交');
+                return false;
+            }
+            var urls = this.$el.find('#urls').val();
         	if(this.urlsvalidation(urls)){
                if(urls.substr(urls.length-1,urls.length) == ';')  //若最后一个字符为分号,则去掉
                  urls = urls.substr(0,urls.length-1); 
@@ -125,6 +131,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         initialize: function(options){
             this.collection = options.collection;
             this.userInfo = options.userInfo;
+            this.tab = options.tab;
             this.numberControl = 30; 
             this.$el = $(_.template(template['tpl/customerSetup/blockUrl/TabCurrentBlockList.html'])());
             this.initblockListDropmenu();
@@ -166,10 +173,10 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 ids: "",
                 needFresh: true
             }
-
             this.onClickQueryButton();
         },
         onClickQueryButton: function(){
+            this.queryArgs.page = 1;
             this.isInitPaginator = false;
             this.showloading();
             this.$el.find('thead input').prop('checked',false);
@@ -206,12 +213,14 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 if(!model.get('isDisabled')) length++;
                 return model.get('isChecked') === true;
              })
-             if(checkedList.length == 0 && length == 0) return false;
+             
              if(checkedList.length > 0){
-               if(checkedList.length == length){
-                  AllChecked.prop('checked',true);
-               }else{
-                  AllChecked.prop('checked',false);
+               if(eventTarget.value != AllChecked.val()){
+                   if(checkedList.length == length){
+                      AllChecked.prop('checked',true);
+                   }else{
+                      AllChecked.prop('checked',false);
+                   }
                }
                this.UnblockButton.removeAttr('disabled');
                this.UnblockButton.off('click');
@@ -404,8 +413,10 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             }.bind(this));
 
             var operatorArray = [
+               {name:'全部',value:0},
                {name:'屏蔽',value:1},
-               {name:'解除屏蔽',value:2}
+               {name:'解除屏蔽',value:2},
+               {name:'自动解除屏蔽',value:3}
             ]
             rootNode = this.$el.find('.dropdown-operator');
             Utility.initDropMenu(rootNode,operatorArray,function(value){
@@ -425,6 +436,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             }.bind(this));
         },
         onClickQueryButton: function(){
+            this.queryArgs.page = 1;
             this.showloading();
             this.isInitPaginator = false;
             this.queryArgs.searchUrl = $.trim(this.$el.find('#input-url').val());
@@ -493,8 +505,11 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             var target = event.target || event.srcElement;
             var id = $(target).attr('data-target');
             switch(id){
-                case '#blockUrlList':
-                  if(this.myTabCurrentBlockListView){
+                case '#blockUrl':
+                  if(this.myTabBlockView) this.myTabBlockView.collection.getGuestQuotaCount({userId:this.userInfo.uid});
+                  break;
+            	case '#blockUrlList':
+            	  if(this.myTabCurrentBlockListView){
                       this.myTabCurrentBlockListView.onClickQueryButton();
                       return;
                   }
@@ -516,10 +531,13 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                   this.myTabHistoryView.render(this.$el.find('#history'));
                 break;
             }           
-        },
-        hide: function(){
+		},
+
+		hide: function(){
+            if(this.$elload) this.$elload.remove();
             this.$el.remove();
         },
+        
         renderload: function(target){
             this.$elload = $(_.template('<div class="domain-spinner">正在进行客户权限验证,请稍候...</div>')());
             this.$elload.appendTo(target);

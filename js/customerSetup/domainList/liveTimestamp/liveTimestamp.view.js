@@ -107,11 +107,9 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                 this.defaultParam.md5Truncate = this.model.get("md5Truncate");
                 this.defaultParam.type = this.model.get("matchingType") || 0;
                 this.defaultParam.policy = this.model.get("matchingValue") || "";
-
-                console.log(this.defaultParam)
             }
 
-            this.$el.find(".open-timestamp .togglebutton input").on("click", $.proxy(this.onClickSetupToggle, this));
+            this.$el.find(".open-referer .togglebutton input").on("click", $.proxy(this.onClickSetupToggle, this));
             this.$el.find(".setup-type input").on("click", $.proxy(this.onClickSetupRadio, this));
             this.$el.find(".anti-leech input").on("click", $.proxy(this.onClickAntiLeechRadio, this));
             this.$el.find(".base-setup .add-secret-key-backup").on("click", $.proxy(this.onClickBaseNewKey, this));

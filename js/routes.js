@@ -645,13 +645,15 @@ define("routes", ['require', 'exports', 'utility',
                         hash: 'index.html#/domainList/' + query + '/liveCnameSetup/' + query2,
                         active: false,
                         children: []
-                    },{
-                        id: 'customerSetup-domainList-liveHttpsSetup',
-                        name: 'https配置',
-                        hash: 'index.html#/domainList/' + query + '/liveHttpsSetup/' + query2,
-                        active: false,
-                        children: []
-                    }]
+                    },
+                    // {
+                    //     id: 'customerSetup-domainList-liveHttpsSetup',
+                    //     name: 'https配置',
+                    //     hash: 'index.html#/domainList/' + query + '/liveHttpsSetup/' + query2,
+                    //     active: false,
+                    //     children: []
+                    // }
+                    ]
                 },{
                     id:'',
                     name:'源站配置',

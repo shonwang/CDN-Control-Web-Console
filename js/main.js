@@ -191,6 +191,9 @@ requirejs.config({
 
         "liveTimestamp.model":"customerSetup/domainList/liveTimestamp/liveTimestamp.model",
         "liveTimestamp.view":"customerSetup/domainList/liveTimestamp/liveTimestamp.view",
+
+        "liveRefererAntiLeech.model":"customerSetup/domainList/liveRefererAntiLeech/liveRefererAntiLeech.model",
+        "liveRefererAntiLeech.view":"customerSetup/domainList/liveRefererAntiLeech/liveRefererAntiLeech.view",
         
         "liveBasicInformation.model": 'customerSetup/domainList/liveBasicInformation/liveBasicInformation.model',
         "liveBasicInformation.view": 'customerSetup/domainList/liveBasicInformation/liveBasicInformation.view',

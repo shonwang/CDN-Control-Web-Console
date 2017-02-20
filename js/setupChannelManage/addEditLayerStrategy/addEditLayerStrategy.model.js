@@ -51,7 +51,7 @@ define("addEditLayerStrategy.model", ['require','exports', 'utility'], function(
             Utility.getAjax(url, '' , successCallback, errorCallback);
         },
         getTopoAndNodeInfo: function(args){
-            var url = BASE_URL + "/resource/topo/origin/info?id="+args,
+            var url = BASE_URL + "/resource/topo/origin/consoleInfo?id="+args,
             successCallback = function(res){
                 if(res){
                     this.trigger('get.topoAndNodeInfo.success',res);

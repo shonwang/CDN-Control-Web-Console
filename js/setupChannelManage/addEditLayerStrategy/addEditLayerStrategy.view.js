@@ -52,7 +52,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 mydeviceManageModel.on("operator.type.success", $.proxy(this.initDropMenu, this));
                 mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
             }.bind(this));
-            
+
             this.initSetup();
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
@@ -404,6 +404,7 @@ define("addEditLayerStrategy.view", ['require','exports', 'template', 'modal.vie
                 mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
             }.bind(this));
         },
+        
         initOperatorUpperList:function(data){
             var statusArray = [];
             _.each(data, function(el, key, list){

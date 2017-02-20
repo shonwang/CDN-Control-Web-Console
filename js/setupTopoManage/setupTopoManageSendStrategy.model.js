@@ -144,7 +144,7 @@ define("setupTopoManageSendStrategy.model", ['require','exports', 'utility'], fu
             Utility.postAjax(url, '',successCallback, errorCallback);
         },
         getTopoOrigininfo:function(args){
-            var url = BASE_URL + "/resource/topo/origin/info?id="+args,
+            var url = BASE_URL + "/resource/topo/origin/consoleInfo?id="+args,
             successCallback = function(res){
                 if(res){
                     this.total = res.total;

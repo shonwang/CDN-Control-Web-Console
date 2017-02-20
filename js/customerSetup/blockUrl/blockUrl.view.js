@@ -532,6 +532,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             }           
 		},
 		hide: function(){
+            if(this.$elload) this.$elload.remove();
             this.$el.remove();
 		},
         renderload: function(target){

@@ -40,10 +40,10 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
             }
 
             if (this.defaultParam.isOpenSetup === 1) {
-                this.$el.find(".open-timestamp .togglebutton input").get(0).checked = true;
+                this.$el.find(".open-referer .togglebutton input").get(0).checked = true;
                 this.$el.find(".setup-content").show(200);
             } else if (this.defaultParam.isOpenSetup === 0) {
-                this.$el.find(".open-timestamp .togglebutton input").get(0).checked = false;
+                this.$el.find(".open-referer .togglebutton input").get(0).checked = false;
                 this.$el.find(".setup-content").hide(200);
             }
 
@@ -69,7 +69,7 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
 
             this.initTypeDropdown();
 
-            this.$el.find(".open-timestamp .togglebutton input").on("click", $.proxy(this.onClickSetupToggle, this));
+            this.$el.find(".open-referer .togglebutton input").on("click", $.proxy(this.onClickSetupToggle, this));
             this.$el.find("#white-domain").on("blur", $.proxy(this.onBlurDomainInput, this));
             this.$el.find("#black-domain").on("blur", $.proxy(this.onBlurDomainInput, this));
             this.$el.find(".null-referer .togglebutton input").on("click", $.proxy(this.onClickIsNullReferer, this));

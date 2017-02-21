@@ -27,6 +27,17 @@ define("liveSLAStatistics.view", ['require','exports', 'template', 'modal.view',
                     myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
                     myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
             }.bind(this))
+
+            this.$el.find(".buffer-size").hide();
+            this.$el.find(".modify-open .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
+            this.$el.find("#first-buffer").on("blur", $.proxy(this.onBlurBufferSize, this));
+            this.$el.find("#second-buffer").on("blur", $.proxy(this.onBlurBufferSize, this));
+
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
+            this.collection.on("set.chargingOpen.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.chargingOpen.error", $.proxy(this.onGetError, this));
         },
 
         onGetDomainInfo: function(data){
@@ -38,21 +49,23 @@ define("liveSLAStatistics.view", ['require','exports', 'template', 'modal.view',
                 this.defaultParam.chargingOpen = data.domainConf.chargingOpen //0:关闭 1:开启            
 
             this.initSetup();
-
-            this.$el.find(".charging-open .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
-            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
-
-            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
-
-            this.collection.on("set.chargingOpen.success", $.proxy(this.onSaveSuccess, this));
-            this.collection.on("set.chargingOpen.error", $.proxy(this.onGetError, this));
         },
 
         initSetup: function(){
-            if (this.defaultParam.chargingOpen === 0)
-                this.$el.find(".charging-open .togglebutton input").get(0).checked = false;
-            else
-                this.$el.find(".charging-open .togglebutton input").get(0).checked = true;
+            if (this.defaultParam.chargingOpen === 0){
+                this.$el.find(".modify-open .togglebutton input").get(0).checked = false;
+                this.$el.find(".buffer-size").hide();
+            } else {
+                this.$el.find(".modify-open .togglebutton input").get(0).checked = true;
+                this.$el.find(".buffer-size").show();
+            }
+        },
+
+        onBlurBufferSize: function(event){
+            var eventTarget = event.srcElement || event.target;
+            var value = parseInt($(eventTarget).val());
+            if (!Utility.isNumber(value) || value < 0 || value > 10)
+                alert("最小可设置为0秒，最大可设置为10秒")
         },
 
         onSaveSuccess: function(){
@@ -87,6 +100,18 @@ define("liveSLAStatistics.view", ['require','exports', 'template', 'modal.view',
         },
 
         onClickSaveBtn: function(){
+            var value = parseInt(this.$el.find("#first-buffer").val());
+            if (!Utility.isNumber(value) || value < 0 || value > 10){
+                alert("最小可设置为0秒，最大可设置为10秒")
+                return
+            }
+
+            value = parseInt(this.$el.find("#second-buffer").val());
+            if (!Utility.isNumber(value) || value < 0 || value > 10){
+                alert("最小可设置为0秒，最大可设置为10秒")
+                return
+            }
+
             var postParam =  {
                 "originId": this.domainInfo.id,
                 "chargingOpen": this.defaultParam.chargingOpen,
@@ -95,13 +120,15 @@ define("liveSLAStatistics.view", ['require','exports', 'template', 'modal.view',
             this.collection.setChargingOpen(postParam)
         },
 
-        onClickToggle: function(){
+        onClickToggle: function(event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){
                 this.defaultParam.chargingOpen = 1;
+                this.$el.find(".buffer-size").show();
             } else {
                 this.defaultParam.chargingOpen = 0;
+                this.$el.find(".buffer-size").hide();
             }
         },
 

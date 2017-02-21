@@ -1,4 +1,4 @@
-<div class="http-optimize fadeInLeft animated">
+<div class="frequency-log fadeInLeft animated">
     <h4>日志配置<small>/变频日志配置</small></h4>
     <div class="well opt-ctn"></div>
     <div class="well">
@@ -6,12 +6,27 @@
             <div class="col-sm-8">
                 <div class="form-horizontal">
                     <div class="form-group">
-                        <label for="modify-host" class="col-sm-4 control-label">变频日志配置</label>
-                        <div class="col-sm-4 charging-open">
+                        <label for="frequency-log-open" class="col-sm-4 control-label">变频日志配置</label>
+                        <div class="col-sm-4 frequency-log-open">
                             <div class="togglebutton" style="padding-top:5px;margin-right:0;">
                                 <label>
                                     <input type="checkbox"><span class="toggle"></span>
                                 </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group log-interval">
+                        <label for="log-interval" class="col-sm-4 control-label">业务日志打印间隔: </label>
+                        <div class="col-sm-4">
+                            <input type="number" class="form-control" id="log-interval" value="300">
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="dropdown time-unit">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-time-unit" data-toggle="dropdown">
+                                    <span class="cur-value">秒</span>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu"></ul>
                             </div>
                         </div>
                     </div>

@@ -27,19 +27,9 @@ define("liveFrequencyLog.view", ['require','exports', 'template', 'modal.view', 
                     myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
                     myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
             }.bind(this))
-        },
 
-        onGetDomainInfo: function(data){
-            this.defaultParam = {
-                chargingOpen: 0 //0:关闭 1:开启
-            }
-
-            if (data.domainConf && data.domainConf.chargingOpen !== null && data.domainConf.chargingOpen !== undefined)
-                this.defaultParam.chargingOpen = data.domainConf.chargingOpen //0:关闭 1:开启            
-
-            this.initSetup();
-
-            this.$el.find(".charging-open .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
+            this.$el.find(".log-interval").hide();
+            this.$el.find(".frequency-log-open .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
 
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
@@ -48,11 +38,45 @@ define("liveFrequencyLog.view", ['require','exports', 'template', 'modal.view', 
             this.collection.on("set.chargingOpen.error", $.proxy(this.onGetError, this));
         },
 
+        onGetDomainInfo: function(data){
+            this.defaultParam = {
+                chargingOpen: 0, //0:关闭 1:开启
+                logInterVal: 300
+            }
+
+            if (data.domainConf && data.domainConf.chargingOpen !== null && data.domainConf.chargingOpen !== undefined)
+                this.defaultParam.chargingOpen = data.domainConf.chargingOpen //0:关闭 1:开启            
+
+            this.initSetup();
+        },
+
         initSetup: function(){
-            if (this.defaultParam.chargingOpen === 0)
-                this.$el.find(".charging-open .togglebutton input").get(0).checked = false;
-            else
-                this.$el.find(".charging-open .togglebutton input").get(0).checked = true;
+            if (this.defaultParam.chargingOpen === 0){
+                this.$el.find(".frequency-log-open .togglebutton input").get(0).checked = false;
+                this.$el.find(".log-interval").hide();
+            } else {
+                this.$el.find(".frequency-log-open .togglebutton input").get(0).checked = true;
+                this.$el.find(".log-interval").show();
+            }
+        },
+
+        initTimeUnitDropDown: function(){
+            var  timeArray = [
+                {"value": 1, "name": "秒"},
+                {"value": 60, "name": "分"},
+                {"value": 60 * 60, "name": "时"},
+                {"value": 60 * 60 * 24, "name": "天"},
+                {"value": 60 * 60 * 24 * 30, "name": "月"},
+                {"value": 60 * 60 * 24 * 30 * 12, "name": "年"},
+            ];
+
+            var input = this.defaultParam.logInterVal,
+                rootNode = this.$el.find(".time-unit");
+                curEl = this.$el.find("#dropdown-time-unit .cur-value");
+
+            Utility.initDropMenu(rootNode, timeArray, function(value){
+                this.defaultParam.cacheTime = parseInt(curInputEl.val()) * parseInt(value);
+            }.bind(this));
         },
 
         onSaveSuccess: function(){
@@ -100,8 +124,10 @@ define("liveFrequencyLog.view", ['require','exports', 'template', 'modal.view', 
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){
                 this.defaultParam.chargingOpen = 1;
+                this.$el.find(".log-interval").show();
             } else {
                 this.defaultParam.chargingOpen = 0;
+                this.$el.find(".log-interval").hide();
             }
         },
 

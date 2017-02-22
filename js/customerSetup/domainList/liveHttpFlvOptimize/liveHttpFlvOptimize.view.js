@@ -27,20 +27,12 @@ define("liveHttpFlvOptimize.view", ['require','exports', 'template', 'modal.view
                     myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
                     myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
             }.bind(this))
-        },
 
-        onGetDomainInfo: function(data){
-            this.defaultParam = {
-                chargingOpen: 0 //0:关闭 1:开启
-            }
-
-            if (data.domainConf && data.domainConf.chargingOpen !== null && data.domainConf.chargingOpen !== undefined)
-                this.defaultParam.chargingOpen = data.domainConf.chargingOpen //0:关闭 1:开启            
-
-            this.initSetup();
-
-            this.$el.find(".charging-open .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
-            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
+            this.$el.find(".keepduration").hide();
+            this.$el.find(".keeptoggle .togglebutton input").on("click", $.proxy(this.onClicKeepToggle, this));
+            this.$el.find(".avheadergroup").hide();
+            this.$el.find(".avheader .togglebutton input").on("click", $.proxy(this.onClicAvheaderToggle, this));
+            this.$el.find(".save-common").on("click", $.proxy(this.onClickSaveCommon, this));
 
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
 
@@ -48,11 +40,42 @@ define("liveHttpFlvOptimize.view", ['require','exports', 'template', 'modal.view
             this.collection.on("set.chargingOpen.error", $.proxy(this.onGetError, this));
         },
 
+        onGetDomainInfo: function(data){
+            this.defaultParam = {
+                chargingOpen: 0, //0:关闭 1:开启
+            }
+
+            if (data.domainConf && data.domainConf.chargingOpen !== null && data.domainConf.chargingOpen !== undefined)
+                this.defaultParam.chargingOpen = data.domainConf.chargingOpen //0:关闭 1:开启            
+
+            this.initSetup();
+        },
+
         initSetup: function(){
             // if (this.defaultParam.chargingOpen === 0)
             //     this.$el.find(".charging-open .togglebutton input").get(0).checked = false;
             // else
             //     this.$el.find(".charging-open .togglebutton input").get(0).checked = true;
+            this.initTimeUnitDropDown();
+        },
+
+        initTimeUnitDropDown: function(){
+            var  timeArray = [
+                {"value": 1, "name": "秒"},
+                {"value": 60, "name": "分"}
+            ];
+
+            var input = this.defaultParam.logInterval,
+                rootNode = this.$el.find(".time-unit");
+                curEl = this.$el.find("#dropdown-time-unit .cur-value"),
+                curInputEl = this.$el.find("#keepduration");
+
+            Utility.initDropMenu(rootNode, timeArray, function(value){
+                this.defaultParam.logInterval = parseInt(curInputEl.val()) * parseInt(value);
+            }.bind(this));
+
+            curEl.html("秒");
+            curInputEl.val(input);
         },
 
         onSaveSuccess: function(){
@@ -86,7 +109,7 @@ define("liveHttpFlvOptimize.view", ['require','exports', 'template', 'modal.view
             }.bind(this))
         },
 
-        onClickSaveBtn: function(){
+        onClickSaveCommon: function(){
             var postParam =  {
                 "originId": this.domainInfo.id,
                 "chargingOpen": this.defaultParam.chargingOpen,
@@ -95,13 +118,27 @@ define("liveHttpFlvOptimize.view", ['require','exports', 'template', 'modal.view
             this.collection.setChargingOpen(postParam)
         },
 
-        onClickToggle: function(){
+        onClicAvheaderToggle: function(){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){
                 this.defaultParam.chargingOpen = 1;
+                this.$el.find(".avheadergroup").show();
             } else {
                 this.defaultParam.chargingOpen = 0;
+                this.$el.find(".avheadergroup").hide();
+            }
+        },
+
+        onClicKeepToggle: function(){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            if (eventTarget.checked){
+                this.defaultParam.chargingOpen = 1;
+                this.$el.find(".keepduration").show();
+            } else {
+                this.defaultParam.chargingOpen = 0;
+                this.$el.find(".keepduration").hide();
             }
         },
 

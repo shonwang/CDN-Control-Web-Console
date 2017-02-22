@@ -41,7 +41,7 @@ define("liveFrequencyLog.view", ['require','exports', 'template', 'modal.view', 
         onGetDomainInfo: function(data){
             this.defaultParam = {
                 chargingOpen: 0, //0:关闭 1:开启
-                logInterVal: 300
+                logInterval: 300
             }
 
             if (data.domainConf && data.domainConf.chargingOpen !== null && data.domainConf.chargingOpen !== undefined)
@@ -58,6 +58,7 @@ define("liveFrequencyLog.view", ['require','exports', 'template', 'modal.view', 
                 this.$el.find(".frequency-log-open .togglebutton input").get(0).checked = true;
                 this.$el.find(".log-interval").show();
             }
+            this.initTimeUnitDropDown();
         },
 
         initTimeUnitDropDown: function(){
@@ -70,13 +71,17 @@ define("liveFrequencyLog.view", ['require','exports', 'template', 'modal.view', 
                 {"value": 60 * 60 * 24 * 30 * 12, "name": "年"},
             ];
 
-            var input = this.defaultParam.logInterVal,
+            var input = this.defaultParam.logInterval,
                 rootNode = this.$el.find(".time-unit");
-                curEl = this.$el.find("#dropdown-time-unit .cur-value");
+                curEl = this.$el.find("#dropdown-time-unit .cur-value"),
+                curInputEl = this.$el.find("#log-interval");
 
             Utility.initDropMenu(rootNode, timeArray, function(value){
-                this.defaultParam.cacheTime = parseInt(curInputEl.val()) * parseInt(value);
+                this.defaultParam.logInterval = parseInt(curInputEl.val()) * parseInt(value);
             }.bind(this));
+
+            curEl.html("秒");
+            curInputEl.val(input);
         },
 
         onSaveSuccess: function(){

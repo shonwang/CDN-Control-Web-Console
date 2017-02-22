@@ -724,23 +724,30 @@ define("routes", ['require', 'exports', 'utility',
                         children: []
                     }]
                 },{
-                    id: 'customerSetup-domainList-livePKOptimize',
+                    id: 'customerSetup-domainList-liveHttpFlvOptimize',
                     name: 'PK优化配置',
-                    hash: 'javascript:void(0)',
-                    children: [{
-                        id: 'customerSetup-domainList-liveHttpFlvOptimize',
-                        name: 'Http+Flv调优配置',
-                        hash: 'index.html#/domainList/' + query + '/liveHttpFlvOptimize/' + query2,
-                        active: false,
-                        children: []
-                    },{
-                        id: 'customerSetup-domainList-liveRtmpOptimize',
-                        name: 'Rtmp调优配置',
-                        hash: 'index.html#/domainList/' + query + '/liveRtmpOptimize/' + query2,
-                        active: false,
-                        children: []
-                    }]
-                },{
+                    hash: 'index.html#/domainList/' + query + '/liveHttpFlvOptimize/' + query2,
+                    children: []  
+                },
+                // {
+                //     id: 'customerSetup-domainList-livePKOptimize',
+                //     name: 'PK优化配置',
+                //     hash: 'javascript:void(0)',
+                //     children: [{
+                //         id: 'customerSetup-domainList-liveHttpFlvOptimize',
+                //         name: 'Http+Flv调优配置',
+                //         hash: 'index.html#/domainList/' + query + '/liveHttpFlvOptimize/' + query2,
+                //         active: false,
+                //         children: []
+                //     },{
+                //         id: 'customerSetup-domainList-liveRtmpOptimize',
+                //         name: 'Rtmp调优配置',
+                //         hash: 'index.html#/domainList/' + query + '/liveRtmpOptimize/' + query2,
+                //         active: false,
+                //         children: []
+                //     }]
+                // },
+                {
                     id: 'customerSetup-domainList-liveSLASetup',
                     name: '日志配置',
                     hash: 'javascript:void(0)',

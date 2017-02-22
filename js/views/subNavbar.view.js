@@ -157,8 +157,7 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                         hash: 'index.html#/domainList/' + query + '/ipBlackWhiteList/' + query2,
                         active: false,
                         children: []
-                    },
-                    {
+                    },{
                         id: 'customerSetup-domainList-refererAntiLeech',
                         name: 'Referer防盗链',
                         hash: 'index.html#/domainList/' + query + '/refererAntiLeech/' + query2,

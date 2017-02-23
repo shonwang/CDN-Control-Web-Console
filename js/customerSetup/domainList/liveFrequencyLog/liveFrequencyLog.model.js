@@ -9,12 +9,12 @@ define("liveFrequencyLog.model", ['require','exports', 'utility'], function(requ
 
         initialize: function(){},
 
-        setChargingOpen: function(args){
-            var url = BASE_URL + "/channelManager/domain/setChargingOpen";
+        setLogConf: function(args){
+            var url = BASE_URL + "/channelManager/live/setLogConf";
             Utility.getAjax(url, args, function(res){
-                this.trigger("set.chargingOpen.success");
+                this.trigger("set.setLogConf.success");
             }.bind(this),function(res){
-                this.trigger("set.chargingOpen.error", res);
+                this.trigger("set.setLogConf.error", res);
             }.bind(this));
         },
     });

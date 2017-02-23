@@ -34,24 +34,44 @@ define("liveFrequencyLog.view", ['require','exports', 'template', 'modal.view', 
 
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
 
-            this.collection.on("set.chargingOpen.success", $.proxy(this.onSaveSuccess, this));
-            this.collection.on("set.chargingOpen.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.setLogConf.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.setLogConf.error", $.proxy(this.onGetError, this));
         },
 
         onGetDomainInfo: function(data){
             this.defaultParam = {
-                chargingOpen: 0, //0:关闭 1:开启
-                logInterval: 300
+                frequencyFlag: 0, //0:关闭 1:开启
+                frequencyInterval: 300
             }
+            //TODO 假数据
+            var data = {
+                "appLives":[
+                    {
+                        "logConf":{
+                            "id":null,
+                            "liveId":null,
+                            "slaAccessFlag":null,
+                            "slaFirstCache":null,
+                            "slaSecondCache":null,
+                            "frequencyFlag":1,
+                            "frequencyInterval":600,
+                        }
+                    }
+                ]
+            };
 
-            if (data.domainConf && data.domainConf.chargingOpen !== null && data.domainConf.chargingOpen !== undefined)
-                this.defaultParam.chargingOpen = data.domainConf.chargingOpen //0:关闭 1:开启            
+            data = data.appLives
+
+            if (data.logConf && data.logConf.frequencyFlag !== null && data.logConf.frequencyFlag !== undefined)
+                this.defaultParam.frequencyFlag = data.logConf.frequencyFlag //0:关闭 1:开启    
+            if (data.logConf && data.logConf.frequencyInterval !== null && data.logConf.frequencyInterval !== undefined)
+                this.defaultParam.frequencyInterval = data.logConf.frequencyInterval //0:关闭 1:开启          
 
             this.initSetup();
         },
 
         initSetup: function(){
-            if (this.defaultParam.chargingOpen === 0){
+            if (this.defaultParam.frequencyFlag === 0){
                 this.$el.find(".frequency-log-open .togglebutton input").get(0).checked = false;
                 this.$el.find(".log-interval").hide();
             } else {
@@ -71,13 +91,13 @@ define("liveFrequencyLog.view", ['require','exports', 'template', 'modal.view', 
                 {"value": 60 * 60 * 24 * 30 * 12, "name": "年"},
             ];
 
-            var input = this.defaultParam.logInterval,
+            var input = this.defaultParam.frequencyInterval,
                 rootNode = this.$el.find(".time-unit");
                 curEl = this.$el.find("#dropdown-time-unit .cur-value"),
                 curInputEl = this.$el.find("#log-interval");
 
             Utility.initDropMenu(rootNode, timeArray, function(value){
-                this.defaultParam.logInterval = parseInt(curInputEl.val()) * parseInt(value);
+                this.defaultParam.frequencyInterval = parseInt(curInputEl.val()) * parseInt(value);
             }.bind(this));
 
             curEl.html("秒");
@@ -118,20 +138,20 @@ define("liveFrequencyLog.view", ['require','exports', 'template', 'modal.view', 
         onClickSaveBtn: function(){
             var postParam =  {
                 "originId": this.domainInfo.id,
-                "chargingOpen": this.defaultParam.chargingOpen,
+                "frequencyFlag": this.defaultParam.frequencyFlag,
                 t: new Date().valueOf()
             }
-            this.collection.setChargingOpen(postParam)
+            this.collection.setLogConf(postParam)
         },
 
         onClickToggle: function(){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){
-                this.defaultParam.chargingOpen = 1;
+                this.defaultParam.frequencyFlag = 1;
                 this.$el.find(".log-interval").show();
             } else {
-                this.defaultParam.chargingOpen = 0;
+                this.defaultParam.frequencyFlag = 0;
                 this.$el.find(".log-interval").hide();
             }
         },

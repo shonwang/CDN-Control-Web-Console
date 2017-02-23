@@ -126,7 +126,27 @@ define("customerSetup.live.controller", ['require','exports'],
         },
 
         liveRefererAntiLeechCallback:function(query, query2){
-            
+            require(['liveRefererAntiLeech.view', 'liveRefererAntiLeech.model'], function(LiveRefererAntiLeechView, LiveRefererAntiLeechModel){
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-liveRefererAntiLeech';
+                this.setupLiveDomainManageNavbar(query, query2);
+                var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                if (!this.liveRefererAntiLeechModel)
+                    this.liveRefererAntiLeechModel = new LiveRefererAntiLeechModel();
+                if (!this.liveRefererAntiLeechView ){
+                    var options = {
+                        collection: this.liveRefererAntiLeechModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.liveRefererAntiLeechView = new LiveRefererAntiLeechView(options);
+                    this.liveRefererAntiLeechView.render(renderTarget);
+                } else {
+                    this.domainManageNavbar.select(this.curPage);
+                    this.liveRefererAntiLeechView.update(query, query2, renderTarget);
+                }
+            }.bind(this));             
         },
 
         liveBasicInformationCallback: function(query, query2){

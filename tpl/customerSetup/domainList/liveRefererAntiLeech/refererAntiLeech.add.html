@@ -1,0 +1,58 @@
+<div>
+    <div class="match-condition-ctn"></div>
+    <hr>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label for="referer-type" class="col-sm-3 control-label">referer类型</label>
+            <div class="col-sm-7 referer-type">
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-referer-type" data-toggle="dropdown">
+                        <span class="cur-value">加载中...</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu"></ul>
+                </div>
+            </div>
+        </div>
+        <div class="form-group white-list">
+            <label for="white-domain" class="col-sm-3 control-label">合法域名</label>
+            <div class="col-sm-7">
+                <textarea class="form-control" rows="3" id="white-domain"></textarea>
+            </div>
+        </div>
+<!--         <div class="form-group white-list">
+            <label for="white-url" class="col-sm-3 control-label">合法URL</label>
+            <div class="col-sm-7">
+                <textarea class="form-control" rows="3" id="white-url"></textarea>
+            </div>
+        </div> -->
+        <div class="form-group black-list">
+            <label for="black-domain" class="col-sm-3 control-label">非法域名</label>
+            <div class="col-sm-7">
+                <textarea class="form-control" rows="3" id="black-domain"></textarea>
+            </div>
+        </div>
+        <div class="alert alert-dismissable alert-info">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            提示：<br>
+            1.不需要输入网址符http://，最多可以设置100条。<br>
+            2.多个域名使用英文半角逗号分隔。<br>
+        </div>
+        <div class="form-group">
+            <label for="null-referer" class="col-sm-3 control-label">允许空referer</label>
+            <div class="col-sm-2 null-referer">
+                <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                    <label>
+                        <input type="checkbox"><span class="toggle"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+<!--         <div class="form-group black-list">
+            <label for="black-url" class="col-sm-3 control-label">非法URL</label>
+            <div class="col-sm-7">
+                <textarea class="form-control" rows="3" id="black-url"></textarea>
+            </div>
+        </div> -->
+    </form>
+</div>

@@ -9,12 +9,12 @@ define("liveHttpFlvOptimize.model", ['require','exports', 'utility'], function(r
 
         initialize: function(){},
 
-        setChargingOpen: function(args){
-            var url = BASE_URL + "/channelManager/domain/setChargingOpen";
+        setPKConf: function(args){
+            var url = BASE_URL + "/channelManager/live/setPKConf";
             Utility.getAjax(url, args, function(res){
-                this.trigger("set.chargingOpen.success");
+                this.trigger("set.setPKConf.success");
             }.bind(this),function(res){
-                this.trigger("set.chargingOpen.error", res);
+                this.trigger("set.setPKConf.error", res);
             }.bind(this));
         },
     });

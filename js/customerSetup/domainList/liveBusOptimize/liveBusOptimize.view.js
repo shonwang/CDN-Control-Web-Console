@@ -32,13 +32,48 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
                     myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
                     myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
             }.bind(this))
+
+            // this.$el.find(".Remarks-type").on('click',$.proxy(this.onClickRadio,this));
+            // this.$el.find(".save").on('click',$.proxy(this.onClickSaveButton,this));
+
+            // this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
         },
         onGetDomainInfo: function(data){
             this.defaultParamGop = {
-                originId:this.domainInfo.id,
-                confCustomType:1,
-                description:""
+                gopType: 1,
+                gopMaxDuration: 30,
+                gopNum: 2,
+                gopMinSendFlag: 0,
+                gopMinSend: 1,
+                noFlowTimeout: 20,
+                delayClose: 5,
+                metaType: 1
             }
+
+            //TODO 假数据
+            var data = {
+                "appLives":[
+                    {
+                        "optimizeConf":{
+                            "gopType": 2, //1:按时长 2:按个数
+                            "gopNum": 3,
+                            "gopMaxDuration": 15,
+                            "gopMinSendFlag": 1,
+                            "gopMinSend": 2,
+                            "noFlowTimeout": 21,
+                            "delayClose": 6,
+                            "metaType": 2, //1:append 2:on 3:copy 4:off
+                        }
+                    }
+                ]
+            };
+
+            data = data.appLives[0]
+
+            if (data.optimizeConf && data.optimizeConf.gopType !== null && data.optimizeConf.gopType !== undefined)
+                this.defaultParam.gopType = data.optimizeConf.gopType  
+            if (data.optimizeConf && data.optimizeConf.gopNum !== null && data.optimizeConf.gopNum !== undefined)
+                this.defaultParam.gopNum = data.optimizeConf.gopNum        
 
             this.initSetup();
         },
@@ -47,24 +82,6 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
             this.initTimeoutSetup();
             this.initCloseClientSetup();
             this.initMetaSetup();
-            // var confCustomType = this.$el.find(".Remarks-type");
-            // var Standard = this.$el.find(".Remarks-type #Standard");
-            // var Customization = this.$el.find(".Remarks-type #Customization");
-            // var description = this.$el.find('#Remarks');
-            // if(this.defaultParam.confCustomType == 1){
-            //     Standard.get(0).checked = true;
-            //     Customization.get(0).checked = false;
-            // }else if(this.defaultParam.confCustomType == 3){
-            //     Standard.get(0).checked = false;
-            //     Customization.get(0).checked = true;
-            // }
-            
-            // description.val(this.defaultParam.description);
-
-            // this.$el.find(".Remarks-type").on('click',$.proxy(this.onClickRadio,this));
-            // this.$el.find(".save").on('click',$.proxy(this.onClickSaveButton,this));
-
-            // this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
         },
 
         initMetaSetup: function(){

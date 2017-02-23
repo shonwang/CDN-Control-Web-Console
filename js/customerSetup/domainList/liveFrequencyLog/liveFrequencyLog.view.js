@@ -60,12 +60,12 @@ define("liveFrequencyLog.view", ['require','exports', 'template', 'modal.view', 
                 ]
             };
 
-            data = data.appLives
+            data = data.appLives[0]
 
             if (data.logConf && data.logConf.frequencyFlag !== null && data.logConf.frequencyFlag !== undefined)
                 this.defaultParam.frequencyFlag = data.logConf.frequencyFlag //0:关闭 1:开启    
             if (data.logConf && data.logConf.frequencyInterval !== null && data.logConf.frequencyInterval !== undefined)
-                this.defaultParam.frequencyInterval = data.logConf.frequencyInterval //0:关闭 1:开启          
+                this.defaultParam.frequencyInterval = data.logConf.frequencyInterval        
 
             this.initSetup();
         },
@@ -99,6 +99,14 @@ define("liveFrequencyLog.view", ['require','exports', 'template', 'modal.view', 
             Utility.initDropMenu(rootNode, timeArray, function(value){
                 this.defaultParam.frequencyInterval = parseInt(curInputEl.val()) * parseInt(value);
             }.bind(this));
+
+            curInputEl.on("click", function(){curInputEl.focus()}.bind(this))
+            curInputEl.on("blur", function(){
+                var unit = _.find(timeArray, function(obj){
+                    return obj.name === curEl.html();
+                }.bind(this));
+                this.defaultParam.frequencyInterval = unit.value * parseInt(curInputEl.val());
+            }.bind(this))
 
             curEl.html("秒");
             curInputEl.val(input);
@@ -137,11 +145,12 @@ define("liveFrequencyLog.view", ['require','exports', 'template', 'modal.view', 
 
         onClickSaveBtn: function(){
             var postParam =  {
-                "originId": this.domainInfo.id,
-                "frequencyFlag": this.defaultParam.frequencyFlag,
-                t: new Date().valueOf()
-            }
-            this.collection.setLogConf(postParam)
+                    "originId": this.domainInfo.id,
+                    "frequencyFlag": this.defaultParam.frequencyFlag,
+                    "frequencyInterval":this.defaultParam.frequencyInterval
+                }
+            console.log(postParam)
+            //this.collection.setLogConf(postParam)
         },
 
         onClickToggle: function(){

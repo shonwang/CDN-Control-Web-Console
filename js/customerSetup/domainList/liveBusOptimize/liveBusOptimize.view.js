@@ -33,13 +33,12 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
                     myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
             }.bind(this))
 
-            // this.$el.find(".Remarks-type").on('click',$.proxy(this.onClickRadio,this));
-            // this.$el.find(".save").on('click',$.proxy(this.onClickSaveButton,this));
+            this.$el.find(".save").on('click',$.proxy(this.onClickSaveButton,this));
 
-            // this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
         },
         onGetDomainInfo: function(data){
-            this.defaultParamGop = {
+            this.defaultParam = {
                 gopType: 1,
                 gopMaxDuration: 30,
                 gopNum: 2,
@@ -73,7 +72,19 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
             if (data.optimizeConf && data.optimizeConf.gopType !== null && data.optimizeConf.gopType !== undefined)
                 this.defaultParam.gopType = data.optimizeConf.gopType  
             if (data.optimizeConf && data.optimizeConf.gopNum !== null && data.optimizeConf.gopNum !== undefined)
-                this.defaultParam.gopNum = data.optimizeConf.gopNum        
+                this.defaultParam.gopNum = data.optimizeConf.gopNum
+            if (data.optimizeConf && data.optimizeConf.gopMaxDuration !== null && data.optimizeConf.gopMaxDuration !== undefined)
+                this.defaultParam.gopMaxDuration = data.optimizeConf.gopMaxDuration
+            if (data.optimizeConf && data.optimizeConf.gopMinSendFlag !== null && data.optimizeConf.gopMinSendFlag !== undefined)
+                this.defaultParam.gopMinSendFlag = data.optimizeConf.gopMinSendFlag
+            if (data.optimizeConf && data.optimizeConf.gopMinSend !== null && data.optimizeConf.gopMinSend !== undefined)
+                this.defaultParam.gopMinSend = data.optimizeConf.gopMinSend
+            if (data.optimizeConf && data.optimizeConf.noFlowTimeout !== null && data.optimizeConf.noFlowTimeout !== undefined)
+                this.defaultParam.noFlowTimeout = data.optimizeConf.noFlowTimeout
+            if (data.optimizeConf && data.optimizeConf.delayClose !== null && data.optimizeConf.delayClose !== undefined)
+                this.defaultParam.delayClose = data.optimizeConf.delayClose
+            if (data.optimizeConf && data.optimizeConf.metaType !== null && data.optimizeConf.metaType !== undefined)
+                this.defaultParam.metaType = data.optimizeConf.metaType                        
 
             this.initSetup();
         },
@@ -93,33 +104,22 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
 
         initMetaDropDown: function(){
             var  baseArray = [
-                {name: "append", value: "append"},
-                {name: "on", value: "on"},
-                {name: "copy", value: "copy"},
-                {name: "off", value: "off"}
+                {name: "append", value: 1},
+                {name: "on", value: 2},
+                {name: "copy", value: 3},
+                {name: "off", value: 4}
             ],
             rootNode = this.$el.find(".meta-type");
             Utility.initDropMenu(rootNode, baseArray, function(value){
-                // if (value !== "custom"){
-                //     this.defaultParam.obtIpCustom = value;
-                //     this.$el.find("#custom-type").hide();
-                // } else {
-                //     this.$el.find("#custom-type").show();
-                //     this.defaultParam.obtIpCustom = this.$el.find("#custom-type").val();
-                // }
+                this.defaultParam.metaType = value
             }.bind(this));
 
-            // var defaultValue = _.find(baseArray, function(object){
-            //     return object.value === this.defaultParam.obtIpCustom;
-            // }.bind(this));
+            var defaultValue = _.find(baseArray, function(object){
+                return object.value === this.defaultParam.metaType;
+            }.bind(this));
 
-            // if (defaultValue){
-            //     this.$el.find(".get-ip-type .cur-value").html(defaultValue.name);
-            //     this.$el.find("#custom-type").hide();
-            // } else {
-            //     this.$el.find(".get-ip-type .cur-value").html("自定义");
-            //     this.$el.find("#custom-type").val(this.defaultParam.obtIpCustom);
-            // }
+            if (defaultValue) 
+                this.$el.find(".meta-type .cur-value").html(defaultValue.name);
         },
 
         initCloseClientSetup: function(){
@@ -127,11 +127,13 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
             this.closeClientEl.appendTo(this.$el.find(".optimize-content"));
 
             this.closeClientEl.find("#closeclient").on('blur', $.proxy(this.onBlurCloseClient, this));
+
+            this.closeClientEl.find("#closeclient").val(this.defaultParam.delayClose)
         },
 
         onBlurCloseClient: function(target){
             var value = parseInt(this.closeClientEl.find("#closeclient").val());
-            if (!Utility.isNumber(value) || value < 5 || value > 60)
+            if (!Utility.isNumber(value) || value < 1 || value > 10)
                 alert("延时关闭填写内容为正整数，默认为5秒，最小值为1秒，最大值为10秒")
         },
 
@@ -140,6 +142,8 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
             this.timeoutEl.appendTo(this.$el.find(".optimize-content"));
 
             this.timeoutEl.find("#timeout").on('blur', $.proxy(this.onBlurTimeout, this));
+
+            this.timeoutEl.find("#timeout").val(this.defaultParam.noFlowTimeout)
         },
 
         onBlurTimeout: function(target){
@@ -159,6 +163,24 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".gopminlength .togglebutton input").on("click", $.proxy(this.onClickGopMinLengthToggle, this));
 
             this.$el.find(".gopminlengthinput").hide();
+
+            if (this.defaultParam.gopType === 1) {
+                this.gopEl.find("#gopCacheType1").get(0).checked = true;
+                this.gopEl.find("#gopduration").val(this.defaultParam.gopNum)
+            } else {
+                this.gopEl.find("#gopCacheType2").get(0).checked = true;
+                this.gopEl.find("#gopnum").val(this.defaultParam.gopNum)
+            }
+            this.gopEl.find("#gopmaxduration").val(this.defaultParam.gopMaxDuration)
+
+            if (this.defaultParam.gopMinSendFlag === 0){
+                this.$el.find(".gopminlength .togglebutton input").get(0).checked = false;
+                this.$el.find(".gopminlengthinput").hide();
+            } else {
+                this.$el.find(".gopminlength .togglebutton input").get(0).checked = true;
+                this.$el.find(".gopminlengthinput").show();
+            }
+            this.gopEl.find("#gopminlength").val(this.defaultParam.gopMinSend)
         },
 
         onBlurGopDuration: function(target){
@@ -190,34 +212,78 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){
-                // this.defaultParam.obtainIp = 1;
+                this.defaultParam.gopMinSendFlag = 1;
                 this.$el.find(".gopminlengthinput").show();
             } else {
-                // this.defaultParam.obtainIp = 0;
+                this.defaultParam.gopMinSendFlag = 0;
                 this.$el.find(".gopminlengthinput").hide();
             }
         },
 
-        onClickRadio: function(event){
-            var target = event.target || event.srcElement;
-            if(target.tagName != 'INPUT') return;
-            
-            var description = this.$el.find('#Remarks');
-            var value = parseInt($(target).val());
-            
-            if(value == this.firstconfCustomType){
-                description.val(this.defaultParam.description);
-            }else{
-                description.val('');
+        onClickSaveButton: function(){
+            var value = "";
+            if (this.gopEl.find("#gopCacheType1").get(0).checked === true){
+                this.defaultParam.gopType === 1
+                value = parseInt(this.gopEl.find("#gopduration").val());
+                if (!Utility.isNumber(value) || value < 2 || value > 30){
+                    alert("gop缓存时长填写内容为正整数，默认为5秒，最小值为2秒，最大值为30秒")
+                    return;
+                }
+            } else if (this.gopEl.find("#gopCacheType2").get(0).checked === true){
+                this.defaultParam.gopType === 2
+                value = parseInt(this.gopEl.find("#gopnum").val());
+                if (!Utility.isNumber(value) || value < 1 || value > 15){
+                    alert("gop缓存个数填写内容为正整数，默认为2个，最小值为1个，最大值为15个")
+                    return;
+                }
+            }
+            this.defaultParam.gopNum = value;
+
+            var gopMaxDuration = parseInt(this.gopEl.find("#gopmaxduration").val());
+            var minVal = parseInt(this.gopEl.find("#gopduration").val());
+            if (!Utility.isNumber(gopMaxDuration) || gopMaxDuration < minVal || gopMaxDuration > 30){
+                alert("最大gop缓存时长填写内容为正整数，默认为30秒，最小值不能小于gop缓存时长填写的时间，最大值为30秒")
+                return;
+            }
+            this.defaultParam.gopMaxDuration = gopMaxDuration;
+
+            if (this.defaultParam.gopMinSendFlag === 1) {
+                var gopMinSend = parseInt(this.gopEl.find("#gopminlength").val());
+                if (!Utility.isNumber(gopMinSend) || gopMinSend < 1 || gopMinSend > 30){
+                    alert("最大gop缓存时长填写内容为正整数，默认为30秒，最小值不能小于gop缓存时长填写的时间，最大值为30秒")
+                    return;
+                }
+                this.defaultParam.gopMinSend = gopMinSend;
             }
 
-            this.defaultParam.confCustomType = value;
-        },
+            var noFlowTimeout = parseInt(this.timeoutEl.find("#timeout").val());
+            if (!Utility.isNumber(noFlowTimeout) || noFlowTimeout < 5 || noFlowTimeout > 60){
+                alert("无流断开的超时时间填写内容为正整数，默认为20秒，最小值为5秒，最大值为60秒")
+                return;
+            }
+            this.defaultParam.noFlowTimeout = noFlowTimeout
 
+            var delayClose = parseInt(this.closeClientEl.find("#closeclient").val());
+            if (!Utility.isNumber(delayClose) || delayClose < 1 || delayClose > 10) {
+                alert("延时关闭填写内容为正整数，默认为5秒，最小值为1秒，最大值为10秒")
+                return;
+            }
+            this.defaultParam.delayClose = delayClose
 
-        onClickSaveButton: function(){
-            this.defaultParam.description = this.$el.find("#Remarks").val();
-            this.collection.modifyDomainBasic(this.defaultParam);
+            var postParam =  {
+                    "originId": this.domainInfo.id,
+                    "gopType": this.defaultParam.gopType,
+                    "gopNum": this.defaultParam.gopNum,
+                    "gopMaxDuration":this.defaultParam.gopMaxDuration,
+                    "gopMinSendFlag": this.defaultParam.gopMinSendFlag,
+                    "gopMinSend": this.defaultParam.gopMinSend,
+                    "noFlowTimeout": this.defaultParam.noFlowTimeout,
+                    "delayClose": this.defaultParam.delayClose,
+                    "metaType": this.defaultParam.metaType
+                }
+            console.log(postParam)
+            //this.collection.setLogConf(postParam)
+            // this.collection.modifyDomainBasic(this.defaultParam);
         },
 
         onSaveSuccess: function(){

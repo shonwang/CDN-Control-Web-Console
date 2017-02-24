@@ -9,12 +9,12 @@
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
         <tr data-id="<%=data[i].get('id')%>">
-            <td><%=data[i].get('videoTypeName')%></td>
-            <td><input type="text" class="form-control end" value="<%=data[i].get('endParam')%>" id="<%=data[i].get('id')%>" readonly="true"></td>
+            <td><%=data[i].get('type')%></td>
+            <td><input type="text" class="form-control param" value="<%=data[i].get('audioOnlyParam')%>" id="<%=data[i].get('id')%>"></td>
             <td>
                 <div class="togglebutton">
                     <label>
-                        <input type="checkbox" id="<%=data[i].get('id')%>" <% if (data[i].get('status') === 1) { %>checked="true" <% } %>>
+                        <input type="checkbox" id="<%=data[i].get('id')%>" <% if (data[i].get('audioOnlyFlag') === 1) { %>checked="true" <% } %>>
                         <span class="toggle"></span>
                     </label>
                 </div>

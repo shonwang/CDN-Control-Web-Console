@@ -20,11 +20,6 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
                 notShowBtn: true
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"));
-            
-            // this.collection.off("modify.DomainBasic.success");
-            // this.collection.off("modify.DomainBasic.error");
-            // this.collection.on("modify.DomainBasic.success", $.proxy(this.onSaveSuccess, this));
-            // this.collection.on("modify.DomainBasic.error", $.proxy(this.onGetError, this));
 
             require(["domainSetup.model"], function(DomainSetupModel){
                 var myDomainSetupModel = new DomainSetupModel();
@@ -33,8 +28,10 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
                     myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
             }.bind(this))
 
-            this.$el.find(".save").on('click',$.proxy(this.onClickSaveButton,this));
+            this.collection.on("set.setLiveConf.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.setLiveConf.error", $.proxy(this.onGetError, this));
 
+            this.$el.find(".save").on('click',$.proxy(this.onClickSaveButton,this));
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
         },
         onGetDomainInfo: function(data){
@@ -282,8 +279,7 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
                     "metaType": this.defaultParam.metaType
                 }
             console.log(postParam)
-            //this.collection.setLogConf(postParam)
-            // this.collection.modifyDomainBasic(this.defaultParam);
+            //this.collection.setLiveConf(postParam)
         },
 
         onSaveSuccess: function(){

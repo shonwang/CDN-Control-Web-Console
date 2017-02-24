@@ -25,15 +25,29 @@ define("liveAudioOnly.view", ['require','exports', 'template', 'modal.view', 'ut
 
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
-            this.collection.on("get.drag.success", $.proxy(this.onDragListSuccess, this));
-            this.collection.on("get.drag.error", $.proxy(this.onGetError, this));
+            this.defaultParam = [{
+                    id: Utility.randomStr(8),
+                    audioOnlyFlag: 0, //0:关闭 1:开启
+                    audioOnlyParam: "audio-only",
+                    type: "Http+Flv"
+                },{
+                    id: Utility.randomStr(8),
+                    audioOnlyFlag: 0, //0:关闭 1:开启
+                    audioOnlyParam: "audio-only",
+                    type: "Rtmp"
+                }
+            ]
 
-            this.collection.getDragConfList({originId: this.domainInfo.id})
+            // this.collection.on("get.drag.success", $.proxy(this.onDragListSuccess, this));
+            // this.collection.on("get.drag.error", $.proxy(this.onGetError, this));
+            //this.collection.getDragConfList({originId: this.domainInfo.id})
 
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
-            this.collection.on("set.drag.success", $.proxy(this.onSaveSuccess, this));
-            this.collection.on("set.drag.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.setLiveConf.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.setLiveConf.error", $.proxy(this.onGetError, this));
+
+            this.onDragListSuccess();
         },
 
         onSaveSuccess: function(){
@@ -68,22 +82,65 @@ define("liveAudioOnly.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         onClickSaveBtn: function(){
-            var list = [];
+            var postParam =  {
+                "originId": this.domainInfo.id,
+            }
             this.collection.each(function(obj){
-                list.push({
-                    "id": obj.get('id'),
-                    "dragMode": obj.get('dragMode'),
-                    "suffix": obj.get('suffix'),
-                    "startParam": obj.get('startParam'),
-                    "endParam": obj.get('endParam'),
-                    "status": obj.get('status'),
-                })
+                if (obj.get('type') === 'Http+Flv'){
+                    postParam.hdlAudioOnlyFlag = obj.get('audioOnlyFlag');
+                    postParam.hdlAudioOnlyParam = obj.get('audioOnlyParam');
+                } else if (obj.get('type') === 'Rtmp'){
+                    postParam.rtmpAudioOnlyFlag = obj.get('audioOnlyFlag');
+                    postParam.rtmpAudioOnlyParam = obj.get('audioOnlyParam');
+                }
             }.bind(this))
 
-            this.collection.setDragConf(list)
+            console.log(postParam)
+            //this.collection.setLiveConf(postParam)
         },
 
         onDragListSuccess: function(){
+            //TODO 假数据
+            var data = {
+                "appLives":[
+                    {
+                        "optimizeConf":{
+                            "hdlAudioOnlyFlag": 1,
+                            "hdlAudioOnlyParam": "audio-only1",
+                            "rtmpAudioOnlyFlag": 1,
+                            "rtmpAudioOnlyParam": "audio-only1",
+                        }
+                    }
+                ]
+            };
+
+            data = data.appLives[0];
+
+            _.each(this.defaultParam, function(el, index, ls){
+                if (data.optimizeConf) {
+                    if (data.optimizeConf.hdlAudioOnlyFlag !== null && 
+                        data.optimizeConf.hdlAudioOnlyFlag !== undefined &&
+                        el.type === "Http+Flv"){
+                        el.audioOnlyFlag = data.optimizeConf.hdlAudioOnlyFlag
+                    }
+                    if (data.optimizeConf.hdlAudioOnlyParam !== null && 
+                        data.optimizeConf.hdlAudioOnlyParam !== undefined &&
+                        el.type === "Http+Flv"){
+                        el.audioOnlyParam = data.optimizeConf.hdlAudioOnlyParam
+                    }
+                    if (data.optimizeConf.rtmpAudioOnlyFlag !== null && 
+                        data.optimizeConf.rtmpAudioOnlyFlag !== undefined &&
+                        el.type === "Rtmp"){
+                        el.audioOnlyFlag = data.optimizeConf.rtmpAudioOnlyFlag
+                    }
+                    if (data.optimizeConf.rtmpAudioOnlyParam !== null && 
+                        data.optimizeConf.rtmpAudioOnlyParam !== undefined &&
+                        el.type === "Rtmp"){
+                        el.audioOnlyParam = data.optimizeConf.rtmpAudioOnlyParam
+                    }
+                }
+                this.collection.push(new this.collection.model(el))
+            }.bind(this))
             this.initTable();
         },
 
@@ -96,37 +153,17 @@ define("liveAudioOnly.view", ['require','exports', 'template', 'modal.view', 'ut
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.table.find("tbody .suffix").on("blur", $.proxy(this.onClickItemSuffix, this));
-            this.table.find("tbody .start").on("blur", $.proxy(this.onClickItemStart, this));
-            this.table.find("tbody .end").on("blur", $.proxy(this.onClickItemEnd, this));
+            this.table.find("tbody .param").on("blur", $.proxy(this.onBlurItemParam, this));
             this.table.find("tbody .togglebutton input").on("click", $.proxy(this.onClickItemToggle, this));
         },
 
-        onClickItemSuffix: function(event){
+        onBlurItemParam: function(event){
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
 
             var model = this.collection.get(id);
 
-            model.set("suffix", $(eventTarget).val());
-        },
-
-        onClickItemStart: function(event){
-            var eventTarget = event.srcElement || event.target,
-                id = $(eventTarget).attr("id");
-
-            var model = this.collection.get(id);
-
-            model.set("startParam", $(eventTarget).val());
-        },
-
-        onClickItemEnd: function(event){
-            var eventTarget = event.srcElement || event.target,
-                id = $(eventTarget).attr("id");
-
-            var model = this.collection.get(id);
-
-            model.set("endParam", $(eventTarget).val());
+            model.set("audioOnlyParam", $(eventTarget).val());
         },
 
         onClickItemToggle: function(event){
@@ -136,7 +173,7 @@ define("liveAudioOnly.view", ['require','exports', 'template', 'modal.view', 'ut
             var id = $(eventTarget).attr("id"),
                 model = this.collection.get(id);
 
-            model.set("status", eventTarget.checked ? 1 : 0)
+            model.set("audioOnlyFlag", eventTarget.checked ? 1 : 0)
         },
 
         onGetError: function(error){

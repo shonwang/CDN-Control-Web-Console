@@ -1,22 +1,13 @@
-define("liveH265Setup.model", ['require','exports', 'utility'], function(require, exports, Utility) {
+define("liveH265Setup.model", ['require','exports', 'utility', 'liveBusOptimize.model'], function(require, exports, Utility, LiveBusOptimizeCollection) {
     var Model = Backbone.Model.extend({
         initialize: function(){}
     });
 
-    var LiveH265SetupCollection = Backbone.Collection.extend({
+    var LiveH265SetupCollection = LiveBusOptimizeCollection.extend({
         
         model: Model,
 
         initialize: function(){},
-
-        setChargingOpen: function(args){
-            var url = BASE_URL + "/channelManager/domain/setChargingOpen";
-            Utility.getAjax(url, args, function(res){
-                this.trigger("set.chargingOpen.success");
-            }.bind(this),function(res){
-                this.trigger("set.chargingOpen.error", res);
-            }.bind(this));
-        },
     });
 
     return LiveH265SetupCollection;

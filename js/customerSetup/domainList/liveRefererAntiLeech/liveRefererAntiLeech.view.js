@@ -27,16 +27,44 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
                 domains: "",
                 nullReferer: 0,
                 forgeReferer: 0,
-                type: 9,
-                policy: ""
+                regexps: ""
             };
+            this.$el.find(".save").on("click", $.proxy(this.onSure, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+            this.$el.find(".open-referer .togglebutton input").on("click", $.proxy(this.onClickSetupToggle, this));
+            this.$el.find("#white-domain").on("blur", $.proxy(this.onBlurDomainInput, this));
+            this.$el.find("#black-domain").on("blur", $.proxy(this.onBlurDomainInput, this));
+            this.$el.find(".null-referer .togglebutton input").on("click", $.proxy(this.onClickIsNullReferer, this));
+            this.$el.find(".forge-referer .togglebutton input").on("click", $.proxy(this.onClickIsForgeReferer, this));
 
-            if (this.isEdit){
-                this.defaultParam.type = this.model.get("matchingType");
-                this.defaultParam.policy = this.model.get("matchingValue") || "";
-                this.defaultParam.refererType = this.model.get("type");
-                this.defaultParam.domains = this.model.get("domains") || "";
-                this.defaultParam.nullReferer = this.model.get("nullReferer");
+            this.initSetup();
+        },
+
+        initSetup: function(){
+            //TODO 假数据
+            var data = [
+                {
+                    "type": 2,   //防盗链类型 1:白名单 2:黑名单
+                    "domains": "",   //域名,英文逗号分隔
+                    "nullReferer": 1,   //允许空referer 0:关 1:开
+                    "openFlag": 1,   //直播开启refer防盗链 0:关 1:开
+                    "regexps": "123",   //正则表达式，英文逗号分隔
+                    "forgeReferer": 1,   //是否允许伪造的refer 0:否 1:是
+                }
+            ]
+            data = data[0]
+
+            if (data){
+                if (data.openFlag !== null && data.openFlag !== undefined)
+                    this.defaultParam.isOpenSetup = data.openFlag
+                if (data.type !== null && data.type !== undefined)
+                    this.defaultParam.refererType = data.type
+                if (data.forgeReferer !== null && data.forgeReferer !== undefined)
+                    this.defaultParam.forgeReferer = data.forgeReferer
+                this.defaultParam.domains = data.domains || "";
+                if (data.nullReferer !== null && data.nullReferer !== undefined)
+                    this.defaultParam.nullReferer = data.nullReferer
+                this.defaultParam.regexps = data.regexps;
             }
 
             if (this.defaultParam.isOpenSetup === 1) {
@@ -50,9 +78,11 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
             if (this.defaultParam.refererType === 1) {
                 this.$el.find(".black-list").hide();
                 this.$el.find("#white-domain").val(this.defaultParam.domains)
+                this.$el.find("#white-re").val(this.defaultParam.regexps)
             } else if (this.defaultParam.refererType === 2){
                 this.$el.find(".white-list").hide();
                 this.$el.find("#black-domain").val(this.defaultParam.domains)
+                this.$el.find("#black-re").val(this.defaultParam.regexps)
             }
 
             if (this.defaultParam.nullReferer === 1){
@@ -68,12 +98,6 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
             }
 
             this.initTypeDropdown();
-
-            this.$el.find(".open-referer .togglebutton input").on("click", $.proxy(this.onClickSetupToggle, this));
-            this.$el.find("#white-domain").on("blur", $.proxy(this.onBlurDomainInput, this));
-            this.$el.find("#black-domain").on("blur", $.proxy(this.onBlurDomainInput, this));
-            this.$el.find(".null-referer .togglebutton input").on("click", $.proxy(this.onClickIsNullReferer, this));
-            this.$el.find(".forge-referer .togglebutton input").on("click", $.proxy(this.onClickIsForgeReferer, this));
         },
 
         onSaveSuccess: function(){
@@ -225,12 +249,11 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
             var whiteDomain = this.$el.find("#white-domain").val(),
                 balckDomain = this.$el.find("#black-domain").val();
 
-            if (this.defaultParam.refererType === 1 && (whiteDomain === "" || whiteUrl === "")){
-                alert("请输入合法域名、URL！")
+            if (this.defaultParam.refererType === 1 && (whiteDomain === "")){
+                alert("请输入合法域名！")
                 return false;
-            }
-            else if (this.defaultParam.refererType === 2 && (balckDomain === "" || blackUrl === "")){
-                alert("请输入非法域名、URL！")
+            } else if (this.defaultParam.refererType === 2 && (balckDomain === "")){
+                alert("请输入非法域名！")
                 return false;
             }
             if (this.defaultParam.refererType === 1 && whiteDomain.indexOf("\n") > -1){
@@ -259,48 +282,27 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
         onSure: function(){
             var result = this.checkEverything();
             if (!result) return false;
-            var matchConditionParam = this.matchConditionView.getMatchConditionParam();
-            if (!matchConditionParam) return false;
 
-            var matchingType = matchConditionParam.type, matchingTypeName;
-            if (matchingType === 0) matchingTypeName = "文件类型";
-            if (matchingType === 1) matchingTypeName = "指定目录";
-            if (matchingType === 2) matchingTypeName = "指定URL";
-            if (matchingType === 3) matchingTypeName = "正则匹配";
-            if (matchingType === 4) matchingTypeName = "url包含指定参数";
-            if (matchingType === 9) matchingTypeName = "全部文件";
-
-            var type = this.defaultParam.refererType, typeName;
-            if (type === 1) typeName = "Referer类型：白名单<br>";
-            if (type === 2) typeName = "Referer类型：黑名单<br>";
-
-            var domains = '', domainsName;
-            
-            if (this.defaultParam.refererType === 1) 
+            var domains = '', regexps;
+            if (this.defaultParam.refererType === 1) {
                 domains = _.uniq(this.$el.find("#white-domain").val().split(',')).join(',')
-            else
+                regexps = this.$el.find("#white-re").val()
+            } else {
                 domains = _.uniq(this.$el.find("#black-domain").val().split(',')).join(',')
-
-            if (domains) domainsName = "合法域名：" + domains + "<br>";
-
-            var nullReferer = this.defaultParam.nullReferer, nullRefererName;
-            if (nullReferer === 0) nullRefererName = "是否允许空引用：否<br>";
-            if (nullReferer === 1) nullRefererName = "是否允许空引用：是<br>";
-
-            var summary = typeName + domainsName + nullRefererName;
-
-            var postParam = {
-                type: type,
-                domains: domains,
-                nullReferer: this.defaultParam.nullReferer,
-                id: this.isEdit ? this.model.get("id") : new Date().valueOf(),
-                matchingType: matchingType,
-                matchingValue: matchConditionParam.policy,
-                summary: summary,
-                matchingTypeName: matchingTypeName
+                regexps = this.$el.find("#black-re").val()
             }
 
-            return postParam
+            var postParam = {
+                type: this.defaultParam.refererType,
+                domains: domains,
+                nullReferer: this.defaultParam.nullReferer,
+                "originId": this.domainInfo.id,
+                "openFlag": this.defaultParam.isOpenSetup,
+                "regexps": regexps,
+                "forgeReferer": this.defaultParam.forgeReferer
+            }
+
+            console.log(postParam) 
         },
 
         hide: function(){

@@ -63,11 +63,9 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
             this.initBaseAdvancedSetup();
             // this.collection.on("get.protection.success", $.proxy(this.onChannelListSuccess, this));
             // this.collection.on("get.protection.error", $.proxy(this.onGetError, this));
+            this.$el.find(".save").on("click", $.proxy(this.onSure, this));
 
-            // this.$el.find(".add").on("click", $.proxy(this.onClickAddRule, this));
-            // this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
-
-            // this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
 
             // this.collection.on("set.protection.success", $.proxy(this.onSaveSuccess, this));
             // this.collection.on("set.protection.error", $.proxy(this.onGetError, this));
@@ -559,9 +557,6 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
             var result = this.checkBalabala();
             if (!result) return false;
 
-            var matchConditionParam = this.matchConditionView.getMatchConditionParam();
-            if (!matchConditionParam) return false;
-
             var protectionType, confType, expirationTime, md5Truncate;
             confType = this.defaultParam.isBaseSetup === 1 ? 0 : 1
             if (confType === 0){
@@ -615,44 +610,21 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                 }.bind(this))
             }
 
-            var confTypeName;
-            if (confType === 0) confTypeName = "配置类型：标准配置<br>";
-            if (confType === 1) confTypeName = "配置类型：高级配置<br>";
-
-            var protectionTypeName;
-            if (protectionType === 1 && confType === 0) protectionTypeName = "防盗链格式：TypeA<br>";
-            if (protectionType === 2 && confType === 0) protectionTypeName = "防盗链格式：TypeB<br>";
-            if (protectionType === 3 && confType === 0) protectionTypeName = "防盗链格式：TypeC<br>";
-            if (protectionType === 1 && confType === 1) protectionTypeName = "加密URL形式：形式1：加密字符串在参数中<br>";
-            if (protectionType === 2 && confType === 1) protectionTypeName = "加密URL形式：形式2：加密字符串在路径中<br>";
-            if (protectionType === 3 && confType === 1) protectionTypeName = "加密URL形式：形式2：加密字符串在路径中<br>";
-
-            var authKeyListName;
-            authKeyListName = "共享秘钥：1主，" + (authKeyList.length - 1) + "备<br>";
-
-            var expirationTimeName;
-            if (expirationTime === 0) expirationTimeName = "失效时间：时间戳时间<br>";
-            if (expirationTime !== 0) expirationTimeName = "失效时间：时间戳时间+过期时间：" + expirationTime + "秒<br>";
-
-            var summary = confTypeName + protectionTypeName + authKeyListName + expirationTimeName;
-
             var postParam = {
-                "id": this.model ? data.id : new Date().valueOf(),
-                "matchingType": matchConditionParam.type,
-                "matchingValue": matchConditionParam.policy,
-                "typeName": matchConditionParam.typeName,
+                "originId": this.domainInfo.id,
+                "openFlag": this.defaultParam.isOpenSetup,
                 "confType": confType,
                 "protectionType": protectionType,
                 "timeParam": this.$el.find("#key_time").val(),
                 "hashParam": this.$el.find("#key_hash").val(),
                 "timeType": this.defaultParam.timestampType,
                 "expirationTime": expirationTime,
-                "authFactor": this.$el.find("#atuth-divisor").val(),
+                // "authFactor": this.$el.find("#atuth-divisor").val(),
                 "md5Truncate": md5Truncate,
                 "authKeyList": authKeyList,
-                "summary": summary
+                "authDivisorList": this.defaultParam.atuthDivisorArray
             }
-            return postParam;
+            console.log(postParam);
         },
 
         onGetError: function(error){

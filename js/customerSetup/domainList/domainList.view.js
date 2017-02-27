@@ -75,7 +75,8 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
         toQueryDomain:function(){
             var args = this.args;
             this.showLoading();
-            this.collection.queryDomain(args);
+            //this.collection.queryDomain(args);
+             this.collection.getDomainInfoList(args);
         },
 
         showLoading:function(){

@@ -90,7 +90,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         onClickSaveBtn: function () {
             var flag = true;
             this.checked;
-            debugger
+            // debugger
             if (this.ruleContent.local.length == 0) {
                 alert('请选择本层节点');
                 return;
@@ -406,7 +406,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     }
                 }.bind(this))
             }
-debugger
+// debugger
             if(this.isEdit) {
                 if(this.rule.length > 0) {
                     var id = this.id;
@@ -655,7 +655,7 @@ debugger
         onClickRadioButton: function (event) {
             //TODO chiefttype是在upper里面
             //TODO STEP4
-            debugger
+            // debugger
             this.checked = true;
             var eventTarget = event.srcElement || event.target, id;
             var id = eventTarget.id;

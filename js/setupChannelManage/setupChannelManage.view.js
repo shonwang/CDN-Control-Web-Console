@@ -81,7 +81,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     originId: this.model.get("id"),
                     version: version,
                     onSaveCallback: function () {
-                        debugger
+                        // debugger
                     }.bind(this),
                     onCancelCallback: function () {
                         mySetupBillView.$el.remove();
@@ -345,7 +345,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 id = $(eventTarget).attr("data-id");
             }
             this.id = id;
-            debugger
+            // debugger
             require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function (AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                 var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                 var options = myAddEditLayerStrategyModel;
@@ -359,7 +359,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     topologyId: this.model.get('topologyId'),
                     isEdit: true,
                     onSaveCallback: function () {
-                        debugger
+                        // debugger
                         var data = this.InformationProcessing(this.defaultParam);
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".special-layer").show();
@@ -410,7 +410,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     onSaveCallback: function () {
                         //this.defaultParam = this.rule;
                         this.checked;
-                        debugger
+                        // debugger
                         var data = this.InformationProcessing(this.defaultParam);
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".special-layer").show();
@@ -521,7 +521,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             return rule;
         },
         InformationProcessing: function (data) {
-            debugger
+            // debugger
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             var data_save = [];
             var self = this;
@@ -887,7 +887,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 collection: this.collection,
                 model: model,
                 onSaveCallback: function () {
-                    debugger
+                    // debugger
                     mySpecialLayerManageView.$el.remove();
                     this.$el.find(".list-panel").show();
                 }.bind(this),

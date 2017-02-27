@@ -12,8 +12,8 @@
               <td><%=data[i]["localLayer"]%></td>
               <td>
                   <% if(data[i].mainUpperLayer) {%>
-                      <strong>主：<%=data[i]["mainUpperLayer"]%></strong><span></span>
-                      <strong> 备：<%=data[i]["spareUpperLayer"]%></strong><span></span>
+                      <strong>主：</strong><span><%=data[i]["mainUpperLayer"]%></span>
+                      <strong> 备：></strong><span><%=data[i]["spareUpperLayer"]%</span>
                   <%} else { %>
                       <span><%= data[i]["upperLayer"] %></span>
                   <% } %>

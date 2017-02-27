@@ -912,8 +912,21 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             });
             return rule;
         },
+        addChiefType(data) {
+            for(var i = 0 ; i<data.rule.length ; i++) {
+                var item = data.rule[i].upper;
+                for(var k = 0 ; k<item.length; k++) {
+                    if(!item[k].chiefType && item[k].chiefType !== 0) {
+                        data.rule[i].upper[k].chiefType = 1;
+                    }
+                }
+            }
+            return data
+        },
         onClickSaveButton: function () {
+            debugger
             var flag = true;
+            this.defaultParam = this.addChiefType(this.defaultParam);
             this.defaultParam.name = $.trim(this.$el.find("#input-name").val());
             if (this.defaultParam.name == '') {
                 alert('请输入拓扑关系名称');
@@ -947,6 +960,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 }
             })
             if (flag) {
+
                 if (this.isEdit) {
                     //console.log(this.defaultParam);
                     this.collection.topoModify(this.defaultParam);

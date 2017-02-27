@@ -916,7 +916,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             for(var i = 0 ; i<data.rule.length ; i++) {
                 var item = data.rule[i].upper;
                 for(var k = 0 ; k<item.length; k++) {
-                    if(!item[k].chiefType && item[k].chiefType !== 0) {
+                    if(!item[k].chiefType && item[k].chiefType !==0){
                         data.rule[i].upper[k].chiefType = 1;
                     }
                 }
@@ -1387,7 +1387,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
 
         initRuleTable: function (data, checked) {
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
-
+            debugger
             var data = data,
                 checked = checked;
             this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.role.table.html'])({

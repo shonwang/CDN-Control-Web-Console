@@ -126,7 +126,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     }.bind(this))
                 }
             }.bind(this))
-
+            debugger
             if (flag) {
                 if (!this.isEdit) {
                     this.rule.push(this.ruleContent);
@@ -406,15 +406,15 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     }
                 }.bind(this))
             }
-// debugger
+debugger
             if(this.isEdit) {
                 if(this.rule.length > 0) {
                     var id = this.id;
-                    var idIndex = _.findIndex(this.rule,function(item){
-                       return item.local[0] === id
-                    });
-                    idIndex = idIndex === -1 ? 0 : idIndex;
-                    var targetIndex = _.findIndex(this.rule[idIndex].upper,function(item){
+                    // var idIndex = _.findIndex(this.rule,function(item){
+                    //    return item.local[0] === id
+                    // });
+                    // idIndex = idIndex === -1 ? 0 : idIndex;
+                    var targetIndex = _.findIndex(this.rule[id].upper,function(item){
                         return item.chiefType === 0
                     });
                     if(targetIndex >= 0 && this.selectedUpperNodeList.length > 0) {
@@ -653,7 +653,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }
         },
         onClickRadioButton: function (event) {
-            //TODO chiefttype是在upper里面
             //TODO STEP4
             // debugger
             this.checked = true;

@@ -253,7 +253,7 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
-                    width: 800,
+                    width: 1000,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

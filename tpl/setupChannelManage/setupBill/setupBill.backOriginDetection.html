@@ -1,0 +1,24 @@
+<table class="table table-striped table-hover">
+    <tbody>
+        <tr>
+          <td>回源检测</td>
+          <td><%=data["flagStr"]%></td>
+        </tr>
+        <tr>
+          <td>请求方式</td>
+          <td><%=data["detectMethod"]%><%=data["detectUrl"]%></td>
+        </tr>
+        <tr>
+          <td>设置请求HOST头</td>
+          <td><%=data["host"]%></td>
+        </tr>
+        <tr>
+          <td>正常响应状态</td>
+          <td><%=data["expectedResponse"]%></td>
+        </tr>
+        <tr>
+          <td>探测频率</td>
+          <td><%=data["frequency"]%></td>
+        </tr>
+    </tbody>
+</table>

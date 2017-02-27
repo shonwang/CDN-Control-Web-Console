@@ -96,6 +96,11 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (this.config.domainConf.protocol  === 4) this.baseInfo.protocolStr = 'https';
 
             this.baseInfo.originPort = this.config.domainConf.originPort;
+            this.baseInfo.description = this.config.originDomain.description;
+
+            if (this.config.domainConf.confCustomType === 1) this.baseInfo.confCustomTypeStr = '标准化开放式配置（默认）';
+            if (this.config.domainConf.confCustomType  === 2) this.baseInfo.confCustomTypeStr = '标准化内部配置';
+            if (this.config.domainConf.confCustomType === 3) this.baseInfo.confCustomTypeStr = '定制化配置';
 
             this.baseInfoTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.base.html'])({
                 data: this.baseInfo
@@ -122,9 +127,9 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (domainConf.backsourceFlag === 0) this.originSetupInfo.backsourceFlagStr = '关闭';
             if (domainConf.backsourceFlag  === 1) this.originSetupInfo.backsourceFlagStr = '开启';
             //"originType": 源站类型 1:IP源站 2:域名源站 3: type=1时,KS3  type=2时,ksvideo
-            if (originDomain.type === 1 && domainConf.originType === 1 && domainConf.backsourceFlag === 0) 
+            if (domainConf.originType === 1 && domainConf.backsourceFlag === 0) 
                 this.originSetupInfo.originTypeStr = 'IP源站';
-            if (originDomain.type === 1 && domainConf.originType === 2 && domainConf.backsourceFlag === 0) 
+            if (domainConf.originType === 2 && domainConf.backsourceFlag === 0) 
                 this.originSetupInfo.originTypeStr = '域名源站';
             if (originDomain.type === 1 && domainConf.originType === 3 && domainConf.backsourceFlag === 0) 
                 this.originSetupInfo.originTypeStr = 'KS3';
@@ -192,6 +197,21 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             }));
             this.originHostSetupTable.appendTo(this.$el.find(".bill-ctn"));
 
+            this.initOriginDetection()
+        },
+
+        initOriginDetection: function(argument) {
+            this.originDetectionInfo = this.config.detectOriginConfig || {};
+
+            var flag = this.config.detectOriginConfig.flag;
+            if (flag === 0) this.originDetectionInfo.flagStr = "关闭"
+            if (flag === 1) this.originDetectionInfo.flagStr = "开启"
+
+            this.originHostSetupTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.backOriginDetection.html'])({
+                data: this.originDetectionInfo
+            }));
+            this.originHostSetupTable.appendTo(this.$el.find(".bill-ctn"));
+
             this.initFollowing()
         },
 
@@ -229,12 +249,13 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
 
                 myCacheRuleModel.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
-                this.cacheRuleTable = $(_.template(template['tpl/customerSetup/domainList/cacheRule/cacheRule.table.html'])({
-                    data: myCacheRuleModel.models,
-                    hideAction: true
-                }));
-                this.cacheRuleTable.appendTo(this.$el.find(".bill-ctn"));
-
+                if (myCacheRuleModel.models.length > 0) {
+                    this.cacheRuleTable = $(_.template(template['tpl/customerSetup/domainList/cacheRule/cacheRule.table.html'])({
+                        data: myCacheRuleModel.models,
+                        hideAction: true
+                    }));
+                    this.cacheRuleTable.appendTo(this.$el.find(".bill-ctn"));
+                } 
                 this.initDelMarkCache();
             }.bind(this))
         },
@@ -260,12 +281,13 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
 
                 myDelMarkCacheModel.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
-                this.delMarkCacheTable = $(_.template(template['tpl/customerSetup/domainList/delMarkCache/delMarkCache.table.html'])({
-                    data: myDelMarkCacheModel.models,
-                    hideAction: true
-                }));
-
-                this.delMarkCacheTable.appendTo(this.$el.find(".bill-ctn"));
+                if (myDelMarkCacheModel.models.length > 0) {
+                    this.delMarkCacheTable = $(_.template(template['tpl/customerSetup/domainList/delMarkCache/delMarkCache.table.html'])({
+                        data: myDelMarkCacheModel.models,
+                        hideAction: true
+                    }));
+                    this.delMarkCacheTable.appendTo(this.$el.find(".bill-ctn"));
+                }
 
                 this.initDragPlay();
             }.bind(this));
@@ -320,12 +342,14 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
 
                 myClientLimitSpeedModel.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
-                this.clientLimitSpeedTable = $(_.template(template['tpl/customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.table.html'])({
-                    data: myClientLimitSpeedModel.models,
-                    hideAction: true
-                }));
+                if (myClientLimitSpeedModel.models.length > 0) {
+                    this.clientLimitSpeedTable = $(_.template(template['tpl/customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.table.html'])({
+                        data: myClientLimitSpeedModel.models,
+                        hideAction: true
+                    }));
 
-                this.clientLimitSpeedTable.appendTo(this.$el.find(".bill-ctn"));
+                    this.clientLimitSpeedTable.appendTo(this.$el.find(".bill-ctn"));
+                }
 
                 this.initHttpHeaderOpt();
             }.bind(this));
@@ -350,14 +374,17 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                     return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
                 }.bind(this));
 
+
                 myHttpHeaderOptModel.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
-                this.httpHeaderOptTable = $(_.template(template['tpl/customerSetup/domainList/httpHeaderOpt/httpHeaderOpt.table.html'])({
-                    data: myHttpHeaderOptModel.models,
-                    hideAction: true
-                }));
+                if (myHttpHeaderOptModel.models.length > 0) {
+                    this.httpHeaderOptTable = $(_.template(template['tpl/customerSetup/domainList/httpHeaderOpt/httpHeaderOpt.table.html'])({
+                        data: myHttpHeaderOptModel.models,
+                        hideAction: true
+                    }));
 
-                this.httpHeaderOptTable.appendTo(this.$el.find(".bill-ctn"));
+                    this.httpHeaderOptTable.appendTo(this.$el.find(".bill-ctn"));
+                }
 
                 this.initHttpHeaderCtr();
             }.bind(this));
@@ -450,11 +477,13 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
 
                 myRefererAntiLeechModel.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
-                this.refererAntiLeechTable = $(_.template(template['tpl/customerSetup/domainList/refererAntiLeech/refererAntiLeech.table.html'])({
-                    data: myRefererAntiLeechModel.models,
-                    hideAction: true
-                }));
-                this.refererAntiLeechTable.appendTo(this.$el.find(".bill-ctn"));
+                if (myRefererAntiLeechModel.models.length > 0) {
+                    this.refererAntiLeechTable = $(_.template(template['tpl/customerSetup/domainList/refererAntiLeech/refererAntiLeech.table.html'])({
+                        data: myRefererAntiLeechModel.models,
+                        hideAction: true
+                    }));
+                    this.refererAntiLeechTable.appendTo(this.$el.find(".bill-ctn"));
+                }
 
                 this.initTimestamp();
             }.bind(this));
@@ -481,11 +510,13 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
 
                 myTimestampModel.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
-                this.timestampTable = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.table.html'])({
-                    data: myTimestampModel.models,
-                    hideAction: true
-                }));
-                this.timestampTable.appendTo(this.$el.find(".bill-ctn"));
+                if (myTimestampModel.models.length > 0) {
+                    this.timestampTable = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.table.html'])({
+                        data: myTimestampModel.models,
+                        hideAction: true
+                    }));
+                    this.timestampTable.appendTo(this.$el.find(".bill-ctn"));
+                }
 
                 this.initOpenNgxLog()
             }.bind(this));

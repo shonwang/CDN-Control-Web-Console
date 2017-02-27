@@ -232,6 +232,7 @@ requirejs.config({
 
         "setupBill.model": 'setupChannelManage/setupBill/setupBill.model',
         "setupBill.view": 'setupChannelManage/setupBill/setupBill.view',
+        "setupBillLive.view": 'setupChannelManage/setupBill/setupBillLive.view',
 
         "setupAppManage.model": "setupAppManage/setupAppManage.model",
         "setupAppManage.view": "setupAppManage/setupAppManage.view",

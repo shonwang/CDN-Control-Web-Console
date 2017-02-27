@@ -1,0 +1,114 @@
+<div class="referer-antiLeech-panel fadeInLeft animated">
+    <h4>访问控制<small>/referer防盗链</small></h4>
+    <div class="well opt-ctn"></div>
+    <div class="well">
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="modify-host" class="col-sm-3 control-label">referer防盗链</label>
+                        <div class="col-sm-4 open-referer">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-8">
+                <form class="form-horizontal setup-content">
+                    <div class="form-group">
+                        <label for="referer-type" class="col-sm-3 control-label">referer类型</label>
+                        <div class="col-sm-7 referer-type">
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-referer-type" data-toggle="dropdown">
+                                    <span class="cur-value">加载中...</span>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu"></ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-dismissable alert-info">
+                        <button type="button" class="close" data-dismiss="alert">×</button>
+                        提示：<br>
+                        1.域名禁止以“http”或“https”开头，仅支持精确域名，不支持泛域名<br>
+                        例如：www.baidu.com<br>
+                        2.最多可以设置100条，多个域名使用回车分隔。<br>
+                    </div>
+                    <div class="form-group white-list">
+                        <label for="white-domain" class="col-sm-3 control-label">合法域名</label>
+                        <div class="col-sm-7">
+                            <textarea class="form-control" rows="3" id="white-domain"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group black-list">
+                        <label for="black-domain" class="col-sm-3 control-label">非法域名</label>
+                        <div class="col-sm-7">
+                            <textarea class="form-control" rows="3" id="black-domain"></textarea>
+                        </div>
+                    </div>
+                    <div class="alert alert-dismissable alert-info">
+                        <button type="button" class="close" data-dismiss="alert">×</button>
+                        提示：<br>
+                        1.请按照正则表达式的格式进行书写<br>
+                        如*.hdllive.ks-cdn.com应为.*.hdllive.ks-cdn.com<br>
+                        2.最多可以设置100条，多个正则使用回车分隔。<br>
+                    </div>
+                    <div class="form-group white-list">
+                        <label for="white-re" class="col-sm-3 control-label">合法正则</label>
+                        <div class="col-sm-7">
+                            <textarea class="form-control" rows="3" id="white-re"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group black-list">
+                        <label for="black-re" class="col-sm-3 control-label">非法正则</label>
+                        <div class="col-sm-7">
+                            <textarea class="form-control" rows="3" id="black-re"></textarea>
+                        </div>
+                    </div>
+                    <div class="alert alert-dismissable alert-info">
+                        <button type="button" class="close" data-dismiss="alert">×</button>
+                        空Referer:<br>
+                        1.head头中没有Referer<br>
+                        2.有Referer但是没有值
+                    </div>
+                    <div class="form-group">
+                        <label for="null-referer" class="col-sm-3 control-label">允许空referer</label>
+                        <div class="col-sm-2 null-referer">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-dismissable alert-info">
+                        <button type="button" class="close" data-dismiss="alert">×</button>
+                        伪造的Referer即非法的URL请求
+                    </div>
+                    <div class="form-group">
+                        <label for="forge-referer" class="col-sm-3 control-label">伪造的referer</label>
+                        <div class="col-sm-2 forge-referer">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-sm-offset-2 col-sm-2">
+                <a href="javascript:void(0)" class="btn btn-primary save"><span class="glyphicon glyphicon-save"></span>保存</a>
+            </div>
+        </div>
+    </div>
+</div>

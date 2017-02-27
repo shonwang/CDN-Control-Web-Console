@@ -404,6 +404,9 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             if (data.domainConf && data.domainConf.hostType !== null && data.domainConf.hostType !== undefined)
                 this.defaultParamModifyHost.domainType = data.domainConf.hostType;
 
+            if (data.domainConf && data.domainConf.openFlag !== null && data.domainConf.openFlag !== undefined)
+                this.isModifyHost = data.domainConf.openFlag === 0 ? false : true;
+
             this.defaultParamModifyHost.customHostHeader = data.domainConf.customHostHeader;
             this.defaultParamModifyHost.domain = data.originDomain.domain;
             this.defaultParamModifyHost.originAddress = data.domainConf.originAddress;
@@ -435,7 +438,8 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             var postParam = {
                 "originId": this.domainInfo.id,
                 "customHostHeader": value,
-                "hostType": this.defaultParamModifyHost.domainType
+                "hostType": this.defaultParamModifyHost.domainType,
+                "openFlag": this.isModifyHost ? 1 : 0
             };
             this.collection.setHostHeaderConfig(postParam)
         },

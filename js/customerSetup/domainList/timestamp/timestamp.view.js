@@ -27,6 +27,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 timeParam: "",
                 hashParam: "",
                 authFactor: "",
+                atuthDivisorArray: [],
                 md5Truncate: "",
                 type: 9,
                 policy: ""
@@ -125,6 +126,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.$el.find(".advanced-setup.deadline input[name='deadline']").on("click", $.proxy(this.onClickAdvancedDeadlineRadio, this));
                 this.$el.find(".advanced-setup .add-secret-key-backup").on("click", $.proxy(this.onClickAdvancedNewKey, this));
                 this.$el.find(".splice-md5 input[name='spliceMd5']").on("click", $.proxy(this.onClickSpliceMd5Radio, this));
+                this.$el.find(".advanced-setup .add-atuth-divisor").on("click", $.proxy(this.onClickAddAtuthDivisor, this));
                 this.initBaseAdvancedSetup();
             }.bind(this))
         },
@@ -217,6 +219,34 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.$el.find("#dropdown-timestamp-type .cur-value").html(defaultOtherValue.name);
             else
                 this.$el.find("#dropdown-timestamp-type .cur-value").html(timeTypeArray[0].name);
+
+            //TODO Value的值需要改成后端提供的枚举
+            this.curAtuthDivisor = 1;
+            this.curAtuthDivisorParam = "";
+            this.$el.find("#atuth-divisor-param").hide();
+
+            var  atuthDivisorArray = [
+                {value: 1, name: "host:用户请求域名"},
+                {value: 2, name: "method：用户请求方法"},
+                {value: 13, name: "uri：用户请求的uri"},
+                {value: 14, name: "url：不带参数"},
+                {value: 15, name: "arg&name:请求url中的参数名称"},
+                {value: 16, name: "hdr&name：请求头中的header名称"},
+                {value: 17, name: "time：请求url中是时间戳"},
+                {value: 18, name: "key：秘钥"},
+                {value: 19, name: "filename：文件名称，带后缀"},
+                {value: 10, name: "filenameno：文件名称，不带后缀"}
+            ],
+            atuthDivisorRootNode = this.$el.find(".atuth-divisor");
+            Utility.initDropMenu(atuthDivisorRootNode, atuthDivisorArray, function(value){
+                this.curAtuthDivisor = parseInt(value);
+                if (this.curAtuthDivisor === 2){
+                    this.$el.find("#atuth-divisor-param").show();
+                } else {
+                    this.$el.find("#atuth-divisor-param").hide();
+                    this.$el.find("#atuth-divisor-param").val("");
+                }
+            }.bind(this));
         },
 
         hideOrShowSetup: function(){
@@ -286,6 +316,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 backupKey: newKey
             });
             this.updateBaseKeyTable();
+            this.$el.find(".base-setup #new-backup-key").val("")
         },
 
         onClickAntiLeechRadio: function(event){
@@ -318,6 +349,64 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             this.defaultParam.spliceMd5 = parseInt($(eventTarget).val())
+        },
+
+        getAtuthDivisorName: function(){
+            // var atuthDivisors = this.defaultParam.authFactor.split(',');
+            // this.atuthDivisorArray = [];
+            // _.each(atuthDivisors, function(el, index, ls){
+            //     atuthDivisorArray.push({id: new Date().valueOf(), value: el})
+            // }.bind(this));
+        },
+
+        onClickAddAtuthDivisor: function(event){
+            var eventTarget = event.srcElement || event.target;
+
+            this.curAtuthDivisorParam = this.$el.find("#atuth-divisor-param").val();
+            if (this.curAtuthDivisor === 2 && this.curAtuthDivisorParam === ""){
+                alert("参数不能为空")
+                return;
+            }
+
+            if (this.defaultParam.atuthDivisorArray.length >= 6) {
+                alert("最大可以设置6个");
+                return;
+            }
+
+            this.defaultParam.atuthDivisorArray.push({
+                id: new Date().valueOf(),
+                divisorName: this.$el.find("#dropdown-atuth-divisor .cur-value").html(),
+                divisor: this.curAtuthDivisor,
+                divisorParam: this.curAtuthDivisorParam
+            });
+            this.updateAtuthDivisorTable();
+        },
+
+        updateAtuthDivisorTable: function(){
+            this.$el.find(".advanced-setup .atuth-divisor-table").find(".table").remove()
+            this.atuthDivisorTable = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.atuthDivisor.table.html'])({
+                data: this.defaultParam.atuthDivisorArray
+            }))
+
+            this.atuthDivisorTable.find(".delete").on("click", $.proxy(this.onClickAuthDivisorTableItemDelete, this));
+            this.$el.find(".advanced-setup .atuth-divisor-table .table-ctn").html(this.atuthDivisorTable.get(0));
+        },
+
+        onClickAuthDivisorTableItemDelete: function(event){
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+
+            var filterArray = _.filter(this.defaultParam.atuthDivisorArray, function(obj){
+                return obj.id !== parseInt(id)
+            }.bind(this))
+
+            if (filterArray.length <= 1) {
+                alert("最少不能少于2个");
+                return;
+            }
+
+            this.defaultParam.atuthDivisorArray = filterArray;
+            this.updateAtuthDivisorTable();
         },
 
         updateAdvancedKeyTable: function(){
@@ -355,6 +444,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 backupKey: newKey
             });
             this.updateAdvancedKeyTable();
+            this.$el.find(".advanced-setup #new-backup-key").val("");
         },
 
         checkBalabala: function(){

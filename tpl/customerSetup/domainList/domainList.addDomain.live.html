@@ -3,28 +3,63 @@
 	<div class="cdn-row clearfix margin-top10">
 		<div class="label-text-show">访问协议：</div>
 		<div class="label-content-show margin-left10">
+
 			<div class="radio">
-				<label for="radio-protocol2">
-					<input type="radio" name="radio-protocol" id="radio-protocol2" value="HLS" checked="true">
+				<label for="radio-live-protocol1">
+					<input type="radio" name="radio-live-protocol" id="radio-live-protocol1" value="RTMP" checked>
 					<span class="circle"></span>
 					<span class="check"></span>
-					hls
+					RTMP
 				</label>
 			</div>
+			<div class="radio">
+				<label for="radio-live-protocol2">
+					<input type="radio" name="radio-live-protocol" id="radio-live-protocol2" value="HTTP+FLV">
+					<span class="circle"></span>
+					<span class="check"></span>
+					HTTP+FLV
+				</label>
+			</div>
+			<div class="radio">
+				<label for="radio-live-protocol3">
+					<input type="radio" name="radio-live-protocol" id="radio-live-protocol3" value="HLS">
+					<span class="circle"></span>
+					<span class="check"></span>
+					HLS
+				</label>
+			</div>
+
 		</div>
 	</div>	
 	
 	<div class="cdn-row clearfix margin-top10">
 		<div class="label-text-show">回源协议：</div>
 		<div class="label-content-show margin-left10">
-			<div class="radio">
-				<label for="radio-origin-h">
-					<input type="radio" name="radio-origin2" id="radio-origin-h" value="HLS" checked="true">
+			<div class="radio" id="selectForRTMP">
+				<label for="radio-live-origin1">
+					<input type="radio" name="radio-live-origin" id="radio-live-origin1" value="RTMP" checked>
 					<span class="circle"></span>
 					<span class="check"></span>
-					hls
+					RTMP
 				</label>
-			</div>	
+			</div>
+			<div class="radio" id="selectForHTTPAndFLV" style="display:none;">
+				<label for="radio-live-origin2">
+					<input type="radio" name="radio-live-origin" id="radio-live-origin2" value="HTTP+FLV">
+					<span class="circle"></span>
+					<span class="check"></span>
+					HTTP+FLV
+				</label>
+			</div>
+			<div class="radio" id="selectForHLS" style="display:none;">
+				<label for="radio-live-origin3">
+					<input type="radio" name="radio-live-origin" id="radio-live-origin3" value="HLS">
+					<span class="circle"></span>
+					<span class="check"></span>
+					HLS
+				</label>
+			</div>
+			
 		</div>
 	</div>	
 	<!-- region -->

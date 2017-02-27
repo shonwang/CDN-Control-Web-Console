@@ -10,11 +10,18 @@
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].id%>">
               <td><%=data[i]["localLayer"]%></td>
-              <td><%=data[i]["upperLayer"]%></td>
               <td>
-                  <a href="javascript:void(0)" class="edit">编辑</a>
-                  <a href="javascript:void(0)" class="delete" style="visibility:hidden;">删除</a>
+                  <% if(data[i].mainUpperLayer) {%>
+                      <strong>主：<%=data[i]["mainUpperLayer"]%></strong><span></span>
+                      <strong> 备：<%=data[i]["spareUpperLayer"]%></strong><span></span>
+                  <%} else { %>
+                      <span><%= data[i]["upperLayer"] %></span>
+                  <% } %>
               </td>
+              <td>
+                <a href="javascript:void(0)" class="edit">编辑</a>
+                <a href="javascript:void(0)" class="delete" style="visibility:hidden;">删除</a>
+            </td>
             </tr>
         <% } %>  
     </tbody>

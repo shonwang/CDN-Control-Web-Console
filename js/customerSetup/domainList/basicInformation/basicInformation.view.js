@@ -122,10 +122,7 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
                 this.sendPopup = new Modal(options);
             }.bind(this))
         },
-        /*addDomainBasicSuccess: function(res){
-            alert('保存成功');
-            this.update(this.options.query, this.options.query2, this.target);
-        },*/
+
         onGetError: function(error){
             if (error&&error.message)
                 alert(error.message)

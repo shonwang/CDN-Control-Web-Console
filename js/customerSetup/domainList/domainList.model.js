@@ -74,6 +74,28 @@ define("domainList.model", ['require','exports','utility'], function(require, ex
                 this.trigger("query.domain.error", res);
             }.bind(this));
         },
+
+        getDomainInfoList: function(args){
+            var url = BASE_URL + "/channelManager/domain/getDomainInfoList";
+
+            Utility.postAjax(url, args, function(res){
+                this.reset();
+                if (res){
+                    _.each(res.data, function(element, index, list){
+                        if (element.domainConf && element.originDomain){ 
+                            element.originDomain.protocol = element.domainConf.protocol
+                            this.push(new Model(element.originDomain));
+                        }
+                    }.bind(this))
+                    this.total = res.totalCount;
+                    this.trigger("query.domain.success");
+                } else {
+                    this.trigger("query.domain.error"); 
+                } 
+            }.bind(this),function(res){
+                this.trigger("query.domain.error", res);
+            }.bind(this));
+        },
   
         submitDomain: function(args){
             var url = BASE_URL + "/channelManager/domain/addDomainBasic";

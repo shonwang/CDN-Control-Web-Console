@@ -75,7 +75,8 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
         toQueryDomain:function(){
             var args = this.args;
             this.showLoading();
-            this.collection.queryDomain(args);
+            //this.collection.queryDomain(args);
+            this.collection.getDomainInfoList(args);
         },
 
         showLoading:function(){
@@ -139,11 +140,20 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
                 id: model.get("id"),
                 domain: model.get("domain")
             })
-
-            if (model.get("type") !== 2)
+            // type=1 protocol=0,4 下载
+            // type=1 protocol=2 伪直播
+            // type=2 protocol= 1,3真直播
+            if ((model.get("type") === 1 && model.get("protocol") === 0) ||
+                (model.get("type") === 1 && model.get("protocol") === 4) ||
+                (model.get("type") === 1 && model.get("protocol") === 2)) {
                 window.location.hash = '#/domainList/' + args + "/basicInformation/" + args2
-            else
+            } else if ((model.get("type") === 2 && model.get("protocol") === 1) ||
+                       (model.get("type") === 2 && model.get("protocol") === 3)) {
                 window.location.hash = '#/domainList/' + args + "/liveBasicInformation/" + args2
+            } else {
+                alert(`type=1 protocol=0,4 下载<br>type=1 protocol=2 伪直播<br>type=2 protocol= 1,3真直播<br>
+                    当前返回的type为` + model.get("type") + "，protocol为" + model.get("protocol"));
+            }
         },
 
         setNoData:function(msg){

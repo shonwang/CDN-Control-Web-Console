@@ -7,7 +7,6 @@
 		<td><%=data[i].get("cdnFoctoryStr")%></td>
 		<td><%=data[i].get("createTimeFormated")%></td>
 		<td><%=data[i].get("updateTimeFormated")%></td>
-		<td><%=data[i].get("protocol")%></td>
 		<td>
 			<% if (data[i].get("auditStatus") !== 0 && data[i].get("auditStatus") !== 2) { %>
 			<a href="javascript:void(0)" id="<%=data[i].id%>" class="manage">管理</a>

@@ -36,10 +36,16 @@ define("cacheKeySetup.view", ['require','exports', 'template', 'modal.view', 'ut
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveButton, this))
             this.$el.find(".cache-key input").on("click", $.proxy(this.onClickToggle, this))
 
-            this.collection.on("modify.cacheKey.success", $.proxy(this.launchSendPopup, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
+            this.collection.on("modify.cacheKey.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("modify.cacheKey.error", $.proxy(this.onGetError, this));
 
             this.initSetup(data)
+        },
+
+        onSaveSuccess: function(){
+            alert("保存成功！")
         },
 
         launchSendPopup: function(){
@@ -49,6 +55,7 @@ define("cacheKeySetup.view", ['require','exports', 'template', 'modal.view', 'ut
                     domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
                     }.bind(this)
                 });
                 var options = {
@@ -56,6 +63,7 @@ define("cacheKeySetup.view", ['require','exports', 'template', 'modal.view', 'ut
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
+                    width: 800,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

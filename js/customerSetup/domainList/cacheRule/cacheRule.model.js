@@ -14,8 +14,10 @@ define("cacheRule.model", ['require','exports', 'utility'], function(require, ex
                 expireTime = this.get('expireTime'), summary = '';
 
             if (expireTime === 0 && hasOriginPolicy === 0) summary = "缓存时间：不缓存";
-            if (expireTime !== 0 && hasOriginPolicy === 0) summary = "缓存时间：" + Utility.timeFormat(expireTime);
-            if (expireTime !== 0 && hasOriginPolicy === 1) summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + Utility.timeFormat(expireTime);
+            if (expireTime !== 0 && hasOriginPolicy === 0) summary = "缓存时间：" + Utility.timeFormat2(expireTime);
+            if (expireTime !== 0 && hasOriginPolicy === 1) summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + Utility.timeFormat2(expireTime);
+            // if (expireTime !== 0 && hasOriginPolicy === 0) summary = "缓存时间：" + expireTime + "秒";
+            // if (expireTime !== 0 && hasOriginPolicy === 1) summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + expireTime + "秒";
             this.set("summary", summary);
         }
     });

@@ -37,6 +37,8 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.collection.on("get.version.error",$.proxy(this.onGetError,this));
             if (this.options.version)
                 this.collection.getVersion({originId: this.options.originId, versionNum: this.options.version})
+            else if (this.options.isFromPublish)
+                this.collection.checkList({originId: this.options.originId})
             else
                 this.collection.getVersion({originId: this.options.originId})
         },
@@ -371,7 +373,7 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             // "removeKs3": 0:不去除ks3头 1:去除
             if (domainConf.obtainIp === 0) this.headerCtrInfo.obtainIpStr = "获取客户端IP: 关闭";
             if (domainConf.obtainIp === 1) 
-                this.headerCtrInfo.obtainIpStr = "获取客户端IP: 开启; 获取客户端ip方式: " + domainConf.obtainIpCustom
+                this.headerCtrInfo.obtainIpStr = "获取客户端IP: 开启; <br>获取客户端ip方式: " + domainConf.obtainIpCustom
             if (domainConf.addCors === 0) 
                 this.headerCtrInfo.addCorsStr = "增加http head：Access-Control-Allow-Origin: * : 关闭";
             if (domainConf.addCors === 1) 

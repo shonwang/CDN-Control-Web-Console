@@ -1498,7 +1498,11 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
         },
         setOperatorInfo: function (res) {
             this.operator = [];
+<<<<<<< HEAD
             _.each(res, function (el, index, list) {
+=======
+            _.each(res.rows, function (el, index, list) {
+>>>>>>> addCheckout20170222
                 this.operator.push({
                     'name': el.name,
                     'value': el.id
@@ -1507,7 +1511,11 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
         },
         InformationProcessing: function (data) {
             //TODO STEP5
+<<<<<<< HEAD
             //看那个对象里面有chiefType属性 对象改成 从upperLayer -> mainLayer spareLayer 同时把chiefType值也传进来 用作在模板中判断是否需要主备
+=======
+            //看那个对象里面有chiefType属性 对象改成 从upperLayer -> mainLayer spareLayer
+>>>>>>> addCheckout20170222
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             // debugger
             var hasChiefType = [];

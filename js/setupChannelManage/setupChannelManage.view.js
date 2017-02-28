@@ -201,7 +201,10 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
         getTopologyRoleSuccess: function (res) {
             this.collection.getRuleOrigin(res);
         },
+<<<<<<< HEAD
 
+=======
+>>>>>>> addCheckout20170222
         getTopologyRoleError: function (error) {
             if (error && error.status == 404) {
                 this.defaultParam = [];
@@ -411,12 +414,19 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     onSaveCallback: function () {
                         //this.defaultParam = this.rule;
                         this.checked;
+<<<<<<< HEAD
                         // debugger
+=======
+                        debugger
+>>>>>>> addCheckout20170222
                         var data = this.InformationProcessing(this.defaultParam);
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".special-layer").show();
                         this.initRuleTable(data);
+<<<<<<< HEAD
 
+=======
+>>>>>>> addCheckout20170222
                     }.bind(this),
                     onCancelCallback: function () {
                         myAddEditLayerStrategyView.$el.remove();
@@ -596,7 +606,10 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({data: {name: "拓扑关系"}}));
 
             this.initDomainList();
+<<<<<<< HEAD
 
+=======
+>>>>>>> addCheckout20170222
             require(["setupTopoManage.model"], function (SetupTopoManageModel) {
                 this.mySetupTopoManageModel = new SetupTopoManageModel();
                 this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.initTable, this));

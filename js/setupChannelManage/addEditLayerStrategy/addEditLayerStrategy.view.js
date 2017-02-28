@@ -126,7 +126,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     }.bind(this))
                 }
             }.bind(this))
-            debugger
+            // debugger
             if (flag) {
                 if (!this.isEdit) {
                     this.rule.push(this.ruleContent);
@@ -406,7 +406,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     }
                 }.bind(this))
             }
-debugger
+            // debugger
             if(this.isEdit) {
                 if(this.rule.length > 0) {
                     var id = this.id;

@@ -76,7 +76,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 collection: this.collection,
                 model: this.model,
                 onSaveCallback: function () {
-                    debugger
+                    // debugger
                     this.onClickQueryButton();
                     myEditOrAddSendView.$el.remove();
                     this.$el.find(".list-panel").show();
@@ -98,7 +98,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 id = $(eventTarget).attr("id");
             }
 
-            debugger
+            // debugger
 
             var myEditOrAddSendView = new EditOrAddSendView({
                 collection: this.collection,
@@ -106,7 +106,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 isEdit: true,
                 id: id,
                 onSaveCallback: function () {
-                    debugger
+                    // debugger
                     this.onClickQueryButton();
                     myEditOrAddSendView.$el.remove();
                     this.$el.find(".list-panel").show();
@@ -334,7 +334,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     this.$el.find('.sendStrategy').show();
                 }.bind(this),
                 onSaveCallback: function () {
-                    debugger
+                    // debugger
                     this.initstepTable(this.InformationProcessing(this.defaultParam.deliveryStrategyDef));
                     this.allNodes = this.FilterNodes(this.allNodes);
                     myAddStepView.$el.remove();
@@ -366,7 +366,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     this.$el.find('.sendStrategy').show();
                 }.bind(this),
                 onSaveCallback: function () {
-                    debugger
+                    // debugger
                     this.initstepTable(this.InformationProcessing(this.defaultParam.deliveryStrategyDef));
                     this.allNodes = this.FilterNodes(this.allNodes);
                     myAddStepView.$el.remove();
@@ -924,7 +924,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             return data
         },
         onClickSaveButton: function () {
-            debugger
+            // debugger
             var flag = true;
             this.defaultParam = this.addChiefType(this.defaultParam);
             this.defaultParam.name = $.trim(this.$el.find("#input-name").val());
@@ -1387,7 +1387,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
 
         initRuleTable: function (data, checked) {
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
-            debugger
+            // debugger
             var data = data,
                 checked = checked;
             this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.role.table.html'])({
@@ -1419,7 +1419,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             }
             this.id = id;
 
-            debugger
+            // debugger
             require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function (AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                 var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
                     collection: this.collection,
@@ -1430,7 +1430,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     isEdit: true,
                     onSaveCallback: function () {
                         //TODO
-                        debugger
+                        // debugger
                         this.defaultParam.rule = this.rule;
                         var data = this.InformationProcessing(this.rule);
                         myAddEditLayerStrategyView.$el.remove();
@@ -1509,7 +1509,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             //TODO STEP5
             //看那个对象里面有chiefType属性 对象改成 从upperLayer -> mainLayer spareLayer 同时把chiefType值也传进来 用作在模板中判断是否需要主备
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
-            debugger
+            // debugger
             var hasChiefType = [];
             for(var i = 0 ; i<data.length; i++) {
                 hasChiefType.push(false);
@@ -1574,10 +1574,8 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 data_save_content.id = key;
                 data_save.push(data_save_content);
                 //TODO
-                //在这里记得给data_save_content对象赋值 上面的 主X 副X  条件是 如果chiefType值为0
-                /*if(this.ruleContent.upper.chiefType === 0){
-                    data_save.push()
-                 }*/
+                //在这里给data_save_content对象赋值 上面的 主X 副X  条件是 如果chiefType值为0
+
             });
             return data_save;
         },
@@ -1695,7 +1693,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 collection: this.collection,
                 WhetherSaveSuccess: this.WhetherSaveSuccess,
                 onSaveCallback: function () {
-                    debugger
+                    // debugger
                     this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
                     myEditTopoView.$el.remove();
                     this.$el.find(".list-panel").show();
@@ -1727,7 +1725,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 model: model,
                 isEdit: true,
                 onSaveCallback: function () {
-                    debugger
+                    // debugger
                     this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
                     myEditTopoView.$el.remove();
                     this.$el.find(".list-panel").show();
@@ -1760,7 +1758,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     collection: options,
                     model: model,
                     onSaveCallback: function () {
-                        debugger
+                        // debugger
                         this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
                         mySendView.$el.remove();
                         this.$el.find(".list-panel").show();

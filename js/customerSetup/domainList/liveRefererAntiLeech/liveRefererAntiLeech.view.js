@@ -109,6 +109,7 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
                 var mySaveThenSendView = new SaveThenSendView({
                     collection: new SaveThenSendModel(),
                     domainInfo: this.domainInfo,
+                    isRealLive: true,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
                         window.location.hash = '#/domainList/' + this.options.query;

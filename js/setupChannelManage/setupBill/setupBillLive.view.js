@@ -20,13 +20,78 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         initRefererAntiLeech: function(){
+            this.refererAntiLeechInfo = this.config.referSafetyChainList || [];
+            this.refererAntiLeechInfo = [
+                {
+                    "type": 2,   //防盗链类型 1:白名单 2:黑名单
+                    "domains": "",   //域名,英文逗号分隔
+                    "nullReferer": 1,   //允许空referer 0:关 1:开
+                    "openFlag": 1,   //直播开启refer防盗链 0:关 1:开
+                    "regexps": "123",   //正则表达式，英文逗号分隔
+                    "forgeReferer": 1,   //是否允许伪造的refer 0:否 1:是
+                }
+            ];
 
+            _.each(this.refererAntiLeechInfo, function(el, index, ls){
+                if (!el.openFlag){
+                    this.refererAntiLeechTable = $(`<table class="table table-striped table-hover">
+                                                        <caption>访问控制</caption>
+                                                        <tbody>
+                                                            <tr>
+                                                              <td>referer防盗链</td>
+                                                              <td><span class="label label-danger">关闭</span></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>`)
+                } else {
+                    el.openFlagStr = '<span class="label label-success">开启</span>';
+                    if (el.type === 1) el.typeStr = '白名单';
+                    if (el.type === 2) el.typeStr = '黑名单';
+                    if (el.nullReferer === 0) el.nullRefererStr = '<span class="label label-danger">关闭</span>';
+                    if (el.nullReferer === 1) el.nullRefererStr = '<span class="label label-success">开启</span>';
+                    if (el.forgeReferer === 0) el.forgeRefererStr = '<span class="label label-danger">关闭</span>';
+                    if (el.forgeReferer === 1) el.forgeRefererStr = '<span class="label label-success">开启</span>';
+                    this.refererAntiLeechTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveRefererAntiLeech.html'])({
+                        data: el
+                    }));
+                }
+                this.refererAntiLeechTable.appendTo(this.$el.find(".bill-ctn"));
+            }.bind(this))
+
+            this.initTimestamp();
         },
 
         initTimestamp: function(){
-            this.initTimestampInfo = this.config.standardProtectionList || [];
+            this.timestampInfo = this.config.standardProtectionList || [];
 
-            _.each(this.initTimestampInfo, function(el, index, ls){
+            this.timestampInfo = [
+                {
+                    "openFlag": 1,
+                    "confType": 1,
+                    "protectionType": 1,
+                    "timeParam": "null",
+                    "hashParam": "null",
+                    "timeType": 2,
+                    "timeValue": "null",
+                    "expirationTime": 3600,
+                    "md5Truncate": '123,123',
+                    "authKeyList": [
+                        {
+                            "id": 4,
+                            "authKey": "xxx",
+                        }
+                    ],
+                    "authDivisorList": [
+                        {
+                            "id": 4,
+                            "divisor": 1,
+                            "divisorParam":"",
+                        }
+                    ]
+                }
+            ];
+
+            _.each(this.timestampInfo, function(el, index, ls){
                 if (!el.openFlag){
                     this.timestampTable = $(`<table class="table table-striped table-hover">
                                                         <tbody>
@@ -110,7 +175,9 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
 
             this.authDivisorTable.find(".delete").remove();
             root.html(this.authDivisorTable.get(0));
-        }
+        },
+
+        
     });
 
     return SetupLiveBillView;

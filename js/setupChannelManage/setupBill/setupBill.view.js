@@ -112,10 +112,10 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         initCname: function() {
-            // this.cnameTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.cname.html'])({
-            //     data: this.config.originDomain.cnameData
-            // }));
-            // this.cnameTable.appendTo(this.$el.find(".bill-ctn"));
+            this.cnameTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.cname.html'])({
+                data: this.config.originDomain.cnameData
+            }));
+            this.cnameTable.appendTo(this.$el.find(".bill-ctn"));
 
             this.initOriginSetup();
         },
@@ -124,8 +124,8 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.originSetupInfo = {};
             var domainConf = this.config.domainConf, originDomain = this.config.originDomain;
             //"backsourceFlag": 配置高级回源策略的开启或关闭,0:关闭 1:开启
-            if (domainConf.backsourceFlag === 0) this.originSetupInfo.backsourceFlagStr = '关闭';
-            if (domainConf.backsourceFlag  === 1) this.originSetupInfo.backsourceFlagStr = '开启';
+            if (domainConf.backsourceFlag === 0) this.originSetupInfo.backsourceFlagStr = '<span class="label label-danger">关闭</span>';
+            if (domainConf.backsourceFlag  === 1) this.originSetupInfo.backsourceFlagStr = '<span class="label label-success">开启</span>';
             //"originType": 源站类型 1:IP源站 2:域名源站 3: type=1时,KS3  type=2时,ksvideo
             if (domainConf.originType === 1 && domainConf.backsourceFlag === 0) 
                 this.originSetupInfo.originTypeStr = 'IP源站';
@@ -204,8 +204,8 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.originDetectionInfo = this.config.detectOriginConfig || {};
 
             var flag = this.config.detectOriginConfig.flag;
-            if (flag === 0) this.originDetectionInfo.flagStr = "关闭"
-            if (flag === 1) this.originDetectionInfo.flagStr = "开启"
+            if (flag === 0) this.originDetectionInfo.flagStr = '<span class="label label-danger">关闭</span>'
+            if (flag === 1) this.originDetectionInfo.flagStr = '<span class="label label-success">开启</span>'
 
             this.originHostSetupTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.backOriginDetection.html'])({
                 data: this.originDetectionInfo
@@ -219,8 +219,8 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.followingInfo = {};
             var domainConf = this.config.domainConf, originDomain = this.config.originDomain;
             //"following": following302 0:关  1：开
-            if (domainConf.following === 0) this.followingInfo.followingStr = '关闭';
-            if (domainConf.following  === 1) this.followingInfo.followingStr = '开启';
+            if (domainConf.following === 0) this.followingInfo.followingStr = '<span class="label label-danger">关闭</span>';
+            if (domainConf.following  === 1) this.followingInfo.followingStr = '<span class="label label-success">开启</span>';
             this.followingTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.following.html'])({
                 data: this.followingInfo
             }));
@@ -398,17 +398,17 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             // "addCors": 0:不增加http head：Access-Control-Allow-Origin: *   1:增加
             // "removeCookie": 0:不去除cookie头   1:去除 
             // "removeKs3": 0:不去除ks3头 1:去除
-            if (domainConf.obtainIp === 0) this.headerCtrInfo.obtainIpStr = "获取客户端IP: 关闭";
+            if (domainConf.obtainIp === 0) this.headerCtrInfo.obtainIpStr = '获取客户端IP: <span class="label label-danger">关闭</span>';
             if (domainConf.obtainIp === 1) 
-                this.headerCtrInfo.obtainIpStr = "获取客户端IP: 开启; 获取客户端ip方式: " + domainConf.obtainIpCustom
+                this.headerCtrInfo.obtainIpStr = '获取客户端IP: <span class="label label-success">开启</span>; 获取客户端ip方式: ' + domainConf.obtainIpCustom
             if (domainConf.addCors === 0) 
-                this.headerCtrInfo.addCorsStr = "增加http head：Access-Control-Allow-Origin: * : 关闭";
+                this.headerCtrInfo.addCorsStr = '增加http head：Access-Control-Allow-Origin: * : <span class="label label-danger">关闭</span>';
             if (domainConf.addCors === 1) 
-                this.headerCtrInfo.addCorsStr = "增加http head：Access-Control-Allow-Origin: * : 开启";
+                this.headerCtrInfo.addCorsStr = '增加http head：Access-Control-Allow-Origin: * : <span class="label label-success">开启</span>';
             if (domainConf.removeCookie === 0) 
-                this.headerCtrInfo.removeCookieStr = "去除cookie头: 关闭";
+                this.headerCtrInfo.removeCookieStr = '去除cookie头: <span class="label label-danger">关闭</span>';
             if (domainConf.removeCookie === 1) 
-                this.headerCtrInfo.removeCookieStr = "去除cookie头: 开启";
+                this.headerCtrInfo.removeCookieStr = '去除cookie头: <span class="label label-success">开启</span>';
 
             this.httpHeaderCtr = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.httpHeaderCtr.html'])({
                 data: this.headerCtrInfo
@@ -428,10 +428,10 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             // }]
             if (this.urlParameterVo) {
                 var delTypeName, addTypeName, addDetailsStr = [];
-                if (this.urlParameterVo.delType === 0) delTypeName = "关闭";
-                if (this.urlParameterVo.addType === 0) addTypeName = "关闭";
-                if (this.urlParameterVo.delType === 1) delTypeName = "开启";
-                if (this.urlParameterVo.addType === 1) addTypeName = "开启";
+                if (this.urlParameterVo.delType === 0) delTypeName = '<span class="label label-danger">关闭</span>';
+                if (this.urlParameterVo.addType === 0) addTypeName = '<span class="label label-danger">关闭</span>';
+                if (this.urlParameterVo.delType === 1) delTypeName = '<span class="label label-success">开启</span>';
+                if (this.urlParameterVo.addType === 1) addTypeName = '<span class="label label-success">开启</span>';
 
                 _.each(this.urlParameterVo.addDetails, function(el, index, ls) {
                     addDetailsStr.push("参数：" + el.key + ", 值：" + el.value)
@@ -526,8 +526,8 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.chargingOpenInfo = {};
             var domainConf = this.config.domainConf, originDomain = this.config.originDomain;
             //"chargingOpen" 是否开启计费 1 开启 0关闭
-            if (domainConf.chargingOpen === 0) this.chargingOpenInfo.chargingOpenStr = '关闭';
-            if (domainConf.chargingOpen  === 1) this.chargingOpenInfo.chargingOpenStr = '开启';
+            if (domainConf.chargingOpen === 0) this.chargingOpenInfo.chargingOpenStr = '<span class="label label-danger">关闭</span>';
+            if (domainConf.chargingOpen  === 1) this.chargingOpenInfo.chargingOpenStr = '<span class="label label-success">开启</span>';
             this.chargingOpenTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.chargingOpen.html'])({
                 data: this.chargingOpenInfo
             }));

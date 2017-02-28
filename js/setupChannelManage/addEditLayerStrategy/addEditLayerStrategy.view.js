@@ -211,6 +211,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 callback: function (data) {
                 }.bind(this)
             });
+            this.addNodeSearchSelect = searchSelect;
             this.onGetUpperNode(res);
         },
 
@@ -320,15 +321,17 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             this.defaultParam.localType = parseInt($(eventTarget).val());
-
-            if (this.defaultParam.localType === 1) {
+            if (this.defaultParam.localType === 1){
+                this.addNodeSearchSelect && this.addNodeSearchSelect.cancelAll();
                 this.ruleContent.localType = 1;
                 this.ruleContent.local = [];
                 this.$el.find(".operator-ctn").hide();
                 this.$el.find(".nodes-ctn").show();
-            } else if (this.defaultParam.localType === 2) {
+            } else if (this.defaultParam.localType === 2){
+                this.addNodeSearchSelect && this.addNodeSearchSelect.cancelAll();
                 this.ruleContent.localType = 2;
                 this.ruleContent.local = [1];
+                this.$el.find("#dropdown-operator .cur-value").html("联通");
                 this.$el.find(".nodes-ctn").hide();
                 this.$el.find(".operator-ctn").show();
             }

@@ -443,7 +443,8 @@
             return html.join('');
         },
 
-        checkAll: function(bool) {
+        checkAll: function(bool,isOnOkClick) {
+            //isOnOkClick,新增bool值，当在checkAll的时候，是否默认点击“确定”按钮，此功能在取消所有已选中的checkbox时，需要传true来执行回调
             var oUl = this.selectValueLayer;
             var liList = oUl.getElementsByTagName("li");
             var selectList = oUl.getElementsByTagName("input");
@@ -466,6 +467,10 @@
             }
             var checkedList = this.getCheckedValue();
             this.callback && this.callback(checkedList);
+            if(isOnOkClick){
+                var list = this.getCheckedObj();
+                this.onOk && this.onOk(list);
+            }
         },
 
         selectInvert: function() {
@@ -514,6 +519,10 @@
                 });
             }
             return arr;
+        },
+
+        cancelAll:function(){
+            this.checkAll(false,true);
         },
 
         createElement: function(tag) {

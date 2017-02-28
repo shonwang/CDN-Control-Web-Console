@@ -4,7 +4,8 @@
           <tr>
             <th>节点名</th> 
             <th></th>
-            <th>操作</th>  
+            <th>选择备用节点</th>
+            <th>操作</th>
           </tr>
         </thead>  
         <% for(var i = 0; i < data.length; i++) { %>
@@ -23,6 +24,18 @@
               <%} else {%>
                 <td></td>
               <%}%>
+                <% if(data.length > 1){ %>
+              <td>
+                  <% if(data[i].chiefType === 0){ %>
+                  <input type="radio" class="spareradio" name="spareradio" id="<%= data[i].nodeId %>" value="<%= data[i].nodeId %>" checked> 备用
+                  <% } else { %>
+                  <input type="radio" class="spareradio" name="spareradio" id="<%= data[i].nodeId %>" value="<%= data[i].nodeId %>" > 备用
+                  <% } %>
+
+              </td>
+                <%} else {%>
+                <td></td>
+                <%}%>
               <td>
                   <a href="javascript:void(0)" id="<%=data[i].nodeId%>" class="delete" title="删除"><span class="glyphicon glyphicon-trash"></span></a>
               </td>

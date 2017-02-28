@@ -1,9 +1,10 @@
 define("setupTopoManage.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-            var createTime = this.get('createTime')
+            var createTime = this.get('createTime');
             
             createTime = this.set("createTime", new Date(createTime).format("yyyy/MM/dd hh:mm"));
+            this.set('checked',false);
         }
     });
 

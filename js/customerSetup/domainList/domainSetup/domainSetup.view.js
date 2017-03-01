@@ -184,6 +184,7 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
         },
 
         render: function(target){
+            this.target = target;
             this.$el.appendTo(target);
         }
     });

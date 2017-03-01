@@ -121,6 +121,7 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         render: function(target){
+            this.target = target;
             this.$el.appendTo(target);
         }
     });

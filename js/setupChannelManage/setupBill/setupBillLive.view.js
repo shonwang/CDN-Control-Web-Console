@@ -7,9 +7,9 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
         initOriginDetection: function(argument) {
             this.originDetectionInfo = this.config.detectOriginConfig || {};
 
+            this.strArray = ['<span class="label label-danger">关闭</span>', '<span class="label label-success">开启</span>'];
             var flag = this.config.detectOriginConfig.flag;
-            if (flag === 0) this.originDetectionInfo.flagStr = '<span class="label label-danger">关闭</span>'
-            if (flag === 1) this.originDetectionInfo.flagStr = '<span class="label label-success">开启</span>'
+            this.originDetectionInfo.flagStr = this.strArray[flag];
 
             this.originHostSetupTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.backOriginDetection.html'])({
                 data: this.originDetectionInfo
@@ -47,10 +47,10 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
                     el.openFlagStr = '<span class="label label-success">开启</span>';
                     if (el.type === 1) el.typeStr = '白名单';
                     if (el.type === 2) el.typeStr = '黑名单';
-                    if (el.nullReferer === 0) el.nullRefererStr = '<span class="label label-danger">关闭</span>';
-                    if (el.nullReferer === 1) el.nullRefererStr = '<span class="label label-success">开启</span>';
-                    if (el.forgeReferer === 0) el.forgeRefererStr = '<span class="label label-danger">关闭</span>';
-                    if (el.forgeReferer === 1) el.forgeRefererStr = '<span class="label label-success">开启</span>';
+
+                    el.nullRefererStr = this.strArray[el.nullReferer];
+                    el.forgeRefererStr = this.strArray[el.forgeReferer];
+
                     this.refererAntiLeechTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveRefererAntiLeech.html'])({
                         data: el
                     }));
@@ -123,7 +123,9 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
                         if (el.md5Truncate == "") 
                             el.md5TruncateStr = "全部（默认）";
                         else 
-                            el.md5TruncateStr = '自定义: ' + el.md5Truncate; 
+                            el.md5TruncateStr = '自定义: ' + el.md5Truncate;
+                        var timeTypeArray = ['', 'UNIX时间（十六进制）', 'UNIX时间（十进制）', ];
+                        el.timeTypeStr = timeTypeArray[el.timeType]
                         this.timestampTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveTimestamp.advanced.html'])({
                             data: el
                         }));
@@ -133,6 +135,8 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
                 }
                 this.timestampTable.appendTo(this.$el.find(".bill-ctn"));
             }.bind(this))
+
+            this.initLiveBusOptimize();
         },
 
         updateBaseKeyTable: function(data, root){
@@ -177,7 +181,140 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
             root.html(this.authDivisorTable.get(0));
         },
 
-        
+        initLiveBusOptimize: function(){
+            this.appLives = this.config.appLives || [];
+            this.appLives = [{
+                        "optimizeConf":{
+                            "gopType": 2, //1:按时长 2:按个数
+                            "gopNum": 3,
+                            "gopMaxDuration": 15,
+                            "gopMinSendFlag": 1,
+                            "gopMinSend": 2,
+                            "noFlowTimeout": 21,
+                            "delayClose": 6,
+                            "metaType": 2, //1:append 2:on 3:copy 4:off
+                            "h265Flag": 1,
+                            "hdlAudioOnlyFlag": 1,
+                            "hdlAudioOnlyParam": "audio-only1",
+                            "rtmpAudioOnlyFlag": 1,
+                            "rtmpAudioOnlyParam": "audio-only1",
+                            "edge302Flag": 1
+                        },
+                        "pkConf":{
+                            "hdlAvhZeroTimestamp": 1,
+                            "hdlTimestampZeroStart": 1,
+                            "hdlGopZeroTimestamp": 1,
+                            "hdlGopSendAudio": 0,
+                            "rtmpAvhZeroTimestamp": 1,
+                            "rtmpTimestampZeroStart": 1,
+                            "rtmpGopZeroTimestamp": 1,
+                            "rtmpGopSendAudio": 0,
+                            "avHeaderFlag": 1,
+                            "avHeaderWaitTime": 1,
+                            "keepAliveFlag": 1,
+                            "keepAliveTime": 1,
+                        },
+                        "logConf":{
+                            "slaAccessFlag": 1,
+                            "slaFirstCache": 20,
+                            "slaSecondCache":15,
+                            "frequencyFlag":1,
+                            "frequencyInterval":600,
+                        }
+                    }];
+
+            _.each(this.appLives, function(el, index, ls){
+                var optimizeConf = el.optimizeConf;
+                if (optimizeConf.gopType === 1) {
+                    optimizeConf.gopTypeStr = "按时长";
+                    optimizeConf.gopNumStr = "gop缓存时长：" + optimizeConf.gopNum + "秒";
+                } else {
+                    optimizeConf.gopTypeStr = "按个数";
+                    optimizeConf.gopNumStr = "gop缓存个数：" + optimizeConf.gopNum + "个";
+                }
+                optimizeConf.gopMaxDurationStr = optimizeConf.gopMaxDuration + "秒";
+                if (optimizeConf.gopMinSendFlag === 0)
+                    optimizeConf.gopMinSendStr = '<span class="label label-danger">关闭</span>';
+                else
+                    optimizeConf.gopMinSendStr = '<span class="label label-success">开启</span>' + optimizeConf.gopMinSend + "秒";
+                optimizeConf.noFlowTimeoutStr = optimizeConf.noFlowTimeout + "秒";
+                optimizeConf.delayCloseStr = optimizeConf.delayClose + "秒后关闭客户端连接";
+                var metaTypeNameArray = ["", "append", "on", "copy", "off"]
+                optimizeConf.metaTypeStr = metaTypeNameArray[optimizeConf.metaType];
+
+                optimizeConf.h265FlagStr = this.strArray[optimizeConf.h265Flag];
+                optimizeConf.hdlAudioOnlyFlagStr = this.strArray[optimizeConf.hdlAudioOnlyFlag];
+                optimizeConf.rtmpAudioOnlyFlagStr = this.strArray[optimizeConf.rtmpAudioOnlyFlag];
+                optimizeConf.edge302FlagStr = this.strArray[optimizeConf.edge302Flag];
+
+                this.liveBusOptimizeTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveBusOptimize.html'])({
+                    data: optimizeConf
+                }));
+
+                this.liveBusOptimizeTable.appendTo(this.$el.find(".bill-ctn"));
+            }.bind(this))
+
+            this.initPKBusOptimize();
+        },
+
+        initPKBusOptimize: function(){
+            _.each(this.appLives, function(el, index, ls){
+                var pkConf = el.pkConf;
+                if (pkConf.keepAliveFlag === 0)
+                    pkConf.keepAliveFlagStr = '<span class="label label-danger">关闭</span>';
+                else
+                    pkConf.keepAliveFlagStr = '<span class="label label-success">开启</span> 时长: ' + Utility.timeFormat2(pkConf.keepAliveTime);
+
+                if (pkConf.avHeaderFlag === 0)
+                    pkConf.avHeaderFlagStr = '<span class="label label-danger">关闭</span>';
+                else
+                    pkConf.avHeaderFlagStr = '<span class="label label-success">开启</span> 等待音视频合并头持续的时间: ' + Utility.timeFormat2(pkConf.avHeaderWaitTime);
+
+                pkConf.hdlAvhZeroTimestampStr = this.strArray[pkConf.hdlAvhZeroTimestamp];
+                pkConf.hdlTimestampZeroStartStr = this.strArray[pkConf.hdlTimestampZeroStart];
+                pkConf.hdlGopZeroTimestampStr = this.strArray[pkConf.hdlGopZeroTimestamp];
+                pkConf.hdlGopSendAudioStr = this.strArray[pkConf.hdlGopSendAudio];
+
+                pkConf.rtmpAvhZeroTimestampStr = this.strArray[pkConf.rtmpAvhZeroTimestamp];
+                pkConf.rtmpTimestampZeroStartStr = this.strArray[pkConf.rtmpTimestampZeroStart];
+                pkConf.rtmpGopZeroTimestampStr = this.strArray[pkConf.rtmpGopZeroTimestamp];
+                pkConf.rtmpGopSendAudioStr = this.strArray[pkConf.rtmpGopSendAudio];
+
+                this.livePKOptimizeTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.livePKOptimize.html'])({
+                    data: pkConf
+                }));
+
+                this.livePKOptimizeTable.appendTo(this.$el.find(".bill-ctn"));
+            }.bind(this))
+
+            this.initLogConf();
+        },
+
+        initLogConf: function(){
+            _.each(this.appLives, function(el, index, ls){
+                var logConf = el.logConf;
+                if (logConf.slaAccessFlag === 0){
+                    logConf.slaAccessFlagStr = '<span class="label label-danger">关闭</span>';
+                } else {
+                    logConf.slaAccessFlagStr = '<span class="label label-success">开启</span><br>' + 
+                    '计算access日志中的卡顿时，客户端的假设首次缓冲大小: ' + logConf.slaFirstCache + "秒<br>" + 
+                    '计算access日志中的卡顿时，客户端的假设首次缓冲大小: ' + logConf.slaSecondCache + "秒<br>" ;
+                }
+
+                if (logConf.frequencyFlag === 0){
+                    logConf.frequencyFlagStr = '<span class="label label-danger">关闭</span>';
+                } else {
+                    logConf.frequencyFlagStr = '<span class="label label-success">开启</span>间隔: ' + 
+                    Utility.timeFormat2(logConf.frequencyInterval);
+                }
+
+                this.livePKOptimizeTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.livelogConf.html'])({
+                    data: logConf
+                }));
+
+                this.livePKOptimizeTable.appendTo(this.$el.find(".bill-ctn"));
+            }.bind(this))
+        },
     });
 
     return SetupLiveBillView;

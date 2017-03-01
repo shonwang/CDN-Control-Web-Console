@@ -93,7 +93,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         onClickSaveBtn: function () {
             // debugger
             var flag = true;
-            this.checked;
             if (this.ruleContent.local.length == 0) {
                 alert('请选择本层节点');
                 return;
@@ -225,6 +224,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             var data = res;
             if (res && res.rows) data = res.rows
             if (this.isChannel) {
+                // debugger
                 data = res.allNodes;
             }
             _.each(data, function (el, index, list) {
@@ -662,7 +662,16 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.checked = true;
             var eventTarget = event.srcElement || event.target, id;
             var id = eventTarget.id;
-            // spareUpperLayer = eventTarget.parentNode.parentNode.firstChild.innerText;
+            // if(this.ruleContent.upper.chiefType){
+                // this.ruleContent.upper.remove("chiefType")
+            // }
+            this.ruleContent.upper = this.ruleContent.upper.map(function(item){
+                var newItem = {};
+                newItem.ipCorporation = item.ipCorporation;
+                newItem.nodeId = item.nodeId;
+                return newItem;
+            });
+
             for (var i = 0; i < this.ruleContent.upper.length; i++) {
                 if(this.ruleContent.upper.chiefType){
                     this.ruleContent.upper.remove("chiefType");

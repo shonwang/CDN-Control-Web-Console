@@ -339,7 +339,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
         },
         onClickItemEdit: function (event) {
-            debugger
+            // debugger
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "A") {
                 eventTarget = $(eventTarget).parent().parent();
@@ -361,7 +361,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     topologyId: this.model.get('topologyId'),
                     isEdit: true,
                     onSaveCallback: function () {
-                        debugger
+                        // debugger
                         var data = this.InformationProcessing(this.defaultParam);
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".special-layer").show();
@@ -434,7 +434,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
         },
         //点击保存按钮保存特殊策略
         onClickSaveButton: function () {
-            de
+            // debugger
             var flag = true;
             if (this.defaultParam.length == 0) {
                 alert('请选择节点');
@@ -565,6 +565,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                             })
                     }
                 _.each(el.upper, function (upper) {
+                    // debugger
                     _.each(self.allNodes, function (nodes) {
                         if (upper.nodeId == nodes.id) {
                             if(!hasChiefType[key]){

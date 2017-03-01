@@ -257,6 +257,8 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             this.collection.getTopoOrigininfo(this.model.get('id'));
         },
         onGetNodeSuccess: function (res) {
+            // debugger
+            console.log('get nodes ');
             this.$el.find('.add-step').css('display', 'inline-block');
             _.each(res.allNodes, function (el, index, list) {
                 if (typeof el.chName == 'undefined') {
@@ -388,6 +390,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             }
         },
         onClickSaveButton: function () {
+            // debugger
             this.defaultParam.name = this.$el.find('#input-Name').val();
             this.defaultParam.topologyId = this.model.get('id');
             this.defaultParam.description = this.$el.find('#description').val();
@@ -412,6 +415,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
         onGetError: function (error) {
+            console.log('a error');
             if (error && error.message)
                 alert(error.message)
             else
@@ -693,6 +697,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
         onClickSaveButton: function () {
+            // debugger
 
             this.defaultParam.shell = $(".scriptContent").val();
 
@@ -782,8 +787,8 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
         },
         addTopoSuccess: function () {
             //this.WhetherSaveSuccess = true;
-            this.options.onSaveCallback && this.options.onSaveCallback();
             alert('保存成功');
+            this.options.onSaveCallback && this.options.onSaveCallback();
         },
         addTopoError: function (error) {
             if (error && error.message) {
@@ -864,9 +869,10 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             this.collection.getDeviceTypeList();//获取应用类型列表接口
 
             if (this.isEdit) {
-                var data = this.analyticFunction(this.defaultParam.rule);
-                this.defaultParam.rule = this.analyticRuleFunction(this.defaultParam);
-                this.initRuleTable(data, this.checked);
+                    // debugger
+                    // var data = this.analyticFunction(this.defaultParam.rule);
+                    // this.defaultParam.rule = this.analyticRuleFunction(this.defaultParam);
+                    // this.initRuleTable(data, this.checked);
             }
         },
         analyticFunction: function (data) {
@@ -905,7 +911,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 _.each(el.upper, function (upper) {
                     _.each(self.allNodes, function (nodes) {
                         if (upper.nodeId == nodes.nodeId) {
-                            if(!hasChiefType[key]) {
+                            if(upper.chiefType === 1) {
                                 data_save_content.upperLayer.push(nodes.name)
                             } else {
                                 if(upper.chiefType === 0) {
@@ -938,6 +944,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     localAll.push(local.id);
                 })
                 _.each(el.upper, function (upper) {
+                    // debugger
                     upperAll.push({id: upper.rsNodeMsgVo.id, ipCorporation: upper.ipCorporation});
                 })
                 rule.push({id: el.id, localType: el.localType, local: localAll, upper: upperAll});
@@ -1001,6 +1008,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     //console.log(this.defaultParam);
                     this.collection.topoAdd(this.defaultParam);
                 }
+                this.options.onSaveCallback && this.options.onSaveCallback();
             }
 
         },
@@ -1037,6 +1045,8 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
         },
 
         onGetAllNode: function (res) {
+// debugger
+            this.allNodes = res;
             this.$el.find('.all .add-node').show();
             var nodesArray = [];
 
@@ -1109,6 +1119,10 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     callback: function (data) {
                     }.bind(this)
                 });
+                // debugger
+                    var data = this.InformationProcessing(this.defaultParam.rule);
+                    this.defaultParam.rule = this.analyticRuleFunction(this.defaultParam);
+                    this.initRuleTable(data, this.checked);
             } else {
                 var searchSelect = new SearchSelect({
                     containerID: this.$el.find('.all .add-node-ctn').get(0),
@@ -1337,6 +1351,8 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             });
         },
         initUpperTable: function () {
+            //FLAG
+            // debugger
             this.upperTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
                 data: this.selectedUpperNodeList
             }));
@@ -1422,6 +1438,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             // debugger
             var data = data,
                 checked = checked;
+
             this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.role.table.html'])({
                 data: data,
                 checked: checked,
@@ -1551,6 +1568,12 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     }
                 });
             }
+            var constVar = '';
+            if(this.isEdit) {
+                constVar = 'id';
+            } else {
+                constVar = '';
+            };
 
             var data_save = [];
             var self = this;
@@ -1562,11 +1585,11 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     'mainUpperLayer': [],
                     'spareUpperLayer': []
                 };
-
+                // debugger
                 if (el.localType == 2) {
                     _.each(el.local, function (local) {
                         _.each(self.operator, function (operator) {
-                            if (local == operator.value) {
+                            if (local == operator.value || local[constVar] == operator.value) {
                                 data_save_content.localLayer.push(operator.name)
                             }
                         })
@@ -1574,7 +1597,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 } else if (el.localType == 1) {
                     _.each(el.local, function (local) {
                         _.each(self.allNodes, function (nodes) {
-                            if (local == nodes.nodeId) {
+                            if (local[constVar] == nodes[constVar] || local == nodes[constVar]) {
 
                                 data_save_content.localLayer.push(nodes.name);
                             }
@@ -1583,21 +1606,37 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 }
                 _.each(el.upper, function (upper) {
                     _.each(self.allNodes, function (nodes) {
-                        if (upper.nodeId == nodes.nodeId) {
-                            if(!hasChiefType[key]) {
-                                data_save_content.upperLayer.push(nodes.name)
-                            } else {
-                                if(upper.chiefType === 0) {
-                                    data_save_content.spareUpperLayer.push(nodes.name);
+                        if(self.isEdit) {
+                            if (upper.rsNodeMsgVo.id == nodes.id) {
+                                if(!hasChiefType[key]) {
+                                    data_save_content.upperLayer.push(nodes.chName)
                                 } else {
-                                    data_save_content.mainUpperLayer.push(nodes.name);
+                                    if(upper.chiefType === 0) {
+                                        data_save_content.spareUpperLayer.push(nodes.chName);
+                                    } else {
+                                        data_save_content.mainUpperLayer.push(nodes.chName);
+                                    }
                                 }
                             }
-
+                        } else {
+                            if (upper.nodeId == nodes.id) {
+                                if(!hasChiefType[key]) {
+                                    data_save_content.upperLayer.push(nodes.chName)
+                                } else {
+                                    if(upper.chiefType === 0) {
+                                        data_save_content.spareUpperLayer.push(nodes.chName);
+                                    } else {
+                                        data_save_content.mainUpperLayer.push(nodes.chName);
+                                    }
+                                }
+                            }
                         }
+
                     })
 
-                })
+                });
+
+
                 data_save_content.localLayer = data_save_content.localLayer.join('、');
                 data_save_content.upperLayer = data_save_content.upperLayer.join('、');
                 data_save_content.spareUpperLayer = data_save_content.spareUpperLayer.join('、');

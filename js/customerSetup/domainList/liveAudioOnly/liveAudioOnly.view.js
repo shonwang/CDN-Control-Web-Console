@@ -59,6 +59,7 @@ define("liveAudioOnly.view", ['require','exports', 'template', 'modal.view', 'ut
                 var mySaveThenSendView = new SaveThenSendView({
                     collection: new SaveThenSendModel(),
                     domainInfo: this.domainInfo,
+                    isRealLive: true,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
                         window.location.hash = '#/domainList/' + this.options.query;
@@ -69,7 +70,7 @@ define("liveAudioOnly.view", ['require','exports', 'template', 'modal.view', 'ut
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
-                    width: 800,
+                    width: 1000,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

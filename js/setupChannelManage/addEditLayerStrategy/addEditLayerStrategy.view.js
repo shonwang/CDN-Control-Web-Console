@@ -44,20 +44,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
-<<<<<<< HEAD
-=======
-
-
-            require(['deviceManage.model'], function (deviceManageModel) {
-                var mydeviceManageModel = new deviceManageModel();
-                mydeviceManageModel.operatorTypeList();
-                mydeviceManageModel.off("operator.type.success");
-                mydeviceManageModel.off("operator.type.error");
-                mydeviceManageModel.on("operator.type.success", $.proxy(this.initDropMenu, this));
-                mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
-            }.bind(this));
-
->>>>>>> addCheckout20170222
 
             require(['deviceManage.model'],function(deviceManageModel){
                 var mydeviceManageModel = new deviceManageModel();
@@ -77,11 +63,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         initSetup: function () {
-<<<<<<< HEAD
-            this.$el.find('.local .add-node').hide();
-=======
             this.$el.find('.local .add-node').show();
->>>>>>> addCheckout20170222
             if (this.defaultParam.localType === 1) {
                 this.$el.find("#strategyRadio1").get(0).checked = true;
                 this.$el.find("#strategyRadio2").get(0).checked = false;
@@ -109,11 +91,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         onClickSaveBtn: function () {
             var flag = true;
             this.checked;
-<<<<<<< HEAD
-            // debugger
-=======
-            debugger
->>>>>>> addCheckout20170222
             if (this.ruleContent.local.length == 0) {
                 alert('请选择本层节点');
                 return;
@@ -149,11 +126,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     }.bind(this))
                 }
             }.bind(this))
-            // debugger
-<<<<<<< HEAD
-=======
-
->>>>>>> addCheckout20170222
             if (flag) {
                 if (!this.isEdit) {
                     this.rule.push(this.ruleContent);
@@ -347,23 +319,14 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             this.defaultParam.localType = parseInt($(eventTarget).val());
-<<<<<<< HEAD
             if (this.defaultParam.localType === 1){
                 this.addNodeSearchSelect && this.addNodeSearchSelect.cancelAll();
-=======
-
-            if (this.defaultParam.localType === 1) {
->>>>>>> addCheckout20170222
                 this.ruleContent.localType = 1;
                 this.ruleContent.local = [];
                 this.$el.find(".operator-ctn").hide();
                 this.$el.find(".nodes-ctn").show();
-<<<<<<< HEAD
             } else if (this.defaultParam.localType === 2){
                 this.addNodeSearchSelect && this.addNodeSearchSelect.cancelAll();
-=======
-            } else if (this.defaultParam.localType === 2) {
->>>>>>> addCheckout20170222
                 this.ruleContent.localType = 2;
                 this.ruleContent.local = [1];
                 this.$el.find("#dropdown-operator .cur-value").html("联通");
@@ -476,15 +439,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.upperTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperDelete, this));
             this.upperTable.find("tbody .spareradio").on("click", $.proxy(this.onClickRadioButton, this));
 
-<<<<<<< HEAD
-=======
-            /* this.collection.off("get.operatorUpper.success");
-             this.collection.off("get.operatorUpper.error");
-             this.collection.on("get.operatorUpper.success",$.proxy(this.initOperatorUpperList,this));
-             this.collection.on("get.operatorUpper.error",$.proxy(this.onGetError, this));
-             this.collection.getOperatorUpperList();*/
-
->>>>>>> addCheckout20170222
             require(['deviceManage.model'], function (deviceManageModel) {
                 var mydeviceManageModel = new deviceManageModel();
                 mydeviceManageModel.operatorTypeList();
@@ -496,11 +450,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
         initOperatorUpperList: function (data) {
             var statusArray = [];
-<<<<<<< HEAD
-            _.each(data.rows, function(el, key, list){
-=======
             _.each(data, function (el, key, list) {
->>>>>>> addCheckout20170222
                 statusArray.push({name: el.name, value: el.id})
             }.bind(this))
             rootNodes = this.upperTable.find(".ipOperator .dropdown");

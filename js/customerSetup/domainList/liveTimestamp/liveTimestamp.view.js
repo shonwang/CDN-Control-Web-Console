@@ -60,17 +60,41 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
             this.$el.find(".advanced-setup .add-secret-key-backup").on("click", $.proxy(this.onClickAdvancedNewKey, this));
             this.$el.find(".splice-md5 input[name='spliceMd5']").on("click", $.proxy(this.onClickSpliceMd5Radio, this));
             this.$el.find(".advanced-setup .add-atuth-divisor").on("click", $.proxy(this.onClickAddAtuthDivisor, this));
-            this.initBaseAdvancedSetup();
-            // this.collection.on("get.protection.success", $.proxy(this.onChannelListSuccess, this));
-            // this.collection.on("get.protection.error", $.proxy(this.onGetError, this));
-            this.$el.find(".save").on("click", $.proxy(this.onSure, this));
 
+            this.collection.on("get.protection.success", $.proxy(this.initBaseAdvancedSetup, this));
+            this.collection.on("get.protection.error", $.proxy(this.onGetError, this));
+            this.$el.find(".save").on("click", $.proxy(this.onSure, this));
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
 
-            // this.collection.on("set.protection.success", $.proxy(this.onSaveSuccess, this));
-            // this.collection.on("set.protection.error", $.proxy(this.onGetError, this));
+            this.collection.getStandardProtection({originId:this.domainInfo.id});
+        },
 
-            //this.onClickQueryButton()
+        launchSendPopup: function(){
+            require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
+                var mySaveThenSendView = new SaveThenSendView({
+                    collection: new SaveThenSendModel(),
+                    domainInfo: this.domainInfo,
+                    isRealLive: true,
+                    onSendSuccess: function() {
+                        this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
+                    }.bind(this)
+                });
+                var options = {
+                    title: "发布",
+                    body : mySaveThenSendView,
+                    backdrop : 'static',
+                    type     : 2,
+                    width: 1000,
+                    onOKCallback:  function(){
+                        mySaveThenSendView.sendConfig();
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();
+                    }.bind(this)
+                }
+                this.sendPopup = new Modal(options);
+            }.bind(this))
         },
 
         initBaseAdvancedSetup: function(){
@@ -102,6 +126,7 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                 }
             ]
             data = data[0]
+
             if (data){
                 if (data.openFlag !== null && data.openFlag !== undefined)
                     this.defaultParam.isOpenSetup = data.openFlag
@@ -611,7 +636,6 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
             }
 
             var postParam = {
-                "originId": this.domainInfo.id,
                 "openFlag": this.defaultParam.isOpenSetup,
                 "confType": confType,
                 "protectionType": protectionType,
@@ -624,7 +648,12 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                 "authKeyList": authKeyList,
                 "authDivisorList": this.defaultParam.atuthDivisorArray
             }
-            console.log(postParam);
+            postParam = {
+                "originId": this.domainInfo.id,
+                "list": [postParam]
+            }
+
+            this.collection.setStandardProtection(postParam)
         },
 
         onGetError: function(error){

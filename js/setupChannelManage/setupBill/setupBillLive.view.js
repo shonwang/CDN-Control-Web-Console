@@ -124,7 +124,7 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
                             el.md5TruncateStr = "全部（默认）";
                         else 
                             el.md5TruncateStr = '自定义: ' + el.md5Truncate;
-                        var timeTypeArray = ['', 'UNIX时间（十六进制）', 'UNIX时间（十进制）', ];
+                        var timeTypeArray = ['', 'UNIX时间（十六进制）', 'UNIX时间（十进制）'];
                         el.timeTypeStr = timeTypeArray[el.timeType]
                         this.timestampTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveTimestamp.advanced.html'])({
                             data: el
@@ -296,9 +296,9 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
                 if (logConf.slaAccessFlag === 0){
                     logConf.slaAccessFlagStr = '<span class="label label-danger">关闭</span>';
                 } else {
-                    logConf.slaAccessFlagStr = '<span class="label label-success">开启</span><br>' + 
+                    logConf.slaAccessFlagStr = '<span class="label label-success">开启</span><br><hr>' + 
                     '计算access日志中的卡顿时，客户端的假设首次缓冲大小: ' + logConf.slaFirstCache + "秒<br>" + 
-                    '计算access日志中的卡顿时，客户端的假设首次缓冲大小: ' + logConf.slaSecondCache + "秒<br>" ;
+                    '计算access日志中的卡顿时，客户端的假设再次缓冲大小: ' + logConf.slaSecondCache + "秒<br>" ;
                 }
 
                 if (logConf.frequencyFlag === 0){

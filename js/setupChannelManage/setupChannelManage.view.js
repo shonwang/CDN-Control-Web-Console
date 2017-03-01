@@ -412,7 +412,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     onSaveCallback: function () {
                         //this.defaultParam = this.rule;
                         this.checked;
-                        debugger
+                        // debugger
                         var data = this.InformationProcessing(this.defaultParam);
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".special-layer").show();
@@ -525,7 +525,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             return rule;
         },
         InformationProcessing: function (data) {
-             debugger
+             // debugger
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             var hasChiefType = [];
             for(var i = 0 ; i<data.length; i++) {

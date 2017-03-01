@@ -91,7 +91,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
         onClickSaveBtn: function () {
-            debugger
+            // debugger
             var flag = true;
             this.checked;
             if (this.ruleContent.local.length == 0) {

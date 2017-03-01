@@ -418,7 +418,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 alert("网络阻塞，请刷新重试！")
         },
         InformationProcessing: function (data) {
-            debugger
+            // debugger
             var data_save = [];
             var self = this;
             _.each(data, function (el, key, ls) {
@@ -440,7 +440,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
 
             }.bind(this));
             return data_save;
-            debugger
+            // debugger
         },
         FilterNodes: function (data) {
             var arr = [];
@@ -1541,7 +1541,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             //TODO STEP5
             //看那个对象里面有chiefType属性 对象改成 从upperLayer -> mainLayer spareLayer
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
-            debugger
+            // debugger
             var hasChiefType = [];
             for(var i = 0 ; i<data.length; i++) {
                 hasChiefType.push(false);
@@ -1610,7 +1610,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
 
             });
             return data_save
-            debugger
+            // debugger
         },
         onGetError: function (error) {
             if (error && error.message)
@@ -1726,7 +1726,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 collection: this.collection,
                 WhetherSaveSuccess: this.WhetherSaveSuccess,
                 onSaveCallback: function () {
-                    debugger
+                    // debugger
                     this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
                     myEditTopoView.$el.remove();
                     this.$el.find(".list-panel").show();

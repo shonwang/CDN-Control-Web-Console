@@ -418,6 +418,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 alert("网络阻塞，请刷新重试！")
         },
         InformationProcessing: function (data) {
+            debugger
             var data_save = [];
             var self = this;
             _.each(data, function (el, key, ls) {
@@ -439,6 +440,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
 
             }.bind(this));
             return data_save;
+            debugger
         },
         FilterNodes: function (data) {
             var arr = [];
@@ -868,13 +870,24 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             }
         },
         analyticFunction: function (data) {
+            var hasChiefType = [];
+            for(var i = 0 ; i<data.length; i++) {
+                hasChiefType.push(false);
+                _.each(data[i].upper, function (item) {
+                    if (item.chiefType === 0) {
+                        hasChiefType[i] = true;
+                    }
+                });
+            }
             var data_save = [];
             var self = this;
             _.each(data, function (el, key, ls) {
                 var data_save_content = {
                     id: null,
                     'localLayer': [],
-                    'upperLayer': []
+                    'upperLayer': [],
+                    'mainUpperLayer': [],
+                    'spareUpperLayer': [],
                 };
                 if (el.localType == 2) {
                     _.each(el.local, function (local) {
@@ -885,12 +898,31 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                         data_save_content.localLayer.push(local.name);
                     })
                 }
-                _.each(el.upper, function (upper) {
+                /*_.each(el.upper, function (upper) {
                     data_save_content.upperLayer.push(upper.rsNodeMsgVo.name)
+
+                })*/
+                _.each(el.upper, function (upper) {
+                    _.each(self.allNodes, function (nodes) {
+                        if (upper.nodeId == nodes.nodeId) {
+                            if(!hasChiefType[key]) {
+                                data_save_content.upperLayer.push(nodes.name)
+                            } else {
+                                if(upper.chiefType === 0) {
+                                    data_save_content.spareUpperLayer.push(nodes.name);
+                                } else {
+                                    data_save_content.mainUpperLayer.push(nodes.name);
+                                }
+                            }
+
+                        }
+                    })
 
                 })
                 data_save_content.localLayer = data_save_content.localLayer.join('、');
                 data_save_content.upperLayer = data_save_content.upperLayer.join('、');
+                data_save_content.upperLayer = data_save_content.mainUpperLayer.join('、');
+                data_save_content.upperLayer = data_save_content.spareUpperLayer.join('、');
                 data_save_content.id = key;
                 data_save.push(data_save_content);
 
@@ -1509,7 +1541,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             //TODO STEP5
             //看那个对象里面有chiefType属性 对象改成 从upperLayer -> mainLayer spareLayer
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
-            // debugger
+            debugger
             var hasChiefType = [];
             for(var i = 0 ; i<data.length; i++) {
                 hasChiefType.push(false);
@@ -1577,7 +1609,8 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 //在这里给data_save_content对象赋值 上面的 主X 副X  条件是 如果chiefType值为0
 
             });
-            return data_save;
+            return data_save
+            debugger
         },
         onGetError: function (error) {
             if (error && error.message)
@@ -1693,7 +1726,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 collection: this.collection,
                 WhetherSaveSuccess: this.WhetherSaveSuccess,
                 onSaveCallback: function () {
-                    // debugger
+                    debugger
                     this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
                     myEditTopoView.$el.remove();
                     this.$el.find(".list-panel").show();

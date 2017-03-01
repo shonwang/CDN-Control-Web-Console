@@ -91,9 +91,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
         onClickSaveBtn: function () {
+            debugger
             var flag = true;
             this.checked;
-            debugger
             if (this.ruleContent.local.length == 0) {
                 alert('请选择本层节点');
                 return;
@@ -662,8 +662,11 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.checked = true;
             var eventTarget = event.srcElement || event.target, id;
             var id = eventTarget.id;
-            spareUpperLayer = eventTarget.parentNode.parentNode.firstChild.innerText;
+            // spareUpperLayer = eventTarget.parentNode.parentNode.firstChild.innerText;
             for (var i = 0; i < this.ruleContent.upper.length; i++) {
+                if(this.ruleContent.upper.chiefType){
+                    this.ruleContent.upper.remove("chiefType");
+                }
                 if ($(".spareradio")[i].checked) {
                     this.ruleContent.upper[i]["chiefType"] = 0;
                 }

@@ -168,8 +168,10 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             //获取运营商的节点信息
             this.collection.off('get.operator.success');
             this.collection.off('get.operator.error');
-            this.collection.on('get.operator.success', $.proxy(this.getOperatorList, this));
+            this.collection.on("get.operator.success", $.proxy(this.setOperatorInfo, this));
+            /*this.collection.on('get.operator.success', $.proxy(this.getOperatorList, this));*/
             this.collection.on('get.operator.error', $.proxy(this.onGetError, this));
+
 
             this.collection.getOperatorList();
 
@@ -337,6 +339,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
         },
         onClickItemEdit: function (event) {
+            debugger
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "A") {
                 eventTarget = $(eventTarget).parent().parent();
@@ -345,7 +348,6 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 id = $(eventTarget).attr("data-id");
             }
             this.id = id;
-            // debugger
             require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function (AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                 var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                 var options = myAddEditLayerStrategyModel;
@@ -359,7 +361,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     topologyId: this.model.get('topologyId'),
                     isEdit: true,
                     onSaveCallback: function () {
-                        // debugger
+                        debugger
                         var data = this.InformationProcessing(this.defaultParam);
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".special-layer").show();
@@ -432,6 +434,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
         },
         //点击保存按钮保存特殊策略
         onClickSaveButton: function () {
+            de
             var flag = true;
             if (this.defaultParam.length == 0) {
                 alert('请选择节点');
@@ -467,7 +470,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
         },
         setOperatorInfo: function (res) {
             this.operator = [];
-            _.each(res, function (el, index, list) {
+            _.each(res.rows, function (el, index, list) {
                 this.operator.push({
                     'name': el.name,
                     'value': el.id
@@ -481,7 +484,9 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 var data_save_content = {
                     id: null,
                     'localLayer': [],
-                    'upperLayer': []
+                    'upperLayer': [],
+                    'mainUpperLayer': [],
+                    'spareUpperLayer': []
                 };
                 if (el.localType == 2) {
                     _.each(el.local, function (local) {
@@ -520,42 +525,67 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             return rule;
         },
         InformationProcessing: function (data) {
-            // debugger
+             debugger
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
+            var hasChiefType = [];
+            for(var i = 0 ; i<data.length; i++) {
+                hasChiefType.push(false);
+                _.each(data[i].upper, function (item) {
+                    if (item.chiefType === 0) {
+                        hasChiefType[i] = true;
+                    }
+                });
+            }
             var data_save = [];
             var self = this;
             _.each(data, function (el, key, ls) {
                 var data_save_content = {
                     id: null,
                     'localLayer': [],
+                    'upperLayer': [],
+                    'mainUpperLayer': [],
+                    'spareUpperLayer': [],
                 };
-                if (el.localType == 2) {
-                    _.each(el.local, function (local) {
-                        _.each(self.operator, function (operator) {
-                            if (local == operator.value) {
-                                data_save_content.localLayer.push(operator.name)
-                            }
-                        })
-                    }.bind(this))
-                } else if (el.localType == 1) {
-                    _.each(el.local, function (local) {
-                        _.each(self.allNodes, function (nodes) {
+                    if (el.localType == 2) {
+                        _.each(el.local, function (local) {
+                            _.each(self.operator, function (operator) {
+                                if (local == operator.value) {
+                                    data_save_content.localLayer.push(operator.name)
+                                }
+                            })
+                        }.bind(this))
+                    } else {
+                        if (el.localType == 1) {
+                            _.each(el.local, function (local) {
+                                _.each(self.allNodes, function (nodes) {
 
-                            if (local == nodes.id) {
-                                data_save_content.localLayer.push(nodes.chName);
-                            }
-                        })
-                    })
-                }
+                                    if (local.nodeId == nodes.id) {
+                                        data_save_content.localLayer.push(nodes.chName);
+                                    }
+                                })
+                            })
+                        }
+                    }
                 _.each(el.upper, function (upper) {
                     _.each(self.allNodes, function (nodes) {
                         if (upper.nodeId == nodes.id) {
-                            data_save_content.upperLayer.push(nodes.chName)
+                            if(!hasChiefType[key]){
+                                data_save_content.upperLayer.push(nodes.chName)
+                            } else {
+                                if(upper.chiefType === 0){
+                                    data_save_content.spareUpperLayer.push(nodes.chName);
+                                } else {
+                                    data_save_content.mainUpperLayer.push(nodes.chName);
+                                }
+                            }
+
                         }
                     })
                 })
                 data_save_content.localLayer = data_save_content.localLayer.join('、');
                 data_save_content.upperLayer = data_save_content.upperLayer.join('、');
+                data_save_content.spareUpperLayer = data_save_content.spareUpperLayer.join('、');
+                data_save_content.mainUpperLayer = data_save_content.mainUpperLayer.join('、');
 
                 if (typeof(el.id) == 'undefined') {
                     el.id = key;
@@ -569,6 +599,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
             });
             return data_save;
+            //debugger
         },
         onGetError: function (error) {
             console.log('错误');

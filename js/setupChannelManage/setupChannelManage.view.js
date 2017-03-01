@@ -554,17 +554,15 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                                 }
                             })
                         }.bind(this))
-                    } else {
-                        if (el.localType == 1) {
+                    } else if (el.localType == 1) {
                             _.each(el.local, function (local) {
                                 _.each(self.allNodes, function (nodes) {
 
-                                    if (local.nodeId == nodes.id) {
+                                    if (local== nodes.id) {
                                         data_save_content.localLayer.push(nodes.chName);
                                     }
                                 })
                             })
-                        }
                     }
                 _.each(el.upper, function (upper) {
                     _.each(self.allNodes, function (nodes) {

@@ -35,16 +35,16 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
 
         initLiveRefererAntiLeech: function(){
             this.refererAntiLeechInfo = this.config.referSafetyChainList || [];
-            this.refererAntiLeechInfo = [
-                {
-                    "type": 2,   //防盗链类型 1:白名单 2:黑名单
-                    "domains": "",   //域名,英文逗号分隔
-                    "nullReferer": 1,   //允许空referer 0:关 1:开
-                    "openFlag": 1,   //直播开启refer防盗链 0:关 1:开
-                    "regexps": "123",   //正则表达式，英文逗号分隔
-                    "forgeReferer": 1,   //是否允许伪造的refer 0:否 1:是
-                }
-            ];
+            // this.refererAntiLeechInfo = [
+            //     {
+            //         "type": 2,   //防盗链类型 1:白名单 2:黑名单
+            //         "domains": "",   //域名,英文逗号分隔
+            //         "nullReferer": 1,   //允许空referer 0:关 1:开
+            //         "openFlag": 1,   //直播开启refer防盗链 0:关 1:开
+            //         "regexps": "123",   //正则表达式，英文逗号分隔
+            //         "forgeReferer": 1,   //是否允许伪造的refer 0:否 1:是
+            //     }
+            // ];
 
             _.each(this.refererAntiLeechInfo, function(el, index, ls){
                 if (!el.openFlag){
@@ -78,32 +78,32 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
         initLiveTimestamp: function(){
             this.timestampInfo = this.config.standardProtectionList || [];
 
-            this.timestampInfo = [
-                {
-                    "openFlag": 1,
-                    "confType": 1,
-                    "protectionType": 1,
-                    "timeParam": "null",
-                    "hashParam": "null",
-                    "timeType": 2,
-                    "timeValue": "null",
-                    "expirationTime": 3600,
-                    "md5Truncate": '123,123',
-                    "authKeyList": [
-                        {
-                            "id": 4,
-                            "authKey": "xxx",
-                        }
-                    ],
-                    "authDivisorList": [
-                        {
-                            "id": 4,
-                            "divisor": 1,
-                            "divisorParam":"",
-                        }
-                    ]
-                }
-            ];
+            // this.timestampInfo = [
+            //     {
+            //         "openFlag": 1,
+            //         "confType": 1,
+            //         "protectionType": 1,
+            //         "timeParam": "null",
+            //         "hashParam": "null",
+            //         "timeType": 2,
+            //         "timeValue": "null",
+            //         "expirationTime": 3600,
+            //         "md5Truncate": '123,123',
+            //         "authKeyList": [
+            //             {
+            //                 "id": 4,
+            //                 "authKey": "xxx",
+            //             }
+            //         ],
+            //         "authDivisorList": [
+            //             {
+            //                 "id": 4,
+            //                 "divisor": 1,
+            //                 "divisorParam":"",
+            //             }
+            //         ]
+            //     }
+            // ];
 
             _.each(this.timestampInfo, function(el, index, ls){
                 if (!el.openFlag){
@@ -197,45 +197,45 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
 
         initLiveBusOptimize: function(){
             this.appLives = this.config.appLives || [];
-            this.appLives = [{
-                        "optimizeConf":{
-                            "gopType": 2, //1:按时长 2:按个数
-                            "gopNum": 3,
-                            "gopMaxDuration": 15,
-                            "gopMinSendFlag": 1,
-                            "gopMinSend": 2,
-                            "noFlowTimeout": 21,
-                            "delayClose": 6,
-                            "metaType": 2, //1:append 2:on 3:copy 4:off
-                            "h265Flag": 1,
-                            "hdlAudioOnlyFlag": 1,
-                            "hdlAudioOnlyParam": "audio-only1",
-                            "rtmpAudioOnlyFlag": 1,
-                            "rtmpAudioOnlyParam": "audio-only1",
-                            "edge302Flag": 1
-                        },
-                        "pkConf":{
-                            "hdlAvhZeroTimestamp": 1,
-                            "hdlTimestampZeroStart": 1,
-                            "hdlGopZeroTimestamp": 1,
-                            "hdlGopSendAudio": 0,
-                            "rtmpAvhZeroTimestamp": 1,
-                            "rtmpTimestampZeroStart": 1,
-                            "rtmpGopZeroTimestamp": 1,
-                            "rtmpGopSendAudio": 0,
-                            "avHeaderFlag": 1,
-                            "avHeaderWaitTime": 1,
-                            "keepAliveFlag": 1,
-                            "keepAliveTime": 1,
-                        },
-                        "logConf":{
-                            "slaAccessFlag": 1,
-                            "slaFirstCache": 20,
-                            "slaSecondCache":15,
-                            "frequencyFlag":1,
-                            "frequencyInterval":600,
-                        }
-                    }];
+            // this.appLives = [{
+            //             "optimizeConf":{
+            //                 "gopType": 2, //1:按时长 2:按个数
+            //                 "gopNum": 3,
+            //                 "gopMaxDuration": 15,
+            //                 "gopMinSendFlag": 1,
+            //                 "gopMinSend": 2,
+            //                 "noFlowTimeout": 21,
+            //                 "delayClose": 6,
+            //                 "metaType": 2, //1:append 2:on 3:copy 4:off
+            //                 "h265Flag": 1,
+            //                 "hdlAudioOnlyFlag": 1,
+            //                 "hdlAudioOnlyParam": "audio-only1",
+            //                 "rtmpAudioOnlyFlag": 1,
+            //                 "rtmpAudioOnlyParam": "audio-only1",
+            //                 "edge302Flag": 1
+            //             },
+            //             "pkConf":{
+            //                 "hdlAvhZeroTimestamp": 1,
+            //                 "hdlTimestampZeroStart": 1,
+            //                 "hdlGopZeroTimestamp": 1,
+            //                 "hdlGopSendAudio": 0,
+            //                 "rtmpAvhZeroTimestamp": 1,
+            //                 "rtmpTimestampZeroStart": 1,
+            //                 "rtmpGopZeroTimestamp": 1,
+            //                 "rtmpGopSendAudio": 0,
+            //                 "avHeaderFlag": 1,
+            //                 "avHeaderWaitTime": 1,
+            //                 "keepAliveFlag": 1,
+            //                 "keepAliveTime": 1,
+            //             },
+            //             "logConf":{
+            //                 "slaAccessFlag": 1,
+            //                 "slaFirstCache": 20,
+            //                 "slaSecondCache":15,
+            //                 "frequencyFlag":1,
+            //                 "frequencyInterval":600,
+            //             }
+            //         }];
 
             _.each(this.appLives, function(el, index, ls){
                 var optimizeConf = el.optimizeConf;

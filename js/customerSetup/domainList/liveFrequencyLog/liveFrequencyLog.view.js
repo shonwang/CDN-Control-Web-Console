@@ -21,44 +21,40 @@ define("liveFrequencyLog.view", ['require','exports', 'template', 'modal.view', 
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
-            require(["domainSetup.model"], function(DomainSetupModel){
-                var myDomainSetupModel = new DomainSetupModel();
-                    myDomainSetupModel.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
-                    myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
-                    myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
-            }.bind(this))
-
-            this.$el.find(".log-interval").hide();
-            this.$el.find(".frequency-log-open .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
-            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
-
-            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
-
-            this.collection.on("set.setLogConf.success", $.proxy(this.onSaveSuccess, this));
-            this.collection.on("set.setLogConf.error", $.proxy(this.onGetError, this));
-        },
-
-        onGetDomainInfo: function(data){
             this.defaultParam = {
                 frequencyFlag: 0, //0:关闭 1:开启
                 frequencyInterval: 300
             }
+
+            this.$el.find(".log-interval").hide();
+            this.$el.find(".frequency-log-open .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
+            this.collection.on("set.logConfig.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.logConfig.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.logConfig.success", $.proxy(this.onGetDomainInfo, this));
+            this.collection.on("get.logConfig.error", $.proxy(this.onGetError, this));
+            this.collection.getLogConf({originId:this.domainInfo.id});
+        },
+
+        onGetDomainInfo: function(data){
             //TODO 假数据
-            var data = {
-                "appLives":[
-                    {
-                        "logConf":{
-                            "id":null,
-                            "liveId":null,
-                            "slaAccessFlag":null,
-                            "slaFirstCache":null,
-                            "slaSecondCache":null,
-                            "frequencyFlag":1,
-                            "frequencyInterval":600,
-                        }
-                    }
-                ]
-            };
+            // var data = {
+            //     "appLives":[
+            //         {
+            //             "logConf":{
+            //                 "id":null,
+            //                 "liveId":null,
+            //                 "slaAccessFlag":null,
+            //                 "slaFirstCache":null,
+            //                 "slaSecondCache":null,
+            //                 "frequencyFlag":1,
+            //                 "frequencyInterval":600,
+            //             }
+            //         }
+            //     ]
+            // };
 
             data = data.appLives[0]
 
@@ -150,8 +146,7 @@ define("liveFrequencyLog.view", ['require','exports', 'template', 'modal.view', 
                     "frequencyFlag": this.defaultParam.frequencyFlag,
                     "frequencyInterval":this.defaultParam.frequencyInterval
                 }
-            console.log(postParam)
-            //this.collection.setLogConf(postParam)
+            this.collection.setLogConf(postParam)
         },
 
         onClickToggle: function(){

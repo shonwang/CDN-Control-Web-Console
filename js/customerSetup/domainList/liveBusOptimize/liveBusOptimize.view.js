@@ -61,7 +61,7 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
             //     ]
             // };
 
-            data = data.appLives[0]
+            data = data.appLives[0];
 
             if (data.optimizeConf && data.optimizeConf.gopType !== null && data.optimizeConf.gopType !== undefined)
                 this.defaultParam.gopType = data.optimizeConf.gopType  
@@ -275,8 +275,7 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
                     "delayClose": this.defaultParam.delayClose,
                     "metaType": this.defaultParam.metaType
                 }
-            console.log(postParam)
-            //this.collection.setLiveConf(postParam)
+            this.collection.setLiveConf(postParam)
         },
 
         onSaveSuccess: function(){

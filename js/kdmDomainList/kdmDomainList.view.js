@@ -161,7 +161,6 @@ define("kdmDomainList.view", ['require','exports', 'template', 'modal.view', 'ut
             this.blackListTable.find(".delete").on("click", $.proxy(this.onClickBlackListTableItemDelete, this));
         },
 
-
         //流量拷贝
         convertRequestArray: function(){
             this.requestArgsArray = [];

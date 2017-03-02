@@ -339,7 +339,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
         },
         onClickItemEdit: function (event) {
-            // debugger
+            debugger
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "A") {
                 eventTarget = $(eventTarget).parent().parent();
@@ -525,10 +525,10 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             return rule;
         },
         InformationProcessing: function (data) {
-             // debugger
+            // debugger
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             var hasChiefType = [];
-            for(var i = 0 ; i<data.length; i++) {
+            for (var i = 0; i < data.length; i++) {
                 hasChiefType.push(false);
                 _.each(data[i].upper, function (item) {
                     if (item.chiefType === 0) {
@@ -536,6 +536,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     }
                 });
             }
+            // debugger
             var data_save = [];
             var self = this;
             _.each(data, function (el, key, ls) {
@@ -546,32 +547,32 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     'mainUpperLayer': [],
                     'spareUpperLayer': [],
                 };
-                    if (el.localType == 2) {
-                        _.each(el.local, function (local) {
-                            _.each(self.operator, function (operator) {
-                                if (local == operator.value) {
-                                    data_save_content.localLayer.push(operator.name)
-                                }
-                            })
-                        }.bind(this))
-                    } else if (el.localType == 1) {
-                            _.each(el.local, function (local) {
-                                _.each(self.allNodes, function (nodes) {
+                if (el.localType == 2) {
+                    _.each(el.local, function (local) {
+                        _.each(self.operator, function (operator) {
+                            if (local == operator.value || local.id == operator.value) {
+                                data_save_content.localLayer.push(operator.name);
+                            }
+                        })
+                    }.bind(this))
+                } else if (el.localType == 1) {
+                    _.each(el.local, function (local) {
+                        _.each(self.allNodes, function (nodes) {
 
-                                    if (local== nodes.id) {
-                                        data_save_content.localLayer.push(nodes.chName);
-                                    }
-                                })
-                            })
-                    }
+                            if ((local.id == nodes.id || local == nodes.id) && nodes.id != undefined) {
+                                data_save_content.localLayer.push(nodes.chName);
+                            }
+                        })
+                    })
+                }
                 _.each(el.upper, function (upper) {
                     // debugger
                     _.each(self.allNodes, function (nodes) {
                         if (upper.nodeId == nodes.id) {
-                            if(!hasChiefType[key]){
-                                data_save_content.upperLayer.push(nodes.chName)
+                            if (!hasChiefType[key]) {
+                                data_save_content.upperLayer.push(nodes.chName);
                             } else {
-                                if(upper.chiefType === 0){
+                                if (upper.chiefType === 0) {
                                     data_save_content.spareUpperLayer.push(nodes.chName);
                                 } else {
                                     data_save_content.mainUpperLayer.push(nodes.chName);
@@ -605,7 +606,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             if (error && error.message)
                 alert(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                alert("网络阻塞，请刷新重试！");
 
         },
         render: function (target) {
@@ -872,6 +873,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
         },
 
         onClickItemHistory: function (event) {
+            // debugger
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN") {
                 eventTarget = $(eventTarget).parent();
@@ -898,6 +900,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
         },
 
         onClickItemSpecialLayer: function (event) {
+            // debugger
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN") {
                 eventTarget = $(eventTarget).parent();
@@ -912,13 +915,18 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 alert('该域名未指定拓扑关系，无法添加特殊分层策略');
                 return;
             }
+
             var mySpecialLayerManageView = new SpecialLayerManageView({
                 collection: this.collection,
                 model: model,
+                isEdit: true,
                 onSaveCallback: function () {
                     // debugger
+                    this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
                     mySpecialLayerManageView.$el.remove();
                     this.$el.find(".list-panel").show();
+                    this.onClickQueryButton();
+                    this.initRuleTable(data, this.checked);
                 }.bind(this),
                 onCancelCallback: function () {
                     mySpecialLayerManageView.$el.remove();
@@ -931,6 +939,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
         },
 
         onClickItemEdit: function (event) {
+            // debugger
             require(['setupChannelManage.edit.view'], function (EditChannelView) {
                 var eventTarget = event.srcElement || event.target, id;
                 if (eventTarget.tagName == "SPAN") {

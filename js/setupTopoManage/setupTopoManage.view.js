@@ -422,7 +422,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 alert("网络阻塞，请刷新重试！")
         },
         InformationProcessing: function (data) {
-            // debugger
+            debugger
             var data_save = [];
             var self = this;
             _.each(data, function (el, key, ls) {
@@ -869,15 +869,15 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             this.collection.getDeviceTypeList();//获取应用类型列表接口
 
             if (this.isEdit) {
-                    // debugger
-                    // var data = this.analyticFunction(this.defaultParam.rule);
-                    // this.defaultParam.rule = this.analyticRuleFunction(this.defaultParam);
-                    // this.initRuleTable(data, this.checked);
+                // debugger
+                // var data = this.analyticFunction(this.defaultParam.rule);
+                // this.defaultParam.rule = this.analyticRuleFunction(this.defaultParam);
+                // this.initRuleTable(data, this.checked);
             }
         },
         analyticFunction: function (data) {
             var hasChiefType = [];
-            for(var i = 0 ; i<data.length; i++) {
+            for (var i = 0; i < data.length; i++) {
                 hasChiefType.push(false);
                 _.each(data[i].upper, function (item) {
                     if (item.chiefType === 0) {
@@ -905,16 +905,16 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     })
                 }
                 /*_.each(el.upper, function (upper) {
-                    data_save_content.upperLayer.push(upper.rsNodeMsgVo.name)
+                 data_save_content.upperLayer.push(upper.rsNodeMsgVo.name)
 
-                })*/
+                 })*/
                 _.each(el.upper, function (upper) {
                     _.each(self.allNodes, function (nodes) {
                         if (upper.nodeId == nodes.nodeId) {
-                            if(upper.chiefType === 1) {
+                            if (upper.chiefType === 1) {
                                 data_save_content.upperLayer.push(nodes.name)
                             } else {
-                                if(upper.chiefType === 0) {
+                                if (upper.chiefType === 0) {
                                     data_save_content.spareUpperLayer.push(nodes.name);
                                 } else {
                                     data_save_content.mainUpperLayer.push(nodes.name);
@@ -952,10 +952,10 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             return rule;
         },
         addChiefType(data) {
-            for(var i = 0 ; i<data.rule.length ; i++) {
+            for (var i = 0; i < data.rule.length; i++) {
                 var item = data.rule[i].upper;
-                for(var k = 0 ; k<item.length; k++) {
-                    if(!item[k].chiefType && item[k].chiefType !==0){
+                for (var k = 0; k < item.length; k++) {
+                    if (!item[k].chiefType && item[k].chiefType !== 0) {
                         data.rule[i].upper[k].chiefType = 1;
                     }
                 }
@@ -1120,9 +1120,9 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     }.bind(this)
                 });
                 // debugger
-                    var data = this.InformationProcessing(this.defaultParam.rule);
-                    this.defaultParam.rule = this.analyticRuleFunction(this.defaultParam);
-                    this.initRuleTable(data, this.checked);
+                var data = this.InformationProcessing(this.defaultParam.rule);
+                this.defaultParam.rule = this.analyticRuleFunction(this.defaultParam);
+                this.initRuleTable(data, this.checked);
             } else {
                 var searchSelect = new SearchSelect({
                     containerID: this.$el.find('.all .add-node-ctn').get(0),
@@ -1560,7 +1560,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             // debugger
             var hasChiefType = [];
-            for(var i = 0 ; i<data.length; i++) {
+            for (var i = 0; i < data.length; i++) {
                 hasChiefType.push(false);
                 _.each(data[i].upper, function (item) {
                     if (item.chiefType === 0) {
@@ -1569,11 +1569,12 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 });
             }
             var constVar = '';
-            if(this.isEdit) {
+            if (this.isEdit) {
                 constVar = 'id';
             } else {
                 constVar = '';
-            };
+            }
+            ;
 
             var data_save = [];
             var self = this;
@@ -1589,7 +1590,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 if (el.localType == 2) {
                     _.each(el.local, function (local) {
                         _.each(self.operator, function (operator) {
-                            if (local == operator.value || local[constVar] == operator.value) {
+                            if (local == operator.value || local.id == operator.value) {
                                 data_save_content.localLayer.push(operator.name)
                             }
                         })
@@ -1597,21 +1598,20 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 } else if (el.localType == 1) {
                     _.each(el.local, function (local) {
                         _.each(self.allNodes, function (nodes) {
-                            if (local[constVar] == nodes[constVar] || local == nodes[constVar]) {
-
-                                data_save_content.localLayer.push(nodes.name);
+                            if ((local.id == nodes.id || local == nodes.id) && nodes.id != undefined) {
+                                data_save_content.localLayer.push(nodes.chName);
                             }
                         })
                     })
                 }
                 _.each(el.upper, function (upper) {
                     _.each(self.allNodes, function (nodes) {
-                        if(self.isEdit) {
+                        if (self.isEdit) {
                             if (upper.rsNodeMsgVo.id == nodes.id) {
-                                if(!hasChiefType[key]) {
+                                if (!hasChiefType[key]) {
                                     data_save_content.upperLayer.push(nodes.chName)
                                 } else {
-                                    if(upper.chiefType === 0) {
+                                    if (upper.chiefType === 0) {
                                         data_save_content.spareUpperLayer.push(nodes.chName);
                                     } else {
                                         data_save_content.mainUpperLayer.push(nodes.chName);
@@ -1620,10 +1620,10 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                             }
                         } else {
                             if (upper.nodeId == nodes.id) {
-                                if(!hasChiefType[key]) {
+                                if (!hasChiefType[key]) {
                                     data_save_content.upperLayer.push(nodes.chName)
                                 } else {
-                                    if(upper.chiefType === 0) {
+                                    if (upper.chiefType === 0) {
                                         data_save_content.spareUpperLayer.push(nodes.chName);
                                     } else {
                                         data_save_content.mainUpperLayer.push(nodes.chName);
@@ -1783,6 +1783,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
         },
 
         onClickItemEdit: function (event) {
+            // debugger
             this.off('enterKeyBindQuery');
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN") {

@@ -21,37 +21,33 @@ define("liveH265Setup.view", ['require','exports', 'template', 'modal.view', 'ut
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
-            require(["domainSetup.model"], function(DomainSetupModel){
-                var myDomainSetupModel = new DomainSetupModel();
-                    myDomainSetupModel.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
-                    myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
-                    myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
-            }.bind(this))
+            this.defaultParam = {
+                h265Flag: 0 //0:关闭 1:开启
+            }
 
             this.$el.find(".h265-open .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
 
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
 
-            this.collection.on("set.h265Flag.success", $.proxy(this.onSaveSuccess, this));
-            this.collection.on("set.h265Flag.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.liveConfig.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.liveConfig.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.liveConfig.success", $.proxy(this.onGetDomainInfo, this));
+            this.collection.on("get.liveConfig.error", $.proxy(this.onGetError, this));
+            this.collection.getLiveConf({originId:this.domainInfo.id});
         },
 
         onGetDomainInfo: function(data){
-            this.defaultParam = {
-                h265Flag: 0 //0:关闭 1:开启
-            }
-
             //TODO 假数据
-            var data = {
-                "appLives":[
-                    {
-                        "optimizeConf":{
-                            "h265Flag": 1
-                        }
-                    }
-                ]
-            };
+            // var data = {
+            //     "appLives":[
+            //         {
+            //             "optimizeConf":{
+            //                 "h265Flag": 1
+            //             }
+            //         }
+            //     ]
+            // };
 
             data = data.appLives[0]
 

@@ -37,27 +37,31 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
             this.$el.find(".null-referer .togglebutton input").on("click", $.proxy(this.onClickIsNullReferer, this));
             this.$el.find(".forge-referer .togglebutton input").on("click", $.proxy(this.onClickIsForgeReferer, this));
 
-            this.initSetup();
+            this.collection.on("set.refer.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.refer.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.refer.success", $.proxy(this.initSetup, this));
+            this.collection.on("get.refer.error", $.proxy(this.onGetError, this));
+            this.collection.getReferSafetyChainList({originId:this.domainInfo.id});
         },
 
-        initSetup: function(){
+        initSetup: function(data){
             //TODO 假数据
-            var data = [
-                {
-                    "type": 2,   //防盗链类型 1:白名单 2:黑名单
-                    "domains": "",   //域名,英文逗号分隔
-                    "nullReferer": 1,   //允许空referer 0:关 1:开
-                    "openFlag": 1,   //直播开启refer防盗链 0:关 1:开
-                    "regexps": "123",   //正则表达式，英文逗号分隔
-                    "forgeReferer": 1,   //是否允许伪造的refer 0:否 1:是
-                }
-            ]
+            // var data = [
+            //     {
+            //         "type": 2,   //防盗链类型 1:白名单 2:黑名单
+            //         "domains": "",   //域名,英文逗号分隔
+            //         "nullReferer": 1,   //允许空referer 0:关 1:开
+            //         "openFlag": 1,   //直播开启refer防盗链 0:关 1:开
+            //         "regexps": "123",   //正则表达式，英文逗号分隔
+            //         "forgeReferer": 1,   //是否允许伪造的refer 0:否 1:是
+            //     }
+            // ]
             data = data[0]
 
             if (data){
                 if (data.openFlag !== null && data.openFlag !== undefined)
                     this.defaultParam.isOpenSetup = data.openFlag
-                if (data.type !== null && data.type !== undefined)
+                if (data.type !== null && data.type !== undefined && data.type !== 0)
                     this.defaultParam.refererType = data.type
                 if (data.forgeReferer !== null && data.forgeReferer !== undefined)
                     this.defaultParam.forgeReferer = data.forgeReferer
@@ -281,8 +285,10 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
         },
 
         onSure: function(){
-            var result = this.checkEverything();
-            if (!result) return false;
+            if (this.defaultParam.isOpenSetup) {
+                var result = this.checkEverything();
+                if (!result) return false;
+            }
 
             var domains = '', regexps;
             if (this.defaultParam.refererType === 1) {
@@ -302,8 +308,12 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
                 "regexps": regexps,
                 "forgeReferer": this.defaultParam.forgeReferer
             }
+            postParam = {
+                "originId": this.domainInfo.id,
+                "list": [postParam]
+            }
 
-            console.log(postParam) 
+            this.collection.setReferSafetyChains(postParam)
         },
 
         hide: function(){

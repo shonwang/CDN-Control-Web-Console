@@ -16,10 +16,24 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
             }));
             this.originHostSetupTable.appendTo(this.$el.find(".bill-ctn"));
 
-            this.initRefererAntiLeech()
+            var type = this.config.originDomain.type,
+                protocol = this.config.domainConf.protocol;
+
+            if ((type === 1 && protocol === 0) ||
+                (type === 1 && protocol === 4) ||
+                (type === 1 && protocol === 2)) {
+                this.initFollowing()
+            } else if ((type === 2 && protocol === 1) ||
+                       (type === 2 && protocol === 3)) {
+                this.initLiveRefererAntiLeech()
+            } else {
+                var message = 'type=1 protocol=0,4 下载<br>type=1 protocol=2 伪直播<br>type=2 protocol= 1,3真直播<br>' + 
+                              '当前返回的type为' + type + "，protocol为" + protocol;
+                alert(message)
+            }
         },
 
-        initRefererAntiLeech: function(){
+        initLiveRefererAntiLeech: function(){
             this.refererAntiLeechInfo = this.config.referSafetyChainList || [];
             this.refererAntiLeechInfo = [
                 {
@@ -58,10 +72,10 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
                 this.refererAntiLeechTable.appendTo(this.$el.find(".bill-ctn"));
             }.bind(this))
 
-            this.initTimestamp();
+            this.initLiveTimestamp();
         },
 
-        initTimestamp: function(){
+        initLiveTimestamp: function(){
             this.timestampInfo = this.config.standardProtectionList || [];
 
             this.timestampInfo = [

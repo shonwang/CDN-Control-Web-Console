@@ -21,20 +21,9 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"));
 
-            require(["domainSetup.model"], function(DomainSetupModel){
-                var myDomainSetupModel = new DomainSetupModel();
-                    myDomainSetupModel.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
-                    myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
-                    myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
-            }.bind(this))
-
-            this.collection.on("set.setLiveConf.success", $.proxy(this.onSaveSuccess, this));
-            this.collection.on("set.setLiveConf.error", $.proxy(this.onGetError, this));
-
             this.$el.find(".save").on('click',$.proxy(this.onClickSaveButton,this));
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
-        },
-        onGetDomainInfo: function(data){
+
             this.defaultParam = {
                 gopType: 1,
                 gopMaxDuration: 30,
@@ -46,23 +35,31 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
                 metaType: 1
             }
 
+            this.collection.on("set.liveConfig.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.liveConfig.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.liveConfig.success", $.proxy(this.onGetDomainInfo, this));
+            this.collection.on("get.liveConfig.error", $.proxy(this.onGetError, this));
+            this.collection.getLiveConf({originId:this.domainInfo.id});
+        },
+
+        onGetDomainInfo: function(data){
             //TODO 假数据
-            var data = {
-                "appLives":[
-                    {
-                        "optimizeConf":{
-                            "gopType": 2, //1:按时长 2:按个数
-                            "gopNum": 3,
-                            "gopMaxDuration": 15,
-                            "gopMinSendFlag": 1,
-                            "gopMinSend": 2,
-                            "noFlowTimeout": 21,
-                            "delayClose": 6,
-                            "metaType": 2, //1:append 2:on 3:copy 4:off
-                        }
-                    }
-                ]
-            };
+            // var data = {
+            //     "appLives":[
+            //         {
+            //             "optimizeConf":{
+            //                 "gopType": 2, //1:按时长 2:按个数
+            //                 "gopNum": 3,
+            //                 "gopMaxDuration": 15,
+            //                 "gopMinSendFlag": 1,
+            //                 "gopMinSend": 2,
+            //                 "noFlowTimeout": 21,
+            //                 "delayClose": 6,
+            //                 "metaType": 2, //1:append 2:on 3:copy 4:off
+            //             }
+            //         }
+            //     ]
+            // };
 
             data = data.appLives[0]
 

@@ -41,9 +41,7 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                 hashParam: "k",
                 //authFactor: "",
                 atuthDivisorArray: [],
-                md5Truncate: "",
-                type: 9,
-                policy: ""
+                md5Truncate: ""
             };
 
             this.$el.find(".open-timestamp .togglebutton input").on("click", $.proxy(this.onClickSetupToggle, this));
@@ -51,21 +49,20 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
             this.$el.find(".anti-leech input").on("click", $.proxy(this.onClickAntiLeechRadio, this));
             this.$el.find(".base-setup .add-secret-key-backup").on("click", $.proxy(this.onClickBaseNewKey, this));
             this.$el.find(".base-setup.deadline input[name='baseDeadline']").on("click", $.proxy(this.onClickBaseDeadlineRadio, this));
-
             this.$el.find("#secret-key-primary").on("blur", $.proxy(this.onBlurSecretKeyInput, this));
             this.$el.find("#new-backup-key").on("blur", $.proxy(this.onBlurSecretKeyInput, this));
-
             this.$el.find(".encryption-url input[name='encryption']").on("click", $.proxy(this.onClickEncryptionUrlRadio, this));
             this.$el.find(".advanced-setup.deadline input[name='deadline']").on("click", $.proxy(this.onClickAdvancedDeadlineRadio, this));
             this.$el.find(".advanced-setup .add-secret-key-backup").on("click", $.proxy(this.onClickAdvancedNewKey, this));
             this.$el.find(".splice-md5 input[name='spliceMd5']").on("click", $.proxy(this.onClickSpliceMd5Radio, this));
             this.$el.find(".advanced-setup .add-atuth-divisor").on("click", $.proxy(this.onClickAddAtuthDivisor, this));
-
-            this.collection.on("get.protection.success", $.proxy(this.initBaseAdvancedSetup, this));
-            this.collection.on("get.protection.error", $.proxy(this.onGetError, this));
             this.$el.find(".save").on("click", $.proxy(this.onSure, this));
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
 
+            this.collection.on("set.protection.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.protection.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.protection.success", $.proxy(this.initBaseAdvancedSetup, this));
+            this.collection.on("get.protection.error", $.proxy(this.onGetError, this));
             this.collection.getStandardProtection({originId:this.domainInfo.id});
         },
 
@@ -97,34 +94,38 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
             }.bind(this))
         },
 
-        initBaseAdvancedSetup: function(){
+        onSaveSuccess: function(){
+            alert("保存成功！")
+        },
+
+        initBaseAdvancedSetup: function(data){
             //TODO 假数据
-            var data = [
-                {
-                    "openFlag": 1,
-                    "confType": 1,
-                    "protectionType": 1,
-                    "timeParam": "null",
-                    "hashParam": "null",
-                    "timeType": 2,
-                    "timeValue": "null",
-                    "expirationTime": 3600,
-                    "md5Truncate": '123,123',
-                    "authKeyList": [
-                        {
-                            "id": 4,
-                            "authKey": "xxx",
-                        }
-                    ],
-                    "authDivisorList": [
-                        {
-                            "id": 4,
-                            "divisor": 1,
-                            "divisorParam":"",
-                        }
-                    ]
-                }
-            ]
+            // var data = [
+            //     {
+            //         "openFlag": 1,
+            //         "confType": 1,
+            //         "protectionType": 1,
+            //         "timeParam": "null",
+            //         "hashParam": "null",
+            //         "timeType": 2,
+            //         "timeValue": "null",
+            //         "expirationTime": 3600,
+            //         "md5Truncate": '123,123',
+            //         "authKeyList": [
+            //             {
+            //                 "id": 4,
+            //                 "authKey": "xxx",
+            //             }
+            //         ],
+            //         "authDivisorList": [
+            //             {
+            //                 "id": 4,
+            //                 "divisor": 1,
+            //                 "divisorParam":"",
+            //             }
+            //         ]
+            //     }
+            // ]
             data = data[0]
 
             if (data){
@@ -188,6 +189,7 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                     }
                 }.bind(this))
 
+                if (expirationTime === "" || expirationTime === null) expirationTime = 0;
                 if (expirationTime === 0 && confType === 0)
                     this.defaultParam.baseDeadline === 1;
                 else if (expirationTime !== 0 && confType === 0)
@@ -197,6 +199,7 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                 else if (expirationTime !== 0 && confType === 1)
                     this.defaultParam.advancedDeadline = 2;
 
+                if (md5Truncate === null) md5Truncate = "";
                 if (md5Truncate === ""){
                     this.defaultParam.spliceMd5 = 1;
                 } else {
@@ -259,7 +262,7 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
             this.$el.find("#key_time").val(this.defaultParam.timeParam);
             this.$el.find("#key_hash").val(this.defaultParam.hashParam);
 
-            if (this.defaultParam.md5Truncate.indexOf(",") !== -1){
+            if (this.defaultParam.md5Truncate && this.defaultParam.md5Truncate.indexOf(",") !== -1){
                 this.$el.find("#md5-start").val(this.defaultParam.md5Truncate.split(",")[0])
                 this.$el.find("#md5-end").val(this.defaultParam.md5Truncate.split(",")[1])
             } 
@@ -579,8 +582,10 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         onSure: function(){
-            var result = this.checkBalabala();
-            if (!result) return false;
+            if (this.defaultParam.isOpenSetup){
+                var result = this.checkBalabala();
+                if (!result) return false;
+            }
 
             var protectionType, confType, expirationTime, md5Truncate;
             confType = this.defaultParam.isBaseSetup === 1 ? 0 : 1

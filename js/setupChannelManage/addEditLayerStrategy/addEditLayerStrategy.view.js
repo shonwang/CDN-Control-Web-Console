@@ -6,45 +6,25 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         initialize: function (options) {
             this.options = options;
             this.collection = options.collection;
+
             this.rule = options.rule;
+            this.curEditRule = options.curEditRule
             this.isEdit = options.isEdit;
-            this.id = options.id;
+
             this.topologyId = options.topologyId;
             this.isChannel = options.isChannel;
-            this.checked = false;
 
             if (!this.isEdit) {
-                this.ruleContent = {
-                    "local": [1],
-                    "localType": 2,
-                    "upper": []
-                };
                 this.defaultParam = {
                     "local": [],
                     "localType": 2,
-                    "upper": [{
-                        "nodeId": null,
-                        "ipCorporation": 0,
-                        "chiefType": 1,
-                    }]
+                    "upper": []
                 }
-
             } else {
-
-                //this.ruleContent = this.rule[this.id];
-                this.ruleContent = this.deepClone(this.rule[this.id]);//深度克隆
-                this.defaultParam = {
-                    "local": this.ruleContent.local,
-                    "localType": this.ruleContent.localType,
-                    "upper": [],
-                }
-                _.each(this.rule[this.id].upper, function (el) {
-                    this.defaultParam.upper.push(el);
-                }.bind(this));
+                this.defaultParam = this.curEditRule
             }
-            //var data = [{localLayer: "1111", upperLayer: "22222"}];
+            console.log(this.defaultParam)
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
-
 
             require(['deviceManage.model'], function (deviceManageModel) {
                 var mydeviceManageModel = new deviceManageModel();
@@ -55,17 +35,48 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
             }.bind(this));
 
-
-            this.initSetup();
-
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".strategy-type input").on("click", $.proxy(this.onClickLocalTypeRadio, this));
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancelBtn, this));
         },
 
+        initDropMenu: function (data) {
+            this.statusArray = [];
+            var rootNode = this.$el.find(".operator");
+            _.each(data, function (el, key, list) {
+                this.statusArray.push({name: el.name, value: el.id})
+            }.bind(this))
+
+            Utility.initDropMenu(rootNode, this.statusArray, function (value) {
+                this.defaultParam.local = [parseInt(value)];
+            }.bind(this));
+
+            var defaultValue = null;
+
+            if (this.defaultParam.localType === 2 && this.defaultParam.local[0]) {
+                defaultValue = _.find(this.statusArray, function (object) {
+                    return object.value == this.defaultParam.local[0].id;
+                }.bind(this));
+            }
+
+            if (defaultValue) {
+                this.$el.find("#dropdown-operator .cur-value").html(defaultValue.name);
+            } else {
+                this.$el.find("#dropdown-operator .cur-value").html(this.statusArray[0].name);
+                if (this.defaultParam.localType === 2){
+                    this.defaultParam.local = []
+                    this.defaultParam.local.push({
+                        id: parseInt(this.statusArray[0].value),
+                        name: this.statusArray[0].name,
+                    })
+                }
+            }
+            this.initSetup();
+        },
+
         initSetup: function () {
-            this.$el.find('.local .add-node').show();
+            this.$el.find('.local .add-node').hide();
             if (this.defaultParam.localType === 1) {
                 this.$el.find("#strategyRadio1").get(0).checked = true;
                 this.$el.find("#strategyRadio2").get(0).checked = false;
@@ -83,15 +94,15 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.collection.on("get.topoAndNodeInfo.error", $.proxy(this.onGetError, this));
                 this.collection.getTopoAndNodeInfo(this.topologyId);
             } else {
-                this.onGetLocalNode(this.options.localNodes);
+                this.onGetLocalNodeFromArgs(this.options.localNodes);
             }
         },
 
         onClickCancelBtn: function () {
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
+
         onClickSaveBtn: function () {
-            // debugger
             var flag = true;
             if (this.ruleContent.local.length == 0) {
                 alert('请选择本层节点');
@@ -148,12 +159,37 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 alert("网络阻塞，请刷新重试！")
         },
 
+        onGetLocalNodeFromArgs: function(){
+            this.$el.find('.local .add-node').show();
+            this.localNodeListForSelect = [];
+
+            _.each(this.options.localNodes, function(el){
+                el.checked = false
+                if (this.defaultParam.localType === 1){
+                    _.each(this.defaultParam.local, function(node){
+                        if (node.id === el.nodeId) el.checked = true;
+                    }.bind(this))
+                }
+                this.localNodeListForSelect.push({
+                    checked: el.checked,
+                    name: el.nodeName,
+                    operator: el.operator,
+                    value: el.nodeId
+                })
+            }.bind(this))
+
+            this.initLocalSelect();
+            this.initLocalTable();
+        },
+
         onGetLocalNode: function (res) {
             this.$el.find('.local .add-node').show();
             var nodesArray = [], data = res;
+
             this.selectedLocalNodeList = [];
             this.nodesArrayFirst = [];
             var data = res;
+
             if (res && res.rows) data = res.rows;
             if (this.isChannel) {
                 data = res.allNodes;
@@ -213,7 +249,131 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 callback: function (data) {
                 }.bind(this)
             });
+            this.addNodeSearchSelect = searchSelect;
             this.onGetUpperNode(res);
+        },
+
+        onClickLocalSelectOK: function (data) {
+            this.defaultParam.local = [];
+            _.each(data, function (el, key, ls) {
+                this.defaultParam.local.push({
+                    id: parseInt(el.value), 
+                    name: el.name, 
+                })
+            }.bind(this))
+
+            _.each(this.localNodeListForSelect, function (el, key, ls) {
+                el.checked = false;
+                _.each(this.defaultParam.local, function (data, key, ls) {
+                    if (el.value == data.id) {
+                        el.checked = true;
+                        data.operatorId = el.operator;
+                    }
+                }.bind(this))
+            }.bind(this))
+            this.initLocalTable()
+        },
+
+        initLocalSelect: function(){
+            var options = {
+                containerID: this.$el.find('.local .add-node-ctn').get(0),
+                panelID: this.$el.find('.local .add-node').get(0),
+                openSearch: true,
+                onOk: $.proxy(this.onClickLocalSelectOK, this),
+                data: this.localNodeListForSelect,
+                callback: function (data) {}.bind(this)
+            }
+
+            this.searchSelectLocal = new SearchSelect(options);
+        },
+
+        initLocalTable: function () {
+            var nodeList = [];
+            _.each(this.defaultParam.local, function(el){
+                nodeList.push({
+                    nodeId: el.id,
+                    nodeName: el.name
+                })
+            }.bind(this))
+
+            this.localTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
+                data: nodeList
+            }));
+            if (this.defaultParam.local.length !== 0)
+                this.$el.find(".local .table-ctn").html(this.localTable[0]);
+            else
+                this.$el.find(".local .table-ctn").html(_.template(template['tpl/empty-2.html'])({data: {message: "你还没有添加节点"}}));
+
+            this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemLocalDelete, this));
+        },
+
+        onClickItemLocalDelete: function (event) {
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN") {
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+
+            this.defaultParam.local = _.filter(this.defaultParam.local, function(obj){
+                return obj.id !== parseInt(id)
+            }.bind(this));
+
+            _.each(this.localNodeListForSelect, function(el, index, ls){
+                if (parseInt(el.value) === parseInt(id)) el.checked = false;
+            }.bind(this));
+
+            if (this.searchSelectLocal)
+                this.searchSelectLocal.destroy();
+
+            this.initLocalSelect();
+            this.initLocalTable();
+        },
+
+        onClickLocalTypeRadio: function (event) {
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            this.defaultParam.localType = parseInt($(eventTarget).val());
+
+            if (this.defaultParam.localType === 1){
+                this.searchSelectLocal && this.searchSelectLocal.cancelAll();
+                this.defaultParam.local = [];
+                this.$el.find(".operator-ctn").hide();
+                this.$el.find(".nodes-ctn").show();
+            } else if (this.defaultParam.localType === 2){
+                this.searchSelectLocal && this.searchSelectLocal.cancelAll();
+                this.defaultParam.local = [{
+                    id: this.statusArray[0].value,
+                    name: this.statusArray[0].name
+                }];
+                this.$el.find("#dropdown-operator .cur-value").html(this.statusArray[0].name);
+                this.$el.find(".nodes-ctn").hide();
+                this.$el.find(".operator-ctn").show();
+            }
+            this.initLocalSelect();
+            this.initLocalTable();
+        },
+
+        onGetUpperNodeFromArgs: function(){
+            this.$el.find('.upper .add-node').show();
+            this.upperNodeListForSelect = [];
+
+            _.each(this.options.localNodes, function(el){
+                el.checked = false
+                _.each(this.defaultParam.local, function(node){
+                    if (node.id === el.nodeId) el.checked = true;
+                }.bind(this))
+                this.upperNodeListForSelect.push({
+                    checked: el.checked,
+                    name: el.nodeName,
+                    operator: el.operator,
+                    value: el.nodeId
+                })
+            }.bind(this))
+
+            this.initLocalSelect();
+            this.initLocalTable();
         },
 
         onGetUpperNode: function (res) {
@@ -319,23 +479,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             });
         },
 
-        onClickLocalTypeRadio: function (event) {
-            var eventTarget = event.srcElement || event.target;
-            if (eventTarget.tagName !== "INPUT") return;
-            this.defaultParam.localType = parseInt($(eventTarget).val());
-
-            if (this.defaultParam.localType === 1) {
-                this.ruleContent.localType = 1;
-                this.ruleContent.local = [];
-                this.$el.find(".operator-ctn").hide();
-                this.$el.find(".nodes-ctn").show();
-            } else if (this.defaultParam.localType === 2) {
-                this.ruleContent.localType = 2;
-                this.ruleContent.local = [1];
-                this.$el.find(".nodes-ctn").hide();
-                this.$el.find(".operator-ctn").show();
-            }
-        },
         initUpperSelect: function (res) {
             var nodesArray = this.nodesArrayFirstLocal;
             var searchSelect = new SearchSelect({
@@ -401,6 +544,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 }.bind(this)
             });
         },
+
         initUpperTable: function () {
             if (this.selectedUpperNodeList.length > 0) {
                 _.each(this.selectedUpperNodeList, function (el, index, li) {
@@ -455,8 +599,8 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 mydeviceManageModel.on("operator.type.success", $.proxy(this.initOperatorUpperList, this));
                 mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
             }.bind(this));
-
         },
+
         initOperatorUpperList: function (data) {
             var statusArray = [];
             _.each(data, function (el, key, list) {
@@ -530,6 +674,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
 
             }
         },
+
         initTableDropMenu: function (rootNode, typeArray, callback) {
             var dropRoot = rootNode.find(".dropdown-menu"),
                 rootId = rootNode.attr("id"),
@@ -549,83 +694,38 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 itemNode.appendTo(dropRoot);
             });
         },
-        initLocalSelect: function (res) {
-            var nodesArray = this.nodesArrayFirst;
-            var searchSelect = new SearchSelect({
-                containerID: this.$el.find('.local .add-node-ctn').get(0),
-                panelID: this.$el.find('.local .add-node').get(0),
-                openSearch: true,
-                onOk: function (data) {
-                    this.selectedLocalNodeList = [];
-                    this.ruleContent.local = [];
-                    _.each(data, function (el, key, ls) {
-                        el.checked = true;
-                        this.selectedLocalNodeList.push({nodeId: el.value, nodeName: el.name, checked: el.checked})
-                        this.ruleContent.local.push(parseInt(el.value));
-                    }.bind(this));
-                    _.each(this.nodesArrayFirst, function (el, key, ls) {
-                        el.checked = false;
-                        _.each(this.selectedLocalNodeList, function (data, key, ls) {
-                            if (el.value == data.nodeId) {
-                                data.operatorId = el.operatorId;
-                                el.checked = true;
-                            }
-                        }.bind(this))
-                    }.bind(this))
-                    this.initLocalTable()
-                }.bind(this),
-                data: nodesArray,
-                callback: function (data) {
-                }.bind(this)
-            });
-        },
-        initLocalTable: function () {
-            if (this.selectedLocalNodeList.length > 0) {
-                _.each(this.selectedLocalNodeList, function (el, index, li) {
-                    if (el.operatorId == 9) {
-                        this.selectedLocalNodeList.splice(index, 1);
-                        this.selectedLocalNodeList.unshift(el);
-                    }
-                }.bind(this))
-            }
-            this.localTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
-                data: this.selectedLocalNodeList
-            }));
-            if (this.selectedLocalNodeList.length !== 0)
-                this.$el.find(".local .table-ctn").html(this.localTable[0]);
-            else
-                this.$el.find(".local .table-ctn").html(_.template(template['tpl/empty.html'])());
+        // initLocalSelect: function (res) {
+        //     var nodesArray = this.nodesArrayFirst;
+        //     var searchSelect = new SearchSelect({
+        //         containerID: this.$el.find('.local .add-node-ctn').get(0),
+        //         panelID: this.$el.find('.local .add-node').get(0),
+        //         openSearch: true,
+        //         onOk: function (data) {
+        //             this.selectedLocalNodeList = [];
+        //             this.ruleContent.local = [];
+        //             _.each(data, function (el, key, ls) {
+        //                 el.checked = true;
+        //                 this.selectedLocalNodeList.push({nodeId: el.value, nodeName: el.name, checked: el.checked})
+        //                 this.ruleContent.local.push(parseInt(el.value));
+        //             }.bind(this));
+        //             _.each(this.nodesArrayFirst, function (el, key, ls) {
+        //                 el.checked = false;
+        //                 _.each(this.selectedLocalNodeList, function (data, key, ls) {
+        //                     if (el.value == data.nodeId) {
+        //                         data.operatorId = el.operatorId;
+        //                         el.checked = true;
+        //                     }
+        //                 }.bind(this))
+        //             }.bind(this))
+        //             this.initLocalTable()
+        //         }.bind(this),
+        //         data: nodesArray,
+        //         callback: function (data) {
+        //         }.bind(this)
+        //     });
+        // },
 
-            this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemLocalDelete, this));
-        },
 
-        onClickItemLocalDelete: function (event) {
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN") {
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
-            _.each(this.ruleContent.local, function (el, index, list) {
-                if (el == id) {
-                    this.ruleContent.local.splice(index, 1);
-                }
-            }.bind(this));
-            _.each(this.nodesArrayFirst, function (el, index, list) {
-                if (el.value == parseInt(id)) {
-                    el.checked = false;
-                    this.initLocalSelect(this.nodesArrayFirst);
-                }
-            }.bind(this));
-            for (var i = 0; i < this.selectedLocalNodeList.length; i++) {
-                if (parseInt(this.selectedLocalNodeList[i].nodeId) === parseInt(id)) {
-                    this.selectedLocalNodeList.splice(i, 1);
-                    this.initLocalTable();
-                    return;
-                }
-            }
-        },
         onClickItemUpperDelete: function (event) {
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN") {
@@ -682,29 +782,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }
         },
 
-        initDropMenu: function (data) {
-            this.statusArray = [],
-                rootNode = this.$el.find(".operator");
-            _.each(data, function (el, key, list) {
-                this.statusArray.push({name: el.name, value: el.id})
-            }.bind(this))
-            Utility.initDropMenu(rootNode, this.statusArray, function (value) {
-                this.ruleContent.local = [];
-                this.ruleContent.local.push(parseInt(value));
-            }.bind(this));
 
-            if (this.defaultParam.localType == 2) {
-                var defaultValue = _.find(this.statusArray, function (object) {
-                    return object.value == this.defaultParam.local[0];
-                }.bind(this));
-
-            }
-            if (defaultValue) {
-                this.$el.find("#dropdown-operator .cur-value").html(defaultValue.name);
-            }
-            else
-                this.$el.find("#dropdown-operator .cur-value").html(this.statusArray[0].name);
-        },
         deepClone: function (obj) {
             var str, newobj = obj.constructor === Array ? [] : {};
             if (typeof obj !== 'object') {

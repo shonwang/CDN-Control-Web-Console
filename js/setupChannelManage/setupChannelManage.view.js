@@ -339,7 +339,6 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
         },
         onClickItemEdit: function (event) {
-            debugger
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "A") {
                 eventTarget = $(eventTarget).parent().parent();

@@ -94,7 +94,8 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.collection.on("get.topoAndNodeInfo.error", $.proxy(this.onGetError, this));
                 this.collection.getTopoAndNodeInfo(this.topologyId);
             } else {
-                this.onGetLocalNodeFromArgs(this.options.localNodes);
+                this.onGetLocalNodeFromArgs();
+                this.onGetUpperNodeFromArgs();
             }
         },
 
@@ -139,7 +140,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     }.bind(this))
                 }
             }.bind(this))
-            // debugger
 
             if (flag) {
                 if (!this.isEdit) {
@@ -170,12 +170,16 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                         if (node.id === el.nodeId) el.checked = true;
                     }.bind(this))
                 }
-                this.localNodeListForSelect.push({
-                    checked: el.checked,
-                    name: el.nodeName,
-                    operator: el.operator,
-                    value: el.nodeId
-                })
+                _.each(this.options.upperNodes, function(node){
+                    if (node.nodeId !== el.nodeId) {
+                        this.localNodeListForSelect.push({
+                            checked: el.checked,
+                            name: el.nodeName,
+                            operator: el.operator,
+                            value: el.nodeId
+                        })
+                    }
+                }.bind(this))
             }.bind(this))
 
             this.initLocalSelect();
@@ -361,19 +365,25 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
 
             _.each(this.options.localNodes, function(el){
                 el.checked = false
-                _.each(this.defaultParam.local, function(node){
-                    if (node.id === el.nodeId) el.checked = true;
+                _.each(this.defaultParam.upper, function(node){
+                    if (node.rsNodeMsgVo.id === el.nodeId) {
+                        el.checked = true;
+                        el.chiefType = node.chiefType;
+                        el.ipCorporation = node.ipCorporation;
+                    }
                 }.bind(this))
                 this.upperNodeListForSelect.push({
                     checked: el.checked,
                     name: el.nodeName,
                     operator: el.operator,
-                    value: el.nodeId
+                    value: el.nodeId,
+                    chiefType: el.chiefType,
+                    ipCorporation: el.ipCorporation
                 })
             }.bind(this))
 
-            this.initLocalSelect();
-            this.initLocalTable();
+            this.initUpperSelect();
+            //this.initLocalTable();
         },
 
         onGetUpperNode: function (res) {
@@ -480,69 +490,93 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         initUpperSelect: function (res) {
-            var nodesArray = this.nodesArrayFirstLocal;
-            var searchSelect = new SearchSelect({
+            var options = {
                 containerID: this.$el.find('.upper .add-node-ctn').get(0),
                 panelID: this.$el.find('.upper .add-node').get(0),
                 openSearch: true,
-                onOk: function (data) {
-                    var NowselectedUpperNodeList = [];
-                    _.each(this.selectedUpperNodeList, function (el, index, list) {
-                        NowselectedUpperNodeList.push(el);
-                    }.bind(this));
+                onOk: $.proxy(this.onClickUpperSelectOK, this),
+                data: this.upperNodeListForSelect,
+                callback: function (data) {}.bind(this)
+            }
 
-                    var NowruleContentUpper = [];
-                    _.each(this.ruleContent.upper, function (el, index, list) {
-                        NowruleContentUpper.push(el);
-                    }.bind(this));
+            var searchSelectUpper = new SearchSelect(options);
+        },
 
-                    this.selectedUpperNodeList = [];
-                    this.ruleContent.upper = [];
-                    this.selectedUpperNodeList = [];
-                    this.ruleContent.upper = [];
-                    _.each(data, function (el, key, ls) {
-                        this.selectedUpperNodeList.push({
-                            nodeId: el.value,
-                            nodeName: el.name,
-                            ipCorporation: 0,
-                            operatorId: ''
-                        });
-                        this.ruleContent.upper.push({"nodeId": el.value, "ipCorporation": 0});
-                    }.bind(this));
+        onClickUpperSelectOK: function (data) {
+            this.defaultParam.upper = [];
+            _.each(data, function (el, key, ls) {
+                this.defaultParam.upper.push({
+                    rsNodeMsgVo: {
+                        id: parseInt(el.value), 
+                        name: el.name
+                    } 
+                })
+            }.bind(this))
 
-                    _.each(this.selectedUpperNodeList, function (el, index, list) {
-                        el.ipCorporation = 0;
-                        _.each(NowselectedUpperNodeList, function (upperNode, index, list) {
-                            if (el.nodeId == upperNode.nodeId) {
-                                el.ipCorporation = upperNode.ipCorporation;
-                            }
-                        })
-                    }.bind(this))
+            _.each(this.upperNodeListForSelect, function (el, key, ls) {
+                el.checked = false;
+                _.each(this.defaultParam.upper, function (data, key, ls) {
+                    if (el.value == data.id) {
+                        el.checked = true;
+                        data.operatorId = el.operator;
+                    }
+                }.bind(this))
+            }.bind(this))
+            this.initLocalTable()
 
-                    _.each(this.ruleContent.upper, function (el, index, list) {
-                        el.ipCorporation = 0;
-                        _.each(NowruleContentUpper, function (upper, index, list) {
-                            if (el.nodeId == upper.nodeId) {
-                                el.ipCorporation = upper.ipCorporation;
-                            }
-                        })
-                    }.bind(this))
 
-                    _.each(this.nodesArrayFirstLocal, function (el, key, ls) {
-                        el.checked = false;
-                        _.each(this.selectedUpperNodeList, function (data, key, ls) {
-                            if (el.value == data.nodeId) {
-                                data.operatorId = el.operatorId;
-                                el.checked = true;
-                            }
-                        }.bind(this))
-                    }.bind(this))
-                    this.initUpperTable()
-                }.bind(this),
-                data: nodesArray,
-                callback: function (data) {
-                }.bind(this)
-            });
+            // var NowselectedUpperNodeList = [];
+            // _.each(this.selectedUpperNodeList, function (el, index, list) {
+            //     NowselectedUpperNodeList.push(el);
+            // }.bind(this));
+
+            // var NowruleContentUpper = [];
+            // _.each(this.ruleContent.upper, function (el, index, list) {
+            //     NowruleContentUpper.push(el);
+            // }.bind(this));
+
+            // this.selectedUpperNodeList = [];
+            // this.ruleContent.upper = [];
+            // this.selectedUpperNodeList = [];
+            // this.ruleContent.upper = [];
+            // _.each(data, function (el, key, ls) {
+            //     this.selectedUpperNodeList.push({
+            //         nodeId: el.value,
+            //         nodeName: el.name,
+            //         ipCorporation: 0,
+            //         operatorId: ''
+            //     });
+            //     this.ruleContent.upper.push({"nodeId": el.value, "ipCorporation": 0});
+            // }.bind(this));
+
+            // _.each(this.selectedUpperNodeList, function (el, index, list) {
+            //     el.ipCorporation = 0;
+            //     _.each(NowselectedUpperNodeList, function (upperNode, index, list) {
+            //         if (el.nodeId == upperNode.nodeId) {
+            //             el.ipCorporation = upperNode.ipCorporation;
+            //         }
+            //     })
+            // }.bind(this))
+
+            // _.each(this.ruleContent.upper, function (el, index, list) {
+            //     el.ipCorporation = 0;
+            //     _.each(NowruleContentUpper, function (upper, index, list) {
+            //         if (el.nodeId == upper.nodeId) {
+            //             el.ipCorporation = upper.ipCorporation;
+            //         }
+            //     })
+            // }.bind(this))
+
+            // _.each(this.nodesArrayFirstLocal, function (el, key, ls) {
+            //     el.checked = false;
+            //     _.each(this.selectedUpperNodeList, function (data, key, ls) {
+            //         if (el.value == data.nodeId) {
+            //             data.operatorId = el.operatorId;
+            //             el.checked = true;
+            //         }
+            //     }.bind(this))
+            // }.bind(this))
+            // this.initUpperTable()
         },
 
         initUpperTable: function () {

@@ -387,7 +387,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             this.selectedUpperNodeList = [];
             _.each(data, function (el, key, ls) {
                 this.selectedUpperNodeList.push({
-                    nodeId: el.value,
+                    nodeId: parseInt(el.value),
                     nodeName: el.name,
                     operatorId: ''
                 })

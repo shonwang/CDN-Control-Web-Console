@@ -1273,13 +1273,13 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             else
                 this.$el.find(".rule .table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            // if (!this.isEdit) {
+            if (!this.isEdit) {
                 this.roleTable.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
                 this.roleTable.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
-            // } else {
-            //     this.roleTable.find("tbody .edit").hide();
-            //     this.roleTable.find("tbody .delete").hide();
-            // }
+            } else {
+                this.roleTable.find("tbody .edit").hide();
+                this.roleTable.find("tbody .delete").hide();
+            }
         },
 
         onClickItemEdit: function (event) {

@@ -49,7 +49,13 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }.bind(this))
 
             Utility.initDropMenu(rootNode, this.statusArray, function (value) {
-                this.defaultParam.local = [parseInt(value)];
+                var opObj = _.find(this.statusArray, function (object) {
+                    return object.value == parseInt(value);
+                }.bind(this));
+                this.defaultParam.local = [{
+                        id: parseInt(value),
+                        name: opObj.name,
+                    }];
             }.bind(this));
 
             var defaultValue = null;

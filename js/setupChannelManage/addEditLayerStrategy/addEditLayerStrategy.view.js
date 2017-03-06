@@ -16,6 +16,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
 
             if (!this.isEdit) {
                 this.defaultParam = {
+                    "id": new Date().valueOf(),
                     "local": [],
                     "localType": 2,
                     "upper": []
@@ -23,7 +24,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             } else {
                 this.defaultParam = this.curEditRule
             }
-            console.log(this.defaultParam)
+            console.log("addEditLayerStrategy.view defaultParam: ", this.defaultParam)
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
 
             require(['deviceManage.model'], function (deviceManageModel) {
@@ -72,6 +73,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     })
                 }
             }
+
             this.initSetup();
         },
 
@@ -94,6 +96,8 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.collection.on("get.topoAndNodeInfo.error", $.proxy(this.onGetError, this));
                 this.collection.getTopoAndNodeInfo(this.topologyId);
             } else {
+                console.log("addEditLayerStrategy.view this.options.localNodes: ", this.options.localNodes)
+                console.log("addEditLayerStrategy.view this.options.upperNodes: ", this.options.upperNodes)
                 this.onGetLocalNodeFromArgs();
                 this.onGetUpperNodeFromArgs();
             }
@@ -104,54 +108,39 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         onClickSaveBtn: function () {
-            var flag = true;
-            if (this.ruleContent.local.length == 0) {
+            if (this.defaultParam.local.length == 0) {
                 alert('请选择本层节点');
                 return;
-            } else if (this.ruleContent.upper.length == 0) {
+            } else if (this.defaultParam.upper.length == 0) {
                 alert('请选择上层节点');
                 return;
             }
+
+            var errorMsg = [];
+
             _.each(this.rule, function (rule, index, list) {
-                if (index == this.id || flag == false) {
-                    return;
-                }
-                if ((rule.localType == 1) && (rule.localType == this.ruleContent.localType)) {
-                    _.each(this.ruleContent.local, function (Rlocal, index, list) {
-                        if (rule.local.indexOf(Rlocal) >= 0) {
-                            var select = _.filter(this.nodesArrayFirst, function (local, index, list) {
-                                return Rlocal == local.value;
-                            }.bind(this))
-                            alert(select[0].name + '不能同时存在于两条规则的“本层”中');
-                            flag = false;
-                            return;
-                        }
-                    }.bind(this))
-                } else if ((rule.localType == 2) && (rule.localType == this.ruleContent.localType)) {
-                    _.each(rule.local, function (ruleLocal, index, list) {
-                        if (ruleLocal == this.ruleContent.local) {
-                            var select = _.filter(this.statusArray, function (status, index, list) {
-                                return status.value == ruleLocal;
-                            }.bind(this))
-                            alert(select[0].name + '不能同时存在于两条规则的“本层”中');
-                            flag = false;
-                            return;
-                        }
+                if (this.defaultParam.localType === rule.localType && rule.id !== this.defaultParam.id){
+                    _.each(this.defaultParam.local, function(node){
+                        var nodesError =  _.find(rule.local, function(obj){
+                            return obj.id === node.id
+                        }.bind(this))
+                        if (nodesError) errorMsg.push(nodesError)
                     }.bind(this))
                 }
             }.bind(this))
 
-            if (flag) {
-                if (!this.isEdit) {
-                    this.rule.push(this.ruleContent);
-
-                } else {
-                    this.rule[this.id] = this.ruleContent;
-                }
-                this.options.onSaveCallback && this.options.onSaveCallback();
+            if (errorMsg.length > 0){
+                alert(errorMsg[0].name + '不能同时存在于两条规则的“本层”中');
+                return;
             }
 
+            if (!this.isEdit) this.rule.push(this.defaultParam)
+
+            console.log("addEditLayerStrategy.view this.rule: ", this.rule)
+
+            this.options.onSaveCallback && this.options.onSaveCallback();
         },
+
         onGetError: function (error) {
             if (error && error.message)
                 alert(error.message)
@@ -383,7 +372,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }.bind(this))
 
             this.initUpperSelect();
-            //this.initLocalTable();
+            this.initUpperTable();
         },
 
         onGetUpperNode: function (res) {
@@ -500,6 +489,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }
 
             var searchSelectUpper = new SearchSelect(options);
+            this.$el.find(".upper .add-node-ctn .select-container").css("left", "-80px");
         },
 
         onClickUpperSelectOK: function (data) {
@@ -513,117 +503,48 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 })
             }.bind(this))
 
+            console.log("addEditLayerStrategy.view upperNodeListForSelect: ", this.upperNodeListForSelect)
+
             _.each(this.upperNodeListForSelect, function (el, key, ls) {
                 el.checked = false;
                 _.each(this.defaultParam.upper, function (data, key, ls) {
-                    if (el.value == data.id) {
+                    if (el.value == data.rsNodeMsgVo.id) {
                         el.checked = true;
-                        data.operatorId = el.operator;
+                        data.chiefType = el.chiefType;
+                        data.ipCorporation = el.ipCorporation;
+                        data.rsNodeMsgVo.operatorId = el.operator;
                     }
                 }.bind(this))
             }.bind(this))
-            this.initLocalTable()
 
+            console.log("addEditLayerStrategy.view this.defaultParam.upper: ", this.defaultParam.upper)
 
-            // var NowselectedUpperNodeList = [];
-            // _.each(this.selectedUpperNodeList, function (el, index, list) {
-            //     NowselectedUpperNodeList.push(el);
-            // }.bind(this));
-
-            // var NowruleContentUpper = [];
-            // _.each(this.ruleContent.upper, function (el, index, list) {
-            //     NowruleContentUpper.push(el);
-            // }.bind(this));
-
-            // this.selectedUpperNodeList = [];
-            // this.ruleContent.upper = [];
-            // this.selectedUpperNodeList = [];
-            // this.ruleContent.upper = [];
-            // _.each(data, function (el, key, ls) {
-            //     this.selectedUpperNodeList.push({
-            //         nodeId: el.value,
-            //         nodeName: el.name,
-            //         ipCorporation: 0,
-            //         operatorId: ''
-            //     });
-            //     this.ruleContent.upper.push({"nodeId": el.value, "ipCorporation": 0});
-            // }.bind(this));
-
-            // _.each(this.selectedUpperNodeList, function (el, index, list) {
-            //     el.ipCorporation = 0;
-            //     _.each(NowselectedUpperNodeList, function (upperNode, index, list) {
-            //         if (el.nodeId == upperNode.nodeId) {
-            //             el.ipCorporation = upperNode.ipCorporation;
-            //         }
-            //     })
-            // }.bind(this))
-
-            // _.each(this.ruleContent.upper, function (el, index, list) {
-            //     el.ipCorporation = 0;
-            //     _.each(NowruleContentUpper, function (upper, index, list) {
-            //         if (el.nodeId == upper.nodeId) {
-            //             el.ipCorporation = upper.ipCorporation;
-            //         }
-            //     })
-            // }.bind(this))
-
-            // _.each(this.nodesArrayFirstLocal, function (el, key, ls) {
-            //     el.checked = false;
-            //     _.each(this.selectedUpperNodeList, function (data, key, ls) {
-            //         if (el.value == data.nodeId) {
-            //             data.operatorId = el.operatorId;
-            //             el.checked = true;
-            //         }
-            //     }.bind(this))
-            // }.bind(this))
-            // this.initUpperTable()
+            this.initUpperTable();
         },
 
         initUpperTable: function () {
-            if (this.selectedUpperNodeList.length > 0) {
-                _.each(this.selectedUpperNodeList, function (el, index, li) {
-                    if (el.operatorId == 9) {
-                        this.selectedUpperNodeList.splice(index, 1);
-                        this.selectedUpperNodeList.unshift(el);
-                    }
-                }.bind(this))
-            }
-            // debugger
-            if(this.isEdit) {
-                if(this.rule.length > 0) {
-                    var id = this.id;
-                    // var idIndex = _.findIndex(this.rule,function(item){
-                    //    return item.local[0] === id
-                    // });
-                    // idIndex = idIndex === -1 ? 0 : idIndex;
-                    var targetIndex = _.findIndex(this.rule[id].upper,function(item){
-                        return item.chiefType === 0
-                    });
-                    if(targetIndex >= 0 && this.selectedUpperNodeList.length > 0) {
-                        this.selectedUpperNodeList[targetIndex]["chiefType"] = 0;
-                    }
-                }
-            }
-
-
+            var nodeList = [];
+            _.each(this.defaultParam.upper, function(el){
+                nodeList.push({
+                    nodeId: el.rsNodeMsgVo.id,
+                    nodeName: el.rsNodeMsgVo.name,
+                    operatorId: el.rsNodeMsgVo.operatorId,
+                    chiefType: el.chiefType,
+                    ipCorporation: el.ipCorporation 
+                })
+            }.bind(this))
 
             this.upperTable = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.upper.table.html'])({
-                data: this.selectedUpperNodeList,
-                checked: this.checked
+                data: nodeList,
             }));
-            if (this.selectedUpperNodeList.length !== 0)
+
+            if (nodeList.length !== 0)
                 this.$el.find(".upper .table-ctn").html(this.upperTable[0]);
             else
-                this.$el.find(".upper .table-ctn").html(_.template(template['tpl/empty.html'])());
+                this.$el.find(".upper .table-ctn").html(_.template(template['tpl/empty-2.html'])({data: {message: "你还没有添加节点"}}));
 
             this.upperTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperDelete, this));
             this.upperTable.find("tbody .spareradio").on("click", $.proxy(this.onClickRadioButton, this));
-
-            /* this.collection.off("get.operatorUpper.success");
-             this.collection.off("get.operatorUpper.error");
-             this.collection.on("get.operatorUpper.success",$.proxy(this.initOperatorUpperList,this));
-             this.collection.on("get.operatorUpper.error",$.proxy(this.onGetError, this));
-             this.collection.getOperatorUpperList();*/
 
             require(['deviceManage.model'], function (deviceManageModel) {
                 var mydeviceManageModel = new deviceManageModel();
@@ -641,71 +562,36 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 statusArray.push({name: el.name, value: el.id})
             }.bind(this))
             rootNodes = this.upperTable.find(".ipOperator .dropdown");
-            if (!this.isEdit) {
-                _.each(rootNodes, function (el) {
-                    _.each(this.ruleContent.upper, function (key) {
-                        if (el.id == key.nodeId && key.ipCorporation == 0) {
-                            key.ipCorporation = 1;
-                        }
-                    }.bind(this))
-                }.bind(this))
-            }
+
             for (var i = 0; i < rootNodes.length; i++) {
                 this.initTableDropMenu($(rootNodes[i]), statusArray, function (value, nodeId) {
-                    _.each(this.selectedUpperNodeList, function (el, key, list) {
-                        if (parseInt(el.nodeId) === parseInt(nodeId)) {
+                    _.each(this.upperNodeListForSelect, function (el, key, list) {
+                        if (parseInt(el.value) === parseInt(nodeId)) {
                             el.ipCorporation = parseInt(value);
                         }
                     }.bind(this));
-                    _.each(this.ruleContent.upper, function (el, key, list) {
-                        if (el.nodeId == parseInt(nodeId)) {
+                    _.each(this.defaultParam.upper, function (el, key, list) {
+                        if (el.rsNodeMsgVo.id == parseInt(nodeId)) {
                             el.ipCorporation = parseInt(value);
                         }
                     }.bind(this));
                 }.bind(this));
 
-                var nodeId = $(rootNodes[i]).attr("id"),
+                _.each(this.defaultParam.upper, function(node){
+                    var curNodeId = parseInt(rootNodes[i].id);
+                    if (node.rsNodeMsgVo.id === curNodeId) {
+                        var defaultValue = _.find(statusArray, function(obj){
+                            return obj.value === node.ipCorporation
+                        }.bind(this))
 
-                    newUpperObj = _.find(this.selectedUpperNodeList, function (obj) {
-                        return obj.nodeId == parseInt(nodeId);
-                    }.bind(this))
-
-                upperObj = _.find(this.ruleContent.upper, function (object) {
-                    return object.nodeId == parseInt(nodeId);
+                        if (defaultValue){
+                            $(rootNodes[i]).find("#dropdown-ip-operator .cur-value").html(defaultValue.name)
+                        } else {
+                            $(rootNodes[i]).find("#dropdown-ip-operator .cur-value").html(statusArray[0].name);
+                            node.ipCorporation = statusArray[0].value;
+                        }
+                    }
                 }.bind(this))
-
-                var leberNode = $(rootNodes[i]).find("#dropdown-ip-operator .cur-value");
-
-                if (this.isEdit) {
-                    if (upperObj) {
-                        var defaultValue = _.find(statusArray, function (object) {
-                            return object.value == upperObj.ipCorporation;
-                        }.bind(this));
-
-                        if (defaultValue) {
-                            leberNode.html(defaultValue.name);
-                        }
-                        else
-                            leberNode.html(statusArray[0].name);
-                    } else {
-                        leberNode.html(statusArray[0].name);
-                    }
-                }
-                else {
-                    if (newUpperObj) {
-                        var defaultValue = _.find(statusArray, function (object) {
-                            return object.value == newUpperObj.ipCorporation;
-                        }.bind(this));
-                        if (defaultValue) {
-                            leberNode.html(defaultValue.name);
-                        }
-                        else
-                            leberNode.html(statusArray[0].name);
-                    } else {
-                        leberNode.html(statusArray[0].name);
-                    }
-                }
-
             }
         },
 
@@ -728,37 +614,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 itemNode.appendTo(dropRoot);
             });
         },
-        // initLocalSelect: function (res) {
-        //     var nodesArray = this.nodesArrayFirst;
-        //     var searchSelect = new SearchSelect({
-        //         containerID: this.$el.find('.local .add-node-ctn').get(0),
-        //         panelID: this.$el.find('.local .add-node').get(0),
-        //         openSearch: true,
-        //         onOk: function (data) {
-        //             this.selectedLocalNodeList = [];
-        //             this.ruleContent.local = [];
-        //             _.each(data, function (el, key, ls) {
-        //                 el.checked = true;
-        //                 this.selectedLocalNodeList.push({nodeId: el.value, nodeName: el.name, checked: el.checked})
-        //                 this.ruleContent.local.push(parseInt(el.value));
-        //             }.bind(this));
-        //             _.each(this.nodesArrayFirst, function (el, key, ls) {
-        //                 el.checked = false;
-        //                 _.each(this.selectedLocalNodeList, function (data, key, ls) {
-        //                     if (el.value == data.nodeId) {
-        //                         data.operatorId = el.operatorId;
-        //                         el.checked = true;
-        //                     }
-        //                 }.bind(this))
-        //             }.bind(this))
-        //             this.initLocalTable()
-        //         }.bind(this),
-        //         data: nodesArray,
-        //         callback: function (data) {
-        //         }.bind(this)
-        //     });
-        // },
-
 
         onClickItemUpperDelete: function (event) {
             var eventTarget = event.srcElement || event.target, id;
@@ -768,70 +623,31 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             } else {
                 id = $(eventTarget).attr("id");
             }
-            if (this.isEdit) {
-                var upper = this.ruleContent.upper;
-                for (var i = 0; i < upper.length; i++) {
-                    if (upper[i].nodeId == id) {
-                        upper.splice(i, 1);
-                    }
-                }
-            }
-            _.each(this.nodesArrayFirstLocal, function (el, index, list) {
-                if (el.value == parseInt(id)) {
-                    el.checked = false;
-                    this.initUpperSelect(this.nodesArrayFirstLocal);
-                }
+
+            this.defaultParam.upper = _.filter(this.defaultParam.upper, function(obj){
+                return obj.rsNodeMsgVo.id !== parseInt(id)
             }.bind(this));
-            for (var i = 0; i < this.selectedUpperNodeList.length; i++) {
-                if (parseInt(this.selectedUpperNodeList[i].nodeId) === parseInt(id)) {
-                    this.selectedUpperNodeList.splice(i, 1);
-                    this.initUpperTable();
-                    return;
-                }
-            }
+
+            _.each(this.upperNodeListForSelect, function(el, index, ls){
+                if (parseInt(el.value) === parseInt(id)) el.checked = false;
+            }.bind(this));
+
+            if (this.searchSelectUpper)
+                this.searchSelectUpper.destroy();
+
+            this.initUpperSelect();
+            this.initUpperTable();
         },
+
         onClickRadioButton: function (event) {
-            //TODO STEP4
-            // debugger
-            this.checked = true;
             var eventTarget = event.srcElement || event.target, id;
             var id = eventTarget.id;
-            // if(this.ruleContent.upper.chiefType){
-                // this.ruleContent.upper.remove("chiefType")
-            // }
-            this.ruleContent.upper = this.ruleContent.upper.map(function(item){
-                var newItem = {};
-                newItem.ipCorporation = item.ipCorporation;
-                newItem.nodeId = item.nodeId;
-                return newItem;
-            });
-
-            for (var i = 0; i < this.ruleContent.upper.length; i++) {
-                if(this.ruleContent.upper.chiefType){
-                    this.ruleContent.upper.remove("chiefType");
-                }
-                if ($(".spareradio")[i].checked) {
-                    this.ruleContent.upper[i]["chiefType"] = 0;
-                }
-            }
+            _.each(this.defaultParam.upper, function(obj){
+                obj.chiefType = 1;
+                if (obj.rsNodeMsgVo.id === parseInt(id)) obj.chiefType = 0;
+            }.bind(this))
         },
 
-
-        deepClone: function (obj) {
-            var str, newobj = obj.constructor === Array ? [] : {};
-            if (typeof obj !== 'object') {
-                return;
-            } else if (window.JSON) {
-                str = JSON.stringify(obj), //系列化对象
-                    newobj = JSON.parse(str); //还原
-            } else {
-                for (var i in obj) {
-                    newobj[i] = typeof obj[i] === 'object' ?
-                        cloneObj(obj[i]) : obj[i];
-                }
-            }
-            return newobj;
-        },
         render: function (target) {
             this.$el.appendTo(target)
         }

@@ -16,12 +16,6 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             this.collection.off('get.topo.OriginInfo.error');
             this.collection.on('get.topo.OriginInfo.success', $.proxy(this.onOriginInfo, this));
             this.collection.on('get.topo.OriginInfo.error', $.proxy(this.onGetError, this));
-
-            this.collection.off("get.operator.success");
-            this.collection.off("get.operator.error");
-            this.collection.on("get.operator.success", $.proxy(this.setOperatorInfo, this));
-            this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
-            this.collection.getOperatorList();
             //添加拓扑关系
             this.collection.off('add.topo.success');
             this.collection.off('add.topo.error');
@@ -136,8 +130,6 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
         },
 
         onClickSaveButton: function () {
-            var flag = true;
-            this.defaultParam = this.addChiefType(this.defaultParam);
             this.defaultParam.name = $.trim(this.$el.find("#input-name").val());
             if (this.defaultParam.name == '') {
                 alert('请输入拓扑关系名称');
@@ -159,19 +151,26 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 alert('请添加规则');
                 return;
             }
-            _.each(this.defaultParam.rule, function (el) {
-                if (el.local.length == 0) {
-                    alert('请在配置规则中选择本层节点');
-                    flag = false;
-                    return;
-                } else if (el.upper.length == 0) {
-                    alert('请在配置规则中选择上层节点');
-                    flag = false;
-                    return;
-                }
-            })
 
-            if (!flag) return;
+            console.log(this.defaultParam)
+
+            _.each(this.defaultParam.rule, function(rule){
+                var localIdArray = [], upperObjArray = [];
+                _.each(rule.local, function(node){
+                    localIdArray.push(node.id)
+                }.bind(this))
+                _.each(rule.upper, function(node){
+                    upperObjArray.push({
+                        id: node.rsNodeMsgVo.id,
+                        ipCorporation: node.ipCorporation,
+                        chiefType: node.chiefType
+                    })
+                }.bind(this))
+
+                rule.local = localIdArray;
+                rule.upper = upperObjArray;
+            }.bind(this))
+
             if (this.isEdit)
                 this.collection.topoModify(this.defaultParam);
             else
@@ -373,7 +372,6 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 containerID: this.$el.find('.upper .add-node-ctn').get(0),
                 panelID: this.$el.find('.upper .add-node').get(0),
                 openSearch: true,
-                // selectWidth: 200,
                 onOk: $.proxy(this.onClickUpperNodesSelectOK, this),
                 data: this.nodesArrayFirstUpper,
                 callback: function (data) {}.bind(this)
@@ -453,7 +451,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             this.initUpperTable();
         },
 
-        initRuleTable: function (data) {
+        initRuleTable: function () {
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             this.ruleList = [];
 
@@ -538,15 +536,10 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     curEditRule: this.curEditRule,
                     isEdit: true,
                     onSaveCallback: function () {
-                        this.defaultParam.rule = this.rule;
-                        var data = this.InformationProcessing(this.rule);
+                        console.log("setupTopoManage.view this.defaultParam.rule: ", this.defaultParam.rule)
                         myAddEditLayerStrategyView.$el.remove();
-
                         this.$el.find(".add-topo").show();
-                        this.checked = myAddEditLayerStrategyView.checked;
-                        this.chiefType = myAddEditLayerStrategyView.chiefType;
-
-                        this.initRuleTable(data, this.checked);
+                        this.initRuleTable();
                     }.bind(this),
                     onCancelCallback: function () {
                         myAddEditLayerStrategyView.$el.remove();
@@ -560,16 +553,13 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
         },
 
         onClickItemDelete: function () {
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "A") {
-                eventTarget = $(eventTarget).parent().parent();
-                id = eventTarget.attr("data-id");
-            } else {
-                id = $(eventTarget).attr("data-id");
-            }
-            this.rule.splice(id, 1);
-            this.initRuleTable(data);
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+            this.defaultParam.rule = _.filter(this.defaultParam.rule, function(obj){
+                return obj.id !== parseInt(id)
+            }.bind(this))
 
+            this.initRuleTable();
         },
 
         onClickAddRuleButton: function () {
@@ -580,16 +570,12 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     collection: options,
                     localNodes: this.selectedAllNodeList,
                     upperNodes: this.selectedUpperNodeList,
-                    rule: this.rule,
+                    rule: this.defaultParam.rule,
                     onSaveCallback: function () {
-                        this.defaultParam.rule = this.rule;
-                        var data = this.InformationProcessing(this.rule);
+                        console.log("setupTopoManage.view this.defaultParam.rule: ", this.defaultParam.rule)
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".add-topo").show();
-                        this.checked = myAddEditLayerStrategyView.checked;
-                        this.chiefType = myAddEditLayerStrategyView.chiefType;
-                        this.initRuleTable(data, this.checked);
-
+                        this.initRuleTable();
                     }.bind(this),
                     onCancelCallback: function () {
                         myAddEditLayerStrategyView.$el.remove();
@@ -602,110 +588,6 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             }.bind(this))
         },
 
-        setOperatorInfo: function (res) {
-            this.operator = [];
-            _.each(res.rows, function (el, index, list) {
-                this.operator.push({
-                    'name': el.name,
-                    'value': el.id
-                })
-            }.bind(this));
-        },
-
-        InformationProcessing: function (data) {
-            //TODO STEP5
-            //看那个对象里面有chiefType属性 对象改成 从upperLayer -> mainLayer spareLayer
-            //var data = [{localLayer: "1111", upperLayer: "22222"}];
-            var hasChiefType = [];
-            for (var i = 0; i < data.length; i++) {
-                hasChiefType.push(false);
-                _.each(data[i].upper, function (item) {
-                    if (item.chiefType === 0) {
-                        hasChiefType[i] = true;
-                    }
-                });
-            }
-            var constVar = '';
-            if (this.isEdit) {
-                constVar = 'id';
-            } else {
-                constVar = '';
-            }
-
-            var data_save = [];
-            var self = this;
-            _.each(data, function (el, key, ls) {
-                var data_save_content = {
-                    id: null,
-                    'localLayer': [],
-                    'upperLayer': [],
-                    'mainUpperLayer': [],
-                    'spareUpperLayer': []
-                };
-                
-                if (el.localType == 2) {
-                    _.each(el.local, function (local) {
-                        _.each(self.operator, function (operator) {
-                            if (local == operator.value || local.id == operator.value) {
-                                data_save_content.localLayer.push(operator.name)
-                            }
-                        })
-                    }.bind(this))
-                } else if (el.localType == 1) {
-                    _.each(el.local, function (local) {
-                        _.each(self.allNodes, function (nodes) {
-                            if ((local.id == nodes.id || local == nodes.id) && nodes.id != undefined) {
-                                data_save_content.localLayer.push(nodes.chName);
-                            }
-                        })
-                    })
-                }
-                _.each(el.upper, function (upper) {
-                    _.each(self.allNodes, function (nodes) {
-                        if (self.isEdit) {
-                            if (upper.rsNodeMsgVo.id == nodes.id) {
-                                if (!hasChiefType[key]) {
-                                    data_save_content.upperLayer.push(nodes.chName)
-                                } else {
-                                    if (upper.chiefType === 0) {
-                                        data_save_content.spareUpperLayer.push(nodes.chName);
-                                    } else {
-                                        data_save_content.mainUpperLayer.push(nodes.chName);
-                                    }
-                                }
-                            }
-                        } else {
-                            if (upper.nodeId == nodes.id) {
-                                if (!hasChiefType[key]) {
-                                    data_save_content.upperLayer.push(nodes.chName)
-                                } else {
-                                    if (upper.chiefType === 0) {
-                                        data_save_content.spareUpperLayer.push(nodes.chName);
-                                    } else {
-                                        data_save_content.mainUpperLayer.push(nodes.chName);
-                                    }
-                                }
-                            }
-                        }
-
-                    })
-
-                });
-
-
-                data_save_content.localLayer = data_save_content.localLayer.join('、');
-                data_save_content.upperLayer = data_save_content.upperLayer.join('、');
-                data_save_content.spareUpperLayer = data_save_content.spareUpperLayer.join('、');
-                data_save_content.mainUpperLayer = data_save_content.mainUpperLayer.join('、');
-
-                data_save_content.id = key;
-                data_save.push(data_save_content);
-                //TODO
-                //在这里给data_save_content对象赋值 上面的 主X 副X  条件是 如果chiefType值为0
-            });
-            return data_save
-            
-        },
         onGetError: function (error) {
             if (error && error.message)
                 alert(error.message)
@@ -887,7 +769,6 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     collection: options,
                     model: model,
                     onSaveCallback: function () {
-                        
                         this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
                         mySendView.$el.remove();
                         this.$el.find(".list-panel").show();
@@ -902,9 +783,8 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 this.$el.find(".list-panel").hide();
                 mySendView.render(this.$el.find(".edit-panel"))
             }.bind(this));
-
-
         },
+
         initPaginator: function () {
             this.$el.find(".total-items span").html(this.collection.total)
             if (this.collection.total <= this.queryArgs.size) return;

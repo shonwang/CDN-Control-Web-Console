@@ -80,9 +80,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     collection: mySetupBillModel,
                     originId: this.model.get("id"),
                     version: version,
-                    onSaveCallback: function () {
-                        // debugger
-                    }.bind(this),
+                    onSaveCallback: function () {}.bind(this),
                     onCancelCallback: function () {
                         mySetupBillView.$el.remove();
                         this.$el.find(".history-panel").show();

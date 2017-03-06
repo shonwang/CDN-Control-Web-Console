@@ -24,7 +24,7 @@
                 </td>
                 <td>
                   <% if(data.length > 1){ %>
-                  <input type="radio" class="spareradio" name="spareradio" id="<%= data[i].nodeId %>" value="<%= data[i].nodeId %>" 
+                  <input type="checkbox" class="spareradio" id="<%= data[i].nodeId %>" value="<%= data[i].nodeId %>" 
                   <% if(data[i].chiefType === 0){ %> checked <% } %> > 备用
                   <% } %>
                 </td>

@@ -12,7 +12,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.isEdit = options.isEdit;
 
             this.topologyId = options.topologyId;
-            this.isChannel = options.isChannel;
 
             if (!this.isEdit) {
                 this.defaultParam = {
@@ -116,8 +115,16 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 return;
             }
 
-            var errorMsg = [];
+            var chiefTypeArray = [];
+            chiefTypeArray = _.filter(this.defaultParam.upper, function(obj){
+                return obj.chiefType === 0
+            }.bind(this))
+            if (chiefTypeArray.length === this.defaultParam.upper.length) {
+                alert("不能都设置为备用")
+                return;
+            }
 
+            var errorMsg = [];
             _.each(this.rule, function (rule, index, list) {
                 if (this.defaultParam.localType === rule.localType && rule.id !== this.defaultParam.id){
                     _.each(this.defaultParam.local, function(node){
@@ -159,15 +166,17 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                         if (node.id === el.nodeId) el.checked = true;
                     }.bind(this))
                 }
-                _.each(this.options.upperNodes, function(node){
-                    if (node.nodeId !== el.nodeId) {
-                        this.localNodeListForSelect.push({
-                            checked: el.checked,
-                            name: el.nodeName,
-                            operator: el.operator,
-                            value: el.nodeId
-                        })
-                    }
+                this.localNodeListForSelect.push({
+                    checked: el.checked,
+                    name: el.nodeName,
+                    operator: el.operator,
+                    value: el.nodeId
+                })
+            }.bind(this))
+
+            _.each(this.options.upperNodes, function(node){
+                this.localNodeListForSelect = _.filter(this.localNodeListForSelect, function(obj){
+                    return obj.value !== node.nodeId;
                 }.bind(this))
             }.bind(this))
 
@@ -176,74 +185,27 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         onGetLocalNode: function (res) {
-            this.$el.find('.local .add-node').show();
-            var nodesArray = [], data = res;
-
-            this.selectedLocalNodeList = [];
-            this.nodesArrayFirst = [];
-            var data = res;
-
-            if (res && res.rows) data = res.rows;
-            if (this.isChannel) {
-                data = res.allNodes;
-            }
-            _.each(data, function (el, index, list) {
-                el.checked = false;
-                if (typeof(el.chName) == 'undefined') {
-                    el.chName = el.name;
-                }
-                _.each(this.defaultParam.local, function (defaultLocalId, inx, ls) {
-                    if (defaultLocalId == el.id) {
-                        el.checked = true;
-                        this.selectedLocalNodeList.push({
-                            nodeId: el.id,
-                            nodeName: el.chName,
-                            operatorId: el.operatorId,
-                            checked: el.checked
-                        })
-                    }
-                }.bind(this))
-                if (el.nodeId) el.id = el.nodeId;
-                if (el.nodeName) el.chName = el.nodeName;
-                nodesArray.push({name: el.chName, value: el.id, checked: el.checked, operatorId: el.operatorId});
-                this.nodesArrayFirst.push({
-                    name: el.chName,
-                    value: el.id,
-                    checked: el.checked,
-                    operatorId: el.operatorId
+            console.log(res)
+            this.options.localNodes = [];
+            _.each(res.allNodes, function(node){
+                this.options.localNodes.push({
+                    nodeId: node.id,
+                    nodeName: node.name,
+                    operator: node.operatorId
                 })
             }.bind(this))
-            this.initLocalTable();
 
-            var searchSelect = new SearchSelect({
-                containerID: this.$el.find('.local .add-node-ctn').get(0),
-                panelID: this.$el.find('.local .add-node').get(0),
-                openSearch: true,
-                onOk: function (data) {
-                    this.selectedLocalNodeList = [];
-                    this.ruleContent.local = [];
-                    _.each(data, function (el, key, ls) {
-                        el.checked = true;
-                        this.selectedLocalNodeList.push({nodeId: el.value, nodeName: el.name, checked: el.checked})
-                        this.ruleContent.local.push(parseInt(el.value));
-                    }.bind(this))
-                    _.each(this.nodesArrayFirst, function (el, key, ls) {
-                        el.checked = false;
-                        _.each(this.selectedLocalNodeList, function (data, key, ls) {
-                            if (el.value == data.nodeId) {
-                                el.checked = true;
-                                data.operatorId = el.operatorId;
-                            }
-                        }.bind(this))
-                    }.bind(this))
-                    this.initLocalTable()
-                }.bind(this),
-                data: nodesArray,
-                callback: function (data) {
-                }.bind(this)
-            });
-            this.addNodeSearchSelect = searchSelect;
-            this.onGetUpperNode(res);
+            this.options.upperNodes = [];
+            _.each(res.upperNodes, function(node){
+                this.options.upperNodes.push({
+                    nodeId: node.id,
+                    nodeName: node.name,
+                    operator: node.operatorId
+                })
+            }.bind(this))
+
+            this.onGetLocalNodeFromArgs();
+            this.onGetUpperNodeFromArgs();
         },
 
         onClickLocalSelectOK: function (data) {
@@ -375,109 +337,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.initUpperTable();
         },
 
-        onGetUpperNode: function (res) {
-            this.$el.find('.upper .add-node').show();
-            var nodesArray = [];
-            this.selectedUpperNodeList = [];
-            this.nodesArrayFirstLocal = [];
-            var data = res;
-            if (res && res.rows) data = res.rows
-            if (this.isChannel) {
-                // debugger
-                data = res.allNodes;
-            }
-            _.each(data, function (el, index, list) {
-                el.checked = false;
-                if (typeof(el.chName) == 'undefined') {
-                    el.chName = el.name;
-                }
-                _.each(this.defaultParam.upper, function (defaultNode, inx, ls) {
-                    if (defaultNode.nodeId == el.id) {
-                        el.checked = true;
-                        //TODO
-                        //在selectedUpperNodeList里面的对象里面添加chiefType 取值于 el.chiefType
-                        this.selectedUpperNodeList.push({
-                            nodeId: el.id,
-                            nodeName: el.chName,
-                            ipCorporation: defaultNode.ipCorporation,
-                            operatorId: el.operatorId,
-                            chiefType: el.chiefType
-                        });
-                    }
-                }.bind(this))
-                nodesArray.push({name: el.chName, value: el.id, checked: el.checked, operatorId: el.operatorId});
-                this.nodesArrayFirstLocal.push({
-                    name: el.chName,
-                    value: el.id,
-                    checked: el.checked,
-                    operatorId: el.operatorId
-                });
-            }.bind(this))
-            this.initUpperTable()
-
-            var searchSelect = new SearchSelect({
-                containerID: this.$el.find('.upper .add-node-ctn').get(0),
-                panelID: this.$el.find('.upper .add-node').get(0),
-                openSearch: true,
-                onOk: function (data) {
-                    var NowselectedUpperNodeList = [];
-                    _.each(this.selectedUpperNodeList, function (el, index, list) {
-                        NowselectedUpperNodeList.push(el);
-                    }.bind(this));
-
-                    var NowruleContentUpper = [];
-                    _.each(this.ruleContent.upper, function (el, index, list) {
-                        NowruleContentUpper.push(el);
-                    }.bind(this));
-
-                    this.selectedUpperNodeList = [];
-                    this.ruleContent.upper = [];
-
-                    _.each(data, function (el, key, ls) {
-                        this.selectedUpperNodeList.push({
-                            nodeId: el.value,
-                            nodeName: el.name,
-                            ipCorporation: 0,
-                            operatorId: ''
-                        });
-                        this.ruleContent.upper.push({"nodeId": el.value, "ipCorporation": 0});
-                    }.bind(this))
-
-                    _.each(this.selectedUpperNodeList, function (el, index, list) {
-                        el.ipCorporation = 0;
-                        _.each(NowselectedUpperNodeList, function (upperNode, index, list) {
-                            if (el.nodeId == upperNode.nodeId) {
-                                el.ipCorporation = upperNode.ipCorporation;
-                            }
-                        })
-                    }.bind(this))
-
-                    _.each(this.ruleContent.upper, function (el, index, list) {
-                        el.ipCorporation = 0;
-                        _.each(NowruleContentUpper, function (upper, index, list) {
-                            if (el.nodeId == upper.nodeId) {
-                                el.ipCorporation = upper.ipCorporation;
-                            }
-                        })
-                    }.bind(this))
-
-                    _.each(this.nodesArrayFirstLocal, function (el, key, ls) {
-                        el.checked = false;
-                        _.each(this.selectedUpperNodeList, function (data, key, ls) {
-                            if (el.value == data.nodeId) {
-                                el.checked = true;
-                                data.operatorId = el.operatorId;
-                            }
-                        }.bind(this))
-                    }.bind(this))
-                    this.initUpperTable()
-                }.bind(this),
-                data: nodesArray,
-                callback: function (data) {
-                }.bind(this)
-            });
-        },
-
         initUpperSelect: function (res) {
             var options = {
                 containerID: this.$el.find('.upper .add-node-ctn').get(0),
@@ -544,7 +403,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.$el.find(".upper .table-ctn").html(_.template(template['tpl/empty-2.html'])({data: {message: "你还没有添加节点"}}));
 
             this.upperTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperDelete, this));
-            this.upperTable.find("tbody .spareradio").on("click", $.proxy(this.onClickRadioButton, this));
+            this.upperTable.find("tbody .spareradio").on("click", $.proxy(this.onClickCheckboxButton, this));
 
             require(['deviceManage.model'], function (deviceManageModel) {
                 var mydeviceManageModel = new deviceManageModel();
@@ -639,11 +498,11 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.initUpperTable();
         },
 
-        onClickRadioButton: function (event) {
+        onClickCheckboxButton: function (event) {
             var eventTarget = event.srcElement || event.target, id;
             var id = eventTarget.id;
+
             _.each(this.defaultParam.upper, function(obj){
-                obj.chiefType = 1;
                 if (obj.rsNodeMsgVo.id === parseInt(id)) obj.chiefType = 0;
             }.bind(this))
         },

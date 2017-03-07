@@ -373,7 +373,10 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     if (el.value == data.rsNodeMsgVo.id) {
                         el.checked = true;
                         data.chiefType = el.chiefType;
-                        data.ipCorporation = el.ipCorporation;
+                        if (el.operator === 9)
+                            data.ipCorporation = el.operator;
+                        else
+                            data.ipCorporation = 0
                         data.rsNodeMsgVo.operatorId = el.operator;
                     }
                 }.bind(this))

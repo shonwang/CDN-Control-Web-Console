@@ -929,9 +929,9 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 }.bind(this))
                 _.each(rule.upper, function(node){
                     upperObjArray.push({
-                        id: node.rsNodeMsgVo.id,
+                        nodeId: node.rsNodeMsgVo.id,
                         ipCorporation: node.ipCorporation,
-                        chiefType: node.chiefType
+                        chiefType: node.chiefType === undefined ? 1 : node.chiefType
                     })
                 }.bind(this))
 

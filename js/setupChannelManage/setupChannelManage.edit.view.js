@@ -223,7 +223,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                 this.mySetupSendWaitCustomizeModel.off("set.channel.config.error");
                 this.mySetupSendWaitCustomizeModel.on("set.channel.config.success", $.proxy(this.onSaveComment, this));
                 this.mySetupSendWaitCustomizeModel.on("set.channel.config.error", $.proxy(this.onGetError, this));
-                if (this.applicationType === 203)
+                if (this.applicationType !== 203)
                     this.mySetupSendWaitCustomizeModel.setChannelNgConfig(postParam)
                 else
                     this.mySetupSendWaitCustomizeModel.setChannelLuaConfig(postParam)

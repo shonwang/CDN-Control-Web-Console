@@ -141,7 +141,7 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
                     id: model.get("id"),
                     domain: model.get("domain")
                 }),
-                whereAreYouFrom = 1;
+                whereAreYouFrom = 0;
 
             if (!whereAreYouFrom)
                 window.location.hash = '#/domainList/' + args + "/basicInformation/" + args2;

@@ -63,7 +63,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         initSetup: function () {
-            this.$el.find('.local .add-node').hide();
+            this.$el.find('.local .add-node').show();
             if (this.defaultParam.localType === 1) {
                 this.$el.find("#strategyRadio1").get(0).checked = true;
                 this.$el.find("#strategyRadio2").get(0).checked = false;
@@ -91,7 +91,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         onClickSaveBtn: function () {
             var flag = true;
             this.checked;
-            // debugger
             if (this.ruleContent.local.length == 0) {
                 alert('请选择本层节点');
                 return;
@@ -127,7 +126,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     }.bind(this))
                 }
             }.bind(this))
-            // debugger
             if (flag) {
                 if (!this.isEdit) {
                     this.rule.push(this.ruleContent);
@@ -452,7 +450,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
         initOperatorUpperList: function (data) {
             var statusArray = [];
-            _.each(data.rows, function(el, key, list){
+            _.each(data, function (el, key, list) {
                 statusArray.push({name: el.name, value: el.id})
             }.bind(this))
             rootNodes = this.upperTable.find(".ipOperator .dropdown");

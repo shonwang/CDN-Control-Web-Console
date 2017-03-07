@@ -411,12 +411,10 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     onSaveCallback: function () {
                         //this.defaultParam = this.rule;
                         this.checked;
-                        // debugger
                         var data = this.InformationProcessing(this.defaultParam);
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".special-layer").show();
                         this.initRuleTable(data);
-
                     }.bind(this),
                     onCancelCallback: function () {
                         myAddEditLayerStrategyView.$el.remove();

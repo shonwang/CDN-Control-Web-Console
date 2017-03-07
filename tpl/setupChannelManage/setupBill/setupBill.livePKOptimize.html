@@ -1,0 +1,60 @@
+<div>
+    <table class="table table-striped table-hover">
+        <caption>PK优化配置</caption>
+    </table> 
+    <table class="table table-striped table-hover">
+        <caption>通用优化配置</caption>
+        <tbody>
+            <tr>
+              <td>保持连接</td>
+              <td><%=data["keepAliveFlagStr"]%></td>
+            </tr>
+            <tr>
+              <td>AV header合并发送</td>
+              <td><%=data["avHeaderFlagStr"]%></td>
+            </tr>
+        </tbody>
+    </table> 
+    <table class="table table-striped table-hover">
+        <caption>http+flv优化配置</caption>
+        <tbody>
+            <tr>
+              <td>服务端首次发送的header的时间戳为0</td>
+              <td><%=data["hdlAvhZeroTimestampStr"]%></td>
+            </tr>
+            <tr>
+              <td>时间戳从0开始递增</td>
+              <td><%=data["hdlTimestampZeroStartStr"]%></td>
+            </tr>
+            <tr>
+              <td>发送gop数据时，发送音频</td>
+              <td><%=data["hdlGopSendAudioStr"]%></td>
+            </tr>
+            <tr>
+              <td>发送gop数据时，时间戳全为0</td>
+              <td><%=data["hdlGopZeroTimestampStr"]%></td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-striped table-hover">
+        <caption>rtmp优化配置</caption>
+        <tbody>
+            <tr>
+              <td>服务端首次发送的header的时间戳为0</td>
+              <td><%=data["rtmpAvhZeroTimestampStr"]%></td>
+            </tr>
+            <tr>
+              <td>时间戳从0开始递增</td>
+              <td><%=data["rtmpTimestampZeroStartStr"]%></td>
+            </tr>
+            <tr>
+              <td>发送gop数据时，发送音频</td>
+              <td><%=data["rtmpGopSendAudioStr"]%></td>
+            </tr>
+            <tr>
+              <td>发送gop数据时，时间戳全为0</td>
+              <td><%=data["rtmpGopZeroTimestampStr"]%></td>
+            </tr>
+        </tbody>
+    </table>  
+</div>

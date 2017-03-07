@@ -21,38 +21,91 @@ define("liveFrequencyLog.view", ['require','exports', 'template', 'modal.view', 
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
-            require(["domainSetup.model"], function(DomainSetupModel){
-                var myDomainSetupModel = new DomainSetupModel();
-                    myDomainSetupModel.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
-                    myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
-                    myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
-            }.bind(this))
+            this.defaultParam = {
+                frequencyFlag: 0, //0:关闭 1:开启
+                frequencyInterval: 300
+            }
+
+            this.$el.find(".log-interval").hide();
+            this.$el.find(".frequency-log-open .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
+            this.collection.on("set.logConfig.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.logConfig.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.logConfig.success", $.proxy(this.onGetDomainInfo, this));
+            this.collection.on("get.logConfig.error", $.proxy(this.onGetError, this));
+            this.collection.getLogConf({originId:this.domainInfo.id});
         },
 
         onGetDomainInfo: function(data){
-            this.defaultParam = {
-                chargingOpen: 0 //0:关闭 1:开启
-            }
+            //TODO 假数据
+            // var data = {
+            //     "appLives":[
+            //         {
+            //             "logConf":{
+            //                 "id":null,
+            //                 "liveId":null,
+            //                 "slaAccessFlag":null,
+            //                 "slaFirstCache":null,
+            //                 "slaSecondCache":null,
+            //                 "frequencyFlag":1,
+            //                 "frequencyInterval":600,
+            //             }
+            //         }
+            //     ]
+            // };
 
-            if (data.domainConf && data.domainConf.chargingOpen !== null && data.domainConf.chargingOpen !== undefined)
-                this.defaultParam.chargingOpen = data.domainConf.chargingOpen //0:关闭 1:开启            
+            data = data.appLives[0]
+
+            if (data.logConf && data.logConf.frequencyFlag !== null && data.logConf.frequencyFlag !== undefined)
+                this.defaultParam.frequencyFlag = data.logConf.frequencyFlag //0:关闭 1:开启    
+            if (data.logConf && data.logConf.frequencyInterval !== null && data.logConf.frequencyInterval !== undefined)
+                this.defaultParam.frequencyInterval = data.logConf.frequencyInterval        
 
             this.initSetup();
-
-            this.$el.find(".charging-open .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
-            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
-
-            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
-
-            this.collection.on("set.chargingOpen.success", $.proxy(this.onSaveSuccess, this));
-            this.collection.on("set.chargingOpen.error", $.proxy(this.onGetError, this));
         },
 
         initSetup: function(){
-            if (this.defaultParam.chargingOpen === 0)
-                this.$el.find(".charging-open .togglebutton input").get(0).checked = false;
-            else
-                this.$el.find(".charging-open .togglebutton input").get(0).checked = true;
+            if (this.defaultParam.frequencyFlag === 0){
+                this.$el.find(".frequency-log-open .togglebutton input").get(0).checked = false;
+                this.$el.find(".log-interval").hide();
+            } else {
+                this.$el.find(".frequency-log-open .togglebutton input").get(0).checked = true;
+                this.$el.find(".log-interval").show();
+            }
+            this.initTimeUnitDropDown();
+        },
+
+        initTimeUnitDropDown: function(){
+            var  timeArray = [
+                {"value": 1, "name": "秒"},
+                {"value": 60, "name": "分"},
+                {"value": 60 * 60, "name": "时"},
+                {"value": 60 * 60 * 24, "name": "天"},
+                {"value": 60 * 60 * 24 * 30, "name": "月"},
+                {"value": 60 * 60 * 24 * 30 * 12, "name": "年"},
+            ];
+
+            var input = this.defaultParam.frequencyInterval,
+                rootNode = this.$el.find(".time-unit");
+                curEl = this.$el.find("#dropdown-time-unit .cur-value"),
+                curInputEl = this.$el.find("#log-interval");
+
+            Utility.initDropMenu(rootNode, timeArray, function(value){
+                this.defaultParam.frequencyInterval = parseInt(curInputEl.val()) * parseInt(value);
+            }.bind(this));
+
+            curInputEl.on("click", function(){curInputEl.focus()}.bind(this))
+            curInputEl.on("blur", function(){
+                var unit = _.find(timeArray, function(obj){
+                    return obj.name === curEl.html();
+                }.bind(this));
+                this.defaultParam.frequencyInterval = unit.value * parseInt(curInputEl.val());
+            }.bind(this))
+
+            curEl.html("秒");
+            curInputEl.val(input);
         },
 
         onSaveSuccess: function(){
@@ -64,6 +117,7 @@ define("liveFrequencyLog.view", ['require','exports', 'template', 'modal.view', 
                 var mySaveThenSendView = new SaveThenSendView({
                     collection: new SaveThenSendModel(),
                     domainInfo: this.domainInfo,
+                    isRealLive: true,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
                         window.location.hash = '#/domainList/' + this.options.query;
@@ -74,7 +128,7 @@ define("liveFrequencyLog.view", ['require','exports', 'template', 'modal.view', 
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
-                    width: 800,
+                    width: 1000,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),
@@ -88,20 +142,22 @@ define("liveFrequencyLog.view", ['require','exports', 'template', 'modal.view', 
 
         onClickSaveBtn: function(){
             var postParam =  {
-                "originId": this.domainInfo.id,
-                "chargingOpen": this.defaultParam.chargingOpen,
-                t: new Date().valueOf()
-            }
-            this.collection.setChargingOpen(postParam)
+                    "originId": this.domainInfo.id,
+                    "frequencyFlag": this.defaultParam.frequencyFlag,
+                    "frequencyInterval":this.defaultParam.frequencyInterval
+                }
+            this.collection.setLogConf(postParam)
         },
 
         onClickToggle: function(){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){
-                this.defaultParam.chargingOpen = 1;
+                this.defaultParam.frequencyFlag = 1;
+                this.$el.find(".log-interval").show();
             } else {
-                this.defaultParam.chargingOpen = 0;
+                this.defaultParam.frequencyFlag = 0;
+                this.$el.find(".log-interval").hide();
             }
         },
 

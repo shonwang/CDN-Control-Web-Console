@@ -1,16 +1,29 @@
 define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
-    var AddEditTimestampView = Backbone.View.extend({
+    var LiveTimestampView= Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
-            this.options = options;
             this.collection = options.collection;
-            this.isEdit = options.isEdit;
-            this.model = options.model;
-            this.$el = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.add.html'])());
+            this.options = options;
+            this.$el = $(_.template(template['tpl/customerSetup/domainList/liveTimestamp/liveTimestamp.html'])());
+            var clientInfo = JSON.parse(options.query), 
+                domainInfo = JSON.parse(options.query2),
+                userInfo = {
+                    clientName: clientInfo.clientName,
+                    domain: domainInfo.domain,
+                    uid: clientInfo.uid
+                }
+            this.domainInfo = domainInfo;
+            this.clientInfo = clientInfo;
+            this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
+                data: userInfo,
+                notShowBtn: true
+            }));
+            this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
             this.defaultParam = {
+                isOpenSetup: 1,
                 isBaseSetup: 1,
                 antiLeech: 1,
                 baseSecretKeyPrimary: "",
@@ -24,20 +37,125 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                 advancedSecretKeyPrimary: "",
                 advancedSecretKeyBackup: [],
                 spliceMd5: 1,
-                timeParam: "",
-                hashParam: "",
-                authFactor: "",
-                md5Truncate: "",
-                type: 9,
-                policy: ""
+                timeParam: "t",
+                hashParam: "k",
+                //authFactor: "",
+                atuthDivisorArray: [],
+                md5Truncate: ""
             };
 
-            if (this.isEdit){
-                var protectionType = this.model.get("protectionType"), //1:typeA 2:typeB 3:typeC
-                    confType = this.model.get("confType"),
-                    authKeyList = this.model.get("authKeyList"),
-                    md5Truncate = this.model.get("md5Truncate")
-                    expirationTime = this.model.get("expirationTime");
+            this.$el.find(".open-timestamp .togglebutton input").on("click", $.proxy(this.onClickSetupToggle, this));
+            this.$el.find(".setup-type input").on("click", $.proxy(this.onClickSetupRadio, this));
+            this.$el.find(".anti-leech input").on("click", $.proxy(this.onClickAntiLeechRadio, this));
+            this.$el.find(".base-setup .add-secret-key-backup").on("click", $.proxy(this.onClickBaseNewKey, this));
+            this.$el.find(".base-setup.deadline input[name='baseDeadline']").on("click", $.proxy(this.onClickBaseDeadlineRadio, this));
+            this.$el.find("#secret-key-primary").on("blur", $.proxy(this.onBlurSecretKeyInput, this));
+            this.$el.find("#new-backup-key").on("blur", $.proxy(this.onBlurSecretKeyInput, this));
+            this.$el.find(".encryption-url input[name='encryption']").on("click", $.proxy(this.onClickEncryptionUrlRadio, this));
+            this.$el.find(".advanced-setup.deadline input[name='deadline']").on("click", $.proxy(this.onClickAdvancedDeadlineRadio, this));
+            this.$el.find(".advanced-setup .add-secret-key-backup").on("click", $.proxy(this.onClickAdvancedNewKey, this));
+            this.$el.find(".splice-md5 input[name='spliceMd5']").on("click", $.proxy(this.onClickSpliceMd5Radio, this));
+            this.$el.find(".advanced-setup .add-atuth-divisor").on("click", $.proxy(this.onClickAddAtuthDivisor, this));
+            this.$el.find(".save").on("click", $.proxy(this.onSure, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
+            this.collection.on("set.protection.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.protection.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.protection.success", $.proxy(this.initBaseAdvancedSetup, this));
+            this.collection.on("get.protection.error", $.proxy(this.onGetError, this));
+            this.collection.getStandardProtection({originId:this.domainInfo.id});
+        },
+
+        launchSendPopup: function(){
+            require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
+                var mySaveThenSendView = new SaveThenSendView({
+                    collection: new SaveThenSendModel(),
+                    domainInfo: this.domainInfo,
+                    isRealLive: true,
+                    onSendSuccess: function() {
+                        this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
+                    }.bind(this)
+                });
+                var options = {
+                    title: "发布",
+                    body : mySaveThenSendView,
+                    backdrop : 'static',
+                    type     : 2,
+                    width: 1000,
+                    onOKCallback:  function(){
+                        mySaveThenSendView.sendConfig();
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();
+                    }.bind(this)
+                }
+                this.sendPopup = new Modal(options);
+            }.bind(this))
+        },
+
+        onSaveSuccess: function(){
+            alert("保存成功！")
+        },
+
+        initBaseAdvancedSetup: function(data){
+            //TODO 假数据
+            // var data = [
+            //     {
+            //         "openFlag": 1,
+            //         "confType": 1,
+            //         "protectionType": 1,
+            //         "timeParam": "null",
+            //         "hashParam": "null",
+            //         "timeType": 2,
+            //         "timeValue": "null",
+            //         "expirationTime": 3600,
+            //         "md5Truncate": '123,123',
+            //         "authKeyList": [
+            //             {
+            //                 "id": 4,
+            //                 "authKey": "xxx",
+            //             }
+            //         ],
+            //         "authDivisorList": [
+            //             {
+            //                 "id": 4,
+            //                 "divisor": 1,
+            //                 "divisorParam":"",
+            //             }
+            //         ]
+            //     }
+            // ]
+            data = data[0]
+
+            if (data){
+                if (data.openFlag !== null && data.openFlag !== undefined)
+                    this.defaultParam.isOpenSetup = data.openFlag
+                if (data.authDivisorList) {
+                    var  atuthDivisorArray = [
+                        {value: 1, name: "host:用户请求域名"},
+                        {value: 2, name: "uri：用户请求的uri"},
+                        {value: 3, name: "url：不带参数"},
+                        {value: 4, name: "arg&name:请求url中的参数名称"},
+                        {value: 5, name: "time：请求url中是时间戳"},
+                        {value: 6, name: "key：秘钥"},
+                        {value: 7, name: "filename：文件名称，带后缀"},
+                        {value: 8, name: "filenameno：文件名称，不带后缀"}
+                    ];
+                    _.each(data.authDivisorList, function(el, index, ls){
+                        var nameObj = _.find(atuthDivisorArray, function(obj){
+                            return obj.value === el.divisor
+                        }.bind(this))
+                        if (nameObj) el.divisorName = nameObj.name
+                    }.bind(this))
+                    this.defaultParam.atuthDivisorArray = data.authDivisorList
+                }
+
+                var protectionType = data.protectionType, //1:typeA 2:typeB 3:typeC
+                    confType = data.confType,
+                    authKeyList = data.authKeyList,
+                    md5Truncate = data.md5Truncate,
+                    expirationTime = data.expirationTime;
 
                 if (confType === 0) {
                     this.defaultParam.antiLeech = protectionType
@@ -71,6 +189,7 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                     }
                 }.bind(this))
 
+                if (expirationTime === "" || expirationTime === null) expirationTime = 0;
                 if (expirationTime === 0 && confType === 0)
                     this.defaultParam.baseDeadline === 1;
                 else if (expirationTime !== 0 && confType === 0)
@@ -80,58 +199,30 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                 else if (expirationTime !== 0 && confType === 1)
                     this.defaultParam.advancedDeadline = 2;
 
+                if (md5Truncate === null) md5Truncate = "";
                 if (md5Truncate === ""){
                     this.defaultParam.spliceMd5 = 1;
                 } else {
                     this.defaultParam.spliceMd5 = 2;
                 }
                 this.defaultParam.isBaseSetup = confType === 0 ? 1 : 2; //0:标准配置 1:高级配置
-                this.defaultParam.timestampType = this.model.get("timeType") || 1; //1:UNIX时间（十六进制）2:UNix时间（十进制）3：Text格式
-                this.defaultParam.authFactor = this.model.get("authFactor");
-                this.defaultParam.timeParam = this.model.get("timeParam");
-                this.defaultParam.hashParam = this.model.get("hashParam");
-                this.defaultParam.md5Truncate = this.model.get("md5Truncate");
-                this.defaultParam.type = this.model.get("matchingType") || 0;
-                this.defaultParam.policy = this.model.get("matchingValue") || "";
-
-                console.log(this.defaultParam)
+                this.defaultParam.timestampType = data.timeType || 1; //1:UNIX时间（十六进制）2:UNix时间（十进制）3：Text格式
+                // this.defaultParam.authFactor = data.authFactor;
+                this.defaultParam.timeParam = data.timeParam;
+                this.defaultParam.hashParam = data.hashParam;
+                this.defaultParam.md5Truncate = data.md5Truncate;
+                this.$el.find(".deadline-time #deadline-time").val(data.expirationTime)
             }
 
-            require(['matchCondition.view', 'matchCondition.model'], function(MatchConditionView, MatchConditionModel){
-                var  matchConditionArray = [
-                    {name: "全部文件", value: 9},
-                    {name: "文件类型", value: 0},
-                    {name: "指定URI", value: 2},
-                    {name: "指定目录", value: 1},
-                    {name: "正则匹配", value: 3},
-                ], matchConditionOption = {
-                    collection: new MatchConditionModel(),
-                    defaultCondition : this.defaultParam.type,
-                    defaultPolicy: this.defaultParam.policy,
-                    matchConditionArray: matchConditionArray
-                }
-                this.matchConditionView = new MatchConditionView(matchConditionOption);
-                this.matchConditionView.render(this.$el.find(".match-condition-ctn"));
+            if (this.defaultParam.isOpenSetup === 1) {
+                this.$el.find(".open-timestamp .togglebutton input").get(0).checked = true;
+                this.$el.find(".setup-content").show(200);
+            } else if (this.defaultParam.isOpenSetup === 0) {
+                this.$el.find(".open-timestamp .togglebutton input").get(0).checked = false;
+                this.$el.find(".setup-content").hide(200);
+            }
 
-                this.$el.find(".setup-type input").on("click", $.proxy(this.onClickSetupRadio, this));
-                this.$el.find(".anti-leech input").on("click", $.proxy(this.onClickAntiLeechRadio, this));
-                this.$el.find(".base-setup .add-secret-key-backup").on("click", $.proxy(this.onClickBaseNewKey, this));
-                this.$el.find(".base-setup.deadline input[name='baseDeadline']").on("click", $.proxy(this.onClickBaseDeadlineRadio, this));
-
-                this.$el.find("#secret-key-primary").on("blur", $.proxy(this.onBlurSecretKeyInput, this));
-                this.$el.find("#new-backup-key").on("blur", $.proxy(this.onBlurSecretKeyInput, this));
-
-                this.$el.find(".encryption-url input[name='encryption']").on("click", $.proxy(this.onClickEncryptionUrlRadio, this));
-                this.$el.find(".advanced-setup.deadline input[name='deadline']").on("click", $.proxy(this.onClickAdvancedDeadlineRadio, this));
-                this.$el.find(".advanced-setup .add-secret-key-backup").on("click", $.proxy(this.onClickAdvancedNewKey, this));
-                this.$el.find(".splice-md5 input[name='spliceMd5']").on("click", $.proxy(this.onClickSpliceMd5Radio, this));
-                this.initBaseAdvancedSetup();
-            }.bind(this))
-        },
-
-        initBaseAdvancedSetup: function(){
             this.hideOrShowSetup();
-
             if (this.defaultParam.isBaseSetup === 1)
                 this.$el.find(".setup-type #setupType1").get(0).checked = true;
             else if (this.defaultParam.isBaseSetup === 2)
@@ -167,17 +258,16 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
             else if (this.defaultParam.spliceMd5 === 2)
                 this.$el.find(".advanced-setup.splice-md5 #spliceMd52").get(0).checked = true;
 
-            this.$el.find("#atuth-divisor").val(this.defaultParam.authFactor);
+            //this.$el.find("#atuth-divisor").val(this.defaultParam.authFactor);
             this.$el.find("#key_time").val(this.defaultParam.timeParam);
             this.$el.find("#key_hash").val(this.defaultParam.hashParam);
 
-            if (this.model)
-                this.$el.find(".deadline-time #deadline-time").val(this.model.get("expirationTime"))
-
-            if (this.defaultParam.md5Truncate.indexOf(",") !== -1){
+            if (this.defaultParam.md5Truncate && this.defaultParam.md5Truncate.indexOf(",") !== -1){
                 this.$el.find("#md5-start").val(this.defaultParam.md5Truncate.split(",")[0])
                 this.$el.find("#md5-end").val(this.defaultParam.md5Truncate.split(",")[1])
             } 
+
+            this.updateAtuthDivisorTable();
         },
 
         initDropDropdown: function(){
@@ -202,7 +292,7 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
             var  timeTypeArray = [
                 {name: "UNIX时间（十进制）", value: 2},
                 {name: "UNIX时间（十六进制）", value: 1},
-                {name: "Text格式（例如20130623181426）", value: 3}
+                // {name: "Text格式（例如20130623181426）", value: 3}
             ],
             rootOtherNode = this.$el.find(".timestamp-type");
             Utility.initDropMenu(rootOtherNode, timeTypeArray, function(value){
@@ -217,8 +307,33 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                 this.$el.find("#dropdown-timestamp-type .cur-value").html(defaultOtherValue.name);
             else
                 this.$el.find("#dropdown-timestamp-type .cur-value").html(timeTypeArray[0].name);
-        },
 
+            this.curAtuthDivisor = 1;
+            this.curAtuthDivisorParam = "";
+            this.$el.find("#atuth-divisor-param").hide();
+
+            //1:host 2:URI 3:url 4:param_key 5:time 6:key 7:filename 8:filenameno 9:method 10:head_key
+            var  atuthDivisorArray = [
+                {value: 1, name: "host:用户请求域名"},
+                {value: 2, name: "uri：用户请求的uri"},
+                {value: 3, name: "url：不带参数"},
+                {value: 4, name: "arg&name:请求url中的参数名称"},
+                {value: 5, name: "time：请求url中是时间戳"},
+                {value: 6, name: "key：秘钥"},
+                {value: 7, name: "filename：文件名称，带后缀"},
+                {value: 8, name: "filenameno：文件名称，不带后缀"}
+            ],
+            atuthDivisorRootNode = this.$el.find(".atuth-divisor");
+            Utility.initDropMenu(atuthDivisorRootNode, atuthDivisorArray, function(value){
+                this.curAtuthDivisor = parseInt(value);
+                if (this.curAtuthDivisor === 4){
+                    this.$el.find("#atuth-divisor-param").show();
+                } else {
+                    this.$el.find("#atuth-divisor-param").hide();
+                    this.$el.find("#atuth-divisor-param").val("");
+                }
+            }.bind(this));
+        },
         hideOrShowSetup: function(){
             if (this.defaultParam.isBaseSetup === 1){
                 this.$el.find(".base-setup").show();
@@ -226,6 +341,18 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
             } else if (this.defaultParam.isBaseSetup === 2){
                 this.$el.find(".advanced-setup").show();
                 this.$el.find(".base-setup").hide();
+            }
+        },
+
+        onClickSetupToggle : function(){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            if (eventTarget.checked){
+                this.$el.find(".setup-content").show(200);
+                this.defaultParam.isOpenSetup = 1;
+            } else {
+                this.defaultParam.isOpenSetup = 0;
+                this.$el.find(".setup-content").hide(200);
             }
         },
 
@@ -286,6 +413,7 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                 backupKey: newKey
             });
             this.updateBaseKeyTable();
+            this.$el.find(".base-setup #new-backup-key").val("");
         },
 
         onClickAntiLeechRadio: function(event){
@@ -318,6 +446,57 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             this.defaultParam.spliceMd5 = parseInt($(eventTarget).val())
+        },
+
+        onClickAddAtuthDivisor: function(event){
+            var eventTarget = event.srcElement || event.target;
+
+            this.curAtuthDivisorParam = this.$el.find("#atuth-divisor-param").val();
+            if (this.curAtuthDivisor === 4 && this.curAtuthDivisorParam === ""){
+                alert("参数不能为空")
+                return;
+            }
+
+            if (this.defaultParam.atuthDivisorArray.length >= 6) {
+                alert("最大可以设置6个");
+                return;
+            }
+
+            this.defaultParam.atuthDivisorArray.push({
+                id: new Date().valueOf(),
+                divisorName: this.$el.find("#dropdown-atuth-divisor .cur-value").html(),
+                divisor: this.curAtuthDivisor,
+                divisorParam: this.curAtuthDivisorParam
+            });
+            this.updateAtuthDivisorTable();
+            this.$el.find("#atuth-divisor-param").val("")
+        },
+
+        updateAtuthDivisorTable: function(){
+            this.$el.find(".advanced-setup .atuth-divisor-table").find(".table").remove()
+            this.atuthDivisorTable = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.atuthDivisor.table.html'])({
+                data: this.defaultParam.atuthDivisorArray
+            }))
+
+            this.atuthDivisorTable.find(".delete").on("click", $.proxy(this.onClickAuthDivisorTableItemDelete, this));
+            this.$el.find(".advanced-setup .atuth-divisor-table .table-ctn").html(this.atuthDivisorTable.get(0));
+        },
+
+        onClickAuthDivisorTableItemDelete: function(event){
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+
+            var filterArray = _.filter(this.defaultParam.atuthDivisorArray, function(obj){
+                return obj.id !== parseInt(id)
+            }.bind(this))
+
+            if (filterArray.length <= 1) {
+                alert("最少不能少于2个");
+                return;
+            }
+
+            this.defaultParam.atuthDivisorArray = filterArray;
+            this.updateAtuthDivisorTable();
         },
 
         updateAdvancedKeyTable: function(){
@@ -355,6 +534,7 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                 backupKey: newKey
             });
             this.updateAdvancedKeyTable();
+            this.$el.find(".advanced-setup #new-backup-key").val("")
         },
 
         checkBalabala: function(){
@@ -402,11 +582,10 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         onSure: function(){
-            var result = this.checkBalabala();
-            if (!result) return false;
-
-            var matchConditionParam = this.matchConditionView.getMatchConditionParam();
-            if (!matchConditionParam) return false;
+            if (this.defaultParam.isOpenSetup){
+                var result = this.checkBalabala();
+                if (!result) return false;
+            }
 
             var protectionType, confType, expirationTime, md5Truncate;
             confType = this.defaultParam.isBaseSetup === 1 ? 0 : 1
@@ -461,140 +640,22 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                 }.bind(this))
             }
 
-            var confTypeName;
-            if (confType === 0) confTypeName = "配置类型：标准配置<br>";
-            if (confType === 1) confTypeName = "配置类型：高级配置<br>";
-
-            var protectionTypeName;
-            if (protectionType === 1 && confType === 0) protectionTypeName = "防盗链格式：TypeA<br>";
-            if (protectionType === 2 && confType === 0) protectionTypeName = "防盗链格式：TypeB<br>";
-            if (protectionType === 3 && confType === 0) protectionTypeName = "防盗链格式：TypeC<br>";
-            if (protectionType === 1 && confType === 1) protectionTypeName = "加密URL形式：形式1：加密字符串在参数中<br>";
-            if (protectionType === 2 && confType === 1) protectionTypeName = "加密URL形式：形式2：加密字符串在路径中<br>";
-            if (protectionType === 3 && confType === 1) protectionTypeName = "加密URL形式：形式2：加密字符串在路径中<br>";
-
-            var authKeyListName;
-            authKeyListName = "共享秘钥：1主，" + (authKeyList.length - 1) + "备<br>";
-
-            var expirationTimeName;
-            if (expirationTime === 0) expirationTimeName = "失效时间：时间戳时间<br>";
-            if (expirationTime !== 0) expirationTimeName = "失效时间：时间戳时间+过期时间：" + expirationTime + "秒<br>";
-
-            var summary = confTypeName + protectionTypeName + authKeyListName + expirationTimeName;
-
             var postParam = {
-                "id": this.model ? this.model.get("id") : new Date().valueOf(),
-                "matchingType": matchConditionParam.type,
-                "matchingValue": matchConditionParam.policy,
-                "typeName": matchConditionParam.typeName,
+                "openFlag": this.defaultParam.isOpenSetup,
                 "confType": confType,
                 "protectionType": protectionType,
                 "timeParam": this.$el.find("#key_time").val(),
                 "hashParam": this.$el.find("#key_hash").val(),
                 "timeType": this.defaultParam.timestampType,
                 "expirationTime": expirationTime,
-                "authFactor": this.$el.find("#atuth-divisor").val(),
+                // "authFactor": this.$el.find("#atuth-divisor").val(),
                 "md5Truncate": md5Truncate,
                 "authKeyList": authKeyList,
-                "summary": summary
+                "authDivisorList": this.defaultParam.atuthDivisorArray
             }
-            return postParam;
-        },
-
-        render: function(target) {
-            this.$el.appendTo(target);
-        }
-    });
-
-
-    var LiveTimestampView= Backbone.View.extend({
-        events: {},
-
-        initialize: function(options) {
-            this.collection = options.collection;
-            this.options = options;
-            this.$el = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.html'])());
-            var clientInfo = JSON.parse(options.query), 
-                domainInfo = JSON.parse(options.query2),
-                userInfo = {
-                    clientName: clientInfo.clientName,
-                    domain: domainInfo.domain,
-                    uid: clientInfo.uid
-                }
-            this.domainInfo = domainInfo;
-            this.clientInfo = clientInfo;
-            this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
-                data: userInfo,
-                notShowBtn: false
-            }));
-            this.optHeader.appendTo(this.$el.find(".opt-ctn"))
-
-            this.collection.on("get.protection.success", $.proxy(this.onChannelListSuccess, this));
-            this.collection.on("get.protection.error", $.proxy(this.onGetError, this));
-
-            this.$el.find(".add").on("click", $.proxy(this.onClickAddRule, this));
-            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
-
-            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
-
-            this.collection.on("set.protection.success", $.proxy(this.onSaveSuccess, this));
-            this.collection.on("set.protection.error", $.proxy(this.onGetError, this));
-
-            this.onClickQueryButton()
-        },
-
-        onSaveSuccess: function(){
-            alert("保存成功！")
-        },
-
-        launchSendPopup: function(){
-            require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
-                var mySaveThenSendView = new SaveThenSendView({
-                    collection: new SaveThenSendModel(),
-                    domainInfo: this.domainInfo,
-                    onSendSuccess: function() {
-                        this.sendPopup.$el.modal("hide");
-                        window.location.hash = '#/domainList/' + this.options.query;
-                    }.bind(this)
-                });
-                var options = {
-                    title: "发布",
-                    body : mySaveThenSendView,
-                    backdrop : 'static',
-                    type     : 2,
-                    width: 800,
-                    onOKCallback:  function(){
-                        mySaveThenSendView.sendConfig();
-                    }.bind(this),
-                    onHiddenCallback: function(){
-                        if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();
-                    }.bind(this)
-                }
-                this.sendPopup = new Modal(options);
-            }.bind(this))
-        },
-
-        onClickSaveBtn: function(){
-            var list = [];
-            this.collection.each(function(obj){
-                list.push({
-                    "matchingType": obj.get('matchingType'),
-                    "matchingValue": obj.get('matchingValue'),
-                    "confType": obj.get('confType'),
-                    "protectionType": obj.get('protectionType'),
-                    "timeParam": obj.get('timeParam'),
-                    "hashParam": obj.get('hashParam'),
-                    "timeType": obj.get('timeType'),
-                    "expirationTime": obj.get('expirationTime'),
-                    "authFactor": obj.get('authFactor'),
-                    "md5Truncate": obj.get('md5Truncate'),
-                    "authKeyList": obj.get('authKeyList'),
-                })
-            }.bind(this))
-
-            var postParam = {
+            postParam = {
                 "originId": this.domainInfo.id,
-                "list": list
+                "list": [postParam]
             }
 
             this.collection.setStandardProtection(postParam)
@@ -605,198 +666,6 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
-        },
-
-        onChannelListSuccess: function(){
-            this.initTable();
-        },
-
-        onClickQueryButton: function(){
-            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.collection.getStandardProtection({originId:this.domainInfo.id});
-        },
-
-        initTable: function(){
-            var allFileArray = this.collection.filter(function(obj){
-                return obj.get('matchingType') === 9;
-            }.bind(this));
-
-            var specifiedUrlArray = this.collection.filter(function(obj){
-                return obj.get('matchingType') === 2;
-            }.bind(this));
-
-            var otherArray = this.collection.filter(function(obj){
-                return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
-            }.bind(this));
-
-            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
-
-            this.table = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.table.html'])({
-                data: this.collection.models,
-                hideAction: false
-            }));
-            if (this.collection.models.length !== 0)
-                this.$el.find(".table-ctn").html(this.table[0]);
-            else
-                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-
-            this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-            this.table.find("tbody .up").on("click", $.proxy(this.onClickItemUp, this));
-            this.table.find("tbody .down").on("click", $.proxy(this.onClickItemDown, this));
-            this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
-        },
-
-        onClickItemEdit: function(event){
-            var eventTarget = event.srcElement || event.target,
-                id = $(eventTarget).attr("id");
-
-            var model = this.collection.find(function(obj){
-                return obj.get("id") === parseInt(id)
-            }.bind(this));
-            if (this.addRolePopup) $("#" + this.addRolePopup.modalId).remove();
-
-            var myAddEditTimestampView = new AddEditTimestampView({
-                collection: this.collection,
-                model: model,
-                isEdit: true
-            });
-
-            var options = {
-                title:"时间戳+共享秘钥防盗链",
-                body : myAddEditTimestampView,
-                backdrop : 'static',
-                type     : 2,
-                onOKCallback: function(){
-                    var postParam = myAddEditTimestampView.onSure();
-                    if (!postParam) return;
-                    _.each(postParam, function(value, key, ls){
-                        model.set(key, value);
-                    }.bind(this))
-                    this.collection.trigger("get.protection.success");
-                    this.addRolePopup.$el.modal('hide');
-                }.bind(this),
-                onHiddenCallback: function(){}.bind(this)
-            }
-            this.addRolePopup = new Modal(options);
-        },
-
-        onClickAddRule: function(event){
-            if (this.addRolePopup) $("#" + this.addRolePopup.modalId).remove();
-
-            var myAddEditTimestampView = new AddEditTimestampView({collection: this.collection});
-
-            var options = {
-                title:"时间戳+共享秘钥防盗链",
-                body : myAddEditTimestampView,
-                backdrop : 'static',
-                type     : 2,
-                onOKCallback: function(){
-                    var postParam = myAddEditTimestampView.onSure();
-                    if (!postParam) return;
-                    var model = new this.collection.model(postParam);
-                    var allFileArray = this.collection.filter(function(obj){
-                        return obj.get('matchingType') === 9;
-                    }.bind(this));
-
-                    var specifiedUrlArray = this.collection.filter(function(obj){
-                        return obj.get('matchingType') === 2;
-                    }.bind(this));
-
-                    var otherArray = this.collection.filter(function(obj){
-                        return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
-                    }.bind(this));
-
-                    if (postParam.type === 9) allFileArray.push(model)
-                    if (postParam.type === 2) specifiedUrlArray.push(model)
-                    if (postParam.type !== 9 && postParam.type !== 2) otherArray.push(model)
-  
-                    this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
-                    this.collection.trigger("get.protection.success");
-                    this.addRolePopup.$el.modal('hide');
-                }.bind(this),
-                onHiddenCallback: function(){}.bind(this)
-            }
-            this.addRolePopup = new Modal(options);
-        },
-
-        onClickItemDelete: function(event){
-            var result = confirm("你确定要删除吗？");
-            if (!result) return;
-            var eventTarget = event.srcElement || event.target,
-                id = $(eventTarget).attr("id");
-            for (var i = 0; i < this.collection.models.length; i++){
-                if (this.collection.models[i].get("id") === parseInt(id)){
-                    this.collection.models.splice(i, 1);
-                    this.collection.trigger("get.protection.success")
-                    return;
-                }
-            }
-        },
-
-        onClickItemUp: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
-            var model = this.collection.get(id), modelIndex;
-
-            var allFileArray = this.collection.filter(function(obj){
-                return obj.get('matchingType') === 9;
-            }.bind(this));
-
-            var specifiedUrlArray = this.collection.filter(function(obj){
-                return obj.get('matchingType') === 2;
-            }.bind(this));
-
-            var otherArray = this.collection.filter(function(obj){
-                return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
-            }.bind(this));
-
-            _.each(otherArray, function(el, index, list){
-                if (el.get("id") === parseInt(id)) modelIndex = index; 
-            }.bind(this))
-
-            otherArray = Utility.adjustElement(otherArray, modelIndex, true)
-
-            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
-
-            this.collection.trigger("get.protection.success")
-        },
-
-        onClickItemDown: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
-            var model = this.collection.get(id), modelIndex;
-
-            var allFileArray = this.collection.filter(function(obj){
-                return obj.get('matchingType') === 9;
-            }.bind(this));
-
-            var specifiedUrlArray = this.collection.filter(function(obj){
-                return obj.get('matchingType') === 2;
-            }.bind(this));
-
-            var otherArray = this.collection.filter(function(obj){
-                return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
-            }.bind(this));
-
-            _.each(otherArray, function(el, index, list){
-                if (el.get("id") === parseInt(id)) modelIndex = index; 
-            }.bind(this))
-
-            otherArray = Utility.adjustElement(otherArray, modelIndex, false)
-
-            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
-
-            this.collection.trigger("get.protection.success")
         },
 
         hide: function(){

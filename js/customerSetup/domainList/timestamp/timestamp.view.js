@@ -38,7 +38,30 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                     confType = this.model.get("confType"),
                     authKeyList = this.model.get("authKeyList"),
                     md5Truncate = this.model.get("md5Truncate")
-                    expirationTime = this.model.get("expirationTime");
+                    expirationTime = this.model.get("expirationTime"),
+                    authDivisorList = this.model.get("authDivisorList");
+
+                if (authDivisorList) {
+                    var  atuthDivisorArray = [
+                        {value: 1, name: "host:用户请求域名"},
+                        {value: 2, name: "uri：用户请求的uri"},
+                        {value: 3, name: "url：不带参数"},
+                        {value: 4, name: "arg&name:请求url中的参数名称"},
+                        {value: 5, name: "time：请求url中是时间戳"},
+                        {value: 6, name: "key：秘钥"},
+                        {value: 7, name: "filename：文件名称，带后缀"},
+                        {value: 8, name: "filenameno：文件名称，不带后缀"},
+                        {value: 9, name: "method: 用户请求方法"},
+                        {value: 10, name: "hdr&name：请求头中的header名称"}
+                    ];
+                    _.each(authDivisorList, function(el, index, ls){
+                        var nameObj = _.find(atuthDivisorArray, function(obj){
+                            return obj.value === el.divisor
+                        }.bind(this))
+                        if (nameObj) el.divisorName = nameObj.name
+                    }.bind(this))
+                    this.defaultParam.atuthDivisorArray = authDivisorList
+                }
 
                 if (confType === 0) {
                     this.defaultParam.antiLeech = protectionType
@@ -88,14 +111,12 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 }
                 this.defaultParam.isBaseSetup = confType === 0 ? 1 : 2; //0:标准配置 1:高级配置
                 this.defaultParam.timestampType = this.model.get("timeType") || 1; //1:UNIX时间（十六进制）2:UNix时间（十进制）3：Text格式
-                this.defaultParam.authFactor = this.model.get("authFactor");
+                //this.defaultParam.authFactor = this.model.get("authFactor");
                 this.defaultParam.timeParam = this.model.get("timeParam");
                 this.defaultParam.hashParam = this.model.get("hashParam");
                 this.defaultParam.md5Truncate = this.model.get("md5Truncate");
                 this.defaultParam.type = this.model.get("matchingType") || 0;
                 this.defaultParam.policy = this.model.get("matchingValue") || "";
-
-                console.log(this.defaultParam)
             }
 
             require(['matchCondition.view', 'matchCondition.model'], function(MatchConditionView, MatchConditionModel){
@@ -169,7 +190,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             else if (this.defaultParam.spliceMd5 === 2)
                 this.$el.find(".advanced-setup.splice-md5 #spliceMd52").get(0).checked = true;
 
-            this.$el.find("#atuth-divisor").val(this.defaultParam.authFactor);
+            //this.$el.find("#atuth-divisor").val(this.defaultParam.authFactor);
             this.$el.find("#key_time").val(this.defaultParam.timeParam);
             this.$el.find("#key_hash").val(this.defaultParam.hashParam);
 
@@ -180,6 +201,8 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.$el.find("#md5-start").val(this.defaultParam.md5Truncate.split(",")[0])
                 this.$el.find("#md5-end").val(this.defaultParam.md5Truncate.split(",")[1])
             } 
+
+            this.updateAtuthDivisorTable();
         },
 
         initDropDropdown: function(){
@@ -220,25 +243,27 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             else
                 this.$el.find("#dropdown-timestamp-type .cur-value").html(timeTypeArray[0].name);
 
-            //TODO Value的值需要改成后端提供的枚举
             this.curAtuthDivisor = 1;
             this.curAtuthDivisorParam = "";
             this.$el.find("#atuth-divisor-param").hide();
 
+            //1:host 2:URI 3:url 4:param_key 5:time 6:key 7:filename 8:filenameno 9:method 10:head_key
             var  atuthDivisorArray = [
                 {value: 1, name: "host:用户请求域名"},
-                {value: 2, name: "uri：路径，用户请求的uri，不带参数和域名"},
-                {value: 3, name: "url：不带参数，如果防盗链因子在path中，则为去掉因子后的url"},
-                {value: 4, name: "param_key:请求url中的参数名称"},
+                {value: 2, name: "uri：用户请求的uri"},
+                {value: 3, name: "url：不带参数"},
+                {value: 4, name: "arg&name:请求url中的参数名称"},
                 {value: 5, name: "time：请求url中是时间戳"},
                 {value: 6, name: "key：秘钥"},
                 {value: 7, name: "filename：文件名称，带后缀"},
-                {value: 8, name: "filenameno：文件名称，不带后缀"}
+                {value: 8, name: "filenameno：文件名称，不带后缀"},
+                {value: 9, name: "method: 用户请求方法"},
+                {value: 10, name: "hdr&name：请求头中的header名称"}
             ],
             atuthDivisorRootNode = this.$el.find(".atuth-divisor");
             Utility.initDropMenu(atuthDivisorRootNode, atuthDivisorArray, function(value){
                 this.curAtuthDivisor = parseInt(value);
-                if (this.curAtuthDivisor === 2){
+                if (this.curAtuthDivisor === 4 || this.curAtuthDivisor === 10){
                     this.$el.find("#atuth-divisor-param").show();
                 } else {
                     this.$el.find("#atuth-divisor-param").hide();
@@ -314,6 +339,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 backupKey: newKey
             });
             this.updateBaseKeyTable();
+            this.$el.find(".base-setup #new-backup-key").val("")
         },
 
         onClickAntiLeechRadio: function(event){
@@ -348,20 +374,20 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.defaultParam.spliceMd5 = parseInt($(eventTarget).val())
         },
 
-        getAtuthDivisorName: function(){
-            // var atuthDivisors = this.defaultParam.authFactor.split(',');
-            // this.atuthDivisorArray = [];
-            // _.each(atuthDivisors, function(el, index, ls){
-            //     atuthDivisorArray.push({id: new Date().valueOf(), value: el})
-            // }.bind(this));
-        },
-
         onClickAddAtuthDivisor: function(event){
             var eventTarget = event.srcElement || event.target;
 
             this.curAtuthDivisorParam = this.$el.find("#atuth-divisor-param").val();
-            if (this.curAtuthDivisor === 2 && this.curAtuthDivisorParam === ""){
+            if (this.curAtuthDivisor === 4 && this.curAtuthDivisorParam === ""){
                 alert("参数不能为空")
+                return;
+            }
+            if (this.curAtuthDivisor === 10 && this.curAtuthDivisorParam === ""){
+                alert("参数不能为空")
+                return;
+            }
+            if (this.defaultParam.atuthDivisorArray.length >= 6) {
+                alert("最大可以设置6个");
                 return;
             }
 
@@ -372,6 +398,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 divisorParam: this.curAtuthDivisorParam
             });
             this.updateAtuthDivisorTable();
+            this.$el.find("#atuth-divisor-param").val("")
         },
 
         updateAtuthDivisorTable: function(){
@@ -391,6 +418,11 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             var filterArray = _.filter(this.defaultParam.atuthDivisorArray, function(obj){
                 return obj.id !== parseInt(id)
             }.bind(this))
+
+            if (filterArray.length <= 1) {
+                alert("最少不能少于2个");
+                return;
+            }
 
             this.defaultParam.atuthDivisorArray = filterArray;
             this.updateAtuthDivisorTable();
@@ -431,6 +463,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 backupKey: newKey
             });
             this.updateAdvancedKeyTable();
+            this.$el.find(".advanced-setup #new-backup-key").val("");
         },
 
         checkBalabala: function(){
@@ -638,7 +671,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
-                    width: 800,
+                    width: 1000,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

@@ -176,14 +176,23 @@ requirejs.config({
 
         "liveDomainSetup.model":"customerSetup/domainList/liveDomainSetup/liveDomainSetup.model",
         "liveDomainSetup.view":"customerSetup/domainList/liveDomainSetup/liveDomainSetup.view",
+        
         "liveCnameSetup.model":"customerSetup/domainList/liveCnameSetup/liveCnameSetup.model",
         "liveCnameSetup.view":"customerSetup/domainList/liveCnameSetup/liveCnameSetup.view",
+
         "liveHttpsSetup.model":"customerSetup/domainList/liveHttpsSetup/liveHttpsSetup.model",
         "liveHttpsSetup.view":"customerSetup/domainList/liveHttpsSetup/liveHttpsSetup.view",
+
         "liveBackOriginSetup.model":"customerSetup/domainList/liveBackOriginSetup/liveBackOriginSetup.model",
         "liveBackOriginSetup.view":"customerSetup/domainList/liveBackOriginSetup/liveBackOriginSetup.view",
+
         "liveBackOriginDetection.model":"customerSetup/domainList/liveBackOriginDetection/liveBackOriginDetection.model",
         "liveBackOriginDetection.view":"customerSetup/domainList/liveBackOriginDetection/liveBackOriginDetection.view",
+
+
+        "liveTimestamp.model":"customerSetup/domainList/liveTimestamp/liveTimestamp.model",
+        "liveTimestamp.view":"customerSetup/domainList/liveTimestamp/liveTimestamp.view",
+
         "liveRefererAntiLeech.model":"customerSetup/domainList/liveRefererAntiLeech/liveRefererAntiLeech.model",
         "liveRefererAntiLeech.view":"customerSetup/domainList/liveRefererAntiLeech/liveRefererAntiLeech.view",
         
@@ -224,6 +233,7 @@ requirejs.config({
 
         "setupBill.model": 'setupChannelManage/setupBill/setupBill.model',
         "setupBill.view": 'setupChannelManage/setupBill/setupBill.view',
+        "setupBillLive.view": 'setupChannelManage/setupBill/setupBillLive.view',
 
         "setupAppManage.model": "setupAppManage/setupAppManage.model",
         "setupAppManage.view": "setupAppManage/setupAppManage.view",

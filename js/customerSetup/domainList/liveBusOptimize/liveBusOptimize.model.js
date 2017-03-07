@@ -9,16 +9,30 @@ define("liveBusOptimize.model", ['require','exports', 'utility'], function(requi
 
         initialize: function(){},
 
-        modifyDomainBasic:function(args){
-            var url = BASE_URL + "/channelManager/domain/modifyDomainBasic",
+        setLiveConf:function(args){
+            var url = BASE_URL + "/channelManager/live/setLiveConf",
             successCallback = function(res){
-                this.trigger('modify.DomainBasic.success',res);
+                this.trigger('set.liveConfig.success',res);
             }.bind(this),
             errorCallback = function(response){
-                this.trigger('modify.DomainBasic.error',response)
+                this.trigger('set.liveConfig.error',response)
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
-        }
+        },
+
+        getLiveConf: function(args){
+            var url = BASE_URL + "/channelManager/live/getLiveConf",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("get.liveConfig.success", res);
+                else
+                    this.trigger("get.liveConfig.error", res); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.liveConfig.error", response);  
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
     });
 
     return LiveBusOptimizeCollection;

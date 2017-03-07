@@ -1,6 +1,7 @@
-define("liveBasicInformation.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+define("liveBasicInformation.view", ['require','exports', 'template', 'modal.view', 'utility', 'basicInformation.view'], 
+    function(require, exports, template, Modal, Utility, BasicInformationView) {
 
-    var LiveBasicInformationView = Backbone.View.extend({
+    var LiveBasicInformationView = BasicInformationView.extend({
         events: {},
 
         initialize: function(options) {
@@ -32,66 +33,8 @@ define("liveBasicInformation.view", ['require','exports', 'template', 'modal.vie
                     myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
                     myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
             }.bind(this))
-        },
-        onGetDomainInfo: function(data){
-            this.defaultParam = {
-                originId:this.domainInfo.id,
-                confCustomType:1,
-                description:""
-            }
 
-            if(data.domainConf.confCustomType !== null && data.domainConf.confCustomType !== undefined){
-                this.defaultParam.confCustomType = data.domainConf.confCustomType;
-                this.firstconfCustomType = this.defaultParam.confCustomType;
-            }
-            if(data.originDomain.description !== null && data.originDomain.description !== undefined){
-                this.defaultParam.description = data.originDomain.description;
-            }
-
-            this.initSetup();
-        },
-        initSetup: function(){
-            var confCustomType = this.$el.find(".Remarks-type");
-            var Standard = this.$el.find(".Remarks-type #Standard");
-            var Customization = this.$el.find(".Remarks-type #Customization");
-            var description = this.$el.find('#Remarks');
-            if(this.defaultParam.confCustomType == 1){
-                Standard.get(0).checked = true;
-                Customization.get(0).checked = false;
-            }else if(this.defaultParam.confCustomType == 3){
-                Standard.get(0).checked = false;
-                Customization.get(0).checked = true;
-            }
-            
-            description.val(this.defaultParam.description);
-
-            this.$el.find(".Remarks-type").on('click',$.proxy(this.onClickRadio,this));
-            this.$el.find(".save").on('click',$.proxy(this.onClickSaveButton,this));
-
-            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
-        },
-        onClickRadio: function(event){
-            var target = event.target || event.srcElement;
-            if(target.tagName != 'INPUT') return;
-            
-            var description = this.$el.find('#Remarks');
-            var value = parseInt($(target).val());
-            
-            if(value == this.firstconfCustomType){
-                description.val(this.defaultParam.description);
-            }else{
-                description.val('');
-            }
-
-            this.defaultParam.confCustomType = value;
-        },
-        onClickSaveButton: function(){
-            this.defaultParam.description = this.$el.find("#Remarks").val();
-            this.collection.modifyDomainBasic(this.defaultParam);
-        },
-
-        onSaveSuccess: function(){
-            alert("保存成功！")
+            this.$el.find(".Remarks-type").show();
         },
 
         launchSendPopup: function(){
@@ -99,6 +42,7 @@ define("liveBasicInformation.view", ['require','exports', 'template', 'modal.vie
                 var mySaveThenSendView = new SaveThenSendView({
                     collection: new SaveThenSendModel(),
                     domainInfo: this.domainInfo,
+                    isRealLive: true,
                     description: this.$el.find("#Remarks").val(),
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
@@ -110,7 +54,7 @@ define("liveBasicInformation.view", ['require','exports', 'template', 'modal.vie
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
-                    width: 800,
+                    width: 1000,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),
@@ -122,35 +66,6 @@ define("liveBasicInformation.view", ['require','exports', 'template', 'modal.vie
                 this.sendPopup = new Modal(options);
             }.bind(this))
         },
-        /*addDomainBasicSuccess: function(res){
-            alert('保存成功');
-            this.update(this.options.query, this.options.query2, this.target);
-        },*/
-        onGetError: function(error){
-            if (error&&error.message)
-                alert(error.message)
-            else
-                alert("网络阻塞，请刷新重试！")
-        },
-
-        hide: function(){
-            this.$el.hide();
-        },
-
-        update: function(query, query2, target){
-            this.options.query = query;
-            this.options.query2 = query2;
-            this.collection.off();
-            this.collection.reset();
-            this.$el.remove();
-            this.initialize(this.options);
-            this.render(target);
-        },
-
-        render: function(target){
-            this.$el.appendTo(target);
-            this.target = target
-        }
     });
 
     return LiveBasicInformationView;

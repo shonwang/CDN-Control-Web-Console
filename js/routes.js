@@ -62,14 +62,13 @@ define("routes", ['require', 'exports', 'utility',
             "domainList/:query/openNgxLog/:query2"                : "openNgxLog",
 
             "domainList/:query/liveBasicInformation/:query2"      : "liveBasicInformation",
-
-            "domainList/:query/liveDomainSetup/:query2"      : "liveDomainSetup",
-            "domainList/:query/liveCnameSetup/:query2"      : "liveCnameSetup",
-            "domainList/:query/liveHttpsSetup/:query2"      : "liveHttpsSetup",
-            "domainList/:query/liveBackOriginSetup/:query2"      : "liveBackOriginSetup",
-            "domainList/:query/liveBackOriginDetection/:query2"      : "liveBackOriginDetection",
-            "domainList/:query/liveRefererAntiLeech/:query2":"liveRefererAntiLeech",
-            "domainList/:query/LiveTimestamp/:query2":"liveTimestamp",
+            "domainList/:query/liveDomainSetup/:query2"           : "liveDomainSetup",
+            "domainList/:query/liveCnameSetup/:query2"            : "liveCnameSetup",
+            "domainList/:query/liveHttpsSetup/:query2"            : "liveHttpsSetup",
+            "domainList/:query/liveBackOriginSetup/:query2"       : "liveBackOriginSetup",
+            "domainList/:query/liveBackOriginDetection/:query2"   : "liveBackOriginDetection",
+            "domainList/:query/liveRefererAntiLeech/:query2"      : "liveRefererAntiLeech",
+            "domainList/:query/liveTimestamp/:query2"             : "liveTimestamp",
             
             "domainList/:query/liveBusOptimize/:query2"           : "liveBusOptimize",
             "domainList/:query/liveH265Setup/:query2"             : "liveH265Setup",
@@ -579,7 +578,7 @@ define("routes", ['require', 'exports', 'utility',
             this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveRefererAntiLeechCallback, this, query, query2))
         },
 
-        liveTimestamp:function(){
+        liveTimestamp:function(query, query2){
             this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveTimestampCallback, this, query, query2))
         },
 
@@ -649,13 +648,15 @@ define("routes", ['require', 'exports', 'utility',
                         hash: 'index.html#/domainList/' + query + '/liveCnameSetup/' + query2,
                         active: false,
                         children: []
-                    },{
-                        id: 'customerSetup-domainList-liveHttpsSetup',
-                        name: 'https配置',
-                        hash: 'index.html#/domainList/' + query + '/liveHttpsSetup/' + query2,
-                        active: false,
-                        children: []
-                    }]
+                    },
+                    // {
+                    //     id: 'customerSetup-domainList-liveHttpsSetup',
+                    //     name: 'https配置',
+                    //     hash: 'index.html#/domainList/' + query + '/liveHttpsSetup/' + query2,
+                    //     active: false,
+                    //     children: []
+                    // }
+                    ]
                 },{
                     id:'',
                     name:'源站配置',
@@ -726,23 +727,30 @@ define("routes", ['require', 'exports', 'utility',
                         children: []
                     }]
                 },{
-                    id: 'customerSetup-domainList-livePKOptimize',
+                    id: 'customerSetup-domainList-liveHttpFlvOptimize',
                     name: 'PK优化配置',
-                    hash: 'javascript:void(0)',
-                    children: [{
-                        id: 'customerSetup-domainList-liveHttpFlvOptimize',
-                        name: 'Http+Flv调优配置',
-                        hash: 'index.html#/domainList/' + query + '/liveHttpFlvOptimize/' + query2,
-                        active: false,
-                        children: []
-                    },{
-                        id: 'customerSetup-domainList-liveRtmpOptimize',
-                        name: 'Rtmp调优配置',
-                        hash: 'index.html#/domainList/' + query + '/liveRtmpOptimize/' + query2,
-                        active: false,
-                        children: []
-                    }]
-                },{
+                    hash: 'index.html#/domainList/' + query + '/liveHttpFlvOptimize/' + query2,
+                    children: []  
+                },
+                // {
+                //     id: 'customerSetup-domainList-livePKOptimize',
+                //     name: 'PK优化配置',
+                //     hash: 'javascript:void(0)',
+                //     children: [{
+                //         id: 'customerSetup-domainList-liveHttpFlvOptimize',
+                //         name: 'Http+Flv调优配置',
+                //         hash: 'index.html#/domainList/' + query + '/liveHttpFlvOptimize/' + query2,
+                //         active: false,
+                //         children: []
+                //     },{
+                //         id: 'customerSetup-domainList-liveRtmpOptimize',
+                //         name: 'Rtmp调优配置',
+                //         hash: 'index.html#/domainList/' + query + '/liveRtmpOptimize/' + query2,
+                //         active: false,
+                //         children: []
+                //     }]
+                // },
+                {
                     id: 'customerSetup-domainList-liveSLASetup',
                     name: '日志配置',
                     hash: 'javascript:void(0)',

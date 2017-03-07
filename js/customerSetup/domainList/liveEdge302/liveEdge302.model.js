@@ -1,22 +1,13 @@
-define("liveEdge302.model", ['require','exports', 'utility'], function(require, exports, Utility) {
+define("liveEdge302.model", ['require','exports', 'utility', 'liveBusOptimize.model'], function(require, exports, Utility, LiveBusOptimizeCollection) {
     var Model = Backbone.Model.extend({
         initialize: function(){}
     });
 
-    var LiveEdge302Collection = Backbone.Collection.extend({
+    var LiveEdge302Collection = LiveBusOptimizeCollection.extend({
         
         model: Model,
 
         initialize: function(){},
-
-        setChargingOpen: function(args){
-            var url = BASE_URL + "/channelManager/domain/setChargingOpen";
-            Utility.getAjax(url, args, function(res){
-                this.trigger("set.chargingOpen.success");
-            }.bind(this),function(res){
-                this.trigger("set.chargingOpen.error", res);
-            }.bind(this));
-        },
     });
 
     return LiveEdge302Collection;

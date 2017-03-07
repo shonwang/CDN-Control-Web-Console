@@ -21,38 +21,69 @@ define("liveSLAStatistics.view", ['require','exports', 'template', 'modal.view',
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
-            require(["domainSetup.model"], function(DomainSetupModel){
-                var myDomainSetupModel = new DomainSetupModel();
-                    myDomainSetupModel.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
-                    myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
-                    myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
-            }.bind(this))
+            this.defaultParam = {
+                slaAccessFlag: 0, //0:关闭 1:开启
+                slaFirstCache: 3,
+                slaSecondCache: 1
+            }
+
+            this.$el.find(".buffer-size").hide();
+            this.$el.find(".modify-open .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
+            this.$el.find("#first-buffer").on("blur", $.proxy(this.onBlurBufferSize, this));
+            this.$el.find("#second-buffer").on("blur", $.proxy(this.onBlurBufferSize, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
+            this.collection.on("set.logConfig.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.logConfig.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.logConfig.success", $.proxy(this.onGetDomainInfo, this));
+            this.collection.on("get.logConfig.error", $.proxy(this.onGetError, this));
+            this.collection.getLogConf({originId:this.domainInfo.id});
         },
 
         onGetDomainInfo: function(data){
-            this.defaultParam = {
-                chargingOpen: 0 //0:关闭 1:开启
-            }
+            //TODO 假数据
+            // var data = {
+            //     "appLives":[
+            //         {
+            //             "logConf":{
+            //                 "slaAccessFlag": 1,
+            //                 "slaFirstCache": 20,
+            //                 "slaSecondCache":15,
+            //             }
+            //         }
+            //     ]
+            // };
 
-            if (data.domainConf && data.domainConf.chargingOpen !== null && data.domainConf.chargingOpen !== undefined)
-                this.defaultParam.chargingOpen = data.domainConf.chargingOpen //0:关闭 1:开启            
+            data = data.appLives[0]
+
+            if (data.logConf && data.logConf.slaAccessFlag !== null && data.logConf.slaAccessFlag !== undefined)
+                this.defaultParam.slaAccessFlag = data.logConf.slaAccessFlag //0:关闭 1:开启
+            if (data.logConf && data.logConf.slaFirstCache !== null && data.logConf.slaFirstCache !== undefined)
+                this.defaultParam.slaFirstCache = data.logConf.slaFirstCache
+            if (data.logConf && data.logConf.slaSecondCache !== null && data.logConf.slaSecondCache !== undefined)
+                this.defaultParam.slaSecondCache = data.logConf.slaSecondCache                  
 
             this.initSetup();
-
-            this.$el.find(".charging-open .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
-            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
-
-            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
-
-            this.collection.on("set.chargingOpen.success", $.proxy(this.onSaveSuccess, this));
-            this.collection.on("set.chargingOpen.error", $.proxy(this.onGetError, this));
         },
 
         initSetup: function(){
-            if (this.defaultParam.chargingOpen === 0)
-                this.$el.find(".charging-open .togglebutton input").get(0).checked = false;
-            else
-                this.$el.find(".charging-open .togglebutton input").get(0).checked = true;
+            if (this.defaultParam.slaAccessFlag === 0){
+                this.$el.find(".modify-open .togglebutton input").get(0).checked = false;
+                this.$el.find(".buffer-size").hide();
+            } else {
+                this.$el.find(".modify-open .togglebutton input").get(0).checked = true;
+                this.$el.find(".buffer-size").show();
+            }
+            this.$el.find("#first-buffer").val(this.defaultParam.slaFirstCache)
+            this.$el.find("#second-buffer").val(this.defaultParam.slaSecondCache)
+        },
+
+        onBlurBufferSize: function(event){
+            var eventTarget = event.srcElement || event.target;
+            var value = parseInt($(eventTarget).val());
+            if (!Utility.isNumber(value) || value < 0 || value > 10)
+                alert("最小可设置为0秒，最大可设置为10秒")
         },
 
         onSaveSuccess: function(){
@@ -64,6 +95,7 @@ define("liveSLAStatistics.view", ['require','exports', 'template', 'modal.view',
                 var mySaveThenSendView = new SaveThenSendView({
                     collection: new SaveThenSendModel(),
                     domainInfo: this.domainInfo,
+                    isRealLive: true,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
                         window.location.hash = '#/domainList/' + this.options.query;
@@ -74,7 +106,7 @@ define("liveSLAStatistics.view", ['require','exports', 'template', 'modal.view',
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
-                    width: 800,
+                    width: 1000,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),
@@ -87,21 +119,36 @@ define("liveSLAStatistics.view", ['require','exports', 'template', 'modal.view',
         },
 
         onClickSaveBtn: function(){
-            var postParam =  {
-                "originId": this.domainInfo.id,
-                "chargingOpen": this.defaultParam.chargingOpen,
-                t: new Date().valueOf()
+            var value1 = parseInt(this.$el.find("#first-buffer").val());
+            if (!Utility.isNumber(value1) || value1 < 0 || value1 > 10){
+                alert("最小可设置为0秒，最大可设置为10秒")
+                return
             }
-            this.collection.setChargingOpen(postParam)
+
+            var value2 = parseInt(this.$el.find("#second-buffer").val());
+            if (!Utility.isNumber(value2) || value2 < 0 || value2 > 10){
+                alert("最小可设置为0秒，最大可设置为10秒")
+                return
+            }
+
+            var postParam =  {
+                    "originId": this.domainInfo.id,
+                    "slaAccessFlag": this.defaultParam.slaAccessFlag,
+                    "slaFirstCache": value1,
+                    "slaSecondCache": value2,
+                }
+            this.collection.setLogConf(postParam)
         },
 
-        onClickToggle: function(){
+        onClickToggle: function(event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){
-                this.defaultParam.chargingOpen = 1;
+                this.defaultParam.slaAccessFlag = 1;
+                this.$el.find(".buffer-size").show();
             } else {
-                this.defaultParam.chargingOpen = 0;
+                this.defaultParam.slaAccessFlag = 0;
+                this.$el.find(".buffer-size").hide();
             }
         },
 

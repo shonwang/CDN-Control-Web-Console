@@ -110,7 +110,7 @@ define("customerSetup.live.controller", ['require','exports'],
 
                 if (!this.liveBackOriginDetectionModel)
                     this.liveBackOriginDetectionModel = new LiveBackOriginDetectionModel();
-                if (!this.liveBackOriginSetupView ){
+                if (!this.liveBackOriginDetectionView ){
                     var options = {
                         collection: this.liveBackOriginDetectionModel,
                         query     : query,
@@ -134,7 +134,7 @@ define("customerSetup.live.controller", ['require','exports'],
 
                 if (!this.liveRefererAntiLeechModel)
                     this.liveRefererAntiLeechModel = new LiveRefererAntiLeechModel();
-                if (!this.liveRefererAntiLeechView ){
+                if (!this.liveRefererAntiLeechView){
                     var options = {
                         collection: this.liveRefererAntiLeechModel,
                         query     : query,
@@ -146,7 +146,31 @@ define("customerSetup.live.controller", ['require','exports'],
                     this.domainManageNavbar.select(this.curPage);
                     this.liveRefererAntiLeechView.update(query, query2, renderTarget);
                 }
-            }.bind(this));             
+            }.bind(this));   
+        },
+
+        liveTimestampCallback:function(query, query2){
+            require(['liveTimestamp.view', 'liveTimestamp.model'], function(LiveTimestampView, LiveTimestampModel){
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-liveTimestamp';
+                this.setupLiveDomainManageNavbar(query, query2);
+                var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                if (!this.liveTimestampModel)
+                    this.liveTimestampModel = new LiveTimestampModel();
+                if (!this.liveTimestampView ){
+                    var options = {
+                        collection: this.liveTimestampModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.liveTimestampView = new LiveTimestampView(options);
+                    this.liveTimestampView.render(renderTarget);
+                } else {
+                    this.domainManageNavbar.select(this.curPage);
+                    this.liveTimestampView.update(query, query2, renderTarget);
+                }
+            }.bind(this));                
         },
 
         liveBasicInformationCallback: function(query, query2){

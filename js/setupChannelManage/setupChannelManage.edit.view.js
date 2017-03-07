@@ -183,7 +183,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
         },
 
         onClickViewSetupBillBtn: function(){
-            require(['setupBill.view', 'setupBill.model'], function(SetupBillView, SetupBillModel){
+            require(['setupBillLive.view', 'setupBill.model'], function(SetupBillView, SetupBillModel){
                 var mySetupBillModel = new SetupBillModel();
                 var mySetupBillView = new SetupBillView({
                     collection: mySetupBillModel,

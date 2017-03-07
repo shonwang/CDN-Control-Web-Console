@@ -38,16 +38,14 @@ define("liveAudioOnly.view", ['require','exports', 'template', 'modal.view', 'ut
                 }
             ]
 
-            // this.collection.on("get.drag.success", $.proxy(this.onDragListSuccess, this));
-            // this.collection.on("get.drag.error", $.proxy(this.onGetError, this));
-            //this.collection.getDragConfList({originId: this.domainInfo.id})
-
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
-            this.collection.on("set.setLiveConf.success", $.proxy(this.onSaveSuccess, this));
-            this.collection.on("set.setLiveConf.error", $.proxy(this.onGetError, this));
 
-            this.onDragListSuccess();
+            this.collection.on("set.liveConfig.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.liveConfig.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.liveConfig.success", $.proxy(this.onDragListSuccess, this));
+            this.collection.on("get.liveConfig.error", $.proxy(this.onGetError, this));
+            this.collection.getLiveConf({originId:this.domainInfo.id});
         },
 
         onSaveSuccess: function(){
@@ -59,6 +57,7 @@ define("liveAudioOnly.view", ['require','exports', 'template', 'modal.view', 'ut
                 var mySaveThenSendView = new SaveThenSendView({
                     collection: new SaveThenSendModel(),
                     domainInfo: this.domainInfo,
+                    isRealLive: true,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
                         window.location.hash = '#/domainList/' + this.options.query;
@@ -69,7 +68,7 @@ define("liveAudioOnly.view", ['require','exports', 'template', 'modal.view', 'ut
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
-                    width: 800,
+                    width: 1000,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),
@@ -95,24 +94,23 @@ define("liveAudioOnly.view", ['require','exports', 'template', 'modal.view', 'ut
                 }
             }.bind(this))
 
-            console.log(postParam)
-            //this.collection.setLiveConf(postParam)
+            this.collection.setLiveConf(postParam)
         },
 
-        onDragListSuccess: function(){
+        onDragListSuccess: function(data){
             //TODO 假数据
-            var data = {
-                "appLives":[
-                    {
-                        "optimizeConf":{
-                            "hdlAudioOnlyFlag": 1,
-                            "hdlAudioOnlyParam": "audio-only1",
-                            "rtmpAudioOnlyFlag": 1,
-                            "rtmpAudioOnlyParam": "audio-only1",
-                        }
-                    }
-                ]
-            };
+            // var data = {
+            //     "appLives":[
+            //         {
+            //             "optimizeConf":{
+            //                 "hdlAudioOnlyFlag": 1,
+            //                 "hdlAudioOnlyParam": "audio-only1",
+            //                 "rtmpAudioOnlyFlag": 1,
+            //                 "rtmpAudioOnlyParam": "audio-only1",
+            //             }
+            //         }
+            //     ]
+            // };
 
             data = data.appLives[0];
 

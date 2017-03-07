@@ -22,7 +22,8 @@ define("timestamp.model", ['require','exports', 'utility'], function(require, ex
             if (protectionType === 3 && confType === 1) protectionTypeName = "加密URL形式：形式2：加密字符串在路径中<br>";
 
             var authKeyList = this.get("authKeyList"), authKeyListName;
-            authKeyListName = "共享秘钥：1主，" + (authKeyList.length - 1) + "备<br>";
+            if (authKeyList)
+                authKeyListName = "共享秘钥：1主，" + (authKeyList.length - 1) + "备<br>";
 
             var expirationTime = this.get("expirationTime"), expirationTimeName;
             if (expirationTime === 0) expirationTimeName = "失效时间：时间戳时间<br>";

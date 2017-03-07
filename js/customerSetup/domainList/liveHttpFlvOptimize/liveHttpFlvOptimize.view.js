@@ -21,28 +21,6 @@ define("liveHttpFlvOptimize.view", ['require','exports', 'template', 'modal.view
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
-            require(["domainSetup.model"], function(DomainSetupModel){
-                var myDomainSetupModel = new DomainSetupModel();
-                    myDomainSetupModel.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
-                    myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
-                    myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
-            }.bind(this))
-
-            this.$el.find(".keepduration").hide();
-            this.$el.find(".keeptoggle .togglebutton input").on("click", $.proxy(this.onClicKeepToggle, this));
-            this.$el.find(".avheadergroup").hide();
-            this.$el.find(".avheader .togglebutton input").on("click", $.proxy(this.onClicAvheaderToggle, this));
-            this.$el.find(".save-common").on("click", $.proxy(this.onClickSaveCommon, this));
-            this.$el.find(".httpflv-optimize-setup .save").on("click", $.proxy(this.onClickSaveHdl, this));
-            this.$el.find(".rtmp-optimize-setup .save").on("click", $.proxy(this.onClickSaveRtmp, this));
-
-            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
-
-            this.collection.on("set.setPKConf.success", $.proxy(this.onSaveSuccess, this));
-            this.collection.on("set.setPKConf.error", $.proxy(this.onGetError, this));
-        },
-
-        onGetDomainInfo: function(data){
             this.defaultParam = {
                 keepAliveFlag: 0, //0:关闭 1:开启
                 keepAliveTime: 0,
@@ -58,27 +36,45 @@ define("liveHttpFlvOptimize.view", ['require','exports', 'template', 'modal.view
                 rtmpGopSendAudio: 1,
             }
 
+            this.$el.find(".keepduration").hide();
+            this.$el.find(".keeptoggle .togglebutton input").on("click", $.proxy(this.onClicKeepToggle, this));
+            this.$el.find(".avheadergroup").hide();
+            this.$el.find(".avheader .togglebutton input").on("click", $.proxy(this.onClicAvheaderToggle, this));
+            this.$el.find(".save-common").on("click", $.proxy(this.onClickSaveCommon, this));
+            this.$el.find(".httpflv-optimize-setup .save").on("click", $.proxy(this.onClickSaveHdl, this));
+            this.$el.find(".rtmp-optimize-setup .save").on("click", $.proxy(this.onClickSaveRtmp, this));
+
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
+            this.collection.on("set.pkConfig.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.pkConfig.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.pkConfig.success", $.proxy(this.onGetDomainInfo, this));
+            this.collection.on("get.pkConfig.error", $.proxy(this.onGetError, this));
+            this.collection.getPKConf({originId:this.domainInfo.id});
+        },
+
+        onGetDomainInfo: function(data){
             //TODO 假数据
-            var data = {
-                "appLives":[
-                    {
-                        "pkConf":{
-                            "hdlAvhZeroTimestamp": 1,
-                            "hdlTimestampZeroStart": 1,
-                            "hdlGopZeroTimestamp": 1,
-                            "hdlGopSendAudio": 0,
-                            "rtmpAvhZeroTimestamp": 1,
-                            "rtmpTimestampZeroStart": 1,
-                            "rtmpGopZeroTimestamp": 1,
-                            "rtmpGopSendAudio": 0,
-                            "avHeaderFlag": 1,
-                            "avHeaderWaitTime": 1,
-                            "keepAliveFlag": 1,
-                            "keepAliveTime": 1,
-                        }
-                    }
-                ]
-            };
+            // var data = {
+            //     "appLives":[
+            //         {
+            //             "pkConf":{
+            //                 "hdlAvhZeroTimestamp": 1,
+            //                 "hdlTimestampZeroStart": 1,
+            //                 "hdlGopZeroTimestamp": 1,
+            //                 "hdlGopSendAudio": 0,
+            //                 "rtmpAvhZeroTimestamp": 1,
+            //                 "rtmpTimestampZeroStart": 1,
+            //                 "rtmpGopZeroTimestamp": 1,
+            //                 "rtmpGopSendAudio": 0,
+            //                 "avHeaderFlag": 1,
+            //                 "avHeaderWaitTime": 1,
+            //                 "keepAliveFlag": 1,
+            //                 "keepAliveTime": 1,
+            //             }
+            //         }
+            //     ]
+            // };
 
             data = data.appLives[0]
 
@@ -182,6 +178,7 @@ define("liveHttpFlvOptimize.view", ['require','exports', 'template', 'modal.view
                 var mySaveThenSendView = new SaveThenSendView({
                     collection: new SaveThenSendModel(),
                     domainInfo: this.domainInfo,
+                    isRealLive: true,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
                         window.location.hash = '#/domainList/' + this.options.query;
@@ -192,7 +189,7 @@ define("liveHttpFlvOptimize.view", ['require','exports', 'template', 'modal.view
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
-                    width: 800,
+                    width: 1000,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),
@@ -222,8 +219,7 @@ define("liveHttpFlvOptimize.view", ['require','exports', 'template', 'modal.view
                 "keepAliveFlag":this.defaultParam.keepAliveFlag,
                 "keepAliveTime": this.defaultParam.keepAliveTime
             }
-            console.log(postParam) 
-            //this.collection.setPKConf(postParam)
+            this.collection.setPKConf(postParam)
         },
 
         onClickSaveHdl: function(){
@@ -234,8 +230,7 @@ define("liveHttpFlvOptimize.view", ['require','exports', 'template', 'modal.view
                 "hdlGopSendAudio": this.$el.find(".httpflv-optimize-setup .goptimestamp .togglebutton input").get(0).checked === true ? 1 : 0,
                 "hdlGopZeroTimestamp" : this.$el.find(".httpflv-optimize-setup .goptimestampzero .togglebutton input").get(0).checked === true ? 1 : 0
             }
-            console.log(postParam)
-            //this.collection.setPKConf(postParam)
+            this.collection.setPKConf(postParam)
         },
 
         onClickSaveRtmp: function(){
@@ -246,8 +241,7 @@ define("liveHttpFlvOptimize.view", ['require','exports', 'template', 'modal.view
                 "rtmpGopSendAudio": this.$el.find(".rtmp-optimize-setup .goptimestamp .togglebutton input").get(0).checked === true ? 1 : 0,
                 "rtmpGopZeroTimestamp" : this.$el.find(".rtmp-optimize-setup .goptimestampzero .togglebutton input").get(0).checked === true ? 1 : 0
             }
-            console.log(postParam)
-            //this.collection.setPKConf(postParam)
+            this.collection.setPKConf(postParam)
         },
 
         onClicAvheaderToggle: function(){

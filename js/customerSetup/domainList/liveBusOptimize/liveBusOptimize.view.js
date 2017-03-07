@@ -21,20 +21,9 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"));
 
-            require(["domainSetup.model"], function(DomainSetupModel){
-                var myDomainSetupModel = new DomainSetupModel();
-                    myDomainSetupModel.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
-                    myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
-                    myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
-            }.bind(this))
-
-            this.collection.on("set.setLiveConf.success", $.proxy(this.onSaveSuccess, this));
-            this.collection.on("set.setLiveConf.error", $.proxy(this.onGetError, this));
-
             this.$el.find(".save").on('click',$.proxy(this.onClickSaveButton,this));
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
-        },
-        onGetDomainInfo: function(data){
+
             this.defaultParam = {
                 gopType: 1,
                 gopMaxDuration: 30,
@@ -46,25 +35,33 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
                 metaType: 1
             }
 
-            //TODO 假数据
-            var data = {
-                "appLives":[
-                    {
-                        "optimizeConf":{
-                            "gopType": 2, //1:按时长 2:按个数
-                            "gopNum": 3,
-                            "gopMaxDuration": 15,
-                            "gopMinSendFlag": 1,
-                            "gopMinSend": 2,
-                            "noFlowTimeout": 21,
-                            "delayClose": 6,
-                            "metaType": 2, //1:append 2:on 3:copy 4:off
-                        }
-                    }
-                ]
-            };
+            this.collection.on("set.liveConfig.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.liveConfig.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.liveConfig.success", $.proxy(this.onGetDomainInfo, this));
+            this.collection.on("get.liveConfig.error", $.proxy(this.onGetError, this));
+            this.collection.getLiveConf({originId:this.domainInfo.id});
+        },
 
-            data = data.appLives[0]
+        onGetDomainInfo: function(data){
+            //TODO 假数据
+            // var data = {
+            //     "appLives":[
+            //         {
+            //             "optimizeConf":{
+            //                 "gopType": 2, //1:按时长 2:按个数
+            //                 "gopNum": 3,
+            //                 "gopMaxDuration": 15,
+            //                 "gopMinSendFlag": 1,
+            //                 "gopMinSend": 2,
+            //                 "noFlowTimeout": 21,
+            //                 "delayClose": 6,
+            //                 "metaType": 2, //1:append 2:on 3:copy 4:off
+            //             }
+            //         }
+            //     ]
+            // };
+
+            data = data.appLives[0];
 
             if (data.optimizeConf && data.optimizeConf.gopType !== null && data.optimizeConf.gopType !== undefined)
                 this.defaultParam.gopType = data.optimizeConf.gopType  
@@ -220,14 +217,14 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
         onClickSaveButton: function(){
             var value = "";
             if (this.gopEl.find("#gopCacheType1").get(0).checked === true){
-                this.defaultParam.gopType === 1
+                this.defaultParam.gopType = 1;
                 value = parseInt(this.gopEl.find("#gopduration").val());
                 if (!Utility.isNumber(value) || value < 2 || value > 30){
                     alert("gop缓存时长填写内容为正整数，默认为5秒，最小值为2秒，最大值为30秒")
                     return;
                 }
             } else if (this.gopEl.find("#gopCacheType2").get(0).checked === true){
-                this.defaultParam.gopType === 2
+                this.defaultParam.gopType = 2;
                 value = parseInt(this.gopEl.find("#gopnum").val());
                 if (!Utility.isNumber(value) || value < 1 || value > 15){
                     alert("gop缓存个数填写内容为正整数，默认为2个，最小值为1个，最大值为15个")
@@ -278,8 +275,7 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
                     "delayClose": this.defaultParam.delayClose,
                     "metaType": this.defaultParam.metaType
                 }
-            console.log(postParam)
-            //this.collection.setLiveConf(postParam)
+            this.collection.setLiveConf(postParam)
         },
 
         onSaveSuccess: function(){
@@ -291,6 +287,7 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
                 var mySaveThenSendView = new SaveThenSendView({
                     collection: new SaveThenSendModel(),
                     domainInfo: this.domainInfo,
+                    isRealLive: true,
                     description: this.$el.find("#Remarks").val(),
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
@@ -302,7 +299,7 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
-                    width: 800,
+                    width: 1000,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

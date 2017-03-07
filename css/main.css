@@ -1135,3 +1135,15 @@ td .table {
     bottom: 0;
     top: 0;
 }
+
+
+.bill-ctn .table>tbody>tr>td, 
+.bill-ctn .table>tbody>tr>th, 
+.bill-ctn .table>tfoot>tr>td, 
+.bill-ctn .table>tfoot>tr>th, 
+.bill-ctn .table>thead>tr>td, 
+.bill-ctn .table>thead>tr>th {
+    word-break: normal;
+    white-space: normal;
+}
+

@@ -37,27 +37,31 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
             this.$el.find(".null-referer .togglebutton input").on("click", $.proxy(this.onClickIsNullReferer, this));
             this.$el.find(".forge-referer .togglebutton input").on("click", $.proxy(this.onClickIsForgeReferer, this));
 
-            this.initSetup();
+            this.collection.on("set.refer.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.refer.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.refer.success", $.proxy(this.initSetup, this));
+            this.collection.on("get.refer.error", $.proxy(this.onGetError, this));
+            this.collection.getReferSafetyChainList({originId:this.domainInfo.id});
         },
 
-        initSetup: function(){
+        initSetup: function(data){
             //TODO 假数据
-            var data = [
-                {
-                    "type": 2,   //防盗链类型 1:白名单 2:黑名单
-                    "domains": "",   //域名,英文逗号分隔
-                    "nullReferer": 1,   //允许空referer 0:关 1:开
-                    "openFlag": 1,   //直播开启refer防盗链 0:关 1:开
-                    "regexps": "123",   //正则表达式，英文逗号分隔
-                    "forgeReferer": 1,   //是否允许伪造的refer 0:否 1:是
-                }
-            ]
+            // var data = [
+            //     {
+            //         "type": 2,   //防盗链类型 1:白名单 2:黑名单
+            //         "domains": "",   //域名,英文逗号分隔
+            //         "nullReferer": 1,   //允许空referer 0:关 1:开
+            //         "openFlag": 1,   //直播开启refer防盗链 0:关 1:开
+            //         "regexps": "123",   //正则表达式，英文逗号分隔
+            //         "forgeReferer": 1,   //是否允许伪造的refer 0:否 1:是
+            //     }
+            // ]
             data = data[0]
 
             if (data){
                 if (data.openFlag !== null && data.openFlag !== undefined)
                     this.defaultParam.isOpenSetup = data.openFlag
-                if (data.type !== null && data.type !== undefined)
+                if (data.type !== null && data.type !== undefined && data.type !== 0)
                     this.defaultParam.refererType = data.type
                 if (data.forgeReferer !== null && data.forgeReferer !== undefined)
                     this.defaultParam.forgeReferer = data.forgeReferer
@@ -109,6 +113,7 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
                 var mySaveThenSendView = new SaveThenSendView({
                     collection: new SaveThenSendModel(),
                     domainInfo: this.domainInfo,
+                    isRealLive: true,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
                         window.location.hash = '#/domainList/' + this.options.query;
@@ -119,7 +124,7 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
-                    width: 800,
+                    width: 1000,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),
@@ -248,11 +253,13 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
         checkEverything: function(){
             var whiteDomain = this.$el.find("#white-domain").val(),
                 balckDomain = this.$el.find("#black-domain").val();
+            var blackRe = this.$el.find("#black-re").val();
+            var whiteRe = this.$el.find("#white-re").val();
 
-            if (this.defaultParam.refererType === 1 && (whiteDomain === "")){
+            if (this.defaultParam.refererType === 1 && (whiteDomain === "")&& (whiteRe === "")){
                 alert("请输入合法域名！")
                 return false;
-            } else if (this.defaultParam.refererType === 2 && (balckDomain === "")){
+            } else if (this.defaultParam.refererType === 2 && (balckDomain === "") && (blackRe === "")){
                 alert("请输入非法域名！")
                 return false;
             }
@@ -272,16 +279,18 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
             }
             var result = true;
             if (this.defaultParam.refererType === 1){
-                result = this.onBlurDomainInput({target: this.$el.find("#white-domain").get(0)});
+                result = this.onBlurDomainInput({target: this.$el.find("#white-domain").get(0)}) || whiteRe!="";
             } else if (this.defaultParam.refererType === 2) {
-                result = this.onBlurDomainInput({target: this.$el.find("#black-domain").get(0)});
+                result = this.onBlurDomainInput({target: this.$el.find("#black-domain").get(0)}) || blackRe!="";
             }
             return result;
         },
 
         onSure: function(){
-            var result = this.checkEverything();
-            if (!result) return false;
+            if (this.defaultParam.isOpenSetup) {
+                var result = this.checkEverything();
+                if (!result) return false;
+            }
 
             var domains = '', regexps;
             if (this.defaultParam.refererType === 1) {
@@ -301,8 +310,12 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
                 "regexps": regexps,
                 "forgeReferer": this.defaultParam.forgeReferer
             }
+            postParam = {
+                "originId": this.domainInfo.id,
+                "list": [postParam]
+            }
 
-            console.log(postParam) 
+            this.collection.setReferSafetyChains(postParam)
         },
 
         hide: function(){

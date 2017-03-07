@@ -275,6 +275,9 @@ define("routes", ['require', 'exports', 'utility',
                 case 'customerSetup-domainList-liveTimestamp':
                     this.liveTimestampView.hide();
                     break;
+                case 'customerSetup-domainList-liveRefererAntiLeech':
+                    this.liveRefererAntiLeechView.hide();
+                    break;
                 case 'customerSetup-domainList-liveH265Setup':
                     this.liveH265SetupView.hide();
                     break;

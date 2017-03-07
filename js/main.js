@@ -189,6 +189,7 @@ requirejs.config({
         "liveBackOriginDetection.model":"customerSetup/domainList/liveBackOriginDetection/liveBackOriginDetection.model",
         "liveBackOriginDetection.view":"customerSetup/domainList/liveBackOriginDetection/liveBackOriginDetection.view",
 
+
         "liveTimestamp.model":"customerSetup/domainList/liveTimestamp/liveTimestamp.model",
         "liveTimestamp.view":"customerSetup/domainList/liveTimestamp/liveTimestamp.view",
 
@@ -232,6 +233,7 @@ requirejs.config({
 
         "setupBill.model": 'setupChannelManage/setupBill/setupBill.model',
         "setupBill.view": 'setupChannelManage/setupBill/setupBill.view',
+        "setupBillLive.view": 'setupChannelManage/setupBill/setupBillLive.view',
 
         "setupAppManage.model": "setupAppManage/setupAppManage.model",
         "setupAppManage.view": "setupAppManage/setupAppManage.view",

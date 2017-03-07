@@ -21,44 +21,39 @@ define("liveSLAStatistics.view", ['require','exports', 'template', 'modal.view',
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
-            require(["domainSetup.model"], function(DomainSetupModel){
-                var myDomainSetupModel = new DomainSetupModel();
-                    myDomainSetupModel.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
-                    myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
-                    myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
-            }.bind(this))
-
-            this.$el.find(".buffer-size").hide();
-            this.$el.find(".modify-open .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
-            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
-            this.$el.find("#first-buffer").on("blur", $.proxy(this.onBlurBufferSize, this));
-            this.$el.find("#second-buffer").on("blur", $.proxy(this.onBlurBufferSize, this));
-
-            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
-
-            this.collection.on("set.slaAccessFlag.success", $.proxy(this.onSaveSuccess, this));
-            this.collection.on("set.slaAccessFlag.error", $.proxy(this.onGetError, this));
-        },
-
-        onGetDomainInfo: function(data){
             this.defaultParam = {
                 slaAccessFlag: 0, //0:关闭 1:开启
                 slaFirstCache: 3,
                 slaSecondCache: 1
             }
 
+            this.$el.find(".buffer-size").hide();
+            this.$el.find(".modify-open .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
+            this.$el.find("#first-buffer").on("blur", $.proxy(this.onBlurBufferSize, this));
+            this.$el.find("#second-buffer").on("blur", $.proxy(this.onBlurBufferSize, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
+            this.collection.on("set.logConfig.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.logConfig.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.logConfig.success", $.proxy(this.onGetDomainInfo, this));
+            this.collection.on("get.logConfig.error", $.proxy(this.onGetError, this));
+            this.collection.getLogConf({originId:this.domainInfo.id});
+        },
+
+        onGetDomainInfo: function(data){
             //TODO 假数据
-            var data = {
-                "appLives":[
-                    {
-                        "logConf":{
-                            "slaAccessFlag": 1,
-                            "slaFirstCache": 20,
-                            "slaSecondCache":15,
-                        }
-                    }
-                ]
-            };
+            // var data = {
+            //     "appLives":[
+            //         {
+            //             "logConf":{
+            //                 "slaAccessFlag": 1,
+            //                 "slaFirstCache": 20,
+            //                 "slaSecondCache":15,
+            //             }
+            //         }
+            //     ]
+            // };
 
             data = data.appLives[0]
 
@@ -100,6 +95,7 @@ define("liveSLAStatistics.view", ['require','exports', 'template', 'modal.view',
                 var mySaveThenSendView = new SaveThenSendView({
                     collection: new SaveThenSendModel(),
                     domainInfo: this.domainInfo,
+                    isRealLive: true,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
                         window.location.hash = '#/domainList/' + this.options.query;
@@ -110,7 +106,7 @@ define("liveSLAStatistics.view", ['require','exports', 'template', 'modal.view',
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
-                    width: 800,
+                    width: 1000,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),
@@ -141,8 +137,7 @@ define("liveSLAStatistics.view", ['require','exports', 'template', 'modal.view',
                     "slaFirstCache": value1,
                     "slaSecondCache": value2,
                 }
-            console.log(postParam)
-            //this.collection.setLogConf(postParam)
+            this.collection.setLogConf(postParam)
         },
 
         onClickToggle: function(event){

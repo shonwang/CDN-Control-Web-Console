@@ -303,7 +303,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
-                    width: 800,
+                    width: 1000,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),
@@ -393,7 +393,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
         initModifyHost: function(data){
             this.hideModifyHostOptions();
             this.isModifyHost = true;
-            this.$el.find(".modify-host .togglebutton input").get(0).checked = true
+            
             this.defaultParamModifyHost = {
                 domainType: 3,
                 customHostHeader: "",
@@ -404,9 +404,10 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             if (data.domainConf && data.domainConf.hostType !== null && data.domainConf.hostType !== undefined)
                 this.defaultParamModifyHost.domainType = data.domainConf.hostType;
 
-            if (data.domainConf && data.domainConf.openFlag !== null && data.domainConf.openFlag !== undefined)
-                this.isModifyHost = data.domainConf.openFlag === 0 ? false : true;
+            if (data.domainConf && data.domainConf.hostFlag !== null && data.domainConf.hostFlag !== undefined)
+                this.isModifyHost = data.domainConf.hostFlag === 0 ? false : true;
 
+            this.$el.find(".modify-host .togglebutton input").get(0).checked = this.isModifyHost;
             this.defaultParamModifyHost.customHostHeader = data.domainConf.customHostHeader;
             this.defaultParamModifyHost.domain = data.originDomain.domain;
             this.defaultParamModifyHost.originAddress = data.domainConf.originAddress;
@@ -439,7 +440,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 "originId": this.domainInfo.id,
                 "customHostHeader": value,
                 "hostType": this.defaultParamModifyHost.domainType,
-                "openFlag": this.isModifyHost ? 1 : 0
+                "hostFlag": this.isModifyHost ? 1 : 0
             };
             this.collection.setHostHeaderConfig(postParam)
         },

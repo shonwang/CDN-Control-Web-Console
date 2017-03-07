@@ -69,6 +69,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
         },
 
         initSetup: function(data){
+            this.applicationType = data.applicationType.type;
             this.$el.find("#input-application").val(data.applicationType.name);
 
             var isUseCustomized = this.model.get("tempUseCustomized");
@@ -133,7 +134,8 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
             this.mySetupSendWaitCustomizeModel.getAllConfig({
                 domain: this.model.get("domain"),
                 version: this.model.get("version") || this.model.get("domainVersion"),
-                manuallyModifed: true
+                manuallyModifed: true,
+                applicationType: data.applicationType.type
             })
         },
 
@@ -153,7 +155,8 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
 
             this.configEdit = $(_.template(template[tplPath])({
                 data: cusConfigObj,
-                panelId: Utility.randomStr(8)
+                panelId: Utility.randomStr(8),
+                applicationType: this.applicationType
             }));
             this.configEdit.appendTo(this.$el.find(".customized"))
         },
@@ -220,7 +223,19 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                 this.mySetupSendWaitCustomizeModel.off("set.channel.config.error");
                 this.mySetupSendWaitCustomizeModel.on("set.channel.config.success", $.proxy(this.onSaveComment, this));
                 this.mySetupSendWaitCustomizeModel.on("set.channel.config.error", $.proxy(this.onGetError, this));
-                this.mySetupSendWaitCustomizeModel.setChannelConfig(postParam)
+                if (this.applicationType !== 203) {
+                    this.mySetupSendWaitCustomizeModel.setChannelNgConfig(postParam)
+                } else {
+                    try {
+                        _.each(postParam, function(el){
+                            JSON.parse(el.content)
+                        }.bind(this))
+                    } catch (e){
+                        alert("JSON 格式错误！")
+                        return;
+                    }
+                    this.mySetupSendWaitCustomizeModel.setChannelLuaConfig(postParam)
+                }
             } else {
                 this.onSaveComment();
             }

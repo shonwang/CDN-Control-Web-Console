@@ -367,9 +367,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     } 
                 })
             }.bind(this))
-
-            console.log("addEditLayerStrategy.view upperNodeListForSelect: ", this.upperNodeListForSelect)
-
             _.each(this.upperNodeListForSelect, function (el, key, ls) {
                 el.checked = false;
                 _.each(this.defaultParam.upper, function (data, key, ls) {
@@ -381,9 +378,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     }
                 }.bind(this))
             }.bind(this))
-
-            console.log("addEditLayerStrategy.view this.defaultParam.upper: ", this.defaultParam.upper)
-
             this.initUpperTable();
         },
 
@@ -399,8 +393,17 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 })
             }.bind(this))
 
+            var duoxianArray = _.filter(nodeList, function(obj){
+                return obj.operatorId === 9
+            }.bind(this))
+            var feiDuoxianArray = _.filter(nodeList, function(obj){
+                return obj.operatorId !== 9
+            }.bind(this))
+
+            nodeList = duoxianArray.concat(feiDuoxianArray)
+
             this.upperTable = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.upper.table.html'])({
-                data: nodeList,
+                data: nodeList
             }));
 
             if (nodeList.length !== 0)

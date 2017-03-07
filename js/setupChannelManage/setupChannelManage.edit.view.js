@@ -69,6 +69,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
         },
 
         initSetup: function(data){
+            this.applicationType = data.applicationType.type;
             this.$el.find("#input-application").val(data.applicationType.name);
 
             var isUseCustomized = this.model.get("tempUseCustomized");
@@ -133,7 +134,8 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
             this.mySetupSendWaitCustomizeModel.getAllConfig({
                 domain: this.model.get("domain"),
                 version: this.model.get("version") || this.model.get("domainVersion"),
-                manuallyModifed: true
+                manuallyModifed: true,
+                applicationType: data.applicationType.type
             })
         },
 
@@ -153,7 +155,8 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
 
             this.configEdit = $(_.template(template[tplPath])({
                 data: cusConfigObj,
-                panelId: Utility.randomStr(8)
+                panelId: Utility.randomStr(8),
+                applicationType: this.applicationType
             }));
             this.configEdit.appendTo(this.$el.find(".customized"))
         },

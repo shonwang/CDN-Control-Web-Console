@@ -223,10 +223,19 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                 this.mySetupSendWaitCustomizeModel.off("set.channel.config.error");
                 this.mySetupSendWaitCustomizeModel.on("set.channel.config.success", $.proxy(this.onSaveComment, this));
                 this.mySetupSendWaitCustomizeModel.on("set.channel.config.error", $.proxy(this.onGetError, this));
-                if (this.applicationType !== 203)
+                if (this.applicationType !== 203) {
                     this.mySetupSendWaitCustomizeModel.setChannelNgConfig(postParam)
-                else
+                } else {
+                    try {
+                        _.each(postParam, function(el){
+                            JSON.parse(el.content)
+                        }.bind(this))
+                    } catch (e){
+                        alert("JSON 格式错误！")
+                        return;
+                    }
                     this.mySetupSendWaitCustomizeModel.setChannelLuaConfig(postParam)
+                }
             } else {
                 this.onSaveComment();
             }

@@ -23,7 +23,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             } else {
                 this.defaultParam = this.curEditRule
             }
-            console.log("addEditLayerStrategy.view defaultParam: ", this.defaultParam)
+            console.log("规则初始化默认值: ", this.defaultParam)
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
 
             require(['deviceManage.model'], function (deviceManageModel) {
@@ -97,12 +97,13 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }
 
             if (!this.options.localNodes && !this.options.upperNodes) {
-                this.collection.on("get.topoAndNodeInfo.success", $.proxy(this.onGetLocalNode, this));
-                this.collection.on("get.topoAndNodeInfo.error", $.proxy(this.onGetError, this));
-                this.collection.getTopoAndNodeInfo(this.topologyId);
+                this.collection.on("get.topo.OriginInfo.success", $.proxy(this.onGetLocalNode, this));
+                this.collection.on("get.topo.OriginInfo.error", $.proxy(this.onGetError, this));
+                this.collection.getTopoOrigininfo(this.topologyId);
+                console.log("拓扑ID: ", this.topologyId)
             } else {
-                console.log("addEditLayerStrategy.view this.options.localNodes: ", this.options.localNodes)
-                console.log("addEditLayerStrategy.view this.options.upperNodes: ", this.options.upperNodes)
+                console.log("拓扑所有节点: ", this.options.localNodes)
+                console.log("拓扑上层节点: ", this.options.upperNodes)
                 this.onGetLocalNodeFromArgs();
                 this.onGetUpperNodeFromArgs();
             }
@@ -149,7 +150,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
 
             if (!this.isEdit) this.rule.push(this.defaultParam)
 
-            console.log("addEditLayerStrategy.view this.rule: ", this.rule)
+            console.log("当前保存的规则：this.rule: ", this.rule);
 
             this.options.onSaveCallback && this.options.onSaveCallback();
         },
@@ -191,7 +192,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         onGetLocalNode: function (res) {
-            console.log(res)
+            console.log("根据拓扑ID获取拓扑信息：", res);
             this.options.localNodes = [];
             _.each(res.allNodes, function(node){
                 this.options.localNodes.push({
@@ -298,12 +299,13 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.defaultParam.localType = parseInt($(eventTarget).val());
 
             if (this.defaultParam.localType === 1){
-                this.searchSelectLocal && this.searchSelectLocal.cancelAll();
                 this.defaultParam.local = [];
                 this.$el.find(".operator-ctn").hide();
                 this.$el.find(".nodes-ctn").show();
+                _.each(this.localNodeListForSelect, function(el, index, ls){
+                    el.checked = false;
+                }.bind(this));
             } else if (this.defaultParam.localType === 2){
-                this.searchSelectLocal && this.searchSelectLocal.cancelAll();
                 this.defaultParam.local = [{
                     id: this.statusArray[0].value,
                     name: this.statusArray[0].name
@@ -312,6 +314,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.$el.find(".nodes-ctn").hide();
                 this.$el.find(".operator-ctn").show();
             }
+            if (this.searchSelectLocal)
+                this.searchSelectLocal.destroy();
+
             this.initLocalSelect();
             this.initLocalTable();
         },

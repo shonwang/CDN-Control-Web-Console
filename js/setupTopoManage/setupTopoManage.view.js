@@ -864,7 +864,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             this.$el.find("#input-name").val(res.name);
             this.$el.find("#input-name").attr("readonly", "true");
 
-            console.log(this.defaultParam)
+            console.log("编辑的拓扑: ", this.defaultParam)
             this.initSetup();
         },
 
@@ -1304,7 +1304,6 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     curEditRule: this.curEditRule,
                     isEdit: true,
                     onSaveCallback: function () {
-                        console.log("setupTopoManage.view this.defaultParam.rule: ", this.defaultParam.rule)
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".add-topo").show();
                         this.initRuleTable();
@@ -1340,7 +1339,6 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     upperNodes: this.selectedUpperNodeList,
                     rule: this.defaultParam.rule,
                     onSaveCallback: function () {
-                        console.log("setupTopoManage.view this.defaultParam.rule: ", this.defaultParam.rule)
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".add-topo").show();
                         this.initRuleTable();
@@ -1355,6 +1353,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
             }.bind(this))
         },
+
 
         onGetError: function (error) {
             if (error && error.message)

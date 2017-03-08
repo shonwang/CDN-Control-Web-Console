@@ -80,9 +80,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     collection: mySetupBillModel,
                     originId: this.model.get("id"),
                     version: version,
-                    onSaveCallback: function () {
-                        // debugger
-                    }.bind(this),
+                    onSaveCallback: function () {}.bind(this),
                     onCancelCallback: function () {
                         mySetupBillView.$el.remove();
                         this.$el.find(".history-panel").show();
@@ -136,19 +134,11 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.collection.on('add.special.success', $.proxy(this.addSpecialSuccess, this));
             this.collection.on('add.special.error', $.proxy(this.addSpecialError, this));
 
-
-            //获取频道的特殊分层策略
-            this.collection.off('get.rule.origin.success');
-            this.collection.off('get.rule.origin.error');
-            this.collection.on('get.rule.origin.success', $.proxy(this.onRuleInfo, this));
-            this.collection.on('get.rule.origin.error', $.proxy(this.onGetError, this));
-
             //获取特殊规则的id
             this.collection.off('getTopologyRole.success');
             this.collection.off('getTopologyRole.error');
             this.collection.on('getTopologyRole.success', $.proxy(this.getTopologyRoleSuccess, this));
             this.collection.on('getTopologyRole.error', $.proxy(this.getTopologyRoleError, this));
-
             this.collection.getTopologyRole(this.model.get('id'));
 
             //保存特殊规则的id
@@ -156,22 +146,6 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.collection.off('addTopologyRole.error');
             this.collection.on('addTopologyRole.success', $.proxy(this.addTopologyRoleSuccess, this));
             this.collection.on('addTopologyRole.error', $.proxy(this.onGetError, this));
-
-            //获取本id下的节点列表信息
-            this.collection.off('get.node.success');
-            this.collection.off('get.node.error');
-            this.collection.on('get.node.success', $.proxy(this.onGetAllNode, this));
-            this.collection.on('get.node.error', $.proxy(this.onGetError, this));
-
-            this.collection.getNodeList();
-
-            //获取运营商的节点信息
-            this.collection.off('get.operator.success');
-            this.collection.off('get.operator.error');
-            this.collection.on('get.operator.success', $.proxy(this.getOperatorList, this));
-            this.collection.on('get.operator.error', $.proxy(this.onGetError, this));
-
-            this.collection.getOperatorList();
 
             //推送到待下发中
             this.collection.off("post.predelivery.success");
@@ -196,27 +170,33 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             }, this));
             this.collection.on("get.domainInfo.error", $.proxy(this.onGetError, this));
             this.collection.getDomainInfo({originId: this.model.get("id")});
+
+            this.defaultParam = {
+                "rule": []
+            };
         },
+
         //获取特殊规则的rulesID成功
         getTopologyRoleSuccess: function (res) {
+            //获取频道的特殊分层策略
+            this.collection.off('get.rule.origin.success');
+            this.collection.off('get.rule.origin.error');
+            this.collection.on('get.rule.origin.success', $.proxy(this.initRuleTable, this));
+            this.collection.on('get.rule.origin.error', $.proxy(this.onGetError, this));
             this.collection.getRuleOrigin(res);
         },
 
         getTopologyRoleError: function (error) {
             if (error && error.status == 404) {
-                this.defaultParam = [];
-                this.initRuleTable(this.defaultParam);
-                console.log(error.message);
-            }
-            else if (error && error.message && error.status != 404) {
+                this.initRuleTable();
+            } else if (error && error.message && error.status != 404) {
                 alert(error.message);
-            }
-            else {
+            } else {
                 alert("网络阻塞，请刷新重试！")
             }
         },
+
         onClickItemPublish: function () {
-            //var result = this.confCustomType == 1 ? confirm("确定将域名放入待下发吗？") : confirm("确定将域名放入待定制吗？");
             if (this.confCustomType === 1) {
                 var result = confirm("确定将域名放入待下发吗？");
             } else if (this.confCustomType === 3) {
@@ -239,23 +219,21 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.collection.on("post.predelivery.error", $.proxy(this.onGetError, this));
             this.collection.predelivery(postParam)
         },
+
         onPostPredelivery: function (res) {
             this.options.onSaveCallback && this.options.onSaveCallback();
             alert('操作成功');
-            console.log(this.confCustomType);
             if (this.confCustomType === 1)
                 window.location.hash = '#/setupSendWaitSend';
             else if (this.confCustomType === 3)
                 window.location.hash = '#/setupSendWaitCustomize';
-
         },
+
         //保存特殊策略成功之后保存特殊策略的域名ID和特殊规则的id成功
         addTopologyRoleSuccess: function (res) {
-            //alert('保存成功');
-            console.log(this.model);
             this.onClickItemPublish();
-            //this.options.onSaveCallback && this.options.onSaveCallback();
         },
+
         //保存特殊策略成功
         addSpecialSuccess: function (res) {
             var ruleIds = [];
@@ -269,102 +247,102 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             }
             this.collection.addTopologyRole(args); //保存域名的ID和特殊策略的ID
         },
+
         addSpecialError: function (error) {
-            if (error && error.message) {
+            if (error && error.message)
                 alert(error.message);
-            }
             else
                 alert("网络阻塞，请刷新重试！");
+        },
 
-        },
-        onRuleInfo: function (res) {
-            this.defaultParam = [];
-            _.each(res, function (el, index, list) {
-                this.defaultParam.push({
-                    "id": el.id,
-                    "NoEdit": true,
-                    "local": el.local,
-                    "localType": el.localType,
-                    "upper": el.upper
-                })
-            }.bind(this));
-            this.NoEditNodes = [];
-            _.each(this.defaultParam, function (el, index, list) {
-                this.NoEditNodes.push(el.id);
-            }.bind(this));
-            var data = this.analyticFunction(this.defaultParam);
-            this.defaultParam = this.analyticRuleFunction(this.defaultParam);
-            this.initRuleTable(data);
-        },
-        onGetAllNode: function (res) {
-            this.allNodes = res;
-        },
-        getOperatorList: function (res) {
-            this.operator = [];
-            _.each(res, function (el, index, list) {
-                this.operator.push({
-                    'name': el.name,
-                    'value': el.id
-                })
-            }.bind(this));
-        },
-        initRuleTable: function (data) {
-            var data = data;
+        initRuleTable: function () {
+            //var data = [{localLayer: "1111", upperLayer: "22222"}];
+            this.ruleList = [];
 
-            this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.role.table.html'])({
-                data: data,
+            _.each(this.defaultParam.rule, function(rule, index, ls){
+                var localLayerArray = [], upperLayer = [],
+                    primaryArray = [], backupArray = [],
+                    primaryNameArray = [], backupNameArray = [];
+                _.each(rule.local, function(local, inx, list){
+                    localLayerArray.push(local.name)
+                }.bind(this));
+
+                primaryArray = _.filter(rule.upper, function(obj){
+                    return obj.chiefType !== 0;
+                }.bind(this))
+                backupArray = _.filter(rule.upper, function(obj){
+                    return obj.chiefType === 0;
+                }.bind(this))
+
+                _.each(primaryArray, function(upper, inx, list){
+                    if (upper.rsNodeMsgVo)
+                        primaryNameArray.push(upper.rsNodeMsgVo.name)
+                    else
+                        primaryNameArray.push("[后端没有返回名称]")
+                }.bind(this));
+                _.each(backupArray, function(upper, inx, list){
+                    if (upper.rsNodeMsgVo)
+                        backupNameArray.push(upper.rsNodeMsgVo.name)
+                    else
+                        backupNameArray.push("[后端没有返回名称]")
+                }.bind(this));
+
+                var upperLayer = primaryNameArray.join('、');
+                if (rule.upper.length > 1)
+                    upperLayer = '<strong>主：</strong>' + primaryNameArray.join('、');
+                if (backupArray.length > 0)
+                    upperLayer += '<br><strong>备：</strong>' + backupNameArray.join('、');
+
+                var ruleStrObj = {
+                    id: rule.id,
+                    localLayer: localLayerArray.join('、'),
+                    upperLayer: upperLayer 
+                }
+                this.ruleList.push(ruleStrObj)
+            }.bind(this))
+
+            this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.role.table.html'])({
+                 data: this.ruleList
             }));
-
-            if (data.length !== 0)
-                this.$el.find(".table-ctn").html(this.table[0]);
+            if (this.ruleList.length !== 0)
+                this.$el.find(".table-ctn").html(this.roleTable[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.tr = this.table.find('tbody tr');
-            for (var i = 0; i < this.tr.length; i++) {
-                var flag = false;
-                _.each(this.NoEditNodes, function (nodes, index, list) {
-                    if ($(this.tr[i]).attr('data-id') == nodes) {
-                        flag = true;
-                    }
-                }.bind(this));
-                if (flag) {
-                    $(this.tr[i]).find('.edit').css('visibility', 'hidden');
-                }
-            }
-
-            this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-            this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
-
+            // if (!this.isEdit) {
+                this.roleTable.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
+                this.roleTable.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+            // } else {
+            //     this.roleTable.find("tbody .edit").hide();
+            //     this.roleTable.find("tbody .delete").hide();
+            // }
         },
+
         onClickItemEdit: function (event) {
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "A") {
-                eventTarget = $(eventTarget).parent().parent();
-                id = eventTarget.attr("data-id");
-            } else {
-                id = $(eventTarget).attr("data-id");
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+
+            this.curEditRule = _.find(this.defaultParam.rule, function(obj){
+                return obj.id === parseInt(id)
+            }.bind(this))
+
+            if (!this.curEditRule){
+                alert("找不到此行的数据，无法编辑");
+                return;
             }
-            this.id = id;
-            // debugger
             require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function (AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                 var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                 var options = myAddEditLayerStrategyModel;
                 var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
-                    //TODO
-                    //传入含有chiefType属性的对象
                     collection: options,
-                    rule: this.defaultParam,
-                    id: this.id,
-                    isChannel: true,
+                    rule: this.defaultParam.rule,
                     topologyId: this.model.get('topologyId'),
+                    curEditRule: this.curEditRule,
                     isEdit: true,
                     onSaveCallback: function () {
-                        // debugger
-                        var data = this.InformationProcessing(this.defaultParam);
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".special-layer").show();
-                        this.initRuleTable(data);
+                        this.initRuleTable();
                     }.bind(this),
                     onCancelCallback: function () {
                         myAddEditLayerStrategyView.$el.remove();
@@ -376,45 +354,29 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
             }.bind(this))
         },
+
         onClickItemDelete: function () {
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "A") {
-                eventTarget = $(eventTarget).parent().parent();
-                id = eventTarget.attr("data-id");
-            } else {
-                id = $(eventTarget).attr("data-id");
-            }
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+            this.defaultParam.rule = _.filter(this.defaultParam.rule, function(obj){
+                return obj.id !== parseInt(id)
+            }.bind(this))
 
-            var defaultParamFlag = [];
-            _.each(this.defaultParam, function (el, index, list) {
-                if (el.id != id) {
-                    defaultParamFlag.push(el);
-                }
-            }.bind(this));
-            this.defaultParam = defaultParamFlag;
-
-            var data = this.InformationProcessing(this.defaultParam);
-            this.initRuleTable(data);
-
+            this.initRuleTable();
         },
+
         onClickAddRuleButton: function () {
             require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function (AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                 var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                 var options = myAddEditLayerStrategyModel;
                 var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
                     collection: options,
-                    rule: this.defaultParam,
+                    rule: this.defaultParam.rule,
                     topologyId: this.model.get('topologyId'),
-                    isEdit: false,
-                    isChannel: true,
-                    model: this.model,
                     onSaveCallback: function () {
-                        //this.defaultParam = this.rule;
-                        this.checked;
-                        var data = this.InformationProcessing(this.defaultParam);
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".special-layer").show();
-                        this.initRuleTable(data);
+                        this.initRuleTable();
                     }.bind(this),
                     onCancelCallback: function () {
                         myAddEditLayerStrategyView.$el.remove();
@@ -430,154 +392,47 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
         onClickCancelButton: function () {
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
+
         //点击保存按钮保存特殊策略
         onClickSaveButton: function () {
-            var flag = true;
-            if (this.defaultParam.length == 0) {
-                alert('请选择节点');
+            if (this.defaultParam.rule.length == 0) {
+                alert('请添加规则');
                 return;
             }
-            _.each(this.defaultParam, function (el) {
-                if (el.local.length == 0) {
-                    alert('请在配置规则中选择本层节点');
-                    flag = false;
-                    return;
-                } else if (el.upper.length == 0) {
-                    alert('请在配置规则中选择上层节点');
-                    flag = false;
-                    return;
-                }
-            })
-            if (flag) {
-                _.each(this.defaultParam, function (el, index, list) {
-                    if (!el.NoEdit) {
-                        el.id = 0;
-                    }
-                }.bind(this));
-                _.each(this.defaultParam, function (el, index, list) {
-                    delete el.NoEdit;
-                }.bind(this));
-                this.Param = {
-                    "topoId": this.model.get('topologyId'),
-                    "rule": this.defaultParam
-                }
-                this.collection.specilaAdd(this.Param);
+
+            console.log(this.defaultParam.rule)
+
+            _.each(this.defaultParam.rule, function(rule){
+                var localIdArray = [], upperObjArray = [];
+                _.each(rule.local, function(node){
+                    localIdArray.push(node.id)
+                }.bind(this))
+                _.each(rule.upper, function(node){
+                    upperObjArray.push({
+                        nodeId: node.rsNodeMsgVo.id,
+                        ipCorporation: node.ipCorporation,
+                        chiefType: node.chiefType
+                    })
+                }.bind(this))
+
+                rule.local = localIdArray;
+                rule.upper = upperObjArray;
+            }.bind(this))
+
+            var postParam = {
+                "topoId": this.model.get('topologyId'),
+                "rule": this.defaultParam.rule
             }
-            //this.options.onSaveCallback && this.options.onSaveCallback();
+            this.collection.specilaAdd(postParam);
         },
-        setOperatorInfo: function (res) {
-            this.operator = [];
-            _.each(res, function (el, index, list) {
-                this.operator.push({
-                    'name': el.name,
-                    'value': el.id
-                })
-            }.bind(this));
-        },
-        analyticFunction: function (data) {
-            var data_save = [];
-            var self = this;
-            _.each(data, function (el, key, ls) {
-                var data_save_content = {
-                    id: null,
-                    'localLayer': [],
-                    'upperLayer': []
-                };
-                if (el.localType == 2) {
-                    _.each(el.local, function (local) {
-                        data_save_content.localLayer.push(local.name)
-                    })
-                } else if (el.localType == 1) {
-                    _.each(el.local, function (local) {
-                        data_save_content.localLayer.push(local.name);
-                    })
-                }
-                _.each(el.upper, function (upper) {
-                    data_save_content.upperLayer.push(upper.rsNodeMsgVo.name)
 
-                })
-                data_save_content.localLayer = data_save_content.localLayer.join('、');
-                data_save_content.upperLayer = data_save_content.upperLayer.join('、');
-                data_save_content.id = el.id;
-                data_save.push(data_save_content);
-
-            });
-            return data_save;
-        },
-        analyticRuleFunction: function (res) {
-            var rule = [];
-            _.each(res, function (el) {
-                var localAll = [];
-                var upperAll = [];
-                _.each(el.local, function (local) {
-                    localAll.push(local.id);
-                })
-                _.each(el.upper, function (upper) {
-                    upperAll.push({nodeId: upper.rsNodeMsgVo.id, ipCorporation: upper.ipCorporation});
-                })
-                rule.push({id: el.id, NoEdit: el.NoEdit, localType: el.localType, local: localAll, upper: upperAll});
-            });
-            return rule;
-        },
-        InformationProcessing: function (data) {
-            // debugger
-            //var data = [{localLayer: "1111", upperLayer: "22222"}];
-            var data_save = [];
-            var self = this;
-            _.each(data, function (el, key, ls) {
-                var data_save_content = {
-                    id: null,
-                    'localLayer': [],
-                };
-                if (el.localType == 2) {
-                    _.each(el.local, function (local) {
-                        _.each(self.operator, function (operator) {
-                            if (local == operator.value) {
-                                data_save_content.localLayer.push(operator.name)
-                            }
-                        })
-                    }.bind(this))
-                } else if (el.localType == 1) {
-                    _.each(el.local, function (local) {
-                        _.each(self.allNodes, function (nodes) {
-
-                            if (local == nodes.id) {
-                                data_save_content.localLayer.push(nodes.chName);
-                            }
-                        })
-                    })
-                }
-                _.each(el.upper, function (upper) {
-                    _.each(self.allNodes, function (nodes) {
-                        if (upper.nodeId == nodes.id) {
-                            data_save_content.upperLayer.push(nodes.chName)
-                        }
-                    })
-                })
-                data_save_content.localLayer = data_save_content.localLayer.join('、');
-                data_save_content.upperLayer = data_save_content.upperLayer.join('、');
-
-                if (typeof(el.id) == 'undefined') {
-                    el.id = key;
-                    data_save_content.id = key;
-                }
-                else {
-                    data_save_content.id = el.id;
-                }
-
-                data_save.push(data_save_content);
-
-            });
-            return data_save;
-        },
         onGetError: function (error) {
-            console.log('错误');
             if (error && error.message)
                 alert(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
-
+                alert("网络阻塞，请刷新重试！");
         },
+
         render: function (target) {
             this.$el.appendTo(target);
         }
@@ -883,13 +738,17 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 alert('该域名未指定拓扑关系，无法添加特殊分层策略');
                 return;
             }
+
             var mySpecialLayerManageView = new SpecialLayerManageView({
                 collection: this.collection,
                 model: model,
+                isEdit: true,
                 onSaveCallback: function () {
-                    // debugger
+                    this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
                     mySpecialLayerManageView.$el.remove();
                     this.$el.find(".list-panel").show();
+                    this.onClickQueryButton();
+                    this.initRuleTable(data, this.checked);
                 }.bind(this),
                 onCancelCallback: function () {
                     mySpecialLayerManageView.$el.remove();

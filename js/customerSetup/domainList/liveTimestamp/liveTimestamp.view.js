@@ -191,9 +191,9 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
 
                 if (expirationTime === "" || expirationTime === null) expirationTime = 0;
                 if (expirationTime === 0 && confType === 0)
-                    this.defaultParam.baseDeadline === 1;
+                    this.defaultParam.baseDeadline = 1;
                 else if (expirationTime !== 0 && confType === 0)
-                    this.defaultParam.baseDeadline === 2;
+                    this.defaultParam.baseDeadline = 2;
                 else if (expirationTime === 0 && confType === 1)
                     this.defaultParam.advancedDeadline = 1;
                 else if (expirationTime !== 0 && confType === 1)

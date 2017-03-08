@@ -27,11 +27,22 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 timeParam: "",
                 hashParam: "",
                 authFactor: "",
-                atuthDivisorArray: [],
+                atuthDivisorArray: [{
+                    "id": -1,
+                    "divisor": 6,
+                }, {
+                    "id": -2,
+                    "divisor": 2,
+                }, {
+                    "id": -3,
+                    "divisor": 5,
+                }],
                 md5Truncate: "",
                 type: 9,
                 policy: ""
             };
+
+            var authDivisorList = this.defaultParam.atuthDivisorArray;
 
             if (this.isEdit){
                 var protectionType = this.model.get("protectionType"), //1:typeA 2:typeB 3:typeC
@@ -40,28 +51,6 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                     md5Truncate = this.model.get("md5Truncate")
                     expirationTime = this.model.get("expirationTime"),
                     authDivisorList = this.model.get("authDivisorList");
-
-                if (authDivisorList) {
-                    var  atuthDivisorArray = [
-                        {value: 1, name: "host:用户请求域名"},
-                        {value: 2, name: "uri：用户请求的uri"},
-                        {value: 3, name: "url：不带参数"},
-                        {value: 4, name: "arg&name:请求url中的参数名称"},
-                        {value: 5, name: "time：请求url中是时间戳"},
-                        {value: 6, name: "key：秘钥"},
-                        {value: 7, name: "filename：文件名称，带后缀"},
-                        {value: 8, name: "filenameno：文件名称，不带后缀"},
-                        {value: 9, name: "method: 用户请求方法"},
-                        {value: 10, name: "hdr&name：请求头中的header名称"}
-                    ];
-                    _.each(authDivisorList, function(el, index, ls){
-                        var nameObj = _.find(atuthDivisorArray, function(obj){
-                            return obj.value === el.divisor
-                        }.bind(this))
-                        if (nameObj) el.divisorName = nameObj.name
-                    }.bind(this))
-                    this.defaultParam.atuthDivisorArray = authDivisorList
-                }
 
                 if (confType === 0) {
                     this.defaultParam.antiLeech = protectionType
@@ -97,14 +86,13 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
 
                 if (expirationTime === "" || expirationTime === null) expirationTime = 0;
 
-                if (expirationTime === 0 && confType === 0)
+                if (expirationTime === 0){
                     this.defaultParam.baseDeadline = 1;
-                else if (expirationTime !== 0 && confType === 0)
-                    this.defaultParam.baseDeadline = 2;
-                else if (expirationTime === 0 && confType === 1)
                     this.defaultParam.advancedDeadline = 1;
-                else if (expirationTime !== 0 && confType === 1)
+                } else if (expirationTime !== 0) {
+                    this.defaultParam.baseDeadline = 2;
                     this.defaultParam.advancedDeadline = 2;
+                }
 
                 if (md5Truncate === ""){
                     this.defaultParam.spliceMd5 = 1;
@@ -119,6 +107,28 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.defaultParam.md5Truncate = this.model.get("md5Truncate");
                 this.defaultParam.type = this.model.get("matchingType") || 0;
                 this.defaultParam.policy = this.model.get("matchingValue") || "";
+            }
+
+            if (authDivisorList) {
+                var  atuthDivisorArray = [
+                    {value: 1, name: "host:用户请求域名"},
+                    {value: 2, name: "uri：用户请求的uri"},
+                    {value: 3, name: "url：不带参数"},
+                    {value: 4, name: "arg&name:请求url中的参数名称"},
+                    {value: 5, name: "time：请求url中是时间戳"},
+                    {value: 6, name: "key：秘钥"},
+                    {value: 7, name: "filename：文件名称，带后缀"},
+                    {value: 8, name: "filenameno：文件名称，不带后缀"},
+                    {value: 9, name: "method: 用户请求方法"},
+                    {value: 10, name: "hdr&name：请求头中的header名称"}
+                ];
+                _.each(authDivisorList, function(el, index, ls){
+                    var nameObj = _.find(atuthDivisorArray, function(obj){
+                        return obj.value === el.divisor
+                    }.bind(this))
+                    if (nameObj) el.divisorName = nameObj.name
+                }.bind(this))
+                this.defaultParam.atuthDivisorArray = authDivisorList
             }
 
             require(['matchCondition.view', 'matchCondition.model'], function(MatchConditionView, MatchConditionModel){
@@ -604,7 +614,8 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 "hashParam": this.$el.find("#key_hash").val(),
                 "timeType": this.defaultParam.timestampType,
                 "expirationTime": expirationTime,
-                "authFactor": this.$el.find("#atuth-divisor").val(),
+                //"authFactor": this.$el.find("#atuth-divisor").val(),
+                "authDivisorList": this.defaultParam.atuthDivisorArray,
                 "md5Truncate": md5Truncate,
                 "authKeyList": authKeyList,
                 "summary": summary
@@ -697,7 +708,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                     "hashParam": obj.get('hashParam'),
                     "timeType": obj.get('timeType'),
                     "expirationTime": obj.get('expirationTime'),
-                    "authFactor": obj.get('authFactor'),
+                    "authDivisorList": obj.get('authDivisorList'),
                     "md5Truncate": obj.get('md5Truncate'),
                     "authKeyList": obj.get('authKeyList'),
                 })

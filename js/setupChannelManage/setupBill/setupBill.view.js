@@ -192,6 +192,14 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.originHostSetupInfo.hostTypeStr = '回源域名';
                 this.originHostSetupInfo.customHostHeader = domainConf.originAddress;
             }
+            
+            if(domainConf.hostFlag === 0){
+                this.originHostSetupInfo.hostFlayStr = '<span class="label label-danger">关闭</span>';
+            }
+            if(domainConf.hostFlag === 1){
+                this.originHostSetupInfo.hostFlayStr = '<span class="label label-success">开启</span>';
+            }
+
             this.originHostSetupTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.originHostSetup.html'])({
                 data: this.originHostSetupInfo
             }));

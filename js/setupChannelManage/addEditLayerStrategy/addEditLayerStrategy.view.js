@@ -378,7 +378,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     if (el.value == data.rsNodeMsgVo.id) {
                         el.checked = true;
                         data.chiefType = el.chiefType;
-                        if (el.operator === 9)
+                        if (el.ipCorporation !== undefined)
+                            data.ipCorporation = el.ipCorporation;
+                        else if (el.operator === 9)
                             data.ipCorporation = el.operator;
                         else
                             data.ipCorporation = 0
@@ -520,7 +522,13 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             var id = eventTarget.id;
 
             _.each(this.defaultParam.upper, function(obj){
-                if (obj.rsNodeMsgVo.id === parseInt(id)) obj.chiefType = eventTarget.checked ? 0 : 1;
+                if (obj.rsNodeMsgVo.id === parseInt(id)) 
+                    obj.chiefType = eventTarget.checked ? 0 : 1;
+            }.bind(this))
+
+            _.each(this.upperNodeListForSelect, function(obj){
+                if (parseInt(obj.value) === parseInt(id)) 
+                    obj.chiefType = eventTarget.checked ? 0 : 1;
             }.bind(this))
         },
 

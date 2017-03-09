@@ -157,10 +157,10 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
             if ((this.curType === 1 && this.curProtocol === 0) ||
                 (this.curType === 1 && this.curProtocol === 4) ||
                 (this.curType === 2 && this.curProtocol === 2)) {
-                window.location.hash = '#/domainList/' + args + "/basicInformation/" + args2
+                window.location.hash = '#/domainList/' + this.args + "/basicInformation/" + this.args2
             } else if ((this.curType === 2 && this.curProtocol === 1) ||
                        (this.curType === 2 && this.curProtocol === 3)) {
-                window.location.hash = '#/domainList/' + args + "/liveBasicInformation/" + args2
+                window.location.hash = '#/domainList/' + this.args + "/liveBasicInformation/" + this.args2
             } else {
                 alert(`type=1 protocol=0,4 下载<br>type=2 protocol=2 伪直播<br>type=2 protocol= 1,3真直播<br>
                     当前返回的type为` + this.curType + "，protocol为" + this.curProtocol);

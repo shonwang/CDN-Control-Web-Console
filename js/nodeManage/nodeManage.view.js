@@ -499,14 +499,14 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                     this.collection.getOperationByCountry({id: data.value})
                 }.bind(this)
             });
-            // if (this.isEdit){
-            //     this.$el.find(".dropdown-country .cur-value").html(this.model.get("countryName"));
-            //     this.collection.getOperationByCountry({id: this.model.get("countryId")})
-            //     //this.$el.find("#dropdown-country").prop("disabled", true)
-            // } else {
+            if (this.isEdit){
+                this.$el.find(".dropdown-country .cur-value").html(this.model.get("countryName"));
+                this.collection.getOperationByCountry({id: this.model.get("countryId")})
+                //this.$el.find("#dropdown-country").prop("disabled", true)
+            } else {
                 this.$el.find('#dropdown-country .cur-value').html(nameList[0].name);
                 this.collection.getOperationByCountry({id: nameList[0].value});
-            // }
+            }
         },
 
         onGetAllCity: function(res){

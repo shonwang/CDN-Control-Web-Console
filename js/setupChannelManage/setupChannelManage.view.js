@@ -133,26 +133,23 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.collection.off('add.special.error');
             this.collection.on('add.special.success', $.proxy(this.addSpecialSuccess, this));
             this.collection.on('add.special.error', $.proxy(this.addSpecialError, this));
-
-            //获取特殊规则的id
-            this.collection.off('getTopologyRole.success');
-            this.collection.off('getTopologyRole.error');
-            this.collection.on('getTopologyRole.success', $.proxy(this.getTopologyRoleSuccess, this));
-            this.collection.on('getTopologyRole.error', $.proxy(this.getTopologyRoleError, this));
-            this.collection.getTopologyRole(this.model.get('id'));
-
             //保存特殊规则的id
-            this.collection.off('addTopologyRole.success');
-            this.collection.off('addTopologyRole.error');
-            this.collection.on('addTopologyRole.success', $.proxy(this.addTopologyRoleSuccess, this));
-            this.collection.on('addTopologyRole.error', $.proxy(this.onGetError, this));
-
+            this.collection.off('addTopologyRule.success');
+            this.collection.off('addTopologyRule.error');
+            this.collection.on('addTopologyRule.success', $.proxy(this.addTopologyRuleSuccess, this));
+            this.collection.on('addTopologyRule.error', $.proxy(this.onGetError, this));
             //推送到待下发中
             this.collection.off("post.predelivery.success");
             this.collection.off("post.predelivery.error");
             this.collection.on("post.predelivery.success", $.proxy(this.onPublishSuccess, this));
             this.collection.on("post.predelivery.error", $.proxy(this.onGetError, this));
 
+            //获取特殊规则的id
+            this.collection.off('getTopologyRule.success');
+            this.collection.off('getTopologyRule.error');
+            this.collection.on('getTopologyRule.success', $.proxy(this.getTopologyRuleSuccess, this));
+            this.collection.on('getTopologyRule.error', $.proxy(this.getTopologyRuleError, this));
+            this.collection.getTopologyRule(this.model.get('id'));
             //获取到version
             this.collection.off("get.channel.history.success");
             this.collection.off("get.channel.history.error");
@@ -161,7 +158,6 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             }, this));
             this.collection.on("get.channel.history.error", $.proxy(this.onGetError, this));
             this.collection.getVersionList({"originId": this.model.get("id")});
-
             //获取域名的基本信息
             this.collection.off("get.domainInfo.success");
             this.collection.off("get.domainInfo.error");
@@ -176,9 +172,8 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             };
         },
 
-        //获取特殊规则的rulesID成功
-        getTopologyRoleSuccess: function (res) {
-            //获取频道的特殊分层策略
+        getTopologyRuleSuccess: function (res) {
+            console.log("获取频道的特殊分层策略规则ID: ", res)
             this.collection.off('get.rule.origin.success');
             this.collection.off('get.rule.origin.error');
             this.collection.on('get.rule.origin.success', $.proxy(this.initRuleTable, this));
@@ -186,7 +181,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.collection.getRuleOrigin(res);
         },
 
-        getTopologyRoleError: function (error) {
+        getTopologyRuleError: function (error) {
             if (error && error.status == 404) {
                 this.initRuleTable();
             } else if (error && error.message && error.status != 404) {
@@ -230,7 +225,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
         },
 
         //保存特殊策略成功之后保存特殊策略的域名ID和特殊规则的id成功
-        addTopologyRoleSuccess: function (res) {
+        addTopologyRuleSuccess: function (res) {
             this.onClickItemPublish();
         },
 
@@ -245,7 +240,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 "originId": this.model.get('id'),
                 "roleIds": ruleIds
             }
-            this.collection.addTopologyRole(args); //保存域名的ID和特殊策略的ID
+            this.collection.addTopologyRule(args); //保存域名的ID和特殊策略的ID
         },
 
         addSpecialError: function (error) {
@@ -255,7 +250,9 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 alert("网络阻塞，请刷新重试！");
         },
 
-        initRuleTable: function () {
+        initRuleTable: function (res) {
+            console.log("获取频道的特殊分层策略规则: ", res);
+            if (res && res.length > 0) this.defaultParam.rule = res;
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             this.ruleList = [];
 
@@ -330,7 +327,8 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 alert("找不到此行的数据，无法编辑");
                 return;
             }
-            require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function (AddEditLayerStrategyView, AddEditLayerStrategyModel) {
+            require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], 
+                function (AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                 var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                 var options = myAddEditLayerStrategyModel;
                 var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
@@ -399,9 +397,6 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 alert('请添加规则');
                 return;
             }
-
-            console.log(this.defaultParam.rule)
-
             _.each(this.defaultParam.rule, function(rule){
                 var localIdArray = [], upperObjArray = [];
                 _.each(rule.local, function(node){

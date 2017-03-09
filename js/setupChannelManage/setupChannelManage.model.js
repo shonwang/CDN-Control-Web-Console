@@ -41,21 +41,6 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
 
         initialize: function(){},
 
-        getOperatorList:function(args){
-            var url = BASE_URL + "/resource/rs/metaData/operator/list",
-            successCallback = function(res) {
-                if(res){
-                    this.trigger("get.operator.success",res);
-                }else{
-                    this.trigger("get.operator.error");
-                }
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger('get.devicetype.error');
-            }.bind(this);
-            Utility.getAjax(url, '' , successCallback, errorCallback);
-        },
-
         predelivery:function(args){
             var url = BASE_URL + "/cd/predelivery",
             successCallback = function(res) {
@@ -134,27 +119,13 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
            successCallback = function(res){
                 if(res){
                     this.total = res.total;
-                    this.trigger("get.rule.origin.success",res);
+                    this.trigger("get.rule.origin.success", res);
                 }else{
                     this.trigger("get.rule.origin.error");
                 }
             }.bind(this),
             errorCallback = function(response){
                 this.trigger('get.rule.origin.error',response)
-            }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
-        },
-
-        getNodeList: function(args){
-            var url = BASE_URL + "/resource/rs/node/queryNode",
-            successCallback = function(res){
-                if (res)
-                    this.trigger("get.node.success", res); 
-                else
-                    this.trigger("get.node.error", res); 
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("get.node.error", response);  
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
@@ -175,27 +146,27 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
-        getTopologyRole: function(args){
+        getTopologyRule: function(args){
             var url = BASE_URL + "/channelManager/topology/getTopologyRoleByOriginId?originId="+args,
             successCallback = function(res){
                 if (res)
-                    this.trigger("getTopologyRole.success", res); 
+                    this.trigger("getTopologyRule.success", res); 
                 else
-                    this.trigger("getTopologyRole.error"); 
+                    this.trigger("getTopologyRule.error"); 
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("getTopologyRole.error", response);  
+                this.trigger("getTopologyRule.error", response);  
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        addTopologyRole: function(args){
+        addTopologyRule: function(args){
              var url = BASE_URL + '/channelManager/topology/addTopologyRole',
             successCallback = function(res){
-                this.trigger("addTopologyRole.success", res); 
+                this.trigger("addTopologyRule.success", res); 
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("addTopologyRole.error", response);  
+                this.trigger("addTopologyRule.error", response);  
             }.bind(this);
             
             Utility.getAjax(url, args, successCallback, errorCallback); 

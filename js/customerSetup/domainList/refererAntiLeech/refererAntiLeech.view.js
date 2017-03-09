@@ -212,14 +212,15 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
             if (type === 1) typeName = "Referer类型：白名单<br>";
             if (type === 2) typeName = "Referer类型：黑名单<br>";
 
-            var domains = '', domainsName;
+            var domains = '', domainsName = '';
             
             if (this.defaultParam.refererType === 1) 
                 domains = _.uniq(this.$el.find("#white-domain").val().split(',')).join(',')
             else
                 domains = _.uniq(this.$el.find("#black-domain").val().split(',')).join(',')
 
-            if (domains) domainsName = "合法域名：" + domains + "<br>";
+            if (domains&&type === 1) domainsName = "合法域名：" + domains + "<br>";
+            if (domains&&type === 1) domainsName = "非法域名：" + domains + "<br>";
 
             var nullReferer = this.defaultParam.nullReferer, nullRefererName;
             if (nullReferer === 0) nullRefererName = "是否允许空引用：否<br>";

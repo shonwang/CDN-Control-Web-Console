@@ -60,15 +60,15 @@ define("setupSendDetail.model", ['require','exports', 'utility'], function(requi
             Utility.postAjax(url, args, successCallback, errorCallback); 
         },
 
-        ingoreDevice:function(args){
-            var url = BASE_URL + "/cd/delivery/task/ingoredevice",
+        batchIgnoreDevice:function(args){
+            var url = BASE_URL + "/cd/delivery/task/batchignoredevice",
             successCallback = function(res){
                 this.trigger("get.ingoredevice.success"); 
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("get.ingoredevice.error", response); 
             }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback); 
+            Utility.postAjax(url, args, successCallback, errorCallback); 
         }
 
     });

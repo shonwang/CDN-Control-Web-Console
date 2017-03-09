@@ -442,9 +442,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             _.each(this.selectedUpperNodeList, function (el, key, ls) {
                 this.defaultParam.upperNodes.push(parseInt(el.nodeId));
             }.bind(this))
-
-            if (this.searchSelectUpper)
-                this.searchSelectUpper.destroy();
+            
             this.initUpperSelect();
             this.initUpperTable();
         },

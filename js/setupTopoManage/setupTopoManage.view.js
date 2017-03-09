@@ -297,7 +297,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             if (this.selectedAllNodeList.length !== 0)
                 this.$el.find(".all .table-ctn").html(this.localTable[0]);
             else
-                this.$el.find(".all .table-ctn").html(_.template(template['tpl/empty.html'])());
+                this.$el.find(".all .table-ctn").html(_.template(template['tpl/empty-2.html'])({data: {message: "还没有添加节点"}}));
 
             if (!this.isEdit)
                 this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemAllDelete, this));
@@ -414,7 +414,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             if (this.selectedUpperNodeList.length !== 0)
                 this.$el.find(".upper .table-ctn").html(this.upperTable[0]);
             else
-                this.$el.find(".upper .table-ctn").html(_.template(template['tpl/empty.html'])());
+                this.$el.find(".upper .table-ctn").html(_.template(template['tpl/empty-2.html'])({data: {message: "还没有添加节点"}}));
 
             if (!this.isEdit)
                 this.upperTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperDelete, this));
@@ -501,7 +501,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             if (this.ruleList.length !== 0)
                 this.$el.find(".rule .table-ctn").html(this.roleTable[0]);
             else
-                this.$el.find(".rule .table-ctn").html(_.template(template['tpl/empty.html'])());
+                this.$el.find(".rule .table-ctn").html(_.template(template['tpl/empty-2.html'])({data: {message: "还没有添加规则"}}));
 
             if (!this.isEdit) {
                 this.roleTable.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));

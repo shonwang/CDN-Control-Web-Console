@@ -268,7 +268,7 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/customerSetup/domainList/domainList.addDomain.live.html'])({}));
             
-            this.$el.find("input[name=radio-protocol]").on("click",$.proxy(this.onRadioProtocolChange,this))
+            this.$el.find("input[name=radio-live-protocol]").on("click",$.proxy(this.onRadioProtocolChange,this))
             this.$el.find("input[name=radio-origin2]").on("click",$.proxy(this.onRadioOriginChange,this));
             this.$el.find("#cdn-originIP").on("focus",$.proxy(this.hideOriginTips,this));
             this.$el.find("#cdn-originAddress").on("focus",$.proxy(this.hideOriginTips,this));
@@ -276,18 +276,40 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
             this.setDropdownMenu();
         },
 
-        onRadioProtocolChange:function(){
+        onRadioProtocolChange:function(event){
             this.$el.find("#cdn-cdnProtocol-error").hide();
+
+            var target = event.srcElement || event.target;
+            var val = $(target).val();
+            //this.$el.find("input[name=radio-live-origin]").prop("checked",false);
+            if(val=="RTMP"){
+                this.$el.find("#selectForRTMP").show();
+                this.$el.find("#selectForHTTPAndFLV").hide();
+                this.$el.find("#selectForHLS").hide();
+                this.$el.find("#radio-live-origin1").prop("checked",true);
+            }
+            else if(val=="HTTP+FLV"){
+                this.$el.find("#selectForRTMP").show();
+                this.$el.find("#selectForHTTPAndFLV").show();
+                this.$el.find("#selectForHLS").hide();
+                this.$el.find("#radio-live-origin1").prop("checked",true);
+            }
+            else if(val=="HLS"){
+                this.$el.find("#selectForRTMP").hide();
+                this.$el.find("#selectForHTTPAndFLV").hide();
+                this.$el.find("#selectForHLS").show();
+                this.$el.find("#radio-live-origin3").prop("checked",true);
+            }
         },
 
         onRadioOriginChange:function(){
-            this.$el.find("#cdn-originProtocol-error").hide();
+            //this.$el.find("#cdn-originProtocol-error").hide();
         },
 
         checkArgs:function(){
             this.args.DomainName = this.parent.args.DomainName;
-            this.args.CdnProtocol = this.$el.find("input[name=radio-protocol]:checked").val() || null;
-            this.args.OriginProtocol = this.$el.find("input[name=radio-origin2]:checked").val() || null;
+            this.args.CdnProtocol = this.$el.find("input[name=radio-live-protocol]:checked").val() || null;
+            this.args.OriginProtocol = this.$el.find("input[name=radio-live-origin]:checked").val() || null;
             if(!this.checkProtocol()){
                 return false;
             }
@@ -619,7 +641,7 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
                   "originAddress": _.uniq(result.Origin.split(',')).join(','),
                   "originPort": result.OriginPort
             }
-
+            
             this.collection.submitDomain(postParam);
             this.$el.find("#add-domain-btnSubmit").attr("disabled", "disabled");
         },

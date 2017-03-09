@@ -1,13 +1,13 @@
-define("setupTopoManageSendStrategy.model", ['require','exports', 'utility'], function(require, exports, Utility) {
+define("setupTopoManageSendStrategy.model", ['require','exports', 'utility', 'setupTopoManage.model'], 
+    function(require, exports, Utility, SetupTopoManageCollection) {
     var Model = Backbone.Model.extend({
         initialize: function(){
            var createTime = this.get('createTime')
-            
            this.set("createTime", new Date(createTime).format("yyyy/MM/dd hh:mm"));
         }
     });
 
-    var SetupTopoManageSendStrategyCollection = Backbone.Collection.extend({ 
+    var SetupTopoManageSendStrategyCollection = SetupTopoManageCollection.extend({ 
         
         model: Model,
         
@@ -32,6 +32,7 @@ define("setupTopoManageSendStrategy.model", ['require','exports', 'utility'], fu
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
+
         getOriginSendinfo: function(args){
             var url = BASE_URL + "/resource/topo/info/list",
             successCallback = function(res){
@@ -47,19 +48,7 @@ define("setupTopoManageSendStrategy.model", ['require','exports', 'utility'], fu
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
-        getNodeList: function(args){
-            var url = BASE_URL + "/resource/rs/node/queryNode",
-            successCallback = function(res){
-                if (res)
-                    this.trigger("get.node.success", res); 
-                else
-                    this.trigger("get.node.error", res); 
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("get.node.error", response);  
-            }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
-        },
+
         addSendView: function(args){
             var url = BASE_URL + "/cd/strategy",
             successCallback = function(res){
@@ -75,6 +64,7 @@ define("setupTopoManageSendStrategy.model", ['require','exports', 'utility'], fu
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+
         getSendViewDetail: function(args){
             var url = BASE_URL + "/cd/strategy/"+args,
             successCallback = function(res){
@@ -92,6 +82,7 @@ define("setupTopoManageSendStrategy.model", ['require','exports', 'utility'], fu
             
             Utility.getAjax(url,'',successCallback, errorCallback);
         },
+
         modifySendStrategy: function(args){
              var url = BASE_URL + "/cd/strategy/"+args.id,
             successCallback = function(res){
@@ -109,6 +100,7 @@ define("setupTopoManageSendStrategy.model", ['require','exports', 'utility'], fu
             
             Utility.postAjax(url, args,successCallback, errorCallback);
         },
+
         deleteSendStrategy: function(args){
             var url = BASE_URL + "/cd/strategy/"+args,
             successCallback = function(res){
@@ -126,6 +118,7 @@ define("setupTopoManageSendStrategy.model", ['require','exports', 'utility'], fu
             
             Utility.deleteAjax(url, '',successCallback, errorCallback);
         },
+
         setDefaultStrategy: function(args){
             var url = BASE_URL + "/cd/strategy/default?strategyId="+args,
             successCallback = function(res){
@@ -142,23 +135,7 @@ define("setupTopoManageSendStrategy.model", ['require','exports', 'utility'], fu
             }.bind(this);
             
             Utility.postAjax(url, '',successCallback, errorCallback);
-        },
-        getTopoOrigininfo:function(args){
-            var url = BASE_URL + "/resource/topo/origin/info?id="+args,
-            successCallback = function(res){
-                if(res){
-                    this.total = res.total;
-                    this.trigger("get.node.success",res);
-                }else{
-                    this.trigger("get.node.error");
-                }
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger('get.node.error',response)
-            }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
-        },
-
+        }
     });
 
     return SetupTopoManageSendStrategyCollection;

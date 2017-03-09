@@ -185,6 +185,7 @@ requirejs.config({
         "setupTopoManage.model": "setupTopoManage/setupTopoManage.model",
         "setupTopoManage.view": "setupTopoManage/setupTopoManage.view",
         "setupTopoManageSendStrategy.model": "setupTopoManage/setupTopoManageSendStrategy.model",
+        "setupTopoManageSendStrategy.view": "setupTopoManage/setupTopoManageSendStrategy.view",
 
         "setupSendManage.controller": "setupSendManage/setupSendManage.controller",
         "setupSendDone.model": "setupSendManage/setupSendDone/setupSendDone.model",

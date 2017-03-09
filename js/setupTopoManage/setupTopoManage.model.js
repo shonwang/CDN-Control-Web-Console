@@ -1,9 +1,10 @@
 define("setupTopoManage.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-            var createTime = this.get('createTime')
+            var createTime = this.get('createTime');
             
             createTime = this.set("createTime", new Date(createTime).format("yyyy/MM/dd hh:mm"));
+            this.set('checked',false);
         }
     });
 
@@ -32,6 +33,7 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+
         getTopoOrigininfo:function(args){
             var url = BASE_URL + "/resource/topo/origin/info?id="+args,
             successCallback = function(res){
@@ -47,6 +49,7 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+
         getDeviceTypeList:function(args){
             var url = BASE_URL + "/resource/rs/metaData/deviceType/list",
             successCallback = function(res) {
@@ -61,34 +64,7 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
             }.bind(this);
             Utility.getAjax(url, '' , successCallback, errorCallback);
         },
-        getOperatorList:function(args){
-            var url = BASE_URL + "/resource/rs/metaData/operator/list",
-            successCallback = function(res) {
-                if(res){
-                    this.trigger("get.operator.success",res);
-                }else{
-                    this.trigger("get.operator.error");
-                }
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger('get.devicetype.error');
-            }.bind(this);
-            Utility.getAjax(url, '' , successCallback, errorCallback);
-        },
-        getOperatorUpperList:function(args){
-            var url = BASE_URL + "/resource/rs/metaData/operator/list",
-            successCallback = function(res) {
-                if(res){
-                    this.trigger("get.operatorUpper.success",res);
-                }else{
-                    this.trigger("get.operatorUpper.error");
-                }
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger('get.operatorUpper.error');
-            }.bind(this);
-            Utility.getAjax(url, '' , successCallback, errorCallback);
-        },
+
         topoAdd:function(args){
             var url = BASE_URL + "/resource/topo/add",
             successCallback = function(res){
@@ -108,6 +84,7 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+
         topoModify:function(args){
             var url = BASE_URL + "/resource/topo/modify",
             successCallback = function(res){
@@ -127,6 +104,7 @@ define("setupTopoManage.model", ['require','exports', 'utility'], function(requi
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+        
         getNodeList: function(args){
             var url = BASE_URL + "/resource/rs/node/queryNode",
             successCallback = function(res){

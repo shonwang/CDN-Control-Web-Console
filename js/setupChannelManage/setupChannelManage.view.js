@@ -179,6 +179,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.collection.on('get.rule.origin.success', $.proxy(this.initRuleTable, this));
             this.collection.on('get.rule.origin.error', $.proxy(this.onGetError, this));
             this.collection.getRuleOrigin(res);
+            this.notEditId = res;
         },
 
         getTopologyRuleError: function (error) {
@@ -298,21 +299,25 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 this.ruleList.push(ruleStrObj)
             }.bind(this))
 
-            this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.role.table.html'])({
+            this.ruleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.role.table.html'])({
                  data: this.ruleList
             }));
             if (this.ruleList.length !== 0)
-                this.$el.find(".table-ctn").html(this.roleTable[0]);
+                this.$el.find(".table-ctn").html(this.ruleTable[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            // if (!this.isEdit) {
-                this.roleTable.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-                this.roleTable.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
-            // } else {
-            //     this.roleTable.find("tbody .edit").hide();
-            //     this.roleTable.find("tbody .delete").hide();
-            // }
+            this.ruleTable.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
+            this.ruleTable.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+
+            _.each(this.ruleTable.find("tbody .edit"), function(el){
+                _.each(this.notEditId, function(id){
+                    if (id === parseInt(el.id)){
+                        $(el).hide();
+                        $(el).siblings(".delete").hide();
+                    }
+                }.bind(this))
+            }.bind(this))
         },
 
         onClickItemEdit: function (event) {

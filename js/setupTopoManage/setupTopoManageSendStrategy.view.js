@@ -281,7 +281,7 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
             this.$el.find('.add-step').css('display', 'inline-block');
 
             this.allNodes = res.allNodes; //所有的节点,会执行节点的过滤操作
-            console.log('拓扑中的所有节点: ', this.allNodesShow)
+            console.log('拓扑中的所有节点: ', this.allNodes)
             if (this.isEdit) {
                 this.collection.getSendViewDetail(this.model.get('id'));
                 console.log('编辑情况下发策略ID: ', this.model.get('id'))

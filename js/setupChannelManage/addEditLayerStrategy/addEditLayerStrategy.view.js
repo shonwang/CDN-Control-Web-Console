@@ -520,7 +520,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             var id = eventTarget.id;
 
             _.each(this.defaultParam.upper, function(obj){
-                if (obj.rsNodeMsgVo.id === parseInt(id)) obj.chiefType = 0;
+                if (obj.rsNodeMsgVo.id === parseInt(id)) obj.chiefType = eventTarget.checked ? 0 : 1;
             }.bind(this))
         },
 

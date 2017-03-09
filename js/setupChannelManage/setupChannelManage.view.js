@@ -327,7 +327,8 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 alert("找不到此行的数据，无法编辑");
                 return;
             }
-            require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function (AddEditLayerStrategyView, AddEditLayerStrategyModel) {
+            require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], 
+                function (AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                 var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                 var options = myAddEditLayerStrategyModel;
                 var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
@@ -396,7 +397,6 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 alert('请添加规则');
                 return;
             }
-
             _.each(this.defaultParam.rule, function(rule){
                 var localIdArray = [], upperObjArray = [];
                 _.each(rule.local, function(node){

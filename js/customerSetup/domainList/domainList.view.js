@@ -133,26 +133,37 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
 
-            var model = this.collection.get(id), args = JSON.stringify({
+            var model = this.collection.get(id);
+
+            this.args = JSON.stringify({
                 clientName: this.userInfo.clientName,
                 uid: this.userInfo.uid
-            }), args2 = JSON.stringify({
+            });
+            this.args2 = JSON.stringify({
                 id: model.get("id"),
                 domain: model.get("domain")
-            })
+            });
+
+            this.curType = model.get("type");
+            this.curProtocol = model.get("protocol");
+
+            this.redirectToManage();
+        },
+
+        redirectToManage: function(){
             // type=1 protocol=0,4 下载
             // type=2 protocol=2 伪直播
             // type=2 protocol= 1,3真直播
-            if ((model.get("type") === 1 && model.get("protocol") === 0) ||
-                (model.get("type") === 1 && model.get("protocol") === 4) ||
-                (model.get("type") === 2 && model.get("protocol") === 2)) {
+            if ((this.curType === 1 && this.curProtocol === 0) ||
+                (this.curType === 1 && this.curProtocol === 4) ||
+                (this.curType === 2 && this.curProtocol === 2)) {
                 window.location.hash = '#/domainList/' + args + "/basicInformation/" + args2
-            } else if ((model.get("type") === 2 && model.get("protocol") === 1) ||
-                       (model.get("type") === 2 && model.get("protocol") === 3)) {
+            } else if ((this.curType === 2 && this.curProtocol === 1) ||
+                       (this.curType === 2 && this.curProtocol === 3)) {
                 window.location.hash = '#/domainList/' + args + "/liveBasicInformation/" + args2
             } else {
                 alert(`type=1 protocol=0,4 下载<br>type=2 protocol=2 伪直播<br>type=2 protocol= 1,3真直播<br>
-                    当前返回的type为` + model.get("type") + "，protocol为" + model.get("protocol"));
+                    当前返回的type为` + this.curType + "，protocol为" + this.curProtocol);
             }
         },
 

@@ -406,7 +406,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     upperObjArray.push({
                         nodeId: node.rsNodeMsgVo.id,
                         ipCorporation: node.ipCorporation,
-                        chiefType: node.chiefType
+                        chiefType: node.chiefType === undefined ? 1 : node.chiefType
                     })
                 }.bind(this))
 

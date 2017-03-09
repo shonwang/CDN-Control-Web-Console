@@ -261,13 +261,16 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             }.bind(this))
 
             this.showDisablePopup();
-            // _.each(this.skipList, function(el){
-            //     this.collection.ingoreDevice({
-            //         taskStepId: this.model.get('taskStepId'),
-            //         deviceName: el.get("deviceName"),
-            //         deviceId: el.get('id')
-            //     })
-            // }.bind(this))
+
+            var postParam = [];
+            _.each(this.skipList, function(el){
+                postParam.push({
+                    taskStepId: this.model.get('taskStepId'),
+                    deviceId: el.get('id')
+                })
+            }.bind(this))
+
+            this.collection.batchIgnoreDevice(postParam);
         },
 
         showDisablePopup: function() {
@@ -343,12 +346,12 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             } else {
                 id = $(eventTarget).attr("id");
             }
-            //?taskStepId={任务StepID}&deviceName={设备名称}&deviceId={设备ID}
-            this.collection.ingoreDevice({
+
+            var postParam = [{
                 taskStepId: this.model.get('taskStepId'),
-                deviceName: this.collection.get(id).get("deviceName"),
                 deviceId: id
-            })
+            }]
+            this.collection.batchIgnoreDevice(postParam)
         },
 
         onSkipSuccess: function(){
@@ -358,6 +361,7 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             }
             this.onClickQueryButton();
             alert("跳过成功")
+            this.onClickQueryButton();
         },
 
         onClickItemDetail: function(event){
@@ -423,6 +427,7 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
                 this.isMultiSkip = false;
                 this.disablePopup&&this.disablePopup.$el.modal('hide');
             }
+            this.onClickQueryButton();
         },
 
         onGetError: function(error){

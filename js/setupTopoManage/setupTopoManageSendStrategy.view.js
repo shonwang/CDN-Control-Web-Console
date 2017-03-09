@@ -272,6 +272,7 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
             this.defaultParam = res;
             this.$el.find('#input-Name').val(this.defaultParam.name);
             this.$el.find('#description').val(this.defaultParam.description);
+            this.initNodeName();
             this.initStepTable();
         },
 
@@ -286,12 +287,8 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
                 this.collection.getSendViewDetail(this.model.get('id'));
                 console.log('编辑情况下发策略ID: ', this.model.get('id'))
             } else {
-                var nodeNames = {};
-                _.each(this.allNodes, function(el){
-                    nodeNames[el.id] = el.name;
-                }.bind(this))
-                this.defaultParam.nodeNames = nodeNames;
                 console.log('新建默认策略详情: ', this.defaultParam)
+                this.initNodeName();
                 this.initStepTable();
             }
         },
@@ -300,6 +297,15 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
             var mynextStepView = new nextStepView({});
             mynextStepView.render(this.$el.find('#selectNextTime'));
             this.$el.find('#selectNextTime').css('visibility', 'hidden');
+        },
+
+        initNodeName: function(){
+            var nodeNames = {};
+            _.each(this.allNodes, function(el){
+                nodeNames[el.id] = el.name;
+            }.bind(this))
+            this.defaultParam.nodeNames = nodeNames;
+            console.log('节点名称: ', this.defaultParam.nodeNames)
         },
 
         initStepTable: function(){

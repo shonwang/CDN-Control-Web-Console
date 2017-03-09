@@ -204,7 +204,6 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
         },
 
         onClickSaveButton: function(){
-            // debugger
             if (this.isEdit) {
                 var postParam = [], cusConfig = this.cusConfigInfo;
 

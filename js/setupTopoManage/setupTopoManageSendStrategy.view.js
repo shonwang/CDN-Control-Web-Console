@@ -25,6 +25,7 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
 
             if (this.isEdit){
                 this.currentStep = options.currentStep;//每一条的步骤参数
+                if (this.currentStep.range === undefined) this.currentStep.range = 0
             } else {
                 this.currentStep = {
                     "step": this.deliveryDetail.deliveryStrategyDef.length + 1,

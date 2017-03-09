@@ -1452,6 +1452,7 @@ define("setupTopoManage.view", ['require','exports', 'template', 'modal.view', '
                 };
                 if(el.localType == 2){
                     _.each(el.local,function(local){
+
                         _.each(self.operator,function(operator){
                             if(local == operator.value){
                                data_save_content.localLayer.push(operator.name)

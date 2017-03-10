@@ -152,8 +152,12 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 return;
             }
 
+            console.log("点击保存按钮时的拓扑", this.defaultParam)
+
+            var postRules = [], postTopo = {};
+
             _.each(this.defaultParam.rule, function(rule){
-                var localIdArray = [], upperObjArray = [];
+                var localIdArray = [], upperObjArray = [], tempRule = {};
                 _.each(rule.local, function(node){
                     localIdArray.push(node.id)
                 }.bind(this))
@@ -165,14 +169,24 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     })
                 }.bind(this))
 
-                rule.local = localIdArray;
-                rule.upper = upperObjArray;
+                tempRule.id = rule.id;
+                tempRule.localType = rule.localType
+                tempRule.local = localIdArray;
+                tempRule.upper = upperObjArray;
+                postRules.push(tempRule);
             }.bind(this))
 
+            postTopo.allNodes = this.defaultParam.allNodes;
+            postTopo.id = this.defaultParam.id;
+            postTopo.name = this.defaultParam.name;
+            postTopo.type = this.defaultParam.type;
+            postTopo.upperNodes = this.defaultParam.upperNodes;
+            postTopo.rule = postRules
+
             if (this.isEdit)
-                this.collection.topoModify(this.defaultParam);
+                this.collection.topoModify(postTopo);
             else
-                this.collection.topoAdd(this.defaultParam);
+                this.collection.topoAdd(postTopo);
             this.options.onSaveCallback && this.options.onSaveCallback();
         },
 

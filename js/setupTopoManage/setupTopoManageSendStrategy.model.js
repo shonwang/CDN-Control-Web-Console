@@ -135,27 +135,7 @@ define("setupTopoManageSendStrategy.model", ['require','exports', 'utility', 'se
             }.bind(this);
             
             Utility.postAjax(url, '',successCallback, errorCallback);
-<<<<<<< HEAD
-        },
-        getTopoOrigininfo:function(args){
-            var url = BASE_URL + "/resource/topo/origin/consoleInfo?id="+args,
-            successCallback = function(res){
-                if(res){
-                    this.total = res.total;
-                    this.trigger("get.node.success",res);
-                }else{
-                    this.trigger("get.node.error");
-                }
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger('get.node.error',response)
-            }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
-        },
-
-=======
         }
->>>>>>> multiSkip20170307
     });
 
     return SetupTopoManageSendStrategyCollection;

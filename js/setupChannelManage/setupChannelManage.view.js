@@ -252,8 +252,10 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
         },
 
         initRuleTable: function (res) {
-            console.log("获取频道的特殊分层策略规则: ", res);
-            if (res && res.length > 0) this.defaultParam.rule = res;
+            if (res && res.length > 0) {
+                this.defaultParam.rule = res;
+                console.log("获取频道的特殊分层策略规则: ", res);
+            }
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             this.ruleList = [];
 
@@ -402,11 +404,17 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 alert('请添加规则');
                 return;
             }
+            console.log("保存当前所有规则", this.defaultParam.rule);
+
+            var postRules = [];
+
             _.each(this.defaultParam.rule, function(rule){
-                var localIdArray = [], upperObjArray = [];
+                var localIdArray = [], upperObjArray = [], tempRule = {};
+
                 _.each(rule.local, function(node){
                     localIdArray.push(node.id)
                 }.bind(this))
+
                 _.each(rule.upper, function(node){
                     upperObjArray.push({
                         nodeId: node.rsNodeMsgVo.id,
@@ -415,13 +423,16 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     })
                 }.bind(this))
 
-                rule.local = localIdArray;
-                rule.upper = upperObjArray;
+                tempRule.id = rule.id;
+                tempRule.localType = rule.localType
+                tempRule.local = localIdArray;
+                tempRule.upper = upperObjArray;
+                postRules.push(tempRule)
             }.bind(this))
 
             var postParam = {
                 "topoId": this.model.get('topologyId'),
-                "rule": this.defaultParam.rule
+                "rule": postRules
             }
             this.collection.specilaAdd(postParam);
         },

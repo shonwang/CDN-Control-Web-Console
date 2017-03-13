@@ -7,7 +7,8 @@
                 <div class="panel panel-default">
                     <div class="panel-heading" id="heading-<%=data.up[i].id%>-<%=panelId%>">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#upper-layer-<%=panelId%>" href="#upper-layer-<%=data.up[i].id%>-<%=panelId%>">
+                            <a data-toggle="collapse" data-parent="#upper-layer-<%=panelId%>" 
+                            href="#upper-layer-<%=data.up[i].id%>-<%=panelId%>-<%=data.up[i].name.substring(0, 1)%>">
                                 <%=data.up[i].name%>
                                 <% if (!data.up[i].luaOnly) { %>
                                     <span class="text-danger">：文件不包含全部配置，请下发nginx文件</span>
@@ -15,7 +16,7 @@
                             </a>
                         </h4>
                     </div>
-                    <div id="upper-layer-<%=data.up[i].id%>-<%=panelId%>" class="panel-collapse collapse">
+                    <div id="upper-layer-<%=data.up[i].id%>-<%=panelId%>-<%=data.up[i].name.substring(0, 1)%>" class="panel-collapse collapse">
                         <div class="panel-body">
                             <textarea class="form-control" rows="10" id="auto-file-<%=data.up[i].id%>" readonly="true">
                                 <%=data.up[i].content%>
@@ -30,12 +31,13 @@
     <div class="panel panel-primary">
         <div class="panel-heading">下层配置</div>
         <div class="panel-body">
-            <div class="panel-group" id="down-layer">
+            <div class="panel-group" id="down-layer-<%=panelId%>">
                 <% for(var i = 0; i < data.down.length; i++) { %>
                 <div class="panel panel-default">
                     <div class="panel-heading" id="heading-<%=data.down[i].id%>-<%=panelId%>">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#down-layer" href="#down-layer-<%=data.down[i].id%>-<%=panelId%>">
+                            <a data-toggle="collapse" data-parent="#down-layer-<%=panelId%>" 
+                            href="#down-layer-<%=data.down[i].id%>-<%=panelId%>-<%=data.down[i].name.substring(0, 1)%>">
                                 <%=data.down[i].name%>
                                 <% if (!data.down[i].luaOnly) { %>
                                     <span class="text-danger">：文件不包含全部配置，请下发nginx文件</span>
@@ -43,7 +45,7 @@
                             </a>
                         </h4>
                     </div>
-                    <div id="down-layer-<%=data.down[i].id%>-<%=panelId%>" class="panel-collapse collapse">
+                    <div id="down-layer-<%=data.down[i].id%>-<%=panelId%>-<%=data.down[i].name.substring(0, 1)%>" class="panel-collapse collapse">
                         <div class="panel-body">
                             <textarea class="form-control" rows="10" id="auto-file-<%=data.down[i].id%>" readonly="true">
                                 <%=data.down[i].content%>

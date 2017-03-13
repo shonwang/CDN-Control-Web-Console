@@ -44,6 +44,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.table.find("tbody .bill").on("click", $.proxy(this.onClickItemBill, this));
+            this.table.find("tbody .config").on("click", $.proxy(this.onClickItemConfig, this));
             this.table.find("tbody .publish").on("click", $.proxy(this.onClickItemPublish, this));
         },
 
@@ -68,6 +69,36 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
         onPostPredelivery: function () {
             alert("发布成功！")
             window.location.hash = '#/setupSendWaitSend';
+        },
+
+        onClickItemConfig: function(event){
+            var eventTarget = event.srcElement || event.target,
+                version = $(eventTarget).attr("version");
+                
+            var clickedObj = {
+                domain: this.model.get("domain"),
+                domainVersion: version
+            }
+
+            require(["setupSendDetail.view"], function(SendDetailView){
+                if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
+
+                var myConfiFileDetailView = new SendDetailView.ConfiFileDetailView({
+                    collection: this.collection, 
+                    model     : clickedObj
+                });
+                var options = {
+                    title: "配置文件详情",
+                    body : myConfiFileDetailView,
+                    backdrop : 'static',
+                    type     : 1,
+                    onOKCallback:  function(){
+                        this.configFilePopup.$el.modal("hide");
+                    }.bind(this),
+                    onHiddenCallback: function(){}.bind(this)
+                }
+                this.configFilePopup = new Modal(options);
+            }.bind(this))
         },
 
         onClickItemBill: function (event) {

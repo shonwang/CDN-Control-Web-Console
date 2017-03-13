@@ -263,7 +263,7 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
                 CdnProtocol:null,//访问协议
                 OriginProtocol: null,//回源方式
                 Origin:null,//源站类型选选择后输入的ipList或urlList
-                OriginPort:80//端口
+                OriginPort:"1935"//端口
             };
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/customerSetup/domainList/domainList.addDomain.live.html'])({}));
@@ -273,7 +273,16 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
             this.$el.find("#cdn-originIP").on("focus",$.proxy(this.hideOriginTips,this));
             this.$el.find("#cdn-originAddress").on("focus",$.proxy(this.hideOriginTips,this));
             this.$el.find("#cdn-KS3Address").on("focus",$.proxy(this.hideOriginTips,this));
+
+            this.$el.find("input[name=radio-port]").on("click",$.proxy(this.onRadioPortChange,this))
+
             this.setDropdownMenu();
+        },
+        
+        onRadioPortChange:function(event){
+            var target = event.srcElement || event.target;
+            var val = $(target).val();
+            this.args.OriginPort = val;
         },
 
         onRadioProtocolChange:function(event){
@@ -283,22 +292,34 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
             var val = $(target).val();
             //this.$el.find("input[name=radio-live-origin]").prop("checked",false);
             if(val=="RTMP"){
+                this.setDropdownMenu();
                 this.$el.find("#selectForRTMP").show();
                 this.$el.find("#selectForHTTPAndFLV").hide();
                 this.$el.find("#selectForHLS").hide();
                 this.$el.find("#radio-live-origin1").prop("checked",true);
+                this.$el.find("#radio-port1935").show();
+                this.$el.find("#radio-port1935 input").click();
+                this.$el.find("#radio-port80").hide();
             }
             else if(val=="HTTP+FLV"){
+                this.setDropdownMenu();
                 this.$el.find("#selectForRTMP").show();
                 this.$el.find("#selectForHTTPAndFLV").show();
                 this.$el.find("#selectForHLS").hide();
                 this.$el.find("#radio-live-origin1").prop("checked",true);
+                this.$el.find("#radio-port1935").hide();
+                this.$el.find("#radio-port80").show();
+                this.$el.find("#radio-port80 input").click();
             }
             else if(val=="HLS"){
+                this.setDropdownMenuForHLS();
                 this.$el.find("#selectForRTMP").hide();
                 this.$el.find("#selectForHTTPAndFLV").hide();
                 this.$el.find("#selectForHLS").show();
                 this.$el.find("#radio-live-origin3").prop("checked",true);
+                this.$el.find("#radio-port1935").hide();
+                this.$el.find("#radio-port80").show();
+                this.$el.find("#radio-port80 input").click();
             }
         },
 
@@ -451,7 +472,34 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
         },
 
         setDropdownMenu:function(){
+            this.args.OriginType = 1;
+            this.setShowOriginList();
+            this.$el.find(".cdn-download-live-port").hide();
+            this.$el.find("#dropdown-menu-origin-type .cur-caret").html("请选择");
             //直播的源站类型
+            var ctn = this.$el.find("#dropdown-menu-origin-type");
+            var dateArray = [
+                {name:"请选择",value:"1"},
+                {name:"域名源站",value:"domain"},
+                {name:"视频云源站",value:"ksvideo"}
+            ];
+            this.initDropMenu(ctn,dateArray,function(obj){
+                if(obj.value!=1){
+                    this.$el.find("#cdn-originType-error").hide();
+                }
+                this.$el.find(".cdn-download-live-port").hide();
+                this.args.OriginType = obj.value;
+                this.setShowOriginList();
+            }.bind(this));
+
+        },
+
+        setDropdownMenuForHLS:function(){
+            //直播的源站类型
+            this.args.OriginType = 1;
+            this.setShowOriginList();
+            this.$el.find(".cdn-download-live-port").hide();
+            this.$el.find("#dropdown-menu-origin-type .cur-caret").html("请选择");
             var ctn = this.$el.find("#dropdown-menu-origin-type");
             var dateArray = [
                 {name:"请选择",value:"1"},
@@ -466,8 +514,7 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
                 this.$el.find(".cdn-download-live-port").hide();
                 this.args.OriginType = obj.value;
                 this.setShowOriginList();
-            }.bind(this));
-
+            }.bind(this));            
         },
 
         initDropMenu: function (rootNode, typeArray,callback){

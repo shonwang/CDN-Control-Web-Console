@@ -3,6 +3,24 @@ define("controller", ['require','exports'],
 
     var Controller = Backbone.Router.extend({
 
+        specialLayerManageCallback: function(){
+            require(['specialLayerManage.view', 'specialLayerManage.model'], function(SpecialLayerManageView, SpecialLayerManageModel){
+                this.curPage = 'specialLayerManage';
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                if (!this.specialLayerManageModel)
+                    this.specialLayerManageModel = new SpecialLayerManageModel();
+                if (!this.specialLayerManageView ){
+                    var options = {
+                        collection: this.specialLayerManageModel
+                    };
+                    this.specialLayerManageView = new SpecialLayerManageView(options);
+                    this.specialLayerManageView.render($('.ksc-content'));
+                } else {
+                    this.specialLayerManageView.update();
+                }
+            }.bind(this));
+        },
+
         importAssessCallback: function(){
             require(['importAssess.view', 'importAssess.model'], function(ImportAssessView, ImportAssessModel){
                 this.curPage = 'importAssess';
@@ -68,7 +86,7 @@ define("controller", ['require','exports'],
                     var options = {
                         collection: this.setupChannelManageModel
                     };
-                    this.setupChannelManageView = new SetupChannelManageView(options);
+                    this.setupChannelManageView = new SetupChannelManageView.SetupChannelManageView(options);
                     this.setupChannelManageView.render($('.ksc-content'));
                 } else {
                     this.setupChannelManageView.update();

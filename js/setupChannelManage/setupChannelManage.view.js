@@ -1,4 +1,5 @@
-define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view', 'utility'], function (require, exports, template, Modal, Utility) {
+define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view', 'utility'], 
+    function (require, exports, template, Modal, Utility) {
 
     var HistoryView = Backbone.View.extend({
         events: {
@@ -987,5 +988,6 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
         }
     });
 
-    return SetupChannelManageView;
+    exports.SetupChannelManageView = SetupChannelManageView;
+    exports.SpecialLayerManageView = SpecialLayerManageView;
 });

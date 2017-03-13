@@ -1,5 +1,16 @@
 define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view', 'utility'], function (require, exports, template, Modal, Utility) {
 
+    var AddCommentsView = Backbone.View.extend({
+
+        initialize: function(){
+            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.addComments.html'])({data: {}}));
+        },
+
+        render: function (target) {
+            this.$el.appendTo(target);
+        }
+    })
+
     var HistoryView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
@@ -19,6 +30,8 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.collection.on("get.channel.history.success", $.proxy(this.initSetup, this));
             this.collection.on("get.channel.history.error", $.proxy(this.onGetError, this));
             this.collection.getVersionList({"originId": this.model.get("id")})
+
+            //this.description = this.model.get("description");
         },
 
         initSetup: function (data) {
@@ -46,9 +59,32 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.table.find("tbody .bill").on("click", $.proxy(this.onClickItemBill, this));
             this.table.find("tbody .config").on("click", $.proxy(this.onClickItemConfig, this));
             this.table.find("tbody .publish").on("click", $.proxy(this.onClickItemPublish, this));
+            this.table.find("tbody .comments").on("click", $.proxy(this.onClickItemComments, this));
         },
 
-        onClickItemPublish: function () {
+        onClickItemComments: function(event){
+            var eventTarget = event.srcElement || event.target,
+                version = $(eventTarget).attr("version");
+
+            if (this.commentsPopup) $("#" + this.commentsPopup.modalId).remove();
+
+            var myAddCommentsView = new AddCommentsView({
+                collection: this.collection, 
+            });
+            var options = {
+                title: "添加备注",
+                body : myAddCommentsView,
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback:  function(){
+                    this.commentsPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){}.bind(this)
+            }
+            this.commentsPopup = new Modal(options);
+        },
+
+        onClickItemPublish: function (event) {
             var eventTarget = event.srcElement || event.target,
                 version = $(eventTarget).attr("version");
 

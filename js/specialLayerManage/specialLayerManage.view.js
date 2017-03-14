@@ -9,6 +9,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection = options.collection;
                 this.model = options.model;
                 this.isEdit = options.isEdit;
+                this.isView = options.isView;
 
                 this.$el = $(_.template(template['tpl/specialLayerManage/specialLayerManage.edit.html'])({ data: {} }));
 
@@ -16,16 +17,16 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection.off('get.topo.OriginInfo.error');
                 this.collection.on('get.topo.OriginInfo.success', $.proxy(this.onOriginInfo, this));
                 this.collection.on('get.topo.OriginInfo.error', $.proxy(this.onGetError, this));
-                //添加拓扑关系
-                this.collection.off('add.topo.success');
-                this.collection.off('add.topo.error');
-                this.collection.on('add.topo.success', $.proxy(this.addTopoSuccess, this));
-                this.collection.on('add.topo.error', $.proxy(this.addTopoError, this));
-                //修改拓扑关系
-                this.collection.off('modify.topo.success');
-                this.collection.off('modify.topo.error');
-                this.collection.on('modify.topo.success', $.proxy(this.modifyTopoSuccess, this));
-                this.collection.on('modify.topo.error', $.proxy(this.modifyTopoError, this));
+                // //添加拓扑关系
+                // this.collection.off('add.topo.success');
+                // this.collection.off('add.topo.error');
+                // this.collection.on('add.topo.success', $.proxy(this.addTopoSuccess, this));
+                // this.collection.on('add.topo.error', $.proxy(this.addTopoError, this));
+                // //修改拓扑关系
+                // this.collection.off('modify.topo.success');
+                // this.collection.off('modify.topo.error');
+                // this.collection.on('modify.topo.success', $.proxy(this.modifyTopoSuccess, this));
+                // this.collection.on('modify.topo.error', $.proxy(this.modifyTopoError, this));
 
                 if (this.isEdit) {
                     this.collection.getTopoOrigininfo(this.model.get('id'));
@@ -40,6 +41,8 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     }
                     this.initSetup();
                 }
+
+                this.$el.find('.view-less').hide();
             },
 
             addTopoSuccess: function() {
@@ -86,12 +89,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     "type": res.type
                 }
 
-                this.NodeleteNodes = [];
-
-                _.each(this.defaultParam.allNodes, function(el) {
-                    this.NodeleteNodes.push(el)
-                }.bind(this));
-
                 this.$el.find("#input-name").val(res.name);
                 this.$el.find("#input-name").attr("readonly", "true");
 
@@ -100,34 +97,50 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             initSetup: function() {
-                this.$el.find('.all .add-node').hide();
-                this.$el.find('.upper .add-node').hide();
+                // this.$el.find('.upper .add-node').hide();
                 this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
                 if (!this.isEdit) {
-                    if (AUTH_OBJ.ApplyCreateTopos)
-                        this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
+                    // if (AUTH_OBJ.ApplyCreateTopos)
+                    this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
                     this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
-                    this.$el.find(".alert-danger").show();
+                    this.$el.find(".domain-list").hide();
+                } else if (!this.isView) {
+                    // if (AUTH_OBJ.ApplyEditTopos)
+                    this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
+                    this.$el.find(".view-more").on("click", $.proxy(this.onClickViewMoreButton, this));
+                    this.$el.find(".view-less").on("click", $.proxy(this.onClickViewLessButton, this));
+                    this.$el.find(".domain-list").show();
+                    this.$el.find(".comment-group").hide();
                 } else {
-                    if (AUTH_OBJ.ApplyEditTopos)
-                        this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
                     this.$el.find(".add-rule").hide();
-                    this.$el.find(".alert-danger").hide();
+                    this.$el.find(".opt-ctn .save").hide();
                 }
-                this.collection.off("get.node.success");
-                this.collection.off("get.node.error");
-                this.collection.on("get.node.success", $.proxy(this.onGetAllNode, this));
-                this.collection.on("get.node.error", $.proxy(this.onGetError, this));
+                // this.collection.off("get.node.success");
+                // this.collection.off("get.node.error");
+                // this.collection.on("get.node.success", $.proxy(this.onGetAllNode, this));
+                // this.collection.on("get.node.error", $.proxy(this.onGetError, this));
 
                 this.collection.off("get.devicetype.success");
                 this.collection.off("get.devicetype.error");
                 this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
                 this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
 
-                this.collection.getNodeList(); //获取所有节点列表接口
+                //this.collection.getNodeList(); //获取所有节点列表接口
                 this.collection.getDeviceTypeList(); //获取应用类型列表接口
 
                 this.initRuleTable();
+            },
+
+            onClickViewMoreButton: function(event) {
+                this.$el.find('.view-less').show();
+                this.$el.find(".view-more").hide();
+                this.$el.find('.domain-ctn').css('max-height', 'none');
+            },
+
+            onClickViewLessButton: function(event) {
+                this.$el.find('.view-less').hide();
+                this.$el.find(".view-more").show();
+                this.$el.find('.domain-ctn').css('max-height', '200px');
             },
 
             onClickSaveButton: function() {
@@ -256,213 +269,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.initAllNodesTable();
             },
 
-            initAllNodesSelect: function() {
-                var options = {
-                    containerID: this.$el.find('.all .add-node-ctn').get(0),
-                    panelID: this.$el.find('.all .add-node').get(0),
-                    openSearch: true,
-                    onOk: $.proxy(this.onClickAllNodesSelectOK, this),
-                    data: this.nodesArrayFirst,
-                    callback: function(data) {}.bind(this)
-                }
-
-                if (this.isEdit) {
-                    options.isDisabled = true;
-                    options.disabledNode = _.filter(this.nodesArrayFirst, function(obj) {
-                        return obj.checked === true;
-                    });
-                }
-                this.searchSelectAllNodes = new SearchSelect(options);
-            },
-
-            onClickAllNodesSelectOK: function(data) {
-                this.selectedAllNodeList = [];
-                _.each(data, function(el, key, ls) {
-                    this.selectedAllNodeList.push({
-                        nodeId: parseInt(el.value),
-                        nodeName: el.name,
-                        checked: true
-                    });
-                }.bind(this))
-
-                this.defaultParam.allNodes = [];
-                _.each(this.selectedAllNodeList, function(el, key, ls) {
-                    this.defaultParam.allNodes.push(parseInt(el.nodeId));
-                }.bind(this))
-
-                _.each(this.nodesArrayFirst, function(el, key, ls) {
-                    el.checked = false;
-                    _.each(this.selectedAllNodeList, function(data, key, ls) {
-                        if (el.value == data.nodeId) {
-                            el.checked = true;
-                            data.operator = el.operator;
-                        }
-                    }.bind(this))
-                }.bind(this))
-
-                this.initAllNodesTable();
-            },
-
-            initAllNodesTable: function() {
-                this.localTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
-                    data: this.selectedAllNodeList
-                }));
-
-                if (this.selectedAllNodeList.length !== 0)
-                    this.$el.find(".all .table-ctn").html(this.localTable[0]);
-                else
-                    this.$el.find(".all .table-ctn").html(_.template(template['tpl/empty-2.html'])({ data: { message: "还没有添加节点" } }));
-
-                if (!this.isEdit)
-                    this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemAllDelete, this));
-                else
-                    this.localTable.find("tbody .delete").remove();
-
-                this.onGetUpperNode();
-            },
-
-            onClickItemAllDelete: function(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "SPAN") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                _.each(this.nodesArrayFirst, function(el, index, ls) {
-                    if (parseInt(el.value) === parseInt(id)) el.checked = false;
-                }.bind(this))
-                this.selectedAllNodeList = _.filter(this.selectedAllNodeList, function(obj) {
-                    return parseInt(obj.nodeId) !== parseInt(id)
-                }.bind(this))
-
-                this.defaultParam.allNodes = [];
-                _.each(this.selectedAllNodeList, function(el, key, ls) {
-                    this.defaultParam.allNodes.push(parseInt(el.nodeId));
-                }.bind(this))
-
-                if (this.searchSelectAllNodes)
-                    this.searchSelectAllNodes.destroy();
-                this.initAllNodesSelect();
-                this.initAllNodesTable();
-            },
-
-            onGetUpperNode: function(res) {
-                if (!this.isEdit) this.$el.find('.upper .add-node').show();
-
-                this.selectedUpperNodeList = [];
-                this.nodesArrayFirstUpper = [];
-
-                _.each(this.selectedAllNodeList, function(el, index, list) {
-                    el.checked = false;
-                    _.each(this.defaultParam.upperNodes, function(upperId, inx, ls) {
-                        if (upperId === el.nodeId) {
-                            el.checked = true;
-                            this.selectedUpperNodeList.push({
-                                nodeId: el.nodeId,
-                                nodeName: el.nodeName,
-                                checked: true
-                            })
-                        }
-                    }.bind(this))
-                    this.nodesArrayFirstUpper.push({
-                        name: el.nodeName,
-                        value: el.nodeId,
-                        checked: el.checked,
-                        operator: el.operatorId
-                    });
-                }.bind(this))
-
-                this.initUpperTable()
-                this.initUpperSelect()
-            },
-
-            initUpperSelect: function() {
-                if (this.searchSelectUpper)
-                    this.searchSelectUpper.destroy();
-                var options = {
-                    containerID: this.$el.find('.upper .add-node-ctn').get(0),
-                    panelID: this.$el.find('.upper .add-node').get(0),
-                    openSearch: true,
-                    onOk: $.proxy(this.onClickUpperNodesSelectOK, this),
-                    data: this.nodesArrayFirstUpper,
-                    callback: function(data) {}.bind(this)
-                }
-
-                this.searchSelectUpper = new SearchSelect(options);
-                this.$el.find(".upper .add-node-ctn .select-container").css("left", "-170px");
-            },
-
-            onClickUpperNodesSelectOK: function(data) {
-                this.selectedUpperNodeList = [];
-                _.each(data, function(el, key, ls) {
-                    this.selectedUpperNodeList.push({
-                        nodeId: parseInt(el.value),
-                        nodeName: el.name,
-                        operatorId: ''
-                    })
-                }.bind(this))
-
-                this.defaultParam.upperNodes = [];
-                _.each(this.selectedUpperNodeList, function(el) {
-                    this.defaultParam.upperNodes.push(parseInt(el.nodeId));
-                }.bind(this))
-
-                _.each(this.nodesArrayFirstUpper, function(el, key, ls) {
-                    el.checked = false;
-                    _.each(this.selectedUpperNodeList, function(data, key, ls) {
-                        if (el.value == data.nodeId) {
-                            el.checked = true;
-                            data.operator = el.operator;
-                        }
-                    }.bind(this))
-                }.bind(this))
-
-                this.initUpperTable()
-            },
-
-            initUpperTable: function() {
-                this.upperTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
-                    data: this.selectedUpperNodeList
-                }));
-                if (this.selectedUpperNodeList.length !== 0)
-                    this.$el.find(".upper .table-ctn").html(this.upperTable[0]);
-                else
-                    this.$el.find(".upper .table-ctn").html(_.template(template['tpl/empty-2.html'])({ data: { message: "还没有添加节点" } }));
-
-                if (!this.isEdit)
-                    this.upperTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperDelete, this));
-                else
-                    this.upperTable.find("tbody .delete").hide();
-            },
-
-            onClickItemUpperDelete: function(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "SPAN") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-
-                _.each(this.nodesArrayFirstUpper, function(el, index, ls) {
-                    if (parseInt(el.value) === parseInt(id)) el.checked = false;
-                }.bind(this))
-                this.selectedUpperNodeList = _.filter(this.selectedUpperNodeList, function(obj) {
-                    return parseInt(obj.nodeId) !== parseInt(id)
-                }.bind(this))
-
-                this.defaultParam.upperNodes = [];
-                _.each(this.selectedUpperNodeList, function(el, key, ls) {
-                    this.defaultParam.upperNodes.push(parseInt(el.nodeId));
-                }.bind(this))
-
-                this.initUpperSelect();
-                this.initUpperTable();
-            },
-
             initRuleTable: function() {
                 //var data = [{localLayer: "1111", upperLayer: "22222"}];
                 this.ruleList = [];
@@ -520,7 +326,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 else
                     this.$el.find(".rule .table-ctn").html(_.template(template['tpl/empty-2.html'])({ data: { message: "还没有添加规则" } }));
 
-                if (!this.isEdit) {
+                if (!this.isView) {
                     this.roleTable.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
                     this.roleTable.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
                 } else {
@@ -601,7 +407,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 }.bind(this))
             },
 
-
             onGetError: function(error) {
                 if (error && error.message)
                     alert(error.message)
@@ -631,18 +436,18 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
                 this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
 
-                if (AUTH_OBJ.QueryTopos) {
-                    this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-                    this.off('enterKeyBindQuery');
-                    this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
-                    this.enterKeyBindQuery();
-                } else {
-                    this.$el.find(".opt-ctn .query").remove();
-                }
-                if (AUTH_OBJ.CreateTopos)
-                    this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
-                else
-                    this.$el.find(".opt-ctn .new").remove();
+                // if (AUTH_OBJ.QueryTopos) {
+                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
+                this.off('enterKeyBindQuery');
+                this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
+                this.enterKeyBindQuery();
+                // } else {
+                //     this.$el.find(".opt-ctn .query").remove();
+                // }
+                // if (AUTH_OBJ.CreateTopos)
+                this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
+                // else
+                //     this.$el.find(".opt-ctn .new").remove();
 
                 this.queryArgs = {
                     "name": null,
@@ -694,12 +499,14 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 else
                     this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-                if (AUTH_OBJ.EditTopos)
-                    this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-                else
-                    this.table.find("tbody .edit").remove();
+                // if (AUTH_OBJ.EditTopos)
+                this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
+                // else
+                //     this.table.find("tbody .edit").remove();
 
-                this.table.find("tbody .send").on("click", $.proxy(this.onClickItemSend, this));
+                this.table.find("tbody .view").on("click", $.proxy(this.onClickItemView, this));
+
+                this.table.find("[data-toggle='popover']").popover();
             },
 
             onClickAddRuleTopoBtn: function() {
@@ -753,8 +560,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 myAddEditLayerView.render(this.$el.find(".edit-panel"))
             },
 
-            onClickItemSend: function() {
-                this.off('enterKeyBindQuery');
+            onClickItemView: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id;
                 if (eventTarget.tagName == "SPAN") {
@@ -764,28 +570,24 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     id = $(eventTarget).attr("id");
                 }
                 var model = this.collection.get(id);
-                require(['setupTopoManageSendStrategy.model', 'setupTopoManageSendStrategy.view'],
-                    function(setupTopoManageSendStrategyModel, setupTopoManageSendStrategyView) {
-                        var mySendStrategeModel = new setupTopoManageSendStrategyModel();
-                        var options = mySendStrategeModel;
-                        var mySendView = new setupTopoManageSendStrategyView({
-                            collection: options,
-                            model: model,
-                            onSaveCallback: function() {
-                                this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
-                                mySendView.$el.remove();
-                                this.$el.find(".list-panel").show();
-                            }.bind(this),
-                            onCancelCallback: function() {
-                                this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
-                                mySendView.$el.remove();
-                                this.$el.find(".list-panel").show();
-                            }.bind(this)
-                        })
+                var myAddEditLayerView = new AddEditLayerView({
+                    collection: this.collection,
+                    model: model,
+                    isEdit: true,
+                    isView: true,
+                    onSaveCallback: function() {
+                        myAddEditLayerView.$el.remove();
+                        this.$el.find(".list-panel").show();
+                        this.onClickQueryButton();
+                    }.bind(this),
+                    onCancelCallback: function() {
+                        myAddEditLayerView.$el.remove();
+                        this.$el.find(".list-panel").show();
+                    }.bind(this)
+                })
 
-                        this.$el.find(".list-panel").hide();
-                        mySendView.render(this.$el.find(".edit-panel"))
-                    }.bind(this));
+                this.$el.find(".list-panel").hide();
+                myAddEditLayerView.render(this.$el.find(".edit-panel"))
             },
 
             initPaginator: function() {

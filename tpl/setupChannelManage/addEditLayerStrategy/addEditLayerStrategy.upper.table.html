@@ -4,14 +4,15 @@
           <tr>
             <th>节点名</th> 
             <th></th>
-            <th>操作</th>  
+            <th>选择备用节点</th>
+            <th>操作</th>
           </tr>
         </thead>  
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].nodeId%>">
               <td><%=data[i].nodeName%></td>
-              <% if(data[i].operatorId == 9) {%>
                 <td class="ipOperator">
+                    <% if(data[i].operatorId == 9) {%>
                     <div class="dropdown" id="<%=data[i].nodeId%>">
                         <button class="btn btn-default btn-sm dropdown-toggle" type="button" id="dropdown-ip-operator" data-toggle="dropdown">
                             <span class="cur-value">加载中...</span>
@@ -19,13 +20,17 @@
                         </button>
                         <ul class="dropdown-menu"></ul>
                     </div>
+                    <% } %>
                 </td>
-              <%} else {%>
-                <td></td>
-              <%}%>
-              <td>
+                <td>
+                  <% if(data.length > 1){ %>
+                  <input type="checkbox" class="spareradio" id="<%= data[i].nodeId %>" value="<%= data[i].nodeId %>" 
+                  <% if(data[i].chiefType === 0){ %> checked <% } %> > 备用
+                  <% } %>
+                </td>
+                <td>
                   <a href="javascript:void(0)" id="<%=data[i].nodeId%>" class="delete" title="删除"><span class="glyphicon glyphicon-trash"></span></a>
-              </td>
+                </td>
             </tr>
         <% } %>
     </tbody>

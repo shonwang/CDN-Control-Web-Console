@@ -11,7 +11,6 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
 
             require(['setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeModel){
                 this.mySetupSendWaitCustomizeModel = new SetupSendWaitCustomizeModel();
-
                 if (this.model.isCustom) {
                     this.mySetupSendWaitCustomizeModel.off("get.all.config.success");
                     this.mySetupSendWaitCustomizeModel.off("get.all.config.error");
@@ -443,5 +442,6 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
         }
     });
 
-    return SendDetailView
+    exports.SendDetailView = SendDetailView;
+    exports.ConfiFileDetailView = ConfiFileDetailView;
 });

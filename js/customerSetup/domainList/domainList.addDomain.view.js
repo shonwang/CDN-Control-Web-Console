@@ -269,6 +269,7 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
             this.$el = $(_.template(template['tpl/customerSetup/domainList/domainList.addDomain.live.html'])({}));
             
             this.$el.find("input[name=radio-live-protocol]").on("click",$.proxy(this.onRadioProtocolChange,this))
+            this.$el.find("input[name=radio-live-origin]").on("click",$.proxy(this.onRadioLiveOriginChange,this))
             this.$el.find("input[name=radio-origin2]").on("click",$.proxy(this.onRadioOriginChange,this));
             this.$el.find("#cdn-originIP").on("focus",$.proxy(this.hideOriginTips,this));
             this.$el.find("#cdn-originAddress").on("focus",$.proxy(this.hideOriginTips,this));
@@ -283,6 +284,21 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
             var target = event.srcElement || event.target;
             var val = $(target).val();
             this.args.OriginPort = val;
+        },
+        
+        onRadioLiveOriginChange:function(event){
+            var target = event.srcElement || event.target;
+            var val = $(target).val();
+            if(val=="RTMP"){
+                this.$el.find("#radio-port1935").show();
+                this.$el.find("#radio-port1935 input").click();
+                this.$el.find("#radio-port80").hide();
+            }
+            else if(val=="HTTP+FLV"){
+                this.$el.find("#radio-port1935").hide();
+                this.$el.find("#radio-port80").show();
+                this.$el.find("#radio-port80 input").click();
+            }
         },
 
         onRadioProtocolChange:function(event){
@@ -307,9 +323,9 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
                 this.$el.find("#selectForHTTPAndFLV").show();
                 this.$el.find("#selectForHLS").hide();
                 this.$el.find("#radio-live-origin1").prop("checked",true);
-                this.$el.find("#radio-port1935").hide();
-                this.$el.find("#radio-port80").show();
-                this.$el.find("#radio-port80 input").click();
+                this.$el.find("#radio-port1935").show();
+                this.$el.find("#radio-port80").hide();
+                this.$el.find("#radio-port1935 input").click();
             }
             else if(val=="HLS"){
                 this.setDropdownMenuForHLS();

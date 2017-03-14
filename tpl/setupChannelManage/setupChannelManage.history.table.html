@@ -1,27 +1,33 @@
-<table class="table table-striped table-hover"> 
-    <thead> 
-      <tr>
-        <th>版本号</th>
-        <th>创建时间</th>
-        <th>状态</th>
-        <th>备注</th> 
-        <th>操作</th>  
-      </tr>
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>版本号</th>
+            <th>创建时间</th>
+            <th>状态</th>
+            <th>备注</th>
+            <th>操作</th>
+        </tr>
     </thead>
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].id%>">
-              <td><%=data[i]["version"]%></td>
-              <td><%=data[i]["createTimeFormated"]%></td>
-              <td><%=data[i]["statusStr"]%></td>
-              <td><a href="javascript:void(0)" title='<%=data[i]["version"]%>'>备注</a></td>
-              <td>
-                  <a href="javascript:void(0)" class="config" version='<%=data[i]["version"]%>'>配置文件</a>
-                  <a href="javascript:void(0)" class="bill" version='<%=data[i]["version"]%>'>配置单</a>
-                  <a href="javascript:void(0)" class="publish" version='<%=data[i]["version"]%>'>发布</a>
-                  <a href="javascript:void(0)" class="comments" version='<%=data[i]["version"]%>'>添加备注</a>
-              </td>
+                <td>
+                    <%=data[i]["version"]%>
+                </td>
+                <td>
+                    <%=data[i]["createTimeFormated"]%>
+                </td>
+                <td>
+                    <%=data[i]["statusStr"]%>
+                </td>
+                <td> <a href="javascript:void(0)" data-container="body" data-toggle="popover" data-placement="top" data-content='<%=data[i]["version"]%>' data-trigger="hover">备注</a></td>
+                <td>
+                    <a href="javascript:void(0)" class="config" version='<%=data[i]["version"]%>'>配置文件</a>
+                    <a href="javascript:void(0)" class="bill" version='<%=data[i]["version"]%>'>配置单</a>
+                    <a href="javascript:void(0)" class="publish" version='<%=data[i]["version"]%>'>发布</a>
+                    <a href="javascript:void(0)" class="comments" version='<%=data[i]["version"]%>'>添加备注</a>
+                </td>
             </tr>
-        <% } %>  
+            <% } %>
     </tbody>
 </table>

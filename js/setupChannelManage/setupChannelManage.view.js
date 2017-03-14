@@ -1,12 +1,12 @@
-define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view', 'utility'], function (require, exports, template, Modal, Utility) {
+define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
     var AddCommentsView = Backbone.View.extend({
 
-        initialize: function(){
-            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.addComments.html'])({data: {}}));
+        initialize: function() {
+            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.addComments.html'])({ data: {} }));
         },
 
-        render: function (target) {
+        render: function(target) {
             this.$el.appendTo(target);
         }
     })
@@ -16,12 +16,12 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             //"click .search-btn":"onClickSearch"
         },
 
-        initialize: function (options) {
+        initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
             this.model = options.model;
 
-            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.html'])({data: {}}));
+            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.html'])({ data: {} }));
 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
 
@@ -29,17 +29,17 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.collection.off("get.channel.history.error");
             this.collection.on("get.channel.history.success", $.proxy(this.initSetup, this));
             this.collection.on("get.channel.history.error", $.proxy(this.onGetError, this));
-            this.collection.getVersionList({"originId": this.model.get("id")})
+            this.collection.getVersionList({ "originId": this.model.get("id") })
 
             //this.description = this.model.get("description");
         },
 
-        initSetup: function (data) {
+        initSetup: function(data) {
             this.versionList = data;
 
             this.$el.find('#input-domain').val(this.model.get("domain"))
 
-            _.each(data, function (el, index, ls) {
+            _.each(data, function(el, index, ls) {
                 if (el.createTime)
                     el.createTimeFormated = new Date(el.createTime).format("yyyy/MM/dd hh:mm:ss")
             }.bind(this))
@@ -60,31 +60,33 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.table.find("tbody .config").on("click", $.proxy(this.onClickItemConfig, this));
             this.table.find("tbody .publish").on("click", $.proxy(this.onClickItemPublish, this));
             this.table.find("tbody .comments").on("click", $.proxy(this.onClickItemComments, this));
+
+            this.table.find("[data-toggle='popover']").popover();
         },
 
-        onClickItemComments: function(event){
+        onClickItemComments: function(event) {
             var eventTarget = event.srcElement || event.target,
                 version = $(eventTarget).attr("version");
 
             if (this.commentsPopup) $("#" + this.commentsPopup.modalId).remove();
 
             var myAddCommentsView = new AddCommentsView({
-                collection: this.collection, 
+                collection: this.collection,
             });
             var options = {
                 title: "添加备注",
-                body : myAddCommentsView,
-                backdrop : 'static',
-                type     : 2,
-                onOKCallback:  function(){
+                body: myAddCommentsView,
+                backdrop: 'static',
+                type: 2,
+                onOKCallback: function() {
                     this.commentsPopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){}.bind(this)
+                onHiddenCallback: function() {}.bind(this)
             }
             this.commentsPopup = new Modal(options);
         },
 
-        onClickItemPublish: function (event) {
+        onClickItemPublish: function(event) {
             var eventTarget = event.srcElement || event.target,
                 version = $(eventTarget).attr("version");
 
@@ -102,53 +104,53 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.collection.predelivery(postParam)
         },
 
-        onPostPredelivery: function () {
+        onPostPredelivery: function() {
             alert("发布成功！")
             window.location.hash = '#/setupSendWaitSend';
         },
 
-        onClickItemConfig: function(event){
+        onClickItemConfig: function(event) {
             var eventTarget = event.srcElement || event.target,
                 version = $(eventTarget).attr("version");
-                
+
             var clickedObj = {
                 domain: this.model.get("domain"),
                 domainVersion: version
             }
 
-            require(["setupSendDetail.view"], function(SendDetailView){
+            require(["setupSendDetail.view"], function(SendDetailView) {
                 if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
 
                 var myConfiFileDetailView = new SendDetailView.ConfiFileDetailView({
-                    collection: this.collection, 
-                    model     : clickedObj
+                    collection: this.collection,
+                    model: clickedObj
                 });
                 var options = {
                     title: "配置文件详情",
-                    body : myConfiFileDetailView,
-                    backdrop : 'static',
-                    type     : 1,
-                    onOKCallback:  function(){
+                    body: myConfiFileDetailView,
+                    backdrop: 'static',
+                    type: 1,
+                    onOKCallback: function() {
                         this.configFilePopup.$el.modal("hide");
                     }.bind(this),
-                    onHiddenCallback: function(){}.bind(this)
+                    onHiddenCallback: function() {}.bind(this)
                 }
                 this.configFilePopup = new Modal(options);
             }.bind(this))
         },
 
-        onClickItemBill: function (event) {
+        onClickItemBill: function(event) {
             var eventTarget = event.srcElement || event.target,
                 version = $(eventTarget).attr("version");
 
-            require(['setupBill.view', 'setupBill.model'], function (SetupBillView, SetupBillModel) {
+            require(['setupBill.view', 'setupBill.model'], function(SetupBillView, SetupBillModel) {
                 var mySetupBillModel = new SetupBillModel();
                 var mySetupBillView = new SetupBillView({
                     collection: mySetupBillModel,
                     originId: this.model.get("id"),
                     version: version,
-                    onSaveCallback: function () {}.bind(this),
-                    onCancelCallback: function () {
+                    onSaveCallback: function() {}.bind(this),
+                    onCancelCallback: function() {
                         mySetupBillView.$el.remove();
                         this.$el.find(".history-panel").show();
                     }.bind(this)
@@ -159,18 +161,18 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             }.bind(this))
         },
 
-        onClickCancelButton: function () {
+        onClickCancelButton: function() {
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
 
-        onGetError: function (error) {
+        onGetError: function(error) {
             if (error && error.message)
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
         },
 
-        render: function (target) {
+        render: function(target) {
             this.$el.appendTo(target);
         }
     });
@@ -180,12 +182,12 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             //"click .search-btn":"onClickSearch"
         },
 
-        initialize: function (options) {
+        initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
             this.model = options.model;
             this.rule = [];
-            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.specialLayer.html'])({data: this.model.attributes}));
+            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.specialLayer.html'])({ data: this.model.attributes }));
 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
             this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
@@ -220,26 +222,26 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             //获取到version
             this.collection.off("get.channel.history.success");
             this.collection.off("get.channel.history.error");
-            this.collection.on("get.channel.history.success", $.proxy(function (res) {
+            this.collection.on("get.channel.history.success", $.proxy(function(res) {
                 this.version = res[0].version
             }, this));
             this.collection.on("get.channel.history.error", $.proxy(this.onGetError, this));
-            this.collection.getVersionList({"originId": this.model.get("id")});
+            this.collection.getVersionList({ "originId": this.model.get("id") });
             //获取域名的基本信息
             this.collection.off("get.domainInfo.success");
             this.collection.off("get.domainInfo.error");
-            this.collection.on("get.domainInfo.success", $.proxy(function (res) {
+            this.collection.on("get.domainInfo.success", $.proxy(function(res) {
                 this.confCustomType = res.domainConf.confCustomType;
             }, this));
             this.collection.on("get.domainInfo.error", $.proxy(this.onGetError, this));
-            this.collection.getDomainInfo({originId: this.model.get("id")});
+            this.collection.getDomainInfo({ originId: this.model.get("id") });
 
             this.defaultParam = {
                 "rule": []
             };
         },
 
-        getTopologyRuleSuccess: function (res) {
+        getTopologyRuleSuccess: function(res) {
             console.log("获取频道的特殊分层策略规则ID: ", res)
             this.collection.off('get.rule.origin.success');
             this.collection.off('get.rule.origin.error');
@@ -249,7 +251,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.notEditId = res;
         },
 
-        getTopologyRuleError: function (error) {
+        getTopologyRuleError: function(error) {
             if (error && error.status == 404) {
                 this.initRuleTable();
             } else if (error && error.message && error.status != 404) {
@@ -259,7 +261,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             }
         },
 
-        onClickItemPublish: function () {
+        onClickItemPublish: function() {
             if (this.confCustomType === 1) {
                 var result = confirm("确定将域名放入待下发吗？");
             } else if (this.confCustomType === 3) {
@@ -283,7 +285,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.collection.predelivery(postParam)
         },
 
-        onPostPredelivery: function (res) {
+        onPostPredelivery: function(res) {
             this.options.onSaveCallback && this.options.onSaveCallback();
             alert('操作成功');
             if (this.confCustomType === 1)
@@ -293,14 +295,14 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
         },
 
         //保存特殊策略成功之后保存特殊策略的域名ID和特殊规则的id成功
-        addTopologyRuleSuccess: function (res) {
+        addTopologyRuleSuccess: function(res) {
             this.onClickItemPublish();
         },
 
         //保存特殊策略成功
-        addSpecialSuccess: function (res) {
+        addSpecialSuccess: function(res) {
             var ruleIds = [];
-            _.each(res.rule, function (res, index, list) {
+            _.each(res.rule, function(res, index, list) {
                 ruleIds.push(res.id);
             });
             ruleIds = ruleIds.join(',');
@@ -311,14 +313,14 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.collection.addTopologyRule(args); //保存域名的ID和特殊策略的ID
         },
 
-        addSpecialError: function (error) {
+        addSpecialError: function(error) {
             if (error && error.message)
                 alert(error.message);
             else
                 alert("网络阻塞，请刷新重试！");
         },
 
-        initRuleTable: function (res) {
+        initRuleTable: function(res) {
             if (res && res.length > 0) {
                 this.defaultParam.rule = res;
                 console.log("获取频道的特殊分层策略规则: ", res);
@@ -326,28 +328,31 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             //var data = [{localLayer: "1111", upperLayer: "22222"}];
             this.ruleList = [];
 
-            _.each(this.defaultParam.rule, function(rule, index, ls){
-                var localLayerArray = [], upperLayer = [],
-                    primaryArray = [], backupArray = [],
-                    primaryNameArray = [], backupNameArray = [];
-                _.each(rule.local, function(local, inx, list){
+            _.each(this.defaultParam.rule, function(rule, index, ls) {
+                var localLayerArray = [],
+                    upperLayer = [],
+                    primaryArray = [],
+                    backupArray = [],
+                    primaryNameArray = [],
+                    backupNameArray = [];
+                _.each(rule.local, function(local, inx, list) {
                     localLayerArray.push(local.name)
                 }.bind(this));
 
-                primaryArray = _.filter(rule.upper, function(obj){
+                primaryArray = _.filter(rule.upper, function(obj) {
                     return obj.chiefType !== 0;
                 }.bind(this))
-                backupArray = _.filter(rule.upper, function(obj){
+                backupArray = _.filter(rule.upper, function(obj) {
                     return obj.chiefType === 0;
                 }.bind(this))
 
-                _.each(primaryArray, function(upper, inx, list){
+                _.each(primaryArray, function(upper, inx, list) {
                     if (upper.rsNodeMsgVo)
                         primaryNameArray.push(upper.rsNodeMsgVo.name)
                     else
                         primaryNameArray.push("[后端没有返回名称]")
                 }.bind(this));
-                _.each(backupArray, function(upper, inx, list){
+                _.each(backupArray, function(upper, inx, list) {
                     if (upper.rsNodeMsgVo)
                         backupNameArray.push(upper.rsNodeMsgVo.name)
                     else
@@ -363,13 +368,13 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 var ruleStrObj = {
                     id: rule.id,
                     localLayer: localLayerArray.join('、'),
-                    upperLayer: upperLayer 
+                    upperLayer: upperLayer
                 }
                 this.ruleList.push(ruleStrObj)
             }.bind(this))
 
             this.ruleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.role.table.html'])({
-                 data: this.ruleList
+                data: this.ruleList
             }));
             if (this.ruleList.length !== 0)
                 this.$el.find(".table-ctn").html(this.ruleTable[0]);
@@ -379,9 +384,9 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.ruleTable.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
             this.ruleTable.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
 
-            _.each(this.ruleTable.find("tbody .edit"), function(el){
-                _.each(this.notEditId, function(id){
-                    if (id === parseInt(el.id)){
+            _.each(this.ruleTable.find("tbody .edit"), function(el) {
+                _.each(this.notEditId, function(id) {
+                    if (id === parseInt(el.id)) {
                         $(el).hide();
                         $(el).siblings(".delete").hide();
                     }
@@ -389,68 +394,68 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             }.bind(this))
         },
 
-        onClickItemEdit: function (event) {
+        onClickItemEdit: function(event) {
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
 
-            this.curEditRule = _.find(this.defaultParam.rule, function(obj){
+            this.curEditRule = _.find(this.defaultParam.rule, function(obj) {
                 return obj.id === parseInt(id)
             }.bind(this))
 
-            if (!this.curEditRule){
+            if (!this.curEditRule) {
                 alert("找不到此行的数据，无法编辑");
                 return;
             }
-            require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], 
-                function (AddEditLayerStrategyView, AddEditLayerStrategyModel) {
-                var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
-                var options = myAddEditLayerStrategyModel;
-                var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
-                    collection: options,
-                    rule: this.defaultParam.rule,
-                    topologyId: this.model.get('topologyId'),
-                    curEditRule: this.curEditRule,
-                    isEdit: true,
-                    onSaveCallback: function () {
-                        myAddEditLayerStrategyView.$el.remove();
-                        this.$el.find(".special-layer").show();
-                        this.initRuleTable();
-                    }.bind(this),
-                    onCancelCallback: function () {
-                        myAddEditLayerStrategyView.$el.remove();
-                        this.$el.find(".special-layer").show();
-                    }.bind(this)
-                })
+            require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
+                function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
+                    var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
+                    var options = myAddEditLayerStrategyModel;
+                    var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
+                        collection: options,
+                        rule: this.defaultParam.rule,
+                        topologyId: this.model.get('topologyId'),
+                        curEditRule: this.curEditRule,
+                        isEdit: true,
+                        onSaveCallback: function() {
+                            myAddEditLayerStrategyView.$el.remove();
+                            this.$el.find(".special-layer").show();
+                            this.initRuleTable();
+                        }.bind(this),
+                        onCancelCallback: function() {
+                            myAddEditLayerStrategyView.$el.remove();
+                            this.$el.find(".special-layer").show();
+                        }.bind(this)
+                    })
 
-                this.$el.find(".special-layer").hide();
-                myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
-            }.bind(this))
+                    this.$el.find(".special-layer").hide();
+                    myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
+                }.bind(this))
         },
 
-        onClickItemDelete: function () {
+        onClickItemDelete: function() {
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
-            this.defaultParam.rule = _.filter(this.defaultParam.rule, function(obj){
+            this.defaultParam.rule = _.filter(this.defaultParam.rule, function(obj) {
                 return obj.id !== parseInt(id)
             }.bind(this))
 
             this.initRuleTable();
         },
 
-        onClickAddRuleButton: function () {
-            require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function (AddEditLayerStrategyView, AddEditLayerStrategyModel) {
+        onClickAddRuleButton: function() {
+            require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                 var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                 var options = myAddEditLayerStrategyModel;
                 var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
                     collection: options,
                     rule: this.defaultParam.rule,
                     topologyId: this.model.get('topologyId'),
-                    onSaveCallback: function () {
+                    onSaveCallback: function() {
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".special-layer").show();
                         this.initRuleTable();
                     }.bind(this),
-                    onCancelCallback: function () {
+                    onCancelCallback: function() {
                         myAddEditLayerStrategyView.$el.remove();
                         this.$el.find(".special-layer").show();
                     }.bind(this)
@@ -461,12 +466,12 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             }.bind(this))
         },
 
-        onClickCancelButton: function () {
+        onClickCancelButton: function() {
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
 
         //点击保存按钮保存特殊策略
-        onClickSaveButton: function () {
+        onClickSaveButton: function() {
             if (this.defaultParam.rule.length == 0) {
                 alert('请添加规则');
                 return;
@@ -475,14 +480,16 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
             var postRules = [];
 
-            _.each(this.defaultParam.rule, function(rule){
-                var localIdArray = [], upperObjArray = [], tempRule = {};
+            _.each(this.defaultParam.rule, function(rule) {
+                var localIdArray = [],
+                    upperObjArray = [],
+                    tempRule = {};
 
-                _.each(rule.local, function(node){
+                _.each(rule.local, function(node) {
                     localIdArray.push(node.id)
                 }.bind(this))
 
-                _.each(rule.upper, function(node){
+                _.each(rule.upper, function(node) {
                     upperObjArray.push({
                         nodeId: node.rsNodeMsgVo.id,
                         ipCorporation: node.ipCorporation,
@@ -504,14 +511,14 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.collection.specilaAdd(postParam);
         },
 
-        onGetError: function (error) {
+        onGetError: function(error) {
             if (error && error.message)
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！");
         },
 
-        render: function (target) {
+        render: function(target) {
             this.$el.appendTo(target);
         }
     });
@@ -519,15 +526,15 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
     var SelectTopoView = Backbone.View.extend({
         events: {},
 
-        initialize: function (options) {
+        initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
             this.domainArray = options.domainArray;
 
-            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({data: {name: "拓扑关系"}}));
+            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({ data: { name: "拓扑关系" } }));
 
             this.initDomainList();
-            require(["setupTopoManage.model"], function (SetupTopoManageModel) {
+            require(["setupTopoManage.model"], function(SetupTopoManageModel) {
                 this.mySetupTopoManageModel = new SetupTopoManageModel();
                 this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.initTable, this));
                 this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this));
@@ -540,7 +547,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             }.bind(this))
         },
 
-        initDomainList: function () {
+        initDomainList: function() {
             this.domainList = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.detail.domain.html'])({
                 data: this.domainArray,
             }));
@@ -550,7 +557,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 this.$el.find(".domain-ctn").html(_.template(template['tpl/empty.html'])());
         },
 
-        initTable: function () {
+        initTable: function() {
             this.table = $(_.template(template['tpl/setupSendManage/setupSendWaitSend/setupSendWaitSend.sendStrategy.table.html'])({
                 data: this.mySetupTopoManageModel.models,
             }));
@@ -560,7 +567,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
         },
 
-        onSure: function () {
+        onSure: function() {
             var selectedTopo = this.$el.find("input:checked");
             if (!selectedTopo.get(0)) {
                 alert("请选择一个拓扑关系")
@@ -569,7 +576,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             var topoId = selectedTopo.get(0).id,
                 domainIdArray = [];
 
-            _.each(this.domainArray, function (el, index, ls) {
+            _.each(this.domainArray, function(el, index, ls) {
                 domainIdArray.push(el.id)
             }.bind(this))
 
@@ -581,14 +588,14 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             return postParam
         },
 
-        onGetError: function (error) {
+        onGetError: function(error) {
             if (error && error.message)
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
         },
 
-        render: function (target) {
+        render: function(target) {
             this.$el.appendTo(target);
         }
     });
@@ -596,7 +603,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
     var SetupChannelManageView = Backbone.View.extend({
         events: {},
 
-        initialize: function (options) {
+        initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.html'])());
@@ -631,15 +638,15 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.onClickQueryButton();
         },
 
-        enterKeyBindQuery: function () {
-            $(document).on('keydown', function (e) {
+        enterKeyBindQuery: function() {
+            $(document).on('keydown', function(e) {
                 if (e.keyCode == 13) {
                     this.onClickQueryButton();
                 }
             }.bind(this));
         },
 
-        onGetError: function (error) {
+        onGetError: function(error) {
             this.disablePopup && this.disablePopup.$el.modal('hide');
             if (error && error.message)
                 alert(error.message)
@@ -647,12 +654,12 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 alert("网络阻塞，请刷新重试！")
         },
 
-        onChannelListSuccess: function () {
+        onChannelListSuccess: function() {
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
         },
 
-        onClickQueryButton: function () {
+        onClickQueryButton: function() {
             this.isInitPaginator = false;
             this.queryArgs.currentPage = 1;
             this.queryArgs.domain = this.$el.find("#input-domain").val();
@@ -662,7 +669,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.collection.queryChannel(this.queryArgs);
         },
 
-        initTable: function () {
+        initTable: function() {
             this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
             this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.table.html'])({
                 data: this.collection.models,
@@ -692,13 +699,13 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
         },
 
-        onClickMultiModifyTopology: function () {
-            var checkedList = this.collection.filter(function (model) {
+        onClickMultiModifyTopology: function() {
+            var checkedList = this.collection.filter(function(model) {
                 return model.get("isChecked") === true;
             });
 
             this.domainArray = [];
-            _.each(checkedList, function (el, index, ls) {
+            _.each(checkedList, function(el, index, ls) {
                 this.domainArray.push({
                     domain: el.get("domain"),
                     version: el.get("version"),
@@ -719,7 +726,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 body: mySelectTopoView,
                 backdrop: 'static',
                 type: type,
-                onOKCallback: function () {
+                onOKCallback: function() {
                     var result = mySelectTopoView.onSure();
                     if (!result) return;
                     this.collection.off("add.channel.topology.success");
@@ -730,14 +737,14 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     this.selectTopoPopup.$el.modal("hide");
                     this.showDisablePopup("服务器正在努力处理中...")
                 }.bind(this),
-                onHiddenCallback: function () {
+                onHiddenCallback: function() {
                     this.enterKeyBindQuery();
                 }.bind(this)
             }
             this.selectTopoPopup = new Modal(options);
         },
 
-        showDisablePopup: function (msg) {
+        showDisablePopup: function(msg) {
             if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
             var options = {
                 title: "警告",
@@ -749,9 +756,9 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.disablePopup.$el.find(".close").remove();
         },
 
-        onAddChannelTopologySuccess: function () {
+        onAddChannelTopologySuccess: function() {
             var postParam = [];
-            _.each(this.domainArray, function (el, index, ls) {
+            _.each(this.domainArray, function(el, index, ls) {
                 postParam.push({
                     domain: el.domain,
                     version: el.version,
@@ -767,15 +774,16 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.collection.predelivery(postParam)
         },
 
-        onPostPredelivery: function () {
+        onPostPredelivery: function() {
             this.disablePopup && this.disablePopup.$el.modal('hide');
             alert("批量更换拓扑关系成功！")
 
             window.location.hash = '#/setupSendWaitSend';
         },
 
-        onClickItemHistory: function (event) {
-            var eventTarget = event.srcElement || event.target, id;
+        onClickItemHistory: function(event) {
+            var eventTarget = event.srcElement || event.target,
+                id;
             if (eventTarget.tagName == "SPAN") {
                 eventTarget = $(eventTarget).parent();
                 id = eventTarget.attr("id");
@@ -788,9 +796,8 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             var myHistoryView = new HistoryView({
                 collection: this.collection,
                 model: model,
-                onSaveCallback: function () {
-                }.bind(this),
-                onCancelCallback: function () {
+                onSaveCallback: function() {}.bind(this),
+                onCancelCallback: function() {
                     myHistoryView.$el.remove();
                     this.$el.find(".list-panel").show();
                 }.bind(this)
@@ -800,8 +807,9 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             myHistoryView.render(this.$el.find(".history-panel"))
         },
 
-        onClickItemSpecialLayer: function (event) {
-            var eventTarget = event.srcElement || event.target, id;
+        onClickItemSpecialLayer: function(event) {
+            var eventTarget = event.srcElement || event.target,
+                id;
             if (eventTarget.tagName == "SPAN") {
                 eventTarget = $(eventTarget).parent();
                 id = eventTarget.attr("id");
@@ -820,14 +828,14 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 collection: this.collection,
                 model: model,
                 isEdit: true,
-                onSaveCallback: function () {
+                onSaveCallback: function() {
                     this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
                     mySpecialLayerManageView.$el.remove();
                     this.$el.find(".list-panel").show();
                     this.onClickQueryButton();
                     this.initRuleTable(data, this.checked);
                 }.bind(this),
-                onCancelCallback: function () {
+                onCancelCallback: function() {
                     mySpecialLayerManageView.$el.remove();
                     this.$el.find(".list-panel").show();
                 }.bind(this)
@@ -837,9 +845,10 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             mySpecialLayerManageView.render(this.$el.find(".strategy-panel"))
         },
 
-        onClickItemEdit: function (event) {
-            require(['setupChannelManage.edit.view'], function (EditChannelView) {
-                var eventTarget = event.srcElement || event.target, id;
+        onClickItemEdit: function(event) {
+            require(['setupChannelManage.edit.view'], function(EditChannelView) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
                 if (eventTarget.tagName == "SPAN") {
                     eventTarget = $(eventTarget).parent();
                     id = eventTarget.attr("id");
@@ -853,9 +862,8 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     collection: this.collection,
                     model: model,
                     isEdit: false,
-                    onSaveCallback: function () {
-                    }.bind(this),
-                    onCancelCallback: function () {
+                    onSaveCallback: function() {}.bind(this),
+                    onCancelCallback: function() {
                         myEditChannelView.$el.remove();
                         this.$el.find(".list-panel").show();
                     }.bind(this)
@@ -866,14 +874,14 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             }.bind(this));
         },
 
-        onItemCheckedUpdated: function (event) {
+        onItemCheckedUpdated: function(event) {
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             var id = $(eventTarget).attr("id");
             var model = this.collection.get(id);
             model.set("isChecked", eventTarget.checked)
 
-            var checkedList = this.collection.filter(function (model) {
+            var checkedList = this.collection.filter(function(model) {
                 return model.get("isChecked") === true;
             })
             if (checkedList.length === this.collection.models.length)
@@ -887,10 +895,10 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             }
         },
 
-        onAllCheckedUpdated: function (event) {
+        onAllCheckedUpdated: function(event) {
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
-            this.collection.each(function (model) {
+            this.collection.each(function(model) {
                 model.set("isChecked", eventTarget.checked);
             }.bind(this))
             this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
@@ -901,7 +909,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             }
         },
 
-        initPaginator: function () {
+        initPaginator: function() {
             this.$el.find(".total-items span").html(this.collection.total)
 
             if (this.collection.total <= this.queryArgs.pageSize) return;
@@ -911,7 +919,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 totalPages: total,
                 visiblePages: 10,
                 currentPage: 1,
-                onPageChange: function (num, type) {
+                onPageChange: function(num, type) {
                     if (type !== "init") {
                         this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                         var args = _.extend(this.queryArgs);
@@ -924,27 +932,27 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.isInitPaginator = true;
         },
 
-        initChannelDropMenu: function () {
+        initChannelDropMenu: function() {
             var statusArray = [
-                    {name: "全部", value: "All"},
-                    {name: "删除", value: -1},
-                    {name: "审核中", value: 0},
-                    {name: "审核通过", value: 1},
-                    {name: "审核失败", value: 2},
-                    {name: "停止", value: 3},
-                    {name: "配置中", value: 4},
-                    {name: "编辑中", value: 6},
-                    {name: "待下发", value: 7},
-                    {name: "待定制", value: 8},
-                    {name: "定制化配置错误", value: 9},
-                    {name: "下发中", value: 10},
-                    {name: "下发失败", value: 11},
-                    {name: "下发成功", value: 12},
-                    {name: "运行中", value: 13},
-                    {name: "配置失败", value: 14}
+                    { name: "全部", value: "All" },
+                    { name: "删除", value: -1 },
+                    { name: "审核中", value: 0 },
+                    { name: "审核通过", value: 1 },
+                    { name: "审核失败", value: 2 },
+                    { name: "停止", value: 3 },
+                    { name: "配置中", value: 4 },
+                    { name: "编辑中", value: 6 },
+                    { name: "待下发", value: 7 },
+                    { name: "待定制", value: 8 },
+                    { name: "定制化配置错误", value: 9 },
+                    { name: "下发中", value: 10 },
+                    { name: "下发失败", value: 11 },
+                    { name: "下发成功", value: 12 },
+                    { name: "运行中", value: 13 },
+                    { name: "配置失败", value: 14 }
                 ],
                 rootNode = this.$el.find(".dropdown-status");
-            Utility.initDropMenu(rootNode, statusArray, function (value) {
+            Utility.initDropMenu(rootNode, statusArray, function(value) {
                 if (value == "All")
                     this.queryArgs.auditStatus = null;
                 else
@@ -952,13 +960,13 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             }.bind(this));
 
             var protocolArray = [
-                    {name: "全部", value: "All"},
-                    {name: "http+hlv", value: 1},
-                    {name: "hls", value: 2},
-                    {name: "rtmp", value: 3}
+                    { name: "全部", value: "All" },
+                    { name: "http+hlv", value: 1 },
+                    { name: "hls", value: 2 },
+                    { name: "rtmp", value: 3 }
                 ],
                 rootNode = this.$el.find(".dropdown-protocol");
-            Utility.initDropMenu(rootNode, protocolArray, function (value) {
+            Utility.initDropMenu(rootNode, protocolArray, function(value) {
                 if (value == "All")
                     this.queryArgs.protocol = null;
                 else
@@ -966,12 +974,12 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             }.bind(this));
 
             var companyArray = [
-                    {name: "全部", value: "All"},
-                    {name: "自建", value: 1},
-                    {name: "网宿", value: 2}
+                    { name: "全部", value: "All" },
+                    { name: "自建", value: 1 },
+                    { name: "网宿", value: 2 }
                 ],
                 rootNode = this.$el.find(".dropdown-company");
-            Utility.initDropMenu(rootNode, companyArray, function (value) {
+            Utility.initDropMenu(rootNode, companyArray, function(value) {
                 if (value == "All")
                     this.queryArgs.cdnFactory = null;
                 else
@@ -979,12 +987,12 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             }.bind(this));
 
             var typeArray = [
-                    {name: "全部", value: "All"},
-                    {name: "下载加速", value: 1},
-                    {name: "直播加速", value: 2}
+                    { name: "全部", value: "All" },
+                    { name: "下载加速", value: 1 },
+                    { name: "直播加速", value: 2 }
                 ],
                 rootNode = this.$el.find(".dropdown-type");
-            Utility.initDropMenu(rootNode, typeArray, function (value) {
+            Utility.initDropMenu(rootNode, typeArray, function(value) {
                 if (value == "All")
                     this.queryArgs.type = null;
                 else
@@ -992,18 +1000,18 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             }.bind(this));
 
             var pageNum = [
-                {name: "10条", value: 10},
-                {name: "20条", value: 20},
-                {name: "50条", value: 50},
-                {name: "3000条", value: 3000}
+                { name: "10条", value: 10 },
+                { name: "20条", value: 20 },
+                { name: "50条", value: 50 },
+                { name: "3000条", value: 3000 }
             ]
-            Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function (value) {
+            Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value) {
                 this.queryArgs.pageSize = value;
                 this.queryArgs.currentPage = 1;
                 this.onClickQueryButton();
             }.bind(this));
 
-            require(["setupTopoManage.model"], function (SetupTopoManageModel) {
+            require(["setupTopoManage.model"], function(SetupTopoManageModel) {
                 this.mySetupTopoManageModel = new SetupTopoManageModel();
                 this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.onGetTopoSuccess, this))
                 this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this))
@@ -1017,9 +1025,9 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             }.bind(this))
         },
 
-        onGetTopoSuccess: function () {
-            var topoArray = [{name: "全部", value: "All"}]
-            this.mySetupTopoManageModel.each(function (el, index, lst) {
+        onGetTopoSuccess: function() {
+            var topoArray = [{ name: "全部", value: "All" }]
+            this.mySetupTopoManageModel.each(function(el, index, lst) {
                 topoArray.push({
                     name: el.get('name'),
                     value: el.get('id')
@@ -1027,7 +1035,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             }.bind(this))
 
             rootNode = this.$el.find(".dropdown-topo");
-            Utility.initDropMenu(rootNode, topoArray, function (value) {
+            Utility.initDropMenu(rootNode, topoArray, function(value) {
                 if (value == "All")
                     this.queryArgs.topologyId = null;
                 else
@@ -1035,12 +1043,12 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             }.bind(this));
         },
 
-        hide: function () {
+        hide: function() {
             this.$el.hide();
             $(document).off('keydown');
         },
 
-        update: function (target) {
+        update: function(target) {
             this.collection.off();
             this.collection.reset();
             this.$el.remove();
@@ -1048,7 +1056,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.render(target || this.target);
         },
 
-        render: function (target) {
+        render: function(target) {
             this.$el.appendTo(target);
             this.target = target;
         }

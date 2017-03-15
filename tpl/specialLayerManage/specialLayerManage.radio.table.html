@@ -1,0 +1,25 @@
+<table class="table table-striped table-hover">
+    <thead> 
+      <tr>
+        <th>名称</th>
+        <th>应用</th> 
+      </tr>
+    </thead>
+    <tbody>
+        <% for(var i = 0; i < data.length; i++) { %>
+            <% if (!data[i].get('notDisplay')) { %>
+            <tr data-id="<%=data[i].get('id')%>">
+              <td>
+                  <div class="radio">
+                      <label>
+                        <input type="radio" name="options-topo" id=<%=data[i].get('id')%>>
+                        <%=data[i].get("name")%>
+                      </label>
+                  </div>
+              </td>
+              <td><%=data[i].get('id')%></td>
+            </tr>
+            <% } %>
+        <% } %>  
+    </tbody>
+</table>

@@ -41,7 +41,9 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
             _.each(data, function(el, index, ls) {
                 if (el.createTime)
-                    el.createTimeFormated = new Date(el.createTime).format("yyyy/MM/dd hh:mm:ss")
+                    el.createTimeFormated = new Date(el.createTime).format("yyyy/MM/dd hh:mm:ss");
+                if (el.deliveryStatus === -1) el.statusStr === "<span class='test-danger'>失败</span>";
+                if (el.deliveryStatus === 1) el.statusStr === "<span class='test-success'>成功</span>";
             }.bind(this))
 
             this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.table.html'])({

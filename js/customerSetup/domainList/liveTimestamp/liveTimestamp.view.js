@@ -490,10 +490,10 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                 return obj.id !== parseInt(id)
             }.bind(this))
 
-            if (filterArray.length <= 1) {
-                alert("最少不能少于2个");
-                return;
-            }
+            // if (filterArray.length <= 1) {
+            //     alert("最少不能少于2个");
+            //     return;
+            // }
 
             this.defaultParam.atuthDivisorArray = filterArray;
             this.updateAtuthDivisorTable();
@@ -568,6 +568,11 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
             if (this.defaultParam.spliceMd5 === 2 && 
                 (spliceMd5Max === "" || spliceMd5Min === "" || parseInt(spliceMd5Max) - parseInt(spliceMd5Min) < 0)){
                 alert("你选择了高级设置截取MD5值，需要填写正确的取值范围！");
+                return;
+            }
+
+            if (this.defaultParam.isBaseSetup === 2 && this.defaultParam.atuthDivisorArray.length < 2) {
+                alert("鉴权因子最少不能少于2个");
                 return;
             }
             var result = true;

@@ -11,16 +11,20 @@
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].id%>">
-                <td>
-                    <%=data[i]["version"]%>
+                <td><%=data[i]["version"]%>
                 </td>
-                <td>
-                    <%=data[i]["createTimeFormated"]%>
+                <td><%=data[i]["createTimeFormated"]%>
                 </td>
-                <td>
-                    <%=data[i]["statusStr"]%>
+                <td><%=data[i]["statusStr"]%>
                 </td>
-                <td> <a href="javascript:void(0)" data-container="body" data-toggle="popover" data-placement="top" data-content='<%=data[i]["version"]%>' data-trigger="hover">备注</a></td>
+                <td> 
+                   <a href="javascript:void(0)" 
+                      data-container="body" 
+                      data-toggle="popover" 
+                      data-placement="top" 
+                      data-content='<%=data[i]["remark"] || "无"%>' 
+                      data-trigger="hover">备注</a>
+                </td>
                 <td>
                     <a href="javascript:void(0)" class="config" version='<%=data[i]["version"]%>'>配置文件</a>
                     <a href="javascript:void(0)" class="bill" version='<%=data[i]["version"]%>'>配置单</a>

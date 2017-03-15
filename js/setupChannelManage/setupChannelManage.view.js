@@ -463,7 +463,8 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
         },
 
         onClickAddRuleButton: function() {
-            require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
+            require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], 
+            function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                 var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                 var options = myAddEditLayerStrategyModel;
                 var myAddEditLayerStrategyView = new AddEditLayerStrategyView({

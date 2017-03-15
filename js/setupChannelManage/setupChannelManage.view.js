@@ -6,6 +6,10 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.addComments.html'])({ data: {} }));
         },
 
+        onSure: function(){
+            return this.$el.find('#secondary').val();
+        },
+
         render: function(target) {
             this.$el.appendTo(target);
         }
@@ -44,6 +48,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     el.createTimeFormated = new Date(el.createTime).format("yyyy/MM/dd hh:mm:ss");
                 if (el.deliveryStatus === -1) el.statusStr === "<span class='test-danger'>失败</span>";
                 if (el.deliveryStatus === 1) el.statusStr === "<span class='test-success'>成功</span>";
+                this.originId = el.originId;
             }.bind(this))
 
             this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.table.html'])({
@@ -81,6 +86,19 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 backdrop: 'static',
                 type: 2,
                 onOKCallback: function() {
+                    var comments = myAddCommentsView.onSure();
+                    this.collection.off('set.remark.success');
+                    this.collection.off('set.remark.error');
+                    this.collection.on('set.remark.success', function(){
+                        alert("修改成功");
+                        this.collection.getVersionList({ "originId": this.model.get("id") })
+                    }.bind(this))
+                    this.collection.on('set.remark.error', $.proxy(this.onGetError, this))
+                    this.collection.modifyVersionRemark({
+                        originId: this.originId,
+                        version: version,
+                        remark: comments
+                    })
                     this.commentsPopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function() {}.bind(this)

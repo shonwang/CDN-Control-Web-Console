@@ -103,6 +103,9 @@ requirejs.config({
         "domainList.view": 'customerSetup/domainList/domainList.view',
         "domainList.addDomain.view": 'customerSetup/domainList/domainList.addDomain.view',
 
+        "interfaceQuota.model": 'customerSetup/interfaceQuota/interfaceQuota.model',
+        "interfaceQuota.view": 'customerSetup/interfaceQuota/interfaceQuota.view',
+
         "blockUrl.view": 'customerSetup/blockUrl/blockUrl.view',
         "blockUrl.model": 'customerSetup/blockUrl/blockUrl.model',
 

@@ -352,8 +352,9 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 }
 
                 require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
+                    var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                     var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
-                        collection: this.collection,
+                        collection: myAddEditLayerStrategyModel,
                         localNodes: this.selectedAllNodeList,
                         upperNodes: this.selectedUpperNodeList,
                         rule: this.defaultParam.rule,
@@ -388,9 +389,8 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             onClickAddRuleButton: function() {
                 require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                     var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
-                    var options = myAddEditLayerStrategyModel;
                     var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
-                        collection: options,
+                        collection: myAddEditLayerStrategyModel,
                         localNodes: this.selectedAllNodeList,
                         upperNodes: this.selectedUpperNodeList,
                         rule: this.defaultParam.rule,

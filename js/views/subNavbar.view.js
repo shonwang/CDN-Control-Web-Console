@@ -13,6 +13,7 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
         },
 
         initDefaultMenu: function(query, query2){
+            var AUTH_OBJ = window.AUTH_OBJ;
             this.menuList = [
                 {
                     id: 'customerSetup-domainList-basicInformation',
@@ -99,6 +100,7 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                 },{
                     id: '',
                     name: '点播优化',
+                    notShow:!AUTH_OBJ.OndemandOptimization,
                     hash: 'javascript:void(0)',
                     children: [{
                         id: 'customerSetup-domainList-dragPlay',
@@ -110,6 +112,7 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                 },{
                     id: '',
                     name: '限速',
+                    notShow:!AUTH_OBJ.SpeedLimit,
                     hash: 'javascript:void(0)',
                     children: [{
                         id: 'customerSetup-domainList-clientLimitSpeed',
@@ -121,6 +124,7 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                 },{
                     id: '',
                     name: 'HTTP头控制',
+                    notShow:!AUTH_OBJ.HttpheadControl,
                     hash: 'javascript:void(0)',
                     children: [{
                         id: 'customerSetup-domainList-httpHeaderOpt',
@@ -138,6 +142,7 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                 },{
                     id: '',
                     name: 'URL控制',
+                    notShow:!AUTH_OBJ.UrlControl,
                     hash: 'javascript:void(0)',
                     children: [{
                         id: 'customerSetup-domainList-requestArgsModify',
@@ -155,18 +160,21 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                         id: 'customerSetup-domainList-ipBlackWhiteList',
                         name: 'IP黑白名单',
                         hash: 'index.html#/domainList/' + query + '/ipBlackWhiteList/' + query2,
+                        notShow:!AUTH_OBJ.IPMatchingCondition,
                         active: false,
                         children: []
                     },{
                         id: 'customerSetup-domainList-refererAntiLeech',
                         name: 'Referer防盗链',
                         hash: 'index.html#/domainList/' + query + '/refererAntiLeech/' + query2,
+                        notShow:!AUTH_OBJ.referIPMatchingCondition,
                         active: false,
                         children: []
                     },{
                         id: 'customerSetup-domainList-timestamp',
                         name: '时间戳+共享秘钥防盗链',
                         hash: 'index.html#/domainList/' + query + '/timestamp/' + query2,
+                        notShow:!AUTH_OBJ.TimeSafetychain,
                         active: false,
                         children: []
                     }]

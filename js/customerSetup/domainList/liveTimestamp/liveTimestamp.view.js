@@ -40,7 +40,16 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                 timeParam: "t",
                 hashParam: "k",
                 //authFactor: "",
-                atuthDivisorArray: [],
+                atuthDivisorArray: [{
+                    "id": -1,
+                    "divisor": 6,
+                }, {
+                    "id": -2,
+                    "divisor": 2,
+                }, {
+                    "id": -3,
+                    "divisor": 5,
+                }],
                 md5Truncate: ""
             };
 

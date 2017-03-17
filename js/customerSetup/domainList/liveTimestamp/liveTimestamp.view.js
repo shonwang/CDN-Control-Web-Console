@@ -140,7 +140,7 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
             if (data){
                 if (data.openFlag !== null && data.openFlag !== undefined)
                     this.defaultParam.isOpenSetup = data.openFlag
-                if (data.authDivisorList) {
+
                     var  atuthDivisorArray = [
                         {value: 1, name: "host:用户请求域名"},
                         {value: 2, name: "uri：用户请求的uri"},
@@ -151,14 +151,17 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                         {value: 7, name: "filename：文件名称，带后缀"},
                         {value: 8, name: "filenameno：文件名称，不带后缀"}
                     ];
-                    _.each(data.authDivisorList, function(el, index, ls){
-                        var nameObj = _.find(atuthDivisorArray, function(obj){
-                            return obj.value === el.divisor
-                        }.bind(this))
-                        if (nameObj) el.divisorName = nameObj.name
-                    }.bind(this))
+
+                if (data.authDivisorList && data.authDivisorList.length > 0) {
                     this.defaultParam.atuthDivisorArray = data.authDivisorList
                 }
+
+                _.each(this.defaultParam.atuthDivisorArray, function(el, index, ls){
+                    var nameObj = _.find(atuthDivisorArray, function(obj){
+                        return obj.value === el.divisor
+                    }.bind(this))
+                    if (nameObj) el.divisorName = nameObj.name
+                }.bind(this))
 
                 var protectionType = data.protectionType, //1:typeA 2:typeB 3:typeC
                     confType = data.confType,

@@ -398,8 +398,8 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 alert("参数不能为空")
                 return;
             }
-            if (this.defaultParam.atuthDivisorArray.length >= 6) {
-                alert("最大可以设置6个");
+            if (this.defaultParam.atuthDivisorArray.length >= 10) {
+                alert("最大可以设置10个");
                 return;
             }
 
@@ -507,7 +507,9 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             var spliceMd5Min = this.$el.find("#md5-start").val(),
                 spliceMd5Max = this.$el.find("#md5-end").val();
             if (this.defaultParam.spliceMd5 === 2 && 
-                (spliceMd5Max === "" || spliceMd5Min === "" || parseInt(spliceMd5Max) - parseInt(spliceMd5Min) < 0)){
+                (spliceMd5Max === "" || spliceMd5Min === "" || 
+                 parseInt(spliceMd5Max) - parseInt(spliceMd5Min) < 0) || 
+                spliceMd5Min < 1 || spliceMd5Max > 32){
                 alert("你选择了高级设置截取MD5值，需要填写正确的取值范围！");
                 return;
             }

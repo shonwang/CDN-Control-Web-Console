@@ -164,6 +164,11 @@ module.exports = function(grunt) {
         modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 9;\n');
     });
 
+    grunt.registerTask('preonline-url', '', function() {
+        modifyFile("dest/js/main.js", 'DEBUG', 'window.DEBUG = 10;\n');
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 10;\n');
+    });
+
     grunt.registerTask('temp',['underscore:compile']);
     grunt.registerTask('debug',["clean", 'underscore:compile', "copy", "cssmin", 'processhtml', 'filerev', 'usemin']);
     grunt.registerTask('set',["clean", 'underscore:compile', "copy", "set-url", "cssmin", 'processhtml', 'filerev', 'usemin']);
@@ -173,5 +178,6 @@ module.exports = function(grunt) {
     grunt.registerTask('develop',["clean", 'underscore:compile', "copy", "dev-url", "cssmin", 'processhtml', 'filerev', 'usemin']);
     grunt.registerTask('shanghai',["clean", 'underscore:compile', "copy", "shanghai-url", "cssmin", 'processhtml', 'filerev', 'usemin']);
     grunt.registerTask('wuqing',["clean", 'underscore:compile', "copy", "wuqing-url", "cssmin", 'processhtml', 'filerev', 'usemin']);
+    grunt.registerTask('preonline',["clean", 'underscore:compile', "copy", "preonline-url", "cssmin", 'processhtml', 'filerev', 'usemin']);
     grunt.registerTask('gatewaydevelop',["clean", 'underscore:compile', "copy", "gateway-develop-url", "cssmin", 'processhtml', 'filerev', 'usemin']);
 };

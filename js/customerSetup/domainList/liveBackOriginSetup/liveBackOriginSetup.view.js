@@ -164,6 +164,10 @@ define("liveBackOriginSetup.view", ['require','exports', 'template', 'modal.view
             //     this.$el.find(".quality .radio input").get(0).checked = true;
             // }
             //this.$el.find("#ip-num").val(this.defaultParam.ipNum);
+
+            if (this.protocol === 3)
+                this.$el.find("#origin-protocol-hdl").parent('label').hide();
+
             if (this.defaultParam.originProtocol === 3){
                 this.$el.find("#origin-protocol-rtmp").get(0).checked = true;
                 this.$el.find("#origin-protocol-hdl").get(0).checked = false;

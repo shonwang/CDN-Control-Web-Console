@@ -11,7 +11,9 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.isEdit = options.isEdit;
                 this.isView = options.isView;
 
-                this.$el = $(_.template(template['tpl/specialLayerManage/specialLayerManage.edit.html'])({ data: {} }));
+                this.$el = $(_.template(template['tpl/specialLayerManage/specialLayerManage.edit.html'])({
+                    data: {}
+                }));
 
                 this.collection.off('get.topo.OriginInfo.success');
                 this.collection.off('get.topo.OriginInfo.error');
@@ -118,20 +120,18 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     this.$el.find(".opt-ctn .save").hide();
                     this.$el.find(".comment-group").hide();
                 }
-                // this.collection.off("get.node.success");
-                // this.collection.off("get.node.error");
-                // this.collection.on("get.node.success", $.proxy(this.onGetAllNode, this));
-                // this.collection.on("get.node.error", $.proxy(this.onGetError, this));
+                this.collection.off("get.node.success");
+                this.collection.off("get.node.error");
+                this.collection.on("get.node.success", $.proxy(this.onGetAllNode, this));
+                this.collection.on("get.node.error", $.proxy(this.onGetError, this));
 
                 this.collection.off("get.devicetype.success");
                 this.collection.off("get.devicetype.error");
                 this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
                 this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
 
-                //this.collection.getNodeList(); //获取所有节点列表接口
+                this.collection.getNodeList(); //获取所有节点列表接口
                 this.collection.getDeviceTypeList(); //获取应用类型列表接口
-
-                this.initRuleTable();
             },
 
             onClickViewMoreButton: function(event) {
@@ -216,8 +216,14 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     rootNode = this.$el.find(".dropdown-type");
 
                 _.each(res, function(el, index, ls) {
-                    typeArray.push({ name: el.name, value: el.id });
-                    this.deviceTypeArray.push({ name: el.name, value: el.id });
+                    typeArray.push({
+                        name: el.name,
+                        value: el.id
+                    });
+                    this.deviceTypeArray.push({
+                        name: el.name,
+                        value: el.id
+                    });
                 }.bind(this));
                 if (!this.isEdit) {
                     this.defaultParam.type = typeArray[0].value;
@@ -236,40 +242,25 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             onGetAllNode: function(res) {
-                this.$el.find('.all .add-node').show();
                 this.allNodes = res;
                 //过滤掉关闭和挂起的节点
                 var resFlag = [];
                 _.each(res, function(el, index, list) {
                     if (el.status != 3 && el.status != 2) resFlag.push(el)
                 })
-
-                this.selectedAllNodeList = [];
                 this.nodesArrayFirst = [];
 
                 _.each(resFlag, function(el, index, list) {
                     el.checked = false;
-                    _.each(this.defaultParam.allNodes, function(defaultLocalId, inx, ls) {
-                        if (defaultLocalId === el.id) {
-                            el.checked = true;
-                            this.selectedAllNodeList.push({
-                                nodeId: el.id,
-                                nodeName: el.chName,
-                                operator: el.operatorId,
-                                checked: el.checked
-                            })
-                        }
-                    }.bind(this));
                     this.nodesArrayFirst.push({
-                        name: el.chName,
-                        value: el.id,
+                        nodeName: el.chName,
+                        nodeId: el.id,
                         checked: el.checked,
                         operator: el.operatorId
                     });
                 }.bind(this))
 
-                this.initAllNodesSelect();
-                this.initAllNodesTable();
+                this.initRuleTable();
             },
 
             initRuleTable: function() {
@@ -327,7 +318,11 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 if (this.ruleList.length !== 0)
                     this.$el.find(".rule .table-ctn").html(this.roleTable[0]);
                 else
-                    this.$el.find(".rule .table-ctn").html(_.template(template['tpl/empty-2.html'])({ data: { message: "还没有添加规则" } }));
+                    this.$el.find(".rule .table-ctn").html(_.template(template['tpl/empty-2.html'])({
+                        data: {
+                            message: "还没有添加规则"
+                        }
+                    }));
 
                 if (!this.isView) {
                     this.roleTable.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
@@ -351,29 +346,31 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     return;
                 }
 
-                require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
-                    var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
-                    var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
-                        collection: myAddEditLayerStrategyModel,
-                        localNodes: this.selectedAllNodeList,
-                        upperNodes: this.selectedUpperNodeList,
-                        rule: this.defaultParam.rule,
-                        curEditRule: this.curEditRule,
-                        isEdit: true,
-                        onSaveCallback: function() {
-                            myAddEditLayerStrategyView.$el.remove();
-                            this.$el.find(".add-topo").show();
-                            this.initRuleTable();
-                        }.bind(this),
-                        onCancelCallback: function() {
-                            myAddEditLayerStrategyView.$el.remove();
-                            this.$el.find(".add-topo").show();
-                        }.bind(this)
-                    })
+                require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
+                    function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
+                        var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
+                        var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
+                            collection: myAddEditLayerStrategyModel,
+                            localNodes: this.nodesArrayFirst,
+                            upperNodes: this.nodesArrayFirst,
+                            rule: this.defaultParam.rule,
+                            curEditRule: this.curEditRule,
+                            isEdit: true,
+                            notFilter: true,
+                            onSaveCallback: function() {
+                                myAddEditLayerStrategyView.$el.remove();
+                                this.$el.find(".add-topo").show();
+                                this.initRuleTable();
+                            }.bind(this),
+                            onCancelCallback: function() {
+                                myAddEditLayerStrategyView.$el.remove();
+                                this.$el.find(".add-topo").show();
+                            }.bind(this)
+                        })
 
-                    this.$el.find(".add-topo").hide();
-                    myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
-                }.bind(this))
+                        this.$el.find(".add-topo").hide();
+                        myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
+                    }.bind(this))
             },
 
             onClickItemDelete: function() {
@@ -387,27 +384,29 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             onClickAddRuleButton: function() {
-                require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
-                    var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
-                    var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
-                        collection: myAddEditLayerStrategyModel,
-                        localNodes: this.selectedAllNodeList,
-                        upperNodes: this.selectedUpperNodeList,
-                        rule: this.defaultParam.rule,
-                        onSaveCallback: function() {
-                            myAddEditLayerStrategyView.$el.remove();
-                            this.$el.find(".add-topo").show();
-                            this.initRuleTable();
-                        }.bind(this),
-                        onCancelCallback: function() {
-                            myAddEditLayerStrategyView.$el.remove();
-                            this.$el.find(".add-topo").show();
-                        }.bind(this)
-                    })
+                require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
+                    function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
+                        var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
+                        var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
+                            collection: myAddEditLayerStrategyModel,
+                            localNodes: this.nodesArrayFirst,
+                            upperNodes: this.nodesArrayFirst,
+                            rule: this.defaultParam.rule,
+                            notFilter: true,
+                            onSaveCallback: function() {
+                                myAddEditLayerStrategyView.$el.remove();
+                                this.$el.find(".add-topo").show();
+                                this.initRuleTable();
+                            }.bind(this),
+                            onCancelCallback: function() {
+                                myAddEditLayerStrategyView.$el.remove();
+                                this.$el.find(".add-topo").show();
+                            }.bind(this)
+                        })
 
-                    this.$el.find(".add-topo").hide();
-                    myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
-                }.bind(this))
+                        this.$el.find(".add-topo").hide();
+                        myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
+                    }.bind(this))
             },
 
             onGetError: function(error) {
@@ -428,21 +427,25 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             initialize: function(options) {
                 this.collection = options.collection;
                 this.$el = $(_.template(template['tpl/specialLayerManage/specialLayerManage.html'])());
+
                 //获取所有的拓扑关系信息
-                this.collection.off("get.topoInfo.success");
-                this.collection.off("get.topoInfo.error");
-                this.collection.on("get.topoInfo.success", $.proxy(this.onGetTopoSuccess, this));
+                this.collection.on("get.topoInfo.success", $.proxy(this.onGetStrategySuccess, this));
                 this.collection.on("get.topoInfo.error", $.proxy(this.onGetError, this));
                 //获取应用类型
-                this.collection.off("get.devicetype.success");
-                this.collection.off("get.devicetype.error");
                 this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
                 this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
 
                 // if (AUTH_OBJ.QueryTopos) {
-                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-                this.off('enterKeyBindQuery');
-                this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
+                this.$el.find(".opt-ctn .query").on("click", function() {
+                    this.curPage = 1;
+                    this.onClickQueryButton();
+                }.bind(this));
+
+                this.on('enterKeyBindQuery', function() {
+                    this.curPage = 1;
+                    this.onClickQueryButton();
+                }.bind(this));
+
                 this.enterKeyBindQuery();
                 // } else {
                 //     this.$el.find(".opt-ctn .query").remove();
@@ -451,15 +454,15 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
                 // else
                 //     this.$el.find(".opt-ctn .new").remove();
-
+                this.curPage = 1;
                 this.queryArgs = {
                     "name": null,
                     "type": null,
                     "page": 1,
                     "size": 10
                 }
-                this.onClickQueryButton();
                 this.collection.getDeviceTypeList();
+                this.onClickQueryButton();
             },
 
             enterKeyBindQuery: function() {
@@ -477,14 +480,14 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     alert("网络阻塞，请刷新重试！")
             },
 
-            onGetTopoSuccess: function() {
+            onGetStrategySuccess: function() {
                 this.initTable();
                 if (!this.isInitPaginator) this.initPaginator();
             },
 
             onClickQueryButton: function() {
                 this.isInitPaginator = false;
-                this.queryArgs.page = 1;
+                this.queryArgs.page = this.curPage;
                 this.queryArgs.name = this.$el.find("#input-topo-name").val();
                 if (this.queryArgs.name == "") this.queryArgs.name = null;
                 this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
@@ -600,7 +603,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.$el.find(".pagination").jqPaginator({
                     totalPages: total,
                     visiblePages: 10,
-                    currentPage: 1,
+                    currentPage: this.curPage,
                     onPageChange: function(num, type) {
                         if (type !== "init") {
                             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
@@ -608,6 +611,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             args.page = num;
                             args.count = this.queryArgs.size;
                             this.collection.getTopoinfo(args);
+                            this.curPage = num
                         }
                     }.bind(this)
                 });
@@ -623,8 +627,14 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     rootNode = this.$el.find(".dropdown-type");
 
                 _.each(res, function(el, index, ls) {
-                    typeArray.push({ name: el.name, value: el.id });
-                    this.deviceTypeArray.push({ name: el.name, value: el.id });
+                    typeArray.push({
+                        name: el.name,
+                        value: el.id
+                    });
+                    this.deviceTypeArray.push({
+                        name: el.name,
+                        value: el.id
+                    });
                 }.bind(this));
                 if (!this.isEdit) {
                     var rootNode = this.$el.find(".dropdown-app");
@@ -638,15 +648,22 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     this.$el.find("#dropdown-app").attr("disabled", "disabled")
                 }
 
-                var pageNum = [
-                    { name: "10条", value: 10 },
-                    { name: "20条", value: 20 },
-                    { name: "50条", value: 50 },
-                    { name: "100条", value: 100 }
-                ]
+                var pageNum = [{
+                    name: "10条",
+                    value: 10
+                }, {
+                    name: "20条",
+                    value: 20
+                }, {
+                    name: "50条",
+                    value: 50
+                }, {
+                    name: "100条",
+                    value: 100
+                }]
                 Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value) {
                     this.queryArgs.size = parseInt(value);
-                    this.queryArgs.page = 1;
+                    this.curPage = 1;
                     this.onClickQueryButton();
                 }.bind(this));
             },

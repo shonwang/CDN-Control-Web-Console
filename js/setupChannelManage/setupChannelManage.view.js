@@ -11,7 +11,9 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection = options.collection;
                 this.model = options.model;
 
-                this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.html'])({ data: {} }));
+                this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.html'])({
+                    data: {}
+                }));
 
                 this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
 
@@ -19,7 +21,9 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection.off("get.channel.history.error");
                 this.collection.on("get.channel.history.success", $.proxy(this.initSetup, this));
                 this.collection.on("get.channel.history.error", $.proxy(this.onGetError, this));
-                this.collection.getVersionList({ "originId": this.model.get("id") })
+                this.collection.getVersionList({
+                    "originId": this.model.get("id")
+                })
             },
 
             initSetup: function(data) {
@@ -48,7 +52,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 this.table.find("tbody .publish").on("click", $.proxy(this.onClickItemPublish, this));
             },
 
-            onClickItemPublish: function() {
+            onClickItemPublish: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     version = $(eventTarget).attr("version");
 
@@ -119,7 +123,13 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection = options.collection;
                 this.model = options.model;
                 this.rule = [];
-                this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.specialLayer.html'])({ data: this.model.attributes }));
+                this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.specialLayer.html'])({
+                    data: this.model.attributes
+                }));
+
+                this.defaultParam = {
+                    "rule": []
+                };
 
                 this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
                 this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
@@ -129,78 +139,17 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     this.$el.find('.save').attr('disabled', 'disabled');
                     this.$el.find('.save').off("click");
                 }
-                //添加特殊策略
-                this.collection.off('add.special.success');
-                this.collection.off('add.special.error');
-                this.collection.on('add.special.success', $.proxy(this.addSpecialSuccess, this));
-                this.collection.on('add.special.error', $.proxy(this.addSpecialError, this));
-                //保存特殊规则的id
-                this.collection.off('addTopologyRule.success');
-                this.collection.off('addTopologyRule.error');
-                this.collection.on('addTopologyRule.success', $.proxy(this.addTopologyRuleSuccess, this));
-                this.collection.on('addTopologyRule.error', $.proxy(this.onGetError, this));
-                //推送到待下发中
-                this.collection.off("post.predelivery.success");
-                this.collection.off("post.predelivery.error");
-                this.collection.on("post.predelivery.success", $.proxy(this.onPublishSuccess, this));
-                this.collection.on("post.predelivery.error", $.proxy(this.onGetError, this));
                 //获取特殊规则的id
                 this.collection.off('getTopologyRule.success');
                 this.collection.off('getTopologyRule.error');
                 this.collection.on('getTopologyRule.success', $.proxy(this.getTopologyRuleSuccess, this));
                 this.collection.on('getTopologyRule.error', $.proxy(this.getTopologyRuleError, this));
                 this.collection.getTopologyRule(this.model.get('id'));
-                //获取到version
-                this.collection.off("get.channel.history.success");
-                this.collection.off("get.channel.history.error");
-                this.collection.on("get.channel.history.success", $.proxy(function(res) {
-                    this.version = res[0].version
-                }, this));
-                this.collection.on("get.channel.history.error", $.proxy(this.onGetError, this));
-                this.collection.getVersionList({ "originId": this.model.get("id") });
-                //获取域名的基本信息
-                this.collection.off("get.domainInfo.success");
-                this.collection.off("get.domainInfo.error");
-                this.collection.on("get.domainInfo.success", $.proxy(function(res) {
-                    this.confCustomType = res.domainConf.confCustomType;
-                }, this));
-                this.collection.on("get.domainInfo.error", $.proxy(this.onGetError, this));
-                this.collection.getDomainInfo({ originId: this.model.get("id") });
-                //获取拓扑名称
-                if (this.model.get("topologyId")) {
-                    require(['setupTopoManage.model'], function(SetupTopoManageModel) {
-                        var mySetupTopoManageModel = new SetupTopoManageModel();
-                        mySetupTopoManageModel.on("get.topo.OriginInfo.success", $.proxy(this.onGetTopoInfo, this));
-                        mySetupTopoManageModel.on("get.topo.OriginInfo.error", $.proxy(this.onGetError, this));
-                        mySetupTopoManageModel.getTopoOrigininfo(this.model.get("topologyId"))
-                    }.bind(this));
-                } else {
-                    this.$el.find("#input-topology").val("默认拓扑关系");
-                }
 
-                require(['setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeModel) {
-                    var mySetupSendWaitCustomizeModel = new SetupSendWaitCustomizeModel();
-                    mySetupSendWaitCustomizeModel.on("get.channel.config.success", $.proxy(this.onGetConfigInfo, this));
-                    mySetupSendWaitCustomizeModel.on("get.channel.config.error", $.proxy(this.onGetError, this));
-                    mySetupSendWaitCustomizeModel.getChannelConfig({
-                        domain: this.model.get("domain"),
-                        version: this.model.get("version") || this.model.get("domainVersion")
-                    })
-                }.bind(this));
-
-                this.defaultParam = {
-                    "rule": []
-                };
+                this.getTopoAppNameForShow();
             },
 
-            onGetTopoInfo: function(data) {
-                this.$el.find("#input-topology").val(data.name);
-            },
-
-            onGetConfigInfo: function(data) {
-                this.$el.find("#input-application").val(data.applicationType.name);
-            },
-
+            // getTopologyRule -> initRuleTable
             getTopologyRuleSuccess: function(res) {
                 console.log("获取频道的特殊分层策略规则ID: ", res)
                 this.collection.off('get.rule.origin.success');
@@ -219,65 +168,6 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 } else {
                     alert("网络阻塞，请刷新重试！")
                 }
-            },
-
-            onClickItemPublish: function() {
-                if (this.confCustomType === 1) {
-                    var result = confirm("确定将域名放入待下发吗？");
-                } else if (this.confCustomType === 3) {
-                    var result = confirm("确定将域名放入待定制吗？");
-                } else {
-                    alert('此域名的confCustomType为' + this.confCustomType + '无法待下发或者是待定制');
-                }
-                if (!result) return;
-
-                var postParam = [{
-                    domain: this.model.get("domain"),
-                    version: this.version,
-                    description: this.model.get("description"),
-                    configReason: 2
-                }]
-
-                this.collection.off("post.predelivery.success");
-                this.collection.off("post.predelivery.error");
-                this.collection.on("post.predelivery.success", $.proxy(this.onPostPredelivery, this));
-                this.collection.on("post.predelivery.error", $.proxy(this.onGetError, this));
-                this.collection.predelivery(postParam)
-            },
-
-            onPostPredelivery: function(res) {
-                this.options.onSaveCallback && this.options.onSaveCallback();
-                alert('操作成功');
-                if (this.confCustomType === 1)
-                    window.location.hash = '#/setupSendWaitSend';
-                else if (this.confCustomType === 3)
-                    window.location.hash = '#/setupSendWaitCustomize';
-            },
-
-            //保存特殊策略成功之后保存特殊策略的域名ID和特殊规则的id成功
-            addTopologyRuleSuccess: function(res) {
-                this.onClickItemPublish();
-            },
-
-            //保存特殊策略成功
-            addSpecialSuccess: function(res) {
-                var ruleIds = [];
-                _.each(res.rule, function(res, index, list) {
-                    ruleIds.push(res.id);
-                });
-                ruleIds = ruleIds.join(',');
-                var args = {
-                    "originId": this.model.get('id'),
-                    "roleIds": ruleIds
-                }
-                this.collection.addTopologyRule(args); //保存域名的ID和特殊策略的ID
-            },
-
-            addSpecialError: function(error) {
-                if (error && error.message)
-                    alert(error.message);
-                else
-                    alert("网络阻塞，请刷新重试！");
             },
 
             initRuleTable: function(res) {
@@ -403,34 +293,31 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             onClickAddRuleButton: function() {
-                require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
-                    var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
-                    var options = myAddEditLayerStrategyModel;
-                    var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
-                        collection: options,
-                        rule: this.defaultParam.rule,
-                        topologyId: this.model.get('topologyId'),
-                        onSaveCallback: function() {
-                            myAddEditLayerStrategyView.$el.remove();
-                            this.$el.find(".special-layer").show();
-                            this.initRuleTable();
-                        }.bind(this),
-                        onCancelCallback: function() {
-                            myAddEditLayerStrategyView.$el.remove();
-                            this.$el.find(".special-layer").show();
-                        }.bind(this)
-                    })
+                require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
+                    function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
+                        var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
+                        var options = myAddEditLayerStrategyModel;
+                        var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
+                            collection: options,
+                            rule: this.defaultParam.rule,
+                            topologyId: this.model.get('topologyId'),
+                            onSaveCallback: function() {
+                                myAddEditLayerStrategyView.$el.remove();
+                                this.$el.find(".special-layer").show();
+                                this.initRuleTable();
+                            }.bind(this),
+                            onCancelCallback: function() {
+                                myAddEditLayerStrategyView.$el.remove();
+                                this.$el.find(".special-layer").show();
+                            }.bind(this)
+                        })
 
-                    this.$el.find(".special-layer").hide();
-                    myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
-                }.bind(this))
+                        this.$el.find(".special-layer").hide();
+                        myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
+                    }.bind(this))
             },
 
-            onClickCancelButton: function() {
-                this.options.onCancelCallback && this.options.onCancelCallback();
-            },
-
-            //点击保存按钮保存特殊策略
+            //点击保存按钮-> addSpecialSuccess -> addTopologyRuleSuccess -> onPostPredelivery
             onClickSaveButton: function() {
                 if (this.defaultParam.rule.length == 0) {
                     alert('请添加规则');
@@ -465,10 +352,115 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 }.bind(this))
 
                 var postParam = {
-                    "topoId": this.model.get('topologyId'),
-                    "rule": postRules
-                }
+                        "topoId": this.model.get('topologyId'),
+                        "rule": postRules
+                    }
+                    //添加特殊策略
+                this.collection.off('add.special.success');
+                this.collection.off('add.special.error');
+                this.collection.on('add.special.success', $.proxy(this.addSpecialSuccess, this));
+                this.collection.on('add.special.error', $.proxy(this.onGetError, this));
                 this.collection.specilaAdd(postParam);
+            },
+
+            addSpecialSuccess: function(res) {
+                var ruleIds = [];
+                _.each(res.rule, function(res, index, list) {
+                    ruleIds.push(res.id);
+                });
+                ruleIds = ruleIds.join(',');
+                var args = {
+                        "originId": this.model.get('id'),
+                        "roleIds": ruleIds
+                    }
+                    //保存特殊规则的id
+                this.collection.off('addTopologyRule.success');
+                this.collection.off('addTopologyRule.error');
+                this.collection.on('addTopologyRule.success', $.proxy(this.addTopologyRuleSuccess, this));
+                this.collection.on('addTopologyRule.error', $.proxy(this.onGetError, this));
+                this.collection.addTopologyRule(args); //保存域名的ID和特殊策略的ID
+            },
+
+            addTopologyRuleSuccess: function() {
+                var result;
+                if (this.confCustomType === 1) {
+                    result = confirm("确定将域名放入待下发吗？");
+                } else if (this.confCustomType === 3) {
+                    result = confirm("确定将域名放入待定制吗？");
+                } else {
+                    alert('此域名的confCustomType为' + this.confCustomType + '无法待下发或者是待定制');
+                }
+                if (!result) return;
+
+                var postParam = [{
+                    domain: this.model.get("domain"),
+                    version: this.model.get("version"),
+                    description: this.model.get("description"),
+                    configReason: 2
+                }]
+
+                this.collection.off("post.predelivery.success");
+                this.collection.off("post.predelivery.error");
+                this.collection.on("post.predelivery.success", $.proxy(this.onPostPredelivery, this));
+                this.collection.on("post.predelivery.error", $.proxy(this.onGetError, this));
+                this.collection.predelivery(postParam)
+            },
+
+            onPostPredelivery: function(res) {
+                this.options.onSaveCallback && this.options.onSaveCallback();
+                alert('操作成功');
+                if (this.confCustomType === 1)
+                    window.location.hash = '#/setupSendWaitSend';
+                else if (this.confCustomType === 3)
+                    window.location.hash = '#/setupSendWaitCustomize';
+            },
+
+            getTopoAppNameForShow: function() {
+                //获取域名的基本信息
+                this.collection.off("get.domainInfo.success");
+                this.collection.off("get.domainInfo.error");
+                this.collection.on("get.domainInfo.success", $.proxy(this.onGetConfCustomType, this));
+                this.collection.on("get.domainInfo.error", $.proxy(this.onGetError, this));
+                this.collection.getDomainInfo({
+                    originId: this.model.get("id")
+                });
+                //获取拓扑名称
+                if (this.model.get("topologyId")) {
+                    require(['setupTopoManage.model'], function(SetupTopoManageModel) {
+                        var mySetupTopoManageModel = new SetupTopoManageModel();
+                        mySetupTopoManageModel.on("get.topo.OriginInfo.success", $.proxy(this.onGetTopoInfo, this));
+                        mySetupTopoManageModel.on("get.topo.OriginInfo.error", $.proxy(this.onGetError, this));
+                        mySetupTopoManageModel.getTopoOrigininfo(this.model.get("topologyId"))
+                    }.bind(this));
+                } else {
+                    this.$el.find("#input-topology").val("默认拓扑关系");
+                }
+                //获取应用名称
+                require(['setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeModel) {
+                    var mySetupSendWaitCustomizeModel = new SetupSendWaitCustomizeModel();
+                    mySetupSendWaitCustomizeModel.on("get.channel.config.success", $.proxy(this.onGetConfigInfo, this));
+                    mySetupSendWaitCustomizeModel.on("get.channel.config.error", $.proxy(this.onGetError, this));
+                    mySetupSendWaitCustomizeModel.getChannelConfig({
+                        domain: this.model.get("domain"),
+                        version: this.model.get("version") || this.model.get("domainVersion")
+                    })
+                }.bind(this));
+            },
+
+            onClickCancelButton: function() {
+                this.options.onCancelCallback && this.options.onCancelCallback();
+            },
+
+            onGetConfCustomType: function(res) {
+                this.confCustomType = res.domainConf.confCustomType;
+            },
+
+            onGetTopoInfo: function(data) {
+                this.$el.find("#input-topology").val(data.name);
+            },
+
+            onGetConfigInfo: function(data) {
+                this.$el.find("#input-application").val(data.applicationType.name);
             },
 
             onGetError: function(error) {
@@ -491,7 +483,11 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection = options.collection;
                 this.domainArray = options.domainArray;
 
-                this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({ data: { name: "分层策略" } }));
+                this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({
+                    data: {
+                        name: "分层策略"
+                    }
+                }));
 
                 this.initDomainList();
 
@@ -588,7 +584,11 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection = options.collection;
                 this.domainArray = options.domainArray;
 
-                this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({ data: { name: "拓扑关系" } }));
+                this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({
+                    data: {
+                        name: "拓扑关系"
+                    }
+                }));
 
                 this.initDomainList();
                 require(["setupTopoManage.model"], function(SetupTopoManageModel) {
@@ -1060,24 +1060,55 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             initChannelDropMenu: function() {
-                var statusArray = [
-                        { name: "全部", value: "All" },
-                        { name: "删除", value: -1 },
-                        { name: "审核中", value: 0 },
-                        { name: "审核通过", value: 1 },
-                        { name: "审核失败", value: 2 },
-                        { name: "停止", value: 3 },
-                        { name: "配置中", value: 4 },
-                        { name: "编辑中", value: 6 },
-                        { name: "待下发", value: 7 },
-                        { name: "待定制", value: 8 },
-                        { name: "定制化配置错误", value: 9 },
-                        { name: "下发中", value: 10 },
-                        { name: "下发失败", value: 11 },
-                        { name: "下发成功", value: 12 },
-                        { name: "运行中", value: 13 },
-                        { name: "配置失败", value: 14 }
-                    ],
+                var statusArray = [{
+                        name: "全部",
+                        value: "All"
+                    }, {
+                        name: "删除",
+                        value: -1
+                    }, {
+                        name: "审核中",
+                        value: 0
+                    }, {
+                        name: "审核通过",
+                        value: 1
+                    }, {
+                        name: "审核失败",
+                        value: 2
+                    }, {
+                        name: "停止",
+                        value: 3
+                    }, {
+                        name: "配置中",
+                        value: 4
+                    }, {
+                        name: "编辑中",
+                        value: 6
+                    }, {
+                        name: "待下发",
+                        value: 7
+                    }, {
+                        name: "待定制",
+                        value: 8
+                    }, {
+                        name: "定制化配置错误",
+                        value: 9
+                    }, {
+                        name: "下发中",
+                        value: 10
+                    }, {
+                        name: "下发失败",
+                        value: 11
+                    }, {
+                        name: "下发成功",
+                        value: 12
+                    }, {
+                        name: "运行中",
+                        value: 13
+                    }, {
+                        name: "配置失败",
+                        value: 14
+                    }],
                     rootNode = this.$el.find(".dropdown-status");
                 Utility.initDropMenu(rootNode, statusArray, function(value) {
                     if (value == "All")
@@ -1086,12 +1117,19 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                         this.queryArgs.auditStatus = parseInt(value)
                 }.bind(this));
 
-                var protocolArray = [
-                        { name: "全部", value: "All" },
-                        { name: "http+hlv", value: 1 },
-                        { name: "hls", value: 2 },
-                        { name: "rtmp", value: 3 }
-                    ],
+                var protocolArray = [{
+                        name: "全部",
+                        value: "All"
+                    }, {
+                        name: "http+hlv",
+                        value: 1
+                    }, {
+                        name: "hls",
+                        value: 2
+                    }, {
+                        name: "rtmp",
+                        value: 3
+                    }],
                     rootNode = this.$el.find(".dropdown-protocol");
                 Utility.initDropMenu(rootNode, protocolArray, function(value) {
                     if (value == "All")
@@ -1100,11 +1138,16 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                         this.queryArgs.protocol = parseInt(value)
                 }.bind(this));
 
-                var companyArray = [
-                        { name: "全部", value: "All" },
-                        { name: "自建", value: 1 },
-                        { name: "网宿", value: 2 }
-                    ],
+                var companyArray = [{
+                        name: "全部",
+                        value: "All"
+                    }, {
+                        name: "自建",
+                        value: 1
+                    }, {
+                        name: "网宿",
+                        value: 2
+                    }],
                     rootNode = this.$el.find(".dropdown-company");
                 Utility.initDropMenu(rootNode, companyArray, function(value) {
                     if (value == "All")
@@ -1113,11 +1156,16 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                         this.queryArgs.cdnFactory = parseInt(value)
                 }.bind(this));
 
-                var typeArray = [
-                        { name: "全部", value: "All" },
-                        { name: "下载加速", value: 1 },
-                        { name: "直播加速", value: 2 }
-                    ],
+                var typeArray = [{
+                        name: "全部",
+                        value: "All"
+                    }, {
+                        name: "下载加速",
+                        value: 1
+                    }, {
+                        name: "直播加速",
+                        value: 2
+                    }],
                     rootNode = this.$el.find(".dropdown-type");
                 Utility.initDropMenu(rootNode, typeArray, function(value) {
                     if (value == "All")
@@ -1126,12 +1174,19 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                         this.queryArgs.type = parseInt(value)
                 }.bind(this));
 
-                var pageNum = [
-                    { name: "10条", value: 10 },
-                    { name: "20条", value: 20 },
-                    { name: "50条", value: 50 },
-                    { name: "3000条", value: 3000 }
-                ]
+                var pageNum = [{
+                    name: "10条",
+                    value: 10
+                }, {
+                    name: "20条",
+                    value: 20
+                }, {
+                    name: "50条",
+                    value: 50
+                }, {
+                    name: "3000条",
+                    value: 3000
+                }]
                 Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value) {
                     this.queryArgs.pageSize = value;
                     this.queryArgs.currentPage = 1;
@@ -1153,7 +1208,10 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             onGetTopoSuccess: function() {
-                var topoArray = [{ name: "全部", value: "All" }]
+                var topoArray = [{
+                    name: "全部",
+                    value: "All"
+                }]
                 this.mySetupTopoManageModel.each(function(el, index, lst) {
                     topoArray.push({
                         name: el.get('name'),

@@ -441,11 +441,11 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
 
             require(['deviceManage.model'], function(deviceManageModel) {
                 var mydeviceManageModel = new deviceManageModel();
-                mydeviceManageModel.operatorTypeList();
                 mydeviceManageModel.off("operator.type.success");
                 mydeviceManageModel.off("operator.type.error");
                 mydeviceManageModel.on("operator.type.success", $.proxy(this.initOperatorUpperList, this));
                 mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
+                mydeviceManageModel.operatorTypeList();
             }.bind(this));
         },
 

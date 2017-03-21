@@ -562,28 +562,29 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     return;
                 }
 
-                require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
-                    var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
-                        collection: this.collection,
-                        localNodes: this.selectedAllNodeList,
-                        upperNodes: this.selectedUpperNodeList,
-                        rule: this.defaultParam.rule,
-                        curEditRule: this.curEditRule,
-                        isEdit: true,
-                        onSaveCallback: function() {
-                            myAddEditLayerStrategyView.$el.remove();
-                            this.$el.find(".add-topo").show();
-                            this.initRuleTable();
-                        }.bind(this),
-                        onCancelCallback: function() {
-                            myAddEditLayerStrategyView.$el.remove();
-                            this.$el.find(".add-topo").show();
-                        }.bind(this)
-                    })
+                require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
+                    function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
+                        var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
+                            collection: this.collection,
+                            localNodes: this.selectedAllNodeList,
+                            upperNodes: this.selectedUpperNodeList,
+                            rule: this.defaultParam.rule,
+                            curEditRule: this.curEditRule,
+                            isEdit: true,
+                            onSaveCallback: function() {
+                                myAddEditLayerStrategyView.$el.remove();
+                                this.$el.find(".add-topo").show();
+                                this.initRuleTable();
+                            }.bind(this),
+                            onCancelCallback: function() {
+                                myAddEditLayerStrategyView.$el.remove();
+                                this.$el.find(".add-topo").show();
+                            }.bind(this)
+                        })
 
-                    this.$el.find(".add-topo").hide();
-                    myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
-                }.bind(this))
+                        this.$el.find(".add-topo").hide();
+                        myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
+                    }.bind(this))
             },
 
             onClickItemDelete: function() {
@@ -597,28 +598,29 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             },
 
             onClickAddRuleButton: function() {
-                require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
-                    var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
-                    var options = myAddEditLayerStrategyModel;
-                    var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
-                        collection: options,
-                        localNodes: this.selectedAllNodeList,
-                        upperNodes: this.selectedUpperNodeList,
-                        rule: this.defaultParam.rule,
-                        onSaveCallback: function() {
-                            myAddEditLayerStrategyView.$el.remove();
-                            this.$el.find(".add-topo").show();
-                            this.initRuleTable();
-                        }.bind(this),
-                        onCancelCallback: function() {
-                            myAddEditLayerStrategyView.$el.remove();
-                            this.$el.find(".add-topo").show();
-                        }.bind(this)
-                    })
+                require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
+                    function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
+                        var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
+                        var options = myAddEditLayerStrategyModel;
+                        var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
+                            collection: options,
+                            localNodes: this.selectedAllNodeList,
+                            upperNodes: this.selectedUpperNodeList,
+                            rule: this.defaultParam.rule,
+                            onSaveCallback: function() {
+                                myAddEditLayerStrategyView.$el.remove();
+                                this.$el.find(".add-topo").show();
+                                this.initRuleTable();
+                            }.bind(this),
+                            onCancelCallback: function() {
+                                myAddEditLayerStrategyView.$el.remove();
+                                this.$el.find(".add-topo").show();
+                            }.bind(this)
+                        })
 
-                    this.$el.find(".add-topo").hide();
-                    myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
-                }.bind(this))
+                        this.$el.find(".add-topo").hide();
+                        myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
+                    }.bind(this))
             },
 
 

@@ -99,7 +99,7 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
         },
 
         getTopoOrigininfo:function(args){
-            var url = BASE_URL + "/resource/topo/origin/info?id="+args,
+            var url = BASE_URL + "/resource/topo/origin/consoleInfo?id="+args,
             successCallback = function(res){
                 if(res){
                     this.total = res.total;
@@ -115,7 +115,7 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
         },
 
         getRuleOrigin: function(args){
-           var url = BASE_URL + "/resource/topo/rule/origin?ruleIds="+args,
+           var url = BASE_URL + "/resource/topo/rule/consoleOrigin?ruleIds="+args,
            successCallback = function(res){
                 if(res){
                     this.total = res.total;

@@ -1,7 +1,7 @@
 module.exports = function(grunt) {
     var pkg = grunt.file.readJSON('package.json');
     grunt.initConfig({
-        clean: ["dest"],
+        clean: ["dest", "temp"],
         underscore: {
             compile: {
                 options: {
@@ -36,8 +36,8 @@ module.exports = function(grunt) {
         hash: {
             options: {
                 mapping: 'dest/assets.json', //mapping file so your server can serve the right files
-                srcBasePath: 'temp/js', // the base Path you want to remove from the `key` string in the mapping file
-                destBasePath: 'dest/js', // the base Path you want to remove from the `value` string in the mapping file
+                srcBasePath: 'temp/js/', // the base Path you want to remove from the `key` string in the mapping file
+                destBasePath: 'dest/js/', // the base Path you want to remove from the `value` string in the mapping file
                 // flatten: false, // Set to true if you don't want to keep folder structure in the `key` value in the mapping file
                 hashLength: 8, // hash length, the max value depends on your hash function
                 // hashFunction: function(source, encoding) { // default is md5
@@ -55,6 +55,16 @@ module.exports = function(grunt) {
                     src: ['js/**/*.js', 'js/*.js'],
                     dest: 'dest/'
                 }]
+            }
+        },
+        getpaths: {
+            options: {
+                mapping: 'assets.json', 
+                srcBasePath: 'js/'
+            },
+            js: {
+                src: ['js/**/*.js', 'js/*.js'], 
+                dest: ''
             }
         },
         uglify: {
@@ -86,7 +96,7 @@ module.exports = function(grunt) {
                     ]
                 }
             },
-            bundle: {
+            js: {
                 options: {
                     compress: true,
                     mangle: {
@@ -99,6 +109,17 @@ module.exports = function(grunt) {
                     src: ['js/**/*.js', 'js/*.js'],
                     dest: 'temp/'
                 }]
+            },
+            main: {
+                options: {
+                    compress: true,
+                    mangle: {
+                        except: ['define', 'exports', 'require']
+                    }
+                },
+                files: {
+                    'dest/js/main.js': ['temp/js/main.js']
+                }
             }
         },
         processhtml: {
@@ -129,20 +150,13 @@ module.exports = function(grunt) {
             }
         },
         copy: {
-            main: {
+            other: {
                 files: [{
                     expand: true,
                     cwd: '',
                     src: ['css/*', 'css/**/*'],
                     dest: 'dest/'
-                }, 
-                // {
-                //     expand: true,
-                //     cwd: '',
-                //     src: ['js/*', 'js/**/*'],
-                //     dest: 'temp/'
-                // }, 
-                {
+                }, {
                     expand: true,
                     cwd: '',
                     src: ['libs/require.min.js',
@@ -171,7 +185,13 @@ module.exports = function(grunt) {
                     src: "*.html",
                     dest: 'dest/'
                 }]
-            }
+            },
+            main: {
+                expand: true,
+                cwd: '',
+                src: ['js/main.js'],
+                dest: 'temp/'
+            }, 
         }
     });
 
@@ -183,72 +203,128 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-hash');
+    require("./build/hash")(grunt);
+    require("./build/getPaths")(grunt);
 
-    var modifyFile = function(filePath, key, val) {
+    var modifyFile = function(filePath, key, val, setQeqPath) {
+        grunt.log.writeln(filePath)
         var dataMain = grunt.file.read(filePath);
         var mainArray = dataMain.split("\n"),
-            line, newMain = [];
+            line, newMain = [], isSkip = false;
         for (var k = 0; k < mainArray.length; k++) {
             line = mainArray[k];
-            grunt.log.writeln(line)
-            if (line.indexOf(key) > -1 && line.indexOf('if') == -1) line = val;
+            if (line.indexOf('//PATH START===') > -1) isSkip = true;
+            if (line.indexOf('//PATH END===') > -1) {
+                line = '';
+                isSkip = false;
+            }
+            if (isSkip || line === '') continue;
+            if (line.indexOf(key) > -1 && line.indexOf('if') == -1) {
+                grunt.log.writeln(line)
+                line = val;
+                grunt.log.writeln(line)
+            }
             newMain.push(line);
-            grunt.log.writeln(line)
         }
-        grunt.file.write(filePath, newMain.join("\n"));
+        var content = newMain.join("\n");
+        if (setQeqPath) {
+            var requirePath = grunt.file.read(setQeqPath);
+            grunt.log.writeln(requirePath)
+            content = '//PATH START=== \n var REQ_PATH = ' + requirePath + ";\n//PATH END===\n" + content;
+            grunt.log.writeln(content)
+            grunt.file.delete(setQeqPath)
+        }
+        grunt.file.write(filePath, content);
     };
 
     grunt.registerTask('set-url', '', function() {
-        modifyFile("dest/js/main.js", 'DEBUG', 'window.DEBUG = 2;\n');
+        modifyFile("temp/js/main.js", 'urlArgs', '\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 2;\n', "dest/assets.json");
         modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 2;\n');
     });
 
-    grunt.registerTask('test-url', '', function() {
-        modifyFile("dest/js/main.js", 'DEBUG', 'window.DEBUG = 4;\n');
-        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 4;\n');
-    });
-
     grunt.registerTask('online-url', '', function() {
-        modifyFile("dest/js/main.js", 'DEBUG', 'window.DEBUG = 3;\n');
+        modifyFile("temp/js/main.js", 'urlArgs', '\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 3;\n', "dest/assets.json");
         modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 3;\n');
     });
 
+    grunt.registerTask('test-url', '', function() {
+        modifyFile("temp/js/main.js", 'urlArgs', '\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 4;\n', "dest/assets.json");
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 4;\n');
+    });
+
     grunt.registerTask('gray-url', '', function() {
-        modifyFile("dest/js/main.js", 'DEBUG', 'window.DEBUG = 5;\n');
+        modifyFile("temp/js/main.js", 'urlArgs', '\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 5;\n', "dest/assets.json");
         modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 5;\n');
     });
 
     grunt.registerTask('dev-url', '', function() {
-        modifyFile("dest/js/main.js", 'DEBUG', 'window.DEBUG = 6;\n');
+        modifyFile("temp/js/main.js", 'urlArgs', '\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 6;\n', "dest/assets.json");
         modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 6;\n');
     });
 
     grunt.registerTask('shanghai-url', '', function() {
-        modifyFile("dest/js/main.js", 'DEBUG', 'window.DEBUG = 7;\n');
+        modifyFile("temp/js/main.js", 'urlArgs', '\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 7;\n', "dest/assets.json");
         modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 7;\n');
     });
 
     grunt.registerTask('gateway-develop-url', '', function() {
-        modifyFile("dest/js/main.js", 'DEBUG', 'window.DEBUG = 8;\n');
+        modifyFile("temp/js/main.js", 'urlArgs', '\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 8;\n', "dest/assets.json");
         modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 8;\n');
     });
 
     grunt.registerTask('wuqing-url', '', function() {
-        modifyFile("dest/js/main.js", 'DEBUG', 'window.DEBUG = 9;\n');
+        modifyFile("temp/js/main.js", 'urlArgs', '\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 9;\n', "dest/assets.json");
         modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 9;\n');
     });
 
+    grunt.registerTask('debug-url', '', function() {
+        modifyFile("temp/js/main.js", 'urlArgs', '\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 1.1;\n', "dest/assets.json");
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 1.1;\n');
+    });
 
-    grunt.registerTask('gtest', ["clean", 'hash'])
-    grunt.registerTask('temp', ['underscore:compile']);
-    grunt.registerTask('debug', ["clean", 'underscore:compile', "copy", 'uglify', "cssmin", 'processhtml', 'filerev', 'usemin']);
-    grunt.registerTask('set', ["clean", 'underscore:compile', "copy", "set-url", "uglify", "cssmin", 'processhtml', 'filerev', 'usemin']);
-    grunt.registerTask('test', ["clean", 'underscore:compile', "copy", "test-url", "uglify", "cssmin", 'processhtml', 'filerev', 'usemin']);
-    grunt.registerTask('online', ["clean", 'underscore:compile', "copy", "online-url", "uglify", "cssmin", 'processhtml', 'filerev', 'usemin']);
-    grunt.registerTask('gray', ["clean", 'underscore:compile', "copy", "gray-url", "uglify", "cssmin", 'processhtml', 'filerev', 'usemin']);
-    grunt.registerTask('develop', ["clean", 'underscore:compile', "copy", "dev-url", "uglify", "cssmin", 'processhtml', 'filerev', 'usemin']);
-    grunt.registerTask('shanghai', ["clean", 'underscore:compile', "copy", "shanghai-url", "uglify", "cssmin", 'processhtml', 'filerev', 'usemin']);
-    grunt.registerTask('wuqing', ["clean", 'underscore:compile', "copy", "wuqing-url", "uglify", "cssmin", 'processhtml', 'filerev', 'usemin']);
-    grunt.registerTask('gatewaydevelop', ["clean", 'underscore:compile', "copy", "gateway-develop-url", "uglify", "cssmin", 'processhtml', 'filerev', 'usemin']);
+    grunt.registerTask('module-url', '', function() {
+        modifyFile("js/main.js", 'DEBUG', 'window.DEBUG = 1.1;\n', "assets.json");
+        modifyFile("login.html", 'DEBUG', 'window.DEBUG = 1.1;\n');
+    });
+
+    grunt.registerTask('temp', ["clean", 'underscore']);
+    grunt.registerTask('module', ["clean", 'underscore', 'getpaths', 'module-url']);
+    grunt.registerTask('debug', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+        'copy:main','debug-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
+    // clean 清空temp dest 文件夹 
+    // underscore 编译模版
+    // copy:other 复制文件到dest文件夹
+    // uglify:libs, uglify:js 压缩合并libs/里的文件到dest/libs/libs.js 且 压缩 js/ 到temp/js/
+    // hash 给 temp/js/ 里的文件生成 MD5 到 dest/js/ , 除了main.js 文件，且 生成 requirejs 路径配置文件 dest/assets.json;
+    // copy:main 复制 js/main.js 到 temp/js/main.js 
+    // **-url 修改 temp/js/main.js、login.html文件的基本域名，且写入 dest/assets.json 中的路径配置
+    // uglify:main 压缩 temp/js/main.js 到 dest/js/main.js
+    // cssmin 压缩css文件到 dest/css/all.css
+    // processhtml: 将html中的引用替换为 all.css 、libs.js
+    // filerev & usemin: 生成 dest/js/main.js 、dest/libs/libs.js 和 dest/css/all.css 文件的MD5，并在文件中替换 
+    grunt.registerTask('set', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+        'copy:main', 'set-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
+    grunt.registerTask('online', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+        'copy:main', 'online-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
+    grunt.registerTask('test', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+        'copy:main', 'test-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
+    grunt.registerTask('gray', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+        'copy:main', 'gray-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
+    grunt.registerTask('develop', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+        'copy:main', 'dev-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
+    grunt.registerTask('shanghai', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+        'copy:main', 'shanghai-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
+    grunt.registerTask('gatewaydevelop', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+        'copy:main', 'gateway-develop-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
+    grunt.registerTask('wuqing', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+        'copy:main', 'wuqing-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
 };

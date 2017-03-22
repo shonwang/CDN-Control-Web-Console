@@ -53,6 +53,9 @@ requirejs.config({
         "dispSuggesttion.view": "dispSuggesttion/dispSuggesttion.view",
         "dispSuggesttion.model": "dispSuggesttion/dispSuggesttion.model",
 
+        "importAssess.model": "importAssess/importAssess.model",
+        "importAssess.view": "importAssess/importAssess.view",
+
         "coverRegion.view": 'coverRegion/coverRegion.view',
         "coverRegion.model": 'coverRegion/coverRegion.model',
 
@@ -94,7 +97,7 @@ requirejs.config({
 
         "templateManage.model": 'templateManage/templateManage.model',
         "templateManage.view": 'templateManage/templateManage.view',
-
+        /*客户域名配置*/
         "customerSetup.model": 'customerSetup/customerSetup.model',
         "customerSetup.view": 'customerSetup/customerSetup.view',
         "customerSetup.controller": 'customerSetup/customerSetup.controller',
@@ -108,7 +111,7 @@ requirejs.config({
 
         "matchCondition.view": 'customerSetup/domainList/matchCondition/matchCondition.view',
         "matchCondition.model": 'customerSetup/domainList/matchCondition/matchCondition.model',
-        
+        /*客户域名配置： 点播，伪直播*/
         "basicInformation.model": 'customerSetup/domainList/basicInformation/basicInformation.model',
         "basicInformation.view": 'customerSetup/domainList/basicInformation/basicInformation.view',
 
@@ -168,7 +171,59 @@ requirejs.config({
 
         "saveThenSend.model": 'customerSetup/domainList/saveThenSend/saveThenSend.model',
         "saveThenSend.view": 'customerSetup/domainList/saveThenSend/saveThenSend.view',
+        /*客户域名配置： 真直播*/
+        "customerSetup.live.controller": 'customerSetup/customerSetup.live.controller',
 
+        "liveDomainSetup.model":"customerSetup/domainList/liveDomainSetup/liveDomainSetup.model",
+        "liveDomainSetup.view":"customerSetup/domainList/liveDomainSetup/liveDomainSetup.view",
+        
+        "liveCnameSetup.model":"customerSetup/domainList/liveCnameSetup/liveCnameSetup.model",
+        "liveCnameSetup.view":"customerSetup/domainList/liveCnameSetup/liveCnameSetup.view",
+
+        "liveHttpsSetup.model":"customerSetup/domainList/liveHttpsSetup/liveHttpsSetup.model",
+        "liveHttpsSetup.view":"customerSetup/domainList/liveHttpsSetup/liveHttpsSetup.view",
+
+        "liveBackOriginSetup.model":"customerSetup/domainList/liveBackOriginSetup/liveBackOriginSetup.model",
+        "liveBackOriginSetup.view":"customerSetup/domainList/liveBackOriginSetup/liveBackOriginSetup.view",
+
+        "liveBackOriginDetection.model":"customerSetup/domainList/liveBackOriginDetection/liveBackOriginDetection.model",
+        "liveBackOriginDetection.view":"customerSetup/domainList/liveBackOriginDetection/liveBackOriginDetection.view",
+
+
+        "liveTimestamp.model":"customerSetup/domainList/liveTimestamp/liveTimestamp.model",
+        "liveTimestamp.view":"customerSetup/domainList/liveTimestamp/liveTimestamp.view",
+
+        "liveRefererAntiLeech.model":"customerSetup/domainList/liveRefererAntiLeech/liveRefererAntiLeech.model",
+        "liveRefererAntiLeech.view":"customerSetup/domainList/liveRefererAntiLeech/liveRefererAntiLeech.view",
+        
+        "liveBasicInformation.model": 'customerSetup/domainList/liveBasicInformation/liveBasicInformation.model',
+        "liveBasicInformation.view": 'customerSetup/domainList/liveBasicInformation/liveBasicInformation.view',
+
+        "liveBusOptimize.model": 'customerSetup/domainList/liveBusOptimize/liveBusOptimize.model',
+        "liveBusOptimize.view": 'customerSetup/domainList/liveBusOptimize/liveBusOptimize.view',
+
+        "liveH265Setup.model": 'customerSetup/domainList/liveH265Setup/liveH265Setup.model',
+        "liveH265Setup.view": 'customerSetup/domainList/liveH265Setup/liveH265Setup.view',
+
+        "liveAudioOnly.model": 'customerSetup/domainList/liveAudioOnly/liveAudioOnly.model',
+        "liveAudioOnly.view": 'customerSetup/domainList/liveAudioOnly/liveAudioOnly.view',
+
+        "liveEdge302.model": 'customerSetup/domainList/liveEdge302/liveEdge302.model',
+        "liveEdge302.view": 'customerSetup/domainList/liveEdge302/liveEdge302.view',
+
+        "liveHttpFlvOptimize.model": 'customerSetup/domainList/liveHttpFlvOptimize/liveHttpFlvOptimize.model',
+        "liveHttpFlvOptimize.view": 'customerSetup/domainList/liveHttpFlvOptimize/liveHttpFlvOptimize.view',
+
+        "liveRtmpOptimize.model": 'customerSetup/domainList/liveRtmpOptimize/liveRtmpOptimize.model',
+        "liveRtmpOptimize.view": 'customerSetup/domainList/liveRtmpOptimize/liveRtmpOptimize.view', 
+
+        "liveSLAStatistics.model": 'customerSetup/domainList/liveSLAStatistics/liveSLAStatistics.model',
+        "liveSLAStatistics.view": 'customerSetup/domainList/liveSLAStatistics/liveSLAStatistics.view',
+
+        "liveFrequencyLog.model": 'customerSetup/domainList/liveFrequencyLog/liveFrequencyLog.model',
+        "liveFrequencyLog.view": 'customerSetup/domainList/liveFrequencyLog/liveFrequencyLog.view',                 
+
+        /*配置下发*/
         "setupChannelManage.model": "setupChannelManage/setupChannelManage.model",
         "setupChannelManage.view": "setupChannelManage/setupChannelManage.view",
         "setupChannelManage.edit.view": "setupChannelManage/setupChannelManage.edit.view",
@@ -178,6 +233,7 @@ requirejs.config({
 
         "setupBill.model": 'setupChannelManage/setupBill/setupBill.model',
         "setupBill.view": 'setupChannelManage/setupBill/setupBill.view',
+        "setupBillLive.view": 'setupChannelManage/setupBill/setupBillLive.view',
 
         "setupAppManage.model": "setupAppManage/setupAppManage.model",
         "setupAppManage.view": "setupAppManage/setupAppManage.view",
@@ -202,9 +258,6 @@ requirejs.config({
 
         "setupSendWaitSend.model": "setupSendManage/setupSendWaitSend/setupSendWaitSend.model",
         "setupSendWaitSend.view": "setupSendManage/setupSendWaitSend/setupSendWaitSend.view",
-
-        "importAssess.model": "importAssess/importAssess.model",
-        "importAssess.view": "importAssess/importAssess.view",
     },
     urlArgs: new Date().valueOf()
 });

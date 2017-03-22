@@ -11,18 +11,33 @@ define("saveThenSend.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.send.success", $.proxy(this.onSendSuccess, this));
             this.collection.on("get.send.error", $.proxy(this.onGetError, this));
 
-            require(['setupBill.view', 'setupBill.model'], function(SetupBillView, SetupBillModel){
-                var mySetupBillModel = new SetupBillModel();
-                var mySetupBillView = new SetupBillView({
-                    collection: mySetupBillModel,
-                    originId: this.options.domainInfo.id,
-                    isFromPublish: true,
-                    onSaveCallback: function(){}.bind(this),
-                    onCancelCallback: function(){}.bind(this)
-                })
-                mySetupBillView.render(this.$el.find(".bill-ctn"));
-                mySetupBillView.$el.find(".opt-ctn").remove();
-            }.bind(this))
+            if (!this.options.isRealLive){
+                require(['setupBill.view', 'setupBill.model'], function(SetupBillView, SetupBillModel){
+                    var mySetupBillModel = new SetupBillModel();
+                    var mySetupBillView = new SetupBillView({
+                        collection: mySetupBillModel,
+                        originId: this.options.domainInfo.id,
+                        isFromPublish: true,
+                        onSaveCallback: function(){}.bind(this),
+                        onCancelCallback: function(){}.bind(this)
+                    })
+                    mySetupBillView.render(this.$el.find(".bill-ctn"));
+                    mySetupBillView.$el.find(".opt-ctn").remove();
+                }.bind(this))
+            } else {
+                require(['setupBillLive.view', 'setupBill.model'], function(SetupBillView, SetupBillModel){
+                    var mySetupBillModel = new SetupBillModel();
+                    var mySetupBillView = new SetupBillView({
+                        collection: mySetupBillModel,
+                        originId: this.options.domainInfo.id,
+                        isFromPublish: true,
+                        onSaveCallback: function(){}.bind(this),
+                        onCancelCallback: function(){}.bind(this)
+                    })
+                    mySetupBillView.render(this.$el.find(".bill-ctn"));
+                    mySetupBillView.$el.find(".opt-ctn").remove();
+                }.bind(this))
+            }
         },
 
         onSendSuccess: function(res) {

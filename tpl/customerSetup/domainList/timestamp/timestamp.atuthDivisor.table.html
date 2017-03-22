@@ -1,0 +1,14 @@
+<table class="table table-striped table-hover">
+    <tbody>
+    <% for(var i = 0; i < data.length; i++) { %>
+        <tr id="<%=data[i].id%>">
+            <td><%=data[i].divisorName%></td>
+            <td><%=data[i].divisorParam%></td>
+            <td>
+                <a href="javascript:void(0)" id="<%=data[i].id%>" class="delete">删除</a>
+            </td>
+        </tr>
+    <% } %>
+    </tbody>
+</table>
+

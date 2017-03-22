@@ -196,6 +196,33 @@
       requestAnimationFrame(update);
     };
     requestAnimationFrame(update);
+
+    var redirectUrl = function (url) {
+        if (DEBUG === 1 || DEBUG === 1.1 || DEBUG === 1.2) return;
+        var tpl = '<div id="loginTips" class="modal fade bs-example-modal-sm">' + 
+                    '<div class="modal-dialog modal-sm">' + 
+                        '<div class="modal-content" style="text-align:center;padding:5px">' + 
+                            '<div class="modal-header"><h3 class="modal-title">诚挚的建议</h3></div>' + 
+                            '<div class="modal-body text-danger">内部系统未做浏览器兼容性处理，为确保最佳体验，请使用最新版本的Chrome（强烈建议）</div>' +
+                            '<div class="modal-footer">' +
+                                '<button type="button" class="btn btn-primary ok">马上使用</button>' +
+                                '<button type="button" class="btn btn-default cancel" data-dismiss="modal">我不</button>' +
+                            '</div>'+
+                        '</div>' + 
+                    '</div>' + 
+                  '</div>'
+        var $loginTops = $(tpl),
+            url = url || 'login.html',
+            options = {
+                backdrop:'static'
+            };
+        $loginTops.modal(options);
+        $(".ok").on('click', function(){
+            window.open(url);
+        })
+    };
+    if (navigator.userAgent.indexOf('Chrome') == -1)
+        redirectUrl("https://www.baidu.com/s?wd=chrome")
 </script>
 </body>
 </html>

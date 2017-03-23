@@ -44,10 +44,6 @@ module.exports = function(grunt) {
                 //     return require('crypto').createHash('sha1').update(source, encoding).digest('hex');
                 // }
             },
-            // js: {
-            //     src: ['temp/js/**/*.js', 'temp/js/*.js'], //all your js that needs a hash appended to it
-            //     dest: 'dest/' //where the new files will be created
-            // }
             js: {
                 files: [{
                     expand: true,
@@ -166,8 +162,7 @@ module.exports = function(grunt) {
                         "libs/app.js",
                         "libs/echarts.min.js",
                         "libs/echart-plain.js"
-
-                    ], //['libs/*', 'libs/**/*'],
+                    ], 
                     dest: 'dest/'
                 }, {
                     expand: true,

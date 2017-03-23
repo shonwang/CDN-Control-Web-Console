@@ -15,10 +15,10 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     data: {}
                 }));
 
-                this.collection.off('get.topo.OriginInfo.success');
-                this.collection.off('get.topo.OriginInfo.error');
-                this.collection.on('get.topo.OriginInfo.success', $.proxy(this.onOriginInfo, this));
-                this.collection.on('get.topo.OriginInfo.error', $.proxy(this.onGetError, this));
+                this.collection.off('get.strategyInfoById.success');
+                this.collection.off('get.strategyInfoById.error');
+                this.collection.on('get.strategyInfoById.success', $.proxy(this.onStrategyInfo, this));
+                this.collection.on('get.strategyInfoById.error', $.proxy(this.onGetError, this));
 
                 this.collection.off('add.strategy.success');
                 this.collection.off('add.strategy.error');
@@ -31,7 +31,9 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 // this.collection.on('modify.topo.error', $.proxy(this.modifyTopoError, this));
 
                 if (this.isEdit) {
-                    this.collection.getStrategyInfoById(this.model.get('id'));
+                    this.collection.getStrategyInfoById({
+                        id: this.model.get('id')
+                    });
                 } else {
                     this.defaultParam = {
                         "id": null,
@@ -56,30 +58,20 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 alert('修改成功');
             },
 
-            onOriginInfo: function(res) {
-                var allNodes = [],
-                    upperNodes = [];
-
-                _.each(res.allNodes, function(el) {
-                    allNodes.push(el.id);
-                }.bind(this));
-                _.each(res.upperNodes, function(el) {
-                    upperNodes.push(el.id);
-                });
-
+            onStrategyInfo: function(res) {
                 this.defaultParam = {
                     "id": res.id,
                     "name": res.name,
-                    "allNodes": allNodes,
-                    "upperNodes": upperNodes,
+                    "remark": res.remark,
                     "rule": res.rule,
                     "type": res.type
                 }
 
                 this.$el.find("#input-name").val(res.name);
                 this.$el.find("#input-name").attr("readonly", "true");
+                this.$el.find("#secondary").val(res.remark);
 
-                console.log("编辑的拓扑: ", this.defaultParam)
+                console.log("编辑的分层策略: ", this.defaultParam)
                 this.initSetup();
             },
 
@@ -174,7 +166,8 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 postTopo.id = this.defaultParam.id;
                 postTopo.name = this.defaultParam.name;
                 postTopo.type = this.defaultParam.type;
-                postTopo.rule = postRules
+                postTopo.rule = postRules;
+                postTopo.remark = this.$el.find("#secondary").val();
 
                 if (this.isEdit)
                     this.collection.topoModify(postTopo);
@@ -350,7 +343,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     }.bind(this))
             },
 
-            onClickItemDelete: function() {
+            onClickItemDelete: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
                 this.defaultParam.rule = _.filter(this.defaultParam.rule, function(obj) {
@@ -408,20 +401,15 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 //获取所有的拓扑关系信息
                 this.collection.on("get.strategyList.success", $.proxy(this.onGetStrategySuccess, this));
                 this.collection.on("get.strategyList.error", $.proxy(this.onGetError, this));
+                this.collection.on("delete.strategyList.success", $.proxy(this.resetList, this));
+                this.collection.on("delete.strategyList.error", $.proxy(this.onGetError, this));
                 //获取应用类型
                 this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
                 this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
 
                 // if (AUTH_OBJ.QueryTopos) {
-                this.$el.find(".opt-ctn .query").on("click", function() {
-                    this.curPage = 1;
-                    this.onClickQueryButton();
-                }.bind(this));
-
-                this.on('enterKeyBindQuery', function() {
-                    this.curPage = 1;
-                    this.onClickQueryButton();
-                }.bind(this));
+                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.resetList, this));
+                this.on('enterKeyBindQuery', $.proxy(this.resetList, this));
 
                 this.enterKeyBindQuery();
                 // } else {
@@ -439,6 +427,11 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     "size": 10
                 }
                 this.collection.getDeviceTypeList();
+                this.onClickQueryButton();
+            },
+
+            resetList: function(){
+                this.curPage = 1;
                 this.onClickQueryButton();
             },
 
@@ -488,6 +481,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 //     this.table.find("tbody .edit").remove();
 
                 this.table.find("tbody .view").on("click", $.proxy(this.onClickItemView, this));
+                this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
 
                 this.table.find("[data-toggle='popover']").popover();
             },
@@ -496,15 +490,14 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.off('enterKeyBindQuery');
                 var myAddEditLayerView = new AddEditLayerView({
                     collection: this.collection,
-                    WhetherSaveSuccess: this.WhetherSaveSuccess,
                     onSaveCallback: function() {
-                        this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
+                        this.on('enterKeyBindQuery', $.proxy(this.resetList, this));
                         myAddEditLayerView.$el.remove();
                         this.$el.find(".list-panel").show();
                         this.onClickQueryButton();
                     }.bind(this),
                     onCancelCallback: function() {
-                        this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
+                        this.on('enterKeyBindQuery', $.proxy(this.resetList, this));
                         myAddEditLayerView.$el.remove();
                         this.$el.find(".list-panel").show();
                     }.bind(this)
@@ -512,6 +505,19 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
 
                 this.$el.find(".list-panel").hide();
                 myAddEditLayerView.render(this.$el.find(".edit-panel"))
+            },
+
+            onClickItemDelete: function(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+
+                this.collection.deleteStrategy({id : id})
             },
 
             onClickItemEdit: function(event) {

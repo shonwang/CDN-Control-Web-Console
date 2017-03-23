@@ -3,11 +3,15 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
         var Model = Backbone.Model.extend({
             initialize: function() {
                 var createTime = this.get('createTime'),
+                    type = this.get('type'),
                     updateTime = this.get('updateTime');
 
                 createTime = this.set("createTimeStr", new Date(createTime).format("yyyy/MM/dd hh:mm"));
                 updateTime = this.set("updateTimeStr", new Date(updateTime).format("yyyy/MM/dd hh:mm"));
-                //this.set('checked',false);
+                if (type === 200) this.set("typeName", 'LVS');
+                if (type === 201) this.set("typeName", 'Relay');
+                if (type === 202) this.set("typeName", 'Cache');
+                if (type === 203) this.set("typeName", 'Live');
             }
         });
 
@@ -28,7 +32,7 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
                             this.total = res.total;
                             this.trigger("get.strategyList.success");
                         } else {
-                            this.trigger("get.strategyList.error");
+                            this.trigger("get.strategyList.error", res);
                         }
                     }.bind(this),
                     errorCallback = function(response) {
@@ -41,13 +45,13 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
                 var url = BASE_URL + "/resource/special/getStrategyInfo",
                     successCallback = function(res) {
                         if (res) {
-                            this.trigger("get.devicetype.success", res);
+                            this.trigger("get.strategyInfoById.success", res);
                         } else {
-                            this.trigger("get.devicetype.error");
+                            this.trigger("get.strategyInfoById.error");
                         }
                     }.bind(this),
                     errorCallback = function(response) {
-                        this.trigger('get.devicetype.error');
+                        this.trigger('get.strategyInfoById.error');
                     }.bind(this);
                 Utility.getAjax(url, args, successCallback, errorCallback);
             },
@@ -58,9 +62,20 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
                         this.trigger("add.strategy.success", res);
                     }.bind(this),
                     errorCallback = function(response) {
-                        this.trigger('add.strategy.error');
+                        this.trigger('add.strategy.error', response);
                     }.bind(this);
                 Utility.postAjax(url, args, successCallback, errorCallback);
+            },
+
+            deleteStrategy: function(args) {
+                var url = BASE_URL + "/resource/special/deleteStrategy",
+                    successCallback = function(res) {
+                        this.trigger("delete.strategy.success", res);
+                    }.bind(this),
+                    errorCallback = function(response) {
+                        this.trigger('delete.strategy.error', response);
+                    }.bind(this);
+                Utility.getAjax(url, args, successCallback, errorCallback);
             },
         });
 

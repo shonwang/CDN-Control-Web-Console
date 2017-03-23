@@ -65,7 +65,7 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
                     this.defaultParam.refererType = data.type
                 if (data.forgeReferer !== null && data.forgeReferer !== undefined)
                     this.defaultParam.forgeReferer = data.forgeReferer
-                this.defaultParam.domains = data.domains || "";
+                this.defaultParam.domains = data.domains.split(',').join('\n') || "";
                 if (data.nullReferer !== null && data.nullReferer !== undefined)
                     this.defaultParam.nullReferer = data.nullReferer
                 this.defaultParam.regexps = data.regexps;
@@ -294,10 +294,10 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
 
             var domains = '', regexps;
             if (this.defaultParam.refererType === 1) {
-                domains = _.uniq(this.$el.find("#white-domain").val().split(',')).join(',')
+                domains = _.uniq(this.$el.find("#white-domain").val().split('\n')).join(',')
                 regexps = this.$el.find("#white-re").val()
             } else {
-                domains = _.uniq(this.$el.find("#black-domain").val().split(',')).join(',')
+                domains = _.uniq(this.$el.find("#black-domain").val().split('\n')).join(',')
                 regexps = this.$el.find("#black-re").val()
             }
 

@@ -65,7 +65,8 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
                     this.defaultParam.refererType = data.type
                 if (data.forgeReferer !== null && data.forgeReferer !== undefined)
                     this.defaultParam.forgeReferer = data.forgeReferer
-                this.defaultParam.domains = data.domains.split(',').join('\n') || "";
+                this.defaultParam.domains = data.domains || "";
+                this.defaultParam.domains = this.defaultParam.domains.split(",").join("\n");
                 if (data.nullReferer !== null && data.nullReferer !== undefined)
                     this.defaultParam.nullReferer = data.nullReferer
                 this.defaultParam.regexps = data.regexps;

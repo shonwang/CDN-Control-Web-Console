@@ -19,11 +19,11 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection.off('get.topo.OriginInfo.error');
                 this.collection.on('get.topo.OriginInfo.success', $.proxy(this.onOriginInfo, this));
                 this.collection.on('get.topo.OriginInfo.error', $.proxy(this.onGetError, this));
-                // //添加拓扑关系
-                // this.collection.off('add.topo.success');
-                // this.collection.off('add.topo.error');
-                // this.collection.on('add.topo.success', $.proxy(this.addTopoSuccess, this));
-                // this.collection.on('add.topo.error', $.proxy(this.addTopoError, this));
+
+                this.collection.off('add.strategy.success');
+                this.collection.off('add.strategy.error');
+                this.collection.on('add.strategy.success', $.proxy(this.addStrategySuccess, this));
+                this.collection.on('add.strategy.error', $.proxy(this.onGetError, this));
                 // //修改拓扑关系
                 // this.collection.off('modify.topo.success');
                 // this.collection.off('modify.topo.error');
@@ -31,14 +31,13 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 // this.collection.on('modify.topo.error', $.proxy(this.modifyTopoError, this));
 
                 if (this.isEdit) {
-                    this.collection.getTopoOrigininfo(this.model.get('id'));
+                    this.collection.getStrategyInfoById(this.model.get('id'));
                 } else {
                     this.defaultParam = {
                         "id": null,
                         "name": "",
                         "type": null,
-                        "allNodes": [],
-                        "upperNodes": [],
+                        'remark': null,
                         "rule": []
                     }
                     this.initSetup();
@@ -47,28 +46,14 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.$el.find('.view-less').hide();
             },
 
-            addTopoSuccess: function() {
+            addStrategySuccess: function() {
                 alert('保存成功');
                 this.options.onSaveCallback && this.options.onSaveCallback();
             },
 
-            addTopoError: function(error) {
-                if (error && error.message)
-                    alert(error.message);
-                else
-                    alert("网络阻塞，请刷新重试！");
-            },
-
-            modifyTopoSuccess: function() {
+            modifyStrategySuccess: function() {
                 this.options.onSaveCallback && this.options.onSaveCallback();
                 alert('修改成功');
-            },
-
-            modifyTopoError: function(error) {
-                if (error && error.message)
-                    alert(error.message);
-                else
-                    alert("网络阻塞，请刷新重试！");
             },
 
             onOriginInfo: function(res) {
@@ -149,23 +134,17 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             onClickSaveButton: function() {
                 this.defaultParam.name = $.trim(this.$el.find("#input-name").val());
                 if (this.defaultParam.name == '') {
-                    alert('请输入拓扑关系名称');
+                    alert('请输入名称');
                     return;
                 } else if (this.defaultParam.type == null) {
                     alert('请选择设备类型');
-                    return;
-                } else if (this.defaultParam.allNodes.length == 0) {
-                    alert('请选择加入拓扑关系的节点');
-                    return;
-                } else if (this.defaultParam.upperNodes.length == 0) {
-                    alert('请选择拓扑关系的上层节点');
                     return;
                 } else if (this.defaultParam.rule.length == 0) {
                     alert('请添加规则');
                     return;
                 }
 
-                console.log("点击保存按钮时的拓扑", this.defaultParam)
+                console.log("点击保存按钮时的分层策略", this.defaultParam)
 
                 var postRules = [],
                     postTopo = {};
@@ -192,17 +171,15 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     postRules.push(tempRule);
                 }.bind(this))
 
-                postTopo.allNodes = this.defaultParam.allNodes;
                 postTopo.id = this.defaultParam.id;
                 postTopo.name = this.defaultParam.name;
                 postTopo.type = this.defaultParam.type;
-                postTopo.upperNodes = this.defaultParam.upperNodes;
                 postTopo.rule = postRules
 
                 if (this.isEdit)
                     this.collection.topoModify(postTopo);
                 else
-                    this.collection.topoAdd(postTopo);
+                    this.collection.addStrategy(postTopo);
                 this.options.onSaveCallback && this.options.onSaveCallback();
             },
 
@@ -429,8 +406,8 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.$el = $(_.template(template['tpl/specialLayerManage/specialLayerManage.html'])());
 
                 //获取所有的拓扑关系信息
-                this.collection.on("get.topoInfo.success", $.proxy(this.onGetStrategySuccess, this));
-                this.collection.on("get.topoInfo.error", $.proxy(this.onGetError, this));
+                this.collection.on("get.strategyList.success", $.proxy(this.onGetStrategySuccess, this));
+                this.collection.on("get.strategyList.error", $.proxy(this.onGetError, this));
                 //获取应用类型
                 this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
                 this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
@@ -492,7 +469,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 if (this.queryArgs.name == "") this.queryArgs.name = null;
                 this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                 this.$el.find(".pagination").html("");
-                this.collection.getTopoinfo(this.queryArgs);
+                this.collection.getStrategyList(this.queryArgs);
             },
 
             initTable: function() {
@@ -610,7 +587,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             var args = _.extend(this.queryArgs);
                             args.page = num;
                             args.count = this.queryArgs.size;
-                            this.collection.getTopoinfo(args);
+                            this.collection.getStrategyList(args);
                             this.curPage = num
                         }
                     }.bind(this)

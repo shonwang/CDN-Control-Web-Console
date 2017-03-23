@@ -24,11 +24,11 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection.off('add.strategy.error');
                 this.collection.on('add.strategy.success', $.proxy(this.addStrategySuccess, this));
                 this.collection.on('add.strategy.error', $.proxy(this.onGetError, this));
-                // //修改拓扑关系
-                // this.collection.off('modify.topo.success');
-                // this.collection.off('modify.topo.error');
-                // this.collection.on('modify.topo.success', $.proxy(this.modifyTopoSuccess, this));
-                // this.collection.on('modify.topo.error', $.proxy(this.modifyTopoError, this));
+
+                this.collection.off('modify.strategy.success');
+                this.collection.off('modify.strategy.error');
+                this.collection.on('modify.strategy.success', $.proxy(this.modifyStrategySuccess, this));
+                this.collection.on('modify.strategy.error', $.proxy(this.onGetError, this));
 
                 if (this.isEdit) {
                     this.collection.getStrategyInfoById({
@@ -170,10 +170,9 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 postTopo.remark = this.$el.find("#secondary").val();
 
                 if (this.isEdit)
-                    this.collection.topoModify(postTopo);
+                    this.collection.modifyStrategy(postTopo);
                 else
                     this.collection.addStrategy(postTopo);
-                this.options.onSaveCallback && this.options.onSaveCallback();
             },
 
             onClickCancelButton: function() {
@@ -401,8 +400,8 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 //获取所有的拓扑关系信息
                 this.collection.on("get.strategyList.success", $.proxy(this.onGetStrategySuccess, this));
                 this.collection.on("get.strategyList.error", $.proxy(this.onGetError, this));
-                this.collection.on("delete.strategyList.success", $.proxy(this.resetList, this));
-                this.collection.on("delete.strategyList.error", $.proxy(this.onGetError, this));
+                this.collection.on("delete.strategy.success", $.proxy(this.resetList, this));
+                this.collection.on("delete.strategy.error", $.proxy(this.onGetError, this));
                 //获取应用类型
                 this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
                 this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
@@ -430,7 +429,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.onClickQueryButton();
             },
 
-            resetList: function(){
+            resetList: function() {
                 this.curPage = 1;
                 this.onClickQueryButton();
             },
@@ -517,7 +516,9 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     id = $(eventTarget).attr("id");
                 }
 
-                this.collection.deleteStrategy({id : id})
+                this.collection.deleteStrategy({
+                    id: id
+                })
             },
 
             onClickItemEdit: function(event) {

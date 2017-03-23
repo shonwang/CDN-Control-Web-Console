@@ -22,12 +22,12 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 this.collection.off('add.topo.success');
                 this.collection.off('add.topo.error');
                 this.collection.on('add.topo.success', $.proxy(this.addTopoSuccess, this));
-                this.collection.on('add.topo.error', $.proxy(this.addTopoError, this));
+                this.collection.on('add.topo.error', $.proxy(this.onGetError, this));
                 //修改拓扑关系
                 this.collection.off('modify.topo.success');
                 this.collection.off('modify.topo.error');
                 this.collection.on('modify.topo.success', $.proxy(this.modifyTopoSuccess, this));
-                this.collection.on('modify.topo.error', $.proxy(this.modifyTopoError, this));
+                this.collection.on('modify.topo.error', $.proxy(this.onGetError, this));
 
                 if (this.isEdit) {
                     this.collection.getTopoOrigininfo(this.model.get('id'));
@@ -49,23 +49,9 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 this.options.onSaveCallback && this.options.onSaveCallback();
             },
 
-            addTopoError: function(error) {
-                if (error && error.message)
-                    alert(error.message);
-                else
-                    alert("网络阻塞，请刷新重试！");
-            },
-
             modifyTopoSuccess: function() {
                 this.options.onSaveCallback && this.options.onSaveCallback();
                 alert('修改成功');
-            },
-
-            modifyTopoError: function(error) {
-                if (error && error.message)
-                    alert(error.message);
-                else
-                    alert("网络阻塞，请刷新重试！");
             },
 
             onOriginInfo: function(res) {
@@ -189,7 +175,6 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     this.collection.topoModify(postTopo);
                 else
                     this.collection.topoAdd(postTopo);
-                this.options.onSaveCallback && this.options.onSaveCallback();
             },
 
             onClickCancelButton: function() {

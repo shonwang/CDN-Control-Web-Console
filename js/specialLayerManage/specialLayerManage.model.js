@@ -67,6 +67,17 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
                 Utility.postAjax(url, args, successCallback, errorCallback);
             },
 
+            modifyStrategy: function(args) {
+                var url = BASE_URL + "/resource/special/modifyStrategy",
+                    successCallback = function(res) {
+                        this.trigger("modify.strategy.success", res);
+                    }.bind(this),
+                    errorCallback = function(response) {
+                        this.trigger('modify.strategy.error', response);
+                    }.bind(this);
+                Utility.postAjax(url, args, successCallback, errorCallback);
+            },
+
             deleteStrategy: function(args) {
                 var url = BASE_URL + "/resource/special/deleteStrategy",
                     successCallback = function(res) {

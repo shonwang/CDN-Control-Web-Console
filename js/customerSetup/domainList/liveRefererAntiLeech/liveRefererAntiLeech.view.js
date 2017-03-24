@@ -236,7 +236,10 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
                 }
                 for (var i = 0; i < domains.length; i++){
                     if (!Utility.isAntileechDomain(domains[i])){
-                        error = {message: "第" + (i + 1) + "个域名输错了！"};
+                        if (domains[i] === '')
+                            error = {message: "第" + i + "个域名后面换行了，请继续输入域名，否则请取消换行!"}
+                        else
+                            error = {message: "第" + (i + 1) + "个域名输错了！"};
                         alert(error.message)
                         return false;
                     }
@@ -257,7 +260,7 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
             var blackRe = this.$el.find("#black-re").val();
             var whiteRe = this.$el.find("#white-re").val();
 
-            if (this.defaultParam.refererType === 1 && (whiteDomain === "")&& (whiteRe === "")){
+            if (this.defaultParam.refererType === 1 && (whiteDomain === "") && (whiteRe === "")){
                 alert("请输入合法域名！")
                 return false;
             } else if (this.defaultParam.refererType === 2 && (balckDomain === "") && (blackRe === "")){
@@ -278,18 +281,19 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
                     return false;
                 }
             }
-            var result = true;
+            var result = false;
             if (this.defaultParam.refererType === 1){
-                result = this.onBlurDomainInput({target: this.$el.find("#white-domain").get(0)}) || whiteRe!="";
+                result = this.onBlurDomainInput({target: this.$el.find("#white-domain").get(0)});
             } else if (this.defaultParam.refererType === 2) {
-                result = this.onBlurDomainInput({target: this.$el.find("#black-domain").get(0)}) || blackRe!="";
+                result = this.onBlurDomainInput({target: this.$el.find("#black-domain").get(0)});
             }
             return result;
         },
 
         onSure: function(){
+            var result;
             if (this.defaultParam.isOpenSetup) {
-                var result = this.checkEverything();
+                result = this.checkEverything();
                 if (!result) return false;
             }
 

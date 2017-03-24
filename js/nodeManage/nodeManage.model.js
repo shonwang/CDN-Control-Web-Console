@@ -12,6 +12,9 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
 
             if (chargingType === 1) this.set("chargingTypeName", '95峰值');
             if (chargingType === 0) this.set("chargingTypeName", '免费');
+            if (chargingType === 2) this.set("chargingTypeName", '包端口');
+            if (chargingType === 3) this.set("chargingTypeName", '峰值');
+            if (chargingType === 4) this.set("chargingTypeName", '第三峰');
 
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
             if (startChargingTime) this.set("startChargingTimeFormated", new Date(startChargingTime).format("yyyy/MM/dd hh:mm"));

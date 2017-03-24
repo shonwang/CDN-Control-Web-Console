@@ -1,4 +1,4 @@
-define("setupSendDetail.model", ['require','exports', 'utility'], function(require, exports, Utility) {
+define("setupSending.detail.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
             var status  = this.get("status");

@@ -300,10 +300,10 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
             var domains = '', regexps;
             if (this.defaultParam.refererType === 1) {
                 domains = _.uniq(this.$el.find("#white-domain").val().split('\n')).join(',')
-                regexps = this.$el.find("#white-re").val()
+                regexps = this.$el.find("#white-re").val().split('\n').join(',')
             } else {
                 domains = _.uniq(this.$el.find("#black-domain").val().split('\n')).join(',')
-                regexps = this.$el.find("#black-re").val()
+                regexps = this.$el.find("#black-re").val().split('\n').join(',')
             }
 
             var postParam = {

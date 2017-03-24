@@ -193,6 +193,22 @@ requirejs.config({
 requirejs(['routes'], function(routes) {
     Backbone.history.start();
 });
-// requirejs.onError = function (err) {
-//     alert('模块: ' + err.requireModules + "拉取失败！请检查您的网络，清除浏览器缓存后重试！")
-// };
+requirejs.onError = function () {
+    console.log(arguments)
+    var errorPopup = $('#big-main-error').get(0);
+    if (errorPopup) return;
+    var message = "<br>请清空缓存后刷新重试！";
+    var tpl = '<div id="big-main-error" class="modal">' + 
+                '<div class="modal-dialog">' + 
+                    '<div class="modal-content">' + 
+                        '<div class="modal-header"><h3 class="modal-title text-danger text-center">Oh snap! You got an error!</h3></div>' + 
+                        '<div class="modal-body"><div class="alert alert-danger">'+ arguments[0].stack + message + '</div></div>' + 
+                    '</div>' + 
+                '</div>' + 
+              '</div>'
+    var $errorPopup = $(tpl),
+        options = {
+            backdrop:'static'
+        };
+    $errorPopup.modal(options);
+};

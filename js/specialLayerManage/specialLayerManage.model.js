@@ -42,7 +42,7 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
             },
 
             getStrategyInfoById: function(args) {
-                var url = BASE_URL + "/resource/special/getStrategyInfo",
+                var url = BASE_URL + "/resource/special/getStrategyConsoleInfo",
                     successCallback = function(res) {
                         if (res) {
                             this.trigger("get.strategyInfoById.success", res);

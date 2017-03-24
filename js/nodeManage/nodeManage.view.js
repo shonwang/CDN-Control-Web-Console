@@ -367,9 +367,9 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
 
         initDropList: function(list){
             var nameList = [
-                {name: "95峰值", value: 1}
-                {name: "包端口", value: 2}
-                {name: "峰值", value: 3}
+                {name: "95峰值", value: 1},
+                {name: "包端口", value: 2},
+                {name: "峰值", value: 3},
                 {name: "第三峰", value: 4}
                 // {name: "免费", value: 0}
             ];

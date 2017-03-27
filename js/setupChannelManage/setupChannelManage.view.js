@@ -139,14 +139,33 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     this.$el.find('.save').attr('disabled', 'disabled');
                     this.$el.find('.save').off("click");
                 }
-                //获取特殊规则的id
+                获取特殊规则的id
                 this.collection.off('getTopologyRule.success');
                 this.collection.off('getTopologyRule.error');
                 this.collection.on('getTopologyRule.success', $.proxy(this.getTopologyRuleSuccess, this));
                 this.collection.on('getTopologyRule.error', $.proxy(this.getTopologyRuleError, this));
                 this.collection.getTopologyRule(this.model.get('id'));
 
+
                 this.getTopoAppNameForShow();
+            },
+
+            onGetSpecialLayerInfo: function(){
+                var layerArray = []
+                this.mySetupTopoManageModel.each(function(el, index, lst) {
+                    layerArray.push({
+                        name: el.get('name'),
+                        value: el.get('id')
+                    })
+                }.bind(this))
+
+                rootNode = this.$el.find(".dropdown-layer");
+                Utility.initDropMenu(rootNode, layerArray, function(value) {
+                    if (value == "All")
+                        this.queryArgs.topologyId = null;
+                    else
+                        this.queryArgs.topologyId = parseInt(value)
+                }.bind(this));
             },
 
             // getTopologyRule -> initRuleTable
@@ -158,6 +177,18 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection.on('get.rule.origin.error', $.proxy(this.onGetError, this));
                 this.collection.getRuleOrigin(res);
                 this.notEditId = res;
+
+                require(["specialLayerManage.model"], function(SpecialLayerManageModel) {
+                    this.mySpecialLayerManageModel = new SpecialLayerManageModel();
+                    this.mySpecialLayerManageModel.on("get.strategyList.success", $.proxy(this.onGetSpecialLayerInfo, this));
+                    this.mySpecialLayerManageModel.on("get.strategyList.error", $.proxy(this.onGetError, this));
+                    this.mySpecialLayerManageModel.getStrategyList({
+                        name: null,
+                        page: 1,
+                        size: 99999,
+                        type: null
+                    });
+                }.bind(this))
             },
 
             getTopologyRuleError: function(error) {
@@ -493,11 +524,11 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
                 this.$el.find("#input-layer").on('keyup', $.proxy(this.onKeyupLayerInput, this));
 
-                require(["setupTopoManage.model"], function(SetupTopoManageModel) {
-                    this.mySetupTopoManageModel = new SetupTopoManageModel();
-                    this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.initTable, this));
-                    this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this));
-                    this.mySetupTopoManageModel.getTopoinfo({
+                require(["specialLayerManage.model"], function(SpecialLayerManageModel) {
+                    this.mySpecialLayerManageModel = new SpecialLayerManageModel();
+                    this.mySpecialLayerManageModel.on("get.strategyList.success", $.proxy(this.initTable, this));
+                    this.mySpecialLayerManageModel.on("get.strategyList.error", $.proxy(this.onGetError, this));
+                    this.mySpecialLayerManageModel.getStrategyList({
                         name: null,
                         page: 1,
                         size: 99999,
@@ -517,10 +548,10 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             onKeyupLayerInput: function() {
-                if (!this.mySetupTopoManageModel.models || this.mySetupTopoManageModel.models.length === 0) return;
+                if (!this.mySpecialLayerManageModel.models || this.mySpecialLayerManageModel.models.length === 0) return;
                 var keyWord = this.$el.find("#input-layer").val();
 
-                _.each(this.mySetupTopoManageModel.models, function(model, index, list) {
+                _.each(this.mySpecialLayerManageModel.models, function(model, index, list) {
                     if (keyWord === "") {
                         model.set("notDisplay", false);
                     } else {
@@ -535,9 +566,9 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
             initTable: function() {
                 this.table = $(_.template(template['tpl/specialLayerManage/specialLayerManage.radio.table.html'])({
-                    data: this.mySetupTopoManageModel.models,
+                    data: this.mySpecialLayerManageModel.models,
                 }));
-                if (this.mySetupTopoManageModel.models.length !== 0)
+                if (this.mySpecialLayerManageModel.models.length !== 0)
                     this.$el.find(".table-ctn").html(this.table[0]);
                 else
                     this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
@@ -550,6 +581,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     return false;
                 }
                 var topoId = selectedTopo.get(0).id,
+                    topologyName = selectedTopo.siblings('span').html(),
                     domainIdArray = [];
 
                 _.each(this.domainArray, function(el, index, ls) {
@@ -557,7 +589,8 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 }.bind(this))
 
                 var postParam = {
-                    topologyId: topoId,
+                    ruleId: topoId,
+                    ruleName: topologyName,
                     originIdList: domainIdArray
                 };
 
@@ -593,7 +626,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 this.initDomainList();
                 require(["setupTopoManage.model"], function(SetupTopoManageModel) {
                     this.mySetupTopoManageModel = new SetupTopoManageModel();
-                    this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.initTable, this));
+                    this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.onGetTopoInfo, this));
                     this.mySetupTopoManageModel.on("get.topoInfo.error", $.proxy(this.onGetError, this));
                     this.mySetupTopoManageModel.getTopoinfo({
                         name: null,
@@ -602,7 +635,10 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                         type: null
                     });
                 }.bind(this))
+            },
 
+            onGetTopoInfo: function(){
+                this.initTopoTable()
                 this.$el.find(".layer-toggle .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
                 var mySelectLayerView = new SelectLayerView({
                     collection: this.collection,
@@ -633,7 +669,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     this.$el.find(".domain-ctn").html(_.template(template['tpl/empty.html'])());
             },
 
-            initTable: function() {
+            initTopoTable: function() {
                 this.table = $(_.template(template['tpl/setupSendManage/setupSendWaitSend/setupSendWaitSend.sendStrategy.table.html'])({
                     data: this.mySetupTopoManageModel.models,
                 }));
@@ -868,11 +904,11 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     onOKCallback: function() {
                         var result = mySelectLayerView.onSure();
                         if (!result) return;
-                        this.collection.off("add.channel.topology.success");
-                        this.collection.off("add.channel.topology.error");
-                        this.collection.on("add.channel.topology.success", $.proxy(this.onAddChannelTopologySuccess, this));
-                        this.collection.on("add.channel.topology.error", $.proxy(this.onGetError, this));
-                        this.collection.addTopologyList(result)
+                        this.collection.off("set.layerStrategy.success");
+                        this.collection.off("set.layerStrategy.error");
+                        this.collection.on("set.layerStrategy.success", $.proxy(this.onAddChannelTopologySuccess, this));
+                        this.collection.on("set.layerStrategy.error", $.proxy(this.onGetError, this));
+                        this.collection.addTopologyRuleList(result)
                         this.selectLayerPopup.$el.modal("hide");
                         this.showDisablePopup("服务器正在努力处理中...")
                     }.bind(this),

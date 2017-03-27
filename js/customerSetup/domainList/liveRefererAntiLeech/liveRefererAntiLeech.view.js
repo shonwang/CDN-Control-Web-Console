@@ -282,10 +282,12 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
                 }
             }
             var result = false;
-            if (this.defaultParam.refererType === 1){
+            if (this.defaultParam.refererType === 1 && whiteDomain !== ""){
                 result = this.onBlurDomainInput({target: this.$el.find("#white-domain").get(0)});
-            } else if (this.defaultParam.refererType === 2) {
+            } else if (this.defaultParam.refererType === 2 && balckDomain !== "") {
                 result = this.onBlurDomainInput({target: this.$el.find("#black-domain").get(0)});
+            } else {
+                result = true;
             }
             return result;
         },

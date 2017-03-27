@@ -644,12 +644,13 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             onSure: function() {
-                var selectedTopo = this.$el.find("input:checked");
+                var selectedTopo = this.$el.find(".topo input:checked");
                 if (!selectedTopo.get(0)) {
                     alert("请选择一个拓扑关系")
                     return false;
                 }
                 var topoId = selectedTopo.get(0).id,
+                    topologyName = selectedTopo.siblings('span').html(),
                     domainIdArray = [];
 
                 _.each(this.domainArray, function(el, index, ls) {
@@ -658,8 +659,23 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
                 var postParam = {
                     topologyId: topoId,
-                    originIdList: domainIdArray
+                    originIdList: domainIdArray,
+                    topologyName: topologyName
                 };
+
+                var isOpenLayer = this.$el.find(".layer-toggle .togglebutton input").get(0).checked;
+
+                if (isOpenLayer) {
+                    var selectedLayer = this.$el.find(".layer input:checked");
+                    if (!selectedLayer.get(0)) {
+                        alert("请选择一个分层策略")
+                        return false;
+                    }
+                    var layerId = selectedLayer.get(0).id;
+                    var layerName = selectedLayer.siblings('span').html();
+                    postParam.topologyRuleId = layerId;
+                    postParam.ruleName = layerName;
+                }
 
                 return postParam
             },

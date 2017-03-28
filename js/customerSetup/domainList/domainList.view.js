@@ -171,18 +171,18 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
                        (this.curType === 2 && this.curProtocol === 3)) {
                 window.location.hash = '#/domainList/' + this.args + "/liveBasicInformation/" + this.args2
             } else {
-                alert(`type=1 protocol=0,4 下载<br>type=2 protocol=2 伪直播<br>type=2 protocol= 1,3真直播<br>
-                    当前返回的type为` + this.curType + "，protocol为" + this.curProtocol);
+                alert('type=1 protocol=0,4 下载<br>type=2 protocol=2 伪直播<br>type=2 protocol= 1,3真直播<br>' + 
+                    '当前返回的type为' + this.curType + "，protocol为" + this.curProtocol);
             }
         },
 
         alertChangeType: function(id){
             if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
 
-            var message = `<div class="alert alert-danger">
-                                <strong>重要提示: </strong><br>
-                                使用中控对域名进行编辑管理后，该域名在控制台或使用OpenAPI进行修改下发配置
-                           </div>`;
+            var message = '<div class="alert alert-danger">' +
+                                '<strong>重要提示: </strong><br>' +
+                                '使用中控对域名进行编辑管理后，该域名在控制台或使用OpenAPI进行修改下发配置' +
+                           '</div>';
             var options = {
                 title: "警告",
                 body : message,

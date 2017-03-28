@@ -48,15 +48,15 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
 
             _.each(this.refererAntiLeechInfo, function(el, index, ls){
                 if (!el.openFlag){
-                    this.refererAntiLeechTable = $(`<table class="table table-striped table-hover">
-                                                        <caption>访问控制</caption>
-                                                        <tbody>
-                                                            <tr>
-                                                              <td>referer防盗链</td>
-                                                              <td><span class="label label-danger">关闭</span></td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>`)
+                    this.refererAntiLeechTable = $('<table class="table table-striped table-hover">' + 
+                                                        '<caption>访问控制</caption>' + 
+                                                        '<tbody>' + 
+                                                            '<tr>' + 
+                                                              '<td>referer防盗链</td>' + 
+                                                              '<td><span class="label label-danger">关闭</span></td>' + 
+                                                            '</tr>' + 
+                                                        '</tbody>' + 
+                                                    '</table>')
                 } else {
                     el.openFlagStr = '<span class="label label-success">开启</span>';
                     if (el.type === 1) el.typeStr = '白名单';
@@ -107,14 +107,14 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
 
             _.each(this.timestampInfo, function(el, index, ls){
                 if (!el.openFlag){
-                    this.timestampTable = $(`<table class="table table-striped table-hover">
-                                                        <tbody>
-                                                            <tr>
-                                                              <td>时间戳+共享秘钥防盗链</td>
-                                                              <td><span class="label label-danger">关闭</span></td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>`)
+                    this.timestampTable = $('<table class="table table-striped table-hover">' + 
+                                                        '<tbody>' + 
+                                                            '<tr>' + 
+                                                              '<td>时间戳+共享秘钥防盗链</td>' + 
+                                                              '<td><span class="label label-danger">关闭</span></td>' + 
+                                                            '</tr>' + 
+                                                        '</tbody>' + 
+                                                    '</table>')
                 } else {
                     el.openFlagStr = '<span class="label label-success">开启</span>';
 

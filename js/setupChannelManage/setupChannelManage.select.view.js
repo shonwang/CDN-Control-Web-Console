@@ -190,7 +190,7 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
 
                 var postParam = {
                     topologyId: topoId,
-                    originIdList: domainIdArray
+                    originIdList: domainIdArray,
                     topologyName: topologyName
                 };
 

@@ -22,7 +22,6 @@
     <div class="count-particles">
       <span class="js-count-particles">109</span> particles
     </div>
-
     <!-- particles.js container -->
     <div id="particles-js"><canvas class="particles-js-canvas-el" style="width: 100%; height: 100%;"></canvas></div>
     <div class="container">
@@ -85,7 +84,7 @@
 <script type="text/javascript" src="libs/particles.min.js"></script>
 <script type="text/javascript" src="libs/app.js"></script>
 <script type="text/javascript">
-    window.DEBUG = 1.1;
+window.DEBUG = 1.1;
 
     if (window.DEBUG === 1)
         window.BASE_URL = "http://develop.gateway.center.cdn.ksyun.com";
@@ -110,7 +109,6 @@
     else if(window.DEBUG === 9)
         window.BASE_URL = "http://wq.center.cdn.ksyun.com";
     
-
     var onClickChange = function(argument) {
         var url = BASE_URL + "/rs/login/validation/code?" + new Date().valueOf()
         $(".codeimage").attr("src", url)
@@ -125,9 +123,7 @@
             contentType: "application/json",
             processData: false
         };
-
         defaultParas.data = JSON.stringify(data.queryData);
-
         defaultParas.beforeSend = function(xhr){
             xhr.setRequestHeader("systemKey","resourcemanager");
         }
@@ -139,24 +135,18 @@
         defaultParas.error = function(response, msg){
             data.errorCallBack&&data.errorCallBack(response, msg)
         }
-
         $.ajax(defaultParas);
     };
-
     $("#inputEmail3").on("focus", function(argument) {
         $(".alert-denger").hide();
     });
-
     $("#inputPassword3").on("focus", function(argument) {
         $(".alert-denger").hide();
     });
-
     // $("#checkcode").on("focus", function(argument) {
     //     $(".alert-denger").hide();
     // });
-
     $(".btn-default").on("click", onClickChange)
-
     var onLogin = function(argument) {
         var username = $("#inputEmail3").val(),
             password = $('#inputPassword3').val();
@@ -164,7 +154,6 @@
         $(".alert-denger").hide();
         //if (!username || !password || !checkcode) $(".alert-denger").show();
         if (!username || !password) $(".alert-denger").show();
-
         var data = {
             url            : BASE_URL + "/gateway/auth/do/auth",
             type           : "POST",
@@ -179,14 +168,12 @@
         }
         sendRequest(data);
     }
-
     $(".logoin-btn").on("click", onLogin)
     $(document).on("keyup", function(event) {
         event.stopPropagation();
         event.preventDefault();
         if (event.keyCode === 13) onLogin()
     })
-
     var count_particles, update;
     count_particles = document.querySelector('.js-count-particles');
     update = function() {
@@ -196,7 +183,6 @@
       requestAnimationFrame(update);
     };
     requestAnimationFrame(update);
-
     var redirectUrl = function (url) {
         if (DEBUG === 1 || DEBUG === 1.1 || DEBUG === 1.2) return;
         var tpl = '<div id="loginTips" class="modal fade bs-example-modal-sm">' + 

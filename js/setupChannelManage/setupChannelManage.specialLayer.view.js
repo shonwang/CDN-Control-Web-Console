@@ -27,25 +27,6 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                     this.$el.find('.save').attr('disabled', 'disabled');
                     this.$el.find('.save').off("click");
                 }
-                //获取特殊规则的id
-                this.collection.off('getTopologyRule.success');
-                this.collection.off('getTopologyRule.error');
-                this.collection.on('getTopologyRule.success', $.proxy(this.getTopologyRuleSuccess, this));
-                this.collection.on('getTopologyRule.error', $.proxy(this.getTopologyRuleError, this));
-                this.collection.getTopologyRule(this.model.get('id'));
-
-                this.getTopoAppNameForShow();
-            },
-
-            // getTopologyRule -> getStrategyList
-            getTopologyRuleSuccess: function(res) {
-                console.log("获取频道的特殊分层策略规则ID: ", res)
-                    // this.collection.off('get.rule.origin.success');
-                    // this.collection.off('get.rule.origin.error');
-                    // this.collection.on('get.rule.origin.success', $.proxy(this.initRuleTable, this));
-                    // this.collection.on('get.rule.origin.error', $.proxy(this.onGetError, this));
-                    //this.collection.getRuleOrigin(res);
-                this.notEditId = res;
 
                 require(["specialLayerManage.model"], function(SpecialLayerManageModel) {
                     this.mySpecialLayerManageModel = new SpecialLayerManageModel();
@@ -65,26 +46,21 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                     this.mySpecialLayerManageModel.on("get.strategyInfoById.success", $.proxy(this.initRuleTable, this));
                     this.mySpecialLayerManageModel.on("get.strategyInfoById.error", $.proxy(this.onGetError, this));
                 }.bind(this))
+
+                this.getTopoAppNameForShow();
             },
 
-            onGetSpecialLayerInfo: function() {
-                var layerArray = []
-                this.mySpecialLayerManageModel.each(function(el, index, lst) {
-                    layerArray.push({
-                        name: el.get('name'),
-                        value: el.get('id')
-                    })
-                }.bind(this))
-
-                rootNode = this.$el.find(".dropdown-layer");
-                Utility.initDropMenu(rootNode, layerArray, function(value) {
-                    this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                    this.mySpecialLayerManageModel.getStrategyInfoById({
-                        id: value
-                    })
-                }.bind(this));
-
-                var defaultValue = _.find(layerArray, function(object) {
+            // getTopologyRule -> getStrategyList
+            getTopologyRuleSuccess: function(res) {
+                console.log("获取频道的特殊分层策略规则ID: ", res)
+                // this.collection.off('get.rule.origin.success');
+                // this.collection.off('get.rule.origin.error');
+                // this.collection.on('get.rule.origin.success', $.proxy(this.initRuleTable, this));
+                // this.collection.on('get.rule.origin.error', $.proxy(this.onGetError, this));
+                //this.collection.getRuleOrigin(res);
+                this.notEditId = res;
+                
+                var defaultValue = _.find(this.layerArray, function(object) {
                     return object.value === this.notEditId[0]
                 }.bind(this));
 
@@ -96,11 +72,38 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                         id: defaultValue.value
                     })
                 } else {
-                    this.$el.find(".dropdown-layer .cur-value").html(layerArray[0].name);
+                    this.$el.find(".dropdown-layer .cur-value").html(this.layerArray[0].name);
                     this.mySpecialLayerManageModel.getStrategyInfoById({
-                        id: layerArray[0].value
+                        id: this.layerArray[0].value
                     })
                 }
+            },
+
+            onGetSpecialLayerInfo: function() {
+                var layerArray = []
+                this.mySpecialLayerManageModel.each(function(el, index, lst) {
+                    layerArray.push({
+                        name: el.get('name'),
+                        value: el.get('id')
+                    })
+                }.bind(this))
+
+                this.layerArray = layerArray;
+
+                rootNode = this.$el.find(".dropdown-layer");
+                Utility.initDropMenu(rootNode, layerArray, function(value) {
+                    this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                    this.mySpecialLayerManageModel.getStrategyInfoById({
+                        id: value
+                    })
+                }.bind(this));
+
+                //获取特殊规则的id
+                this.collection.off('getTopologyRule.success');
+                this.collection.off('getTopologyRule.error');
+                this.collection.on('getTopologyRule.success', $.proxy(this.getTopologyRuleSuccess, this));
+                this.collection.on('getTopologyRule.error', $.proxy(this.getTopologyRuleError, this));
+                this.collection.getTopologyRule(this.model.get('id'));
             },
 
             getTopologyRuleError: function(error) {

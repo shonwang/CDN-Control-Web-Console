@@ -203,7 +203,6 @@ define("setupChannelManage.model", ['require', 'exports', 'utility'], function(r
             var url = BASE_URL + '/channelManager/topology/addTopologyRoleList',
                 successCallback = function(res) {
                     if (res) {
-                        this.total = res.total;
                         this.trigger("set.layerStrategy.success", res);
                     } else {
                         this.trigger("set.layerStrategy.error");
@@ -211,6 +210,21 @@ define("setupChannelManage.model", ['require', 'exports', 'utility'], function(r
                 }.bind(this),
                 errorCallback = function(response) {
                     this.trigger('set.layerStrategy.error', response)
+                }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+        isTopoStrategyMatch: function(args) {
+            var url = BASE_URL + '/resource/special/isTopoStrategyMatch',
+                successCallback = function(res) {
+                    if (res) {
+                        this.trigger("get.isTopoStrategyMatch.success", res);
+                    } else {
+                        this.trigger("get.isTopoStrategyMatch.error");
+                    }
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger('get.isTopoStrategyMatch.error', response)
                 }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         }

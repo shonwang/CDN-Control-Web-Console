@@ -47,6 +47,11 @@ define("domainList.model", ['require','exports','utility'], function(require, ex
             var createTime = this.get("createTime"), updateTime = this.get("updateTime")
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
             if (updateTime) this.set("updateTimeFormated", new Date(updateTime).format("yyyy/MM/dd hh:mm"));
+
+            var confCustomType = this.get('confCustomType');
+            if (confCustomType === 1) this.set('confCustomTypeName', '中控标准');
+            if (confCustomType === 2) this.set('confCustomTypeName', 'open API');
+            if (confCustomType === 3) this.set('confCustomTypeName', '中控定制');
         }
     });
 
@@ -64,6 +69,29 @@ define("domainList.model", ['require','exports','utility'], function(require, ex
                 if (res){
                     _.each(res.data, function(element, index, list){
                         this.push(new Model(element));
+                    }.bind(this))
+                    this.total = res.totalCount;
+                    this.trigger("query.domain.success");
+                } else {
+                    this.trigger("query.domain.error"); 
+                } 
+            }.bind(this),function(res){
+                this.trigger("query.domain.error", res);
+            }.bind(this));
+        },
+
+        getDomainInfoList: function(args){
+            var url = BASE_URL + "/channelManager/domain/getDomainInfoList";
+
+            Utility.postAjax(url, args, function(res){
+                this.reset();
+                if (res){
+                    _.each(res.data, function(element, index, list){
+                        if (element.domainConf && element.originDomain){ 
+                            element.originDomain.protocol = element.domainConf.protocol;
+                            element.originDomain.confCustomType = element.domainConf.confCustomType;
+                            this.push(new Model(element.originDomain));
+                        }
                     }.bind(this))
                     this.total = res.totalCount;
                     this.trigger("query.domain.success");
@@ -108,6 +136,20 @@ define("domainList.model", ['require','exports','utility'], function(require, ex
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("get.region.error", response);  
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        changeConfCustomType: function(args){
+            var url = BASE_URL + "/channelManager/domain/changeConfCustomType",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("change.confCustomType.success", res);
+                else
+                    this.trigger("change.confCustomType.error", res)
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("change.confCustomType.error", response);  
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         }

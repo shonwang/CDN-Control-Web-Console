@@ -1,4 +1,4 @@
-<div>
+<div class="customsetup-timestamp">
     <div class="match-condition-ctn"></div>
     <hr>
     <form class="form-horizontal">
@@ -208,8 +208,28 @@
         </div>
         <div class="form-group advanced-setup atuth-divisor">
             <label for="atuth-divisor" class="col-sm-3 control-label" style="margin-right:0">鉴权因子</label>
-            <div class="col-sm-7">
+            <div class="col-sm-4">
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-atuth-divisor" data-toggle="dropdown">
+                        <span class="cur-value">host:用户请求域名</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu"></ul>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" id="atuth-divisor-param">
+            </div>
+            <div class="col-sm-1">
+                <a href="javascript:void(0)" class="btn btn-success add-atuth-divisor"><span class="glyphicon glyphicon-plus"></span>新增</a>
+            </div>
+<!--             <div class="col-sm-7">
                 <textarea type="text" class="form-control" rows="1" id="atuth-divisor" placeholder="鉴权因子以英文半角逗号分隔，可设置多个。"></textarea>
+            </div> -->
+        </div>
+        <div class="form-group advanced-setup atuth-divisor">
+            <div class="col-sm-offset-1 col-sm-11 atuth-divisor-table">
+                <div class="table-ctn table-responsive"></div>
             </div>
         </div>
         <div class="form-group advanced-setup splice-md5">

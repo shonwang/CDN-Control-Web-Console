@@ -205,6 +205,9 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
             if (!this.isEdit) {
                 this.deliveryDetail.deliveryStrategyDef.push(this.currentStep)
             } 
+            _.each(this.deliveryDetail.deliveryStrategyDef, function(step){
+                step.name = "第" + step.step + "步";
+            }.bind(this))
             console.log("保存时的策略详情: ", this.deliveryDetail)
             this.options.onSaveCallback && this.options.onSaveCallback();
         },

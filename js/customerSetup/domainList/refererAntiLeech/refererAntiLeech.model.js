@@ -13,8 +13,9 @@ define("refererAntiLeech.model", ['require','exports', 'utility'], function(requ
             if (type === 1) typeName = "Referer类型：白名单<br>";
             if (type === 2) typeName = "Referer类型：黑名单<br>";
 
-            var domains = this.get('domains'), domainsName;
-            if (domains) domainsName = "合法域名：" + domains + "<br>";
+            var domains = this.get('domains'), domainsName = '';
+            if (domains&&type === 1) domainsName = "合法域名：" + domains + "<br>";
+            if (domains&&type === 2) domainsName = "非法域名：" + domains + "<br>";
 
             var nullReferer = this.get('nullReferer'), nullRefererName;
             if (nullReferer === 0) nullRefererName = "是否允许空引用：否<br>";

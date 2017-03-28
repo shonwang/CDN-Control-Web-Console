@@ -26,13 +26,11 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             console.log("规则初始化默认值: ", this.defaultParam)
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
 
-            require(['deviceManage.model'], function (deviceManageModel) {
-                var mydeviceManageModel = new deviceManageModel();
-                mydeviceManageModel.operatorTypeList();
-                mydeviceManageModel.off("operator.type.success");
-                mydeviceManageModel.off("operator.type.error");
-                mydeviceManageModel.on("operator.type.success", $.proxy(this.initDropMenu, this));
-                mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
+            require(['nodeManage.model'], function (NodeManageModel) {
+                var myNodeManageModel = new NodeManageModel();
+                myNodeManageModel.on("get.operator.success", $.proxy(this.initDropMenu, this));
+                myNodeManageModel.on("get.operator.error", $.proxy(this.onGetError, this));
+                myNodeManageModel.getOperatorList();
             }.bind(this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
@@ -44,7 +42,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         initDropMenu: function (data) {
             this.statusArray = [];
             var rootNode = this.$el.find(".operator");
-            _.each(data, function (el, key, list) {
+            _.each(data.rows, function (el, key, list) {
                 this.statusArray.push({name: el.name, value: el.id})
             }.bind(this))
 
@@ -297,7 +295,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             this.defaultParam.localType = parseInt($(eventTarget).val());
-
             if (this.defaultParam.localType === 1){
                 this.defaultParam.local = [];
                 this.$el.find(".operator-ctn").hide();
@@ -426,11 +423,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
 
             require(['deviceManage.model'], function (deviceManageModel) {
                 var mydeviceManageModel = new deviceManageModel();
-                mydeviceManageModel.operatorTypeList();
-                mydeviceManageModel.off("operator.type.success");
-                mydeviceManageModel.off("operator.type.error");
                 mydeviceManageModel.on("operator.type.success", $.proxy(this.initOperatorUpperList, this));
                 mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
+                mydeviceManageModel.operatorTypeList();
             }.bind(this));
         },
 

@@ -1,0 +1,29 @@
+<table class="table table-striped table-hover">
+    <caption>访问控制</caption>
+    <tbody>
+        <tr>
+          <td>referer防盗链</td>
+          <td><%=data["openFlagStr"]%></td>
+        </tr>
+        <tr>
+          <td>referer类型</td>
+          <td><%=data["typeStr"]%></td>
+        </tr>
+        <tr>
+          <td>域名</td>
+          <td><%=data["domains"]%></td>
+        </tr>
+        <tr>
+          <td>正则</td>
+          <td><%=data["regexps"]%></td>
+        </tr>
+        <tr>
+          <td>允许空referer</td>
+          <td><%=data["nullRefererStr"]%></td>
+        </tr>
+        <tr>
+          <td>伪造的referer</td>
+          <td><%=data["forgeRefererStr"]%></td>
+        </tr>
+    </tbody>
+</table>

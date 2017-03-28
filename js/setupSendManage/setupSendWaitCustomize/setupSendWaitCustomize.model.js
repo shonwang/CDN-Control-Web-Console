@@ -73,8 +73,19 @@ define("setupSendWaitCustomize.model", ['require','exports', 'utility'], functio
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        setChannelConfig: function(args){
+        setChannelNgConfig: function(args){
             var url = BASE_URL + "/cg/config/download/nginx.conf",
+            successCallback = function(res){
+                this.trigger("set.channel.config.success", res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("set.channel.config.error", response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+        setChannelLuaConfig: function(args){
+            var url = BASE_URL + "/cg/config/download/lua.conf",
             successCallback = function(res){
                 this.trigger("set.channel.config.success", res);
             }.bind(this),

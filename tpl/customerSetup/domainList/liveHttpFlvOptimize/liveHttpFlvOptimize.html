@@ -1,0 +1,195 @@
+<div class="drag-play-panel fadeInLeft animated">
+    <h4>直播业务配置<small>/边缘302</small></h4>
+    <div class="well opt-ctn"></div>
+    <div class="well keep-connect">
+        <h4>通用优化配置</h4>
+        <hr>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="keeptoggle" class="col-sm-3 control-label">保持连接</label>
+                        <div class="col-sm-4 keeptoggle">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group keepduration">
+                        <label for="keepduration" class="col-sm-3 control-label">保持连接时长</label>
+                        <div class="col-sm-2">
+                            <input type="number" class="form-control" id="keepduration">
+                        </div>
+                        <div class="col-sm-1">
+                            <div class="dropdown time-unit">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-time-unit" data-toggle="dropdown">
+                                    <span class="cur-value">秒</span>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu"></ul>
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <p class="form-control-static">
+                                <span class="text-danger">(填写内容为正整数，最小值为0秒，最大值为1440分钟)</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="avheader" class="col-sm-3 control-label">AV header合并发送</label>
+                        <div class="col-sm-4 avheader">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-horizontal">
+                    <div class="form-group avheadergroup">
+                        <label for="waitduration" class="col-sm-3 control-label">等待音视频合并头持续的时间</label>
+                        <div class="col-sm-2">
+                            <input type="number" class="form-control" id="waitduration" value="5" min="1" max="30">
+                        </div>
+                        <div class="col-sm-6">
+                            <p class="form-control-static">秒
+                                <span class="text-danger">（填写内容为正整数，默认为5秒，最小值为1秒，最大值为30秒）</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="col-sm-offset-2 col-sm-2">
+                    <a href="javascript:void(0)" class="btn btn-primary save-common"><span class="glyphicon glyphicon-save"></span>保存</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="well httpflv-optimize-setup">
+        <h4>http+flv优化配置</h4>
+        <hr>
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="timestamp" class="col-sm-6 control-label">服务端首次发送的header的时间戳为0</label>
+                        <div class="col-sm-4 timestamp">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="timestampincrease" class="col-sm-6 control-label">时间戳从0开始递增</label>
+                        <div class="col-sm-4 timestampincrease">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="goptimestamp" class="col-sm-6 control-label">发送gop数据时，发送音频</label>
+                        <div class="col-sm-4 goptimestamp">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="goptimestampzero" class="col-sm-6 control-label">发送gop数据时，时间戳全为0</label>
+                        <div class="col-sm-4 goptimestampzero">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="col-sm-offset-2 col-sm-2">
+                    <a href="javascript:void(0)" class="btn btn-primary save"><span class="glyphicon glyphicon-save"></span>保存</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="well rtmp-optimize-setup">
+        <h4>rtmp优化配置</h4>
+        <hr>
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="timestamp" class="col-sm-6 control-label">服务端首次发送的header的时间戳为0</label>
+                        <div class="col-sm-4 timestamp">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="timestampincrease" class="col-sm-6 control-label">时间戳从0开始递增</label>
+                        <div class="col-sm-4 timestampincrease">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="goptimestamp" class="col-sm-6 control-label">发送gop数据时，发送音频</label>
+                        <div class="col-sm-4 goptimestamp">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="goptimestampzero" class="col-sm-6 control-label">发送gop数据时，时间戳全为0</label>
+                        <div class="col-sm-4 goptimestampzero">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="col-sm-offset-2 col-sm-2">
+                    <a href="javascript:void(0)" class="btn btn-primary save"><span class="glyphicon glyphicon-save"></span>保存</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

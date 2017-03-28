@@ -171,6 +171,7 @@ requirejs.config({
 
         "setupChannelManage.model": "setupChannelManage/setupChannelManage.model",
         "setupChannelManage.view": "setupChannelManage/setupChannelManage.view",
+        "setupChannelManage.edit.view": "setupChannelManage/setupChannelManage.edit.view",
         "setupChannelManage.specialLayer.view": "setupChannelManage/setupChannelManage.specialLayer.view",
         "setupChannelManage.select.view": "setupChannelManage/setupChannelManage.select.view",
         "setupChannelManage.history.view": "setupChannelManage/setupChannelManage.history.view",

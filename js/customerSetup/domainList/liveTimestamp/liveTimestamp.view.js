@@ -218,7 +218,7 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                     this.defaultParam.spliceMd5 = 2;
                 }
                 this.defaultParam.isBaseSetup = confType === 0 ? 1 : 2; //0:标准配置 1:高级配置
-                this.defaultParam.timestampType = data.timeType || 1; //1:UNIX时间（十六进制）2:UNix时间（十进制）3：Text格式
+                this.defaultParam.timestampType = data.timeType || 2; //1:UNIX时间（十六进制）2:UNix时间（十进制）3：Text格式
                 // this.defaultParam.authFactor = data.authFactor;
                 this.defaultParam.timeParam = data.timeParam;
                 this.defaultParam.hashParam = data.hashParam;

@@ -261,6 +261,12 @@ requirejs.config({
 
         "setupSendWaitSend.model": "setupSendManage/setupSendWaitSend/setupSendWaitSend.model",
         "setupSendWaitSend.view": "setupSendManage/setupSendWaitSend/setupSendWaitSend.view",
+
+        "importAssess.model": "importAssess/importAssess.model",
+        "importAssess.view": "importAssess/importAssess.view",
+
+        "specialLayerManage.model": "specialLayerManage/specialLayerManage.model",
+        "specialLayerManage.view": "specialLayerManage/specialLayerManage.view",
     },
     urlArgs: new Date().valueOf()
 });

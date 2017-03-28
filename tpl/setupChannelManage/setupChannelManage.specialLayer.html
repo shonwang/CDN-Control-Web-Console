@@ -10,8 +10,27 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-3 control-label">回上层配置规则</label>
+                    <label for="input-application" class="col-sm-3 control-label">应用</label>
                     <div class="col-sm-6">
+                        <input type="text" class="form-control" id="input-application" value="<%=data.name%>" readonly="true">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="input-topology" class="col-sm-3 control-label">拓扑关系</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="input-topology" value="<%=data.name%>" readonly="true">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="dropdown-layer" class="col-sm-3 control-label">回上层配置规则</label>
+                    <div class="dropdown col-sm-3 dropdown-layer">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-layer" data-toggle="dropdown">
+                            <span class="cur-value">加载中...</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu"></ul>
+                    </div>
+                    <div class="col-sm-3">
                         <a href="javascript:void(0)" class="btn btn-success add-role">添加规则</a>
                     </div>
                 </div>
@@ -35,4 +54,3 @@
         </div>
     </div>
 </div>
-

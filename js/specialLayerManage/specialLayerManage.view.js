@@ -1,7 +1,7 @@
-define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 'utility'],
+define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view', 'utility'],
     function(require, exports, template, Modal, Utility) {
 
-        var EditTopoView = Backbone.View.extend({
+        var AddEditLayerView = Backbone.View.extend({
             events: {},
 
             initialize: function(options) {
@@ -9,98 +9,93 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 this.collection = options.collection;
                 this.model = options.model;
                 this.isEdit = options.isEdit;
+                this.isView = options.isView;
 
-                this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.edit.html'])({
+                this.$el = $(_.template(template['tpl/specialLayerManage/specialLayerManage.edit.html'])({
                     data: {}
                 }));
 
-                this.collection.off('get.topo.OriginInfo.success');
-                this.collection.off('get.topo.OriginInfo.error');
-                this.collection.on('get.topo.OriginInfo.success', $.proxy(this.onOriginInfo, this));
-                this.collection.on('get.topo.OriginInfo.error', $.proxy(this.onGetError, this));
-                //添加拓扑关系
-                this.collection.off('add.topo.success');
-                this.collection.off('add.topo.error');
-                this.collection.on('add.topo.success', $.proxy(this.addTopoSuccess, this));
-                this.collection.on('add.topo.error', $.proxy(this.onGetError, this));
-                //修改拓扑关系
-                this.collection.off('modify.topo.success');
-                this.collection.off('modify.topo.error');
-                this.collection.on('modify.topo.success', $.proxy(this.modifyTopoSuccess, this));
-                this.collection.on('modify.topo.error', $.proxy(this.onGetError, this));
+                this.collection.off('get.strategyInfoById.success');
+                this.collection.off('get.strategyInfoById.error');
+                this.collection.on('get.strategyInfoById.success', $.proxy(this.onStrategyInfo, this));
+                this.collection.on('get.strategyInfoById.error', $.proxy(this.onGetError, this));
+
+                this.collection.off('add.strategy.success');
+                this.collection.off('add.strategy.error');
+                this.collection.on('add.strategy.success', $.proxy(this.addStrategySuccess, this));
+                this.collection.on('add.strategy.error', $.proxy(this.onGetError, this));
+
+                this.collection.off('modify.strategy.success');
+                this.collection.off('modify.strategy.error');
+                this.collection.on('modify.strategy.success', $.proxy(this.modifyStrategySuccess, this));
+                this.collection.on('modify.strategy.error', $.proxy(this.onGetError, this));
 
                 if (this.isEdit) {
-                    this.collection.getTopoOrigininfo(this.model.get('id'));
+                    this.collection.getStrategyInfoById({
+                        id: this.model.get('id')
+                    });
                 } else {
                     this.defaultParam = {
                         "id": null,
                         "name": "",
                         "type": null,
-                        "allNodes": [],
-                        "upperNodes": [],
+                        'remark': null,
                         "rule": []
                     }
                     this.initSetup();
                 }
+
+                this.$el.find('.view-less').hide();
             },
 
-            addTopoSuccess: function() {
+            addStrategySuccess: function() {
                 alert('保存成功');
                 this.options.onSaveCallback && this.options.onSaveCallback();
             },
 
-            modifyTopoSuccess: function() {
+            modifyStrategySuccess: function() {
                 this.options.onSaveCallback && this.options.onSaveCallback();
                 alert('修改成功');
             },
 
-            onOriginInfo: function(res) {
-                var allNodes = [],
-                    upperNodes = [];
-
-                _.each(res.allNodes, function(el) {
-                    allNodes.push(el.id);
-                }.bind(this));
-                _.each(res.upperNodes, function(el) {
-                    upperNodes.push(el.id);
-                });
-
+            onStrategyInfo: function(res) {
                 this.defaultParam = {
                     "id": res.id,
                     "name": res.name,
-                    "allNodes": allNodes,
-                    "upperNodes": upperNodes,
+                    "remark": res.remark,
                     "rule": res.rule,
                     "type": res.type
                 }
 
-                this.NodeleteNodes = [];
-
-                _.each(this.defaultParam.allNodes, function(el) {
-                    this.NodeleteNodes.push(el)
-                }.bind(this));
-
                 this.$el.find("#input-name").val(res.name);
                 this.$el.find("#input-name").attr("readonly", "true");
+                this.$el.find("#secondary").val(res.remark);
 
-                console.log("编辑的拓扑: ", this.defaultParam)
+                console.log("编辑的分层策略: ", this.defaultParam)
                 this.initSetup();
             },
 
             initSetup: function() {
-                this.$el.find('.all .add-node').hide();
-                this.$el.find('.upper .add-node').hide();
+                // this.$el.find('.upper .add-node').hide();
                 this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
                 if (!this.isEdit) {
-                    if (AUTH_OBJ.ApplyCreateTopos)
-                        this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
+                    // if (AUTH_OBJ.ApplyCreateTopos)
+                    this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
                     this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
-                    this.$el.find(".alert-danger").show();
-                } else {
-                    if (AUTH_OBJ.ApplyEditTopos)
-                        this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
+                    this.$el.find(".domain-list").hide();
+                } else if (!this.isView && this.isEdit) {
+                    // if (AUTH_OBJ.ApplyEditTopos)
+                    this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
+                    this.$el.find(".view-more").on("click", $.proxy(this.onClickViewMoreButton, this));
+                    this.$el.find(".view-less").on("click", $.proxy(this.onClickViewLessButton, this));
+                    this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
+                    this.$el.find(".comment-group").hide();
+                } else if (this.isView) {
+                    this.$el.find(".view-more").on("click", $.proxy(this.onClickViewMoreButton, this));
+                    this.$el.find(".view-less").on("click", $.proxy(this.onClickViewLessButton, this));
                     this.$el.find(".add-rule").hide();
-                    this.$el.find(".alert-danger").hide();
+                    this.$el.find(".opt-ctn .save").hide();
+                    this.$el.find(".comment-group").hide();
                 }
                 this.collection.off("get.node.success");
                 this.collection.off("get.node.error");
@@ -114,30 +109,34 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
 
                 this.collection.getNodeList(); //获取所有节点列表接口
                 this.collection.getDeviceTypeList(); //获取应用类型列表接口
+            },
 
-                this.initRuleTable();
+            onClickViewMoreButton: function(event) {
+                this.$el.find('.view-less').show();
+                this.$el.find(".view-more").hide();
+                this.$el.find('.domain-ctn').css('max-height', 'none');
+            },
+
+            onClickViewLessButton: function(event) {
+                this.$el.find('.view-less').hide();
+                this.$el.find(".view-more").show();
+                this.$el.find('.domain-ctn').css('max-height', '200px');
             },
 
             onClickSaveButton: function() {
                 this.defaultParam.name = $.trim(this.$el.find("#input-name").val());
                 if (this.defaultParam.name == '') {
-                    alert('请输入拓扑关系名称');
+                    alert('请输入名称');
                     return;
                 } else if (this.defaultParam.type == null) {
                     alert('请选择设备类型');
-                    return;
-                } else if (this.defaultParam.allNodes.length == 0) {
-                    alert('请选择加入拓扑关系的节点');
-                    return;
-                } else if (this.defaultParam.upperNodes.length == 0) {
-                    alert('请选择拓扑关系的上层节点');
                     return;
                 } else if (this.defaultParam.rule.length == 0) {
                     alert('请添加规则');
                     return;
                 }
 
-                console.log("点击保存按钮时的拓扑", this.defaultParam)
+                console.log("点击保存按钮时的分层策略", this.defaultParam)
 
                 var postRules = [],
                     postTopo = {};
@@ -164,17 +163,16 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     postRules.push(tempRule);
                 }.bind(this))
 
-                postTopo.allNodes = this.defaultParam.allNodes;
                 postTopo.id = this.defaultParam.id;
                 postTopo.name = this.defaultParam.name;
                 postTopo.type = this.defaultParam.type;
-                postTopo.upperNodes = this.defaultParam.upperNodes;
-                postTopo.rule = postRules
+                postTopo.rule = postRules;
+                postTopo.remark = this.$el.find("#secondary").val();
 
                 if (this.isEdit)
-                    this.collection.topoModify(postTopo);
+                    this.collection.modifyStrategy(postTopo);
                 else
-                    this.collection.topoAdd(postTopo);
+                    this.collection.addStrategy(postTopo);
             },
 
             onClickCancelButton: function() {
@@ -213,255 +211,25 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             },
 
             onGetAllNode: function(res) {
-                this.$el.find('.all .add-node').show();
                 this.allNodes = res;
                 //过滤掉关闭和挂起的节点
                 var resFlag = [];
                 _.each(res, function(el, index, list) {
                     if (el.status != 3 && el.status != 2) resFlag.push(el)
                 })
-
-                this.selectedAllNodeList = [];
                 this.nodesArrayFirst = [];
 
                 _.each(resFlag, function(el, index, list) {
                     el.checked = false;
-                    _.each(this.defaultParam.allNodes, function(defaultLocalId, inx, ls) {
-                        if (defaultLocalId === el.id) {
-                            el.checked = true;
-                            this.selectedAllNodeList.push({
-                                nodeId: el.id,
-                                nodeName: el.chName,
-                                operator: el.operatorId,
-                                checked: el.checked
-                            })
-                        }
-                    }.bind(this));
                     this.nodesArrayFirst.push({
-                        name: el.chName,
-                        value: el.id,
+                        nodeName: el.chName,
+                        nodeId: el.id,
                         checked: el.checked,
                         operator: el.operatorId
                     });
                 }.bind(this))
 
-                this.initAllNodesSelect();
-                this.initAllNodesTable();
-            },
-
-            initAllNodesSelect: function() {
-                var options = {
-                    containerID: this.$el.find('.all .add-node-ctn').get(0),
-                    panelID: this.$el.find('.all .add-node').get(0),
-                    openSearch: true,
-                    onOk: $.proxy(this.onClickAllNodesSelectOK, this),
-                    data: this.nodesArrayFirst,
-                    callback: function(data) {}.bind(this)
-                }
-
-                if (this.isEdit) {
-                    options.isDisabled = true;
-                    options.disabledNode = _.filter(this.nodesArrayFirst, function(obj) {
-                        return obj.checked === true;
-                    });
-                }
-                this.searchSelectAllNodes = new SearchSelect(options);
-            },
-
-            onClickAllNodesSelectOK: function(data) {
-                this.selectedAllNodeList = [];
-                _.each(data, function(el, key, ls) {
-                    this.selectedAllNodeList.push({
-                        nodeId: parseInt(el.value),
-                        nodeName: el.name,
-                        checked: true
-                    });
-                }.bind(this))
-
-                this.defaultParam.allNodes = [];
-                _.each(this.selectedAllNodeList, function(el, key, ls) {
-                    this.defaultParam.allNodes.push(parseInt(el.nodeId));
-                }.bind(this))
-
-                _.each(this.nodesArrayFirst, function(el, key, ls) {
-                    el.checked = false;
-                    _.each(this.selectedAllNodeList, function(data, key, ls) {
-                        if (el.value == data.nodeId) {
-                            el.checked = true;
-                            data.operator = el.operator;
-                        }
-                    }.bind(this))
-                }.bind(this))
-
-                this.initAllNodesTable();
-            },
-
-            initAllNodesTable: function() {
-                this.localTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
-                    data: this.selectedAllNodeList
-                }));
-
-                if (this.selectedAllNodeList.length !== 0)
-                    this.$el.find(".all .table-ctn").html(this.localTable[0]);
-                else
-                    this.$el.find(".all .table-ctn").html(_.template(template['tpl/empty-2.html'])({
-                        data: {
-                            message: "还没有添加节点"
-                        }
-                    }));
-
-                if (!this.isEdit)
-                    this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemAllDelete, this));
-                else
-                    this.localTable.find("tbody .delete").remove();
-
-                this.onGetUpperNode();
-            },
-
-            onClickItemAllDelete: function(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "SPAN") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                _.each(this.nodesArrayFirst, function(el, index, ls) {
-                    if (parseInt(el.value) === parseInt(id)) el.checked = false;
-                }.bind(this))
-                this.selectedAllNodeList = _.filter(this.selectedAllNodeList, function(obj) {
-                    return parseInt(obj.nodeId) !== parseInt(id)
-                }.bind(this))
-
-                this.defaultParam.allNodes = [];
-                _.each(this.selectedAllNodeList, function(el, key, ls) {
-                    this.defaultParam.allNodes.push(parseInt(el.nodeId));
-                }.bind(this))
-
-                if (this.searchSelectAllNodes)
-                    this.searchSelectAllNodes.destroy();
-                this.initAllNodesSelect();
-                this.initAllNodesTable();
-            },
-
-            onGetUpperNode: function(res) {
-                if (!this.isEdit) this.$el.find('.upper .add-node').show();
-
-                this.selectedUpperNodeList = [];
-                this.nodesArrayFirstUpper = [];
-
-                _.each(this.selectedAllNodeList, function(el, index, list) {
-                    el.checked = false;
-                    _.each(this.defaultParam.upperNodes, function(upperId, inx, ls) {
-                        if (upperId === el.nodeId) {
-                            el.checked = true;
-                            this.selectedUpperNodeList.push({
-                                nodeId: el.nodeId,
-                                nodeName: el.nodeName,
-                                checked: true
-                            })
-                        }
-                    }.bind(this))
-                    this.nodesArrayFirstUpper.push({
-                        name: el.nodeName,
-                        value: el.nodeId,
-                        checked: el.checked,
-                        operator: el.operatorId
-                    });
-                }.bind(this))
-
-                this.initUpperTable()
-                this.initUpperSelect()
-            },
-
-            initUpperSelect: function() {
-                if (this.searchSelectUpper)
-                    this.searchSelectUpper.destroy();
-                var options = {
-                    containerID: this.$el.find('.upper .add-node-ctn').get(0),
-                    panelID: this.$el.find('.upper .add-node').get(0),
-                    openSearch: true,
-                    onOk: $.proxy(this.onClickUpperNodesSelectOK, this),
-                    data: this.nodesArrayFirstUpper,
-                    callback: function(data) {}.bind(this)
-                }
-
-                this.searchSelectUpper = new SearchSelect(options);
-                this.$el.find(".upper .add-node-ctn .select-container").css("left", "-170px");
-            },
-
-            onClickUpperNodesSelectOK: function(data) {
-                this.selectedUpperNodeList = [];
-                _.each(data, function(el, key, ls) {
-                    this.selectedUpperNodeList.push({
-                        nodeId: parseInt(el.value),
-                        nodeName: el.name,
-                        operatorId: ''
-                    })
-                }.bind(this))
-
-                this.defaultParam.upperNodes = [];
-                _.each(this.selectedUpperNodeList, function(el) {
-                    this.defaultParam.upperNodes.push(parseInt(el.nodeId));
-                }.bind(this))
-
-                _.each(this.nodesArrayFirstUpper, function(el, key, ls) {
-                    el.checked = false;
-                    _.each(this.selectedUpperNodeList, function(data, key, ls) {
-                        if (el.value == data.nodeId) {
-                            el.checked = true;
-                            data.operator = el.operator;
-                        }
-                    }.bind(this))
-                }.bind(this))
-
-                this.initUpperTable()
-            },
-
-            initUpperTable: function() {
-                this.upperTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
-                    data: this.selectedUpperNodeList
-                }));
-                if (this.selectedUpperNodeList.length !== 0)
-                    this.$el.find(".upper .table-ctn").html(this.upperTable[0]);
-                else
-                    this.$el.find(".upper .table-ctn").html(_.template(template['tpl/empty-2.html'])({
-                        data: {
-                            message: "还没有添加节点"
-                        }
-                    }));
-
-                if (!this.isEdit)
-                    this.upperTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperDelete, this));
-                else
-                    this.upperTable.find("tbody .delete").hide();
-            },
-
-            onClickItemUpperDelete: function(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "SPAN") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-
-                _.each(this.nodesArrayFirstUpper, function(el, index, ls) {
-                    if (parseInt(el.value) === parseInt(id)) el.checked = false;
-                }.bind(this))
-                this.selectedUpperNodeList = _.filter(this.selectedUpperNodeList, function(obj) {
-                    return parseInt(obj.nodeId) !== parseInt(id)
-                }.bind(this))
-
-                this.defaultParam.upperNodes = [];
-                _.each(this.selectedUpperNodeList, function(el, key, ls) {
-                    this.defaultParam.upperNodes.push(parseInt(el.nodeId));
-                }.bind(this))
-
-                this.initUpperSelect();
-                this.initUpperTable();
+                this.initRuleTable();
             },
 
             initRuleTable: function() {
@@ -525,7 +293,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                         }
                     }));
 
-                if (!this.isEdit) {
+                if (!this.isView) {
                     this.roleTable.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
                     this.roleTable.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
                 } else {
@@ -549,13 +317,15 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
 
                 require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
                     function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
+                        var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                         var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
-                            collection: this.collection,
-                            localNodes: this.selectedAllNodeList,
-                            upperNodes: this.selectedUpperNodeList,
+                            collection: myAddEditLayerStrategyModel,
+                            localNodes: this.nodesArrayFirst,
+                            upperNodes: this.nodesArrayFirst,
                             rule: this.defaultParam.rule,
                             curEditRule: this.curEditRule,
                             isEdit: true,
+                            notFilter: true,
                             onSaveCallback: function() {
                                 myAddEditLayerStrategyView.$el.remove();
                                 this.$el.find(".add-topo").show();
@@ -572,7 +342,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     }.bind(this))
             },
 
-            onClickItemDelete: function() {
+            onClickItemDelete: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
                 this.defaultParam.rule = _.filter(this.defaultParam.rule, function(obj) {
@@ -586,12 +356,12 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
                     function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                         var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
-                        var options = myAddEditLayerStrategyModel;
                         var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
-                            collection: options,
-                            localNodes: this.selectedAllNodeList,
-                            upperNodes: this.selectedUpperNodeList,
+                            collection: myAddEditLayerStrategyModel,
+                            localNodes: this.nodesArrayFirst,
+                            upperNodes: this.nodesArrayFirst,
                             rule: this.defaultParam.rule,
+                            notFilter: true,
                             onSaveCallback: function() {
                                 myAddEditLayerStrategyView.$el.remove();
                                 this.$el.find(".add-topo").show();
@@ -608,7 +378,6 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     }.bind(this))
             },
 
-
             onGetError: function(error) {
                 if (error && error.message)
                     alert(error.message)
@@ -621,44 +390,48 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             }
         });
 
-        var SetupTopoManageView = Backbone.View.extend({
+        var SpecialLayerManageView = Backbone.View.extend({
             events: {},
 
             initialize: function(options) {
                 this.collection = options.collection;
-                this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.html'])());
+                this.$el = $(_.template(template['tpl/specialLayerManage/specialLayerManage.html'])());
+
                 //获取所有的拓扑关系信息
-                this.collection.off("get.topoInfo.success");
-                this.collection.off("get.topoInfo.error");
-                this.collection.on("get.topoInfo.success", $.proxy(this.onGetTopoSuccess, this));
-                this.collection.on("get.topoInfo.error", $.proxy(this.onGetError, this));
+                this.collection.on("get.strategyList.success", $.proxy(this.onGetStrategySuccess, this));
+                this.collection.on("get.strategyList.error", $.proxy(this.onGetError, this));
+                this.collection.on("delete.strategy.success", $.proxy(this.resetList, this));
+                this.collection.on("delete.strategy.error", $.proxy(this.onGetError, this));
                 //获取应用类型
-                this.collection.off("get.devicetype.success");
-                this.collection.off("get.devicetype.error");
                 this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
                 this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
 
-                if (AUTH_OBJ.QueryTopos) {
-                    this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-                    this.off('enterKeyBindQuery');
-                    this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
-                    this.enterKeyBindQuery();
-                } else {
-                    this.$el.find(".opt-ctn .query").remove();
-                }
-                if (AUTH_OBJ.CreateTopos)
-                    this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
-                else
-                    this.$el.find(".opt-ctn .new").remove();
+                // if (AUTH_OBJ.QueryTopos) {
+                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.resetList, this));
+                this.on('enterKeyBindQuery', $.proxy(this.resetList, this));
 
+                this.enterKeyBindQuery();
+                // } else {
+                //     this.$el.find(".opt-ctn .query").remove();
+                // }
+                // if (AUTH_OBJ.CreateTopos)
+                this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
+                // else
+                //     this.$el.find(".opt-ctn .new").remove();
+                this.curPage = 1;
                 this.queryArgs = {
                     "name": null,
                     "type": null,
                     "page": 1,
                     "size": 10
                 }
-                this.onClickQueryButton();
                 this.collection.getDeviceTypeList();
+                this.onClickQueryButton();
+            },
+
+            resetList: function() {
+                this.curPage = 1;
+                this.onClickQueryButton();
             },
 
             enterKeyBindQuery: function() {
@@ -676,23 +449,23 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     alert("网络阻塞，请刷新重试！")
             },
 
-            onGetTopoSuccess: function() {
+            onGetStrategySuccess: function() {
                 this.initTable();
                 if (!this.isInitPaginator) this.initPaginator();
             },
 
             onClickQueryButton: function() {
                 this.isInitPaginator = false;
-                this.queryArgs.page = 1;
+                this.queryArgs.page = this.curPage;
                 this.queryArgs.name = this.$el.find("#input-topo-name").val();
                 if (this.queryArgs.name == "") this.queryArgs.name = null;
                 this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                 this.$el.find(".pagination").html("");
-                this.collection.getTopoinfo(this.queryArgs);
+                this.collection.getStrategyList(this.queryArgs);
             },
 
             initTable: function() {
-                this.table = $(_.template(template['tpl/setupTopoManage/setupTopoManage.table.html'])({
+                this.table = $(_.template(template['tpl/specialLayerManage/specialLayerManage.table.html'])({
                     data: this.collection.models,
                     permission: AUTH_OBJ
                 }));
@@ -701,34 +474,51 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 else
                     this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-                if (AUTH_OBJ.EditTopos)
-                    this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-                else
-                    this.table.find("tbody .edit").remove();
+                // if (AUTH_OBJ.EditTopos)
+                this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
+                // else
+                //     this.table.find("tbody .edit").remove();
 
-                this.table.find("tbody .send").on("click", $.proxy(this.onClickItemSend, this));
+                this.table.find("tbody .view").on("click", $.proxy(this.onClickItemView, this));
+                this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+
+                this.table.find("[data-toggle='popover']").popover();
             },
 
             onClickAddRuleTopoBtn: function() {
                 this.off('enterKeyBindQuery');
-                var myEditTopoView = new EditTopoView({
+                var myAddEditLayerView = new AddEditLayerView({
                     collection: this.collection,
-                    WhetherSaveSuccess: this.WhetherSaveSuccess,
                     onSaveCallback: function() {
-                        this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
-                        myEditTopoView.$el.remove();
+                        this.on('enterKeyBindQuery', $.proxy(this.resetList, this));
+                        myAddEditLayerView.$el.remove();
                         this.$el.find(".list-panel").show();
                         this.onClickQueryButton();
                     }.bind(this),
                     onCancelCallback: function() {
-                        this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
-                        myEditTopoView.$el.remove();
+                        this.on('enterKeyBindQuery', $.proxy(this.resetList, this));
+                        myAddEditLayerView.$el.remove();
                         this.$el.find(".list-panel").show();
                     }.bind(this)
                 })
 
                 this.$el.find(".list-panel").hide();
-                myEditTopoView.render(this.$el.find(".edit-panel"))
+                myAddEditLayerView.render(this.$el.find(".edit-panel"))
+            },
+
+            onClickItemDelete: function(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+
+                this.collection.deleteStrategy({
+                    id: id
+                })
             },
 
             onClickItemEdit: function(event) {
@@ -741,27 +531,26 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     id = $(eventTarget).attr("id");
                 }
                 var model = this.collection.get(id);
-                var myEditTopoView = new EditTopoView({
+                var myAddEditLayerView = new AddEditLayerView({
                     collection: this.collection,
                     model: model,
                     isEdit: true,
                     onSaveCallback: function() {
-                        myEditTopoView.$el.remove();
+                        myAddEditLayerView.$el.remove();
                         this.$el.find(".list-panel").show();
                         this.onClickQueryButton();
                     }.bind(this),
                     onCancelCallback: function() {
-                        myEditTopoView.$el.remove();
+                        myAddEditLayerView.$el.remove();
                         this.$el.find(".list-panel").show();
                     }.bind(this)
                 })
 
                 this.$el.find(".list-panel").hide();
-                myEditTopoView.render(this.$el.find(".edit-panel"))
+                myAddEditLayerView.render(this.$el.find(".edit-panel"))
             },
 
-            onClickItemSend: function() {
-                this.off('enterKeyBindQuery');
+            onClickItemView: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id;
                 if (eventTarget.tagName == "SPAN") {
@@ -771,28 +560,24 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     id = $(eventTarget).attr("id");
                 }
                 var model = this.collection.get(id);
-                require(['setupTopoManageSendStrategy.model', 'setupTopoManageSendStrategy.view'],
-                    function(setupTopoManageSendStrategyModel, setupTopoManageSendStrategyView) {
-                        var mySendStrategeModel = new setupTopoManageSendStrategyModel();
-                        var options = mySendStrategeModel;
-                        var mySendView = new setupTopoManageSendStrategyView({
-                            collection: options,
-                            model: model,
-                            onSaveCallback: function() {
-                                this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
-                                mySendView.$el.remove();
-                                this.$el.find(".list-panel").show();
-                            }.bind(this),
-                            onCancelCallback: function() {
-                                this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
-                                mySendView.$el.remove();
-                                this.$el.find(".list-panel").show();
-                            }.bind(this)
-                        })
+                var myAddEditLayerView = new AddEditLayerView({
+                    collection: this.collection,
+                    model: model,
+                    isEdit: true,
+                    isView: true,
+                    onSaveCallback: function() {
+                        myAddEditLayerView.$el.remove();
+                        this.$el.find(".list-panel").show();
+                        this.onClickQueryButton();
+                    }.bind(this),
+                    onCancelCallback: function() {
+                        myAddEditLayerView.$el.remove();
+                        this.$el.find(".list-panel").show();
+                    }.bind(this)
+                })
 
-                        this.$el.find(".list-panel").hide();
-                        mySendView.render(this.$el.find(".edit-panel"))
-                    }.bind(this));
+                this.$el.find(".list-panel").hide();
+                myAddEditLayerView.render(this.$el.find(".edit-panel"))
             },
 
             initPaginator: function() {
@@ -802,14 +587,15 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 this.$el.find(".pagination").jqPaginator({
                     totalPages: total,
                     visiblePages: 10,
-                    currentPage: 1,
+                    currentPage: this.curPage,
                     onPageChange: function(num, type) {
                         if (type !== "init") {
                             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                             var args = _.extend(this.queryArgs);
                             args.page = num;
                             args.count = this.queryArgs.size;
-                            this.collection.getTopoinfo(args);
+                            this.collection.getStrategyList(args);
+                            this.curPage = num
                         }
                     }.bind(this)
                 });
@@ -861,7 +647,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 }]
                 Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value) {
                     this.queryArgs.size = parseInt(value);
-                    this.queryArgs.page = 1;
+                    this.curPage = 1;
                     this.onClickQueryButton();
                 }.bind(this));
             },
@@ -881,5 +667,5 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             }
         });
 
-        return SetupTopoManageView;
+        return SpecialLayerManageView;
     });

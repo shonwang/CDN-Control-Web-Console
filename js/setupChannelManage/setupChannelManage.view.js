@@ -152,11 +152,11 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             // getTopologyRule -> getStrategyList
             getTopologyRuleSuccess: function(res) {
                 console.log("获取频道的特殊分层策略规则ID: ", res)
-                // this.collection.off('get.rule.origin.success');
-                // this.collection.off('get.rule.origin.error');
-                // this.collection.on('get.rule.origin.success', $.proxy(this.initRuleTable, this));
-                // this.collection.on('get.rule.origin.error', $.proxy(this.onGetError, this));
-                //this.collection.getRuleOrigin(res);
+                    // this.collection.off('get.rule.origin.success');
+                    // this.collection.off('get.rule.origin.error');
+                    // this.collection.on('get.rule.origin.success', $.proxy(this.initRuleTable, this));
+                    // this.collection.on('get.rule.origin.error', $.proxy(this.onGetError, this));
+                    //this.collection.getRuleOrigin(res);
                 this.notEditId = res;
 
                 require(["specialLayerManage.model"], function(SpecialLayerManageModel) {
@@ -179,7 +179,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 }.bind(this))
             },
 
-            onGetSpecialLayerInfo: function(){
+            onGetSpecialLayerInfo: function() {
                 var layerArray = []
                 this.mySpecialLayerManageModel.each(function(el, index, lst) {
                     layerArray.push({
@@ -191,21 +191,27 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 rootNode = this.$el.find(".dropdown-layer");
                 Utility.initDropMenu(rootNode, layerArray, function(value) {
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                    this.mySpecialLayerManageModel.getStrategyInfoById({id: value})
+                    this.mySpecialLayerManageModel.getStrategyInfoById({
+                        id: value
+                    })
                 }.bind(this));
 
-                var defaultValue = _.find(layerArray, function(object){
+                var defaultValue = _.find(layerArray, function(object) {
                     return object.value === this.notEditId[0]
                 }.bind(this));
 
                 this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                
-                if (defaultValue){
+
+                if (defaultValue) {
                     this.$el.find(".dropdown-layer .cur-value").html(defaultValue.name)
-                    this.mySpecialLayerManageModel.getStrategyInfoById({id: defaultValue.value})
+                    this.mySpecialLayerManageModel.getStrategyInfoById({
+                        id: defaultValue.value
+                    })
                 } else {
                     this.$el.find(".dropdown-layer .cur-value").html(layerArray[0].name);
-                    this.mySpecialLayerManageModel.getStrategyInfoById({id: layerArray[0].value})
+                    this.mySpecialLayerManageModel.getStrategyInfoById({
+                        id: layerArray[0].value
+                    })
                 }
             },
 
@@ -655,7 +661,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 }.bind(this))
             },
 
-            onGetTopoInfo: function(){
+            onGetTopoInfo: function() {
                 this.initTopoTable()
                 this.$el.find(".layer-toggle .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
                 var mySelectLayerView = new SelectLayerView({

@@ -86,7 +86,7 @@ define("controller", ['require','exports'],
                     var options = {
                         collection: this.setupChannelManageModel
                     };
-                    this.setupChannelManageView = new SetupChannelManageView.SetupChannelManageView(options);
+                    this.setupChannelManageView = new SetupChannelManageView(options);
                     this.setupChannelManageView.render($('.ksc-content'));
                 } else {
                     this.setupChannelManageView.update();

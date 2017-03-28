@@ -286,6 +286,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
 
         onSaveSuccess: function(){
             alert("保存成功！")
+            this.update(this.options.query, this.options.query2, this.target);
         },
 
         launchSendPopup: function(){

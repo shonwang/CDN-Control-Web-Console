@@ -140,7 +140,7 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
             if (data){
                 if (data.openFlag !== null && data.openFlag !== undefined)
                     this.defaultParam.isOpenSetup = data.openFlag
-                if (data.authDivisorList) {
+
                     var  atuthDivisorArray = [
                         {value: 1, name: "host:用户请求域名"},
                         {value: 2, name: "uri：用户请求的uri"},
@@ -151,14 +151,17 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                         {value: 7, name: "filename：文件名称，带后缀"},
                         {value: 8, name: "filenameno：文件名称，不带后缀"}
                     ];
-                    _.each(data.authDivisorList, function(el, index, ls){
-                        var nameObj = _.find(atuthDivisorArray, function(obj){
-                            return obj.value === el.divisor
-                        }.bind(this))
-                        if (nameObj) el.divisorName = nameObj.name
-                    }.bind(this))
+
+                if (data.authDivisorList && data.authDivisorList.length > 0) {
                     this.defaultParam.atuthDivisorArray = data.authDivisorList
                 }
+
+                _.each(this.defaultParam.atuthDivisorArray, function(el, index, ls){
+                    var nameObj = _.find(atuthDivisorArray, function(obj){
+                        return obj.value === el.divisor
+                    }.bind(this))
+                    if (nameObj) el.divisorName = nameObj.name
+                }.bind(this))
 
                 var protectionType = data.protectionType, //1:typeA 2:typeB 3:typeC
                     confType = data.confType,
@@ -215,7 +218,7 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                     this.defaultParam.spliceMd5 = 2;
                 }
                 this.defaultParam.isBaseSetup = confType === 0 ? 1 : 2; //0:标准配置 1:高级配置
-                this.defaultParam.timestampType = data.timeType || 1; //1:UNIX时间（十六进制）2:UNix时间（十进制）3：Text格式
+                this.defaultParam.timestampType = data.timeType || 2; //1:UNIX时间（十六进制）2:UNix时间（十进制）3：Text格式
                 // this.defaultParam.authFactor = data.authFactor;
                 this.defaultParam.timeParam = data.timeParam;
                 this.defaultParam.hashParam = data.hashParam;
@@ -466,8 +469,8 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                 return;
             }
 
-            if (this.defaultParam.atuthDivisorArray.length >= 6) {
-                alert("最大可以设置6个");
+            if (this.defaultParam.atuthDivisorArray.length >= 10) {
+                alert("最大可以设置10个");
                 return;
             }
 
@@ -575,7 +578,9 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
             var spliceMd5Min = this.$el.find("#md5-start").val(),
                 spliceMd5Max = this.$el.find("#md5-end").val();
             if (this.defaultParam.spliceMd5 === 2 && 
-                (spliceMd5Max === "" || spliceMd5Min === "" || parseInt(spliceMd5Max) - parseInt(spliceMd5Min) < 0)){
+                (spliceMd5Max === "" || spliceMd5Min === "" || 
+                 parseInt(spliceMd5Max) - parseInt(spliceMd5Min) < 0 || 
+                 spliceMd5Min < 1 || spliceMd5Max > 32)){
                 alert("你选择了高级设置截取MD5值，需要填写正确的取值范围！");
                 return;
             }

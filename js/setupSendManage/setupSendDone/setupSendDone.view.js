@@ -91,7 +91,7 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
 
             var model = this.collection.get(id);
             
-            require(["setupSendDetail.view", "setupSendDetail.model"], function(SendDetailView, SetupSendDetailModel){
+            require(["setupSending.detail.view", "setupSending.detail.model"], function(SendDetailView, SetupSendDetailModel){
                 var mySetupSendDetailModel = new SetupSendDetailModel();
                 var mySendDetailView = new SendDetailView.SendDetailView({
                     collection: mySetupSendDetailModel,

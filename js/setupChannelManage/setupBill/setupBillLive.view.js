@@ -58,7 +58,7 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
                                             '</tr>' +
                                         '</tbody>' +
                                     '</table>'
-                    this.refererAntiLeechTable = $()
+                    this.refererAntiLeechTable = $(tempTpl)
                 } else {
                     el.openFlagStr = '<span class="label label-success">开启</span>';
                     if (el.type === 1) el.typeStr = '白名单';

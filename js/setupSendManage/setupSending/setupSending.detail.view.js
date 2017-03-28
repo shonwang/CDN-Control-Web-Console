@@ -1,4 +1,4 @@
-define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+define("setupSending.detail.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
     var ConfiFileDetailView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"

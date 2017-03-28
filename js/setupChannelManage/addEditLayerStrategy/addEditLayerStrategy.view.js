@@ -439,10 +439,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.upperTable.find("tbody .spareradio").on("click", $.proxy(this.onClickCheckboxButton, this));
 
             require(['deviceManage.model'], function(deviceManageModel) {
-                var mydeviceManageModel = new deviceManageModel(); << << << < HEAD
-                    === === =
-                    mydeviceManageModel.off("operator.type.success");
-                mydeviceManageModel.off("operator.type.error"); >>> >>> > specialLayerManage20170313
+                var mydeviceManageModel = new deviceManageModel();
                 mydeviceManageModel.on("operator.type.success", $.proxy(this.initOperatorUpperList, this));
                 mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
                 mydeviceManageModel.operatorTypeList();

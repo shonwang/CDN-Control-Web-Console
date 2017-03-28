@@ -482,7 +482,7 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
                         el.set("isDisplay", false)
                         el.set("isChecked", false)
                     }.bind(this))
-                    this.filterByTopo("topoSpecialStrategyId", value)
+                    this.filterByTopo("specialStrategyId", value)
                 }
                 this.initTable();
             }.bind(this));

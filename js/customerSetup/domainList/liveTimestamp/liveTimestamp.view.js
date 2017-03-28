@@ -223,7 +223,7 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
                 this.defaultParam.timeParam = data.timeParam;
                 this.defaultParam.hashParam = data.hashParam;
                 this.defaultParam.md5Truncate = data.md5Truncate;
-                this.$el.find(".deadline-time #deadline-time").val(data.expirationTime)
+                this.$el.find(".deadline-time #deadline-time").val(data.expirationTime || 1800)
             }
 
             if (this.defaultParam.isOpenSetup === 1) {

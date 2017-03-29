@@ -138,7 +138,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 domainVersion: version
             }
 
-            require(["setupSendDetail.view"], function(SendDetailView) {
+            require(["setupSending.detail.view"], function(SendDetailView) {
                 if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
 
                 var myConfiFileDetailView = new SendDetailView.ConfiFileDetailView({

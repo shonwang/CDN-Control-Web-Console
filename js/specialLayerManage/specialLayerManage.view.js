@@ -67,6 +67,8 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     "type": res.type
                 }
 
+                this.domainList = res.domainList || ['没有关联的域名'];
+
                 this.$el.find("#input-name").val(res.name);
                 this.$el.find("#input-name").attr("readonly", "true");
                 this.$el.find("#secondary").val(res.remark);
@@ -76,6 +78,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             initSetup: function() {
+                this.initDomainList();
                 // this.$el.find('.upper .add-node').hide();
                 this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
                 if (!this.isEdit) {
@@ -109,6 +112,16 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
 
                 this.collection.getNodeList(); //获取所有节点列表接口
                 this.collection.getDeviceTypeList(); //获取应用类型列表接口
+            },
+
+            initDomainList: function(){
+                var nodeTpl = '';
+                _.each(this.domainList, function(el){
+                    nodeTpl = '<li class="node-item">' + 
+                                   '<span class="label label-primary" id="' + Utility.randomStr(8) +'">'+ el +'</span>' +
+                              '</li>';
+                    $(nodeTpl).appendTo(this.$el.find(".node-ctn"))
+                }.bind(this))
             },
 
             onClickViewMoreButton: function(event) {

@@ -69,7 +69,8 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
                 this.defaultParam.domains = this.defaultParam.domains.split(",").join("\n");
                 if (data.nullReferer !== null && data.nullReferer !== undefined)
                     this.defaultParam.nullReferer = data.nullReferer
-                this.defaultParam.regexps = data.regexps;
+                this.defaultParam.regexps = data.regexps || "";
+                this.defaultParam.regexps = this.defaultParam.regexps.split(",").join("\n");
             }
 
             if (this.defaultParam.isOpenSetup === 1) {

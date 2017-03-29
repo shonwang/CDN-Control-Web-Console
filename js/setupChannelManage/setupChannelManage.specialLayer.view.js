@@ -20,6 +20,7 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                 };
 
                 this.curLayerId = null;
+                this.notEditId = [];
 
                 this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
                 this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
@@ -107,6 +108,7 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                     })
                 } else {
                     this.$el.find(".dropdown-layer .cur-value").html('没有对应的分层策略');
+                    this.initRuleTable();
                 }
             },
 
@@ -114,7 +116,6 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                 if (error && error.status == 404) {
                     this.notEditId = [];
                     this.setLayerDefaultData();
-                    this.initRuleTable();
                 } else if (error && error.message && error.status != 404) {
                     alert(error.message);
                 } else {

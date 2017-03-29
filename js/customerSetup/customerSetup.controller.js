@@ -29,6 +29,7 @@ define("customerSetup.controller", ['require','exports'],
         },
 
         timestampCallback: function(query, query2) {
+            if(!AUTH_OBJ.TimeSafetychain) return;
             require(['timestamp.view', 'timestamp.model'], function(TimestampView, TimestampModel){
                 this.navbarView.select('customerSetup');
                 this.curPage = 'customerSetup-domainList-timestamp';
@@ -53,6 +54,7 @@ define("customerSetup.controller", ['require','exports'],
         },
 
         refererAntiLeechCallback: function(query, query2) {
+            //if(!AUTH_OBJ.referIPMatchingCondition) return;
             require(['refererAntiLeech.view', 'refererAntiLeech.model'], function(RefererAntiLeechView, RefererAntiLeechModel){
                 this.navbarView.select('customerSetup');
                 this.curPage = 'customerSetup-domainList-refererAntiLeech';
@@ -77,6 +79,7 @@ define("customerSetup.controller", ['require','exports'],
         },
 
         ipBlackWhiteListCallback: function(query, query2) {
+            //if(!AUTH_OBJ.IPMatchingCondition) return;
             require(['ipBlackWhiteList.view', 'ipBlackWhiteList.model'], function(IpBlackWhiteListView, IpBlackWhiteListModel){
                 this.navbarView.select('customerSetup');
                 this.curPage = 'customerSetup-domainList-ipBlackWhiteList';
@@ -125,6 +128,7 @@ define("customerSetup.controller", ['require','exports'],
         },
 
         httpHeaderCtrCallback: function(query, query2) {
+            if(!AUTH_OBJ.HttpheadControl) return;
             require(['httpHeaderCtr.view', 'httpHeaderCtr.model'], function(HttpHeaderCtrView, HttpHeaderCtrModel){
                 this.navbarView.select('customerSetup');
                 this.curPage = 'customerSetup-domainList-httpHeaderCtr';
@@ -149,6 +153,7 @@ define("customerSetup.controller", ['require','exports'],
         },
 
         httpHeaderOptCallback: function(query, query2) {
+            if(!AUTH_OBJ.HttpheadControl) return;
             require(['httpHeaderOpt.view', 'httpHeaderOpt.model'], function(HttpHeaderOptView, HttpHeaderOptModel){
                 this.navbarView.select('customerSetup');
                 this.curPage = 'customerSetup-domainList-httpHeaderOpt';
@@ -173,6 +178,7 @@ define("customerSetup.controller", ['require','exports'],
         },
 
         clientLimitSpeedCallback: function(query, query2) {
+            if(!AUTH_OBJ.SpeedLimit) return;
             require(['clientLimitSpeed.view', 'clientLimitSpeed.model'], function(ClientLimitSpeedView, ClientLimitSpeedModel){
                 this.navbarView.select('customerSetup');
                 this.curPage = 'customerSetup-domainList-clientLimitSpeed';
@@ -197,6 +203,7 @@ define("customerSetup.controller", ['require','exports'],
         },
 
         dragPlayCallback: function(query, query2) {
+            if(!AUTH_OBJ.OndemandOptimization) return;
             require(['dragPlay.view', 'dragPlay.model'], function(DragPlayView, DragPlayModel){
                 this.navbarView.select('customerSetup');
                 this.curPage = 'customerSetup-domainList-dragPlay';

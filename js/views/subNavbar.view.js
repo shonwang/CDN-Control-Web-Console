@@ -159,7 +159,7 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     {
                         id: 'customerSetup-domainList-ipBlackWhiteList',
                         name: 'IP黑白名单',
-                        notShow:!AUTH_OBJ.IPMatchingCondition,
+                        //notShow:!AUTH_OBJ.IPMatchingCondition,
                         hash: 'index.html#/domainList/' + query + /ipBlackWhiteList/ + query2,
                         active: false,
                         children: []
@@ -167,7 +167,7 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     {
                         id: 'customerSetup-domainList-refererAntiLeech',
                         name: 'Referer防盗链',
-                        notShow:!AUTH_OBJ.referIPMatchingCondition,
+                        //notShow:!AUTH_OBJ.referIPMatchingCondition,
                         hash: 'index.html#/domainList/' + query + /refererAntiLeech/ + query2,
                         active: false,
                         children: []

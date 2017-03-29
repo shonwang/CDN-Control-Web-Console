@@ -54,7 +54,7 @@ define("customerSetup.controller", ['require','exports'],
         },
 
         refererAntiLeechCallback: function(query, query2) {
-            if(!AUTH_OBJ.referIPMatchingCondition) return;
+            //if(!AUTH_OBJ.referIPMatchingCondition) return;
             require(['refererAntiLeech.view', 'refererAntiLeech.model'], function(RefererAntiLeechView, RefererAntiLeechModel){
                 this.navbarView.select('customerSetup');
                 this.curPage = 'customerSetup-domainList-refererAntiLeech';
@@ -79,7 +79,7 @@ define("customerSetup.controller", ['require','exports'],
         },
 
         ipBlackWhiteListCallback: function(query, query2) {
-            if(!AUTH_OBJ.IPMatchingCondition) return;
+            //if(!AUTH_OBJ.IPMatchingCondition) return;
             require(['ipBlackWhiteList.view', 'ipBlackWhiteList.model'], function(IpBlackWhiteListView, IpBlackWhiteListModel){
                 this.navbarView.select('customerSetup');
                 this.curPage = 'customerSetup-domainList-ipBlackWhiteList';

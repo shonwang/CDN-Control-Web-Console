@@ -153,6 +153,9 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
                 return;
             }
 
+            this.curType = model.get("type");
+            this.curProtocol = model.get("protocol");
+
             this.redirectToManage();
         },
 

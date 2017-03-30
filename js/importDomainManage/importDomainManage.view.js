@@ -12,10 +12,12 @@ define("importDomainManage.view", ['require','exports', 'template', 'modal.view'
 
             this.collection.on("get.list.success", $.proxy(this.onGetDomainList, this));
             this.collection.on("get.list.error", $.proxy(this.onGetError, this));
-            // this.collection.on("update.client", $.proxy(this.updateUserInfoView, this));
-            // this.collection.on("update.assess.table", $.proxy(this.initTable, this));
-            // this.collection.on("get.evaluationFlag.success", $.proxy(this.onGetEvaluationSuccess, this));
-            // this.collection.on("get.evaluationFlag.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.stop.success", $.proxy(this.refreshList, this));
+            this.collection.on("set.stop.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.open.success", $.proxy(this.refreshList, this));
+            this.collection.on("set.open.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.delete.success", $.proxy(this.refreshList, this));
+            this.collection.on("set.delete.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.enterKeyBindQuery();
@@ -75,11 +77,31 @@ define("importDomainManage.view", ['require','exports', 'template', 'modal.view'
 
             this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
             this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
+            this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));
+            this.table.find("tbody .open").on("click", $.proxy(this.onClickItemOpen, this));
         },
 
         onGetDomainList: function(res){
             if (!this.isInitPaginator) this.initPaginator();
             this.initTable();
+        },
+
+        onClickItemOpen: function(event){
+            var eventTarget = event.srcElement || event.target, 
+                id = $(eventTarget).attr("id");
+
+            var model = this.collection.get(id),
+                cnameId = model.get('cnameId');
+            this.collection.activeCname({cnameId: cnameId, t: new Date().valueOf()})
+        },
+
+        onClickItemStop: function(event){
+            var eventTarget = event.srcElement || event.target, 
+                id = $(eventTarget).attr("id");
+
+            var model = this.collection.get(id),
+                cnameId = model.get('cnameId');
+            this.collection.forbiddenCname({cnameId: cnameId, t: new Date().valueOf()})
         },
 
         onClickAddDomain: function(){
@@ -122,32 +144,33 @@ define("importDomainManage.view", ['require','exports', 'template', 'modal.view'
         },
 
         onClickItemDelete: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
+            var eventTarget = event.srcElement || event.target, 
                 id = $(eventTarget).attr("id");
-            }
 
-            var model = this.collection.get(id);
-            this.collection.remove(model);
-            this.collection.models.reverse();
-            this.collection.trigger("update.assess.table");
+            var model = this.collection.get(id),
+                cnameId = model.get('cnameId');
+            this.collection.deleteCname({cnameId: cnameId, t: new Date().valueOf()})
         },
 
-        onClickItemEdit: function(){
-            var myHistoryView = new HistoryView({
-                collection: this.collection,
-                onSaveCallback: function(){}.bind(this),
-                onCancelCallback: function(){
-                    myHistoryView.$el.remove();
-                    this.$el.find(".list-panel").show();
-                }.bind(this)
-            })
+        onClickItemEdit: function(event){
+            require(['importDomainManage.edit.view'], function(ImportDomainManageEditView){
+                var eventTarget = event.srcElement || event.target, 
+                    id = $(eventTarget).attr("id");
 
-            this.$el.find(".list-panel").hide();
-            myHistoryView.render(this.$el.find(".history-panel"))
+                var model = this.collection.get(id);
+                var myHistoryView = new HistoryView({
+                    curModel: model,
+                    collection: this.collection,
+                    onSaveCallback: function(){}.bind(this),
+                    onCancelCallback: function(){
+                        myHistoryView.$el.remove();
+                        this.$el.find(".list-panel").show();
+                    }.bind(this)
+                })
+
+                this.$el.find(".list-panel").hide();
+                myHistoryView.render(this.$el.find(".history-panel"))
+            }.bind(this))
         },
 
         initChannelDropMenu: function(){
@@ -175,8 +198,8 @@ define("importDomainManage.view", ['require','exports', 'template', 'modal.view'
 
         initPaginator: function () {
             this.$el.find(".total-items span").html(this.collection.total)
-            if (this.collection.total <= this.queryArgs.count) return;
-            var total = Math.ceil(this.collection.total / this.queryArgs.count);
+            if (this.collection.total <= this.queryArgs.pageSize) return;
+            var total = Math.ceil(this.collection.total / this.queryArgs.pageSize);
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
                 visiblePages: 10,
@@ -198,13 +221,14 @@ define("importDomainManage.view", ['require','exports', 'template', 'modal.view'
         initNumberDrop: function () {
             var dispatch302Array = [
                 {name: "全部", value: 'all'},
-                {name: "未开启", value: 0},
+                {name: "关闭", value: 0},
                 {name: "开启", value: 1}
             ]
             Utility.initDropMenu(this.$el.find(".dropdown-302dispatch"), dispatch302Array, function (value) {
-                this.queryArgs.open302 = value;
                 if (value === "all")
                     this.queryArgs.open302 = null;
+                else
+                    this.queryArgs.open302 = parseInt(value);
                 this.refreshList();
             }.bind(this));
 

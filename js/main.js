@@ -166,6 +166,7 @@ window.DEBUG = 1.1;
 
 
 
+
 if (window.DEBUG === 1)
     window.BASE_URL = "http://develop.gateway.center.cdn.ksyun.com";
 else if (window.DEBUG === 1.1)

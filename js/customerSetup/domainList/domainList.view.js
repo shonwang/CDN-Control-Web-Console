@@ -165,7 +165,7 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
 
             var message = `<div class="alert alert-danger">
                                 <strong>重要提示: </strong><br>
-                                使用中控对域名进行编辑管理后，该域名在控制台或使用OpenAPI进行修改下发配置
+                                使用中控编辑管理域名配置后，该域名将不能在控制台或使用OpenAPI进行配置修改配置”，是否确认使用？
                            </div>`;
             var options = {
                 title: "警告",

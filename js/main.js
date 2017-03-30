@@ -80,6 +80,9 @@
   "importAssess.edit.view": "importAssess/importAssess.edit.view",
   "importAssess.model": "importAssess/importAssess.model",
   "importAssess.view": "importAssess/importAssess.view",
+  "importDomainManage.edit.view": "importDomainManage/importDomainManage.edit.view",
+  "importDomainManage.model": "importDomainManage/importDomainManage.model",
+  "importDomainManage.view": "importDomainManage/importDomainManage.view",
   "ipManage.model": "ipManage/ipManage.model",
   "ipManage.view": "ipManage/ipManage.view",
   "liveAllSetup.model": "liveAllSetup/liveAllSetup.model",
@@ -128,6 +131,7 @@
 };
 //PATH END===
 window.DEBUG = 1.1;
+
 
 if (window.DEBUG === 1)
     window.BASE_URL = "http://develop.gateway.center.cdn.ksyun.com";

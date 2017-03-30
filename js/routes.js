@@ -16,6 +16,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
             "dispGroup"           : "dispGroup",
             "dispConfig"          : "dispConfig",
             "importAssess"        : "importAssess",
+            "importDomainManage"  : "importDomainManage",
             "coverRegion"         : "coverRegion",
             "coverManage"         : "coverManage",
             "liveAllSetup"        : "liveAllSetup",
@@ -80,6 +81,9 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                     break;
                 case 'importAssess':
                     this.importAssessView.hide();
+                    break;
+                case 'importDomainManage':
+                    this.importDomainManageView.hide();
                     break;
                 case 'dispConfig':
                     this.dispConfigView.remove();
@@ -342,6 +346,10 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
 
         importAssess: function(){
             this.navbarView.initLogin($.proxy(Controller.importAssessCallback, this))
+        },
+
+        importDomainManage: function(){
+            this.navbarView.initLogin($.proxy(Controller.importDomainManageCallback, this))
         },
 
         dispGroup: function(){

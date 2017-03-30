@@ -47,8 +47,8 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
             _.each(data, function(el, index, ls) {
                 if (el.createTime)
                     el.createTimeFormated = new Date(el.createTime).format("yyyy/MM/dd hh:mm:ss");
-                if (el.deliveryStatus === -1) el.statusStr === "<span class='test-danger'>失败</span>";
-                if (el.deliveryStatus === 1) el.statusStr === "<span class='test-success'>成功</span>";
+                if (el.deliveryStatus === -1) el.statusStr = "<span class='test-danger'>失败</span>";
+                if (el.deliveryStatus === 1) el.statusStr = "<span class='test-success'>成功</span>";
                 this.originId = el.originId;
             }.bind(this))
 

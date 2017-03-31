@@ -77,18 +77,15 @@ define("importDomainManage.model", ['require','exports', 'utility'], function(re
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        getCnameList: function(args){
-            var url = BASE_URL + "/rs/evaluation/getCnameList",
+        editCname: function(args){
+            var url = BASE_URL + "/cname/editCname",
             successCallback = function(res){
-                if (res)
-                    this.trigger("get.cname.success", res);
-                else
-                    this.trigger("get.cname.error");
+                this.trigger("set.cname.success", res);
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("get.cname.error", response);
+                this.trigger("set.cname.error", response);
             }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
         getEvaluationFlag: function(args){

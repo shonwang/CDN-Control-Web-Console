@@ -1,88 +1,143 @@
 define("importDomainManage.edit.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
     
-    var SelectDomainView = Backbone.View.extend({
+    var SelectDispView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
-            this.domainArray = options.domainArray;
 
-            this.$el = $(_.template(template['tpl/importDomainManage/importDomainManage.select.domain.html'])());
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickConfirmButton, this));
+            this.$el = $(_.template(template['tpl/importDomainManage/importDomainManage.select.disp.html'])());
+            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickSearchButton, this));
+            this.$el.find(".opt-ctn .cancel-select").on("click", $.proxy(this.onClickCancelSelectButton, this));
 
-            this.initChannelDropMenu();
+            this.curPage = 1;
+            this.initDispListDropMenu();
 
             this.queryArgs = {
-                cname: null,
-                currentPage:1,
-                pageSize:10
-            }
-            this.onClickConfirmButton();
+                    "name"  : null,//调度组名称
+                    "status": null,//调度组状态
+                    "level" : null,//覆盖级别
+                    "remark": null,
+                    "page"  : 1,
+                    "count" : 10
+                }
+            this.refreshList();
+        },
+
+        getDispGroupList: function(){
+            require(["dispGroup.model"], function(DispGroupModel){
+                this.myDispGroupModel = new DispGroupModel();
+                this.myDispGroupModel.on("get.dispGroup.success", $.proxy(this.onGetDispGroupList, this));
+                this.myDispGroupModel.on("get.dispGroup.error", $.proxy(this.onGetError, this));
+                this.myDispGroupModel.getDispGroupList(this.queryArgs);
+            }.bind(this))
         },
 
         enterKeyBindQuery: function(){
             $(document).on('keydown', function(e){
                 if(e.keyCode == 13){
-                    this.onClickConfirmButton();
+                    this.onClickSearchButton();
                 }
             }.bind(this));
         },
 
-        onClickConfirmButton: function(){
+        onClickSearchButton: function(){
+            this.curPage = 1;
+            this.refreshList();
+        },
+
+        refreshList: function(){
             this.isInitPaginator = false;
-            this.queryArgs.currentPage = 1;
-            this.queryArgs.cname = this.$el.find("#input-cname").val();
-            if (this.queryArgs.cname == "") this.queryArgs.cname = null;
+            this.queryArgs.page = this.curPage;
+            this.queryArgs.name = this.$el.find("#input-name").val().trim();
+            if (this.queryArgs.name == "") this.queryArgs.name = null; 
+            this.queryArgs.remark = this.$el.find("#input-remark").val().trim();
+            if (this.queryArgs.remark == "") this.queryArgs.remark = null; 
 
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
+            this.getDispGroupList();
+        },
 
-            this.collection.on("get.cname.success", $.proxy(this.initTable, this));
-            this.collection.on("get.cname.error", $.proxy(this.onGetError, this));
-            this.collection.getCnameList(this.queryArgs)
+        onGetDispGroupList: function(){
+            this.myDispGroupModel.off("ip.type.success");
+            this.myDispGroupModel.off("ip.type.error");
+            this.myDispGroupModel.on("ip.type.success", $.proxy(this.onGetIpTypeSuccess, this));
+            this.myDispGroupModel.on("ip.type.error", $.proxy(this.onGetError, this));
+            this.myDispGroupModel.ipTypeList();
+        },
+
+        onGetIpTypeSuccess: function(data){
+            _.each(this.myDispGroupModel.models, function(el, inx, list){
+                var ipObj = _.find(data, function(obj){
+                    return parseInt(obj.id) === parseInt(el.get("resolveIpType"))
+                }.bind(this))
+                if (ipObj) el.set("resolveIpTypeName", ipObj.name)
+            }.bind(this))
+
+            this.initTable();
+            if (!this.isInitPaginator) this.initPaginator();
         },
 
         initTable: function(data){
-            this.collection.total = data.total;
-            this.cnameList = data.rows;
-
-            if (!this.isInitPaginator) this.initPaginator();
-
-            this.table = $(_.template(template['tpl/importDomainManage/importDomainManage.domain.table.html'])({
-                data: this.cnameList, 
+            this.table = $(_.template(template['tpl/importDomainManage/importDomainManage.disp.table.html'])({
+                data: this.myDispGroupModel.models,
+                permission:{}
             }));
-            if (this.cnameList.length !== 0)
+            if (this.myDispGroupModel.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+
+            this.table.find(".remark").popover();
+            this.table.find("tbody input").on("click", $.proxy(this.onClickRadioButton, this));
         },
 
-        initPaginator: function(){
-            this.$el.find(".total-items span").html(this.collection.total)
-            if (this.collection.total <= this.queryArgs.pageSize) return;
-            var total = Math.ceil(this.collection.total/this.queryArgs.pageSize);
+        onClickCancelSelectButton: function(){
+            _.each(this.table.find("tbody input"), function(el){
+                el.checked = false;
+            })
+            this.options.onCancelSelectCallback && this.options.onCancelSelectCallback()
+        },
 
+        onClickRadioButton: function(event){
+            var eventTarget = event.srcElement || event.target, 
+                id = $(eventTarget).attr("id");
+
+            var dispName = $(eventTarget).siblings('span').html();
+
+            var data = {
+                dispId: id,
+                dispName: dispName
+            }
+
+            this.options.onOKCallback && this.options.onOKCallback(data)
+        },
+
+        initPaginator: function () {
+            this.$el.find(".total-items span").html(this.myDispGroupModel.total)
+            if (this.myDispGroupModel.total <= this.queryArgs.count) return;
+            var total = Math.ceil(this.myDispGroupModel.total / this.queryArgs.count);
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
                 visiblePages: 10,
-                currentPage: 1,
-                first: '',
-                last: '',
+                currentPage: this.curPage,
                 onPageChange: function (num, type) {
-                    if (type !== "init"){
+                    if (type !== "init") {
                         this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                         var args = _.extend(this.queryArgs);
-                        args.currentPage = num;
-                        args.pageSize = this.queryArgs.pageSize;
-                        this.collection.getCnameList(args);
+                        args.page = num;
+                        this.curPage = num;
+                        args.count = this.queryArgs.count;
+                        this.refreshList();
                     }
                 }.bind(this)
             });
             this.isInitPaginator = true;
         },
 
-        initChannelDropMenu: function(){
+        initDispListDropMenu: function(){
             var pageNum = [
                 {name: "10条", value: 10},
                 {name: "20条", value: 20},
@@ -90,24 +145,9 @@ define("importDomainManage.edit.view", ['require','exports', 'template', 'modal.
                 {name: "100条", value: 100}
             ]
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
-                this.queryArgs.pageSize = value;
-                this.queryArgs.currentPage = 1;
-                this.onClickConfirmButton();
+                this.queryArgs.count = value;
+                this.refreshList();
             }.bind(this));
-        },
-
-        onSure: function(){
-            var selectedDomain = this.$el.find("input:checked");
-            if (!selectedDomain.get(0)){
-                alert("请选择一个域名")
-                return false;
-            }
-            var id = selectedDomain.get(0).id,
-                model = _.find(this.cnameList, function(obj){
-                    return obj.id === parseInt(id)
-                }.bind(this));
-
-            return model;   
         },
 
         onGetError: function(error){
@@ -131,110 +171,86 @@ define("importDomainManage.edit.view", ['require','exports', 'template', 'modal.
         initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
-            this.model      = options.model;
+            this.model      = options.curModel;
 
-            this.$el = $(_.template(template['tpl/importDomainManage/importDomainManage.history.html'])({data: {}}));
+            this.$el = $(_.template(template['tpl/importDomainManage/importDomainManage.edit.html'])({data: this.model}));
+            this.$el.find(".hide-disp-domain").on("click", $.proxy(this.onClickHideDisp, this));
+            this.$el.find(".show-disp-domain").on("click", $.proxy(this.onClickShowDisp, this));
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-            this.$el.find(".query").on("click", $.proxy(this.onClickSearchButton, this));
+            this.$el.find(".togglebutton input").on("click", $.proxy(this.onClickToggle, this));
+            this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
 
-            this.startTime = new Date().format("yyyy/MM/dd") + " 00:00:00";
-            this.endTime = new Date().valueOf();
-            this.startTime = new Date(this.startTime).valueOf();
-
-            this.initChargeDatePicker();
-
-            this.defaultParam = {
-                // "page" : 1,
-                // "count": 99999,
-                "startIssueTime": this.startTime,
-                "endIssueTime": this.endTime
-            }
-
-            this.collection.off("get.history.success");
-            this.collection.off("get.history.error");
-            this.collection.on("get.history.success", $.proxy(this.initSetup, this));
-            this.collection.on("get.history.error", $.proxy(this.onGetError, this))
-            this.collection.getHistoryList(this.defaultParam);
+            this.currentDispId = this.model.get('dispId');
+            this.curOpen302 = this.model.get('open302') ? 1 : 0;
+            this.$el.find(".disp-list-ctn").hide();
+            this.initDispList();
         },
 
-        initChargeDatePicker: function(){
-            var startVal = null, endVal = null;
-            if (this.startTime)
-                startVal = new Date(this.startTime).format("yyyy/MM/dd hh:mm");
-            var startOption = {
-                lang:'ch',
-                timepicker: true,
-                scrollInput: false,
-                format:'Y/m/d H:i', 
-                value: startVal, 
-                onChangeDateTime: function(){
-                    this.startTime = new Date(arguments[0]).valueOf();
-                }.bind(this)
-            };
-            this.$el.find("#input-start").datetimepicker(startOption);
-            if (this.endTime)
-                endVal = new Date(this.endTime).format("yyyy/MM/dd hh:mm");
-            var endOption = {
-                lang:'ch',
-                timepicker: true,
-                scrollInput: false,
-                format:'Y/m/d H:i', 
-                value: endVal, 
-                onChangeDateTime: function(){
-                    this.endTime = new Date(arguments[0]).valueOf();
-                }.bind(this)
-            };
-            this.$el.find("#input-end").datetimepicker(endOption);
-        },
+        onClickToggle: function(){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
 
-        initSetup: function(data){
-            //if (!this.isInitPaginator) this.initPaginator();
-
-            this.historyList = data;
-
-            _.each(data, function(el, index, ls){
-                el.createTimeFormated = new Date(el.createTime).format("yyyy/mm/dd hh:MM:ss")
-            }.bind(this))
-
-            this.table = $(_.template(template['tpl/importDomainManage/importDomainManage.history.table.html'])({
-                data: data, 
-            }));
-            if (data.length !== 0)
-                this.$el.find(".table-ctn").html(this.table[0]);
+            var message = '';
+            if (!this.curOpen302)
+                message = this.model.get('domain') || "[后端返回domain为null]" + "域名是否确定要开启302调度服务？"
             else
-                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+                message = this.model.get('domain') || "[后端返回domain为null]" + "域名是否确定要关闭302调度服务？"
+
+            var result = confirm(message)
+            if (!result)
+                eventTarget.checked = !eventTarget.checked
+            this.curOpen302 = eventTarget.checked ? 1 : 0;
         },
 
-        initPaginator: function(){
-            this.$el.find(".total-items span").html(this.historyList.total)
-            if (this.historyList.total <= this.defaultParam.count) return;
-            var total = Math.ceil(this.historyList.total/this.defaultParam.count);
+        onClickSaveButton: function(){
+            var message = this.model.get('cname') + '接入域名将CNAME到' + this.model.get('dispDomain') + '调度域名，是否确定修改？';
+            var result = confirm(message);
+            var postParam = {
+                cnameId: this.model.get("cnameId"),
+                topoId: this.model.get("topoId"),
+                dispId: this.currentDispId,
+                open302: this.curOpen302
+            }
+            if (result) {
+                this.collection.off("set.cname.success");
+                this.collection.off("set.cname.error");
+                this.collection.on("set.cname.success", $.proxy(this.onSaveSuccess, this));
+                this.collection.on("set.cname.error", $.proxy(this.onGetError, this));
+                this.collection.editCname(postParam)
+            }
+        },
 
-            this.$el.find(".pagination").jqPaginator({
-                totalPages: total,
-                visiblePages: 10,
-                currentPage: 1,
-                onPageChange: function (num, type) {
-                    if (type !== "init"){
-                        this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                        var args = _.extend(this.defaultParam);
-                        args.page = num;
-                        args.count = this.defaultParam.count;
-                        this.collection.getHistoryList(args);
-                    }
+        onSaveSuccess: function(){
+            alert("保存并下发成功")
+            this.onClickCancelButton();
+        },
+
+        onClickHideDisp: function(){
+            this.$el.find(".hide-disp-domain").hide();
+            this.$el.find(".show-disp-domain").show();
+            this.$el.find(".disp-list-ctn").hide(200);
+        },
+
+        onClickShowDisp: function(){
+            this.$el.find(".hide-disp-domain").show();
+            this.$el.find(".show-disp-domain").hide();
+            this.$el.find(".disp-list-ctn").show(200);
+        },
+
+        initDispList: function(){
+            var mySelectDispView = new SelectDispView({
+                curModel: this.model,
+                collection: this.collection,
+                onOKCallback: function(data){
+                    this.currentDispId = data.dispId;
+                    this.$el.find(".disp-domain .disp-domain-html").html(data.dispName)
+                }.bind(this),
+                onCancelSelectCallback: function(){
+                    this.currentDispId = this.model.get('dispId');
+                    this.$el.find(".disp-domain .disp-domain-html").html(this.model.get('dispDomain'));
                 }.bind(this)
             });
-            this.isInitPaginator = true;
-        },
-
-        onClickSearchButton: function(){
-            this.isInitPaginator = false;
-            this.defaultParam.page = 1;
-            this.defaultParam.startIssueTime = this.startTime;
-            this.defaultParam.endIssueTime = this.endTime;
-            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.$el.find(".pagination").html("");
-            this.collection.getHistoryList(this.defaultParam);
+            mySelectDispView.render(this.$el.find(".disp-list-ctn"))
         },
 
         onClickCancelButton: function(){

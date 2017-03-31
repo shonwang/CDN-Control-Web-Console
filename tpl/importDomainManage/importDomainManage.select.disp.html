@@ -1,28 +1,25 @@
-<div class="assess-manage-history">
-    <h3>接入评估<small>/历史记录</small></h3>
-    <div class="well history-panel">
-        <div>
-            <div class="opt-ctn">
-                <a href="javascript:void(0)" class="btn btn-default cancel">返回</a>
-            </div>
-            <hr>
-            <form class="form-inline" style="margin-bottom: 20px">
+<div>
+    <hr>
+    <div class="row">
+        <div class="col-md-offset-1 col-md-8 opt-ctn">
+            <div class="form-inline">
                 <div class="form-group">
-                    <label for="input-start">开始</label>
-                    <input type="text" class="form-control" id="input-start" readonly="true">
+                    <label for="input-cname">名称</label>
+                    <input type="text" class="form-control" id="input-name">
                 </div>
                 <div class="form-group">
-                    <label for="input-end">结束</label>
-                    <input type="text" class="form-control" id="input-end" readonly="true">
+                    <label for="input-domain">备注</label>
+                    <input type="text" class="form-control" id="input-remark">
                 </div>
                 <a href="javascript:void(0)" class="btn btn-primary query"><span class="glyphicon glyphicon-search"></span>查询</a>
-            </form>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="table-ctn table-responsive"></div>
-                </div>
+                <a href="javascript:void(0)" class="btn btn-default cancel-select">取消选择</a>
             </div>
-<!--             <div class="page-ctn row">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-offset-1 col-md-11">
+            <div class="table-ctn table-responsive"></div>
+            <div class="page-ctn row">
                 <div class="col-md-8 text-center">
                     <div class="pagination"></div>
                 </div>
@@ -47,8 +44,7 @@
                         </div>
                     </form>
                 </div>
-            </div> -->
+            </div>
         </div>
     </div>
 </div>
-

@@ -38,11 +38,12 @@ define("importDomainManage.view", ['require','exports', 'template', 'modal.view'
         },
 
         refreshList: function () {
+            this.disablePopup && this.disablePopup.$el.modal('hide');
             this.isInitPaginator = false;
             this.queryArgs.currentPage = this.curPage;
-            this.queryArgs.cname = this.$el.find("#input-cname").val();
+            this.queryArgs.cname = this.$el.find("#input-cname").val().trim();
             if (this.queryArgs.cname == "") this.queryArgs.cname = null;
-            // this.queryArgs.domain = this.$el.find("#input-domain").val();
+            // this.queryArgs.domain = this.$el.find("#input-domain").val().trim();
             // if (this.queryArgs.domain == "") this.queryArgs.domain = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
@@ -59,6 +60,8 @@ define("importDomainManage.view", ['require','exports', 'template', 'modal.view'
         },
 
         onGetError: function(error){
+            this.disablePopup && this.disablePopup.$el.modal('hide');
+            this.refreshList();
             if (error&&error.message)
                 alert(error.message)
             else
@@ -93,6 +96,7 @@ define("importDomainManage.view", ['require','exports', 'template', 'modal.view'
             var model = this.collection.get(id),
                 cnameId = model.get('cnameId');
             this.collection.activeCname({cnameId: cnameId, t: new Date().valueOf()})
+            this.showDisablePopup("服务器正在努力处理中...")
         },
 
         onClickItemStop: function(event){
@@ -102,45 +106,19 @@ define("importDomainManage.view", ['require','exports', 'template', 'modal.view'
             var model = this.collection.get(id),
                 cnameId = model.get('cnameId');
             this.collection.forbiddenCname({cnameId: cnameId, t: new Date().valueOf()})
+            this.showDisablePopup("服务器正在努力处理中...")
         },
 
-        onClickAddDomain: function(){
-            var checkedList = this.collection.filter(function(model) {
-                return model.get("isChecked") === true;
-            });
-
-            var domainArray = [];
-            _.each(checkedList, function(el, index, ls){
-                domainArray.push({
-                    domain: el.get("domain"), 
-                    id: el.get("id")
-                });
-            }.bind(this))
-
-            if (this.selectDomain) $("#" + this.selectDomain.modalId).remove();
-
-            var mySelectDomainView = new SelectDomainView({
-                collection: this.collection, 
-                domainArray : domainArray
-            });
+        showDisablePopup: function (msg) {
+            if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
             var options = {
-                title: "选择接入域名",
-                body : mySelectDomainView,
-                backdrop : 'static',
-                type     : 2,
-                onOKCallback:  function(){
-                    var result  = mySelectDomainView.onSure();
-                    if (!result) return;
-                    this.$el.find("#input-cname").val(result.name)
-                    this.collection.getClientMessage({cnameId: result.id})
-                    //this.collection.getClientMessage({cname: "mt.huluxia.com.download.ks-cdn.com"})
-                    this.selectDomain.$el.modal("hide");
-                }.bind(this),
-                onHiddenCallback: function(){
-                    this.enterKeyBindQuery();
-                }.bind(this)
+                title: "警告",
+                body: '<div class="alert alert-danger"><strong>' + msg + '</strong></div>',
+                backdrop: 'static',
+                type: 0,
             }
-            this.selectDomain = new Modal(options);
+            this.disablePopup = new Modal(options);
+            this.disablePopup.$el.find(".close").remove();
         },
 
         onClickItemDelete: function(event){
@@ -150,50 +128,30 @@ define("importDomainManage.view", ['require','exports', 'template', 'modal.view'
             var model = this.collection.get(id),
                 cnameId = model.get('cnameId');
             this.collection.deleteCname({cnameId: cnameId, t: new Date().valueOf()})
+            this.showDisablePopup("服务器正在努力处理中...")
         },
 
         onClickItemEdit: function(event){
+            $(document).off('keydown');
             require(['importDomainManage.edit.view'], function(ImportDomainManageEditView){
                 var eventTarget = event.srcElement || event.target, 
                     id = $(eventTarget).attr("id");
 
                 var model = this.collection.get(id);
-                var myHistoryView = new HistoryView({
+                var myImportDomainManageEditView = new ImportDomainManageEditView({
                     curModel: model,
                     collection: this.collection,
                     onSaveCallback: function(){}.bind(this),
                     onCancelCallback: function(){
-                        myHistoryView.$el.remove();
+                        myImportDomainManageEditView.$el.remove();
                         this.$el.find(".list-panel").show();
+                        this.enterKeyBindQuery();
                     }.bind(this)
                 })
 
                 this.$el.find(".list-panel").hide();
-                myHistoryView.render(this.$el.find(".history-panel"))
+                myImportDomainManageEditView.render(this.$el.find(".history-panel"))
             }.bind(this))
-        },
-
-        initChannelDropMenu: function(){
-            require(["dispGroup.model"], function(DispGroupModel){
-                this.myDispGroupModel = new DispGroupModel();
-                this.myDispGroupModel.on("get.dispGroup.success", $.proxy(this.onGetDispGroupList, this));
-                this.myDispGroupModel.on("get.dispGroup.error", $.proxy(this.onGetError, this));
-                this.myDispGroupModel.getDispGroupList({
-                    "name"  : null,//调度组名称
-                    "status": null,//调度组状态
-                    "level" : null,//覆盖级别
-                    "page"  : 1,
-                    "count" : 99999
-                });
-            }.bind(this))
-
-            this.collection.on("get.region.success", $.proxy(this.onGetRegionList, this));
-            this.collection.on("get.region.error", $.proxy(this.onGetError, this));
-            this.collection.selectRegionList({
-               "page": 1,
-               "count": 99999,
-               "name": null
-            });
         },
 
         initPaginator: function () {

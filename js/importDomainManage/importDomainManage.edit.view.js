@@ -228,13 +228,13 @@ define("importDomainManage.edit.view", ['require','exports', 'template', 'modal.
         onClickHideDisp: function(){
             this.$el.find(".hide-disp-domain").hide();
             this.$el.find(".show-disp-domain").show();
-            this.$el.find(".disp-list-ctn").hide(200);
+            this.$el.find(".disp-list-ctn").slideUp(200);
         },
 
         onClickShowDisp: function(){
             this.$el.find(".hide-disp-domain").show();
             this.$el.find(".show-disp-domain").hide();
-            this.$el.find(".disp-list-ctn").show(200);
+            this.$el.find(".disp-list-ctn").slideDown(200);
         },
 
         initDispList: function(){

@@ -759,6 +759,8 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 "trigger"  : "hover"
             })
 
+            this.table.find(".glyphicon-question-sign").popover();
+
             // this.table.find("tbody tr").find("input[type='checkbox']").on("click", $.proxy(this.onItemCheckedUpdated, this));
             // this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
         },

@@ -3,6 +3,24 @@ define("controller", ['require','exports'],
 
     var Controller = Backbone.Router.extend({
 
+        importDomainManageCallback: function(){
+            require(['importDomainManage.view', 'importDomainManage.model'], function(ImportDomainManageView, ImportDomainManageModel){
+                this.curPage = 'importDomainManage';
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                if (!this.importDomainManageModel)
+                    this.importDomainManageModel = new ImportDomainManageModel();
+                if (!this.importDomainManageView ){
+                    var options = {
+                        collection: this.importDomainManageModel
+                    };
+                    this.importDomainManageView = new ImportDomainManageView(options);
+                    this.importDomainManageView.render($('.ksc-content'));
+                } else {
+                    this.importDomainManageView.update();
+                }
+            }.bind(this));
+        },
+
         specialLayerManageCallback: function(){
             require(['specialLayerManage.view', 'specialLayerManage.model'], function(SpecialLayerManageView, SpecialLayerManageModel){
                 this.curPage = 'specialLayerManage';

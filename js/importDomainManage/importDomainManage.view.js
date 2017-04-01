@@ -92,9 +92,10 @@ define("importDomainManage.view", ['require','exports', 'template', 'modal.view'
         onClickItemOpen: function(event){
             var eventTarget = event.srcElement || event.target, 
                 id = $(eventTarget).attr("id");
-
             var model = this.collection.get(id),
                 cnameId = model.get('cnameId');
+            var result = confirm("是否确定启用" + model.get('cname') + "域名的CDN服务" )
+            if (!result) return;
             this.collection.activeCname({cnameId: cnameId, t: new Date().valueOf()})
             this.showDisablePopup("服务器正在努力处理中...")
         },
@@ -102,9 +103,10 @@ define("importDomainManage.view", ['require','exports', 'template', 'modal.view'
         onClickItemStop: function(event){
             var eventTarget = event.srcElement || event.target, 
                 id = $(eventTarget).attr("id");
-
             var model = this.collection.get(id),
                 cnameId = model.get('cnameId');
+            var result = confirm("是否确定暂停" + model.get('cname') + "域名的CDN服务" )
+            if (!result) return;
             this.collection.forbiddenCname({cnameId: cnameId, t: new Date().valueOf()})
             this.showDisablePopup("服务器正在努力处理中...")
         },
@@ -124,9 +126,10 @@ define("importDomainManage.view", ['require','exports', 'template', 'modal.view'
         onClickItemDelete: function(event){
             var eventTarget = event.srcElement || event.target, 
                 id = $(eventTarget).attr("id");
-
             var model = this.collection.get(id),
                 cnameId = model.get('cnameId');
+            var result = confirm("是否确定要删除接入域名：" + model.get('cname'))
+            if (!result) return;
             this.collection.deleteCname({cnameId: cnameId, t: new Date().valueOf()})
             this.showDisablePopup("服务器正在努力处理中...")
         },

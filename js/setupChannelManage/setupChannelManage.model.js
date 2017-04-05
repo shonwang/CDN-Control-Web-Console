@@ -27,6 +27,9 @@ define("setupChannelManage.model", ['require', 'exports', 'utility'], function(r
             if (protocol === 1) this.set("protocolName", "http+hlv");
             if (protocol === 2) this.set("protocolName", "hls");
             if (protocol === 3) this.set("protocolName", "rtmp");
+            if (protocol === 0) this.set("protocolName", "http");
+            if (protocol === 4) this.set("protocolName", "https");
+            if (!protocol) this.set("protocolName", "后端返回为空");
             if (cdnFactory === 1) this.set("cdnFactoryName", '自建');
             if (cdnFactory === 2) this.set("cdnFactoryName", '网宿');
             if (cdnFactory === 3) this.set("cdnFactoryName", '自建+网宿');
@@ -202,11 +205,7 @@ define("setupChannelManage.model", ['require', 'exports', 'utility'], function(r
         addTopologyRuleList: function(args) {
             var url = BASE_URL + '/channelManager/topology/addTopologyRoleList',
                 successCallback = function(res) {
-                    if (res) {
-                        this.trigger("set.layerStrategy.success", res);
-                    } else {
-                        this.trigger("set.layerStrategy.error");
-                    }
+                    this.trigger("set.layerStrategy.success", res);
                 }.bind(this),
                 errorCallback = function(response) {
                     this.trigger('set.layerStrategy.error', response)

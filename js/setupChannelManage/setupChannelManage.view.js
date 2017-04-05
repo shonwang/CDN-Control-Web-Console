@@ -100,6 +100,8 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
                 this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
                 this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+
+                this.table.find(".remark").popover();
             },
 
             onClickMultiModifyTopology: function() {

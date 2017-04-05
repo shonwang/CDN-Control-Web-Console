@@ -28,7 +28,15 @@
               <td><%=data[i].get("specialruleName")%></td>
               <td><%=data[i].get("statusName")%></td>
               <td><%=data[i].get("version")%></td>
-              <td><%=data[i].get("description")%></td>
+              <td>              
+                <a href="javascript:void(0)" class="remark" id="<%=data[i].attributes['id']%>"
+                   data-container="body" 
+                   data-toggle="popover"
+                   data-trigger="hover" 
+                   data-placement="top" 
+                   data-content='<%=data[i].get("description") || "无" %>'>备注</a>
+
+              </td>
               <td>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit" title="编辑">
                       <span class="glyphicon glyphicon-edit"></span>

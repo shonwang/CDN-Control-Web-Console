@@ -19,7 +19,7 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                     "rule": []
                 };
 
-                this.curLayerId = null;
+                this.curLayerId = this.model.get('topologyRoleId');
                 this.notEditId = [];
 
                 this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));

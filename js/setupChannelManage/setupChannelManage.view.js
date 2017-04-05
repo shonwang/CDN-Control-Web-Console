@@ -34,6 +34,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     "cdnFactory": null,
                     "auditStatus": null,
                     "topologyId": null,
+                    "roleId": null,
                     "currentPage": 1,
                     "pageSize": 10
                 }
@@ -539,6 +540,43 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     }
                     this.mySetupTopoManageModel.getTopoinfo(postParam);
                 }.bind(this))
+
+                require(["specialLayerManage.model"], function(SpecialLayerManage) {
+                    this.mySpecialLayerManage = new SpecialLayerManage();
+                    this.mySpecialLayerManage.on("get.strategyList.success", $.proxy(this.onGetLayerSuccess, this))
+                    this.mySpecialLayerManage.on("get.strategyList.error", $.proxy(this.onGetError, this))
+                    var postParam = {
+                        "name": null,
+                        "type": null,
+                        "page": 1,
+                        "size": 99999
+                    }
+                    this.mySpecialLayerManage.getStrategyList(postParam);
+                }.bind(this))
+            },
+
+            onGetLayerSuccess: function() {
+                var topoArray = [{
+                    name: "全部",
+                    value: "All"
+                },{
+                    name: "没有分层策略",
+                    value: -1
+                }]
+                this.mySpecialLayerManage.each(function(el, index, lst) {
+                    topoArray.push({
+                        name: el.get('name'),
+                        value: el.get('id')
+                    })
+                }.bind(this))
+
+                rootNode = this.$el.find(".dropdown-layer");
+                Utility.initDropMenu(rootNode, topoArray, function(value) {
+                    if (value == "All")
+                        this.queryArgs.roleId = null;
+                    else
+                        this.queryArgs.roleId = parseInt(value)
+                }.bind(this));
             },
 
             onGetTopoSuccess: function() {

@@ -86,18 +86,6 @@ define("importDomainManage.model", ['require','exports', 'utility'], function(re
                 this.trigger("set.cname.error", response);
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
-        },
-
-        getEvaluationFlag: function(args){
-            var url = BASE_URL + "/rs/advice/getEvaluationFlag",
-            successCallback = function(res){
-                this.trigger("get.evaluationFlag.success", res);
-            }.bind(this),
-            errorCallback = function(response){
-                this.trigger("get.evaluationFlag.error", response); 
-            }.bind(this);
-
-            Utility.postAjax(url, args, successCallback, errorCallback, null, "text");
         }
     });
 

@@ -121,7 +121,7 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
                     "taskStepId" : this.model.get('taskStepId'),//任务stepId
                     "deviceName" : null,
                     "nodeId": null,// "节点ID"
-                    "status": null,
+                    "status": 1,
                     "page": this.curPage,
                     "count": 10
                 };
@@ -133,7 +133,7 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
                     "taskId" : this.model.get('taskId'),//任务ID
                     "deviceName" : null,
                     "nodeId": null,// "节点ID"
-                    "status": null,
+                    "status": 1,
                     "page": this.curPage,
                     "count": 10
                 };

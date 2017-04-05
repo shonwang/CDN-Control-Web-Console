@@ -338,12 +338,11 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                     ruleName: this.$el.find(".dropdown-layer .cur-value").html()
                 };
 
-                this.collection.off("set.layerStrategy.success");
-                this.collection.off("set.layerStrategy.error");
-                this.collection.on("set.layerStrategy.success", $.proxy(this.addTopologyRuleSuccess, this));
-                this.collection.on("set.layerStrategy.error", $.proxy(this.onGetError, this));
-                this.collection.addTopologyRuleList(postParam)
-
+                this.collection.off("add.channel.topology.success");
+                this.collection.off("add.channel.topology.error");
+                this.collection.on("add.channel.topology.success", $.proxy(this.addTopologyRuleSuccess, this));
+                this.collection.on("add.channel.topology.error", $.proxy(this.onGetError, this));
+                this.collection.addTopologyList(postParam);
             },
 
             // addSpecialSuccess: function(res) {

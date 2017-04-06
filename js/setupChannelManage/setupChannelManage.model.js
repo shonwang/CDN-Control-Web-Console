@@ -29,7 +29,7 @@ define("setupChannelManage.model", ['require', 'exports', 'utility'], function(r
             if (protocol === 3) this.set("protocolName", "rtmp");
             if (protocol === 0) this.set("protocolName", "http");
             if (protocol === 4) this.set("protocolName", "https");
-            if (!protocol) this.set("protocolName", "后端返回为空");
+            if (protocol === null) this.set("protocolName", "后端返回为空");
             if (cdnFactory === 1) this.set("cdnFactoryName", '自建');
             if (cdnFactory === 2) this.set("cdnFactoryName", '网宿');
             if (cdnFactory === 3) this.set("cdnFactoryName", '自建+网宿');

@@ -8,19 +8,41 @@
             </div>
         </div>
     </div>
-    <% } else { %>
+    <% } else if (data.name === "拓扑关系"){ %>
     <div class="alert alert-dismissable alert-info">
         <button type="button" class="close" data-dismiss="alert">×</button>
         <strong>提示：</strong>更换拓扑关系会删除域名原有的特殊分层策略，如有需要，请在更换拓扑后重新添加
     </div>
     <% } %>
-    <div class="long-dropdown-menu">
+    <div class="long-dropdown-menu domain-list">
         <p>涉及的域名</p>
         <div class="domain-ctn"></div>
     </div>
     <hr>
     <div>
         <p>选择<%=data.name%></p>
+        <% if (data.name === "分层策略") { %>        
+        <input type="text" class="form-control" id="input-layer" placeholder="搜索">
+        <hr>
+        <% } %>
         <div class="table-ctn table-responsive long-dropdown-menu"></div>
     </div>
+    <% if (data.name === "拓扑关系") { %>
+    <div>
+        <hr>
+        <div class="form-horizontal">
+            <div class="form-group">
+                <label for="modify-host" class="col-sm-4 control-label">同时修改特殊分层策略</label>
+                <div class="col-sm-4 layer-toggle">
+                    <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                        <label>
+                            <input type="checkbox"><span class="toggle"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layer-ctn" style="display:none"></div>
+    </div>
+    <% } %>
 </div>

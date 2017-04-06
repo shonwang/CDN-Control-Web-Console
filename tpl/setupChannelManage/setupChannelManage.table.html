@@ -7,6 +7,8 @@
         <th>使用协议</th>
 <!--         <th>客户名称</th> -->
         <th>CDN厂商</th>
+        <th>拓扑关系</th>
+        <th>分层策略</th>
         <th>状态</th>   
         <th>版本号</th>  
         <th>备注</th>
@@ -22,9 +24,19 @@
               <td><%=data[i].get("protocolName")%></td>
 <!--               <td><%=data[i].get("cdnFactoryName")%></td> -->
               <td><%=data[i].get("cdnFactoryName")%></td>
+              <td><%=data[i].get("topologyName")%></td>
+              <td><%=data[i].get("specialruleName")%></td>
               <td><%=data[i].get("statusName")%></td>
               <td><%=data[i].get("version")%></td>
-              <td><%=data[i].get("description")%></td>
+              <td>              
+                <a href="javascript:void(0)" class="remark" id="<%=data[i].attributes['id']%>"
+                   data-container="body" 
+                   data-toggle="popover"
+                   data-trigger="hover" 
+                   data-placement="top" 
+                   data-content='<%=data[i].get("description") || "无" %>'>备注</a>
+
+              </td>
               <td>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit" title="编辑">
                       <span class="glyphicon glyphicon-edit"></span>

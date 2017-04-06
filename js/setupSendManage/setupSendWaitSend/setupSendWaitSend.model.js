@@ -98,6 +98,17 @@ define("setupSendWaitSend.model", ['require','exports', 'utility'], function(req
             }.bind(this);
             args.t = new Date().valueOf();
             Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        topoSpecialStrategy: function(args){
+            var url = BASE_URL + "/cd/predelivery/topoSpecialStrategy",
+            successCallback = function(res){
+                this.trigger("get.topoSpecialStrategy.success", res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.topoSpecialStrategy.error", response);  
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         }
     });
 

@@ -227,6 +227,9 @@ requirejs.config({
         "setupChannelManage.model": "setupChannelManage/setupChannelManage.model",
         "setupChannelManage.view": "setupChannelManage/setupChannelManage.view",
         "setupChannelManage.edit.view": "setupChannelManage/setupChannelManage.edit.view",
+        "setupChannelManage.specialLayer.view": "setupChannelManage/setupChannelManage.specialLayer.view",
+        "setupChannelManage.select.view": "setupChannelManage/setupChannelManage.select.view",
+        "setupChannelManage.history.view": "setupChannelManage/setupChannelManage.history.view",
 
         "addEditLayerStrategy.model": "setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.model",
         "addEditLayerStrategy.view": "setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.view",
@@ -258,6 +261,12 @@ requirejs.config({
 
         "setupSendWaitSend.model": "setupSendManage/setupSendWaitSend/setupSendWaitSend.model",
         "setupSendWaitSend.view": "setupSendManage/setupSendWaitSend/setupSendWaitSend.view",
+
+        "importAssess.model": "importAssess/importAssess.model",
+        "importAssess.view": "importAssess/importAssess.view",
+
+        "specialLayerManage.model": "specialLayerManage/specialLayerManage.model",
+        "specialLayerManage.view": "specialLayerManage/specialLayerManage.view",
     },
     urlArgs: new Date().valueOf()
 });

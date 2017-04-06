@@ -24,6 +24,7 @@ define("routes", ['require', 'exports', 'utility',
             "importAssess"        : "importAssess",
             "dispConfig"          : "dispConfig",
             "importAssess"        : "importAssess",
+            "specialLayerManage"  : "specialLayerManage",
             "coverRegion"         : "coverRegion",
             "coverManage"         : "coverManage",
             "liveAllSetup"        : "liveAllSetup",
@@ -106,6 +107,9 @@ define("routes", ['require', 'exports', 'utility',
                     break;
                 case 'importAssess':
                     this.importAssessView.hide();
+                    break;
+                case 'specialLayerManage':
+                    this.specialLayerManageView.hide();
                     break;
                 case 'dispConfig':
                     this.dispConfigView.remove();
@@ -419,6 +423,10 @@ define("routes", ['require', 'exports', 'utility',
 
         importAssess: function(){
             this.navbarView.initLogin($.proxy(Controller.importAssessCallback, this))
+        },
+
+        specialLayerManage: function(){
+            this.navbarView.initLogin($.proxy(Controller.specialLayerManageCallback, this))
         },
 
         dispGroup: function(){

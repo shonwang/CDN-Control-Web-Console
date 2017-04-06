@@ -9,7 +9,11 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                 this.collection = options.collection;
                 this.domainArray = options.domainArray;
 
-                this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({ data: { name: "拓扑关系" } }));
+                this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({
+                    data: {
+                        name: "拓扑关系"
+                    }
+                }));
 
                 this.initDomainList();
                 require(["setupTopoManage.model"], function(SetupTopoManageModel) {

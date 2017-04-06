@@ -200,7 +200,7 @@ define("setupChannelManage.model", ['require', 'exports', 'utility'], function(r
                 this.trigger("set.remark.error", response);  
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
-        }
+        },
 
         addTopologyRuleList: function(args) {
             var url = BASE_URL + '/channelManager/topology/addTopologyRoleList',

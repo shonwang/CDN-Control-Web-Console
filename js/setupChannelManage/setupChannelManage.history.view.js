@@ -85,97 +85,7 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
 
                 if (this.commentsPopup) $("#" + this.commentsPopup.modalId).remove();
 
-<<<<<<< HEAD
-            if (!AUTH_OBJ.SendHistoryConfig) {
-                this.table.find('.publish').remove();
-            }
-            if (data.length !== 0)
-                this.$el.find(".table-ctn").html(this.table[0]);
-            else
-                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-
-            this.table.find("tbody .bill").on("click", $.proxy(this.onClickItemBill, this));
-            this.table.find("tbody .config").on("click", $.proxy(this.onClickItemConfig, this));
-            this.table.find("tbody .publish").on("click", $.proxy(this.onClickItemPublish, this));
-            this.table.find("tbody .comments").on("click", $.proxy(this.onClickItemComments, this));
-
-            this.table.find("[data-toggle='popover']").popover();
-        },
-
-        onClickItemComments: function(event) {
-            var eventTarget = event.srcElement || event.target,
-                version = $(eventTarget).attr("version");
-
-            if (this.commentsPopup) $("#" + this.commentsPopup.modalId).remove();
-
-            var myAddCommentsView = new AddCommentsView({
-                collection: this.collection,
-            });
-            var options = {
-                title: "添加备注",
-                body: myAddCommentsView,
-                backdrop: 'static',
-                type: 2,
-                onOKCallback: function() {
-                    var comments = myAddCommentsView.onSure();
-                    this.collection.off('set.remark.success');
-                    this.collection.off('set.remark.error');
-                    this.collection.on('set.remark.success', function(){
-                        alert("修改成功");
-                        this.collection.getVersionList({ "originId": this.model.get("id") })
-                    }.bind(this))
-                    this.collection.on('set.remark.error', $.proxy(this.onGetError, this))
-                    this.collection.modifyVersionRemark({
-                        originId: this.originId,
-                        version: version,
-                        remark: comments
-                    })
-                    this.commentsPopup.$el.modal("hide");
-                }.bind(this),
-                onHiddenCallback: function() {}.bind(this)
-            }
-            this.commentsPopup = new Modal(options);
-        },
-
-        onClickItemPublish: function(event) {
-            var eventTarget = event.srcElement || event.target,
-                version = $(eventTarget).attr("version");
-
-            var postParam = [{
-                domain: this.model.get("domain"),
-                version: version,
-                description: this.model.get("description"),
-                configReason: 1
-            }]
-
-            this.collection.off("post.predelivery.success");
-            this.collection.off("post.predelivery.error");
-            this.collection.on("post.predelivery.success", $.proxy(this.onPostPredelivery, this));
-            this.collection.on("post.predelivery.error", $.proxy(this.onGetError, this));
-            this.collection.predelivery(postParam)
-        },
-
-        onPostPredelivery: function() {
-            alert("发布成功！")
-            window.location.hash = '#/setupSendWaitSend';
-        },
-
-        onClickItemConfig: function(event) {
-            var eventTarget = event.srcElement || event.target,
-                version = $(eventTarget).attr("version");
-
-            var clickedObj = {
-                domain: this.model.get("domain"),
-                domainVersion: version
-            }
-
-            require(["setupSending.detail.view"], function(SendDetailView) {
-                if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
-
-                var myConfiFileDetailView = new SendDetailView.ConfiFileDetailView({
-=======
                 var myAddCommentsView = new AddCommentsView({
->>>>>>> forTest20161222
                     collection: this.collection,
                 });
                 var options = {
@@ -238,7 +148,7 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                     domainVersion: version
                 }
 
-                require(["setupSendDetail.view"], function(SendDetailView) {
+                require(["setupSending.detail.view"], function(SendDetailView) {
                     if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
 
                     var myConfiFileDetailView = new SendDetailView.ConfiFileDetailView({

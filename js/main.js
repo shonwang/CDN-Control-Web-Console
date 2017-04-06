@@ -153,6 +153,8 @@
   "setupTopoManage.view": "setupTopoManage/setupTopoManage.view",
   "setupTopoManageSendStrategy.model": "setupTopoManage/setupTopoManageSendStrategy.model",
   "setupTopoManageSendStrategy.view": "setupTopoManage/setupTopoManageSendStrategy.view",
+  "specialLayerManage.model": "specialLayerManage/specialLayerManage.model",
+  "specialLayerManage.view": "specialLayerManage/specialLayerManage.view",
   "statisticsManage.model": "statisticsManage/statisticsManage.model",
   "statisticsManage.view": "statisticsManage/statisticsManage.view",
   "template": "template",
@@ -165,6 +167,7 @@
 };
 //PATH END===
 window.DEBUG = 1.1;
+
 
 
 

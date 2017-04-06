@@ -8,7 +8,7 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.nextTimeTable.html'])({data: {}}));
         },
 
-        render(target){
+        render: function(target){
             this.$el.appendTo(target);
         }
     });

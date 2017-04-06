@@ -41,6 +41,8 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                 this.collection.getVersionList({
                     "originId": this.model.get("id")
                 })
+
+                //this.description = this.model.get("description");
             },
 
             initSetup: function(data) {
@@ -146,7 +148,7 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                     domainVersion: version
                 }
 
-                require(["setupSendDetail.view"], function(SendDetailView) {
+                require(["setupSending.detail.view"], function(SendDetailView) {
                     if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
 
                     var myConfiFileDetailView = new SendDetailView.ConfiFileDetailView({

@@ -713,7 +713,6 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 this.off('enterKeyBindQuery');
                 var myEditTopoView = new EditTopoView({
                     collection: this.collection,
-                    WhetherSaveSuccess: this.WhetherSaveSuccess,
                     onSaveCallback: function() {
                         this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
                         myEditTopoView.$el.remove();
@@ -726,7 +725,6 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                         this.$el.find(".list-panel").show();
                     }.bind(this)
                 })
-
                 this.$el.find(".list-panel").hide();
                 myEditTopoView.render(this.$el.find(".edit-panel"))
             },

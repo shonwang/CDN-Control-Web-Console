@@ -449,11 +449,3 @@
 .cdn-originKS3 {
     display: none;
 }
-
-.logDownload .ks-btn a {
-    color: #319cf1;
-}
-
-.logDownload .ks-btn a:hover {
-    color: #0b79d0;
-}

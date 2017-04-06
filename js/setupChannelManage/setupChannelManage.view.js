@@ -9,14 +9,12 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection = options.collection;
                 this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.html'])());
 
-
                 if (!AUTH_OBJ.QueryDomain) {
                     this.$el.find('.query').remove();
                 }
                 if (!AUTH_OBJ.ChangeTopo) {
                     this.$el.find(".multi-modify-topology").remove();
                 }
-
                 this.initChannelDropMenu();
 
                 this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
@@ -272,7 +270,10 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 } else {
                     id = $(eventTarget).attr("id");
                 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> preonline
                 var model = this.collection.get(id);
 
                 if (model.get('topologyId') == null) {

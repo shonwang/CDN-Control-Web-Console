@@ -115,7 +115,7 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
 
-            require(['setupBill.view', 'setupBill.model'], function(SetupBillView, SetupBillModel){
+            require(['setupBillLive.view', 'setupBill.model'], function(SetupBillView, SetupBillModel){
                 var mySetupBillModel = new SetupBillModel();
                 var mySetupBillView = new SetupBillView({
                     collection: mySetupBillModel,
@@ -153,20 +153,35 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
                 return;
             }
 
+            this.curType = model.get("type");
+            this.curProtocol = model.get("protocol");
+
             this.redirectToManage();
         },
 
         redirectToManage: function(){
-            window.location.hash = '#/domainList/' + this.args + "/basicInformation/" + this.args2;
+            // type=1 protocol=0,4 下载
+            // type=2 protocol=2 伪直播
+            // type=2 protocol= 1,3真直播
+            if ((this.curType === 1 && this.curProtocol === 0) ||
+                (this.curType === 1 && this.curProtocol === 4) ||
+                (this.curType === 2 && this.curProtocol === 2)) {
+                window.location.hash = '#/domainList/' + this.args + "/basicInformation/" + this.args2
+            } else if ((this.curType === 2 && this.curProtocol === 1) ||
+                       (this.curType === 2 && this.curProtocol === 3)) {
+                window.location.hash = '#/domainList/' + this.args + "/liveBasicInformation/" + this.args2
+            } else {
+                alert('type=1 protocol=0,4 下载<br>type=2 protocol=2 伪直播<br>type=2 protocol= 1,3真直播<br>当前返回的type为' + this.curType + "，protocol为" + this.curProtocol);
+            }
         },
 
         alertChangeType: function(id){
             if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
 
-            var message = `<div class="alert alert-danger">
-                                <strong>重要提示: </strong><br>
-                                使用中控编辑管理域名配置后，该域名将不能在控制台或使用OpenAPI进行配置修改配置”，是否确认使用？
-                           </div>`;
+            var message = '<div class="alert alert-danger">' + 
+                                '<strong>重要提示: </strong><br>' + 
+                                '使用中控编辑管理域名配置后，该域名将不能在控制台或使用OpenAPI进行配置修改配置”，是否确认使用？' + 
+                           '</div>';
             var options = {
                 title: "警告",
                 body : message,

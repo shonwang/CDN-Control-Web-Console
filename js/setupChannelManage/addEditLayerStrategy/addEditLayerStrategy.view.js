@@ -27,13 +27,11 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             console.log("规则初始化默认值: ", this.defaultParam)
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
 
-            require(['deviceManage.model'], function(deviceManageModel) {
-                var mydeviceManageModel = new deviceManageModel();
-                mydeviceManageModel.operatorTypeList();
-                mydeviceManageModel.off("operator.type.success");
-                mydeviceManageModel.off("operator.type.error");
-                mydeviceManageModel.on("operator.type.success", $.proxy(this.initDropMenu, this));
-                mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
+            require(['nodeManage.model'], function (NodeManageModel) {
+                var myNodeManageModel = new NodeManageModel();
+                myNodeManageModel.on("get.operator.success", $.proxy(this.initDropMenu, this));
+                myNodeManageModel.on("get.operator.error", $.proxy(this.onGetError, this));
+                myNodeManageModel.getOperatorList();
             }.bind(this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
@@ -45,11 +43,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         initDropMenu: function(data) {
             this.statusArray = [];
             var rootNode = this.$el.find(".operator");
-            _.each(data, function(el, key, list) {
-                this.statusArray.push({
-                    name: el.name,
-                    value: el.id
-                })
+
+            _.each(data.rows, function (el, key, list) {
+                this.statusArray.push({name: el.name, value: el.id})
             }.bind(this))
 
             Utility.initDropMenu(rootNode, this.statusArray, function(value) {
@@ -441,8 +437,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
 
             require(['deviceManage.model'], function(deviceManageModel) {
                 var mydeviceManageModel = new deviceManageModel();
-                mydeviceManageModel.off("operator.type.success");
-                mydeviceManageModel.off("operator.type.error");
                 mydeviceManageModel.on("operator.type.success", $.proxy(this.initOperatorUpperList, this));
                 mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
                 mydeviceManageModel.operatorTypeList();

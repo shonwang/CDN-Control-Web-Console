@@ -85,7 +85,8 @@
 <script type="text/javascript" src="libs/particles.min.js"></script>
 <script type="text/javascript" src="libs/app.js"></script>
 <script type="text/javascript">
-    window.DEBUG = 1.1;
+window.DEBUG = 1.1;
+
 
     if (window.DEBUG === 1)
         window.BASE_URL = "http://develop.gateway.center.cdn.ksyun.com";
@@ -109,6 +110,8 @@
         window.BASE_URL = "http://develop.gateway.center.cdn.ksyun.com";
     else if(window.DEBUG === 9)
         window.BASE_URL = "http://wq.center.cdn.ksyun.com";
+    else if(window.DEBUG === 10)
+        window.BASE_URL = "http://preonline.center.cdn.ksyun.com";
     
 
     var onClickChange = function(argument) {
@@ -198,4 +201,4 @@
     requestAnimationFrame(update);
 </script>
 </body>
-</html>
+</html>

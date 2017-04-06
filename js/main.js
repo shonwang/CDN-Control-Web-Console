@@ -208,6 +208,9 @@ requirejs.config({
 
         "importAssess.model": "importAssess/importAssess.model",
         "importAssess.view": "importAssess/importAssess.view",
+
+        "specialLayerManage.model": "specialLayerManage/specialLayerManage.model",
+        "specialLayerManage.view": "specialLayerManage/specialLayerManage.view",
     },
     urlArgs: new Date().valueOf()
 });

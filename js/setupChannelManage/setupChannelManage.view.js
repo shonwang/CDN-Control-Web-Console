@@ -24,6 +24,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
                 this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
                 this.$el.find(".multi-modify-topology").on("click", $.proxy(this.onClickMultiModifyTopology, this))
+                this.$el.find(".multi-modify-layer").on("click", $.proxy(this.onClickMultiModifyLayer, this))
                 this.enterKeyBindQuery();
 
                 this.queryArgs = {
@@ -33,6 +34,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     "cdnFactory": null,
                     "auditStatus": null,
                     "topologyId": null,
+                    "roleId": null,
                     "currentPage": 1,
                     "pageSize": 10
                 }
@@ -72,6 +74,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
             initTable: function() {
                 this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
+                this.$el.find(".multi-modify-layer").attr("disabled", "disabled");
                 this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.table.html'])({
                     data: this.collection.models,
                     permission: AUTH_OBJ
@@ -98,10 +101,12 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
                 this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
                 this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+
+                this.table.find(".remark").popover();
             },
 
             onClickMultiModifyTopology: function() {
-                require(['setupChannelManage.select.view'], function(SelectTopoView) {
+                require(["setupChannelManage.select.view"], function(setupChannelManageSelectView) {
                     var checkedList = this.collection.filter(function(model) {
                         return model.get("isChecked") === true;
                     });
@@ -119,7 +124,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     if (this.selectTopoPopup) $("#" + this.selectTopoPopup.modalId).remove();
 
                     var type = AUTH_OBJ.ApplyChangeTopo ? 2 : 1;
-                    var mySelectTopoView = new SelectTopoView.SelectTopoView({
+                    var mySelectTopoView = new setupChannelManageSelectView.SelectTopoView({
                         collection: this.collection,
                         domainArray: this.domainArray
                     });
@@ -144,6 +149,53 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                         }.bind(this)
                     }
                     this.selectTopoPopup = new Modal(options);
+                }.bind(this));
+            },
+
+            onClickMultiModifyLayer: function() {
+                require(["setupChannelManage.select.view"], function(setupChannelManageSelectView) {
+                    var checkedList = this.collection.filter(function(model) {
+                        return model.get("isChecked") === true;
+                    });
+
+                    this.domainArray = [];
+                    _.each(checkedList, function(el, index, ls) {
+                        this.domainArray.push({
+                            domain: el.get("domain"),
+                            version: el.get("version"),
+                            description: el.get("description"),
+                            id: el.get("id")
+                        });
+                    }.bind(this))
+
+                    if (this.selectLayerPopup) $("#" + this.selectLayerPopup.modalId).remove();
+
+                    //var type = AUTH_OBJ.ApplyChangeTopo ? 2 : 1;
+                    var mySelectLayerView = new setupChannelManageSelectView.SelectLayerView({
+                        collection: this.collection,
+                        domainArray: this.domainArray
+                    });
+                    var options = {
+                        title: "选择分层策略",
+                        body: mySelectLayerView,
+                        backdrop: 'static',
+                        type: 2,
+                        onOKCallback: function() {
+                            var result = mySelectLayerView.onSure();
+                            if (!result) return;
+                            this.collection.off("set.layerStrategy.success");
+                            this.collection.off("set.layerStrategy.error");
+                            this.collection.on("set.layerStrategy.success", $.proxy(this.onAddChannelTopologySuccess, this));
+                            this.collection.on("set.layerStrategy.error", $.proxy(this.onGetError, this));
+                            this.collection.addTopologyRuleList(result)
+                            this.selectLayerPopup.$el.modal("hide");
+                            this.showDisablePopup("服务器正在努力处理中...")
+                        }.bind(this),
+                        onHiddenCallback: function() {
+                            this.enterKeyBindQuery();
+                        }.bind(this)
+                    }
+                    this.selectLayerPopup = new Modal(options);
                 }.bind(this));
             },
 
@@ -227,7 +279,8 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     alert('该域名未指定拓扑关系，无法添加特殊分层策略');
                     return;
                 }
-                require(['setupChannelManage.specialLayer.view'], function(SpecialLayerManageView) {
+
+                require(["setupChannelManage.specialLayer.view"], function(SpecialLayerManageView) {
                     var mySpecialLayerManageView = new SpecialLayerManageView({
                         collection: this.collection,
                         model: model,
@@ -247,7 +300,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
                     this.$el.find(".list-panel").hide();
                     mySpecialLayerManageView.render(this.$el.find(".strategy-panel"))
-                }.bind(this))
+                }.bind(this));
             },
 
             onClickItemEdit: function(event) {
@@ -295,8 +348,10 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     this.table.find("thead input").get(0).checked = false;
                 if (checkedList.length === 0) {
                     this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
+                    this.$el.find(".multi-modify-layer").attr("disabled", "disabled");
                 } else {
                     this.$el.find(".multi-modify-topology").removeAttr("disabled", "disabled");
+                    this.$el.find(".multi-modify-layer").removeAttr("disabled", "disabled");
                 }
             },
 
@@ -309,8 +364,10 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
                 if (eventTarget.checked) {
                     this.$el.find(".multi-modify-topology").removeAttr("disabled", "disabled");
+                    this.$el.find(".multi-modify-layer").removeAttr("disabled", "disabled");
                 } else {
                     this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
+                    this.$el.find(".multi-modify-layer").attr("disabled", "disabled");
                 }
             },
 
@@ -483,6 +540,43 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     }
                     this.mySetupTopoManageModel.getTopoinfo(postParam);
                 }.bind(this))
+
+                require(["specialLayerManage.model"], function(SpecialLayerManage) {
+                    this.mySpecialLayerManage = new SpecialLayerManage();
+                    this.mySpecialLayerManage.on("get.strategyList.success", $.proxy(this.onGetLayerSuccess, this))
+                    this.mySpecialLayerManage.on("get.strategyList.error", $.proxy(this.onGetError, this))
+                    var postParam = {
+                        "name": null,
+                        "type": null,
+                        "page": 1,
+                        "size": 99999
+                    }
+                    this.mySpecialLayerManage.getStrategyList(postParam);
+                }.bind(this))
+            },
+
+            onGetLayerSuccess: function() {
+                var topoArray = [{
+                    name: "全部",
+                    value: "All"
+                }, {
+                    name: "没有分层策略",
+                    value: -1
+                }]
+                this.mySpecialLayerManage.each(function(el, index, lst) {
+                    topoArray.push({
+                        name: el.get('name'),
+                        value: el.get('id')
+                    })
+                }.bind(this))
+
+                rootNode = this.$el.find(".dropdown-layer");
+                Utility.initDropMenu(rootNode, topoArray, function(value) {
+                    if (value == "All")
+                        this.queryArgs.roleId = null;
+                    else
+                        this.queryArgs.roleId = parseInt(value)
+                }.bind(this));
             },
 
             onGetTopoSuccess: function() {

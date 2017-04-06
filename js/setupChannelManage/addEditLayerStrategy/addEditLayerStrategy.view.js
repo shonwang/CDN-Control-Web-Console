@@ -1,15 +1,16 @@
-define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.view', 'utility'], function (require, exports, template, Modal, Utility) {
+define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
     var AddEditLayerStrategyView = Backbone.View.extend({
         events: {},
 
-        initialize: function (options) {
+        initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
 
             this.rule = options.rule;
             this.curEditRule = options.curEditRule
             this.isEdit = options.isEdit;
+            this.notFilter = options.notFilter;
 
             this.topologyId = options.topologyId;
 
@@ -26,7 +27,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             console.log("规则初始化默认值: ", this.defaultParam)
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
 
-            require(['deviceManage.model'], function (deviceManageModel) {
+            require(['deviceManage.model'], function(deviceManageModel) {
                 var mydeviceManageModel = new deviceManageModel();
                 mydeviceManageModel.operatorTypeList();
                 mydeviceManageModel.off("operator.type.success");
@@ -41,27 +42,30 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancelBtn, this));
         },
 
-        initDropMenu: function (data) {
+        initDropMenu: function(data) {
             this.statusArray = [];
             var rootNode = this.$el.find(".operator");
-            _.each(data, function (el, key, list) {
-                this.statusArray.push({name: el.name, value: el.id})
+            _.each(data, function(el, key, list) {
+                this.statusArray.push({
+                    name: el.name,
+                    value: el.id
+                })
             }.bind(this))
 
-            Utility.initDropMenu(rootNode, this.statusArray, function (value) {
-                var opObj = _.find(this.statusArray, function (object) {
+            Utility.initDropMenu(rootNode, this.statusArray, function(value) {
+                var opObj = _.find(this.statusArray, function(object) {
                     return object.value == parseInt(value);
                 }.bind(this));
                 this.defaultParam.local = [{
-                        id: parseInt(value),
-                        name: opObj.name,
-                    }];
+                    id: parseInt(value),
+                    name: opObj.name,
+                }];
             }.bind(this));
 
             var defaultValue = null;
 
             if (this.defaultParam.localType === 2 && this.defaultParam.local[0]) {
-                defaultValue = _.find(this.statusArray, function (object) {
+                defaultValue = _.find(this.statusArray, function(object) {
                     return object.value == this.defaultParam.local[0].id;
                 }.bind(this));
             }
@@ -70,7 +74,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.$el.find("#dropdown-operator .cur-value").html(defaultValue.name);
             } else {
                 this.$el.find("#dropdown-operator .cur-value").html(this.statusArray[0].name);
-                if (this.defaultParam.localType === 2){
+                if (this.defaultParam.localType === 2) {
                     this.defaultParam.local = []
                     this.defaultParam.local.push({
                         id: parseInt(this.statusArray[0].value),
@@ -82,7 +86,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.initSetup();
         },
 
-        initSetup: function () {
+        initSetup: function() {
             this.$el.find('.local .add-node').hide();
             if (this.defaultParam.localType === 1) {
                 this.$el.find("#strategyRadio1").get(0).checked = true;
@@ -109,11 +113,11 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }
         },
 
-        onClickCancelBtn: function () {
+        onClickCancelBtn: function() {
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
 
-        onClickSaveBtn: function () {
+        onClickSaveBtn: function() {
             if (this.defaultParam.local.length == 0) {
                 alert('请选择本层节点');
                 return;
@@ -123,7 +127,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }
 
             var chiefTypeArray = [];
-            chiefTypeArray = _.filter(this.defaultParam.upper, function(obj){
+            chiefTypeArray = _.filter(this.defaultParam.upper, function(obj) {
                 return obj.chiefType === 0
             }.bind(this))
             if (chiefTypeArray.length === this.defaultParam.upper.length) {
@@ -132,10 +136,10 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }
 
             var errorMsg = [];
-            _.each(this.rule, function (rule, index, list) {
-                if (this.defaultParam.localType === rule.localType && rule.id !== this.defaultParam.id){
-                    _.each(this.defaultParam.local, function(node){
-                        var nodesError =  _.find(rule.local, function(obj){
+            _.each(this.rule, function(rule, index, list) {
+                if (this.defaultParam.localType === rule.localType && rule.id !== this.defaultParam.id) {
+                    _.each(this.defaultParam.local, function(node) {
+                        var nodesError = _.find(rule.local, function(obj) {
                             return obj.id === node.id
                         }.bind(this))
                         if (nodesError) errorMsg.push(nodesError)
@@ -143,7 +147,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 }
             }.bind(this))
 
-            if (errorMsg.length > 0){
+            if (errorMsg.length > 0) {
                 alert(errorMsg[0].name + '不能同时存在于两条规则的“本层”中');
                 return;
             }
@@ -155,21 +159,21 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.options.onSaveCallback && this.options.onSaveCallback();
         },
 
-        onGetError: function (error) {
+        onGetError: function(error) {
             if (error && error.message)
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
         },
 
-        onGetLocalNodeFromArgs: function(){
+        onGetLocalNodeFromArgs: function() {
             this.$el.find('.local .add-node').show();
             this.localNodeListForSelect = [];
 
-            _.each(this.options.localNodes, function(el){
+            _.each(this.options.localNodes, function(el) {
                 el.checked = false
-                if (this.defaultParam.localType === 1){
-                    _.each(this.defaultParam.local, function(node){
+                if (this.defaultParam.localType === 1) {
+                    _.each(this.defaultParam.local, function(node) {
                         if (node.id === el.nodeId) el.checked = true;
                     }.bind(this))
                 }
@@ -181,20 +185,22 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 })
             }.bind(this))
 
-            _.each(this.options.upperNodes, function(node){
-                this.localNodeListForSelect = _.filter(this.localNodeListForSelect, function(obj){
-                    return obj.value !== node.nodeId;
+            if (!this.notFilter) {
+                _.each(this.options.upperNodes, function(node) {
+                    this.localNodeListForSelect = _.filter(this.localNodeListForSelect, function(obj) {
+                        return obj.value !== node.nodeId;
+                    }.bind(this))
                 }.bind(this))
-            }.bind(this))
+            }
 
             this.initLocalSelect();
             this.initLocalTable();
         },
 
-        onGetLocalNode: function (res) {
+        onGetLocalNode: function(res) {
             console.log("根据拓扑ID获取拓扑信息：", res);
             this.options.localNodes = [];
-            _.each(res.allNodes, function(node){
+            _.each(res.allNodes, function(node) {
                 this.options.localNodes.push({
                     nodeId: node.id,
                     nodeName: node.name,
@@ -203,7 +209,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }.bind(this))
 
             this.options.upperNodes = [];
-            _.each(res.upperNodes, function(node){
+            _.each(res.upperNodes, function(node) {
                 this.options.upperNodes.push({
                     nodeId: node.id,
                     nodeName: node.name,
@@ -215,18 +221,18 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.onGetUpperNodeFromArgs();
         },
 
-        onClickLocalSelectOK: function (data) {
+        onClickLocalSelectOK: function(data) {
             this.defaultParam.local = [];
-            _.each(data, function (el, key, ls) {
+            _.each(data, function(el, key, ls) {
                 this.defaultParam.local.push({
-                    id: parseInt(el.value), 
-                    name: el.name, 
+                    id: parseInt(el.value),
+                    name: el.name,
                 })
             }.bind(this))
 
-            _.each(this.localNodeListForSelect, function (el, key, ls) {
+            _.each(this.localNodeListForSelect, function(el, key, ls) {
                 el.checked = false;
-                _.each(this.defaultParam.local, function (data, key, ls) {
+                _.each(this.defaultParam.local, function(data, key, ls) {
                     if (el.value == data.id) {
                         el.checked = true;
                         data.operatorId = el.operator;
@@ -236,22 +242,22 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.initLocalTable()
         },
 
-        initLocalSelect: function(){
+        initLocalSelect: function() {
             var options = {
                 containerID: this.$el.find('.local .add-node-ctn').get(0),
                 panelID: this.$el.find('.local .add-node').get(0),
                 openSearch: true,
                 onOk: $.proxy(this.onClickLocalSelectOK, this),
                 data: this.localNodeListForSelect,
-                callback: function (data) {}.bind(this)
+                callback: function(data) {}.bind(this)
             }
 
             this.searchSelectLocal = new SearchSelect(options);
         },
 
-        initLocalTable: function () {
+        initLocalTable: function() {
             var nodeList = [];
-            _.each(this.defaultParam.local, function(el){
+            _.each(this.defaultParam.local, function(el) {
                 nodeList.push({
                     nodeId: el.id,
                     nodeName: el.name
@@ -264,13 +270,18 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             if (this.defaultParam.local.length !== 0)
                 this.$el.find(".local .table-ctn").html(this.localTable[0]);
             else
-                this.$el.find(".local .table-ctn").html(_.template(template['tpl/empty-2.html'])({data: {message: "你还没有添加节点"}}));
+                this.$el.find(".local .table-ctn").html(_.template(template['tpl/empty-2.html'])({
+                    data: {
+                        message: "你还没有添加节点"
+                    }
+                }));
 
             this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemLocalDelete, this));
         },
 
-        onClickItemLocalDelete: function (event) {
-            var eventTarget = event.srcElement || event.target, id;
+        onClickItemLocalDelete: function(event) {
+            var eventTarget = event.srcElement || event.target,
+                id;
             if (eventTarget.tagName == "SPAN") {
                 eventTarget = $(eventTarget).parent();
                 id = eventTarget.attr("id");
@@ -278,11 +289,11 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 id = $(eventTarget).attr("id");
             }
 
-            this.defaultParam.local = _.filter(this.defaultParam.local, function(obj){
+            this.defaultParam.local = _.filter(this.defaultParam.local, function(obj) {
                 return obj.id !== parseInt(id)
             }.bind(this));
 
-            _.each(this.localNodeListForSelect, function(el, index, ls){
+            _.each(this.localNodeListForSelect, function(el, index, ls) {
                 if (parseInt(el.value) === parseInt(id)) el.checked = false;
             }.bind(this));
 
@@ -293,19 +304,19 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.initLocalTable();
         },
 
-        onClickLocalTypeRadio: function (event) {
+        onClickLocalTypeRadio: function(event) {
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             this.defaultParam.localType = parseInt($(eventTarget).val());
 
-            if (this.defaultParam.localType === 1){
+            if (this.defaultParam.localType === 1) {
                 this.defaultParam.local = [];
                 this.$el.find(".operator-ctn").hide();
                 this.$el.find(".nodes-ctn").show();
-                _.each(this.localNodeListForSelect, function(el, index, ls){
+                _.each(this.localNodeListForSelect, function(el, index, ls) {
                     el.checked = false;
                 }.bind(this));
-            } else if (this.defaultParam.localType === 2){
+            } else if (this.defaultParam.localType === 2) {
                 this.defaultParam.local = [{
                     id: this.statusArray[0].value,
                     name: this.statusArray[0].name
@@ -321,13 +332,13 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.initLocalTable();
         },
 
-        onGetUpperNodeFromArgs: function(){
+        onGetUpperNodeFromArgs: function() {
             this.$el.find('.upper .add-node').show();
             this.upperNodeListForSelect = [];
 
-            _.each(this.options.localNodes, function(el){
+            _.each(this.options.localNodes, function(el) {
                 el.checked = false
-                _.each(this.defaultParam.upper, function(node){
+                _.each(this.defaultParam.upper, function(node) {
                     if (node.rsNodeMsgVo.id === el.nodeId) {
                         el.checked = true;
                         el.chiefType = node.chiefType;
@@ -348,33 +359,33 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.initUpperTable();
         },
 
-        initUpperSelect: function (res) {
+        initUpperSelect: function(res) {
             var options = {
                 containerID: this.$el.find('.upper .add-node-ctn').get(0),
                 panelID: this.$el.find('.upper .add-node').get(0),
                 openSearch: true,
                 onOk: $.proxy(this.onClickUpperSelectOK, this),
                 data: this.upperNodeListForSelect,
-                callback: function (data) {}.bind(this)
+                callback: function(data) {}.bind(this)
             }
 
             var searchSelectUpper = new SearchSelect(options);
             this.$el.find(".upper .add-node-ctn .select-container").css("left", "-80px");
         },
 
-        onClickUpperSelectOK: function (data) {
+        onClickUpperSelectOK: function(data) {
             this.defaultParam.upper = [];
-            _.each(data, function (el, key, ls) {
+            _.each(data, function(el, key, ls) {
                 this.defaultParam.upper.push({
                     rsNodeMsgVo: {
-                        id: parseInt(el.value), 
+                        id: parseInt(el.value),
                         name: el.name
-                    } 
+                    }
                 })
             }.bind(this))
-            _.each(this.upperNodeListForSelect, function (el, key, ls) {
+            _.each(this.upperNodeListForSelect, function(el, key, ls) {
                 el.checked = false;
-                _.each(this.defaultParam.upper, function (data, key, ls) {
+                _.each(this.defaultParam.upper, function(data, key, ls) {
                     if (el.value == data.rsNodeMsgVo.id) {
                         el.checked = true;
                         data.chiefType = el.chiefType;
@@ -391,22 +402,22 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.initUpperTable();
         },
 
-        initUpperTable: function () {
+        initUpperTable: function() {
             var nodeList = [];
-            _.each(this.defaultParam.upper, function(el){
+            _.each(this.defaultParam.upper, function(el) {
                 nodeList.push({
                     nodeId: el.rsNodeMsgVo.id,
                     nodeName: el.rsNodeMsgVo.name,
                     operatorId: el.rsNodeMsgVo.operatorId,
                     chiefType: el.chiefType,
-                    ipCorporation: el.ipCorporation 
+                    ipCorporation: el.ipCorporation
                 })
             }.bind(this))
 
-            var duoxianArray = _.filter(nodeList, function(obj){
+            var duoxianArray = _.filter(nodeList, function(obj) {
                 return obj.operatorId === 9
             }.bind(this))
-            var feiDuoxianArray = _.filter(nodeList, function(obj){
+            var feiDuoxianArray = _.filter(nodeList, function(obj) {
                 return obj.operatorId !== 9
             }.bind(this))
 
@@ -419,50 +430,57 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             if (nodeList.length !== 0)
                 this.$el.find(".upper .table-ctn").html(this.upperTable[0]);
             else
-                this.$el.find(".upper .table-ctn").html(_.template(template['tpl/empty-2.html'])({data: {message: "你还没有添加节点"}}));
+                this.$el.find(".upper .table-ctn").html(_.template(template['tpl/empty-2.html'])({
+                    data: {
+                        message: "你还没有添加节点"
+                    }
+                }));
 
             this.upperTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperDelete, this));
             this.upperTable.find("tbody .spareradio").on("click", $.proxy(this.onClickCheckboxButton, this));
 
-            require(['deviceManage.model'], function (deviceManageModel) {
+            require(['deviceManage.model'], function(deviceManageModel) {
                 var mydeviceManageModel = new deviceManageModel();
-                mydeviceManageModel.operatorTypeList();
                 mydeviceManageModel.off("operator.type.success");
                 mydeviceManageModel.off("operator.type.error");
                 mydeviceManageModel.on("operator.type.success", $.proxy(this.initOperatorUpperList, this));
                 mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
+                mydeviceManageModel.operatorTypeList();
             }.bind(this));
         },
 
-        initOperatorUpperList: function (data) {
+        initOperatorUpperList: function(data) {
             var statusArray = [];
-            _.each(data, function (el, key, list) {
-                statusArray.push({name: el.name, value: el.id})
+            _.each(data, function(el, key, list) {
+                statusArray.push({
+                    name: el.name,
+                    value: el.id
+                })
             }.bind(this))
             rootNodes = this.upperTable.find(".ipOperator .dropdown");
 
             for (var i = 0; i < rootNodes.length; i++) {
-                this.initTableDropMenu($(rootNodes[i]), statusArray, function (value, nodeId) {
-                    _.each(this.upperNodeListForSelect, function (el, key, list) {
+                this.initTableDropMenu($(rootNodes[i]), statusArray, function(value, nodeId) {
+                    _.each(this.upperNodeListForSelect, function(el, key, list) {
                         if (parseInt(el.value) === parseInt(nodeId)) {
                             el.ipCorporation = parseInt(value);
                         }
                     }.bind(this));
-                    _.each(this.defaultParam.upper, function (el, key, list) {
+                    _.each(this.defaultParam.upper, function(el, key, list) {
                         if (el.rsNodeMsgVo.id == parseInt(nodeId)) {
                             el.ipCorporation = parseInt(value);
                         }
                     }.bind(this));
                 }.bind(this));
 
-                _.each(this.defaultParam.upper, function(node){
+                _.each(this.defaultParam.upper, function(node) {
                     var curNodeId = parseInt(rootNodes[i].id);
                     if (node.rsNodeMsgVo.id === curNodeId) {
-                        var defaultValue = _.find(statusArray, function(obj){
+                        var defaultValue = _.find(statusArray, function(obj) {
                             return obj.value === node.ipCorporation
                         }.bind(this))
 
-                        if (defaultValue){
+                        if (defaultValue) {
                             $(rootNodes[i]).find("#dropdown-ip-operator .cur-value").html(defaultValue.name)
                         } else {
                             $(rootNodes[i]).find("#dropdown-ip-operator .cur-value").html(statusArray[0].name);
@@ -473,17 +491,17 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }
         },
 
-        initTableDropMenu: function (rootNode, typeArray, callback) {
+        initTableDropMenu: function(rootNode, typeArray, callback) {
             var dropRoot = rootNode.find(".dropdown-menu"),
                 rootId = rootNode.attr("id"),
                 showNode = rootNode.find(".cur-value");
             dropRoot.html("");
-            _.each(typeArray, function (element, index, list) {
+            _.each(typeArray, function(element, index, list) {
                 var itemTpl = '<li value="' + element.value + '">' +
-                        '<a href="javascript:void(0);" value="' + element.value + '">' + element.name + '</a>' +
-                        '</li>',
+                    '<a href="javascript:void(0);" value="' + element.value + '">' + element.name + '</a>' +
+                    '</li>',
                     itemNode = $(itemTpl);
-                itemNode.on("click", function (event) {
+                itemNode.on("click", function(event) {
                     var eventTarget = event.srcElement || event.target;
                     showNode.html($(eventTarget).html()),
                         value = $(eventTarget).attr("value");
@@ -493,8 +511,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             });
         },
 
-        onClickItemUpperDelete: function (event) {
-            var eventTarget = event.srcElement || event.target, id;
+        onClickItemUpperDelete: function(event) {
+            var eventTarget = event.srcElement || event.target,
+                id;
             if (eventTarget.tagName == "SPAN") {
                 eventTarget = $(eventTarget).parent();
                 id = eventTarget.attr("id");
@@ -502,11 +521,11 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 id = $(eventTarget).attr("id");
             }
 
-            this.defaultParam.upper = _.filter(this.defaultParam.upper, function(obj){
+            this.defaultParam.upper = _.filter(this.defaultParam.upper, function(obj) {
                 return obj.rsNodeMsgVo.id !== parseInt(id)
             }.bind(this));
 
-            _.each(this.upperNodeListForSelect, function(el, index, ls){
+            _.each(this.upperNodeListForSelect, function(el, index, ls) {
                 if (parseInt(el.value) === parseInt(id)) el.checked = false;
             }.bind(this));
 
@@ -517,22 +536,23 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.initUpperTable();
         },
 
-        onClickCheckboxButton: function (event) {
-            var eventTarget = event.srcElement || event.target, id;
+        onClickCheckboxButton: function(event) {
+            var eventTarget = event.srcElement || event.target,
+                id;
             var id = eventTarget.id;
 
-            _.each(this.defaultParam.upper, function(obj){
-                if (obj.rsNodeMsgVo.id === parseInt(id)) 
+            _.each(this.defaultParam.upper, function(obj) {
+                if (obj.rsNodeMsgVo.id === parseInt(id))
                     obj.chiefType = eventTarget.checked ? 0 : 1;
             }.bind(this))
 
-            _.each(this.upperNodeListForSelect, function(obj){
-                if (parseInt(obj.value) === parseInt(id)) 
+            _.each(this.upperNodeListForSelect, function(obj) {
+                if (parseInt(obj.value) === parseInt(id))
                     obj.chiefType = eventTarget.checked ? 0 : 1;
             }.bind(this))
         },
 
-        render: function (target) {
+        render: function(target) {
             this.$el.appendTo(target)
         }
     });

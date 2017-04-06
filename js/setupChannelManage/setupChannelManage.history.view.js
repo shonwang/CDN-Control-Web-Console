@@ -41,8 +41,6 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                 this.collection.getVersionList({
                     "originId": this.model.get("id")
                 })
-
-                //this.description = this.model.get("description");
             },
 
             initSetup: function(data) {

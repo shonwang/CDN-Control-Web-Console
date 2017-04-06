@@ -207,7 +207,6 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                     postParam.topologyRuleId = layerId;
                     postParam.ruleName = layerName;
                 }
-
                 return postParam
             },
 

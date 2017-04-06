@@ -1,6 +1,23 @@
 define("setupChannelManage.history.view", ['require', 'exports', 'template', 'modal.view', 'utility'],
     function(require, exports, template, Modal, Utility) {
 
+        var AddCommentsView = Backbone.View.extend({
+
+            initialize: function() {
+                this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.addComments.html'])({
+                    data: {}
+                }));
+            },
+
+            onSure: function() {
+                return this.$el.find('#secondary').val();
+            },
+
+            render: function(target) {
+                this.$el.appendTo(target);
+            }
+        })
+
         var HistoryView = Backbone.View.extend({
             events: {
                 //"click .search-btn":"onClickSearch"
@@ -24,6 +41,8 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                 this.collection.getVersionList({
                     "originId": this.model.get("id")
                 })
+
+                //this.description = this.model.get("description");
             },
 
             initSetup: function(data) {
@@ -33,7 +52,11 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
 
                 _.each(data, function(el, index, ls) {
                     if (el.createTime)
-                        el.createTimeFormated = new Date(el.createTime).format("yyyy/MM/dd hh:mm:ss")
+                        el.createTimeFormated = new Date(el.createTime).format("yyyy/MM/dd hh:mm:ss");
+                    if (el.deliveryStatus === -1) el.statusStr = "<span class='test-danger'>失败</span>";
+                    if (el.deliveryStatus === 1) el.statusStr = "<span class='test-success'>成功</span>";
+                    if (!el.deliveryStatus) el.statusStr = "<span class='test-muted'>未发布</span>";
+                    this.originId = el.originId;
                 }.bind(this))
 
                 this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.history.table.html'])({
@@ -49,7 +72,48 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                     this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
                 this.table.find("tbody .bill").on("click", $.proxy(this.onClickItemBill, this));
+                this.table.find("tbody .config").on("click", $.proxy(this.onClickItemConfig, this));
                 this.table.find("tbody .publish").on("click", $.proxy(this.onClickItemPublish, this));
+                this.table.find("tbody .comments").on("click", $.proxy(this.onClickItemComments, this));
+
+                this.table.find("[data-toggle='popover']").popover();
+            },
+
+            onClickItemComments: function(event) {
+                var eventTarget = event.srcElement || event.target,
+                    version = $(eventTarget).attr("version");
+
+                if (this.commentsPopup) $("#" + this.commentsPopup.modalId).remove();
+
+                var myAddCommentsView = new AddCommentsView({
+                    collection: this.collection,
+                });
+                var options = {
+                    title: "添加备注",
+                    body: myAddCommentsView,
+                    backdrop: 'static',
+                    type: 2,
+                    onOKCallback: function() {
+                        var comments = myAddCommentsView.onSure();
+                        this.collection.off('set.remark.success');
+                        this.collection.off('set.remark.error');
+                        this.collection.on('set.remark.success', function() {
+                            alert("修改成功");
+                            this.collection.getVersionList({
+                                "originId": this.model.get("id")
+                            })
+                        }.bind(this))
+                        this.collection.on('set.remark.error', $.proxy(this.onGetError, this))
+                        this.collection.modifyVersionRemark({
+                            originId: this.originId,
+                            version: version,
+                            remark: comments
+                        })
+                        this.commentsPopup.$el.modal("hide");
+                    }.bind(this),
+                    onHiddenCallback: function() {}.bind(this)
+                }
+                this.commentsPopup = new Modal(options);
             },
 
             onClickItemPublish: function(event) {
@@ -73,6 +137,36 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
             onPostPredelivery: function() {
                 alert("发布成功！")
                 window.location.hash = '#/setupSendWaitSend';
+            },
+
+            onClickItemConfig: function(event) {
+                var eventTarget = event.srcElement || event.target,
+                    version = $(eventTarget).attr("version");
+
+                var clickedObj = {
+                    domain: this.model.get("domain"),
+                    domainVersion: version
+                }
+
+                require(["setupSendDetail.view"], function(SendDetailView) {
+                    if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
+
+                    var myConfiFileDetailView = new SendDetailView.ConfiFileDetailView({
+                        collection: this.collection,
+                        model: clickedObj
+                    });
+                    var options = {
+                        title: "配置文件详情",
+                        body: myConfiFileDetailView,
+                        backdrop: 'static',
+                        type: 1,
+                        onOKCallback: function() {
+                            this.configFilePopup.$el.modal("hide");
+                        }.bind(this),
+                        onHiddenCallback: function() {}.bind(this)
+                    }
+                    this.configFilePopup = new Modal(options);
+                }.bind(this))
             },
 
             onClickItemBill: function(event) {

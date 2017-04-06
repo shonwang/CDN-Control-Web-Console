@@ -39,6 +39,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                 this.$el.find("#input-topology").val("默认拓扑关系");
             }
 
+            this.$el.find("#input-layer").val(this.model.get("specialruleName"));
             this.$el.find("#input-domain").val(this.model.get("domain"));
             this.$el.find("#input-type").val(this.model.get("businessTypeName") || this.model.get("platformName"));
             this.$el.find("#input-protocol").val(this.model.get("protocolName"));

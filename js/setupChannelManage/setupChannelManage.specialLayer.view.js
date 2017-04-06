@@ -326,10 +326,10 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                 this.collection.on('get.isTopoStrategyMatch.success', $.proxy(this.onCheckTopoAndLayerSuccess, this));
                 this.collection.on('get.isTopoStrategyMatch.error', $.proxy(this.onGetError, this));
                 this.collection.isTopoStrategyMatch(postParam);
-                
+
             },
 
-            onCheckTopoAndLayerSuccess: function(){
+            onCheckTopoAndLayerSuccess: function() {
                 var postParam = {
                     topologyId: this.model.get('topologyId'),
                     originIdList: [this.model.get('id')],

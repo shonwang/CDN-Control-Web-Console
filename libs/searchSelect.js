@@ -44,10 +44,10 @@
             this.createTitle();
 
             //this.selectContainer.appendChild(oTitleContainer);
-            if(!this.isDisabled){
-                oTctn.appendChild(oTitleContainer);
-			    this.selectContainer.appendChild(oTctn);
-            }
+            //if(!this.isDisabled){
+            oTctn.appendChild(oTitleContainer);
+            this.selectContainer.appendChild(oTctn);
+            //}
 
             var oUl = document.createElement("ul");
             oUl.className = "select-value-layer";

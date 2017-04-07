@@ -686,7 +686,7 @@ td .table {
   background: #fff;
   z-index: 999999;
 }
-
+/*
 .select-title-container {
   width: 100%;
   background: #d7edff;
@@ -698,6 +698,10 @@ td .table {
   display: table;
   vertical-align: middle;
 }
+*/
+/**** 新添 ****/
+.select-title-container-fixed {padding:8px 20px;}
+.select-title-container {width:100%;overflow:hidden;box-sizing:border-box;font-size:12px;padding:0px 0px 8px;line-height:30px;border-bottom:1px solid #dfdfdf;}
 
 .select-title-container input[type=search] {
   height: 25px;
@@ -711,6 +715,7 @@ td .table {
   12px;
   box-sizing: border-box;
   float: left;
+  margin-right:20px;
 }
 
 .search-ctn {
@@ -799,14 +804,15 @@ td .table {
   top: 1px;
   transition: all 0.2s ease-out;
 }
-
+/*
 .select-checkbox-container {
   color: #0095d0;
   overflow: hidden;
   display: table-cell;
   vertical-align: middle;
 }
-
+*/
+.select-checkbox-container {float:left;color:#3288e9;overflow:hidden;}
 .select-checkbox-container .checkboxcon {
   float: left;
   width: auto;
@@ -887,6 +893,7 @@ td .table {
 }
 
 /* title上的按钮 */
+/*
 .select-check-all {
   height: 16px;
   display: inline-block;
@@ -911,7 +918,7 @@ td .table {
   cursor: pointer;
   padding-right: 10px;
 }
-
+*/
 .select-select-close {
   height: 14px;
   float: right;
@@ -922,7 +929,18 @@ td .table {
   cursor: pointer;
 }
 
+.select-check-all {height:16px;display:inline-block;line-height:16px;cursor:pointer;}
+.select-cancel-all {height:16px;display:inline-block;line-height:16px;margin-left:10px;cursor:pointer;}
+.select-select-back {height:16px;display:inline-block;line-height:16px;margin-left:10px;cursor:pointer;}
+
+.select-btn-ok {height:16px;display:inline-block;line-height:16px;margin-left:10px;cursor:pointer;padding:1px 5px;border-radius:2px;}
+.select-select-close {height:14px;float:right;line-height:normal;width:14px;margin-top:10px;overflow:hidden;cursor:pointer;}
+.select-checkbox-btn {cursor:pointer;height: 40px;display: inline-block;border-right: 1px solid #f2f2f2;padding-right: 10px;padding-left: 10px;line-height: 40px;}
+.select-checkbox-btn.last {border-right:none;}
+.select-checkbox-btn .caret{color:#ed4646;}
+
 /* title上的按钮 */
+/*
 .select-check-all {
   height: 16px;
   display: inline-block;
@@ -955,6 +973,7 @@ td .table {
   display: table-cell;
   vertical-align: middle;
 }
+*/
 /*==================================================*/
 
 .valuable-customer .dropdown-menu{

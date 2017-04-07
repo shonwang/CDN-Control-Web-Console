@@ -325,8 +325,7 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                 this.collection.off('get.isTopoStrategyMatch.error');
                 this.collection.on('get.isTopoStrategyMatch.success', $.proxy(this.onCheckTopoAndLayerSuccess, this));
                 this.collection.on('get.isTopoStrategyMatch.error', $.proxy(this.onGetError, this));
-                this.collection.isTopoStrategyMatch(postParam);
-                
+                this.collection.isTopoStrategyMatch(postParam);   
             },
 
             onCheckTopoAndLayerSuccess: function(){

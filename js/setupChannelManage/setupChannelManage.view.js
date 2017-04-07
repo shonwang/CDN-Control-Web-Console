@@ -9,7 +9,6 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection = options.collection;
                 this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.html'])());
 
-
                 if (!AUTH_OBJ.QueryDomain) {
                     this.$el.find('.query').remove();
                 }
@@ -107,6 +106,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
             onClickMultiModifyTopology: function() {
                 require(["setupChannelManage.select.view"], function(setupChannelManageSelectView) {
+
                     var checkedList = this.collection.filter(function(model) {
                         return model.get("isChecked") === true;
                     });
@@ -124,6 +124,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     if (this.selectTopoPopup) $("#" + this.selectTopoPopup.modalId).remove();
 
                     var type = AUTH_OBJ.ApplyChangeTopo ? 2 : 1;
+
                     var mySelectTopoView = new setupChannelManageSelectView.SelectTopoView({
                         collection: this.collection,
                         domainArray: this.domainArray

@@ -110,7 +110,6 @@
   "domainStatistics.view": "domainStatistics/domainStatistics.view",
   "grayscaleSetup.model": "grayscaleSetup/grayscaleSetup.model",
   "grayscaleSetup.view": "grayscaleSetup/grayscaleSetup.view",
-  "importAssess.edit.view": "importAssess/importAssess.edit.view",
   "importAssess.model": "importAssess/importAssess.model",
   "importAssess.view": "importAssess/importAssess.view",
   "importDomainManage.edit.view": "importDomainManage/importDomainManage.edit.view",
@@ -170,6 +169,7 @@
 };
 //PATH END===
 window.DEBUG = 1.1;
+
 
 
 

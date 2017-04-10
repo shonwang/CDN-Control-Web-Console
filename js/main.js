@@ -154,7 +154,7 @@
   "setupSending.model": "setupSendManage/setupSending/setupSending.model",
   "setupSending.view": "setupSendManage/setupSending/setupSending.view",
   "setupTopoManage.model": "setupTopoManage/setupTopoManage.model",
-  "setupTopoManage.view": "setupTopoManage/setupTopoManage.view1",
+  "setupTopoManage.view": "setupTopoManage/setupTopoManage.view",
   "setupTopoManageSendStrategy.model": "setupTopoManage/setupTopoManageSendStrategy.model",
   "setupTopoManageSendStrategy.view": "setupTopoManage/setupTopoManageSendStrategy.view",
   "specialLayerManage.model": "specialLayerManage/specialLayerManage.model",

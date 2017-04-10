@@ -46,6 +46,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
                     _.each(res.rows, function(element, index, list){
                         this.push(new Model(element));
                     }.bind(this))
+
                     this.total = res.total;
                     this.trigger("get.node.success");
                 } else {

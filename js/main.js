@@ -113,7 +113,7 @@
   "setupSending.model": "setupSendManage/setupSending/setupSending.model",
   "setupSending.view": "setupSendManage/setupSending/setupSending.view",
   "setupTopoManage.model": "setupTopoManage/setupTopoManage.model",
-  "setupTopoManage.view": "setupTopoManage/setupTopoManage.view",
+  "setupTopoManage.view": "setupTopoManage/setupTopoManage.view1",
   "setupTopoManageSendStrategy.model": "setupTopoManage/setupTopoManageSendStrategy.model",
   "setupTopoManageSendStrategy.view": "setupTopoManage/setupTopoManageSendStrategy.view",
   "statisticsManage.model": "statisticsManage/statisticsManage.model",
@@ -162,12 +162,18 @@ requirejs.onError = function () {
     console.log(arguments)
     var errorPopup = $('#big-main-error').get(0);
     if (errorPopup) return;
-    var message = "<br>请清空缓存后刷新重试！";
+    var message = "";
     var tpl = '<div id="big-main-error" class="modal">' + 
                 '<div class="modal-dialog">' + 
                     '<div class="modal-content">' + 
                         '<div class="modal-header"><h3 class="modal-title text-danger text-center">Oh snap! You got an error!</h3></div>' + 
-                        '<div class="modal-body"><div class="alert alert-danger">'+ arguments[0].stack + message + '</div></div>' + 
+                        '<div class="modal-body">' +
+                            '<div class="alert alert-danger">'+ 
+                                '<img class="pull-left img-rounded" src="images/timg.jpg" style="width: 100px;margin-right: 10px;">' + 
+                                arguments[0].stack + message + 
+                            '</div>' + 
+                            '<p class="bg-primary text-center">请清空缓存后刷新重试！</p>' +  
+                        '</div>' + 
                     '</div>' + 
                 '</div>' + 
               '</div>'

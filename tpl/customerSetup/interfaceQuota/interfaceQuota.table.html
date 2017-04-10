@@ -1,0 +1,24 @@
+<table class="table table-striped table-hover">
+    <thead> 
+      <tr>
+        <th>配额组名称</th>
+        <th>已使用次数</th>
+        <th>当前设置配额</th>
+        <th>操作</th>    
+      </tr>
+    </thead>
+    <tbody>
+        <% for(var i = 0; i < data.length; i++) { %>
+            <tr data-id="<%=data[i].get('id')%>">
+              <td><%=data[i].get("quotaName")%></td>
+              <td><%=data[i].get("quotaUserTimes")%></td>
+              <td><%=data[i].get("quotaTimes")%></td>
+              <td>
+                  <a href="javascript:void(0)" id="<%=data[i].cid%>" class="manage edit" title="编辑">
+                      <span class="glyphicon glyphicon-edit"></span>
+                  </a>
+              </td>
+            </tr>
+        <% } %>  
+    </tbody>
+</table>

@@ -42,6 +42,7 @@ define("routes", ['require', 'exports', 'utility',
             "customerSetup"       : "customerSetup",
             "domainList/:query"   : "domainList",
             "blockUrl/:query"     : "blockUrl",
+            "interfaceQuota/:query"   : "interfaceQuota",
             
             "domainList/:query/basicInformation/:query2"          : "basicInformation",
             "domainList/:query/urlBlackList/:query2"              : "urlBlackList",
@@ -188,6 +189,9 @@ define("routes", ['require', 'exports', 'utility',
                     break;
                 case 'customerSetup':
                     this.customerSetupView.hide();
+                    break;
+                case 'customerSetup-interfaceQuota':
+                    this.interfaceQuotaView.hide();
                     break;
                 case 'customerSetup-domainList':
                     this.domainListView.hide();
@@ -623,6 +627,10 @@ define("routes", ['require', 'exports', 'utility',
             this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveFrequencyLogCallback, this, query, query2))
         },
 
+        interfaceQuota: function(query){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.interfaceQuotaCallback, this, query))
+        },
+
         setupDomainManageNavbar: function(query, query2){
             if (!this.domainManageNavbar){
                 var menuOptions = {
@@ -806,6 +814,12 @@ define("routes", ['require', 'exports', 'utility',
                     id: 'customerSetup-blockUrl',
                     name: '一键屏蔽URL',
                     hash: 'index.html#/blockUrl/' + query,
+                    active: false,
+                    children: []
+                },{
+                    id: 'customerSetup-interfaceQuota',
+                    name: 'API接口配额',
+                    hash: 'index.html#/interfaceQuota/' + query,
                     active: false,
                     children: []
                 }]

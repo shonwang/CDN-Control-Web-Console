@@ -96,6 +96,8 @@
   "timestamp.view": "customerSetup/domainList/timestamp/timestamp.view",
   "urlBlackList.model": "customerSetup/domainList/urlBlackList/urlBlackList.model",
   "urlBlackList.view": "customerSetup/domainList/urlBlackList/urlBlackList.view",
+  "interfaceQuota.model": "customerSetup/interfaceQuota/interfaceQuota.model",
+  "interfaceQuota.view": "customerSetup/interfaceQuota/interfaceQuota.view",
   "deviceManage.model": "deviceManage/deviceManage.model",
   "deviceManage.view": "deviceManage/deviceManage.view",
   "dispConfig.model": "dispConfig/dispConfig.model",
@@ -167,6 +169,7 @@
 };
 //PATH END===
 window.DEBUG = 1.1;
+
 
 
 

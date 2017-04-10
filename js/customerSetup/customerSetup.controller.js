@@ -250,6 +250,7 @@ define("customerSetup.controller", ['require','exports'],
                 }
             }.bind(this));
         },
+
         backOriginDetectionCallback: function(query, query2) {
             require(['backOriginDetection.view', 'backOriginDetection.model'], function(BackOriginDetectionView, BackOriginDetectionModel){
                 this.navbarView.select('customerSetup');
@@ -273,6 +274,7 @@ define("customerSetup.controller", ['require','exports'],
                 }
             }.bind(this));
         },
+
         backOriginSetupCallback: function(query, query2) {
             require(['backOriginSetup.view', 'backOriginSetup.model'], function(BackOriginSetupView, BackOriginSetupModel){
                 this.navbarView.select('customerSetup');
@@ -499,6 +501,7 @@ define("customerSetup.controller", ['require','exports'],
                 }
             }.bind(this));
         },
+
         blockUrlCallback: function(query){
             require(['blockUrl.view','blockUrl.model'],function(BlockUrlView,BlockUrlModel){
                  this.curPage = 'customerSetup-blockUrl';
@@ -546,6 +549,31 @@ define("customerSetup.controller", ['require','exports'],
 
             }.bind(this));
         },
+
+        interfaceQuotaCallback: function(query) {
+            if(!AUTH_OBJ.DomainLists || !AUTH_OBJ.ManageCustomer) return;
+            require(['interfaceQuota.view', 'interfaceQuota.model'], function(DomainListView, DomainListModel){
+                this.curPage = 'customerSetup-interfaceQuota';
+                this.navbarView.select('customerSetup', $.proxy(this.removeSubSideBar, this));
+                this.setupCustomerSetupNavbar(query)
+                var renderTarget = this.customerSetupNavbar.$el.find('.sub-content');
+
+                if (!this.interfaceQuotaModel)
+                    this.interfaceQuotaModel = new DomainListModel();
+                if (!this.interfaceQuotaView ){
+                    var options = {
+                        collection: this.interfaceQuotaModel,
+                        query     : query
+                    };
+                    this.interfaceQuotaView = new DomainListView(options);
+                    this.interfaceQuotaView.render(renderTarget);
+                } else {
+                    this.customerSetupNavbar.select(this.curPage);
+                    this.interfaceQuotaView.update(query, renderTarget);
+                }
+            }.bind(this));
+        },
+
         customerSetupCallback: function(){
             require(['customerSetup.view', 'customerSetup.model'], function(CustomerSetupView, CustomerSetupModel){
                 this.curPage = 'customerSetup';

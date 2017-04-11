@@ -99,7 +99,7 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
         },
 
         getTopoOrigininfo:function(args){
-            var url = BASE_URL + "/resource/topo/origin/info?id="+args,
+            var url = BASE_URL + "/resource/topo/origin/consoleInfo?id="+args,
             successCallback = function(res){
                 if(res){
                     this.total = res.total;
@@ -115,7 +115,7 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
         },
 
         getRuleOrigin: function(args){
-           var url = BASE_URL + "/resource/topo/rule/origin?ruleIds="+args,
+           var url = BASE_URL + "/resource/topo/rule/consoleOrigin?ruleIds="+args,
            successCallback = function(res){
                 if(res){
                     this.total = res.total;
@@ -185,6 +185,17 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
                 this.trigger("get.domainInfo.error", response);  
             }.bind(this);
             args.t = new Date().valueOf();
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        modifyVersionRemark: function(args){
+            var url = BASE_URL + "/channelManager/configuration/modifyVersionRemark",
+            successCallback = function(res){
+                this.trigger("set.remark.success", res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("set.remark.error", response);  
+            }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         }
 

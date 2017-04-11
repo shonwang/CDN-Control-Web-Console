@@ -93,7 +93,7 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
             
             require(["setupSending.detail.view", "setupSending.detail.model"], function(SendDetailView, SetupSendDetailModel){
                 var mySetupSendDetailModel = new SetupSendDetailModel();
-                var mySendDetailView = new SendDetailView({
+                var mySendDetailView = new SendDetailView.SendDetailView({
                     collection: mySetupSendDetailModel,
                     model: model,
                     onSaveCallback: function(){}.bind(this),

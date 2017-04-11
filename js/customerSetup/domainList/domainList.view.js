@@ -21,6 +21,9 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
             this.collection.on("query.domain.success",$.proxy(this.queryDomainSuccess,this));
             this.collection.on("query.domain.error",$.proxy(this.queryDomainError,this));
 
+            this.collection.on("change.confCustomType.success", $.proxy(this.changeConfCustomTypeSuccess, this))
+            this.collection.on("change.confCustomType.error", $.proxy(this.changeConfCustomTypeError, this))
+
             this.$el.find("#cdn-search-btn").bind('click',$.proxy(this.onClickSearchBtn,this));
             this.$el.find(".add-domain").bind('click',$.proxy(this.onClickAddDomain,this));
             if(!AUTH_OBJ.CreateCustomerDomain) {
@@ -133,7 +136,8 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
 
-            var model = this.collection.get(id);
+            var model = this.collection.get(id), 
+                whereAreYouFrom = model.get("confCustomType");//等于2时来自openAPI
 
             this.args = JSON.stringify({
                 clientName: this.userInfo.clientName,
@@ -146,6 +150,11 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
 
             this.curType = model.get("type");
             this.curProtocol = model.get("protocol");
+
+            if (whereAreYouFrom === 2) {
+                this.alertChangeType(model.get("id"));
+                return;
+            }
 
             this.redirectToManage();
         },
@@ -164,6 +173,42 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
             } else {
                 alert('type=1 protocol=0,4 下载<br>type=2 protocol=2 伪直播<br>type=2 protocol= 1,3真直播<br>当前返回的type为' + this.curType + "，protocol为" + this.curProtocol);
             }
+        },
+
+        alertChangeType: function(id){
+            if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
+
+            var message = `<div class="alert alert-danger">
+                                <strong>重要提示: </strong><br>
+                                使用中控编辑管理域名配置后，该域名将不能在控制台或使用OpenAPI进行配置修改配置”，是否确认使用？
+                           </div>`;
+            var options = {
+                title: "警告",
+                body : message,
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback:  function(){
+                    this.collection.changeConfCustomType({
+                        originId: id,
+                        confCustomType: 1
+                    })
+                    this.commonPopup.$el.modal('hide');
+                }.bind(this),
+                onCancelCallback: function(){
+                    this.commonPopup.$el.modal('hide');
+                }.bind(this)
+            }
+
+            this.commonPopup = new Modal(options);
+        },
+
+        changeConfCustomTypeSuccess: function(){
+            alert("变更成功")
+            this.redirectToManage();
+        },
+
+        changeConfCustomTypeError: function(res){
+            alert("变更失败: " + res)
         },
 
         setNoData:function(msg){

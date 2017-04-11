@@ -11,7 +11,6 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
 
             require(['setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeModel){
                 this.mySetupSendWaitCustomizeModel = new SetupSendWaitCustomizeModel();
-
                 if (this.model.isCustom) {
                     this.mySetupSendWaitCustomizeModel.off("get.all.config.success");
                     this.mySetupSendWaitCustomizeModel.off("get.all.config.error");
@@ -115,26 +114,26 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
                 this.collection.on("get.task.doingdetail.success",$.proxy(this.queryDetailSuccess,this));
                 this.collection.on("get.task.doingdetail.error",$.proxy(this.onGetError,this));
                 this.collection.on("get.ingoredevice.success",$.proxy(this.onSkipSuccess,this));
-                this.collection.on("get.ingoredevice.error",$.proxy(this.onGetError,this));
-
+                this.collection.on("get.ingoredevice.error",$.proxy(this.onGetSkipError,this));
+                this.$el.find(".multi-skip").on("click", $.proxy(this.onClickMultiSkipButton, this));
                 this.queryArgs = {
                     "taskId" : this.model.get('taskId'),//任务ID
                     "taskStepId" : this.model.get('taskStepId'),//任务stepId
                     "deviceName" : null,
                     "nodeId": null,// "节点ID"
-                    "status": null,
+                    "status": 1,
                     "page": this.curPage,
                     "count": 10
                 };
             } else {
                 this.collection.on("get.task.donedetail.success",$.proxy(this.queryDetailSuccess,this));
                 this.collection.on("get.task.donedetail.error",$.proxy(this.onGetError,this));
-
+                this.$el.find(".multi-skip").remove();
                 this.queryArgs = {
                     "taskId" : this.model.get('taskId'),//任务ID
                     "deviceName" : null,
                     "nodeId": null,// "节点ID"
-                    "status": null,
+                    "status": 1,
                     "page": this.curPage,
                     "count": 10
                 };
@@ -234,6 +233,7 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
         },
 
         initDeviceTable: function(){
+            this.$el.find(".multi-skip").attr("disabled", "disabled");
             data = this.collection.models;
 
             this.table = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.detail.table.html'])({
@@ -248,7 +248,75 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
                 this.table.find(".skip").on("click", $.proxy(this.onClickItemSkip, this));
             else
                 this.table.find(".skip").hide();
-            
+
+            this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
+            this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+        },
+
+        onClickMultiSkipButton: function(){
+            this.isMultiSkip = true;
+            this.skipList = _.filter(this.collection.models, function(el){
+                return el.get("isChecked") === true && (el.get("status") === 1 || el.get("status") === 3);
+            }.bind(this))
+
+            this.showDisablePopup();
+
+            var postParam = [];
+            _.each(this.skipList, function(el){
+                postParam.push({
+                    taskStepId: this.model.get('taskStepId'),
+                    deviceId: el.get('id')
+                })
+            }.bind(this))
+
+            this.collection.batchIgnoreDevice(postParam);
+        },
+
+        showDisablePopup: function() {
+            if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
+            var options = {
+                title    : "警告",
+                body     : '<div class="alert alert-danger"><strong>服务器正在努力跳过...</strong></div>',
+                backdrop : 'static',
+                type     : 0,
+            }
+            this.disablePopup = new Modal(options);
+            this.disablePopup.$el.find(".close").remove();
+        },
+
+        onItemCheckedUpdated: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            var id = $(eventTarget).attr("id");
+            var model = this.collection.get(id);
+            model.set("isChecked", eventTarget.checked)
+
+            var checkedList = this.collection.filter(function(model) {
+                return model.get("isChecked") === true;
+            })
+            if (checkedList.length === this.collection.models.length)
+                this.table.find("thead input").get(0).checked = true;
+            if (checkedList.length !== this.collection.models.length)
+                this.table.find("thead input").get(0).checked = false;
+            if (checkedList.length === 0) {
+                this.$el.find(".multi-skip").attr("disabled", "disabled");
+            } else {
+                this.$el.find(".multi-skip").removeAttr("disabled", "disabled");
+            }
+        },
+
+        onAllCheckedUpdated: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            this.collection.each(function(model){
+                model.set("isChecked", eventTarget.checked);
+            }.bind(this))
+            this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
+            if (eventTarget.checked){
+                this.$el.find(".multi-skip").removeAttr("disabled", "disabled");
+            } else {
+                this.$el.find(".multi-skip").attr("disabled", "disabled");
+            }
         },
 
         updateDomainList: function(){
@@ -277,17 +345,22 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
             } else {
                 id = $(eventTarget).attr("id");
             }
-            //?taskStepId={任务StepID}&deviceName={设备名称}&deviceId={设备ID}
-            this.collection.ingoreDevice({
+
+            var postParam = [{
                 taskStepId: this.model.get('taskStepId'),
-                deviceName: this.collection.get(id).get("deviceName"),
                 deviceId: id
-            })
+            }]
+            this.collection.batchIgnoreDevice(postParam)
         },
 
         onSkipSuccess: function(){
+            if (this.isMultiSkip) {
+                this.isMultiSkip = false;
+                this.disablePopup&&this.disablePopup.$el.modal('hide');
+            }
             this.onClickQueryButton();
             alert("跳过成功")
+            this.onClickQueryButton();
         },
 
         onClickItemDetail: function(event){
@@ -344,6 +417,18 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
 
+        onGetSkipError: function(error){
+            if (error&&error.message)
+                alert(error.message)
+            else
+                alert("网络阻塞，请刷新重试！")
+            if (this.isMultiSkip) {
+                this.isMultiSkip = false;
+                this.disablePopup&&this.disablePopup.$el.modal('hide');
+            }
+            this.onClickQueryButton();
+        },
+
         onGetError: function(error){
             if (error&&error.message)
                 alert(error.message)
@@ -356,5 +441,6 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
         }
     });
 
-    return SendDetailView
+    exports.SendDetailView = SendDetailView;
+    exports.ConfiFileDetailView = ConfiFileDetailView;
 });

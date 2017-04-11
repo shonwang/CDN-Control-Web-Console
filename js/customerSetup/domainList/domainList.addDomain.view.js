@@ -677,7 +677,8 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
             var dateArray = [
                 {name:"请选择",value:"1"},
                 {name:"下载加速",value:"download"},
-                {name:"直播加速",value:"live"}
+                {name:"直播加速",value:"live"},
+                {name:"直播推流加速",value:"liveUpward"}
             ];
             this.initDropMenu(ctn,dateArray,function(obj){
                 var cdnType = obj.value;
@@ -697,6 +698,9 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
                     this.downloadAndLiveView = new AddDownloadView({collection:this.collection,obj:this});
                 }
                 else if(cdnType == "live"){
+                    this.downloadAndLiveView = new AddLiveView({collection:this.collection,obj:this})
+                }
+                else if(cdnType == "liveUpward"){
                     this.downloadAndLiveView = new AddLiveView({collection:this.collection,obj:this})
                 }
                 this.downloadAndLiveView.render(viewCtn);

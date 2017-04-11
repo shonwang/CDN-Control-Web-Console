@@ -8,7 +8,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             this.model = options.model;
             this.isEdit = options.isEdit;
             this.businessTypeList = options.businessTypeList;
-            //console.log(this.businessTypeList);
+            console.log(this.businessTypeList);
             if(this.isEdit){
                 this.args = {
                     id : this.model.get("id"),
@@ -528,7 +528,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                 this.getPageArgs.bisTypeId = parseInt($.trim(value));
             }.bind(this));
             this.getPageArgs.bisTypeId = parseInt(businessTypeList[0].value);
-            console.log(this.getPageArgs);
+
             this.collection.getDomainPageList(this.getPageArgs); //请求table列表
          
             if(this.isEdit){
@@ -581,7 +581,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
 
         onClickCreate: function(){
             //this.getPageArgs.bisTypeId = 10;
-            this.collection.getNodeGroupTree({bisTypeId:10});
+            this.collection.getNodeGroupTree({bisTypeId:this.getPageArgs.bisTypeId});
 
             if (this.addPopup) $("#" + this.addPopup.modalId).remove();
 

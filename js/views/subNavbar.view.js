@@ -160,15 +160,14 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                         id: 'customerSetup-domainList-ipBlackWhiteList',
                         name: 'IP黑白名单',
                         hash: 'index.html#/domainList/' + query + '/ipBlackWhiteList/' + query2,
-                        notShow:!AUTH_OBJ.IPMatchingCondition,
+                        //notShow:!AUTH_OBJ.IPMatchingCondition,
                         active: false,
                         children: []
                     },{
                         id: 'customerSetup-domainList-refererAntiLeech',
                         name: 'Referer防盗链',
                         hash: 'index.html#/domainList/' + query + '/refererAntiLeech/' + query2,
-                        notShow:!AUTH_OBJ.referIPMatchingCondition,
-
+                        //notShow:!AUTH_OBJ.referIPMatchingCondition,
                         active: false,
                         children: []
                     },{

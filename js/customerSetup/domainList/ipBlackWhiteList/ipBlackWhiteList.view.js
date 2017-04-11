@@ -4,6 +4,7 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
         events: {},
 
         initialize: function(options) {
+            this.IPMatchingCondition = AUTH_OBJ.IPMatchingCondition || null;
             this.options = options;
             this.collection = options.collection;
             this.isEdit = options.isEdit;
@@ -32,12 +33,23 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
                     {name: "指定URI", value: 2},
                     {name: "指定目录", value: 1},
                     {name: "正则匹配", value: 3},
-                ], matchConditionOption = {
+                ];
+
+                if(!this.IPMatchingCondition){
+                    //添加特殊条件，如果没有此属性，所有用户，只能选择全部文件
+                    matchConditionArray = [
+                        {name: "全部文件", value: 9}
+                    ]                    
+                }
+
+                var matchConditionOption = {
                     collection: new MatchConditionModel(),
                     defaultCondition : this.defaultParam.type,
                     defaultPolicy: this.defaultParam.policy,
                     matchConditionArray: matchConditionArray
                 }
+
+
                 this.matchConditionView = new MatchConditionView(matchConditionOption);
                 this.matchConditionView.render(this.$el.find(".match-condition-ctn"));
                 

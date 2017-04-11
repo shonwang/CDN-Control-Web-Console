@@ -9,6 +9,7 @@ define("importDomainManage.model", ['require','exports', 'utility'], function(re
             if (businessType === "2") this.set("businessTypeName", '直播加速');
             if (open302) this.set("open302Name", '<span class="text-success">开启</span>');
             if (!open302) this.set("open302Name", '<span class="text-danger">关闭</span>');
+            if (!status) this.set("statusName", '后端返回了不能识别的状态');
             if (status === 1) this.set("statusName", '<span class="text-info">创建中</span>');
             if (status === 2) this.set("statusName", '<span class="text-info">修改中</span>');
             if (status === 3) this.set("statusName", '<span class="text-success">运行中</span>');
@@ -25,7 +26,7 @@ define("importDomainManage.model", ['require','exports', 'utility'], function(re
         initialize: function(){},
 
         queryByPage: function(args){
-            var url = BASE_URL + "/cname/queryByPage",
+            var url = BASE_URL + "/rs/cname/queryByPage",
             successCallback = function(res){
                 this.reset();
                 if(res){
@@ -45,7 +46,7 @@ define("importDomainManage.model", ['require','exports', 'utility'], function(re
         },
 
         forbiddenCname: function(args){
-            var url = BASE_URL + "/cname/forbiddenCname",
+            var url = BASE_URL + "/rs/cname/forbiddenCname",
             successCallback = function(res){
                 this.trigger("set.stop.success", res);
             }.bind(this),
@@ -56,7 +57,7 @@ define("importDomainManage.model", ['require','exports', 'utility'], function(re
         },
 
         activeCname: function(args){
-            var url = BASE_URL + "/cname/activeCname",
+            var url = BASE_URL + "/rs/cname/activeCname",
             successCallback = function(res){
                 this.trigger("set.open.success", res);
             }.bind(this),
@@ -67,7 +68,7 @@ define("importDomainManage.model", ['require','exports', 'utility'], function(re
         },
 
         deleteCname: function(args){
-            var url = BASE_URL + "/cname/deleteCname",
+            var url = BASE_URL + "/rs/cname/deleteCname",
             successCallback = function(res){
                 this.trigger("set.delete.success", res);
             }.bind(this),
@@ -78,7 +79,7 @@ define("importDomainManage.model", ['require','exports', 'utility'], function(re
         },
 
         editCname: function(args){
-            var url = BASE_URL + "/cname/editCname",
+            var url = BASE_URL + "/rs/cname/editCname",
             successCallback = function(res){
                 this.trigger("set.cname.success", res);
             }.bind(this),

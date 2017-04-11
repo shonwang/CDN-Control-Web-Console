@@ -67,7 +67,7 @@ define("importDomainManage.view", ['require','exports', 'template', 'modal.view'
 
         onGetError: function(error){
             this.disablePopup && this.disablePopup.$el.modal('hide');
-            this.refreshList();
+            //this.refreshList();
             if (error&&error.message)
                 alert(error.message)
             else

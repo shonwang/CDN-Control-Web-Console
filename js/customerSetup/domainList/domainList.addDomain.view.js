@@ -701,7 +701,11 @@ define("domainList.addDomain.view", ['require','exports', 'template', 'utility',
                     this.downloadAndLiveView = new AddLiveView({collection:this.collection,obj:this})
                 }
                 else if(cdnType == "liveUpward"){
-                    this.downloadAndLiveView = new AddLiveView({collection:this.collection,obj:this})
+                    this.downloadAndLiveView = new AddLiveView({
+                        collection:this.collection,
+                        obj:this,
+                        liveUpward: true
+                    })
                 }
                 this.downloadAndLiveView.render(viewCtn);
 

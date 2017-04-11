@@ -12,11 +12,11 @@ define("importDomainManage.view", ['require','exports', 'template', 'modal.view'
 
             this.collection.on("get.list.success", $.proxy(this.onGetDomainList, this));
             this.collection.on("get.list.error", $.proxy(this.onGetError, this));
-            this.collection.on("set.stop.success", $.proxy(this.refreshList, this));
+            this.collection.on("set.stop.success", $.proxy(this.onSetSuccess, this));
             this.collection.on("set.stop.error", $.proxy(this.onGetError, this));
-            this.collection.on("set.open.success", $.proxy(this.refreshList, this));
+            this.collection.on("set.open.success", $.proxy(this.onSetSuccess, this));
             this.collection.on("set.open.error", $.proxy(this.onGetError, this));
-            this.collection.on("set.delete.success", $.proxy(this.refreshList, this));
+            this.collection.on("set.delete.success", $.proxy(this.onSetSuccess, this));
             this.collection.on("set.delete.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
@@ -24,6 +24,7 @@ define("importDomainManage.view", ['require','exports', 'template', 'modal.view'
 
             this.queryArgs = {
                 "cname": null,
+                "domain": null,
                 "currentPage": 1,
                 "pageSize": 10,
                 "open302": null
@@ -43,12 +44,17 @@ define("importDomainManage.view", ['require','exports', 'template', 'modal.view'
             this.queryArgs.currentPage = this.curPage;
             this.queryArgs.cname = this.$el.find("#input-cname").val().trim();
             if (this.queryArgs.cname == "") this.queryArgs.cname = null;
-            // this.queryArgs.domain = this.$el.find("#input-domain").val().trim();
-            // if (this.queryArgs.domain == "") this.queryArgs.domain = null;
+            this.queryArgs.domain = this.$el.find("#input-domain").val().trim();
+            if (this.queryArgs.domain == "") this.queryArgs.domain = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
 
             this.collection.queryByPage(this.queryArgs);
+        },
+
+        onSetSuccess: function(){
+            alert("操作成功!")
+            this.refreshList();
         },
         
         enterKeyBindQuery:function(){

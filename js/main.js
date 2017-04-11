@@ -132,7 +132,10 @@
   "setupBill.view": "setupChannelManage/setupBill/setupBill.view",
   "setupBillLive.view": "setupChannelManage/setupBill/setupBillLive.view",
   "setupChannelManage.edit.view": "setupChannelManage/setupChannelManage.edit.view",
+  "setupChannelManage.history.view": "setupChannelManage/setupChannelManage.history.view",
   "setupChannelManage.model": "setupChannelManage/setupChannelManage.model",
+  "setupChannelManage.select.view": "setupChannelManage/setupChannelManage.select.view",
+  "setupChannelManage.specialLayer.view": "setupChannelManage/setupChannelManage.specialLayer.view",
   "setupChannelManage.view": "setupChannelManage/setupChannelManage.view",
   "setupSendDone.model": "setupSendManage/setupSendDone/setupSendDone.model",
   "setupSendDone.view": "setupSendManage/setupSendDone/setupSendDone.view",
@@ -162,6 +165,7 @@
 };
 //PATH END===
 window.DEBUG = 1.1;
+
 
 
 

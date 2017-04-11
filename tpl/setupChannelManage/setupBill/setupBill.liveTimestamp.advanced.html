@@ -1,0 +1,36 @@
+<table class="table table-striped table-hover">
+    <tbody>
+        <tr>
+          <td>时间戳+共享秘钥防盗链</td>
+          <td><%=data["openFlagStr"]%></td>
+        </tr>
+        <tr>
+          <td>配置类型</td>
+          <td><%=data["confTypeStr"]%></td>
+        </tr>
+        <tr>
+          <td>加密URL形式</td>
+          <td><%=data["protectionTypeStr"]%>：$key_time=<%=data["timeParam"]%>，$key_hash=<%=data["hashParam"]%></td>
+        </tr>
+        <tr>
+          <td>共享秘钥</td>
+          <td class="authkey"></td>
+        </tr>
+        <tr>
+          <td>时间戳格式</td>
+          <td><%=data["timeTypeStr"]%></td>
+        </tr>
+        <tr>
+          <td>失效时间</td>
+          <td><%=data["expirationTimeStr"]%></td>
+        </tr>
+        <tr>
+          <td>鉴权因子</td>
+          <td class="authdivisor"></td>
+        </tr>
+        <tr>
+          <td>截取MD5值</td>
+          <td><%=data["md5TruncateStr"]%></td>
+        </tr>
+    </tbody>
+</table>

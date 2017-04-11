@@ -115,7 +115,7 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
 
-            require(['setupBill.view', 'setupBill.model'], function(SetupBillView, SetupBillModel){
+            require(['setupBillLive.view', 'setupBill.model'], function(SetupBillView, SetupBillModel){
                 var mySetupBillModel = new SetupBillModel();
                 var mySetupBillView = new SetupBillView({
                     collection: mySetupBillModel,
@@ -148,16 +148,15 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
                 domain: model.get("domain")
             });
 
+            this.curType = model.get("type");
+            this.curProtocol = model.get("protocol");
+
             if (whereAreYouFrom === 2) {
                 this.alertChangeType(model.get("id"));
                 return;
             }
 
             this.redirectToManage();
-        },
-
-        redirectToManage: function(){
-            window.location.hash = '#/domainList/' + this.args + "/basicInformation/" + this.args2;
         },
 
         alertChangeType: function(id){
@@ -193,7 +192,23 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
         },
 
         changeConfCustomTypeError: function(res){
-            alert("变更失败: " + res)
+            alert("变更失败: " + res);
+        },
+
+        redirectToManage: function(){
+            // type=1 protocol=0,4 下载
+            // type=2 protocol=2 伪直播
+            // type=2 protocol= 1,3真直播
+            if ((this.curType === 1 && this.curProtocol === 0) ||
+                (this.curType === 1 && this.curProtocol === 4) ||
+                (this.curType === 2 && this.curProtocol === 2)) {
+                window.location.hash = '#/domainList/' + this.args + "/basicInformation/" + this.args2
+            } else if ((this.curType === 2 && this.curProtocol === 1) ||
+                       (this.curType === 2 && this.curProtocol === 3)) {
+                window.location.hash = '#/domainList/' + this.args + "/liveBasicInformation/" + this.args2
+            } else {
+                alert('type=1 protocol=0,4 下载<br>type=2 protocol=2 伪直播<br>type=2 protocol= 1,3真直播<br>当前返回的type为' + this.curType + "，protocol为" + this.curProtocol);
+            }
         },
 
         setNoData:function(msg){

@@ -27,17 +27,30 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 timeParam: "",
                 hashParam: "",
                 authFactor: "",
+                atuthDivisorArray: [{
+                    "id": -1,
+                    "divisor": 6,
+                }, {
+                    "id": -2,
+                    "divisor": 2,
+                }, {
+                    "id": -3,
+                    "divisor": 5,
+                }],
                 md5Truncate: "",
                 type: 9,
                 policy: ""
             };
+
+            var authDivisorList = this.defaultParam.atuthDivisorArray;
 
             if (this.isEdit){
                 var protectionType = this.model.get("protectionType"), //1:typeA 2:typeB 3:typeC
                     confType = this.model.get("confType"),
                     authKeyList = this.model.get("authKeyList"),
                     md5Truncate = this.model.get("md5Truncate")
-                    expirationTime = this.model.get("expirationTime");
+                    expirationTime = this.model.get("expirationTime"),
+                    authDivisorList = this.model.get("authDivisorList");
 
                 if (confType === 0) {
                     this.defaultParam.antiLeech = protectionType
@@ -71,14 +84,15 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                     }
                 }.bind(this))
 
-                if (expirationTime === 0 && confType === 0)
-                    this.defaultParam.baseDeadline === 1;
-                else if (expirationTime !== 0 && confType === 0)
-                    this.defaultParam.baseDeadline === 2;
-                else if (expirationTime === 0 && confType === 1)
+                if (expirationTime === "" || expirationTime === null) expirationTime = 0;
+
+                if (expirationTime === 0){
+                    this.defaultParam.baseDeadline = 1;
                     this.defaultParam.advancedDeadline = 1;
-                else if (expirationTime !== 0 && confType === 1)
+                } else if (expirationTime !== 0) {
+                    this.defaultParam.baseDeadline = 2;
                     this.defaultParam.advancedDeadline = 2;
+                }
 
                 if (md5Truncate === ""){
                     this.defaultParam.spliceMd5 = 1;
@@ -87,14 +101,34 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 }
                 this.defaultParam.isBaseSetup = confType === 0 ? 1 : 2; //0:标准配置 1:高级配置
                 this.defaultParam.timestampType = this.model.get("timeType") || 1; //1:UNIX时间（十六进制）2:UNix时间（十进制）3：Text格式
-                this.defaultParam.authFactor = this.model.get("authFactor");
+                //this.defaultParam.authFactor = this.model.get("authFactor");
                 this.defaultParam.timeParam = this.model.get("timeParam");
                 this.defaultParam.hashParam = this.model.get("hashParam");
                 this.defaultParam.md5Truncate = this.model.get("md5Truncate");
                 this.defaultParam.type = this.model.get("matchingType") || 0;
                 this.defaultParam.policy = this.model.get("matchingValue") || "";
+            }
 
-                console.log(this.defaultParam)
+            if (authDivisorList) {
+                var  atuthDivisorArray = [
+                    {value: 1, name: "host:用户请求域名"},
+                    {value: 2, name: "uri：用户请求的uri"},
+                    {value: 3, name: "url：不带参数"},
+                    {value: 4, name: "arg&name:请求url中的参数名称"},
+                    {value: 5, name: "time：请求url中是时间戳"},
+                    {value: 6, name: "key：秘钥"},
+                    {value: 7, name: "filename：文件名称，带后缀"},
+                    {value: 8, name: "filenameno：文件名称，不带后缀"},
+                    {value: 9, name: "method: 用户请求方法"},
+                    {value: 10, name: "hdr&name：请求头中的header名称"}
+                ];
+                _.each(authDivisorList, function(el, index, ls){
+                    var nameObj = _.find(atuthDivisorArray, function(obj){
+                        return obj.value === el.divisor
+                    }.bind(this))
+                    if (nameObj) el.divisorName = nameObj.name
+                }.bind(this))
+                this.defaultParam.atuthDivisorArray = authDivisorList
             }
 
             require(['matchCondition.view', 'matchCondition.model'], function(MatchConditionView, MatchConditionModel){
@@ -125,6 +159,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.$el.find(".advanced-setup.deadline input[name='deadline']").on("click", $.proxy(this.onClickAdvancedDeadlineRadio, this));
                 this.$el.find(".advanced-setup .add-secret-key-backup").on("click", $.proxy(this.onClickAdvancedNewKey, this));
                 this.$el.find(".splice-md5 input[name='spliceMd5']").on("click", $.proxy(this.onClickSpliceMd5Radio, this));
+                this.$el.find(".advanced-setup .add-atuth-divisor").on("click", $.proxy(this.onClickAddAtuthDivisor, this));
                 this.initBaseAdvancedSetup();
             }.bind(this))
         },
@@ -167,7 +202,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             else if (this.defaultParam.spliceMd5 === 2)
                 this.$el.find(".advanced-setup.splice-md5 #spliceMd52").get(0).checked = true;
 
-            this.$el.find("#atuth-divisor").val(this.defaultParam.authFactor);
+            //this.$el.find("#atuth-divisor").val(this.defaultParam.authFactor);
             this.$el.find("#key_time").val(this.defaultParam.timeParam);
             this.$el.find("#key_hash").val(this.defaultParam.hashParam);
 
@@ -178,6 +213,8 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.$el.find("#md5-start").val(this.defaultParam.md5Truncate.split(",")[0])
                 this.$el.find("#md5-end").val(this.defaultParam.md5Truncate.split(",")[1])
             } 
+
+            this.updateAtuthDivisorTable();
         },
 
         initDropDropdown: function(){
@@ -217,6 +254,34 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.$el.find("#dropdown-timestamp-type .cur-value").html(defaultOtherValue.name);
             else
                 this.$el.find("#dropdown-timestamp-type .cur-value").html(timeTypeArray[0].name);
+
+            this.curAtuthDivisor = 1;
+            this.curAtuthDivisorParam = "";
+            this.$el.find("#atuth-divisor-param").hide();
+
+            //1:host 2:URI 3:url 4:param_key 5:time 6:key 7:filename 8:filenameno 9:method 10:head_key
+            var  atuthDivisorArray = [
+                {value: 1, name: "host:用户请求域名"},
+                {value: 2, name: "uri：用户请求的uri"},
+                {value: 3, name: "url：不带参数"},
+                {value: 4, name: "arg&name:请求url中的参数名称"},
+                {value: 5, name: "time：请求url中是时间戳"},
+                {value: 6, name: "key：秘钥"},
+                {value: 7, name: "filename：文件名称，带后缀"},
+                {value: 8, name: "filenameno：文件名称，不带后缀"},
+                {value: 9, name: "method: 用户请求方法"},
+                {value: 10, name: "hdr&name：请求头中的header名称"}
+            ],
+            atuthDivisorRootNode = this.$el.find(".atuth-divisor");
+            Utility.initDropMenu(atuthDivisorRootNode, atuthDivisorArray, function(value){
+                this.curAtuthDivisor = parseInt(value);
+                if (this.curAtuthDivisor === 4 || this.curAtuthDivisor === 10){
+                    this.$el.find("#atuth-divisor-param").show();
+                } else {
+                    this.$el.find("#atuth-divisor-param").hide();
+                    this.$el.find("#atuth-divisor-param").val("");
+                }
+            }.bind(this));
         },
 
         hideOrShowSetup: function(){
@@ -286,6 +351,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 backupKey: newKey
             });
             this.updateBaseKeyTable();
+            this.$el.find(".base-setup #new-backup-key").val("")
         },
 
         onClickAntiLeechRadio: function(event){
@@ -318,6 +384,60 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             this.defaultParam.spliceMd5 = parseInt($(eventTarget).val())
+        },
+
+        onClickAddAtuthDivisor: function(event){
+            var eventTarget = event.srcElement || event.target;
+
+            this.curAtuthDivisorParam = this.$el.find("#atuth-divisor-param").val();
+            if (this.curAtuthDivisor === 4 && this.curAtuthDivisorParam === ""){
+                alert("参数不能为空")
+                return;
+            }
+            if (this.curAtuthDivisor === 10 && this.curAtuthDivisorParam === ""){
+                alert("参数不能为空")
+                return;
+            }
+            if (this.defaultParam.atuthDivisorArray.length >= 10) {
+                alert("最大可以设置10个");
+                return;
+            }
+
+            this.defaultParam.atuthDivisorArray.push({
+                id: new Date().valueOf(),
+                divisorName: this.$el.find("#dropdown-atuth-divisor .cur-value").html(),
+                divisor: this.curAtuthDivisor,
+                divisorParam: this.curAtuthDivisorParam
+            });
+            this.updateAtuthDivisorTable();
+            this.$el.find("#atuth-divisor-param").val("")
+        },
+
+        updateAtuthDivisorTable: function(){
+            this.$el.find(".advanced-setup .atuth-divisor-table").find(".table").remove()
+            this.atuthDivisorTable = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.atuthDivisor.table.html'])({
+                data: this.defaultParam.atuthDivisorArray
+            }))
+
+            this.atuthDivisorTable.find(".delete").on("click", $.proxy(this.onClickAuthDivisorTableItemDelete, this));
+            this.$el.find(".advanced-setup .atuth-divisor-table .table-ctn").html(this.atuthDivisorTable.get(0));
+        },
+
+        onClickAuthDivisorTableItemDelete: function(event){
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+
+            var filterArray = _.filter(this.defaultParam.atuthDivisorArray, function(obj){
+                return obj.id !== parseInt(id)
+            }.bind(this))
+
+            if (filterArray.length <= 1) {
+                alert("最少不能少于2个");
+                return;
+            }
+
+            this.defaultParam.atuthDivisorArray = filterArray;
+            this.updateAtuthDivisorTable();
         },
 
         updateAdvancedKeyTable: function(){
@@ -355,6 +475,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 backupKey: newKey
             });
             this.updateAdvancedKeyTable();
+            this.$el.find(".advanced-setup #new-backup-key").val("");
         },
 
         checkBalabala: function(){
@@ -386,7 +507,9 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
             var spliceMd5Min = this.$el.find("#md5-start").val(),
                 spliceMd5Max = this.$el.find("#md5-end").val();
             if (this.defaultParam.spliceMd5 === 2 && 
-                (spliceMd5Max === "" || spliceMd5Min === "" || parseInt(spliceMd5Max) - parseInt(spliceMd5Min) < 0)){
+                (spliceMd5Max === "" || spliceMd5Min === "" || 
+                 parseInt(spliceMd5Max) - parseInt(spliceMd5Min) < 0) || 
+                spliceMd5Min < 1 || spliceMd5Max > 32){
                 alert("你选择了高级设置截取MD5值，需要填写正确的取值范围！");
                 return;
             }
@@ -493,7 +616,8 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 "hashParam": this.$el.find("#key_hash").val(),
                 "timeType": this.defaultParam.timestampType,
                 "expirationTime": expirationTime,
-                "authFactor": this.$el.find("#atuth-divisor").val(),
+                //"authFactor": this.$el.find("#atuth-divisor").val(),
+                "authDivisorList": this.defaultParam.atuthDivisorArray,
                 "md5Truncate": md5Truncate,
                 "authKeyList": authKeyList,
                 "summary": summary
@@ -562,7 +686,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
-                    width: 800,
+                    width: 1000,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),
@@ -586,7 +710,7 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                     "hashParam": obj.get('hashParam'),
                     "timeType": obj.get('timeType'),
                     "expirationTime": obj.get('expirationTime'),
-                    "authFactor": obj.get('authFactor'),
+                    "authDivisorList": obj.get('authDivisorList'),
                     "md5Truncate": obj.get('md5Truncate'),
                     "authKeyList": obj.get('authKeyList'),
                 })

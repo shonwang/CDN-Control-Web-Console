@@ -170,7 +170,7 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
 
             require(["setupSendDetail.view", "setupSendDetail.model"], function(SendDetailView, SetupSendDetailModel){
                 var mySetupSendDetailModel = new SetupSendDetailModel();
-                var mySendDetailView = new SendDetailView({
+                var mySendDetailView = new SendDetailView.SendDetailView({
                     collection: mySetupSendDetailModel,
                     model: model,
                     isSending: true,

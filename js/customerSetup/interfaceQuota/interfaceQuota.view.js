@@ -10,11 +10,26 @@ define("interfaceQuota.view", ['require', 'exports', 'template', 'utility', "mod
                     "quotaTimes": this.model.get("quotaTimes")
                 }
                 this.$el = $(_.template(template['tpl/customerSetup/interfaceQuota/interfaceQuota.edit.html'])({ data: this.args }));
+                this.$el.find("#input-name").blur(function(){
+                    this.onblur()
+                }.bind(this));
+            },
+            onblur:function () {
+
+                var newQuota = this.$el.find("#input-name").val();
+                    if( isNaN(newQuota) || newQuota <= 0){
+                        this.$el.find("#check").show();
+                        this.$el.find("#editQuota").addClass('has-error');
+                        return
+                    }else{
+                        this.$el.find("#editQuota").removeClass('has-error');
+                        this.$el.find("#check").hide();
+                    }
             },
             getArgs: function (id, popUp) {
                 var newQuota = this.$el.find("#input-name").val();
-                if (!newQuota.length || parseInt(newQuota) <= 0) {
-                    alert("请输入正确的配额值");
+                if (!newQuota.length ||  isNaN(newQuota) || newQuota <= 0) {
+                    this.$el.find("#check").show();
                     return
                 }
                 var quotaName = popUp.get('quotaName');
@@ -52,7 +67,7 @@ define("interfaceQuota.view", ['require', 'exports', 'template', 'utility', "mod
                 this.collection.on("get.user.success", $.proxy(this.onChannelListSuccess, this));
                 this.collection.on("get.user.error", $.proxy(this.onGetError, this));
                 this.collection.on("update.quota.success", function () {
-                    alert("编辑成功！")
+                    alert("修改配额成功！")
                     this.onClickQueryButton();
                 }.bind(this));
                 this.collection.on('update.quota.error', $.proxy(this.onGetError, this));      

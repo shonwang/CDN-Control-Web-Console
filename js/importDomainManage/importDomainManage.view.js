@@ -155,6 +155,7 @@ define("importDomainManage.view", ['require','exports', 'template', 'modal.view'
                         myImportDomainManageEditView.$el.remove();
                         this.$el.find(".list-panel").show();
                         this.enterKeyBindQuery();
+                        this.refreshList();
                     }.bind(this)
                 })
 

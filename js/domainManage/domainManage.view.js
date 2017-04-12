@@ -91,7 +91,7 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                     origdomain:true,
                     lua:true
                 };
-                //console.log(this.args.configRole);
+
                 var self = this;
                 //1.生成domain,2.生成originDomain,3.生成lua.conf
                 if(this.args.configRole != null){
@@ -124,15 +124,12 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                    switch(target.className){
                       case 'origdomain':
                         self.configurationFiletype.origdomain = state;
-                        //console.log(self.configurationFiletype);
                         break;
                       case 'domain':
                         self.configurationFiletype.domain = state;
-                        //console.log(self.configurationFiletype);
                         break;
                       case 'lua':
                         self.configurationFiletype.lua = state;
-                        //console.log(self.configurationFiletype);
                         break;
                     }
                 })
@@ -496,14 +493,12 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                         configRoleType = 1;
                     }
                 }else if(key == 'origdomain' && this.configurationFiletype.origdomain){
-                    //console.log('originDomain');
                     if(configRoleType != ''){
                       configRoleType = configRoleType + ',' +2;
                     }else{
                         configRoleType = 2;
                     }
                 }else if(key == 'lua' && this.configurationFiletype.lua){
-                    //console.log('lua.conf');
                     if(configRoleType != ''){
                         configRoleType = configRoleType+ ',' +3;
                     }else{
@@ -797,7 +792,6 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 height   : 500,
                 onOKCallback:  function(){
                     var options = editDomainView.getArgs();
-                    //console.log(options);
                     if (!options) return;
                     this.collection.editDomain(options);
                     this.editDomainPopup.$el.modal("hide");

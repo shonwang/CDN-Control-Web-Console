@@ -93,8 +93,6 @@ define("timestamp.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.defaultParam.md5Truncate = this.model.get("md5Truncate");
                 this.defaultParam.type = this.model.get("matchingType") || 0;
                 this.defaultParam.policy = this.model.get("matchingValue") || "";
-
-                console.log(this.defaultParam)
             }
 
             require(['matchCondition.view', 'matchCondition.model'], function(MatchConditionView, MatchConditionModel){

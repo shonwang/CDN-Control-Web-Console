@@ -585,7 +585,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
-            console.log(this.collection);
+
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.html'])());
 
             this.initNodeDropMenu();

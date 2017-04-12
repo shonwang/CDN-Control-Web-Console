@@ -338,7 +338,7 @@ define("cacheRule.view", ['require','exports', 'template', 'modal.view', 'utilit
                 onOKCallback: function(){
                     var postParam = myAddEditRoleView.onSure();
                     if (!postParam) return;
-                    console.log(postParam)
+
                     _.each(postParam, function(value, key, ls){
                         model.set(key, value);
                     }.bind(this))

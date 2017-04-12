@@ -7,7 +7,8 @@ define("interfaceQuota.view", ['require', 'exports', 'template', 'utility', "mod
                 this.model = options.model;
                 this.args = {
                     "quotaName": this.model.get("quotaName"),
-                    "quotaTimes": this.model.get("quotaTimes")
+                    "quotaTimes": this.model.get("quotaTimes"),
+                    "interfaceCaller":this.options.interfaceCaller
                 }
                 this.$el = $(_.template(template['tpl/customerSetup/interfaceQuota/interfaceQuota.edit.html'])({ data: this.args }));
                 this.$el.find("#input-name").blur(function(){
@@ -26,7 +27,7 @@ define("interfaceQuota.view", ['require', 'exports', 'template', 'utility', "mod
                         this.$el.find("#check").hide();
                     }
             },
-            getArgs: function (id, popUp) {
+            getArgs: function (id, popUp,userid) {
                 var newQuota = this.$el.find("#input-name").val();
                 if (!newQuota.length ||  isNaN(newQuota) || newQuota <= 0) {
                     this.$el.find("#check").show();
@@ -36,7 +37,8 @@ define("interfaceQuota.view", ['require', 'exports', 'template', 'utility', "mod
                 var args = {
                     "userId": id,
                     "quotaName": quotaName,
-                    "quotaValue": newQuota
+                    "quotaValue": newQuota,
+                    "interfaceCaller":userid,
                 };
                 return args
             },
@@ -49,6 +51,7 @@ define("interfaceQuota.view", ['require', 'exports', 'template', 'utility', "mod
                 this.collection = options.collection;
                 this.options = options;
                 this.uid = JSON.parse(options.query).uid;
+                this.userId = $('.user-name').html();
                 this.queryArgs = {
                     "userId": this.uid,
                     "quotaname": null,
@@ -126,7 +129,7 @@ define("interfaceQuota.view", ['require', 'exports', 'template', 'utility', "mod
                     backdrop: 'static',
                     type: 2,
                     onOKCallback: function () {
-                        var options = editView.getArgs(this.uid, model);
+                        var options = editView.getArgs(this.uid,model,this.userId);
                         if (!options) return;
                         this.collection.updateQuota(options);
                         this.editQuotaPopup.$el.modal("hide");

@@ -29,7 +29,7 @@ define("interfaceQuota.model", ['require','exports','utility'], function(require
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
         updateQuota: function (args) {
-            var url = "/2017-4-1/quota/set?userId="+ args.userId + "&quotaName=" + args.quotaName + "&quotaValue=" + args.quotaValue;
+            var url = "/2017-4-1/quota/set?userId="+ args.userId + "&quotaName=" + args.quotaName + "&quotaValue=" + args.quotaValue + "&interfaceCaller=" + args.interfaceCaller;
             var defaultParas = {
                 type: "GET",
                 url: url,

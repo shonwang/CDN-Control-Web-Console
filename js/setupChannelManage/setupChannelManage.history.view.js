@@ -145,7 +145,8 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
 
                 var clickedObj = {
                     domain: this.model.get("domain"),
-                    domainVersion: version
+                    domainVersion: version,
+                    isCustom: this.model.get("isCustom")
                 }
 
                 require(["setupSendDetail.view"], function(SendDetailView) {

@@ -13,7 +13,7 @@ define("interfaceQuota.view", ['require', 'exports', 'template', 'utility', "mod
             },
             getArgs: function (id, popUp) {
                 var newQuota = this.$el.find("#input-name").val();
-                if (!newQuota.length) {
+                if (!newQuota.length || parseInt(newQuota) <= 0) {
                     alert("请输入正确的配额值");
                     return
                 }

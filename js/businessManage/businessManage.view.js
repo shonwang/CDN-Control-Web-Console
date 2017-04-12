@@ -192,7 +192,6 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                     nodeName: el.name,
                     nodeId: el.value
                 });
-                //console.log(data[index].nodeName,data[index].nodeId);
             });
 
             if (data && data.length != 0) {

@@ -8,7 +8,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             this.model = options.model;
             this.isEdit = options.isEdit;
             this.businessTypeList = options.businessTypeList;
-            console.log(this.businessTypeList);
+            
             if(this.isEdit){
                 this.args = {
                     id : this.model.get("id"),
@@ -268,7 +268,6 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             console.log(error);
         },
         initFileList: function(nodeGroup){
-            //console.log(nodeGroup);
             if(nodeGroup.confFileList.length > 0){
                 this.table = $(_.template(template['tpl/grayscaleSetup/grayscaleSetup.add&edit.nodeFile.html'])({data:nodeGroup.confFileList}));
                 this.$el.find(".nodeFiles").html(this.table[0]);
@@ -295,7 +294,6 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         initDropMenu: function(){
             Utility.initDropMenu(this.$el.find(".dropdown-businessType"), this.businessTypeList, function(value){
                 this.args.bisTypeId = parseInt($.trim(value));
-                console.log(this.args.bisTypeId);
                 this.collection.getNodeGroupTree({bisTypeId:this.args.bisTypeId});
             }.bind(this));
 
@@ -544,7 +542,6 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         },
 
         onClickQueryButton: function(){
-            console.log(this.getPageArgs);
             this.getPageArgs.domain = this.$el.find("#input-domain").val();
             if (this.getPageArgs.domain == ""){
                 this.getPageArgs.domain = null;
@@ -562,7 +559,6 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             this.getPageArgs.page = 1;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
-            console.log(this.getPageArgs);
             this.collection.getDomainPageList(this.getPageArgs);
         },
 

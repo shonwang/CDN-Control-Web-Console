@@ -759,6 +759,8 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 "trigger"  : "hover"
             })
 
+            this.table.find(".glyphicon-question-sign").popover();
+
             // this.table.find("tbody tr").find("input[type='checkbox']").on("click", $.proxy(this.onItemCheckedUpdated, this));
             // this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
         },
@@ -821,6 +823,8 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
 
             this.successTable.find("tbody tr").find("input[type='checkbox']").on("click", $.proxy(this.onSuccessItemCheckedUpdated, this));
             this.successTable.find("thead input").on("click", $.proxy(this.onSuccessAllCheckedUpdated, this));
+
+            this.successTable.find(".glyphicon-question-sign").popover();
         },
 
         onSuccessItemCheckedUpdated: function(event){

@@ -1,0 +1,57 @@
+<div class="import-domain-manage-edit">
+    <h4>接入域名管理<small>/修改关联调度关系信息</small></h4>
+    <div class="well ">
+        <div class="add-topo">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="input-domain" class="col-sm-2 control-label">客户域名</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="input-domain" readonly="true" value='<%=data.get("domain")%>'>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="input-cname" class="col-sm-2 control-label">接入域名</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="input-cname" readonly="true" value='<%=data.get("cname")%>'>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="input-topo" class="col-sm-2 control-label">拓扑关系</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="input-topo" readonly="true" value='<%=data.get("topoName")%>'>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="modify-host" class="col-sm-2 control-label">302 调度</label>
+                    <div class="col-sm-4 disp302">
+                        <div class="togglebutton">
+                            <label>
+                                <input type="checkbox" <% if (data.get("open302")) { %> checked <% } %>><span class="toggle"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="modify-host" class="col-sm-2 control-label">调度域名</label>
+                    <div class="col-sm-4 disp-domain">
+                        <a href="javascript:void(0)" class="btn btn-default hide-disp-domain" style="display: none">
+                            <span class="glyphicon glyphicon-chevron-up"></span>
+                            <span class="disp-domain-html"><%=data.get("dispDomain")%></span>
+                        </a>
+                        <a href="javascript:void(0)" class="btn btn-default show-disp-domain">
+                            <span class="glyphicon glyphicon-chevron-down"></span>
+                            <span class="disp-domain-html"><%=data.get("dispDomain")%></span>
+                        </a>
+                    </div>
+                </div>
+            </form>
+            <div class="disp-list-ctn"></div>
+            <hr>
+            <div class="text-center opt-ctn">
+                <a href="javascript:void(0)" class="btn btn-primary save">保存并下发</a>
+                <a href="javascript:void(0)" class="btn btn-default cancel">放弃</a>
+            </div>
+        </div>
+    </div>
+</div>
+

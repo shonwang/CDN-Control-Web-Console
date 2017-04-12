@@ -6,7 +6,8 @@ define("interfaceQuota.view", ['require', 'exports', 'template', 'utility', "mod
                 this.collection = options.collection;
                 this.model = options.model;
                 this.args = {
-                    "quotaName": this.model.get("quotaName")
+                    "quotaName": this.model.get("quotaName"),
+                    "quotaTimes": this.model.get("quotaTimes")
                 }
                 this.$el = $(_.template(template['tpl/customerSetup/interfaceQuota/interfaceQuota.edit.html'])({ data: this.args }));
             },

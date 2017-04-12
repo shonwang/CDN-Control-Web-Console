@@ -281,7 +281,7 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
                 if (pkConf.keepAliveFlag === 0)
                     pkConf.keepAliveFlagStr = '<span class="label label-danger">关闭</span>';
                 else
-                    pkConf.keepAliveFlagStr = '<span class="label label-success">开启</span> 时长: ' + Utility.timeFormat2(pkConf.keepAliveTime);
+                    pkConf.keepAliveFlagStr = '<span class="label label-success">开启</span> 时长: ' + (pkConf.keepAliveTime === 0 ? Utility.timeFormat2(pkConf.keepAliveTime) : '0秒');
 
                 if (pkConf.avHeaderFlag === 0)
                     pkConf.avHeaderFlagStr = '<span class="label label-danger">关闭</span>';

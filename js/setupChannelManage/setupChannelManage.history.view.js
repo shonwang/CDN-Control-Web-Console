@@ -162,10 +162,17 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                 var eventTarget = event.srcElement || event.target,
                     version = $(eventTarget).attr("version");
 
+                var curObj = _.find(this.versionList, function(obj){
+                    return obj.version === version;
+                }.bind(this))
+
+                var config = JSON.parse(curObj.config),
+                    isCustom = config.domainConf.confCustomType === 3 ? true : false;
+
                 var clickedObj = {
                     domain: this.model.get("domain"),
                     domainVersion: version,
-                    isCustom: this.model.get("isCustom"),
+                    isCustom: isCustom,
                     platformId: this.applicationType
                 }
 
@@ -194,7 +201,7 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                 var eventTarget = event.srcElement || event.target,
                     version = $(eventTarget).attr("version");
 
-                require(['setupBill.view', 'setupBill.model'], function(SetupBillView, SetupBillModel) {
+                require(['setupBillLive.view', 'setupBill.model'], function(SetupBillView, SetupBillModel) {
                     var mySetupBillModel = new SetupBillModel();
                     var mySetupBillView = new SetupBillView({
                         collection: mySetupBillModel,

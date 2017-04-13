@@ -9,8 +9,6 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
             this.collection = options.collection;
             this.model      = options.model;
 
-            console.log(this.model)
-
             require(['setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeModel){
                 this.mySetupSendWaitCustomizeModel = new SetupSendWaitCustomizeModel();
                 if (this.model.isCustom) {

@@ -96,10 +96,20 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
                 this.tbodyList = $(_.template(template['tpl/customerSetup/domainList/domainList.table.tbody.html'])({data:this.collection.models}));
                 this.$el.find(".ks-table tbody").html(this.tbodyList);
                 this.$el.find(".ks-table tbody .manage").on("click", $.proxy(this.onClickItemManage, this));
-                if(!AUTH_OBJ.SetupCustomerDomain){
-                    this.$el.find(".ks-table tbody .manage").remove();
-                }
-                this.$el.find(".ks-table tbody .setup-bill").on("click", $.proxy(this.onClickViewSetupBillBtn, this));  
+                this.$el.find(".ks-table tbody .setup-bill").on("click", $.proxy(this.onClickViewSetupBillBtn, this)); 
+
+                _.each(this.$el.find(".ks-table tbody .manage"), function(el){
+                    var protocol = this.collection.get(el.id).get("protocol");
+                    if ((protocol === 1 && AUTH_OBJ.SetupCustomerLiveDomain) || 
+                        (protocol === 3 && AUTH_OBJ.SetupCustomerLiveDomain)) {
+                        //直播RTMP HDL有管理按钮的权限
+                    } else if (protocol !== 1 && protocol !== 3 && AUTH_OBJ.SetupCustomerDomain){
+                        //点播有管理按钮的权限
+                    } else {
+                        $(el).remove();
+                    }
+                }.bind(this))
+ 
                 if(!AUTH_OBJ.ViewSetupDetails){
                     this.$el.find(".ks-table tbody .setup-bill").remove();
                 }

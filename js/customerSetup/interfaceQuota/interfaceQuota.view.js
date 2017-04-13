@@ -7,21 +7,38 @@ define("interfaceQuota.view", ['require', 'exports', 'template', 'utility', "mod
                 this.model = options.model;
                 this.args = {
                     "quotaName": this.model.get("quotaName"),
-                    "quotaTimes": this.model.get("quotaTimes")
+                    "quotaTimes": this.model.get("quotaTimes"),
+                    "interfaceCaller":this.options.interfaceCaller
                 }
                 this.$el = $(_.template(template['tpl/customerSetup/interfaceQuota/interfaceQuota.edit.html'])({ data: this.args }));
+                this.$el.find("#input-name").blur(function(){
+                    this.onblur()
+                }.bind(this));
             },
-            getArgs: function (id, popUp) {
+            onblur:function () {
+
                 var newQuota = this.$el.find("#input-name").val();
-                if (!newQuota.length) {
-                    alert("请输入正确的配额值");
+                    if( isNaN(newQuota) || newQuota <= 0){
+                        this.$el.find("#check").show();
+                        this.$el.find("#editQuota").addClass('has-error');
+                        return
+                    }else{
+                        this.$el.find("#editQuota").removeClass('has-error');
+                        this.$el.find("#check").hide();
+                    }
+            },
+            getArgs: function (id, popUp,userid) {
+                var newQuota = this.$el.find("#input-name").val();
+                if (!newQuota.length ||  isNaN(newQuota) || newQuota <= 0) {
+                    this.$el.find("#check").show();
                     return
                 }
                 var quotaName = popUp.get('quotaName');
                 var args = {
                     "userId": id,
                     "quotaName": quotaName,
-                    "quotaValue": newQuota
+                    "quotaValue": newQuota,
+                    "interfaceCaller":userid,
                 };
                 return args
             },
@@ -34,6 +51,7 @@ define("interfaceQuota.view", ['require', 'exports', 'template', 'utility', "mod
                 this.collection = options.collection;
                 this.options = options;
                 this.uid = JSON.parse(options.query).uid;
+                this.userId = $('.user-name').html();
                 this.queryArgs = {
                     "userId": this.uid,
                     "quotaname": null,
@@ -52,7 +70,7 @@ define("interfaceQuota.view", ['require', 'exports', 'template', 'utility', "mod
                 this.collection.on("get.user.success", $.proxy(this.onChannelListSuccess, this));
                 this.collection.on("get.user.error", $.proxy(this.onGetError, this));
                 this.collection.on("update.quota.success", function () {
-                    alert("编辑成功！")
+                    alert("修改配额成功！")
                     this.onClickQueryButton();
                 }.bind(this));
                 this.collection.on('update.quota.error', $.proxy(this.onGetError, this));      
@@ -111,7 +129,7 @@ define("interfaceQuota.view", ['require', 'exports', 'template', 'utility', "mod
                     backdrop: 'static',
                     type: 2,
                     onOKCallback: function () {
-                        var options = editView.getArgs(this.uid, model);
+                        var options = editView.getArgs(this.uid,model,this.userId);
                         if (!options) return;
                         this.collection.updateQuota(options);
                         this.editQuotaPopup.$el.modal("hide");

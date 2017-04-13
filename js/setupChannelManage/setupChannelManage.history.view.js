@@ -34,6 +34,27 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
 
                 this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
 
+                this.requirySetupSendWaitCustomizeModel();
+
+                //this.description = this.model.get("description");
+            },
+
+            requirySetupSendWaitCustomizeModel: function(){
+                require(['setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeModel){
+                    this.mySetupSendWaitCustomizeModel = new SetupSendWaitCustomizeModel();
+                    this.mySetupSendWaitCustomizeModel.off("get.channel.config.success");
+                    this.mySetupSendWaitCustomizeModel.off("get.channel.config.error");
+                    this.mySetupSendWaitCustomizeModel.on("get.channel.config.success", $.proxy(this.onGetApplicationType, this));
+                    this.mySetupSendWaitCustomizeModel.on("get.channel.config.error", $.proxy(this.onGetError, this));
+                    this.mySetupSendWaitCustomizeModel.getChannelConfig({
+                        domain: this.model.get("domain"),
+                        version: this.model.get("version") || this.model.get("domainVersion")
+                    })
+                }.bind(this));
+            },
+
+            onGetApplicationType: function(data){
+                this.applicationType = data.applicationType.type
                 this.collection.off("get.channel.history.success");
                 this.collection.off("get.channel.history.error");
                 this.collection.on("get.channel.history.success", $.proxy(this.initSetup, this));
@@ -41,8 +62,6 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                 this.collection.getVersionList({
                     "originId": this.model.get("id")
                 })
-
-                //this.description = this.model.get("description");
             },
 
             initSetup: function(data) {
@@ -143,12 +162,21 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                 var eventTarget = event.srcElement || event.target,
                     version = $(eventTarget).attr("version");
 
+                var curObj = _.find(this.versionList, function(obj){
+                    return obj.version === version;
+                }.bind(this))
+
+                var config = JSON.parse(curObj.config),
+                    isCustom = config.domainConf.confCustomType === 3 ? true : false;
+
                 var clickedObj = {
                     domain: this.model.get("domain"),
-                    domainVersion: version
+                    domainVersion: version,
+                    isCustom: isCustom,
+                    platformId: this.applicationType
                 }
 
-                require(["setupSendDetail.view"], function(SendDetailView) {
+                require(["setupSending.detail.view"], function(SendDetailView) {
                     if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
 
                     var myConfiFileDetailView = new SendDetailView.ConfiFileDetailView({
@@ -173,7 +201,7 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                 var eventTarget = event.srcElement || event.target,
                     version = $(eventTarget).attr("version");
 
-                require(['setupBill.view', 'setupBill.model'], function(SetupBillView, SetupBillModel) {
+                require(['setupBillLive.view', 'setupBill.model'], function(SetupBillView, SetupBillModel) {
                     var mySetupBillModel = new SetupBillModel();
                     var mySetupBillView = new SetupBillView({
                         collection: mySetupBillModel,

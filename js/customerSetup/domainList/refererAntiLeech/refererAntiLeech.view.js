@@ -4,6 +4,7 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
         events: {},
 
         initialize: function(options) {
+            this.referIPMatchingCondition = AUTH_OBJ.referIPMatchingCondition || null;
             this.options = options;
             this.collection = options.collection;
             this.isEdit = options.isEdit;
@@ -33,7 +34,16 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
                     {name: "指定URI", value: 2},
                     {name: "指定目录", value: 1},
                     {name: "正则匹配", value: 3},
-                ], matchConditionOption = {
+                ];
+
+                if(!this.referIPMatchingCondition){
+                    //添加特殊条件，如果没有此属性，所有用户，只能选择全部文件
+                    matchConditionArray = [
+                        {name: "全部文件", value: 9}
+                    ]                    
+                }
+                
+                var matchConditionOption = {
                     collection: new MatchConditionModel(),
                     defaultCondition : this.defaultParam.type,
                     defaultPolicy: this.defaultParam.policy,
@@ -302,7 +312,7 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
-                    width: 800,
+                    width: 1000,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

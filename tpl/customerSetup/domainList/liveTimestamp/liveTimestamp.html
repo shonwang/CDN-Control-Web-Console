@@ -1,0 +1,293 @@
+<div class="http-optimize fadeInLeft animated">
+    <h4>访问控制<small>/时间戳+共享秘钥防盗链</small></h4>
+    <div class="well opt-ctn"></div>
+    <div class="well">
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="modify-host" class="col-sm-4 control-label">时间戳+共享秘钥防盗链</label>
+                        <div class="col-sm-4 open-timestamp">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-8">
+                <form class="form-horizontal setup-content">
+                    <div class="form-group">
+                        <label for="setup-type" class="col-sm-3 control-label" style="margin-right:0">配置类型</label>
+                        <div class="col-sm-8 setup-type">
+                            <div class="radio-inline">
+                                <label>
+                                    <input type="radio" name="setupType" id="setupType1" value="1" checked>标准配置
+                                </label>
+                            </div>
+                            <div class="radio-inline">
+                                <label>
+                                    <input type="radio" name="setupType" id="setupType2" value="2">高级配置
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group base-setup anti-leech">
+                        <label for="anti-leech" class="col-sm-3 control-label" style="margin-right:0">防盗链类型</label>
+                        <div class="col-sm-2">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="antiLeech" id="antiLeech1" value="1">TypeA
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <p class="form-control-static">DomainName/AppName/StreamName?{$key_time=timestamp$key_hash= md5hash}</p>
+                        </div>
+                    </div>
+                    <!--<div class="form-group base-setup anti-leech">
+                        <div class="col-sm-offset-3 col-sm-2">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="antiLeech" id="antiLeech2" value="2">TypeB
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <p class="form-control-static" style="word-break:break-all;">http://DomainName/{md5hash/timestamp}/FileName</p>
+                        </div>
+                    </div>
+                    <div class="form-group base-setup anti-leech">
+                        <div class="col-sm-offset-3 col-sm-2">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="antiLeech" id="antiLeech3" value="3">TypeC
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <p class="form-control-static" style="word-break:break-all;">http://DomainName/{timestamp/md5hash}/FileName</p>
+                        </div>
+                    </div>-->
+                    <div class="form-group base-setup secret-key">
+                        <label for="secret-key-primary" class="col-sm-3 control-label" style="margin-right:0">共享秘钥</label>
+                        <label for="secret-key-primary" class="col-sm-2 control-label text-danger" style="margin-right:0">主享秘钥</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" id="secret-key-primary">
+                        </div>
+                    </div>
+                    <div class="form-group base-setup secret-key">
+                        <label for="secret-key-backup" class="col-sm-offset-3 col-sm-2 control-label" style="margin-right:0">备选秘钥</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" id="new-backup-key">
+                        </div>
+                        <div class="col-sm-2">
+                            <a href="javascript:void(0)" class="btn btn-success add-secret-key-backup"><span class="glyphicon glyphicon-plus"></span>新增</a>
+                        </div>
+                    </div>
+                    <div class="form-group base-setup secret-key">
+                        <div class="col-sm-offset-5 col-sm-5 backup-key-table">
+                            <div class="table-ctn table-responsive"></div>
+                        </div>
+                    </div>
+                    <div class="form-group base-setup deadline">
+                        <label for="deadline" class="col-sm-3 control-label" style="margin-right:0">失效时间</label>
+                        <div class="col-sm-4">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="baseDeadline" id="deadline1" value="1">时间戳时间
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group base-setup deadline">
+                        <div class="col-sm-offset-3 col-sm-4">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="baseDeadline" id="deadline2" value="2">时间戳时间+过期时间
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 deadline-time">
+                            <input class="form-control" type="number" id="deadline-time" min="1">
+                        </div>
+                        <label for="deadline-time" class="col-sm-1 control-label">秒</label>
+                    </div>
+                    <!-- 高级配置 -->
+                    <div class="form-group advanced-setup encryption-url">
+                        <label for="encryption-url" class="col-sm-3 control-label" style="margin-right:0">加密URL形式</label>
+                        <div class="col-sm-7">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="encryption" id="encryption1" value="1">形式1：加密字符串在参数中
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group advanced-setup encryption-url">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <p class="form-control-static text-muted">示例：DomainName/AppName/StreamName?{$key_time=timestamp$key_hash= md5hash}</p>
+                        </div>
+                    </div>
+                    <div class="form-group advanced-setup encryption-url">
+                        <label for="key_time" class="col-sm-offset-3 col-sm-2 control-label" style="margin-right:0">$key_time</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="key_time" placeholder="t">
+                        </div>
+                        <label for="key_hash" class="col-sm-2 control-label" style="margin-right:0">$key_hash</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="key_hash" placeholder="k">
+                        </div>
+                    </div>
+                    <!--<div class="form-group advanced-setup encryption-url">
+                        <div class="col-sm-offset-3 col-sm-7">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="encryption" id="encryption2" value="2">形式2：加密字符串在路径中
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group advanced-setup encryption-url">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <p class="form-control-static text-muted" style="word-break:break-all;">示例：http:// DomainName/{md5hash/timestamp}/FileName</p>
+                        </div>
+                    </div>
+                    <div class="form-group advanced-setup encryption-url">
+                        <label for="mt-position" class="col-sm-offset-2 col-sm-5 control-label" style="margin-right:0">设置md5hash与timestamp位置</label>
+                        <div class="col-sm-4 mt-position">
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-mt-position" data-toggle="dropdown">
+                                    <span class="cur-value">加载中...</span>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu"></ul>
+                            </div>
+                        </div>
+                    </div>-->
+                    <div class="form-group advanced-setup timestamp-type">
+                        <label for="timestamp-type" class="col-sm-3 control-label" style="margin-right:0">时间戳格式</label>
+                        <div class="col-sm-5">
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-timestamp-type" data-toggle="dropdown">
+                                    <span class="cur-value">加载中...</span>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu"></ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group advanced-setup deadline">
+                        <label for="deadline" class="col-sm-3 control-label" style="margin-right:0">失效时间</label>
+                        <div class="col-sm-4">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="deadline" id="deadline1" value="1">时间戳时间
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group advanced-setup deadline">
+                        <div class="col-sm-offset-3 col-sm-4">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="deadline" id="deadline2" value="2">时间戳时间+过期时间
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 deadline-time">
+                            <input class="form-control" type="number" id="deadline-time" min="1">
+                        </div>
+                        <label for="deadline-time" class="col-sm-1 control-label">秒</label>
+                    </div>
+                    <div class="form-group advanced-setup secret-key">
+                        <label for="secret-key-primary" class="col-sm-3 control-label" style="margin-right:0">共享秘钥</label>
+                        <label for="secret-key-primary" class="col-sm-2 control-label text-danger" style="margin-right:0">主享秘钥</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" id="secret-key-primary">
+                        </div>
+                    </div>
+                    <div class="form-group advanced-setup secret-key">
+                        <label for="secret-key-backup" class="col-sm-offset-3 col-sm-2 control-label" style="margin-right:0">备选秘钥</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" id="new-backup-key">
+                        </div>
+                        <div class="col-sm-2">
+                            <a href="javascript:void(0)" class="btn btn-success add-secret-key-backup"><span class="glyphicon glyphicon-plus"></span>新增</a>
+                        </div>
+                    </div>
+                    <div class="form-group advanced-setup secret-key">
+                        <div class="col-sm-offset-5 col-sm-5 backup-key-table">
+                            <div class="table-ctn table-responsive"></div>
+                        </div>
+                    </div>
+                    <div class="form-group advanced-setup atuth-divisor">
+                        <label for="atuth-divisor" class="col-sm-3 control-label" style="margin-right:0">鉴权因子</label>
+                        <div class="col-sm-4">
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-atuth-divisor" data-toggle="dropdown">
+                                    <span class="cur-value">host:用户请求域名</span>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu"></ul>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="atuth-divisor-param">
+                        </div>
+                        <div class="col-sm-1">
+                            <a href="javascript:void(0)" class="btn btn-success add-atuth-divisor"><span class="glyphicon glyphicon-plus"></span>新增</a>
+                        </div>
+                        <!--<div class="col-sm-7">
+                            <textarea type="text" class="form-control" rows="1" id="atuth-divisor" placeholder="鉴权因子以英文半角逗号分隔，可设置多个。"></textarea>
+                        </div> -->
+                    </div>
+                    <div class="form-group advanced-setup atuth-divisor">
+                        <div class="col-sm-offset-1 col-sm-11 atuth-divisor-table">
+                            <div class="table-ctn table-responsive"></div>
+                        </div>
+                    </div>
+                    <div class="form-group advanced-setup splice-md5">
+                        <label for="splice-md5" class="col-sm-3 control-label" style="margin-right:0">截取MD5值</label>
+                        <div class="col-sm-4">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="spliceMd5" id="spliceMd51" value="1">全部（默认）
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group advanced-setup splice-md5">
+                        <div class="col-sm-offset-3 col-sm-3">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="spliceMd5" id="spliceMd52" value="2">自定义
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group advanced-setup splice-md5">
+                        <label for="splice-md5-range" class="col-sm-offset-3 col-sm-2 control-label" style="margin-right:0">取值范围</label>
+                        <div class="col-sm-2">
+                            <input type="number" min="1" class="form-control" id="md5-start">
+                        </div>
+                        <div class="col-sm-1"><p class="form-control-static">至</p></div>
+                        <div class="col-sm-2">
+                            <input type="number" min="1" class="form-control" id="md5-end">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-sm-offset-2 col-sm-2">
+                <a href="javascript:void(0)" class="btn btn-primary save"><span class="glyphicon glyphicon-save"></span>保存</a>
+            </div>
+        </div>
+    </div>
+</div>

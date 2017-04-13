@@ -96,10 +96,20 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
                 this.tbodyList = $(_.template(template['tpl/customerSetup/domainList/domainList.table.tbody.html'])({data:this.collection.models}));
                 this.$el.find(".ks-table tbody").html(this.tbodyList);
                 this.$el.find(".ks-table tbody .manage").on("click", $.proxy(this.onClickItemManage, this));
-                if(!AUTH_OBJ.SetupCustomerDomain){
-                    this.$el.find(".ks-table tbody .manage").remove();
-                }
-                this.$el.find(".ks-table tbody .setup-bill").on("click", $.proxy(this.onClickViewSetupBillBtn, this));  
+                this.$el.find(".ks-table tbody .setup-bill").on("click", $.proxy(this.onClickViewSetupBillBtn, this)); 
+
+                _.each(this.$el.find(".ks-table tbody .manage"), function(el){
+                    var protocol = this.collection.get(el.id).get("protocol");
+                    if ((protocol === 1 && AUTH_OBJ.SetupCustomerLiveDomain) || 
+                        (protocol === 3 && AUTH_OBJ.SetupCustomerLiveDomain)) {
+                        //直播RTMP HDL有管理按钮的权限
+                    } else if (protocol !== 1 && protocol !== 3 && AUTH_OBJ.SetupCustomerDomain){
+                        //点播有管理按钮的权限
+                    } else {
+                        $(el).remove();
+                    }
+                }.bind(this))
+ 
                 if(!AUTH_OBJ.ViewSetupDetails){
                     this.$el.find(".ks-table tbody .setup-bill").remove();
                 }
@@ -115,7 +125,7 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
 
-            require(['setupBill.view', 'setupBill.model'], function(SetupBillView, SetupBillModel){
+            require(['setupBillLive.view', 'setupBill.model'], function(SetupBillView, SetupBillModel){
                 var mySetupBillModel = new SetupBillModel();
                 var mySetupBillView = new SetupBillView({
                     collection: mySetupBillModel,
@@ -148,6 +158,9 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
                 domain: model.get("domain")
             });
 
+            this.curType = model.get("type");
+            this.curProtocol = model.get("protocol");
+
             if (whereAreYouFrom === 2) {
                 this.alertChangeType(model.get("id"));
                 return;
@@ -157,16 +170,28 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
         },
 
         redirectToManage: function(){
-            window.location.hash = '#/domainList/' + this.args + "/basicInformation/" + this.args2;
+            // type=1 protocol=0,4 下载
+            // type=2 protocol=2 伪直播
+            // type=2 protocol= 1,3真直播
+            if ((this.curType === 1 && this.curProtocol === 0) ||
+                (this.curType === 1 && this.curProtocol === 4) ||
+                (this.curType === 2 && this.curProtocol === 2)) {
+                window.location.hash = '#/domainList/' + this.args + "/basicInformation/" + this.args2
+            } else if ((this.curType === 2 && this.curProtocol === 1) ||
+                       (this.curType === 2 && this.curProtocol === 3)) {
+                window.location.hash = '#/domainList/' + this.args + "/liveBasicInformation/" + this.args2
+            } else {
+                alert('type=1 protocol=0,4 下载<br>type=2 protocol=2 伪直播<br>type=2 protocol= 1,3真直播<br>当前返回的type为' + this.curType + "，protocol为" + this.curProtocol);
+            }
         },
 
         alertChangeType: function(id){
             if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
 
-            var message = `<div class="alert alert-danger">
-                                <strong>重要提示: </strong><br>
-                                使用中控编辑管理域名配置后，该域名将不能在控制台或使用OpenAPI进行配置修改配置”，是否确认使用？
-                           </div>`;
+            var message = '<div class="alert alert-danger">'  + 
+                                '<strong>重要提示: </strong><br>'  + 
+                                '使用中控编辑管理域名配置后，该域名将不能在控制台或使用OpenAPI进行配置修改配置”，是否确认使用？' + 
+                           '</div>';
             var options = {
                 title: "警告",
                 body : message,

@@ -544,7 +544,7 @@ define("customerSetup.controller", ['require','exports'],
         },
 
         interfaceQuotaCallback: function(query) {
-            if(!AUTH_OBJ.DomainLists || !AUTH_OBJ.ManageCustomer) return;
+            if(!AUTH_OBJ.DomainLists || !AUTH_OBJ.ManageCustomer || !AUTH_OBJ.OpenApiQuota) return;
             require(['interfaceQuota.view', 'interfaceQuota.model'], function(DomainListView, DomainListModel){
                 this.curPage = 'customerSetup-interfaceQuota';
                 this.navbarView.select('customerSetup', $.proxy(this.removeSubSideBar, this));

@@ -510,6 +510,7 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                 },{
                     id: 'customerSetup-interfaceQuota',
                     name: 'API接口配额',
+                    notShow:!AUTH_OBJ.OpenApiQuota,
                     hash: 'index.html#/interfaceQuota/' + query,
                     active: false,
                     children: []

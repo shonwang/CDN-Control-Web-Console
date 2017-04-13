@@ -11,6 +11,7 @@
                 <% if (data[i].children.length > 0) { %>
                 <ul class="submenu">
                     <% for(var k = 0; k < data[i].children.length; k++) { %> 
+					<%if(data[i].children[k].notShow){continue;}%>
                     <li id='<%=data[i].children[k].id%>' <% if (data[i].children[k].active){ %> class="active" <% } %>>
                         <a href='<%=data[i].children[k].hash%>'><%=data[i].children[k].name%></a>
                     </li>

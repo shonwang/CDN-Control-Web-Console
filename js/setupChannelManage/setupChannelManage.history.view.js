@@ -166,7 +166,7 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                     domain: this.model.get("domain"),
                     domainVersion: version,
                     isCustom: this.model.get("isCustom"),
-                    applicationType: this.applicationType
+                    platformId: this.applicationType
                 }
 
                 require(["setupSending.detail.view"], function(SendDetailView) {

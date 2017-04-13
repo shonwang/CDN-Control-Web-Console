@@ -585,7 +585,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
-            console.log(this.collection);
+
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.html'])());
 
             this.initNodeDropMenu();
@@ -681,6 +681,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
             this.queryArgs.chname = this.$el.find("#input-name").val() || null;
+
             this.collection.getNodeList(this.queryArgs);
         },
 

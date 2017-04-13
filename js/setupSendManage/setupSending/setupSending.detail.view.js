@@ -9,6 +9,8 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
             this.collection = options.collection;
             this.model      = options.model;
 
+            console.log(this.model)
+
             require(['setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeModel){
                 this.mySetupSendWaitCustomizeModel = new SetupSendWaitCustomizeModel();
                 if (this.model.isCustom) {
@@ -19,7 +21,8 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
                     this.mySetupSendWaitCustomizeModel.getAllConfig({
                         domain: this.model.domain,
                         version: this.model.domainVersion,
-                        manuallyModifed: true
+                        manuallyModifed: true,
+                        applicationType: this.model.platformId
                     })
                 } else {
                     this.mySetupSendWaitCustomizeModel.off("get.channel.config.success");
@@ -321,7 +324,8 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
 
         updateDomainList: function(){
             _.each(this.collection.deliveryDomains, function(el, index, ls){
-                el.id = Utility.randomStr(16)
+                el.id = Utility.randomStr(16),
+                el.platformId = this.model.get("platformId")
             }.bind(this))
 
             this.domainList = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.detail.domain.html'])({

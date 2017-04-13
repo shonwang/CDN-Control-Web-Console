@@ -245,7 +245,6 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
                 "description": null,
                 "deliveryStrategyDef": []
             }
-            this.collection.getTopoOrigininfo(this.modelTopo.get('id'));
             console.log("新建编辑下发策略之拓扑ID：", this.modelTopo.get('id'))
             //新建下发策略
             this.collection.off('add.SendView.error');
@@ -267,7 +266,7 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
             this.collection.off('get.topo.OriginInfo.success');
             this.collection.on('get.topo.OriginInfo.success', $.proxy(this.onGetTopoInfoSuccess, this));
             this.collection.on('get.topo.OriginInfo.error', $.proxy(this.onGetError, this));
-
+            this.collection.getTopoOrigininfo(this.modelTopo.get('id'));
             //this.initNextStep();
         },
 
@@ -276,6 +275,20 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
             this.defaultParam = res;
             this.$el.find('#input-Name').val(this.defaultParam.name);
             this.$el.find('#description').val(this.defaultParam.description);
+            var remainderNodes = [], allStepNodes = [];
+            _.each(this.defaultParam.deliveryStrategyDef, function(el){
+                allStepNodes = allStepNodes.concat(el.nodeId)
+            }.bind(this))
+            console.log('编辑情况下所有步骤的节点: ', allStepNodes);
+            _.each(this.allNodes, function(nodeObj){
+                if (_.indexOf(allStepNodes, nodeObj.id) === -1)
+                    remainderNodes.push(nodeObj.id)
+            }.bind(this))
+            console.log('编辑情况下过滤掉所有步骤节点后剩余的节点: ', remainderNodes);
+            var lastStep = this.defaultParam.deliveryStrategyDef[this.defaultParam.deliveryStrategyDef.length - 1];
+            if (lastStep.range === 1)
+                lastStep.nodeId = lastStep.nodeId.concat(remainderNodes)
+
             this.initNodeName();
             this.initStepTable();
         },
@@ -286,6 +299,7 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
             this.$el.find('.add-step').css('display', 'inline-block');
 
             this.allNodes = res.allNodes; //所有的节点,会执行节点的过滤操作
+            //this.allNodes.push({id: 1654656, name: "我是假数据节点"})
             console.log('拓扑中的所有节点: ', this.allNodes)
             if (this.isEdit) {
                 this.collection.getSendViewDetail(this.model.get('id'));

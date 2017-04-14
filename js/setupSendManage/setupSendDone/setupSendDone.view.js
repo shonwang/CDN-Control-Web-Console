@@ -59,7 +59,7 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
         onClickQueryButton: function(){
             this.isInitPaginator = false;
             this.queryArgs.page = this.curPage;
-            this.queryArgs.name = this.$el.find("#input-task-name").val();
+            this.queryArgs.name = this.$el.find("#input-task-name").val().trim();
             if (this.queryArgs.name == "") this.queryArgs.domain = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");

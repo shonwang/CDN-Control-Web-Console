@@ -146,7 +146,7 @@ define("setupSendDetail.view", ['require','exports', 'template', 'modal.view', '
         onClickQueryButton: function(){
             this.isInitPaginator = false;
             this.queryArgs.page = this.curPage;
-            this.queryArgs.deviceName = this.$el.find("#input-device").val();
+            this.queryArgs.deviceName = this.$el.find("#input-device").val().trim();
             if (this.queryArgs.deviceName == "") this.queryArgs.deviceName = null;
 
             this.$el.find(".domain-ctn").html(_.template(template['tpl/loading.html'])({}));

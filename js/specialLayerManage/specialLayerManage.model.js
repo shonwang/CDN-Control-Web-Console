@@ -47,11 +47,11 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
                         if (res) {
                             this.trigger("get.strategyInfoById.success", res);
                         } else {
-                            this.trigger("get.strategyInfoById.error");
+                            this.trigger("get.strategyInfoById.error", res);
                         }
                     }.bind(this),
                     errorCallback = function(response) {
-                        this.trigger('get.strategyInfoById.error');
+                        this.trigger('get.strategyInfoById.error', response);
                     }.bind(this);
                 Utility.getAjax(url, args, successCallback, errorCallback);
             },

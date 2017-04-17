@@ -234,50 +234,50 @@ module.exports = function(grunt) {
 
     grunt.registerTask('set-url', '', function() {
         modifyFile("temp/js/main.js", 'urlArgs', '\n');
-        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 2;\n', "dest/assets.json");
-        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 2;\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 2;', "dest/assets.json");
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 2;');
     });
 
     grunt.registerTask('online-url', '', function() {
         modifyFile("temp/js/main.js", 'urlArgs', '\n');
-        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 3;\n', "dest/assets.json");
-        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 3;\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 3;', "dest/assets.json");
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 3;');
     });
 
     grunt.registerTask('test-url', '', function() {
         modifyFile("temp/js/main.js", 'urlArgs', '\n');
-        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 4;\n', "dest/assets.json");
-        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 4;\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 4;', "dest/assets.json");
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 4;');
     });
 
     grunt.registerTask('gray-url', '', function() {
         modifyFile("temp/js/main.js", 'urlArgs', '\n');
-        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 5;\n', "dest/assets.json");
-        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 5;\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 5;', "dest/assets.json");
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 5;');
     });
 
     grunt.registerTask('dev-url', '', function() {
         modifyFile("temp/js/main.js", 'urlArgs', '\n');
-        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 6;\n', "dest/assets.json");
-        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 6;\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 6;', "dest/assets.json");
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 6;');
     });
 
     grunt.registerTask('shanghai-url', '', function() {
         modifyFile("temp/js/main.js", 'urlArgs', '\n');
-        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 7;\n', "dest/assets.json");
-        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 7;\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 7;', "dest/assets.json");
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 7;');
     });
 
     grunt.registerTask('gateway-develop-url', '', function() {
         modifyFile("temp/js/main.js", 'urlArgs', '\n');
-        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 8;\n', "dest/assets.json");
-        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 8;\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 8;', "dest/assets.json");
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 8;');
     });
 
     grunt.registerTask('wuqing-url', '', function() {
         modifyFile("temp/js/main.js", 'urlArgs', '\n');
-        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 9;\n', "dest/assets.json");
-        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 9;\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 9;', "dest/assets.json");
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 9;');
     });
 
     grunt.registerTask('preonline-url', '', function() {
@@ -288,13 +288,13 @@ module.exports = function(grunt) {
 
     grunt.registerTask('debug-url', '', function() {
         modifyFile("temp/js/main.js", 'urlArgs', '\n');
-        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 1.1;\n', "dest/assets.json");
-        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 1.1;\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 1.1;', "dest/assets.json");
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 1.1;');
     });
 
     grunt.registerTask('module-url', '', function() {
-        modifyFile("js/main.js", 'DEBUG', 'window.DEBUG = 1.1;\n', "assets.json");
-        modifyFile("login.html", 'DEBUG', 'window.DEBUG = 1.1;\n');
+        modifyFile("js/main.js", 'DEBUG', 'window.DEBUG = 1.1;', "assets.json");
+        modifyFile("login.html", 'DEBUG', 'window.DEBUG = 1.1;');
     });
 
     grunt.registerTask('temp', ["clean", 'underscore']);

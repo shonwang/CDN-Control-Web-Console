@@ -270,7 +270,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 } else {
                     id = $(eventTarget).attr("id");
                 }
-
+                
                 var model = this.collection.get(id);
 
                 if (model.get('topologyId') == null) {

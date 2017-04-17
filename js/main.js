@@ -96,6 +96,8 @@
   "timestamp.view": "customerSetup/domainList/timestamp/timestamp.view",
   "urlBlackList.model": "customerSetup/domainList/urlBlackList/urlBlackList.model",
   "urlBlackList.view": "customerSetup/domainList/urlBlackList/urlBlackList.view",
+  "interfaceQuota.model": "customerSetup/interfaceQuota/interfaceQuota.model",
+  "interfaceQuota.view": "customerSetup/interfaceQuota/interfaceQuota.view",
   "deviceManage.model": "deviceManage/deviceManage.model",
   "deviceManage.view": "deviceManage/deviceManage.view",
   "dispConfig.model": "dispConfig/dispConfig.model",
@@ -110,9 +112,11 @@
   "domainStatistics.view": "domainStatistics/domainStatistics.view",
   "grayscaleSetup.model": "grayscaleSetup/grayscaleSetup.model",
   "grayscaleSetup.view": "grayscaleSetup/grayscaleSetup.view",
-  "importAssess.edit.view": "importAssess/importAssess.edit.view",
   "importAssess.model": "importAssess/importAssess.model",
   "importAssess.view": "importAssess/importAssess.view",
+  "importDomainManage.edit.view": "importDomainManage/importDomainManage.edit.view",
+  "importDomainManage.model": "importDomainManage/importDomainManage.model",
+  "importDomainManage.view": "importDomainManage/importDomainManage.view",
   "ipManage.model": "ipManage/ipManage.model",
   "ipManage.view": "ipManage/ipManage.view",
   "liveAllSetup.model": "liveAllSetup/liveAllSetup.model",
@@ -203,12 +207,18 @@ requirejs.onError = function () {
     console.log(arguments)
     var errorPopup = $('#big-main-error').get(0);
     if (errorPopup) return;
-    var message = "<br>请清空缓存后刷新重试！";
+    var message = "";
     var tpl = '<div id="big-main-error" class="modal">' + 
                 '<div class="modal-dialog">' + 
                     '<div class="modal-content">' + 
                         '<div class="modal-header"><h3 class="modal-title text-danger text-center">Oh snap! You got an error!</h3></div>' + 
-                        '<div class="modal-body"><div class="alert alert-danger">'+ arguments[0].stack + message + '</div></div>' + 
+                        '<div class="modal-body">' +
+                            '<div class="alert alert-danger">'+ 
+                                '<img class="pull-left img-rounded" src="images/timg.jpg" style="width: 100px;margin-right: 10px;">' + 
+                                arguments[0].stack + message + 
+                            '</div>' + 
+                            '<p class="bg-primary text-center">请清空缓存后刷新重试！</p>' +  
+                        '</div>' + 
                     '</div>' + 
                 '</div>' + 
               '</div>'

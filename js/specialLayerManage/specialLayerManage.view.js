@@ -92,13 +92,13 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     this.$el.find(".view-more").on("click", $.proxy(this.onClickViewMoreButton, this));
                     this.$el.find(".view-less").on("click", $.proxy(this.onClickViewLessButton, this));
                     this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
-                    this.$el.find(".comment-group").hide();
+                    //this.$el.find(".comment-group").hide();
                 } else if (this.isView) {
                     this.$el.find(".view-more").on("click", $.proxy(this.onClickViewMoreButton, this));
                     this.$el.find(".view-less").on("click", $.proxy(this.onClickViewLessButton, this));
                     this.$el.find(".add-rule").hide();
                     this.$el.find(".opt-ctn .save").hide();
-                    this.$el.find(".comment-group").hide();
+                    //this.$el.find(".comment-group").hide();
                 }
                 this.collection.off("get.node.success");
                 this.collection.off("get.node.error");

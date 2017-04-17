@@ -24,7 +24,6 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             //this.initSetup()
         },
         onOriginInfo:function(res){
-            //console.log(res);
             var tempData = [{
                 name : res.name,
                 id:res.id
@@ -192,7 +191,6 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
         },
 
         initTable: function(){
-            //console.log(this.collection.models[0].attributes['name']);
             this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
             this.table = $(_.template(template['tpl/setupAppManage/setupAppManage.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
             if (this.collection.models.length !== 0)
@@ -258,7 +256,6 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
         },
 
         initPaginator: function(){
-            console.log(this.collection.total);
             this.$el.find(".total-items span").html(this.collection.total)
             if (this.collection.total <= this.queryArgs.count) return;
             var total = Math.ceil(this.collection.total/this.queryArgs.count);

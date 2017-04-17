@@ -328,7 +328,7 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                 this.collection.isTopoStrategyMatch(postParam);   
             },
 
-            onCheckTopoAndLayerSuccess: function(){
+            onCheckTopoAndLayerSuccess: function() {
                 var postParam = {
                     topologyId: this.model.get('topologyId'),
                     originIdList: [this.model.get('id')],

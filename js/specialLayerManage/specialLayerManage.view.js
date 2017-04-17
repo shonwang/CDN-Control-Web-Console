@@ -60,7 +60,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
 
             onStrategyInfo: function(res) {
                 this.defaultParam = {
-                    "id": res.id,
+                    "id": res.id || this.model.get('id'),
                     "name": res.name,
                     "remark": res.remark,
                     "rule": res.rule,

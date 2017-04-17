@@ -560,7 +560,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 var topoArray = [{
                     name: "全部",
                     value: "All"
-                },{
+                }, {
                     name: "没有分层策略",
                     value: -1
                 }]

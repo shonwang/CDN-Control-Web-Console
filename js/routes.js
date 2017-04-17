@@ -112,6 +112,7 @@ define("routes", ['require', 'exports', 'utility',
                     break;
                 case 'specialLayerManage':
                     this.specialLayerManageView.hide();
+                    break;
                 case 'importDomainManage':
                     this.importDomainManageView.hide();
                     break;

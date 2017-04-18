@@ -529,6 +529,10 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     id = $(eventTarget).attr("id");
                 }
 
+                var result = confirm("是否确认删除？");
+
+                if (!result) return;
+
                 this.collection.deleteStrategy({
                     id: id
                 })

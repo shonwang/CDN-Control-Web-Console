@@ -164,9 +164,7 @@ define("importDomainManage.edit.view", ['require','exports', 'template', 'modal.
     }); 
 
     var ImportDomainManageEditView = Backbone.View.extend({
-        events: {
-            //"click .search-btn":"onClickSearch"
-        },
+        events: {},
 
         initialize: function(options) {
             this.options = options;

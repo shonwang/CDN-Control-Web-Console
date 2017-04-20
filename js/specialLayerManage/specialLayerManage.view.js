@@ -529,12 +529,17 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     id = $(eventTarget).attr("id");
                 }
 
+                var result = confirm("是否确认删除？");
+
+                if (!result) return;
+
                 this.collection.deleteStrategy({
                     id: id
                 })
             },
 
             onClickItemEdit: function(event) {
+                this.off('enterKeyBindQuery');
                 var eventTarget = event.srcElement || event.target,
                     id;
                 if (eventTarget.tagName == "SPAN") {
@@ -552,10 +557,12 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         myAddEditLayerView.$el.remove();
                         this.$el.find(".list-panel").show();
                         this.onClickQueryButton();
+                        this.on('enterKeyBindQuery', $.proxy(this.resetList, this));
                     }.bind(this),
                     onCancelCallback: function() {
                         myAddEditLayerView.$el.remove();
                         this.$el.find(".list-panel").show();
+                        this.on('enterKeyBindQuery', $.proxy(this.resetList, this));
                     }.bind(this)
                 })
 
@@ -564,6 +571,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             onClickItemView: function(event) {
+                this.off('enterKeyBindQuery');
                 var eventTarget = event.srcElement || event.target,
                     id;
                 if (eventTarget.tagName == "SPAN") {
@@ -582,10 +590,12 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         myAddEditLayerView.$el.remove();
                         this.$el.find(".list-panel").show();
                         this.onClickQueryButton();
+                        this.on('enterKeyBindQuery', $.proxy(this.resetList, this));
                     }.bind(this),
                     onCancelCallback: function() {
                         myAddEditLayerView.$el.remove();
                         this.$el.find(".list-panel").show();
+                        this.on('enterKeyBindQuery', $.proxy(this.resetList, this));
                     }.bind(this)
                 })
 

@@ -80,6 +80,8 @@ define("routes", ['require', 'exports', 'utility',
             "domainList/:query/liveSLAStatistics/:query2"         : "liveSLAStatistics",
             "domainList/:query/liveFrequencyLog/:query2"          : "liveFrequencyLog",
 
+            "domainList/:query/openAPILogSetup/:query2"           : "openAPILogSetup",
+
             "setupChannelManage"     : "setupChannelManage",
             "setupAppManage"         : "setupAppManage",
             "setupTopoManage"        : "setupTopoManage",
@@ -301,6 +303,9 @@ define("routes", ['require', 'exports', 'utility',
                     break;
                 case 'customerSetup-domainList-liveFrequencyLog':
                     this.liveFrequencyLogView.hide();
+                    break;
+                case 'customerSetup-domainList-openAPILogSetup':
+                    this.openAPILogSetupView.hide();
                     break;
                 default:
             }
@@ -618,6 +623,10 @@ define("routes", ['require', 'exports', 'utility',
             this.navbarView.initLogin($.proxy(CustomerSetupLiveController.liveFrequencyLogCallback, this, query, query2))
         },
 
+        openAPILogSetup: function(query, query2){
+            this.navbarView.initLogin($.proxy(CustomerSetupController.openAPILogSetupCallback, this, query, query2))
+        },
+
         interfaceQuota: function(query){
             this.navbarView.initLogin($.proxy(CustomerSetupController.interfaceQuotaCallback, this, query))
         },
@@ -627,6 +636,28 @@ define("routes", ['require', 'exports', 'utility',
                 var menuOptions = {
                     query: query,
                     query2: query2
+                }
+                this.domainManageNavbar = new SubNavbar(menuOptions);
+                this.domainManageNavbar.select(this.curPage);
+            }
+        },        
+
+        setupLogSetupDomainManageNavbar: function(query, query2){
+            var menu = [
+                {
+                    id: 'customerSetup-domainList-openAPILogSetup',
+                    name: '日志配置',
+                    hash: 'index.html#/domainList/' + query + '/openAPILogSetup/' + query2,
+                    children: []  
+                }
+            ];
+
+            if (!this.domainManageNavbar){
+                var menuOptions = {
+                    query: query,
+                    query2: query2,
+                    menuList: menu,
+                    backHash: 'index.html#/domainList/' + query
                 }
                 this.domainManageNavbar = new SubNavbar(menuOptions);
                 this.domainManageNavbar.select(this.curPage);

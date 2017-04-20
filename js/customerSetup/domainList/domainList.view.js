@@ -36,6 +36,12 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
                 userId: this.userInfo.uid,
                 domain:''         
             };
+
+            this.args1 = JSON.stringify({
+                clientName: this.userInfo.clientName,
+                uid: this.userInfo.uid
+            });
+
             this.toQueryDomain();
             this.setDropDownMenu();
         },
@@ -96,6 +102,7 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
                 this.tbodyList = $(_.template(template['tpl/customerSetup/domainList/domainList.table.tbody.html'])({data:this.collection.models}));
                 this.$el.find(".ks-table tbody").html(this.tbodyList);
                 this.$el.find(".ks-table tbody .manage").on("click", $.proxy(this.onClickItemManage, this));
+                this.$el.find(".ks-table tbody .log-setup").on("click", $.proxy(this.onClickItemlogSetup, this));
                 this.$el.find(".ks-table tbody .setup-bill").on("click", $.proxy(this.onClickViewSetupBillBtn, this)); 
 
                 _.each(this.$el.find(".ks-table tbody .manage"), function(el){
@@ -142,6 +149,20 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
             }.bind(this))
         },
 
+        onClickItemlogSetup: function(event){
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+
+            var model = this.collection.get(id);
+
+            this.args2 = JSON.stringify({
+                id: model.get("id"),
+                domain: model.get("domain")
+            });
+            
+            window.location.hash = '#/domainList/' + this.args1 + "/openAPILogSetup/" + this.args2
+        },
+
         onClickItemManage: function(event){
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
@@ -149,10 +170,6 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
             var model = this.collection.get(id), 
                 whereAreYouFrom = model.get("confCustomType");//等于2时来自openAPI
 
-            this.args = JSON.stringify({
-                clientName: this.userInfo.clientName,
-                uid: this.userInfo.uid
-            });
             this.args2 = JSON.stringify({
                 id: model.get("id"),
                 domain: model.get("domain")
@@ -176,10 +193,10 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
             if ((this.curType === 1 && this.curProtocol === 0) ||
                 (this.curType === 1 && this.curProtocol === 4) ||
                 (this.curType === 2 && this.curProtocol === 2)) {
-                window.location.hash = '#/domainList/' + this.args + "/basicInformation/" + this.args2
+                window.location.hash = '#/domainList/' + this.args1 + "/basicInformation/" + this.args2
             } else if ((this.curType === 2 && this.curProtocol === 1) ||
                        (this.curType === 2 && this.curProtocol === 3)) {
-                window.location.hash = '#/domainList/' + this.args + "/liveBasicInformation/" + this.args2
+                window.location.hash = '#/domainList/' + this.args1 + "/liveBasicInformation/" + this.args2
             } else {
                 alert('type=1 protocol=0,4 下载<br>type=2 protocol=2 伪直播<br>type=2 protocol= 1,3真直播<br>当前返回的type为' + this.curType + "，protocol为" + this.curProtocol);
             }

@@ -83,7 +83,8 @@ define("routes", ['require', 'exports', 'utility', 'navbar.view', 'subNavbar.vie
                     this.importAssessView.hide();
                     break;
                 case 'specialLayerManage':
-                    this.specialLayerManageView.hide();
+                    this.specialLayerManageView.remove();
+                    this.specialLayerManageView = null;
                     break;
                 case 'dispConfig':
                     this.dispConfigView.remove();

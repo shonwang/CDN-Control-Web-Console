@@ -447,7 +447,6 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 } else {
                     id = $(eventTarget).attr("id");
                 }
-
                 _.each(this.nodesArrayFirstUpper, function(el, index, ls) {
                     if (parseInt(el.value) === parseInt(id)) el.checked = false;
                 }.bind(this))
@@ -607,7 +606,6 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                         myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
                     }.bind(this))
             },
-
 
             onGetError: function(error) {
                 if (error && error.message)

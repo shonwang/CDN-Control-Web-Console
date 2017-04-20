@@ -2,9 +2,10 @@ define("setupChannelManage.model", ['require', 'exports', 'utility'], function(r
     var Model = Backbone.Model.extend({
         initialize: function() {
             var businessType = this.get("type"),
-                status = this.get("auditStatus"),
-                protocol = this.get("protocol"),
-                cdnFactory = this.get("cdnFactory");
+                status       = this.get("auditStatus"),
+                protocol     = this.get("protocol"),
+                cdnFactory   = this.get("cdnFactory"),
+                confCustomType = this.get("confCustomType");
 
             if (status === 0) this.set("statusName", '<span class="text-primary">审核中</span>');
             if (status === 1) this.set("statusName", '<span class="text-success">审核通过</span>');
@@ -33,8 +34,13 @@ define("setupChannelManage.model", ['require', 'exports', 'utility'], function(r
             if (cdnFactory === 1) this.set("cdnFactoryName", '自建');
             if (cdnFactory === 2) this.set("cdnFactoryName", '网宿');
             if (cdnFactory === 3) this.set("cdnFactoryName", '自建+网宿');
-
-            this.set("tempUseCustomized", 1)
+            if (confCustomType !== 3){
+                this.set("tempUseCustomized", 1);
+                this.set("isCustom", false);
+            } else {
+                this.set("tempUseCustomized", 2);
+                this.set("isCustom", true);
+            }
         }
     });
 

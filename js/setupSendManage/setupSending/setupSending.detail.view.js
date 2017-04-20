@@ -19,7 +19,8 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
                     this.mySetupSendWaitCustomizeModel.getAllConfig({
                         domain: this.model.domain,
                         version: this.model.domainVersion,
-                        manuallyModifed: true
+                        manuallyModifed: true,
+                        applicationType: this.model.platformId
                     })
                 } else {
                     this.mySetupSendWaitCustomizeModel.off("get.channel.config.success");
@@ -146,7 +147,7 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
         onClickQueryButton: function(){
             this.isInitPaginator = false;
             this.queryArgs.page = this.curPage;
-            this.queryArgs.deviceName = this.$el.find("#input-device").val();
+            this.queryArgs.deviceName = this.$el.find("#input-device").val().trim();
             if (this.queryArgs.deviceName == "") this.queryArgs.deviceName = null;
 
             this.$el.find(".domain-ctn").html(_.template(template['tpl/loading.html'])({}));
@@ -321,7 +322,8 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
 
         updateDomainList: function(){
             _.each(this.collection.deliveryDomains, function(el, index, ls){
-                el.id = Utility.randomStr(16)
+                el.id = Utility.randomStr(16),
+                el.platformId = this.model.get("platformId")
             }.bind(this))
 
             this.domainList = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.detail.domain.html'])({

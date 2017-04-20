@@ -99,7 +99,7 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
         onClickQueryButton: function(){
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
-            this.queryArgs.domain = this.$el.find("#input-domain").val();
+            this.queryArgs.domain = this.$el.find("#input-domain").val().trim();
             if (this.queryArgs.domain == "") this.queryArgs.domain = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");

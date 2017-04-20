@@ -95,7 +95,7 @@ define("setupSending.view", ['require','exports', 'template', 'modal.view', 'uti
         onClickQueryButton: function(){
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
-            this.queryArgs.name = this.$el.find("#input-task-name").val();
+            this.queryArgs.name = this.$el.find("#input-task-name").val().trim();
             if (this.queryArgs.name == "") this.queryArgs.name = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");

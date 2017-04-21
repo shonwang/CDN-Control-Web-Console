@@ -253,7 +253,6 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
         var AddLiveView = Backbone.View.extend({
             initialize: function(options) {
                 this.parent = options.obj;
-                this.isLiveUpward = options.isLiveUpward;
                 this.args = {
                     DomainName: this.parent.args.DomainName || '',
                     OriginType: null, //源站类型
@@ -275,11 +274,6 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 this.$el.find("input[name=radio-port]").on("click", $.proxy(this.onRadioPortChange, this))
 
                 this.setDropdownMenu();
-
-                if (this.isLiveUpward) {
-                    this.$el.find(".non-rtmp").hide();
-                    this.$el.find(".origin-protocol").hide();
-                }
             },
 
             onRadioPortChange: function(event) {
@@ -381,10 +375,8 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 } else if (this.args.OriginType == "domain") {
                     _val = this.$el.find("#cdn-originAddress").val().trim();
 
-                } else if (this.args.OriginType == "ksvideo" && !this.isLiveUpward) {
+                } else if (this.args.OriginType == "ksvideo") {
                     _val = this.$el.find("#cdn-KS3Address").val().trim();
-                } else if (this.isLiveUpward) {
-                    return true;
                 }
 
                 this.args.Origin = _val;
@@ -579,7 +571,7 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     this.$el.find(".cdn-originKsVideo").hide();
                     this.$el.find(".cdn-originAddress").show();
 
-                } else if (originType == "ksvideo" && !this.isLiveUpward) {
+                } else if (originType == "ksvideo") {
                     this.$el.find(".cdn-originIP").hide();
                     this.$el.find(".cdn-originAddress").hide();
                     this.$el.find(".cdn-originKsVideo").show();
@@ -596,6 +588,12 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
             render: function(target) {
                 this.$el.appendTo(target);
             }
+        });
+
+        var AddLiveTestView = AddLiveView.extend({
+            initialize: function(options) {
+                console.log(Backbone.View.extend)
+            },
         });
 
         var AddDomainView = Backbone.View.extend({
@@ -804,11 +802,11 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                             collection: this.collection,
                             obj: this
                         })
+                        var test = new AddLiveTestView();
                     } else if (cdnType == "liveUpward") {
                         this.downloadAndLiveView = new AddLiveView({
                             collection: this.collection,
-                            obj: this,
-                            isLiveUpward: true
+                            obj: this
                         })
                     }
                     this.downloadAndLiveView.render(viewCtn);
@@ -901,7 +899,6 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
             render: function(target) {
                 this.$el.appendTo(target);
             }
-
         });
 
         exports.AddDomainView = AddDomainView;

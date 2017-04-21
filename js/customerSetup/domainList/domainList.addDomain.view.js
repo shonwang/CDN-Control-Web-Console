@@ -58,7 +58,6 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
             },
 
             checkOrignTypeAndContent: function() {
-
                 //源站类型未选的提示
                 if (!this.args.OriginType || this.args.OriginType == 1) {
                     this.$el.find("#cdn-originType-error").show();
@@ -703,7 +702,7 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 var postParam = {
                     "domain": result.DomainName,
                     "userId": this.options.userInfo.uid,
-                    "type": result.CdnType === "download" ? 1 : (result.CdnType === "liveUpward" ? 3 : 2),
+                    "subType": result.CdnType === "download" ? 1 : (result.CdnType === "liveUpward" ? 3 : 2),
                     "protocol": protocols[result.CdnProtocol],
                     "backSourceProtocol": protocols[result.OriginProtocol],
                     "region": result.Regions,
@@ -711,6 +710,8 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     "originAddress": result.CdnType === "liveUpward" ? "" : _.uniq(result.Origin.split(',')).join(','),
                     "originPort": result.OriginPort
                 }
+
+                console.log(postParam)
 
                 this.collection.submitDomain(postParam);
                 this.$el.find("#add-domain-btnSubmit").attr("disabled", "disabled");

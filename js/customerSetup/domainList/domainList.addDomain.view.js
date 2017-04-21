@@ -590,9 +590,98 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
             }
         });
 
-        var AddLiveTestView = AddLiveView.extend({
+        var AddLiveUpwardView = AddLiveView.extend({
             initialize: function(options) {
-                console.log(Backbone.View.extend)
+                AddLiveUpwardView.__super__.initialize.call(this, options);
+
+                this.$el.find(".non-rtmp").hide();
+                this.$el.find(".origin-protocol").hide();
+            },
+
+            checkOrignTypeAndContent: function() {
+                //源站类型未选的提示
+                if (!this.args.OriginType || this.args.OriginType == 1) {
+                    this.$el.find("#cdn-originType-error").show();
+                    return false;
+                }
+                var _val = "";
+                if (this.args.OriginType == "ipaddr") {
+                    _val = this.$el.find("#cdn-originIP").val().replace(/\;+$/, '');
+                } else if (this.args.OriginType == "domain") {
+                    _val = this.$el.find("#cdn-originAddress").val().trim();
+
+                } else if (this.args.OriginType == "ksvideo") {
+                    return true;
+                }
+
+                this.args.Origin = _val;
+
+                var result = this.checkOrigin();
+                if (!result) {
+                    return false;
+                }
+
+                return true;
+            },
+
+            setDropdownMenu: function() {
+                //直播的源站类型
+                this.args.OriginType = 1;
+                this.setShowOriginList();
+                this.$el.find(".cdn-download-live-port").hide();
+                this.$el.find("#dropdown-menu-origin-type .cur-caret").html("请选择");
+                var ctn = this.$el.find("#dropdown-menu-origin-type");
+                var dateArray = [{
+                    name: "请选择",
+                    value: "1"
+                }, {
+                    name: "IP源站",
+                    value: "ipaddr"
+                }, {
+                    name: "域名源站",
+                    value: "domain"
+                }, {
+                    name: "视频云源站",
+                    value: "ksvideo"
+                }];
+                this.initDropMenu(ctn, dateArray, function(obj) {
+                    if (obj.value != 1) {
+                        this.$el.find("#cdn-originType-error").hide();
+                    }
+                    this.$el.find(".cdn-download-live-port").hide();
+                    this.args.OriginType = obj.value;
+                    this.setShowOriginList();
+                }.bind(this));
+            },
+
+            setShowOriginList: function() {
+                //通过OriginType和type来显示不同选项
+                var originType = this.args.OriginType;
+                if (!originType || originType == 1) {
+                    this.$el.find(".cdn-originType-list-ctn").hide();
+                    return false;
+                }
+
+                if (originType == "ipaddr") {
+                    this.$el.find(".cdn-originAddress").hide();
+                    this.$el.find(".cdn-originKsVideo").hide();
+                    this.$el.find(".cdn-originIP").show();
+                } else if (originType == "domain") {
+                    this.$el.find(".cdn-originIP").hide();
+                    this.$el.find(".cdn-originKsVideo").hide();
+                    this.$el.find(".cdn-originAddress").show();
+
+                } else if (originType == "ksvideo") {
+                    this.$el.find(".cdn-originIP").hide();
+                    this.$el.find(".cdn-originAddress").hide();
+                    this.$el.find(".cdn-originKsVideo").hide();
+                }
+
+                if (originType == "ipaddr" || originType == "domain") {
+                    this.$el.find(".cdn-download-live-port").show();
+                } else {
+                    this.$el.find(".cdn-download-live-port").hide();
+                }
             },
         });
 
@@ -705,11 +794,9 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     "backSourceProtocol": protocols[result.OriginProtocol],
                     "region": result.Regions,
                     "originType": originTypes[result.OriginType],
-                    "originAddress": result.CdnType === "liveUpward" ? "" : _.uniq(result.Origin.split(',')).join(','),
+                    "originAddress": (result.CdnType === "liveUpward" && originTypes[result.OriginType] === 3) ? "" : _.uniq(result.Origin.split(',')).join(','),
                     "originPort": result.OriginPort
                 }
-
-                console.log(postParam)
 
                 this.collection.submitDomain(postParam);
                 this.$el.find("#add-domain-btnSubmit").attr("disabled", "disabled");
@@ -802,9 +889,8 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                             collection: this.collection,
                             obj: this
                         })
-                        var test = new AddLiveTestView();
                     } else if (cdnType == "liveUpward") {
-                        this.downloadAndLiveView = new AddLiveView({
+                        this.downloadAndLiveView = new AddLiveUpwardView({
                             collection: this.collection,
                             obj: this
                         })

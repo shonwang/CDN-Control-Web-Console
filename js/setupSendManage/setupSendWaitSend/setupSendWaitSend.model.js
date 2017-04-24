@@ -13,6 +13,7 @@ define("setupSendWaitSend.model", ['require','exports', 'utility'], function(req
             if (isCustom === false) this.set("isCustomName", '否');
             if (configReason === 1) this.set("configReasonName", '用户配置变更');
             if (configReason === 2) this.set("configReasonName", '拓扑变更');
+            if (configReason === 4) this.set("configReasonName", '分层策略变更');
 
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
 

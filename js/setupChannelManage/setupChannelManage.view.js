@@ -288,7 +288,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                             mySpecialLayerManageView.$el.remove();
                             this.$el.find(".list-panel").show();
                             this.onClickQueryButton();
-                            this.initRuleTable(data, this.checked);
+                            //this.initRuleTable(data, this.checked);
                         }.bind(this),
                         onCancelCallback: function() {
                             mySpecialLayerManageView.$el.remove();

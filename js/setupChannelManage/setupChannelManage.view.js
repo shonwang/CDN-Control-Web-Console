@@ -185,7 +185,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                             if (!result) return;
                             this.collection.off("set.layerStrategy.success");
                             this.collection.off("set.layerStrategy.error");
-                            this.collection.on("set.layerStrategy.success", $.proxy(this.onAddChannelTopologySuccess, this));
+                            this.collection.on("set.layerStrategy.success", $.proxy(this.onAddChannelLayerSuccess, this));
                             this.collection.on("set.layerStrategy.error", $.proxy(this.onGetError, this));
                             this.collection.addTopologyRuleList(result)
                             this.selectLayerPopup.$el.modal("hide");
@@ -211,14 +211,14 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 this.disablePopup.$el.find(".close").remove();
             },
 
-            onAddChannelTopologySuccess: function() {
+            onAddChannelLayerSuccess: function() {
                 var postParam = [];
                 _.each(this.domainArray, function(el, index, ls) {
                     postParam.push({
                         domain: el.domain,
                         version: el.version,
                         description: el.description,
-                        configReason: 2
+                        configReason: 4
                     });
                 }.bind(this))
 
@@ -231,7 +231,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
             onPostPredelivery: function() {
                 this.disablePopup && this.disablePopup.$el.modal('hide');
-                alert("批量更换拓扑关系成功！")
+                alert("批量操作成功！")
 
                 window.location.hash = '#/setupSendWaitSend';
             },

@@ -219,7 +219,7 @@ define("setupChannelManage.model", ['require', 'exports', 'utility'], function(r
                     if (res) {
                         this.trigger("get.isTopoStrategyMatch.success", res);
                     } else {
-                        this.trigger("get.isTopoStrategyMatch.error");
+                        this.trigger("get.isTopoStrategyMatch.error", {message: "拓扑关系和分层策略不匹配"});
                     }
                 }.bind(this),
                 errorCallback = function(response) {

@@ -218,7 +218,7 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
         },
 
         changeConfCustomTypeError: function(res){
-            alert("变更失败: " + res)
+            alert("变更失败: " + res);
         },
 
         setNoData:function(msg){

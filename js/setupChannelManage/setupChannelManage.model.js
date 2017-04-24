@@ -1,7 +1,7 @@
 define("setupChannelManage.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-            var businessType = this.get("type"),
+            var businessType = this.get("subType"),
                 status       = this.get("auditStatus"),
                 protocol     = this.get("protocol"),
                 cdnFactory   = this.get("cdnFactory"),
@@ -25,6 +25,7 @@ define("setupChannelManage.model", ['require','exports', 'utility'], function(re
 
             if (businessType === 1) this.set("businessTypeName", '下载加速');
             if (businessType === 2) this.set("businessTypeName", '直播加速');
+            if (businessType === 3) this.set("businessTypeName", '直播推流加速');
             if (protocol === 1) this.set("protocolName","http+hlv");
             if (protocol === 2) this.set("protocolName","hls");
             if (protocol === 3) this.set("protocolName","rtmp");

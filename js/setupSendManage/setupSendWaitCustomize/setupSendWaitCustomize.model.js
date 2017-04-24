@@ -11,6 +11,7 @@ define("setupSendWaitCustomize.model", ['require','exports', 'utility'], functio
             if (operType === 1) this.set("operTypeName", '更新');
             if (configReason === 1) this.set("configReasonName", '用户配置变更');
             if (configReason === 2) this.set("configReasonName", '拓扑变更');
+            if (configReason === 4) this.set("configReasonName", '分层策略变更');
 
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
 

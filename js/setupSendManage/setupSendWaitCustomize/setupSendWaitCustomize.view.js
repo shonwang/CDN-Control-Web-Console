@@ -1,5 +1,5 @@
-define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
- 
+define("setupSendWaitCustomize.view", ['require', 'exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+
     var SetupSendWaitCustomizeView = Backbone.View.extend({
         events: {},
 
@@ -7,7 +7,7 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             this.options = options
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.html'])());
-            if(!AUTH_OBJ.BatchSendToWaitSend){
+            if (!AUTH_OBJ.BatchSendToWaitSend) {
                 this.$el.find('.mulit-send').remove();
             }
             this.initChannelDropMenu();
@@ -25,34 +25,34 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             this.enterKeyBindQuery();
 
             this.queryArgs = {
-                "domain" : null,
+                "domain": null,
                 "operateType": null,
-                "platformId" : null,
+                "platformId": null,
                 "configReason": null,
-                "status" : 0,
+                "status": 0,
                 "count": 10,
                 "page": 1
-             }
+            }
             this.onClickQueryButton();
         },
-        
-        enterKeyBindQuery:function(){
-            $(document).on('keydown', function(e){
-                if(e.keyCode == 13){
+
+        enterKeyBindQuery: function() {
+            $(document).on('keydown', function(e) {
+                if (e.keyCode == 13) {
                     this.onClickQueryButton();
                 }
             }.bind(this));
         },
 
-        onGetError: function(error){
-            this.disablePopup&&this.disablePopup.$el.modal('hide');
-            if (error&&error.message)
+        onGetError: function(error) {
+            this.disablePopup && this.disablePopup.$el.modal('hide');
+            if (error && error.message)
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
         },
 
-        onChannelListSuccess: function(){
+        onChannelListSuccess: function() {
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
         },
@@ -60,22 +60,22 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
         showDisablePopup: function(msg) {
             if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
             var options = {
-                title    : "警告",
-                body     : '<div class="alert alert-danger"><strong>' + msg +'</strong></div>',
-                backdrop : 'static',
-                type     : 0,
+                title: "警告",
+                body: '<div class="alert alert-danger"><strong>' + msg + '</strong></div>',
+                backdrop: 'static',
+                type: 0,
             }
             this.disablePopup = new Modal(options);
             this.disablePopup.$el.find(".close").remove();
         },
 
-        onClickMultiSend: function(){
+        onClickMultiSend: function() {
             var checkedList = this.collection.filter(function(model) {
                 return model.get("isChecked") === true;
             });
 
             this.domainArray = [];
-            _.each(checkedList, function(el, index, ls){
+            _.each(checkedList, function(el, index, ls) {
                 this.domainArray.push({
                     predeliveryId: el.get("id")
                 });
@@ -85,18 +85,18 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             this.showDisablePopup("服务器正在努力处理中...")
         },
 
-        onPublishSuccess: function(){
-            this.disablePopup&&this.disablePopup.$el.modal('hide');
+        onPublishSuccess: function() {
+            this.disablePopup && this.disablePopup.$el.modal('hide');
             alert("操作成功！");
             this.update(this.target)
         },
 
-        onRollBackSuccess: function(){
+        onRollBackSuccess: function() {
             alert("操作成功！");
             this.update(this.target)
         },
 
-        onClickQueryButton: function(){
+        onClickQueryButton: function() {
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
             this.queryArgs.domain = this.$el.find("#input-domain").val();
@@ -106,10 +106,11 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             this.collection.queryChannel(this.queryArgs);
         },
 
-        initTable: function(){
+        initTable: function() {
             this.$el.find(".mulit-send").attr("disabled", "disabled");
             this.table = $(_.template(template['tpl/setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.table.html'])({
-                data: this.collection.models, permission: AUTH_OBJ
+                data: this.collection.models,
+                permission: AUTH_OBJ
             }));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
@@ -124,11 +125,11 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
         },
 
-        onClickItemSend: function(event){
+        onClickItemSend: function(event) {
             var result = confirm("你确定要发布到待下发吗？");
             if (!result) return;
 
-            var eventTarget = event.srcElement || event.target, 
+            var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
             var model = this.collection.get(id);
 
@@ -139,25 +140,29 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             this.collection.publish(this.domainArray)
         },
 
-        onClickItemReject: function(event){
+        onClickItemReject: function(event) {
             var result = confirm("你确定要打回吗？");
             if (!result) return;
 
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
+            var eventTarget = event.srcElement || event.target,
+                id;
+            if (eventTarget.tagName == "SPAN") {
                 eventTarget = $(eventTarget).parent();
                 id = eventTarget.attr("id");
             } else {
                 id = $(eventTarget).attr("id");
             }
 
-            this.collection.rollBack({predeliveryId: id})
+            this.collection.rollBack({
+                predeliveryId: id
+            })
         },
 
-        onClickItemEdit: function(event){
-            require(['setupChannelManage.edit.view'], function(EditChannelView){
-                var eventTarget = event.srcElement || event.target, id;
-                if (eventTarget.tagName == "SPAN"){
+        onClickItemEdit: function(event) {
+            require(['setupChannelManage.edit.view'], function(EditChannelView) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
                     eventTarget = $(eventTarget).parent();
                     id = eventTarget.attr("id");
                 } else {
@@ -171,14 +176,14 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
                     model: model,
                     isEdit: true,
                     isFromSend: true,
-                    onSaveCallback: function(){}.bind(this),
-                    onCancelCallback: function(){
+                    onSaveCallback: function() {}.bind(this),
+                    onCancelCallback: function() {
                         myEditChannelView.$el.remove();
                         this.$el.find(".list-panel").show();
                     }.bind(this)
                 })
 
-                if(!AUTH_OBJ.ApplyEditCustomize){
+                if (!AUTH_OBJ.ApplyEditCustomize) {
                     myEditChannelView.$el.find('.save').remove();
                 }
                 this.$el.find(".list-panel").hide();
@@ -186,7 +191,7 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             }.bind(this));
         },
 
-        onItemCheckedUpdated: function(event){
+        onItemCheckedUpdated: function(event) {
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             var id = $(eventTarget).attr("id");
@@ -207,31 +212,31 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             }
         },
 
-        onAllCheckedUpdated: function(event){
+        onAllCheckedUpdated: function(event) {
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
-            this.collection.each(function(model){
+            this.collection.each(function(model) {
                 model.set("isChecked", eventTarget.checked);
             }.bind(this))
             this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
-            if (eventTarget.checked){
+            if (eventTarget.checked) {
                 this.$el.find(".mulit-send").removeAttr("disabled", "disabled");
             } else {
                 this.$el.find(".mulit-send").attr("disabled", "disabled");
             }
         },
 
-        initPaginator: function(){
+        initPaginator: function() {
             this.$el.find(".total-items span").html(this.collection.total)
             if (this.collection.total <= this.queryArgs.count) return;
-            var total = Math.ceil(this.collection.total/this.queryArgs.count);
+            var total = Math.ceil(this.collection.total / this.queryArgs.count);
 
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
                 visiblePages: 10,
                 currentPage: 1,
-                onPageChange: function (num, type) {
-                    if (type !== "init"){
+                onPageChange: function(num, type) {
+                    if (type !== "init") {
                         this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                         var args = _.extend(this.queryArgs);
                         args.page = num;
@@ -243,15 +248,22 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             this.isInitPaginator = true;
         },
 
-        initChannelDropMenu: function(){
-            var statusArray = [
-                {name: "全部", value: "All"},
-                {name:"新增", value:0},
-                {name: "更新", value:1},
-                {name: "删除", value:2},
-            ],
-            rootNode = this.$el.find(".dropdown-oper");
-            Utility.initDropMenu(rootNode, statusArray, function(value){
+        initChannelDropMenu: function() {
+            var statusArray = [{
+                    name: "全部",
+                    value: "All"
+                }, {
+                    name: "新增",
+                    value: 0
+                }, {
+                    name: "更新",
+                    value: 1
+                }, {
+                    name: "删除",
+                    value: 2
+                }, ],
+                rootNode = this.$el.find(".dropdown-oper");
+            Utility.initDropMenu(rootNode, statusArray, function(value) {
                 if (value == "All")
                     this.queryArgs.operateType = null;
                 else
@@ -259,31 +271,46 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             }.bind(this));
 
             //"1：用户配置变更 2：拓扑变更",
-            var taskType = [
-                {name: "全部", value: "All"},
-                {name:"用户配置变更", value:1},
-                {name: "拓扑变更", value:2},
-            ],
-            rootNode = this.$el.find(".dropdown-task-type");
-            Utility.initDropMenu(rootNode, taskType, function(value){
+            var taskType = [{
+                    name: "全部",
+                    value: "All"
+                }, {
+                    name: "用户配置变更",
+                    value: 1
+                }, {
+                    name: "拓扑变更",
+                    value: 2
+                }, {
+                    name: "分层策略变更",
+                    value: 4
+                }],
+                rootNode = this.$el.find(".dropdown-task-type");
+            Utility.initDropMenu(rootNode, taskType, function(value) {
                 if (value == "All")
                     this.queryArgs.configReason = null;
                 else
                     this.queryArgs.configReason = parseInt(value)
-            }.bind(this));  
+            }.bind(this));
 
-            var pageNum = [
-                {name: "10条", value: 10},
-                {name: "20条", value: 20},
-                {name: "50条", value: 50},
-                {name: "3000条", value: 3000}
-            ]
-            Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
+            var pageNum = [{
+                name: "10条",
+                value: 10
+            }, {
+                name: "20条",
+                value: 20
+            }, {
+                name: "50条",
+                value: 50
+            }, {
+                name: "3000条",
+                value: 3000
+            }]
+            Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value) {
                 this.queryArgs.count = value;
                 this.queryArgs.page = 1;
                 this.onClickQueryButton();
             }.bind(this));
- 
+
             //  require(["setupTopoManage.model"], function(SetupTopoManageModel){
             //     this.mySetupTopoManageModel = new SetupTopoManageModel();
             //     this.mySetupTopoManageModel.on("get.topoInfo.success", $.proxy(this.onGetTopoSuccess, this))
@@ -297,7 +324,7 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             //     this.mySetupTopoManageModel.getTopoinfo(postParam);
             // }.bind(this))
 
-            require(["setupAppManage.model"], function(SetupAppManageModel){
+            require(["setupAppManage.model"], function(SetupAppManageModel) {
                 this.mySetupAppManageModel = new SetupAppManageModel();
                 this.mySetupAppManageModel.on("get.app.info.success", $.proxy(this.onGetAppSuccess, this))
                 this.mySetupAppManageModel.on("get.app.info.error", $.proxy(this.onGetError, this))
@@ -305,9 +332,9 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             }.bind(this))
         },
 
-        onGetTopoSuccess: function(){
+        onGetTopoSuccess: function() {
             var topoArray = []
-            this.mySetupTopoManageModel.each(function(el, index, lst){
+            this.mySetupTopoManageModel.each(function(el, index, lst) {
                 topoArray.push({
                     name: el.get('name'),
                     value: el.get('id')
@@ -315,7 +342,7 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             }.bind(this))
 
             rootNode = this.$el.find(".dropdown-topo");
-            Utility.initDropMenu(rootNode, topoArray, function(value){
+            Utility.initDropMenu(rootNode, topoArray, function(value) {
                 // if (value == "All")
                 //     this.queryArgs.status = null;
                 // else
@@ -323,9 +350,12 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             }.bind(this));
         },
 
-        onGetAppSuccess: function(){
-            var appArray = [{name: "全部", value: "All"},]
-            this.mySetupAppManageModel.each(function(el, index, lst){
+        onGetAppSuccess: function() {
+            var appArray = [{
+                name: "全部",
+                value: "All"
+            }, ]
+            this.mySetupAppManageModel.each(function(el, index, lst) {
                 appArray.push({
                     name: el.get('typeName'),
                     value: el.get('type')
@@ -333,7 +363,7 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             }.bind(this))
 
             rootNode = this.$el.find(".dropdown-app");
-            Utility.initDropMenu(rootNode, appArray, function(value){
+            Utility.initDropMenu(rootNode, appArray, function(value) {
                 if (value == "All")
                     this.queryArgs.platformId = null;
                 else
@@ -341,12 +371,12 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             }.bind(this));
         },
 
-        hide: function(){
+        hide: function() {
             this.$el.hide();
             $(document).off('keydown');
         },
 
-        update: function(target){
+        update: function(target) {
             this.collection.off();
             this.collection.reset();
             this.$el.remove();
@@ -354,7 +384,7 @@ define("setupSendWaitCustomize.view", ['require','exports', 'template', 'modal.v
             this.render(target);
         },
 
-        render: function(target){
+        render: function(target) {
             this.$el.appendTo(target);
             this.target = target;
         }

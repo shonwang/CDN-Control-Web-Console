@@ -339,7 +339,10 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
                 }, {
                     name: "拓扑变更",
                     value: 2
-                }, ],
+                }, {
+                    name: "分层策略变更",
+                    value: 4
+                }],
                 rootNode = this.$el.find(".dropdown-task-type");
             Utility.initDropMenu(rootNode, taskType, function(value) {
                 if (value == "All")

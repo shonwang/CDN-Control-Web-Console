@@ -198,10 +198,12 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     rootNode = this.$el.find(".dropdown-type");
 
                 _.each(res, function(el, index, ls) {
-                    typeArray.push({
-                        name: el.name,
-                        value: el.id
-                    });
+                    if (el.id !== 200 && el.id !== 201) {
+                        typeArray.push({
+                            name: el.name,
+                            value: el.id
+                        });
+                    }
                     this.deviceTypeArray.push({
                         name: el.name,
                         value: el.id
@@ -634,10 +636,12 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     rootNode = this.$el.find(".dropdown-type");
 
                 _.each(res, function(el, index, ls) {
-                    typeArray.push({
-                        name: el.name,
-                        value: el.id
-                    });
+                    if (el.id !== 200 && el.id !== 201) {
+                        typeArray.push({
+                            name: el.name,
+                            value: el.id
+                        });
+                    }
                     this.deviceTypeArray.push({
                         name: el.name,
                         value: el.id

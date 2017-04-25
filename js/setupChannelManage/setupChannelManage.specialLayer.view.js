@@ -366,7 +366,7 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
 
             addTopologyRuleSuccess: function() {
                 var result;
-                if (this.confCustomType === 1) {
+                if (this.confCustomType === 1 || this.confCustomType === 2) {
                     result = confirm("确定将域名放入待下发吗？");
                 } else if (this.confCustomType === 3) {
                     result = confirm("确定将域名放入待定制吗？");

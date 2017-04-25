@@ -7,6 +7,7 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
             initialize: function(options) {
                 this.collection = options.collection;
                 this.selectedNodes = options.selectedNodes;
+                this.nodesList = options.nodesList;
 
                 this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.selectNode.html'])({}));
                 this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
@@ -95,6 +96,18 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                         }.bind(this))
                     }
                 }.bind(this))
+
+                var tempArray = []
+                if (this.nodesList&&this.nodesList.length > 0) {
+                    _.each(this.nodesList, function(el){
+                        var tempNode = _.find(this.allNodes, function(obj){
+                            return obj.id === el.id
+                        }.bind(this))
+                        if (tempNode) tempArray.push(tempNode)
+                    }.bind(this))
+
+                    this.allNodes = tempArray;
+                }
 
                 if (this.selectedNodes.length === this.allNodes.length)
                     this.isCheckedAll = true

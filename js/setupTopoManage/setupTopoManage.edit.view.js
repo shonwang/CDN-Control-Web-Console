@@ -30,6 +30,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.collection.on('modify.topo.error', $.proxy(this.modifyTopoError, this));
 
                 if (this.isEdit) {
+                    this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                     this.collection.getTopoOrigininfo(this.model.get('id'));
                 } else {
                     this.defaultParam = {
@@ -86,18 +87,17 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
             },
 
             initSetup: function() {
-                //this.$el.find('.all .add-node').hide();
-                this.$el.find('.upper .add-node').hide();
                 this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
 
                 if (!this.isEdit && AUTH_OBJ.ApplyCreateTopos) {
                     this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
-                } else if (AUTH_OBJ.ApplyEditTopos){
+                } else if (AUTH_OBJ.ApplyEditTopos) {
                     this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
                 }
 
                 this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
                 this.$el.find('.all .add-node').on("click", $.proxy(this.onClickAddAllNodeButton, this))
+                this.$el.find('.upper .add-node').on("click", $.proxy(this.onClickAddUpperNodeButton, this))
 
                 this.collection.off("get.devicetype.success");
                 this.collection.off("get.devicetype.error");
@@ -106,6 +106,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.collection.getDeviceTypeList(); //获取应用类型列表接口
 
                 this.initAllNodesTable();
+                this.initUpperTable();
                 this.initRuleTable();
             },
 
@@ -204,43 +205,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 }
             },
 
-            onGetAllNode: function(res) {
-                this.$el.find('.all .add-node').show();
-                this.allNodes = res;
-                //过滤掉关闭和挂起的节点
-                var resFlag = [];
-                _.each(res, function(el, index, list) {
-                    if (el.status != 3 && el.status != 2) resFlag.push(el)
-                })
-
-                this.selectedAllNodeList = [];
-                this.nodesArrayFirst = [];
-
-                _.each(resFlag, function(el, index, list) {
-                    el.checked = false;
-                    _.each(this.defaultParam.allNodes, function(defaultLocalId, inx, ls) {
-                        if (defaultLocalId === el.id) {
-                            el.checked = true;
-                            this.selectedAllNodeList.push({
-                                nodeId: el.id,
-                                nodeName: el.chName,
-                                operator: el.operatorId,
-                                checked: el.checked
-                            })
-                        }
-                    }.bind(this));
-                    this.nodesArrayFirst.push({
-                        name: el.chName,
-                        value: el.id,
-                        checked: el.checked,
-                        operator: el.operatorId
-                    });
-                }.bind(this))
-
-                //this.initAllNodesSelect();
-                this.initAllNodesTable();
-            },
-
             onClickAddAllNodeButton: function(event) {
                 require(['setupTopoManage.selectNode.view'], function(SelectNodeView) {
                     if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
@@ -282,8 +246,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 }
 
                 this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemAllDelete, this));
-
-                //this.onGetUpperNode();
             },
 
             onClickItemAllDelete: function(event) {
@@ -303,85 +265,42 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.initAllNodesTable();
             },
 
-            onGetUpperNode: function(res) {
-                this.$el.find('.upper .add-node').show();
-
-                this.selectedUpperNodeList = [];
-                this.nodesArrayFirstUpper = [];
-
-                _.each(this.selectedAllNodeList, function(el, index, list) {
-                    el.checked = false;
-                    _.each(this.defaultParam.upperNodes, function(upperId, inx, ls) {
-                        if (upperId === el.nodeId) {
-                            el.checked = true;
-                            this.selectedUpperNodeList.push({
-                                nodeId: el.nodeId,
-                                nodeName: el.nodeName,
-                                checked: true
-                            })
-                        }
-                    }.bind(this))
-                    this.nodesArrayFirstUpper.push({
-                        name: el.nodeName,
-                        value: el.nodeId,
-                        checked: el.checked,
-                        operator: el.operatorId
-                    });
-                }.bind(this))
-
-                this.initUpperTable()
-                this.initUpperSelect()
-            },
-
-            initUpperSelect: function() {
-                if (this.searchSelectUpper)
-                    this.searchSelectUpper.destroy();
-                var options = {
-                    containerID: this.$el.find('.upper .add-node-ctn').get(0),
-                    panelID: this.$el.find('.upper .add-node').get(0),
-                    openSearch: true,
-                    onOk: $.proxy(this.onClickUpperNodesSelectOK, this),
-                    data: this.nodesArrayFirstUpper,
-                    callback: function(data) {}.bind(this)
+            onClickAddUpperNodeButton: function(event) {
+                if (this.defaultParam.allNodes.length === 0) {
+                    alert("请先添加拓扑节点!")
+                    return;
                 }
 
-                this.searchSelectUpper = new SearchSelect(options);
-                this.$el.find(".upper .add-node-ctn .select-container").css("left", "-170px");
-            },
+                require(['setupTopoManage.selectNode.view'], function(SelectNodeView) {
+                    if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
 
-            onClickUpperNodesSelectOK: function(data) {
-                this.selectedUpperNodeList = [];
-                _.each(data, function(el, key, ls) {
-                    this.selectedUpperNodeList.push({
-                        nodeId: parseInt(el.value),
-                        nodeName: el.name,
-                        operatorId: ''
-                    })
+                    var mySelectNodeView = new SelectNodeView({
+                        collection: this.collection,
+                        selectedNodes: this.defaultParam.upperNodes,
+                        nodesList: this.defaultParam.allNodes
+                    });
+                    var options = {
+                        title: "选择节点",
+                        body: mySelectNodeView,
+                        backdrop: 'static',
+                        type: 2,
+                        height: 500,
+                        onOKCallback: function() {
+                            this.defaultParam.upperNodes = mySelectNodeView.getArgs();
+                            this.selectNodePopup.$el.modal("hide");
+                            this.initUpperTable();
+                        }.bind(this),
+                        onHiddenCallback: function() {}.bind(this)
+                    }
+                    this.selectNodePopup = new Modal(options);
                 }.bind(this))
-
-                this.defaultParam.upperNodes = [];
-                _.each(this.selectedUpperNodeList, function(el) {
-                    this.defaultParam.upperNodes.push(parseInt(el.nodeId));
-                }.bind(this))
-
-                _.each(this.nodesArrayFirstUpper, function(el, key, ls) {
-                    el.checked = false;
-                    _.each(this.selectedUpperNodeList, function(data, key, ls) {
-                        if (el.value == data.nodeId) {
-                            el.checked = true;
-                            data.operator = el.operator;
-                        }
-                    }.bind(this))
-                }.bind(this))
-
-                this.initUpperTable()
             },
 
             initUpperTable: function() {
                 this.upperTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
-                    data: this.selectedUpperNodeList
+                    data: this.defaultParam.upperNodes
                 }));
-                if (this.selectedUpperNodeList.length !== 0)
+                if (this.defaultParam.upperNodes.length !== 0)
                     this.$el.find(".upper .table-ctn").html(this.upperTable[0]);
                 else
                     this.$el.find(".upper .table-ctn").html(_.template(template['tpl/empty-2.html'])({
@@ -390,10 +309,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         }
                     }));
 
-                if (!this.isEdit)
-                    this.upperTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperDelete, this));
-                else
-                    this.upperTable.find("tbody .delete").hide();
+                this.upperTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperDelete, this));
             },
 
             onClickItemUpperDelete: function(event) {
@@ -406,19 +322,10 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     id = $(eventTarget).attr("id");
                 }
 
-                _.each(this.nodesArrayFirstUpper, function(el, index, ls) {
-                    if (parseInt(el.value) === parseInt(id)) el.checked = false;
-                }.bind(this))
-                this.selectedUpperNodeList = _.filter(this.selectedUpperNodeList, function(obj) {
-                    return parseInt(obj.nodeId) !== parseInt(id)
+                this.defaultParam.upperNodes = _.filter(this.defaultParam.upperNodes, function(obj) {
+                    return obj.id !== parseInt(id)
                 }.bind(this))
 
-                this.defaultParam.upperNodes = [];
-                _.each(this.selectedUpperNodeList, function(el, key, ls) {
-                    this.defaultParam.upperNodes.push(parseInt(el.nodeId));
-                }.bind(this))
-
-                this.initUpperSelect();
                 this.initUpperTable();
             },
 
@@ -434,7 +341,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         primaryNameArray = [],
                         backupNameArray = [];
                     _.each(rule.local, function(local, inx, list) {
-                        localLayerArray.push(local.name)
+                        localLayerArray.push(local.name || "[后端没有返回名称]")
                     }.bind(this));
 
                     primaryArray = _.filter(rule.upper, function(obj) {
@@ -457,15 +364,15 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                             backupNameArray.push("[后端没有返回名称]")
                     }.bind(this));
 
-                    var upperLayer = primaryNameArray.join('、');
+                    var upperLayer = primaryNameArray.join('<br>');
                     if (rule.upper.length > 1)
-                        upperLayer = '<strong>主：</strong>' + primaryNameArray.join('、');
+                        upperLayer = '<strong>主：</strong>' + primaryNameArray.join('<br>');
                     if (backupArray.length > 0)
-                        upperLayer += '<br><strong>备：</strong>' + backupNameArray.join('、');
+                        upperLayer += '<br><strong>备：</strong>' + backupNameArray.join('<br>');
 
                     var ruleStrObj = {
                         id: rule.id,
-                        localLayer: localLayerArray.join('、'),
+                        localLayer: localLayerArray.join('<br>'),
                         upperLayer: upperLayer
                     }
                     this.ruleList.push(ruleStrObj)
@@ -483,13 +390,10 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         }
                     }));
 
-                if (!this.isEdit) {
-                    this.roleTable.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-                    this.roleTable.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
-                } else {
-                    this.roleTable.find("tbody .edit").hide();
-                    this.roleTable.find("tbody .delete").hide();
-                }
+                this.roleTable.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
+                this.roleTable.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+
+                this.roleTable.find("[data-toggle='popover']").popover();
             },
 
             onClickItemEdit: function(event) {
@@ -505,28 +409,29 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     return;
                 }
 
-                require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
-                    var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
-                        collection: this.collection,
-                        localNodes: this.selectedAllNodeList,
-                        upperNodes: this.selectedUpperNodeList,
-                        rule: this.defaultParam.rule,
-                        curEditRule: this.curEditRule,
-                        isEdit: true,
-                        onSaveCallback: function() {
-                            myAddEditLayerStrategyView.$el.remove();
-                            this.$el.find(".add-topo").show();
-                            this.initRuleTable();
-                        }.bind(this),
-                        onCancelCallback: function() {
-                            myAddEditLayerStrategyView.$el.remove();
-                            this.$el.find(".add-topo").show();
-                        }.bind(this)
-                    })
+                require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
+                    function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
+                        var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
+                            collection: this.collection,
+                            localNodes: this.selectedAllNodeList,
+                            upperNodes: this.selectedUpperNodeList,
+                            rule: this.defaultParam.rule,
+                            curEditRule: this.curEditRule,
+                            isEdit: true,
+                            onSaveCallback: function() {
+                                myAddEditLayerStrategyView.$el.remove();
+                                this.$el.find(".add-topo").show();
+                                this.initRuleTable();
+                            }.bind(this),
+                            onCancelCallback: function() {
+                                myAddEditLayerStrategyView.$el.remove();
+                                this.$el.find(".add-topo").show();
+                            }.bind(this)
+                        })
 
-                    this.$el.find(".add-topo").hide();
-                    myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
-                }.bind(this))
+                        this.$el.find(".add-topo").hide();
+                        myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
+                    }.bind(this))
             },
 
             onClickItemDelete: function() {
@@ -540,28 +445,29 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
             },
 
             onClickAddRuleButton: function() {
-                require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'], function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
-                    var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
-                    var options = myAddEditLayerStrategyModel;
-                    var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
-                        collection: options,
-                        localNodes: this.selectedAllNodeList,
-                        upperNodes: this.selectedUpperNodeList,
-                        rule: this.defaultParam.rule,
-                        onSaveCallback: function() {
-                            myAddEditLayerStrategyView.$el.remove();
-                            this.$el.find(".add-topo").show();
-                            this.initRuleTable();
-                        }.bind(this),
-                        onCancelCallback: function() {
-                            myAddEditLayerStrategyView.$el.remove();
-                            this.$el.find(".add-topo").show();
-                        }.bind(this)
-                    })
+                require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
+                    function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
+                        var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
+                        var options = myAddEditLayerStrategyModel;
+                        var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
+                            collection: options,
+                            localNodes: this.defaultParam.allNodes,
+                            upperNodes: this.defaultParam.upperNodes,
+                            rule: this.defaultParam.rule,
+                            onSaveCallback: function() {
+                                myAddEditLayerStrategyView.$el.remove();
+                                this.$el.find(".add-topo").show();
+                                this.initRuleTable();
+                            }.bind(this),
+                            onCancelCallback: function() {
+                                myAddEditLayerStrategyView.$el.remove();
+                                this.$el.find(".add-topo").show();
+                            }.bind(this)
+                        })
 
-                    this.$el.find(".add-topo").hide();
-                    myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
-                }.bind(this))
+                        this.$el.find(".add-topo").hide();
+                        myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
+                    }.bind(this))
             },
 
             onGetError: function(error) {

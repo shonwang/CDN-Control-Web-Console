@@ -32,6 +32,15 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 myNodeManageModel.on("get.operator.success", $.proxy(this.initDropMenu, this));
                 myNodeManageModel.on("get.operator.error", $.proxy(this.onGetError, this));
                 myNodeManageModel.getOperatorList();
+                myNodeManageModel.on("get.node.success", $.proxy(this.initSetup, this));
+                myNodeManageModel.on("get.node.error", $.proxy(this.onGetError, this));
+                myNodeManageModel.getNodeList({
+                    "page"    : 1,
+                    "count"   : 99999,
+                    "chname"  : null,//节点名称
+                    "operator": null,//运营商id
+                    "status"  : null//节点状态
+                });
             }.bind(this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
@@ -78,11 +87,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     })
                 }
             }
-
-            this.initSetup();
         },
 
-        initSetup: function() {
+        initSetup: function(data) {
             this.$el.find('.local .add-node').hide();
             if (this.defaultParam.localType === 1) {
                 this.$el.find("#strategyRadio1").get(0).checked = true;
@@ -104,8 +111,8 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             } else {
                 console.log("拓扑所有节点: ", this.options.localNodes)
                 console.log("拓扑上层节点: ", this.options.upperNodes)
-                this.onGetLocalNodeFromArgs();
-                this.onGetUpperNodeFromArgs();
+                // this.onGetLocalNodeFromArgs();
+                // this.onGetUpperNodeFromArgs();
             }
         },
 

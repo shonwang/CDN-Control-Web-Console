@@ -164,9 +164,7 @@ define("importDomainManage.edit.view", ['require','exports', 'template', 'modal.
     }); 
 
     var ImportDomainManageEditView = Backbone.View.extend({
-        events: {
-            //"click .search-btn":"onClickSearch"
-        },
+        events: {},
 
         initialize: function(options) {
             this.options = options;
@@ -203,7 +201,8 @@ define("importDomainManage.edit.view", ['require','exports', 'template', 'modal.
         },
 
         onClickSaveButton: function(){
-            var message = this.model.get('cname') + '接入域名将CNAME到' + this.model.get('dispDomain') + '调度域名，是否确定修改？';
+            var curDispName = this.$el.find(".disp-domain .disp-domain-html").html()
+            var message = this.model.get('cname') + '接入域名将CNAME到' + curDispName + '调度域名，是否确定修改？';
             var result = confirm(message);
             var postParam = {
                 cnameId: this.model.get("cnameId"),

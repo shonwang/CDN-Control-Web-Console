@@ -27,10 +27,11 @@ define("domainList.model", ['require','exports','utility'], function(require, ex
             if (auditStatus === 12) this.set("statusName", '<span class="text-primary">下发成功</span>');
             if (auditStatus === 13) this.set("statusName", '<span class="text-success">运行中</span>');
 
-            var type = this.get("type");
+            var type = this.get("subType");
             /**2016/10/9 15:07:18 type    是   Integer     业务类型 1下载 2 直播 */
             if (type === 2) this.set("typeName", '直播');
             if (type === 1) this.set("typeName", '下载');
+            if (type === 3) this.set("typeName", '直播推流加速');
 
             var cnameData = this.get("cnameData"), cnameDomainStr = [], cdnFoctoryStr = [];
             _.each(cnameData, function(el, index, ls){

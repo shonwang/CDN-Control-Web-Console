@@ -17,7 +17,8 @@ define("routes", ['require', 'exports', 'utility',
         },
 
         routes: {
-            ""                    : "channelManage",
+            ""                    : "customerSetup",
+            "channelManage"       : "channelManage",
             "deviceManage/:query" : "deviceManage",
             "nodeManage"          : "nodeManage",
             "dispGroup"           : "dispGroup",

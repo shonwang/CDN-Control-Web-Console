@@ -133,7 +133,7 @@ define("dispGroup.model", ['require','exports', 'utility'], function(require, ex
                 this.trigger("get.channel.error", response); 
             }.bind(this);
 
-            $.ajax(defaultParas);
+            //$.ajax(defaultParas);
         },
 
         queryChannel: function(args){

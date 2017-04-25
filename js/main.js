@@ -96,6 +96,8 @@
   "timestamp.view": "customerSetup/domainList/timestamp/timestamp.view",
   "urlBlackList.model": "customerSetup/domainList/urlBlackList/urlBlackList.model",
   "urlBlackList.view": "customerSetup/domainList/urlBlackList/urlBlackList.view",
+  "interfaceQuota.model": "customerSetup/interfaceQuota/interfaceQuota.model",
+  "interfaceQuota.view": "customerSetup/interfaceQuota/interfaceQuota.view",
   "deviceManage.model": "deviceManage/deviceManage.model",
   "deviceManage.view": "deviceManage/deviceManage.view",
   "dispConfig.model": "dispConfig/dispConfig.model",
@@ -110,9 +112,11 @@
   "domainStatistics.view": "domainStatistics/domainStatistics.view",
   "grayscaleSetup.model": "grayscaleSetup/grayscaleSetup.model",
   "grayscaleSetup.view": "grayscaleSetup/grayscaleSetup.view",
-  "importAssess.edit.view": "importAssess/importAssess.edit.view",
   "importAssess.model": "importAssess/importAssess.model",
   "importAssess.view": "importAssess/importAssess.view",
+  "importDomainManage.edit.view": "importDomainManage/importDomainManage.edit.view",
+  "importDomainManage.model": "importDomainManage/importDomainManage.model",
+  "importDomainManage.view": "importDomainManage/importDomainManage.view",
   "ipManage.model": "ipManage/ipManage.model",
   "ipManage.view": "ipManage/ipManage.view",
   "liveAllSetup.model": "liveAllSetup/liveAllSetup.model",
@@ -153,6 +157,8 @@
   "setupTopoManage.view": "setupTopoManage/setupTopoManage.view",
   "setupTopoManageSendStrategy.model": "setupTopoManage/setupTopoManageSendStrategy.model",
   "setupTopoManageSendStrategy.view": "setupTopoManage/setupTopoManageSendStrategy.view",
+  "specialLayerManage.model": "specialLayerManage/specialLayerManage.model",
+  "specialLayerManage.view": "specialLayerManage/specialLayerManage.view",
   "statisticsManage.model": "statisticsManage/statisticsManage.model",
   "statisticsManage.view": "statisticsManage/statisticsManage.view",
   "template": "template",
@@ -188,6 +194,8 @@ else if(window.DEBUG === 8)
     window.BASE_URL = "http://develop.gateway.center.cdn.ksyun.com";
 else if(window.DEBUG === 9)
     window.BASE_URL = "http://wq.center.cdn.ksyun.com";
+else if(window.DEBUG === 10)
+    window.BASE_URL = "http://preonline.center.cdn.ksyun.com";
 requirejs.config({
     paths:REQ_PATH,
     urlArgs: new Date().valueOf()

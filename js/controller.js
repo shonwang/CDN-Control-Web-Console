@@ -3,6 +3,42 @@ define("controller", ['require','exports'],
 
     var Controller = Backbone.Router.extend({
 
+        specialLayerManageCallback: function(){
+            require(['specialLayerManage.view', 'specialLayerManage.model'], function(SpecialLayerManageView, SpecialLayerManageModel){
+                this.curPage = 'specialLayerManage';
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                if (!this.specialLayerManageModel)
+                    this.specialLayerManageModel = new SpecialLayerManageModel();
+                if (!this.specialLayerManageView ){
+                    var options = {
+                        collection: this.specialLayerManageModel
+                    };
+                    this.specialLayerManageView = new SpecialLayerManageView(options);
+                    this.specialLayerManageView.render($('.ksc-content'));
+                } else {
+                    this.specialLayerManageView.update();
+                }
+            }.bind(this));
+        },
+
+        importDomainManageCallback: function(){
+            require(['importDomainManage.view', 'importDomainManage.model'], function(ImportDomainManageView, ImportDomainManageModel){
+                this.curPage = 'importDomainManage';
+                this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                if (!this.importDomainManageModel)
+                    this.importDomainManageModel = new ImportDomainManageModel();
+                if (!this.importDomainManageView ){
+                    var options = {
+                        collection: this.importDomainManageModel
+                    };
+                    this.importDomainManageView = new ImportDomainManageView(options);
+                    this.importDomainManageView.render($('.ksc-content'));
+                } else {
+                    this.importDomainManageView.update();
+                }
+            }.bind(this));
+        },
+
         importAssessCallback: function(){
             require(['importAssess.view', 'importAssess.model'], function(ImportAssessView, ImportAssessModel){
                 this.curPage = 'importAssess';

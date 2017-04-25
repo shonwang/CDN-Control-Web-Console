@@ -175,7 +175,6 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                         name: '时间戳+共享秘钥防盗链',
                         hash: 'index.html#/domainList/' + query + '/timestamp/' + query2,
                         notShow:!AUTH_OBJ.TimeSafetychain,
-
                         active: false,
                         children: []
                     }]

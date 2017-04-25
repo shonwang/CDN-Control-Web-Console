@@ -188,8 +188,8 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
         alertChangeType: function(id){
             if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
 
-            var message = '<div class="alert alert-danger">'  + 
-                                '<strong>重要提示: </strong><br>'  + 
+            var message = '<div class="alert alert-danger">' + 
+                                '<strong>重要提示: </strong><br>' + 
                                 '使用中控编辑管理域名配置后，该域名将不能在控制台或使用OpenAPI进行配置修改配置”，是否确认使用？' + 
                            '</div>';
             var options = {

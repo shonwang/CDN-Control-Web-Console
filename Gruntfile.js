@@ -280,6 +280,12 @@ module.exports = function(grunt) {
         modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 9;');
     });
 
+    grunt.registerTask('preonline-url', '', function() {
+        modifyFile("temp/js/main.js", 'urlArgs', '\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 10;', "dest/assets.json");
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 10;');
+    });
+
     grunt.registerTask('debug-url', '', function() {
         modifyFile("temp/js/main.js", 'urlArgs', '\n');
         modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 1.1;', "dest/assets.json");
@@ -322,4 +328,6 @@ module.exports = function(grunt) {
         'copy:main', 'gateway-develop-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
     grunt.registerTask('wuqing', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
         'copy:main', 'wuqing-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
+    grunt.registerTask('preonline', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+        'copy:main', 'preonline-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
 };

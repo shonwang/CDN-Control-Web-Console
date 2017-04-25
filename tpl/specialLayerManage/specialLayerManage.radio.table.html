@@ -1,23 +1,25 @@
-<table class="topo table table-striped table-hover">
+<table class="layer table table-striped table-hover">
     <thead> 
       <tr>
         <th>名称</th>
-        <th>备注</th> 
+        <th>应用</th> 
       </tr>
     </thead>
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
+            <% if (!data[i].get('notDisplay')) { %>
             <tr data-id="<%=data[i].get('id')%>">
               <td>
                   <div class="radio">
                       <label>
-                        <input type="radio" name="options-topo" id=<%=data[i].get('id')%>>
-                        <%=data[i].get("name")%>
+                        <input type="radio" name="options-layer" id=<%=data[i].get('id')%>>
+                        <span><%=data[i].get("name")%></span>
                       </label>
                   </div>
               </td>
-              <td><%=data[i].get("description") || '无备注'%></td>
+              <td><%=data[i].get('typeName')%></td>
             </tr>
+            <% } %>
         <% } %>  
     </tbody>
 </table>

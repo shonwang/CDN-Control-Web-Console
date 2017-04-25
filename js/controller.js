@@ -4,6 +4,7 @@ define("controller", ['require','exports'],
     var Controller = Backbone.Router.extend({
 
         specialLayerManageCallback: function(){
+            if(!AUTH_OBJ.LayeredStrategyManage) return;
             require(['specialLayerManage.view', 'specialLayerManage.model'], function(SpecialLayerManageView, SpecialLayerManageModel){
                 this.curPage = 'specialLayerManage';
                 this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
@@ -22,6 +23,7 @@ define("controller", ['require','exports'],
         },
 
         importDomainManageCallback: function(){
+            if(!AUTH_OBJ.AccessDomainManage) return;
             require(['importDomainManage.view', 'importDomainManage.model'], function(ImportDomainManageView, ImportDomainManageModel){
                 this.curPage = 'importDomainManage';
                 this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));

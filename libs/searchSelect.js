@@ -34,13 +34,20 @@
         draw: function() {
             this.selectContainer = document.createElement("div");
             this.selectContainer.className = "select-container";
-
+            
+            //title
+            var oTctn = document.createElement("div");
+            oTctn.className="select-title-container-fixed";
             var oTitleContainer = document.createElement("div");
             oTitleContainer.className = "select-title-container";
             this.oTitleContainer = oTitleContainer;
             this.createTitle();
 
-            this.selectContainer.appendChild(oTitleContainer);
+            //this.selectContainer.appendChild(oTitleContainer);
+            //if(!this.isDisabled){
+            oTctn.appendChild(oTitleContainer);
+            this.selectContainer.appendChild(oTctn);
+            //}
 
             var oUl = document.createElement("ul");
             oUl.className = "select-value-layer";
@@ -64,7 +71,8 @@
             this.setProperty();
             this.bindEvent();
         },
-
+        
+        /*
         createTitle: function() {
             if (this.openSearch) {
                 var oDiv = document.createElement("div");
@@ -92,6 +100,33 @@
             this.oTitleContainer.appendChild(oClose);
             this.btnClose = oClose;
         },
+            */
+
+		createTitle:function(){
+			if(this.openSearch){
+				var oTips=document.createElement("span");
+				oTips.className="select-search-tips";
+				oTips.innerHTML="过滤";
+				var oSelectInput=document.createElement("input");
+                oSelectInput.placeholder = "请输入关键字";
+				oSelectInput.type="search";
+				//this.oTitleContainer.appendChild(oTips);
+				this.oTitleContainer.appendChild(oSelectInput);
+				this.oSelectInput=oSelectInput;
+			}
+            if (!this.isSingle) {
+                var oCheckBoxContainer=this.createElement("div");
+                oCheckBoxContainer.className="select-checkbox-container";
+                oCheckBoxContainer.appendChild(this.createCheckBtn());
+                this.oTitleContainer.appendChild(oCheckBoxContainer);
+            }
+			//关闭按钮
+			var oClose=this.createElement("div");
+			oClose.className="select-select-close";
+            //oClose.innerHTML = '<i class="icon icon-close-20"></i>';
+			this.oTitleContainer.appendChild(oClose);
+			this.btnClose=oClose;
+		},
 
         bindInputPanel: function() {
             var selectObject = this.selectObject;
@@ -135,7 +170,7 @@
             }
 
         },
-
+        /*
         createCheckBtn: function() {
             var html = [];
             var oCheckAll = this.createElement("div");
@@ -166,6 +201,42 @@
             return oFragMent;
 
         },
+            */
+
+		createCheckBtn :function(){
+			var html=[];
+			var oCheckAll=this.createElement("span");
+			oCheckAll.className="select-check-all";
+			oCheckAll.innerHTML="全选";
+			
+
+			var oSelectBack=this.createElement("span");
+			oSelectBack.className="select-select-back";
+			oSelectBack.innerHTML="反选";
+
+            var oCancelAll=this.createElement("span");
+			oCancelAll.className="select-cancel-all";
+			oCancelAll.innerHTML="清空";
+
+            var oSelectBtnOK=this.createElement("span");
+            if(this.hasOkBtn){
+                oSelectBtnOK.className="select-btn-ok";
+                oSelectBtnOK.innerHTML="确定";
+            }
+
+			this.btnCheckAll=oCheckAll;
+			this.btnCancelAll=oCancelAll;
+			this.btnSelectBack=oSelectBack;
+            this.btnSearchOK=oSelectBtnOK;
+			var oFragMent=document.createDocumentFragment("");
+			oFragMent.appendChild(oCheckAll);
+            oFragMent.appendChild(oSelectBack);
+			oFragMent.appendChild(oCancelAll);
+            oFragMent.appendChild(oSelectBtnOK);
+			return oFragMent;
+
+		},
+
         selectObject: [],
         setProperty: function() {
             var selectContainer = this.selectContainer;

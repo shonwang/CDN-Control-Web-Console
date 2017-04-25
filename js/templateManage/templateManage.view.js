@@ -751,7 +751,6 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                 onOk: function(){},
                 data: cityArray,
                 callback: function(data) {
-                    //console.log(data);
                     this.queryArgs.area = data.value;
                     this.$el.find('#dropdown-area .cur-value').html(data.name);
                 }.bind(this)

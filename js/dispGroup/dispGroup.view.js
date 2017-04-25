@@ -409,7 +409,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.collection.on("GropDomain.list.success", $.proxy(this.onGetGroupDomainListSuccess, this));
             this.collection.on("GropDomain.list.error", $.proxy(this.onGetError, this));
             this.collection.GroupDomainList();
-            
+
             this.collection.off("ip.type.success");
             this.collection.off("ip.type.error");
             this.collection.on("ip.type.success", $.proxy(this.onGetIpTypeSuccess, this));
@@ -695,7 +695,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.collection.on('GropDomain.list.success',$.proxy(this.initGroupDomainList, this));
             this.collection.on('GropDomain.list.error',$.proxy(this.onGetError, this));
             this.collection.GroupDomainList();
-            
+
             this.initDispGroupDropMenu();
 
             this.collection.on("get.dispGroup.success", $.proxy(this.onDispGroupListSuccess, this));

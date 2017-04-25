@@ -28,11 +28,12 @@
              <% if (permission.ManageApplications) { %> 
             <li id="setupAppManage"><a href="index.html#/setupAppManage"><i class="glyphicon glyphicon-font"></i>应用管理</a></li>
              <% } %>
+            <li id="specialLayerManage"><a href="index.html#/specialLayerManage"><i class="glyphicon glyphicon-text-size"></i>分层策略管理</a></li>
         </ul>
     </li>
     <% } %>
     <% if (permission.ManageServices) { %> 
-    <li><a href="javascript:void(0)"><i class="icon icon-content-16"></i>服务管理</a>
+    <li><a href="javascript:void(0)"><i class="icon icon-content-16"></i>调度管理</a>
         <ul class="submenu">
             <% if (permission.ManageGslbGroups) { %> 
             <li id="dispGroup"><a href="index.html#/dispGroup"><i class="icon icon-cache-16"></i>调度组管理</a></li>
@@ -41,6 +42,7 @@
             <li id="dispConfig"><a href="index.html#/dispConfig"><i class="glyphicon glyphicon-cog"></i>调度配置</a></li>
             <% } %>
             <li id="importAssess"><a href="index.html#/importAssess"><i class="glyphicon glyphicon-log-in"></i>接入评估</a></li>
+            <li id="importDomainManage"><a href="index.html#/importDomainManage"><i class="glyphicon glyphicon-import"></i>接入域名管理</a></li>
         </ul>
     </li>
     <% } %>

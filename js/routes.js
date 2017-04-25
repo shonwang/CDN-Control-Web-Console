@@ -21,8 +21,11 @@ define("routes", ['require', 'exports', 'utility',
             "deviceManage/:query" : "deviceManage",
             "nodeManage"          : "nodeManage",
             "dispGroup"           : "dispGroup",
+            "importAssess"        : "importAssess",
             "dispConfig"          : "dispConfig",
             "importAssess"        : "importAssess",
+            "specialLayerManage"  : "specialLayerManage",
+            "importDomainManage"  : "importDomainManage",
             "coverRegion"         : "coverRegion",
             "coverManage"         : "coverManage",
             "liveAllSetup"        : "liveAllSetup",
@@ -106,6 +109,13 @@ define("routes", ['require', 'exports', 'utility',
                     break;
                 case 'importAssess':
                     this.importAssessView.hide();
+                    break;
+                case 'specialLayerManage':
+                    this.specialLayerManageView.remove();
+                    this.specialLayerManageView = null;
+                    break;
+                case 'importDomainManage':
+                    this.importDomainManageView.hide();
                     break;
                 case 'dispConfig':
                     this.dispConfigView.remove();
@@ -422,6 +432,14 @@ define("routes", ['require', 'exports', 'utility',
 
         importAssess: function(){
             this.navbarView.initLogin($.proxy(Controller.importAssessCallback, this))
+        },
+
+        specialLayerManage: function(){
+            this.navbarView.initLogin($.proxy(Controller.specialLayerManageCallback, this))
+        },
+
+        importDomainManage: function(){
+            this.navbarView.initLogin($.proxy(Controller.importDomainManageCallback, this))
         },
 
         dispGroup: function(){

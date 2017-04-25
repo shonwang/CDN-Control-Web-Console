@@ -215,7 +215,6 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
             }
             defaultParas.success = function(res){
-                console.log(res);
                 if (res)
                     this.trigger("ip.type.success", res.rows);
                 else
@@ -300,7 +299,6 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
         },
 
         getDeviceIpList: function(args){
-            console.log('getDeviceIpList');
             var url = BASE_URL + "/rs/device/ip/list";
             var defaultParas = {
                 type: "GET",
@@ -316,7 +314,6 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
             }
             defaultParas.success = function(res){
                 if (res){
-                    console.log(res);
                     this.trigger("get.device.ip.success", res);
                 } else {
                     this.trigger("get.device.ip.error", res); 

@@ -12,7 +12,7 @@
 					RTMP
 				</label>
 			</div>
-			<div class="radio">
+			<div class="radio non-rtmp">
 				<label for="radio-live-protocol2">
 					<input type="radio" name="radio-live-protocol" id="radio-live-protocol2" value="HTTP+FLV">
 					<span class="circle"></span>
@@ -20,7 +20,7 @@
 					HTTP+FLV
 				</label>
 			</div>
-			<div class="radio">
+			<div class="radio non-rtmp">
 				<label for="radio-live-protocol3">
 					<input type="radio" name="radio-live-protocol" id="radio-live-protocol3" value="HLS">
 					<span class="circle"></span>
@@ -32,7 +32,7 @@
 		</div>
 	</div>	
 	
-	<div class="cdn-row clearfix margin-top10">
+	<div class="cdn-row clearfix margin-top10 origin-protocol">
 		<div class="label-text-show">回源协议：</div>
 		<div class="label-content-show margin-left10">
 			<div class="radio" id="selectForRTMP">
@@ -71,7 +71,7 @@
 		<div class="label-content-show margin-left10">
 			<div class="cdn-row clearfix">
 				<div class="ks-dropdown margin-left10 margin-right10 floatLeft" id="dropdown-menu-origin-type">
-					<button type="button" id="origin-type-dropdown" class="ks-btn ks-dropdown-text" data-toggle="dropdown"><span class="cur-caret">请选择</span><span class="ks-caret"></span></button>
+					<button type="button" id="origin-type-dropdown" class="ks-btn ks-dropdown-text" data-toggle="dropdown"><span class="ks-caret"></span><span class="cur-caret">请选择</span></button>
 					<ul class="ks-dropdown-menu" role="menu" aria-labelledby="url-dropdown"></ul>
 				</div>
 				<div class="ks-form-control add-domain-error-tips margin-left10">

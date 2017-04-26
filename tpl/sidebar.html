@@ -4,7 +4,7 @@
         <a href="javascript:void(0)"><i class="glyphicon glyphicon-user"></i>客户资源</a>
         <ul class="submenu">
             <% if (permission.ManageChannels) { %>
-            <li class="active" id="channelManage"><a href="index.html#"><i class="icon icon-monit-20"></i>频道管理</a></li>
+            <li class="active" id="channelManage"><a href="index.html#channelManage"><i class="icon icon-monit-20"></i>频道管理</a></li>
             <% } %>
             <li id="domainManage"><a href="index.html#/domainManage"><i class="glyphicon glyphicon-list"></i>域名管理</a></li>
         </ul>
@@ -28,7 +28,9 @@
              <% if (permission.ManageApplications) { %> 
             <li id="setupAppManage"><a href="index.html#/setupAppManage"><i class="glyphicon glyphicon-font"></i>应用管理</a></li>
              <% } %>
+			 <% if (permission.LayeredStrategyManage) { %>
             <li id="specialLayerManage"><a href="index.html#/specialLayerManage"><i class="glyphicon glyphicon-text-size"></i>分层策略管理</a></li>
+			<% } %>
         </ul>
     </li>
     <% } %>
@@ -42,7 +44,9 @@
             <li id="dispConfig"><a href="index.html#/dispConfig"><i class="glyphicon glyphicon-cog"></i>调度配置</a></li>
             <% } %>
             <li id="importAssess"><a href="index.html#/importAssess"><i class="glyphicon glyphicon-log-in"></i>接入评估</a></li>
+			<% if (permission.AccessDomainManage) { %>
             <li id="importDomainManage"><a href="index.html#/importDomainManage"><i class="glyphicon glyphicon-import"></i>接入域名管理</a></li>
+			<% } %>
         </ul>
     </li>
     <% } %>

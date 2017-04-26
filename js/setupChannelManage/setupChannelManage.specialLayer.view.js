@@ -14,6 +14,7 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                 this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.specialLayer.html'])({
                     data: this.model.attributes
                 }));
+                this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
                 this.defaultParam = {
                     "rule": []
@@ -74,24 +75,34 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                     this.curLayerId = value;
                 }.bind(this));
 
+                require(['nodeManage.model'], function(NodeManageModel) {
+                    var myNodeManageModel = new NodeManageModel();
+                    myNodeManageModel.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
+                    myNodeManageModel.on("get.operator.error", $.proxy(this.onGetError, this));
+                    myNodeManageModel.getOperatorList();
+                }.bind(this))
+            },
+
+            // getTopologyRule -> getStrategyList
+            getTopologyRuleSuccess: function(res) {
+                console.log("获取频道的分层策略ID: ", res)
+                // this.collection.off('get.rule.origin.success');
+                // this.collection.off('get.rule.origin.error');
+                // this.collection.on('get.rule.origin.success', $.proxy(this.initRuleTable, this));
+                // this.collection.on('get.rule.origin.error', $.proxy(this.onGetError, this));
+                //this.collection.getRuleOrigin(res);
+                this.notEditId = res;
+                this.setLayerDefaultData();
+            },
+
+            onGetOperatorSuccess: function(res) {
+                this.operatorList = res.rows;
                 //获取特殊规则的id
                 this.collection.off('getTopologyRule.success');
                 this.collection.off('getTopologyRule.error');
                 this.collection.on('getTopologyRule.success', $.proxy(this.getTopologyRuleSuccess, this));
                 this.collection.on('getTopologyRule.error', $.proxy(this.getTopologyRuleError, this));
                 this.collection.getTopologyRule(this.model.get('id'));
-            },
-
-            // getTopologyRule -> getStrategyList
-            getTopologyRuleSuccess: function(res) {
-                console.log("获取频道的特殊分层策略规则ID: ", res)
-                    // this.collection.off('get.rule.origin.success');
-                    // this.collection.off('get.rule.origin.error');
-                    // this.collection.on('get.rule.origin.success', $.proxy(this.initRuleTable, this));
-                    // this.collection.on('get.rule.origin.error', $.proxy(this.onGetError, this));
-                    //this.collection.getRuleOrigin(res);
-                this.notEditId = res;
-                this.setLayerDefaultData();
             },
 
             setLayerDefaultData: function() {
@@ -150,27 +161,45 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                     }.bind(this))
 
                     _.each(primaryArray, function(upper, inx, list) {
+                        upper.ipCorporationName = "";
+                        if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                            for (var i = 0; i < this.operatorList.length; i++) {
+                                if (this.operatorList[i].id === upper.ipCorporation) {
+                                    upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                    break;
+                                }
+                            }
+                        }
                         if (upper.rsNodeMsgVo)
-                            primaryNameArray.push(upper.rsNodeMsgVo.name)
+                            primaryNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
                         else
                             primaryNameArray.push("[后端没有返回名称]")
                     }.bind(this));
                     _.each(backupArray, function(upper, inx, list) {
+                        upper.ipCorporationName = "";
+                        if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                            for (var i = 0; i < this.operatorList.length; i++) {
+                                if (this.operatorList[i].id === upper.ipCorporation) {
+                                    upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                    break;
+                                }
+                            }
+                        }
                         if (upper.rsNodeMsgVo)
-                            backupNameArray.push(upper.rsNodeMsgVo.name)
+                            backupNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
                         else
                             backupNameArray.push("[后端没有返回名称]")
                     }.bind(this));
 
-                    var upperLayer = primaryNameArray.join('、');
+                    var upperLayer = primaryNameArray.join('<br>');
                     if (rule.upper.length > 1)
-                        upperLayer = '<strong>主：</strong>' + primaryNameArray.join('、');
+                        upperLayer = '<strong>主：</strong>' + primaryNameArray.join('<br>');
                     if (backupArray.length > 0)
-                        upperLayer += '<br><strong>备：</strong>' + backupNameArray.join('、');
+                        upperLayer += '<br><strong>备：</strong>' + backupNameArray.join('<br>');
 
                     var ruleStrObj = {
                         id: rule.id,
-                        localLayer: localLayerArray.join('、'),
+                        localLayer: localLayerArray.join('<br>'),
                         upperLayer: upperLayer
                     }
                     this.ruleList.push(ruleStrObj)
@@ -179,13 +208,20 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                 this.ruleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.role.table.html'])({
                     data: this.ruleList
                 }));
-                if (this.ruleList.length !== 0)
+                if (this.ruleList.length !== 0) {
                     this.$el.find(".table-ctn").html(this.ruleTable[0]);
-                else
-                    this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+                } else {
+                    this.$el.find(".table-ctn").html(_.template(template['tpl/empty-2.html'])({
+                        data: {
+                            message: "暂无数据"
+                        }
+                    }));
+                }
 
                 this.ruleTable.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
                 this.ruleTable.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+
+                this.ruleTable.find("[data-toggle='popover']").popover();
 
                 // _.each(this.ruleTable.find("tbody .edit"), function(el) {
                 //     _.each(this.notEditId, function(id) {

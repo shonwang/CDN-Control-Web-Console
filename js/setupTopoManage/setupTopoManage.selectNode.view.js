@@ -19,11 +19,11 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                     myNodeManageModel.on("get.node.success", $.proxy(this.onGetAllNode, this));
                     myNodeManageModel.on("get.node.error", $.proxy(this.onGetError, this));
                     myNodeManageModel.getNodeList({
-                        "page"    : 1,
-                        "count"   : 99999,
-                        "chname"  : null,//节点名称
-                        "operator": null,//运营商id
-                        "status"  : null//节点状态
+                        "page": 1,
+                        "count": 99999,
+                        "chname": null, //节点名称
+                        "operator": null, //运营商id
+                        "status": null //节点状态
                     });
                 }.bind(this))
 
@@ -36,13 +36,13 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
             onKeyupNodeNameFilter: function() {
                 if (!this.allNodes || this.allNodes.length === 0) return;
                 var keyWord = this.$el.find("#input-name").val();
-                            
+
                 _.each(this.allNodes, function(model, index, list) {
                     if ((this.curOperator === model.operatorId && this.curArea === model.areaId) ||
-                        (this.curOperator === null && this.curArea === model.areaId) || 
-                        (this.curOperator === model.operatorId && this.curArea === null) || 
+                        (this.curOperator === null && this.curArea === model.areaId) ||
+                        (this.curOperator === model.operatorId && this.curArea === null) ||
                         (this.curOperator === null && this.curArea === null)) {
-                        if (keyWord === ""){
+                        if (keyWord === "") {
                             model.isDisplay = true;
                         } else if (model.chName.indexOf(keyWord) > -1) {
                             model.isDisplay = true;
@@ -87,20 +87,25 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
 
             onGetAllNode: function(res) {
                 _.each(res, function(el, index, list) {
-                    if (el.status !== 3 || el.status !== 2) {
+                    if (el.status !== 3 && el.status !== 2) {
+                        el.name = el.chName;
                         el.isDisplay = true;
                         el.isChecked = false;
-                        _.each(this.selectedNodes, function(node){
-                            if (el.id === node.id) el.isChecked = true;
+                        _.each(this.selectedNodes, function(node) {
+                            if (el.id === node.id) {
+                                el.isChecked = true;
+                                el.chiefType = node.chiefType;
+                                el.ipCorporation = node.ipCorporation;
+                            }
                         }.bind(this))
                         this.allNodes.push(el);
                     }
                 }.bind(this))
 
                 var tempArray = []
-                if (this.nodesList&&this.nodesList.length > 0) {
-                    _.each(this.nodesList, function(el){
-                        var tempNode = _.find(this.allNodes, function(obj){
+                if (this.nodesList && this.nodesList.length > 0) {
+                    _.each(this.nodesList, function(el) {
+                        var tempNode = _.find(this.allNodes, function(obj) {
                             return obj.id === el.id
                         }.bind(this))
                         if (tempNode) tempArray.push(tempNode)
@@ -109,11 +114,11 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                     this.allNodes = tempArray;
                 }
 
-                var checkedArray = _.filter(this.allNodes, function(obj){
+                var checkedArray = _.filter(this.allNodes, function(obj) {
                     return obj.isChecked === true;
                 }.bind(this))
 
-                var notCheckedArray = _.filter(this.allNodes, function(obj){
+                var notCheckedArray = _.filter(this.allNodes, function(obj) {
                     return obj.isChecked === false;
                 }.bind(this))
 
@@ -136,7 +141,11 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                 if (this.allNodes.length !== 0)
                     this.$el.find(".table-ctn").html(this.table[0]);
                 else
-                    this.$el.find(".table-ctn").html(_.template(template['tpl/empty-2.html'])({data: {message: "暂无数据"}}));
+                    this.$el.find(".table-ctn").html(_.template(template['tpl/empty-2.html'])({
+                        data: {
+                            message: "暂无数据"
+                        }
+                    }));
 
                 this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
                 this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
@@ -167,7 +176,9 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                 if (eventTarget.tagName !== "INPUT") return;
                 this.table.find("tbody tr").find("input").each(function(index, node) {
                     $(node).prop("checked", eventTarget.checked);
-                    this.allNodes[index].isChecked = eventTarget.checked
+                    _.each(this.allNodes, function(el){
+                        if (el.id === parseInt(node.id)) el.isChecked = eventTarget.checked;
+                    }.bind(this))
                 }.bind(this))
             },
 

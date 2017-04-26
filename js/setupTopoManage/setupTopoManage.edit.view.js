@@ -107,6 +107,17 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
                 this.initAllNodesTable();
                 this.initUpperTable();
+
+                require(['nodeManage.model'], function(NodeManageModel) {
+                    var myNodeManageModel = new NodeManageModel();
+                    myNodeManageModel.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
+                    myNodeManageModel.on("get.operator.error", $.proxy(this.onGetError, this));
+                    myNodeManageModel.getOperatorList();
+                }.bind(this))
+            },
+
+            onGetOperatorSuccess: function(res) {
+                this.operatorList = res.rows;
                 this.initRuleTable();
             },
 
@@ -352,14 +363,33 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     }.bind(this))
 
                     _.each(primaryArray, function(upper, inx, list) {
+                        upper.ipCorporationName = "";
+                        if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                            for (var i = 0; i < this.operatorList.length; i++) {
+                                if (this.operatorList[i].id === upper.ipCorporation) {
+                                    upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                    break;
+                                }
+                            }
+                        }
                         if (upper.rsNodeMsgVo)
-                            primaryNameArray.push(upper.rsNodeMsgVo.name)
+                            primaryNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
                         else
                             primaryNameArray.push("[后端没有返回名称]")
                     }.bind(this));
+
                     _.each(backupArray, function(upper, inx, list) {
+                        upper.ipCorporationName = "";
+                        if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                            for (var i = 0; i < this.operatorList.length; i++) {
+                                if (this.operatorList[i].id === upper.ipCorporation) {
+                                    upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                    break;
+                                }
+                            }
+                        }
                         if (upper.rsNodeMsgVo)
-                            backupNameArray.push(upper.rsNodeMsgVo.name)
+                            backupNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
                         else
                             backupNameArray.push("[后端没有返回名称]")
                     }.bind(this));

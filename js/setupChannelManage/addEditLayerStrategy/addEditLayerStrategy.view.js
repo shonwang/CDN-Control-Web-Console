@@ -28,7 +28,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
-            require(['nodeManage.model'], function (NodeManageModel) {
+            require(['nodeManage.model'], function(NodeManageModel) {
                 var myNodeManageModel = new NodeManageModel();
                 myNodeManageModel.on("get.operator.success", $.proxy(this.initDropMenu, this));
                 myNodeManageModel.on("get.operator.error", $.proxy(this.onGetError, this));
@@ -36,11 +36,11 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 myNodeManageModel.on("get.node.success", $.proxy(this.initSetup, this));
                 myNodeManageModel.on("get.node.error", $.proxy(this.onGetError, this));
                 myNodeManageModel.getNodeList({
-                    "page"    : 1,
-                    "count"   : 99999,
-                    "chname"  : null,//节点名称
-                    "operator": null,//运营商id
-                    "status"  : null//节点状态
+                    "page": 1,
+                    "count": 99999,
+                    "chname": null, //节点名称
+                    "operator": null, //运营商id
+                    "status": null //节点状态
                 });
             }.bind(this));
 
@@ -56,8 +56,11 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.statusArray = [];
             var rootNode = this.$el.find(".operator");
 
-            _.each(data.rows, function (el, key, list) {
-                this.statusArray.push({name: el.name, value: el.id})
+            _.each(data.rows, function(el, key, list) {
+                this.statusArray.push({
+                    name: el.name,
+                    value: el.id
+                })
             }.bind(this))
 
             Utility.initDropMenu(rootNode, this.statusArray, function(value) {
@@ -93,7 +96,12 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         initSetup: function(data) {
-            this.allNodesArray = data;
+            this.allNodesArray = [];
+            _.each(data, function(el, index, list) {
+                if (el.status !== 3 && el.status !== 2) {
+                    this.allNodesArray.push(el);
+                }
+            }.bind(this))
             if (this.defaultParam.localType === 1) {
                 this.$el.find("#strategyRadio1").get(0).checked = true;
                 this.$el.find("#strategyRadio2").get(0).checked = false;
@@ -106,11 +114,16 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.$el.find(".operator-ctn").show();
             }
 
-            if (!this.options.localNodes && !this.options.upperNodes) {
-                this.collection.on("get.topo.OriginInfo.success", $.proxy(this.onGetLocalNode, this));
+            if (!this.options.localNodes && !this.options.upperNodes && !this.notFilter) {
+                this.collection.on("get.topo.OriginInfo.success", $.proxy(this.onGetLocalNodeByTopo, this));
                 this.collection.on("get.topo.OriginInfo.error", $.proxy(this.onGetError, this));
                 this.collection.getTopoOrigininfo(this.topologyId);
                 console.log("拓扑ID: ", this.topologyId)
+            } else if (!this.options.localNodes && !this.options.upperNodes && this.notFilter) {
+                this.options.localNodes = this.allNodesArray;
+                this.options.upperNodes = this.allNodesArray;
+                this.onGetLocalNodeFromArgs();
+                this.onGetUpperNodeFromArgs();
             } else {
                 this.onGetLocalNodeFromArgs();
                 this.onGetUpperNodeFromArgs();
@@ -174,8 +187,8 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.$el.find('.local .add-node').show();
 
             this.topoAllNodes = [];
-            _.each(this.options.localNodes, function(node){
-                var tempNode = _.find(this.allNodesArray, function(obj){
+            _.each(this.options.localNodes, function(node) {
+                var tempNode = _.find(this.allNodesArray, function(obj) {
                     return obj.id === node.id
                 }.bind(this))
                 this.topoAllNodes.push(tempNode)
@@ -184,8 +197,8 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             console.log("拓扑所有节点: ", this.topoAllNodes);
 
             this.topoUpperNodes = [];
-            _.each(this.options.upperNodes, function(node){
-                var tempNode = _.find(this.allNodesArray, function(obj){
+            _.each(this.options.upperNodes, function(node) {
+                var tempNode = _.find(this.allNodesArray, function(obj) {
                     return obj.id === node.id
                 }.bind(this))
                 this.topoUpperNodes.push(tempNode)
@@ -201,6 +214,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     }.bind(this))
                 }.bind(this))
             }
+
             console.log("拓扑本层节点: ", this.localNodeListForSelect);
             this.$el.find('.local .add-node').on('click', $.proxy(this.onClickAddLocalNodeButton, this))
             this.initLocalTable();
@@ -232,26 +246,10 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }.bind(this))
         },
 
-        onGetLocalNode: function(res) {
+        onGetLocalNodeByTopo: function(res) {
             console.log("根据拓扑ID获取拓扑信息：", res);
-            this.options.localNodes = [];
-            _.each(res.allNodes, function(node) {
-                this.options.localNodes.push({
-                    nodeId: node.id,
-                    nodeName: node.name,
-                    operator: node.operatorId
-                })
-            }.bind(this))
-
-            this.options.upperNodes = [];
-            _.each(res.upperNodes, function(node) {
-                this.options.upperNodes.push({
-                    nodeId: node.id,
-                    nodeName: node.name,
-                    operator: node.operatorId
-                })
-            }.bind(this))
-
+            this.options.localNodes = res.allNodes;
+            this.options.upperNodes = res.upperNodes;
             this.onGetLocalNodeFromArgs();
             this.onGetUpperNodeFromArgs();
         },
@@ -336,8 +334,14 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     height: 500,
                     onOKCallback: function() {
                         this.defaultParam.upper = mySelectNodeView.getArgs();
+                        _.each(this.defaultParam.upper, function(el) {
+                            el.rsNodeMsgVo = {};
+                            el.rsNodeMsgVo.id = el.id;
+                            el.rsNodeMsgVo.name = el.chName;
+                            el.rsNodeMsgVo.operatorId = el.operatorId;
+                        }.bind(this))
                         this.selectNodePopup.$el.modal("hide");
-                        this.initLocalTable();
+                        this.initUpperTable();
                     }.bind(this),
                     onHiddenCallback: function() {}.bind(this)
                 }
@@ -370,14 +374,15 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 data: nodeList
             }));
 
-            if (nodeList.length !== 0)
+            if (nodeList.length !== 0) {
                 this.$el.find(".upper .table-ctn").html(this.upperTable[0]);
-            else
+            } else {
                 this.$el.find(".upper .table-ctn").html(_.template(template['tpl/empty-2.html'])({
                     data: {
                         message: "你还没有添加节点"
                     }
                 }));
+            }
 
             this.upperTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperDelete, this));
             this.upperTable.find("tbody .spareradio").on("click", $.proxy(this.onClickCheckboxButton, this));

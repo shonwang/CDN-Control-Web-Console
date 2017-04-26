@@ -30,7 +30,12 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection.on('modify.strategy.success', $.proxy(this.modifyStrategySuccess, this));
                 this.collection.on('modify.strategy.error', $.proxy(this.onGetError, this));
 
+                this.$el.find(".add-rule").hide();
+                this.$el.find(".opt-ctn .save").hide();
+                this.$el.find('.view-less').hide();
+
                 if (this.isEdit) {
+                    this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                     this.collection.getStrategyInfoById({
                         id: this.model.get('id')
                     });
@@ -44,8 +49,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     }
                     this.initSetup();
                 }
-
-                this.$el.find('.view-less').hide();
             },
 
             addStrategySuccess: function() {
@@ -79,31 +82,33 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
 
             initSetup: function() {
                 this.initDomainList();
-                // this.$el.find('.upper .add-node').hide();
                 this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
                 if (!this.isEdit) {
-                    // if (AUTH_OBJ.ApplyCreateTopos)
                     this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
                     this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
                     this.$el.find(".domain-list").hide();
+                    this.$el.find(".add-rule").show();
+                    this.$el.find(".opt-ctn .save").show();
                 } else if (!this.isView && this.isEdit) {
                     // if (AUTH_OBJ.ApplyEditTopos)
                     this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
                     this.$el.find(".view-more").on("click", $.proxy(this.onClickViewMoreButton, this));
                     this.$el.find(".view-less").on("click", $.proxy(this.onClickViewLessButton, this));
                     this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
+                    this.$el.find(".add-rule").show();
+                    this.$el.find(".opt-ctn .save").show();
                     //this.$el.find(".comment-group").hide();
                 } else if (this.isView) {
                     this.$el.find(".view-more").on("click", $.proxy(this.onClickViewMoreButton, this));
                     this.$el.find(".view-less").on("click", $.proxy(this.onClickViewLessButton, this));
-                    this.$el.find(".add-rule").hide();
-                    this.$el.find(".opt-ctn .save").hide();
                     //this.$el.find(".comment-group").hide();
                 }
-                this.collection.off("get.node.success");
-                this.collection.off("get.node.error");
-                this.collection.on("get.node.success", $.proxy(this.onGetAllNode, this));
-                this.collection.on("get.node.error", $.proxy(this.onGetError, this));
+                require(['nodeManage.model'], function(NodeManageModel) {
+                    var myNodeManageModel = new NodeManageModel();
+                    myNodeManageModel.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
+                    myNodeManageModel.on("get.operator.error", $.proxy(this.onGetError, this));
+                    myNodeManageModel.getOperatorList();
+                }.bind(this))
 
                 this.collection.off("get.devicetype.success");
                 this.collection.off("get.devicetype.error");
@@ -114,12 +119,12 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection.getDeviceTypeList(); //获取应用类型列表接口
             },
 
-            initDomainList: function(){
+            initDomainList: function() {
                 var nodeTpl = '';
-                _.each(this.domainList, function(el){
-                    nodeTpl = '<li class="node-item">' + 
-                                   '<span class="label label-primary" id="' + Utility.randomStr(8) +'">'+ el +'</span>' +
-                              '</li>';
+                _.each(this.domainList, function(el) {
+                    nodeTpl = '<li class="node-item">' +
+                        '<span class="label label-primary" id="' + Utility.randomStr(8) + '">' + el + '</span>' +
+                        '</li>';
                     $(nodeTpl).appendTo(this.$el.find(".node-ctn"))
                 }.bind(this))
             },
@@ -225,25 +230,8 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 }
             },
 
-            onGetAllNode: function(res) {
-                this.allNodes = res;
-                //过滤掉关闭和挂起的节点
-                var resFlag = [];
-                _.each(res, function(el, index, list) {
-                    if (el.status != 3 && el.status != 2) resFlag.push(el)
-                })
-                this.nodesArrayFirst = [];
-
-                _.each(resFlag, function(el, index, list) {
-                    el.checked = false;
-                    this.nodesArrayFirst.push({
-                        nodeName: el.chName,
-                        nodeId: el.id,
-                        checked: el.checked,
-                        operator: el.operatorId
-                    });
-                }.bind(this))
-
+            onGetOperatorSuccess: function(res) {
+                this.operatorList = res.rows;
                 this.initRuleTable();
             },
 
@@ -269,28 +257,48 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         return obj.chiefType === 0;
                     }.bind(this))
 
+                    console.log(backupArray)
+
                     _.each(primaryArray, function(upper, inx, list) {
+                        upper.ipCorporationName = "";
+                        if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                            for (var i = 0; i < this.operatorList.length; i++) {
+                                if (this.operatorList[i].id === upper.ipCorporation) {
+                                    upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                    break;
+                                }
+                            }
+                        }
                         if (upper.rsNodeMsgVo)
-                            primaryNameArray.push(upper.rsNodeMsgVo.name)
+                            primaryNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
                         else
                             primaryNameArray.push("[后端没有返回名称]")
                     }.bind(this));
                     _.each(backupArray, function(upper, inx, list) {
+                        upper.ipCorporationName = "";
+                        if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                            for (var i = 0; i < this.operatorList.length; i++) {
+                                if (this.operatorList[i].id === upper.ipCorporation) {
+                                    upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                    break;
+                                }
+                            }
+                        }
                         if (upper.rsNodeMsgVo)
-                            backupNameArray.push(upper.rsNodeMsgVo.name)
+                            backupNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
                         else
                             backupNameArray.push("[后端没有返回名称]")
                     }.bind(this));
 
-                    var upperLayer = primaryNameArray.join('、');
+                    var upperLayer = primaryNameArray.join('<br>');
                     if (rule.upper.length > 1)
-                        upperLayer = '<strong>主：</strong>' + primaryNameArray.join('、');
+                        upperLayer = '<strong>主：</strong>' + primaryNameArray.join('<br>');
                     if (backupArray.length > 0)
-                        upperLayer += '<br><strong>备：</strong>' + backupNameArray.join('、');
+                        upperLayer += '<br><strong>备：</strong>' + backupNameArray.join('<br>');
 
                     var ruleStrObj = {
                         id: rule.id,
-                        localLayer: localLayerArray.join('、'),
+                        localLayer: localLayerArray.join('<br>'),
                         upperLayer: upperLayer
                     }
                     this.ruleList.push(ruleStrObj)
@@ -307,6 +315,8 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             message: "还没有添加规则"
                         }
                     }));
+
+                this.roleTable.find("[data-toggle='popover']").popover();
 
                 if (!this.isView) {
                     this.roleTable.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
@@ -335,8 +345,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                         var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
                             collection: myAddEditLayerStrategyModel,
-                            localNodes: this.nodesArrayFirst,
-                            upperNodes: this.nodesArrayFirst,
                             rule: this.defaultParam.rule,
                             curEditRule: this.curEditRule,
                             isEdit: true,
@@ -373,8 +381,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                         var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
                             collection: myAddEditLayerStrategyModel,
-                            localNodes: this.nodesArrayFirst,
-                            upperNodes: this.nodesArrayFirst,
                             rule: this.defaultParam.rule,
                             notFilter: true,
                             onSaveCallback: function() {
@@ -489,10 +495,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 else
                     this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-                // if (AUTH_OBJ.EditTopos)
                 this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-                // else
-                //     this.table.find("tbody .edit").remove();
 
                 this.table.find("tbody .view").on("click", $.proxy(this.onClickItemView, this));
                 this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));

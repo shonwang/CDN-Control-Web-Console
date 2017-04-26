@@ -30,7 +30,7 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                 this.allNodes = [];
                 this.curOperator = null;
                 this.curArea = null;
-                console.log(this.selectedNodes)
+                console.log("打勾的节点：", this.selectedNodes)
             },
 
             onKeyupNodeNameFilter: function() {
@@ -88,12 +88,12 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
             onGetAllNode: function(res) {
                 _.each(res, function(el, index, list) {
                     if (el.status !== 3 || el.status !== 2) {
-                        this.allNodes.push(el);
                         el.isDisplay = true;
                         el.isChecked = false;
                         _.each(this.selectedNodes, function(node){
                             if (el.id === node.id) el.isChecked = true;
                         }.bind(this))
+                        this.allNodes.push(el);
                     }
                 }.bind(this))
 
@@ -108,6 +108,16 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
 
                     this.allNodes = tempArray;
                 }
+
+                var checkedArray = _.filter(this.allNodes, function(obj){
+                    return obj.isChecked === true;
+                }.bind(this))
+
+                var notCheckedArray = _.filter(this.allNodes, function(obj){
+                    return obj.isChecked === false;
+                }.bind(this))
+
+                this.allNodes = checkedArray.concat(notCheckedArray);
 
                 if (this.selectedNodes.length === this.allNodes.length)
                     this.isCheckedAll = true

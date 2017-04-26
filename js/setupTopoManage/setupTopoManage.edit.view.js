@@ -413,8 +413,8 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                         var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
                             collection: this.collection,
-                            localNodes: this.selectedAllNodeList,
-                            upperNodes: this.selectedUpperNodeList,
+                            localNodes: this.defaultParam.allNodes,
+                            upperNodes: this.defaultParam.upperNodes,
                             rule: this.defaultParam.rule,
                             curEditRule: this.curEditRule,
                             isEdit: true,

@@ -102,6 +102,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     this.allNodesArray.push(el);
                 }
             }.bind(this))
+
             if (this.defaultParam.localType === 1) {
                 this.$el.find("#strategyRadio1").get(0).checked = true;
                 this.$el.find("#strategyRadio2").get(0).checked = false;
@@ -191,7 +192,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 var tempNode = _.find(this.allNodesArray, function(obj) {
                     return obj.id === node.id
                 }.bind(this))
-                this.topoAllNodes.push(tempNode)
+                if (tempNode) this.topoAllNodes.push(tempNode)
             }.bind(this))
 
             console.log("拓扑所有节点: ", this.topoAllNodes);
@@ -201,7 +202,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 var tempNode = _.find(this.allNodesArray, function(obj) {
                     return obj.id === node.id
                 }.bind(this))
-                this.topoUpperNodes.push(tempNode)
+                if (tempNode) this.topoUpperNodes.push(tempNode)
             }.bind(this));
 
             console.log("拓扑上层节点: ", this.topoUpperNodes);

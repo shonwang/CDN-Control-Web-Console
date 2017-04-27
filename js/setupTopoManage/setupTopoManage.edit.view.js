@@ -60,7 +60,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
             modifyTopoSuccess: function() {
                 this.options.onSaveCallback && this.options.onSaveCallback();
-                alert('修改成功');
             },
 
             onOriginInfo: function(res) {
@@ -163,18 +162,23 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     postRules.push(tempRule);
                 }.bind(this))
 
-                postTopo.allNodes = this.defaultParam.allNodes;
+                postTopo.allNodes = [];
+                _.each(this.defaultParam.allNodes, function(el){
+                    postTopo.allNodes.push(el.id)
+                }.bind(this));
                 postTopo.id = this.defaultParam.id;
                 postTopo.name = this.defaultParam.name;
                 postTopo.type = this.defaultParam.type;
-                postTopo.upperNodes = this.defaultParam.upperNodes;
+                postTopo.upperNodes = [];
+                _.each(this.defaultParam.upperNodes, function(el){
+                    postTopo.upperNodes.push(el.id)
+                }.bind(this));
                 postTopo.rule = postRules
 
                 if (this.isEdit)
                     this.collection.topoModify(postTopo);
                 else
                     this.collection.topoAdd(postTopo);
-                this.options.onSaveCallback && this.options.onSaveCallback();
             },
 
             onClickCancelButton: function() {
@@ -482,6 +486,10 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
             },
 
             onClickAddRuleButton: function() {
+                if (this.defaultParam.allNodes.length === 0 || this.defaultParam.upperNodes === 0) {
+                    alert("请先添加拓扑所有节点和上层节点！")
+                    return;
+                }
                 require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
                     function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                         var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();

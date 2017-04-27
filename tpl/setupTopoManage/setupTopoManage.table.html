@@ -19,13 +19,16 @@
               <td><%=data[i].attributes["typeName"]%></td>
               <td><%=data[i].attributes["createTime"]%></td>
               <td>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="edit" title="编辑">
+                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="edit" 
+                     title="编辑" data-toggle="tooltip" data-placement="bottom">
                       <span class="glyphicon glyphicon-edit"></span>
                   </a>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="send" title="下发策略管理">
+                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="send" 
+                     title="下发策略管理" data-toggle="tooltip" data-placement="bottom">
                       <span class="glyphicon glyphicon-send"></span>
                   </a>
-                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="history" title="历史记录">
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="history" 
+                     title="历史记录" data-toggle="tooltip" data-placement="bottom">
                       <span class="glyphicon glyphicon-time"></span>
                   </a>
               </td>

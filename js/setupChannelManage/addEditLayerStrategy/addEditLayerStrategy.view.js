@@ -335,12 +335,19 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     height: 500,
                     onOKCallback: function() {
                         this.defaultParam.upper = mySelectNodeView.getArgs();
+                        var tempArray = []
                         _.each(this.defaultParam.upper, function(el) {
-                            el.rsNodeMsgVo = {};
-                            el.rsNodeMsgVo.id = el.id;
-                            el.rsNodeMsgVo.name = el.chName;
-                            el.rsNodeMsgVo.operatorId = el.operatorId;
+                            var rsNodeMsgVo = {};
+                            rsNodeMsgVo.id = el.id;
+                            rsNodeMsgVo.name = el.chName;
+                            rsNodeMsgVo.operatorId = el.operatorId;
+                            tempArray.push({
+                                chiefType: el.chiefType,
+                                ipCorporation: el.ipCorporation,
+                                rsNodeMsgVo: rsNodeMsgVo
+                            })
                         }.bind(this))
+                        this.defaultParam.upper = tempArray;
                         this.selectNodePopup.$el.modal("hide");
                         this.initUpperTable();
                     }.bind(this),

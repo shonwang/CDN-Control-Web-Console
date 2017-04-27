@@ -500,6 +500,7 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
                 "count": 10
             }
 
+            this.$el.find("#input-name").val(this.modelTopo.get('name'));
             this.collection.on("get.sendInfo.success", $.proxy(this.getSendInfoSuccess, this));
             this.collection.on("get.sendInfo.error", $.proxy(this.onGetError, this));
             //删除下发策略

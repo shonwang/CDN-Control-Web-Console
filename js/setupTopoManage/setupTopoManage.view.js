@@ -93,6 +93,8 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
 
                 this.table.find("tbody .send").on("click", $.proxy(this.onClickItemSend, this));
                 this.table.find("tbody .history").on("click", $.proxy(this.onClickItemHistory, this));
+
+                this.table.find("[data-toggle='tooltip']").tooltip();
             },
 
             onClickAddRuleTopoBtn: function() {
@@ -137,6 +139,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                             myEditTopoView.$el.remove();
                             this.$el.find(".list-panel").show();
                             this.onClickQueryButton();
+                            setTimeout($.proxy(this.alertChangeType, this, model), 500);
                         }.bind(this),
                         onCancelCallback: function() {
                             myEditTopoView.$el.remove();
@@ -147,6 +150,30 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     this.$el.find(".list-panel").hide();
                     myEditTopoView.render(this.$el.find(".edit-panel"));
                 }.bind(this));
+            },
+
+            alertChangeType: function(model) {
+                if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
+
+                var message = '<div class="alert alert-danger">' +
+                    '<strong>重要提示: </strong>' +
+                    model.get('name') + '已修改成功，请及时修改下发策略！' +
+                    '</div>';
+                var options = {
+                    title: "警告",
+                    body: message,
+                    backdrop: 'static',
+                    type: 2,
+                    onOKCallback: function() {
+                        this.onClickItemSend(null, model)
+                        this.commonPopup.$el.modal('hide');
+                    }.bind(this),
+                    onCancelCallback: function() {
+                        this.commonPopup.$el.modal('hide');
+                    }.bind(this)
+                }
+
+                this.commonPopup = new Modal(options);
             },
 
             onClickItemHistory: function(event) {
@@ -176,17 +203,19 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 }.bind(this));
             },
 
-            onClickItemSend: function() {
+            onClickItemSend: function(event, model) {
                 this.off('enterKeyBindQuery');
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "SPAN") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
+                var eventTarget, id;
+                if (!model) {
+                    eventTarget = event.srcElement || event.target
+                    if (eventTarget.tagName == "SPAN") {
+                        eventTarget = $(eventTarget).parent();
+                        id = eventTarget.attr("id");
+                    } else {
+                        id = $(eventTarget).attr("id");
+                    }
+                    model = this.collection.get(id);
                 }
-                var model = this.collection.get(id);
                 require(['setupTopoManageSendStrategy.model', 'setupTopoManageSendStrategy.view'],
                     function(setupTopoManageSendStrategyModel, setupTopoManageSendStrategyView) {
                         var mySendStrategeModel = new setupTopoManageSendStrategyModel();

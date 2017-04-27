@@ -76,10 +76,15 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     data: this.collection.models,
                     permission: AUTH_OBJ
                 }));
-                if (this.collection.models.length !== 0)
+                if (this.collection.models.length !== 0) {
                     this.$el.find(".table-ctn").html(this.table[0]);
-                else
-                    this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+                } else {
+                    this.$el.find(".table-ctn").html(_.template(template['tpl/empty-2.html'])({
+                        data: {
+                            message: "暂无数据"
+                        }
+                    }));
+                }
 
                 if (AUTH_OBJ.EditTopos)
                     this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
@@ -87,6 +92,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     this.table.find("tbody .edit").remove();
 
                 this.table.find("tbody .send").on("click", $.proxy(this.onClickItemSend, this));
+                this.table.find("tbody .history").on("click", $.proxy(this.onClickItemHistory, this));
             },
 
             onClickAddRuleTopoBtn: function() {
@@ -140,6 +146,33 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
 
                     this.$el.find(".list-panel").hide();
                     myEditTopoView.render(this.$el.find(".edit-panel"));
+                }.bind(this));
+            },
+
+            onClickItemHistory: function(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+
+                var model = this.collection.get(id);
+                require(['setupTopoManage.history.view'], function(HistoryView) {
+                    var myHistoryView = new HistoryView({
+                        collection: this.collection,
+                        model: model,
+                        onSaveCallback: function() {}.bind(this),
+                        onCancelCallback: function() {
+                            myHistoryView.$el.remove();
+                            this.$el.find(".list-panel").show();
+                        }.bind(this)
+                    })
+
+                    this.$el.find(".list-panel").hide();
+                    myHistoryView.render(this.$el.find(".history-panel"))
                 }.bind(this));
             },
 

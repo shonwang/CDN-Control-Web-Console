@@ -9,6 +9,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.collection = options.collection;
                 this.model = options.model;
                 this.isEdit = options.isEdit;
+                this.isView = options.isView;
 
                 this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.edit.html'])({
                     data: {}
@@ -22,16 +23,23 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.collection.off('add.topo.success');
                 this.collection.off('add.topo.error');
                 this.collection.on('add.topo.success', $.proxy(this.addTopoSuccess, this));
-                this.collection.on('add.topo.error', $.proxy(this.addTopoError, this));
+                this.collection.on('add.topo.error', $.proxy(this.onGetError, this));
                 //修改拓扑关系
                 this.collection.off('modify.topo.success');
                 this.collection.off('modify.topo.error');
                 this.collection.on('modify.topo.success', $.proxy(this.modifyTopoSuccess, this));
-                this.collection.on('modify.topo.error', $.proxy(this.modifyTopoError, this));
+                this.collection.on('modify.topo.error', $.proxy(this.onGetError, this));
 
-                if (this.isEdit) {
+                if (this.isEdit && !this.isView) {
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                     this.collection.getTopoOrigininfo(this.model.get('id'));
+                } else if (!this.isEdit && this.isView){
+                    this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                    this.collection.getTopoOrigininfo(this.model.get('id'));
+                    this.$el.find(".opt-ctn .save").hide();
+                    this.$el.find('.all .add-node').hide();
+                    this.$el.find('.upper .add-node').hide();
+                    this.$el.find(".add-rule").hide();
                 } else {
                     this.defaultParam = {
                         "id": null,
@@ -50,23 +58,9 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.options.onSaveCallback && this.options.onSaveCallback();
             },
 
-            addTopoError: function(error) {
-                if (error && error.message)
-                    alert(error.message);
-                else
-                    alert("网络阻塞，请刷新重试！");
-            },
-
             modifyTopoSuccess: function() {
                 this.options.onSaveCallback && this.options.onSaveCallback();
                 alert('修改成功');
-            },
-
-            modifyTopoError: function(error) {
-                if (error && error.message)
-                    alert(error.message);
-                else
-                    alert("网络阻塞，请刷新重试！");
             },
 
             onOriginInfo: function(res) {
@@ -81,6 +75,8 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
                 this.$el.find("#input-name").val(res.name);
                 this.$el.find("#input-name").attr("readonly", "true");
+                if (this.isView)
+                    this.$el.find("#comment").attr("readonly", "true");
 
                 console.log("编辑的拓扑: ", this.defaultParam)
                 this.initSetup();
@@ -200,7 +196,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         value: el.id
                     });
                 }.bind(this));
-                if (!this.isEdit) {
+                if (!this.isEdit && !this.isView) {
                     this.defaultParam.type = typeArray[0].value;
                     var rootNode = this.$el.find(".dropdown-app");
                     Utility.initDropMenu(rootNode, typeArray, function(value) {
@@ -257,6 +253,9 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 }
 
                 this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemAllDelete, this));
+
+                if (this.isView)
+                    this.localTable.find("tbody .delete").hide();
             },
 
             onClickItemAllDelete: function(event) {
@@ -321,6 +320,9 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     }));
 
                 this.upperTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperDelete, this));
+
+                if (this.isView)
+                    this.upperTable.find("tbody .delete").hide();
             },
 
             onClickItemUpperDelete: function(event) {
@@ -424,6 +426,11 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.roleTable.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
 
                 this.roleTable.find("[data-toggle='popover']").popover();
+
+                if (this.isView){
+                    this.roleTable.find("tbody .edit").hide();
+                    this.roleTable.find("tbody .delete").hide();
+                }
             },
 
             onClickItemEdit: function(event) {

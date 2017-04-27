@@ -154,6 +154,7 @@
   "setupSending.model": "setupSendManage/setupSending/setupSending.model",
   "setupSending.view": "setupSendManage/setupSending/setupSending.view",
   "setupTopoManage.edit.view": "setupTopoManage/setupTopoManage.edit.view",
+  "setupTopoManage.history.view": "setupTopoManage/setupTopoManage.history.view",
   "setupTopoManage.model": "setupTopoManage/setupTopoManage.model",
   "setupTopoManage.selectNode.view": "setupTopoManage/setupTopoManage.selectNode.view",
   "setupTopoManage.view": "setupTopoManage/setupTopoManage.view",

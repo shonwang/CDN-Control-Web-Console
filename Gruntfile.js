@@ -282,8 +282,8 @@ module.exports = function(grunt) {
 
     grunt.registerTask('preonline-url', '', function() {
         modifyFile("temp/js/main.js", 'urlArgs', '\n');
-        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 10;\n', "dest/assets.json");
-        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 10;\n');
+        modifyFile("temp/js/main.js", 'DEBUG', 'window.DEBUG = 10;', "dest/assets.json");
+        modifyFile("dest/login.html", 'DEBUG', 'window.DEBUG = 10;');
     });
 
     grunt.registerTask('debug-url', '', function() {

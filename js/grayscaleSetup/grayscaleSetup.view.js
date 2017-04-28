@@ -8,7 +8,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             this.model = options.model;
             this.isEdit = options.isEdit;
             this.businessTypeList = options.businessTypeList;
-            
+
             if(this.isEdit){
                 this.args = {
                     id : this.model.get("id"),

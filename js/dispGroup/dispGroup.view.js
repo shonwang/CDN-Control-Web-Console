@@ -206,8 +206,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.queryArgs.page = 1;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
-            this.queryArgs.domain = this.$el.find("#input-domain").val() || null;
-            this.queryArgs.clientName = this.$el.find("#input-client").val() || null;
+            this.queryArgs.domain = this.$el.find("#input-domain").val().trim() || null;
             this.collection.getChannelByDisp(this.queryArgs);
         },
 

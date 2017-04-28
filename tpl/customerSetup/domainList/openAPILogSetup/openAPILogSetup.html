@@ -1,0 +1,82 @@
+<div class="http-optimize fadeInLeft animated">
+    <h4>日志配置</h4>
+    <div class="well opt-ctn"></div>
+    <div class="well">
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="ks3-log" class="col-sm-4 control-label">KS3日志配置</label>
+                        <div class="col-sm-4 ks3-log">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group log-ctn">
+                        <label for="log-granularity" class="col-sm-4 control-label">日志粒度</label>
+                        <div class="col-sm-4 log-granularity">
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-log-granularity" data-toggle="dropdown">
+                                    <span class="cur-value">加载中...</span>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu"></ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group log-ctn">
+                        <label for="log-template" class="col-sm-4 control-label">日志模板</label>
+                        <div class="col-sm-4 log-template">
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-log-template" data-toggle="dropdown">
+                                    <span class="cur-value">加载中...</span>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu"></ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group log-ctn">
+                        <label for="bucket" class="col-sm-4 control-label">Bucket</label>
+                        <div class="col-sm-6 bucket">
+                            <input type="text" class="form-control" id="bucket">
+                        </div>
+                    </div>
+                    <div class="form-group log-ctn">
+                        <label for="file-template" class="col-sm-4 control-label">fileTemplate</label>
+                        <div class="col-sm-6 file-template">
+                            <input type="text" class="form-control" id="file-template">
+                        </div>
+                    </div>
+                    <div class="form-group log-ctn">
+                        <label for="path-template" class="col-sm-4 control-label">pathTemplate</label>
+                        <div class="col-sm-6 path-template">
+                            <input type="text" class="form-control" id="path-template">
+                        </div>
+                    </div>
+                    <div class="form-group log-ctn">
+                        <label for="create-date" class="col-sm-4 control-label">创建日期</label>
+                        <div class="col-sm-6 create-date">
+                            <input type="text" class="form-control" id="create-date" readonly="true">
+                        </div>
+                    </div>
+                    <div class="form-group log-ctn">
+                        <label for="update-date" class="col-sm-4 control-label">修改日期</label>
+                        <div class="col-sm-6 update-date">
+                            <input type="text" class="form-control" id="update-date" readonly="true">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-2">
+                            <a href="javascript:void(0)" class="btn btn-primary save"><span class="glyphicon glyphicon-save"></span>保存</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

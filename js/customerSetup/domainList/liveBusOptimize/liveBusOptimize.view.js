@@ -127,8 +127,8 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
 
         onBlurCloseClient: function(target){
             var value = parseInt(this.closeClientEl.find("#closeclient").val());
-            if (!Utility.isNumber(value) || value < 1 || value > 10)
-                alert("延时关闭填写内容为正整数，默认为5秒，最小值为1秒，最大值为10秒")
+            if (!Utility.isNumber(value) || value < 1 || value > 60)
+                alert("延时关闭填写内容为正整数，默认为5秒，最小值为1秒，最大值为60秒")
         },
 
         initTimeoutSetup: function(){
@@ -258,8 +258,8 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
             this.defaultParam.noFlowTimeout = noFlowTimeout
 
             var delayClose = parseInt(this.closeClientEl.find("#closeclient").val());
-            if (!Utility.isNumber(delayClose) || delayClose < 1 || delayClose > 10) {
-                alert("延时关闭填写内容为正整数，默认为5秒，最小值为1秒，最大值为10秒")
+            if (!Utility.isNumber(delayClose) || delayClose < 1 || delayClose > 60) {
+                alert("延时关闭填写内容为正整数，默认为5秒，最小值为1秒，最大值为60秒")
                 return;
             }
             this.defaultParam.delayClose = delayClose

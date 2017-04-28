@@ -84,6 +84,8 @@
   "liveTimestamp.view": "customerSetup/domainList/liveTimestamp/liveTimestamp.view",
   "matchCondition.model": "customerSetup/domainList/matchCondition/matchCondition.model",
   "matchCondition.view": "customerSetup/domainList/matchCondition/matchCondition.view",
+  "openAPILogSetup.model": "customerSetup/domainList/openAPILogSetup/openAPILogSetup.model",
+  "openAPILogSetup.view": "customerSetup/domainList/openAPILogSetup/openAPILogSetup.view",
   "openNgxLog.model": "customerSetup/domainList/openNgxLog/openNgxLog.model",
   "openNgxLog.view": "customerSetup/domainList/openNgxLog/openNgxLog.view",
   "refererAntiLeech.model": "customerSetup/domainList/refererAntiLeech/refererAntiLeech.model",
@@ -227,4 +229,4 @@ requirejs.onError = function () {
             backdrop:'static'
         };
     $errorPopup.modal(options);
-};
+};

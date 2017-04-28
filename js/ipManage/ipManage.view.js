@@ -249,9 +249,9 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
                 this.collection.getIpInfoList(this.queryArgs);
             } else {
                 this.anotherQuery.page = this.currentPage;
-                this.anotherQuery.ip = this.$el.find("#input-ip").val();
-                this.anotherQuery.deviceName = this.$el.find("#input-device").val();
-                this.anotherQuery.nodeName = this.$el.find("#input-node").val();
+                this.anotherQuery.ip = this.$el.find("#input-ip").val().trim();
+                this.anotherQuery.deviceName = this.$el.find("#input-device").val().trim();
+                this.anotherQuery.nodeName = this.$el.find("#input-node").val().trim();
                 //this.anotherQuery.dispDomain = this.$el.find("#input-group").val();
                 this.collection.queryIpInfoList(this.anotherQuery);
             }

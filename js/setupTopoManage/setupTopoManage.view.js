@@ -608,7 +608,6 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     }.bind(this))
             },
 
-
             onGetError: function(error) {
                 if (error && error.message)
                     alert(error.message)

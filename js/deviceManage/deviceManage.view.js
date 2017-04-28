@@ -908,8 +908,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.queryArgs.page = 1;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
-            this.queryArgs.devicename = this.$el.find("#input-domain").val() || null;
-            this.queryArgs.nodename = this.$el.find("#input-node").val() || null;
+            this.queryArgs.devicename = this.$el.find("#input-domain").val().trim() || null;
+            this.queryArgs.nodename = this.$el.find("#input-node").val().trim() || null;
             this.collection.getDeviceList(this.queryArgs);
         },
 

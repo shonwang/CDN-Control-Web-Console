@@ -8,11 +8,9 @@
 		<td><%=data[i].get("cdnFoctoryStr")%></td>
 		<td><%=data[i].get("createTimeFormated")%></td>
 		<td><%=data[i].get("updateTimeFormated")%></td>
+		<td><a href="javascript:void(0)" id="<%=data[i].id%>" class="log-setup">编辑</a></td>
 		<td>
-			<a href="javascript:void(0)" id="<%=data[i].id%>" class="manage">管理</a>
-			<% if ((data[i].get("protocol") === 1 && data[i].get("type") === 2) || 
-				   (data[i].get("protocol") === 3 && data[i].get("type") === 2) ||
-				   (data[i].get("confCustomType") === 3 )) { %>
+			<% if (data[i].get("protocol") !== 1 && data[i].get("protocol") !== 3 && data[i].get("confCustomType") === 3) { %>
 			<% } else { %>
 				<% if (data[i].get("auditStatus") !== 0 && data[i].get("auditStatus") !== 2) { %>
 				<a href="javascript:void(0)" id="<%=data[i].id%>" class="manage">管理</a>

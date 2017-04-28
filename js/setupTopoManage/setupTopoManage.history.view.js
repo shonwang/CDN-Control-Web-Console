@@ -19,14 +19,23 @@ define("setupTopoManage.history.view", ['require', 'exports', 'template', 'modal
 
                 this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
 
-                var tempData = [{
-                    id: 10929,
-                    remark: '~/(≧▽≦)/~啦啦啦',
-                    updateTime: 1492769855000,
-                    version: "201704211817_r1"
-                }]
+                this.collection.off('get.version.success');
+                this.collection.off('get.version.error');
+                this.collection.on('get.version.success', $.proxy(this.initSetup, this));
+                this.collection.on('get.version.error', $.proxy(this.onGetError, this));
+                this.collection.getTopoVersion({
+                    innerId: this.model.get('id')
+                });
+                this.collection.off('set.version.success');
+                this.collection.off('set.version.error');
+                this.collection.on('set.version.success', $.proxy(this.onSetVersionSuccess, this));
+                this.collection.on('set.version.error', $.proxy(this.onGetError, this));
+            },
 
-                this.initSetup(tempData)
+            onSetVersionSuccess: function() {
+                this.collection.getTopoVersion({
+                    innerId: this.curVersion
+                });
             },
 
             initSetup: function(data) {
@@ -57,15 +66,29 @@ define("setupTopoManage.history.view", ['require', 'exports', 'template', 'modal
                 this.table.find("[data-toggle='popover']").popover();
             },
 
+            onClickItemPublish: function() {
+                var eventTarget = event.srcElement || event.target,
+                    version = $(eventTarget).attr("version");
+
+                this.curVersion = version;
+                this.collection.changeTopoVersion({
+                    innerId: version
+                });
+
+                alert("操作成功！")
+            },
+
             onClickItemViews: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     version = $(eventTarget).attr("version");
 
-                //var model = this.collection.get(id);
+                var model = new this.collection.model({
+                    id: version
+                });
                 require(['setupTopoManage.edit.view'], function(EditTopoView) {
                     var myEditTopoView = new EditTopoView({
                         collection: this.collection,
-                        model: this.model,
+                        model: model,
                         isEdit: false,
                         isView: true,
                         onSaveCallback: function() {

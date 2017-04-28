@@ -29,6 +29,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.collection.off('modify.topo.error');
                 this.collection.on('modify.topo.success', $.proxy(this.modifyTopoSuccess, this));
                 this.collection.on('modify.topo.error', $.proxy(this.onGetError, this));
+                this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
 
                 if (this.isEdit && !this.isView) {
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
@@ -82,8 +83,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
             },
 
             initSetup: function() {
-                this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-
                 if (!this.isEdit && AUTH_OBJ.ApplyCreateTopos) {
                     this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
                 } else if (AUTH_OBJ.ApplyEditTopos) {

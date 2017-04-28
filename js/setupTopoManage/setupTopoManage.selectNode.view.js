@@ -27,6 +27,12 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                     });
                 }.bind(this))
 
+                this.collection.off('get.area.success');
+                this.collection.off('get.area.error');
+                this.collection.on('get.area.success', $.proxy(this.onGetAreaSuccess, this));
+                this.collection.on('get.area.error', $.proxy(this.onGetError, this));
+                this.collection.getAreaList();
+
                 this.allNodes = [];
                 this.curOperator = null;
                 this.curArea = null;
@@ -74,6 +80,27 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                         this.curOperator = parseInt(value)
                     else
                         this.curOperator = null;
+                    this.onKeyupNodeNameFilter();
+                }.bind(this));
+            },
+
+            onGetAreaSuccess: function(res) {
+                this.areaList = res
+                var nameList = [{
+                    name: "全部",
+                    value: "All"
+                }];
+                _.each(res.rows, function(el, index, list) {
+                    nameList.push({
+                        name: el.name,
+                        value: el.id
+                    })
+                });
+                Utility.initDropMenu(this.$el.find(".dropdown-area"), nameList, function(value) {
+                    if (value !== "All")
+                        this.curArea = parseInt(value)
+                    else
+                        this.curArea = null;
                     this.onKeyupNodeNameFilter();
                 }.bind(this));
             },

@@ -90,7 +90,7 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                     name: "全部",
                     value: "All"
                 }];
-                _.each(res.rows, function(el, index, list) {
+                _.each(res, function(el, index, list) {
                     nameList.push({
                         name: el.name,
                         value: el.id

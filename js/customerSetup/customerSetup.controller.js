@@ -4,7 +4,7 @@ define("customerSetup.controller", ['require','exports'],
     var CustomerSetupController = Backbone.Router.extend({
 
         openAPILogSetupCallback: function(query, query2) {
-            if(!AUTH_OBJ.LogServer) return;
+            if(!AUTH_OBJ.OpenApiLogManager) return;
             require(['openAPILogSetup.view', 'openAPILogSetup.model'], function(OpenAPILogSetupView, OpenAPILogSetupModel){
                 this.navbarView.select('customerSetup');
                 this.curPage = 'customerSetup-domainList-openAPILogSetup';

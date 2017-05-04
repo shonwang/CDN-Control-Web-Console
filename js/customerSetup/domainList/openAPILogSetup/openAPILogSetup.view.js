@@ -92,7 +92,7 @@ define("openAPILogSetup.view", ['require', 'exports', 'template', 'modal.view', 
             }.bind(this));
 
             var defaultValue = _.find(granularityArray, function(object) {
-                return object.value === this.defaultParam.granularityArray;
+                return parseInt(object.value) === parseInt(this.defaultParam.granularity);
             }.bind(this));
 
             if (defaultValue) {
@@ -144,10 +144,10 @@ define("openAPILogSetup.view", ['require', 'exports', 'template', 'modal.view', 
                 "originId": this.domainInfo.id,
                 "action": this.defaultParam.action,
                 "granularity": this.defaultParam.granularity,
-                "bucket": this.defaultParam.bucket,
+                "bucket": this.$el.find("#bucket").val().trim(),
                 "formatId": this.defaultParam.formatId,
-                "fileTemplate": this.defaultParam.fileTemplate,
-                "pathTemplate": this.defaultParam.pathTemplate,
+                "fileTemplate": this.$el.find("#file-template").val().trim(),
+                "pathTemplate": this.$el.find("#path-template").val().trim(),
                 "interfaceCaller": this.defaultParam.interfaceCaller || $(".user-name").html()
             }
             this.collection.setLogSetup(postParam)

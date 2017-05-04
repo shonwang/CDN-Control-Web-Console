@@ -200,7 +200,8 @@ requirejs.config({
     paths:REQ_PATH,
     urlArgs: new Date().valueOf()
 });
-requirejs(['routes'], function(routes) {
+requirejs(['routes', 'utility'], function(routes, Utility) {
+    Utility.dateFormat();
     Backbone.history.start();
 });
 requirejs.onError = function () {

@@ -50,6 +50,8 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.$el.find(".cancel").on("click", $.proxy(this.onClickCancelBtn, this));
             this.$el.find('.upper .add-node').hide()
             this.$el.find('.local .add-node').hide();
+            this.$el.find("#strategyRadio1").attr("disabled", "disabled");
+            this.$el.find("#strategyRadio2").attr("disabled", "disabled");
         },
 
         initDropMenu: function(data) {
@@ -115,6 +117,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.$el.find(".operator-ctn").show();
             }
 
+            this.$el.find("#strategyRadio2").removeAttr("disabled", "disabled")
+            this.$el.find("#strategyRadio1").removeAttr("disabled", "disabled")
+
             if (!this.options.localNodes && !this.options.upperNodes && !this.notFilter) {
                 this.collection.on("get.topo.OriginInfo.success", $.proxy(this.onGetLocalNodeByTopo, this));
                 this.collection.on("get.topo.OriginInfo.error", $.proxy(this.onGetError, this));
@@ -126,6 +131,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.onGetLocalNodeFromArgs();
                 this.onGetUpperNodeFromArgs();
             } else {
+                if (this.options.localNodes.length <= this.options.upperNodes.length) {
+                    this.$el.find("#strategyRadio1").attr("disabled", "disabled")
+                }
                 this.onGetLocalNodeFromArgs();
                 this.onGetUpperNodeFromArgs();
             }

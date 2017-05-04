@@ -3,6 +3,31 @@ define("customerSetup.controller", ['require','exports'],
 
     var CustomerSetupController = Backbone.Router.extend({
 
+        openAPILogSetupCallback: function(query, query2) {
+            if(!AUTH_OBJ.OpenApiLogManager) return;
+            require(['openAPILogSetup.view', 'openAPILogSetup.model'], function(OpenAPILogSetupView, OpenAPILogSetupModel){
+                this.navbarView.select('customerSetup');
+                this.curPage = 'customerSetup-domainList-openAPILogSetup';
+                this.setupLogSetupDomainManageNavbar(query, query2);
+                var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                if (!this.openAPILogSetupModel)
+                    this.openAPILogSetupModel = new OpenAPILogSetupModel();
+                if (!this.openAPILogSetupView ){
+                    var options = {
+                        collection: this.openAPILogSetupModel,
+                        query     : query,
+                        query2    : query2
+                    };
+                    this.openAPILogSetupView = new OpenAPILogSetupView(options);
+                    this.openAPILogSetupView.render(renderTarget);
+                } else {
+                    this.domainManageNavbar.select(this.curPage);
+                    this.openAPILogSetupView.update(query, query2, renderTarget);
+                }
+            }.bind(this));
+        },
+
         openNgxLogCallback: function(query, query2) {
             if(!AUTH_OBJ.LogServer) return;
             require(['openNgxLog.view', 'openNgxLog.model'], function(OpenNgxLogView, OpenNgxLogModel){

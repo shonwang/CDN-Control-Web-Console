@@ -73,6 +73,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                 "domainList/:query/liveRtmpOptimize/:query2": "liveRtmpOptimize",
                 "domainList/:query/liveSLAStatistics/:query2": "liveSLAStatistics",
                 "domainList/:query/liveFrequencyLog/:query2": "liveFrequencyLog",
+                "domainList/:query/openAPILogSetup/:query2": "openAPILogSetup",
                 "setupChannelManage": "setupChannelManage",
                 "setupAppManage": "setupAppManage",
                 "setupTopoManage": "setupTopoManage",
@@ -87,7 +88,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     this.curView.hide();
 
                 if (callback) {
-                    this.navbarView.initLogin(function(){
+                    this.navbarView.initLogin(function() {
                         callback.apply(this, args);
                     }.bind(this))
                 }
@@ -366,6 +367,32 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                 }
             },
 
+            openAPILogSetup: function(query, query2) {
+                if (!AUTH_OBJ.OpenApiLogManager) return;
+                require(['openAPILogSetup.view', 'openAPILogSetup.model'], function(OpenAPILogSetupView, OpenAPILogSetupModel) {
+                    this.navbarView.select('customerSetup');
+                    this.curPage = 'customerSetup-domainList-openAPILogSetup';
+                    this.setupLogSetupDomainManageNavbar(query, query2);
+                    var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                    if (!this.openAPILogSetupModel)
+                        this.openAPILogSetupModel = new OpenAPILogSetupModel();
+                    if (!this.openAPILogSetupView) {
+                        var options = {
+                            collection: this.openAPILogSetupModel,
+                            query: query,
+                            query2: query2
+                        };
+                        this.openAPILogSetupView = new OpenAPILogSetupView(options);
+                        this.openAPILogSetupView.render(renderTarget);
+                    } else {
+                        this.domainManageNavbar.select(this.curPage);
+                        this.openAPILogSetupView.update(query, query2, renderTarget);
+                    }
+                    this.curView = this.openAPILogSetupView;
+                }.bind(this));
+            },
+
             specialLayerManage: function() {
                 if (!AUTH_OBJ.LayeredStrategyManage) return;
                 require(['specialLayerManage.view', 'specialLayerManage.model'], function(SpecialLayerManageView, SpecialLayerManageModel) {
@@ -459,7 +486,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.setupAppManageView.update($('.ksc-content'));
                     }
-                    this.curView = this.setupAppManageView;    
+                    this.curView = this.setupAppManageView;
                 }.bind(this));
             },
 
@@ -479,7 +506,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.setupChannelManageView.update();
                     }
-                    this.curView = this.setupChannelManageView;    
+                    this.curView = this.setupChannelManageView;
                 }.bind(this));
             },
 
@@ -498,7 +525,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.customMaintenanceView.update();
                     }
-                    this.curView = this.customMaintenanceView;    
+                    this.curView = this.customMaintenanceView;
                 }.bind(this));
             },
 
@@ -517,7 +544,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.refreshManualView.update();
                     }
-                    this.curView = this.refreshManualView;    
+                    this.curView = this.refreshManualView;
                 }.bind(this));
             },
 
@@ -540,7 +567,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.businessManageView.update();
                     }
-                    this.curView = this.businessManageView;    
+                    this.curView = this.businessManageView;
                 }.bind(this));
             },
 
@@ -560,10 +587,10 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         };
                         this.ipManageView = new IPManageView(options);
                         this.ipManageView.render($('.ksc-content'));
-                    } else{
+                    } else {
                         this.ipManageView.update($('.ksc-content'));
                     }
-                    this.curView = this.ipManageView;    
+                    this.curView = this.ipManageView;
                 }.bind(this));
             },
 
@@ -583,7 +610,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.liveCurentSetupView.update();
                     }
-                    this.curView = this.liveCurentSetupView;    
+                    this.curView = this.liveCurentSetupView;
                 }.bind(this));
             },
 
@@ -603,7 +630,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.liveAllSetupView.update();
                     }
-                    this.curView = this.liveAllSetupView;    
+                    this.curView = this.liveAllSetupView;
                 }.bind(this));
             },
 
@@ -626,7 +653,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.coverManageView.update();
                     }
-                    this.curView = this.coverManageView;    
+                    this.curView = this.coverManageView;
                 }.bind(this));
             },
 
@@ -646,7 +673,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.coverRegionView.update();
                     }
-                    this.curView = this.coverRegionView;    
+                    this.curView = this.coverRegionView;
                 }.bind(this));
             },
 
@@ -672,7 +699,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.dispConfigView.update($('.ksc-content'));
                     }
-                    this.curView = this.dispConfigView;    
+                    this.curView = this.dispConfigView;
                 }.bind(this));
             },
 
@@ -692,7 +719,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.dispGroupView.update();
                     }
-                    this.curView = this.dispGroupView;    
+                    this.curView = this.dispGroupView;
                 }.bind(this));
             },
 
@@ -712,7 +739,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.nodeManageView.update();
                     }
-                    this.curView = this.nodeManageView;    
+                    this.curView = this.nodeManageView;
                 }.bind(this));
             },
 
@@ -733,7 +760,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.deviceManageView.update(query, $('.ksc-content'));
                     }
-                    this.curView = this.deviceManageView;    
+                    this.curView = this.deviceManageView;
                 }.bind(this));
             },
 
@@ -753,7 +780,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.channelManageView.update();
                     }
-                    this.curView = this.channelManageView;    
+                    this.curView = this.channelManageView;
                 }.bind(this));
             },
 
@@ -776,7 +803,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.clientStatisticsView.update($('.ksc-content'));
                     }
-                    this.curView = this.clientStatisticsView;    
+                    this.curView = this.clientStatisticsView;
                 }.bind(this));
             },
 
@@ -799,7 +826,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.domainStatisticsView.update($('.ksc-content'));
                     }
-                    this.curView = this.domainStatisticsView;    
+                    this.curView = this.domainStatisticsView;
                 }.bind(this));
             },
 
@@ -822,7 +849,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.statisticsManageView.update($('.ksc-content'));
                     }
-                    this.curView = this.statisticsManageView;    
+                    this.curView = this.statisticsManageView;
                 }.bind(this));
             },
 
@@ -841,7 +868,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.domainManageView.update();
                     }
-                    this.curView = this.domainManageView;    
+                    this.curView = this.domainManageView;
                 }.bind(this));
             },
 
@@ -860,7 +887,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.grayscaleSetupView.update();
                     }
-                    this.curView = this.grayscaleSetupView;    
+                    this.curView = this.grayscaleSetupView;
                 }.bind(this));
             },
 
@@ -879,7 +906,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.templateManageView.update();
                     }
-                    this.curView = this.templateManageView;    
+                    this.curView = this.templateManageView;
                 }.bind(this));
             },
 
@@ -905,7 +932,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.openNgxLogView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.openNgxLogView;    
+                    this.curView = this.openNgxLogView;
                 }.bind(this));
             },
 
@@ -931,7 +958,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.timestampView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.timestampView;    
+                    this.curView = this.timestampView;
                 }.bind(this));
             },
 
@@ -957,7 +984,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.refererAntiLeechView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.refererAntiLeechView;    
+                    this.curView = this.refererAntiLeechView;
                 }.bind(this));
             },
 
@@ -983,7 +1010,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.ipBlackWhiteListView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.ipBlackWhiteListView;    
+                    this.curView = this.ipBlackWhiteListView;
                 }.bind(this));
             },
 
@@ -1008,7 +1035,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.requestArgsModifyView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.requestArgsModifyView;    
+                    this.curView = this.requestArgsModifyView;
                 }.bind(this));
             },
 
@@ -1034,7 +1061,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.httpHeaderCtrView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.httpHeaderCtrView;    
+                    this.curView = this.httpHeaderCtrView;
                 }.bind(this));
             },
 
@@ -1060,7 +1087,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.httpHeaderOptView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.httpHeaderOptView;    
+                    this.curView = this.httpHeaderOptView;
                 }.bind(this));
             },
 
@@ -1086,7 +1113,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.clientLimitSpeedView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.clientLimitSpeedView;    
+                    this.curView = this.clientLimitSpeedView;
                 }.bind(this));
             },
 
@@ -1112,7 +1139,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.dragPlayView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.dragPlayView;    
+                    this.curView = this.dragPlayView;
                 }.bind(this));
             },
 
@@ -1137,7 +1164,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.following302View.update(query, query2, renderTarget);
                     }
-                    this.curView = this.following302View;    
+                    this.curView = this.following302View;
                 }.bind(this));
             },
 
@@ -1162,7 +1189,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.backOriginDetectionView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.backOriginDetectionView;    
+                    this.curView = this.backOriginDetectionView;
                 }.bind(this));
             },
 
@@ -1187,7 +1214,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.backOriginSetupView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.backOriginSetupView;    
+                    this.curView = this.backOriginSetupView;
                 }.bind(this));
             },
 
@@ -1212,7 +1239,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.cnameSetupView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.cnameSetupView;    
+                    this.curView = this.cnameSetupView;
                 }.bind(this));
             },
 
@@ -1237,7 +1264,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.cacheKeySetupView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.cacheKeySetupView;    
+                    this.curView = this.cacheKeySetupView;
                 }.bind(this));
             },
 
@@ -1262,7 +1289,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.delMarkCacheView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.delMarkCacheView;    
+                    this.curView = this.delMarkCacheView;
                 }.bind(this));
             },
 
@@ -1287,7 +1314,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.cacheRuleView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.cacheRuleView;    
+                    this.curView = this.cacheRuleView;
                 }.bind(this));
             },
 
@@ -1317,7 +1344,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.basicInformationView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.basicInformationView;    
+                    this.curView = this.basicInformationView;
                 }.bind(this));
             },
 
@@ -1347,7 +1374,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.urlBlackListView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.urlBlackListView;    
+                    this.curView = this.urlBlackListView;
                 }.bind(this));
             },
 
@@ -1373,7 +1400,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.domainSetupView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.domainSetupView;    
+                    this.curView = this.domainSetupView;
                 }.bind(this));
             },
 
@@ -1398,7 +1425,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.customerSetupNavbar.select(this.curPage);
                         this.domainListView.update(query, renderTarget);
                     }
-                    this.curView = this.domainListView;    
+                    this.curView = this.domainListView;
                 }.bind(this));
             },
 
@@ -1472,7 +1499,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.customerSetupNavbar.select(this.curPage);
                         this.interfaceQuotaView.update(query, renderTarget);
                     }
-                    this.curView = this.interfaceQuotaView;    
+                    this.curView = this.interfaceQuotaView;
                 }.bind(this));
             },
 
@@ -1492,7 +1519,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     } else {
                         this.customerSetupView.update();
                     }
-                    this.curView = this.customerSetupView;    
+                    this.curView = this.customerSetupView;
                 }.bind(this));
             },
 
@@ -1517,7 +1544,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.setupSendNavbar.select(this.curPage);
                         this.setupSendDoneView.update(renderTarget);
                     }
-                    this.curView = this.setupSendDoneView;    
+                    this.curView = this.setupSendDoneView;
                 }.bind(this));
             },
 
@@ -1542,7 +1569,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.setupSendNavbar.select(this.curPage);
                         this.setupSendingView.update(renderTarget);
                     }
-                    this.curView = this.setupSendingView;    
+                    this.curView = this.setupSendingView;
                 }.bind(this));
             },
 
@@ -1567,7 +1594,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.setupSendNavbar.select(this.curPage);
                         this.setupSendWaitCustomizeView.update(renderTarget);
                     }
-                    this.curView = this.setupSendWaitCustomizeView;    
+                    this.curView = this.setupSendWaitCustomizeView;
                 }.bind(this));
             },
 
@@ -1592,7 +1619,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.setupSendNavbar.select(this.curPage);
                         this.setupSendWaitSendView.update(renderTarget);
                     }
-                    this.curView = this.setupSendWaitSendView;    
+                    this.curView = this.setupSendWaitSendView;
                 }.bind(this));
             },
 
@@ -1619,7 +1646,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.liveDomainSetupView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.liveDomainSetupView;    
+                    this.curView = this.liveDomainSetupView;
                 }.bind(this));
             },
 
@@ -1644,7 +1671,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.liveCnameSetupView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.liveCnameSetupView;    
+                    this.curView = this.liveCnameSetupView;
                 }.bind(this));
             },
 
@@ -1669,7 +1696,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.liveHttpsSetupView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.liveHttpsSetupView;    
+                    this.curView = this.liveHttpsSetupView;
                 }.bind(this));
             },
 
@@ -1694,7 +1721,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.liveBackOriginSetupView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.liveBackOriginSetupView;    
+                    this.curView = this.liveBackOriginSetupView;
                 }.bind(this));
             },
 
@@ -1719,7 +1746,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.liveBackOriginDetectionView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.liveBackOriginDetectionView;    
+                    this.curView = this.liveBackOriginDetectionView;
                 }.bind(this));
             },
 
@@ -1744,7 +1771,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.liveRefererAntiLeechView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.liveRefererAntiLeechView;    
+                    this.curView = this.liveRefererAntiLeechView;
                 }.bind(this));
             },
 
@@ -1769,7 +1796,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.liveTimestampView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.liveTimestampView;    
+                    this.curView = this.liveTimestampView;
                 }.bind(this));
             },
 
@@ -1802,7 +1829,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.liveBasicInformationView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.liveBasicInformationView;    
+                    this.curView = this.liveBasicInformationView;
                 }.bind(this));
             },
 
@@ -1827,7 +1854,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.liveBusOptimizeView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.liveBusOptimizeView;    
+                    this.curView = this.liveBusOptimizeView;
                 }.bind(this));
             },
 
@@ -1852,7 +1879,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.liveH265SetupView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.liveH265SetupView;    
+                    this.curView = this.liveH265SetupView;
                 }.bind(this));
             },
 
@@ -1877,7 +1904,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.liveAudioOnlyView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.liveAudioOnlyView;    
+                    this.curView = this.liveAudioOnlyView;
                 }.bind(this));
             },
 
@@ -1902,7 +1929,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.liveEdge302View.update(query, query2, renderTarget);
                     }
-                    this.curView = this.liveEdge302View;    
+                    this.curView = this.liveEdge302View;
                 }.bind(this));
             },
 
@@ -1927,7 +1954,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.liveHttpFlvOptimizeView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.liveHttpFlvOptimizeView;    
+                    this.curView = this.liveHttpFlvOptimizeView;
                 }.bind(this));
             },
 
@@ -1952,7 +1979,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.liveRtmpOptimizeView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.liveRtmpOptimizeView;    
+                    this.curView = this.liveRtmpOptimizeView;
                 }.bind(this));
             },
 
@@ -1977,7 +2004,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.liveSLAStatisticsView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.liveSLAStatisticsView;    
+                    this.curView = this.liveSLAStatisticsView;
                 }.bind(this));
             },
 
@@ -2002,7 +2029,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainManageNavbar.select(this.curPage);
                         this.liveFrequencyLogView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.liveFrequencyLogView;    
+                    this.curView = this.liveFrequencyLogView;
                 }.bind(this));
             },
         });

@@ -48,7 +48,8 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         "type": null,
                         "allNodes": [],
                         "upperNodes": [],
-                        "rule": []
+                        "rule": [],
+                        "mark": ""
                     }
                     this.initSetup();
                 }
@@ -70,10 +71,12 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     "allNodes": res.allNodes,
                     "upperNodes": res.upperNodes,
                     "rule": res.rule,
-                    "type": res.type
+                    "type": res.type,
+                    "mark": res.mark
                 }
 
                 this.$el.find("#input-name").val(res.name);
+                this.$el.find("#comment").val(res.mark);
                 this.$el.find("#input-name").attr("readonly", "true");
                 if (this.isView)
                     this.$el.find("#comment").attr("readonly", "true");
@@ -173,6 +176,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     postTopo.upperNodes.push(el.id)
                 }.bind(this));
                 postTopo.rule = postRules
+                postTopo.mark = this.$el.find("#comment").val();
 
                 if (this.isEdit)
                     this.collection.topoModify(postTopo);
@@ -489,6 +493,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     alert("请先添加拓扑所有节点和上层节点！")
                     return;
                 }
+
                 require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
                     function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                         var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();

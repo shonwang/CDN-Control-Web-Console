@@ -6,7 +6,6 @@
   "channelManage.view": "channelManage/channelManage.view",
   "clientStatistics.model": "clientStatistics/clientStatistics.model",
   "clientStatistics.view": "clientStatistics/clientStatistics.view",
-  "controller": "controller",
   "coverManage.model": "coverManage/coverManage.model",
   "coverManage.view": "coverManage/coverManage.view",
   "coverRegion.model": "coverRegion/coverRegion.model",
@@ -15,8 +14,6 @@
   "customMaintenance.view": "customMaintenance/customMaintenance.view",
   "blockUrl.model": "customerSetup/blockUrl/blockUrl.model",
   "blockUrl.view": "customerSetup/blockUrl/blockUrl.view",
-  "customerSetup.controller": "customerSetup/customerSetup.controller",
-  "customerSetup.live.controller": "customerSetup/customerSetup.live.controller",
   "customerSetup.model": "customerSetup/customerSetup.model",
   "customerSetup.view": "customerSetup/customerSetup.view",
   "backOriginDetection.model": "customerSetup/domainList/backOriginDetection/backOriginDetection.model",
@@ -145,7 +142,6 @@
   "setupChannelManage.view": "setupChannelManage/setupChannelManage.view",
   "setupSendDone.model": "setupSendManage/setupSendDone/setupSendDone.model",
   "setupSendDone.view": "setupSendManage/setupSendDone/setupSendDone.view",
-  "setupSendManage.controller": "setupSendManage/setupSendManage.controller",
   "setupSendWaitCustomize.model": "setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.model",
   "setupSendWaitCustomize.stratety.view": "setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.stratety.view",
   "setupSendWaitCustomize.view": "setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.view",
@@ -205,7 +201,8 @@ requirejs.config({
     paths:REQ_PATH,
     urlArgs: new Date().valueOf()
 });
-requirejs(['routes'], function(routes) {
+requirejs(['routes', 'utility'], function(routes, Utility) {
+    Utility.dateFormat();
     Backbone.history.start();
 });
 requirejs.onError = function () {
@@ -232,4 +229,4 @@ requirejs.onError = function () {
             backdrop:'static'
         };
     $errorPopup.modal(options);
-};
+};

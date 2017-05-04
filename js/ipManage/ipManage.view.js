@@ -65,6 +65,7 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
         events: {},
 
         initialize: function(options) {
+            this.options = options;
             this.collection = options.collection;
             this.deviceCollection = options.deviceCollection;
             this.$el = $(_.template(template['tpl/ipManage/ipManage.html'])());
@@ -450,10 +451,12 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
             this.$el.hide();
         },
 
-        update: function(){
-            this.$el.show();
-            if (AUTH_OBJ.QueryIP)
-                $(document).on('keydown', $.proxy(this.onEnterQuery, this));
+        update: function(target) {
+            this.collection.off();
+            this.collection.reset();
+            this.remove();
+            this.initialize(this.options);
+            this.render(target);
         },
 
         render: function(target) {

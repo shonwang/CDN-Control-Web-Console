@@ -415,6 +415,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             events: {},
 
             initialize: function(options) {
+                this.options = options;
                 this.collection = options.collection;
                 this.$el = $(_.template(template['tpl/specialLayerManage/specialLayerManage.html'])());
 
@@ -687,9 +688,12 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.off('enterKeyBindQuery');
             },
 
-            update: function() {
-                this.$el.show();
-                this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
+            update: function(target) {
+                this.collection.off();
+                this.collection.reset();
+                this.remove();
+                this.initialize(this.options);
+                this.render(target);
             },
 
             render: function(target) {

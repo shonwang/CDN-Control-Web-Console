@@ -781,6 +781,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
         events: {},
 
         initialize: function(options) {
+            this.options = options;
             this.collection = options.collection;
             this.query      = options.query;
             this.$el = $(_.template(template['tpl/deviceManage/deviceManage.html'])());

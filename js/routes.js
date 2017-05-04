@@ -438,7 +438,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.setupTopoManageView = new SetupTopoManageView(options);
                         this.setupTopoManageView.render($('.ksc-content'));
                     } else {
-                        this.setupTopoManageView.update();
+                        this.setupTopoManageView.update($('.ksc-content'));
                     }
                     this.curView = this.setupTopoManageView;
                 }.bind(this));
@@ -457,7 +457,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.setupAppManageView = new SetupAppManageView(options);
                         this.setupAppManageView.render($('.ksc-content'));
                     } else {
-                        this.setupAppManageView.update();
+                        this.setupAppManageView.update($('.ksc-content'));
                     }
                     this.curView = this.setupAppManageView;    
                 }.bind(this));
@@ -560,6 +560,8 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         };
                         this.ipManageView = new IPManageView(options);
                         this.ipManageView.render($('.ksc-content'));
+                    } else{
+                        this.ipManageView.update($('.ksc-content'));
                     }
                     this.curView = this.ipManageView;    
                 }.bind(this));
@@ -668,7 +670,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.dispConfigView = new DispConfigView(options);
                         this.dispConfigView.render($('.ksc-content'));
                     } else {
-                        this.dispConfigView.update();
+                        this.dispConfigView.update($('.ksc-content'));
                     }
                     this.curView = this.dispConfigView;    
                 }.bind(this));
@@ -771,6 +773,8 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         };
                         this.clientStatisticsView = new ClientStatisticsView(options);
                         this.clientStatisticsView.render($('.ksc-content'));
+                    } else {
+                        this.clientStatisticsView.update($('.ksc-content'));
                     }
                     this.curView = this.clientStatisticsView;    
                 }.bind(this));
@@ -792,6 +796,8 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         };
                         this.domainStatisticsView = new DomainStatisticsView(options);
                         this.domainStatisticsView.render($('.ksc-content'));
+                    } else {
+                        this.domainStatisticsView.update($('.ksc-content'));
                     }
                     this.curView = this.domainStatisticsView;    
                 }.bind(this));
@@ -813,6 +819,8 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         };
                         this.statisticsManageView = new StatisticsManageView(options);
                         this.statisticsManageView.render($('.ksc-content'));
+                    } else {
+                        this.statisticsManageView.update($('.ksc-content'));
                     }
                     this.curView = this.statisticsManageView;    
                 }.bind(this));

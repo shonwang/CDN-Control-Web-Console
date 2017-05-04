@@ -1,0 +1,33 @@
+<div class="setup-topo-manage-history">
+    <h4>拓扑管理<small>/历史记录</small></h4>
+    <div class="well">
+        <div>
+            <div class="opt-ctn">
+                <a href="javascript:void(0)" class="btn btn-default cancel">返回</a>
+            </div>
+            <hr>
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="input-name" class="col-sm-3 control-label">拓扑名称</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="input-name" value="<%=data.get('name')%>" readonly="true">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-md-6">
+                        <div class="alert alert-danger">
+                            <strong>提示：</strong>红色标识版本为当前正在使用的拓扑版本！
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <hr>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-ctn table-responsive"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -51,7 +51,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
                     }.bind(this))
 
                     this.total = res.total;
-                    this.trigger("get.node.success");
+                    this.trigger("get.node.success", res.rows);
                 } else {
                     this.trigger("get.node.error"); 
                 }

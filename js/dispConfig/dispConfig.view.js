@@ -1007,7 +1007,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                         return obj.value === parseInt(data.value)
                     }.bind(this))
                     this.$el.find(".content-ctn #textarea-comment").html(curGroup.remark || "无");
-                    this.$el.find(".content-ctn .channel-table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                    //this.$el.find(".content-ctn .channel-table-ctn").html(_.template(template['tpl/loading.html'])({}));
                     this.dispGroupCollection.getChannelList({groupId: this.queryArgs.groupId});
                     this.onClickQueryButton();
                     
@@ -1034,7 +1034,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             }
             this.onClickQueryButton();
             this.$el.find(".content-ctn #textarea-comment").html(temp[0].remark || "无");
-            this.$el.find(".content-ctn .channel-table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            //this.$el.find(".content-ctn .channel-table-ctn").html(_.template(template['tpl/loading.html'])({}));
             
             this.dispGroupCollection.off("get.channel.success");
             this.dispGroupCollection.off("get.channel.error");

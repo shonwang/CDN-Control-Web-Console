@@ -1,4 +1,4 @@
-define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
     var DispGroupInfoView = Backbone.View.extend({
         events: {
@@ -7,7 +7,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
 
         initialize: function(options) {
             this.collection = options.collection;
-            this.model      = options.model;
+            this.model = options.model;
 
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.dispGroup.html'])({}));
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
@@ -17,17 +17,22 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.on("get.assocateDispGroups.success", $.proxy(this.onGetDispConfigSuccess, this));
             this.collection.on("get.assocateDispGroups.error", $.proxy(this.onGetError, this));
 
-            this.collection.getAssocateDispGroups({nodeId: this.model.get("id")});
+            this.collection.getAssocateDispGroups({
+                nodeId: this.model.get("id")
+            });
             this.initSearchTypeDropList();
         },
 
-        initSearchTypeDropList: function(){
-            var searchArray = [
-                {name: "按名称", value: "1"},
-                {name: "按备注", value: "2"}
-            ],
-            rootNode = this.$el.find(".disp-filter-drop");
-            Utility.initDropMenu(rootNode, searchArray, function(value){
+        initSearchTypeDropList: function() {
+            var searchArray = [{
+                    name: "按名称",
+                    value: "1"
+                }, {
+                    name: "按备注",
+                    value: "2"
+                }],
+                rootNode = this.$el.find(".disp-filter-drop");
+            Utility.initDropMenu(rootNode, searchArray, function(value) {
                 this.curSearchType = value;
                 this.onKeyupDispListFilter();
             }.bind(this));
@@ -37,16 +42,16 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         onKeyupDispListFilter: function() {
             if (!this.channelList || this.channelList.length === 0) return;
             var keyWord = this.$el.find("#disp-filter").val();
-                        
+
             _.each(this.channelList, function(model, index, list) {
-                if (keyWord === ""){
+                if (keyWord === "") {
                     model.isDisplay = true;
-                } else if (this.curSearchType == "1"){
+                } else if (this.curSearchType == "1") {
                     if (model.dispDomain.indexOf(keyWord) > -1)
                         model.isDisplay = true;
                     else
                         model.isDisplay = false;
-                } else if (this.curSearchType == "2"){
+                } else if (this.curSearchType == "2") {
                     if (model.remark.indexOf(keyWord) > -1)
                         model.isDisplay = true;
                     else
@@ -56,17 +61,18 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.initTable();
         },
 
-        onGetError: function(error){
-            if (error&&error.message)
+        onGetError: function(error) {
+            if (error && error.message)
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
         },
 
-        onGetDispConfigSuccess: function(res){
+        onGetDispConfigSuccess: function(res) {
             this.channelList = res;
-            var count = 0; this.isCheckedAll = false;
-            _.each(this.channelList, function(el, index, list){
+            var count = 0;
+            this.isCheckedAll = false;
+            _.each(this.channelList, function(el, index, list) {
                 if (el.associated === 0) el.isChecked = false;
                 if (el.associated === 1) {
                     el.isChecked = true;
@@ -89,8 +95,11 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find("#disp-filter").on("keyup", $.proxy(this.onKeyupDispListFilter, this));
         },
 
-        initTable: function(){
-            this.table = $(_.template(template['tpl/nodeManage/nodeManage.dispGroup.table.html'])({data: this.channelList, isCheckedAll: this.isCheckedAll}));
+        initTable: function() {
+            this.table = $(_.template(template['tpl/nodeManage/nodeManage.dispGroup.table.html'])({
+                data: this.channelList,
+                isCheckedAll: this.isCheckedAll
+            }));
             if (this.channelList.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
@@ -99,20 +108,22 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
             this.table.find("tbody .remark").tooltip({
-                animation  : false,
-                "placement": "top", 
-                "html"     : true,
-                "title"  : function(){return $(this).attr("remark")}, 
-                "trigger"  : "hover"
+                animation: false,
+                "placement": "top",
+                "html": true,
+                "title": function() {
+                    return $(this).attr("remark")
+                },
+                "trigger": "hover"
             })
         },
 
-        onItemCheckedUpdated: function(event){
+        onItemCheckedUpdated: function(event) {
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             var id = $(eventTarget).attr("id");
 
-            var selectedObj = _.find(this.channelList, function(object){
+            var selectedObj = _.find(this.channelList, function(object) {
                 return object.dispId === parseInt(id)
             }.bind(this));
 
@@ -127,23 +138,23 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.table.find("thead input").get(0).checked = false;
         },
 
-        onAllCheckedUpdated: function(event){
+        onAllCheckedUpdated: function(event) {
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
-            this.table.find("tbody tr").find("input").each(function(index, node){
-                if (!$(node).prop("disabled")){
+            this.table.find("tbody tr").find("input").each(function(index, node) {
+                if (!$(node).prop("disabled")) {
                     $(node).prop("checked", eventTarget.checked);
                     this.channelList[index].isChecked = eventTarget.checked
                 }
             }.bind(this))
         },
 
-        getArgs: function(){
+        getArgs: function() {
             var checkedList = this.channelList.filter(function(object) {
                 return object.isChecked === true;
             })
             if (checkedList.length === 0) return false;
-            _.each(checkedList, function(el, inx, list){
+            _.each(checkedList, function(el, inx, list) {
                 el.associated = el.isChecked ? 1 : 0;
                 delete el.priorityName
                 delete el.statusName
@@ -164,50 +175,52 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
 
         initialize: function(options) {
             this.collection = options.collection;
-            this.isEdit     = options.isEdit;
-            this.model      = options.model;
+            this.isEdit = options.isEdit;
+            this.model = options.model;
 
-            if (this.isEdit){
+            if (this.isEdit) {
                 this.args = {
-                    "id"                 : this.model.get("id"),
-                    "name"               : this.model.get("name"),
-                    "chName"             : this.model.get("chName"),
-                    "operator"           : this.model.get("operator"),
-                    "chargingType"       : this.model.get("chargingType"),
-                    "minBandwidth"       : this.model.get("minBandwidth"),
-                    "maxBandwidth"       : this.model.get("maxBandwidth"),
-                    "maxBandwidthThreshold" : this.model.get("maxBandwidthThreshold"),
-                    "minBandwidthThreshold" : this.model.get("minBandwidthThreshold"),
-                    "unitPrice"          : this.model.get("unitPrice"),
-                    "inZabName"          : this.model.get("inZabName"),
-                    "outZabName"         : this.model.get("outZabName"),
-                    "remark"             : this.model.get("remark"),
-                    "operatorId"         : this.model.get("operatorId"),
-                    "operatorName"       : this.model.get("operatorName"),
-                    "startChargingTime"  : this.model.get("startChargingTime")
+                    "id": this.model.get("id"),
+                    "name": this.model.get("name"),
+                    "chName": this.model.get("chName"),
+                    "operator": this.model.get("operator"),
+                    "chargingType": this.model.get("chargingType"),
+                    "minBandwidth": this.model.get("minBandwidth"),
+                    "maxBandwidth": this.model.get("maxBandwidth"),
+                    "maxBandwidthThreshold": this.model.get("maxBandwidthThreshold"),
+                    "minBandwidthThreshold": this.model.get("minBandwidthThreshold"),
+                    "unitPrice": this.model.get("unitPrice"),
+                    "inZabName": this.model.get("inZabName"),
+                    "outZabName": this.model.get("outZabName"),
+                    "remark": this.model.get("remark"),
+                    "operatorId": this.model.get("operatorId"),
+                    "operatorName": this.model.get("operatorName"),
+                    "startChargingTime": this.model.get("startChargingTime")
                 }
             } else {
                 this.args = {
-                    "id"                 : 0,
-                    "name"               : "",
-                    "chName"             : "",
-                    "operator"           : "",
-                    "chargingType"       : 1 ,
-                    "minBandwidth"       : "",
-                    "maxBandwidth"       : "",
-                    "maxBandwidthThreshold" : "",
-                    "minBandwidthThreshold" : "",
-                    "unitPrice"          : "",
-                    "inZabName"          : "",
-                    "outZabName"         : "",
-                    "remark"             : "",
-                    "operatorId"         : "",
-                    "operatorName"       : "",
-                    "startChargingTime"  : new Date().valueOf()
+                    "id": 0,
+                    "name": "",
+                    "chName": "",
+                    "operator": "",
+                    "chargingType": 1,
+                    "minBandwidth": "",
+                    "maxBandwidth": "",
+                    "maxBandwidthThreshold": "",
+                    "minBandwidthThreshold": "",
+                    "unitPrice": "",
+                    "inZabName": "",
+                    "outZabName": "",
+                    "remark": "",
+                    "operatorId": "",
+                    "operatorName": "",
+                    "startChargingTime": new Date().valueOf()
                 }
             }
 
-            this.$el = $(_.template(template['tpl/nodeManage/nodeManage.add&edit.html'])({data: this.args}));
+            this.$el = $(_.template(template['tpl/nodeManage/nodeManage.add&edit.html'])({
+                data: this.args
+            }));
 
             this.collection.off("get.city.success");
             this.collection.off("get.city.error");
@@ -248,7 +261,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.initChargeDatePicker();
         },
 
-        getArgs: function(){
+        getArgs: function() {
             var enName = this.$el.find("#input-english").val().replace(/\s+/g, ""),
                 chName = this.$el.find("#input-name").val().replace(/\s+/g, ""),
                 maxBandwidthThreshold = this.$el.find("#input-threshold").val(),
@@ -263,93 +276,96 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 outzabnameRe = /^[0-9A-Za-z\-\[\]\_]+$/,
                 letterRe = /[A-Za-z]+/,
                 reLocation = /^\d+(\.\d+)?----\d+(\.\d+)?$/;
-            if (!reLocation.test(longitudeLatitude)){
+            if (!reLocation.test(longitudeLatitude)) {
                 alert("需要填写正确的经纬度，否则该节点无法在地图中展示！比如：108.953098----34.2778");
                 return
             }
-            if (!enName || !chName){
+            if (!enName || !chName) {
                 alert("节点名称和英文名称都要填写！");
                 return;
             }
-            if (!re.test(maxBandwidth) || !re.test(minBandwidth)){
+            if (!re.test(maxBandwidth) || !re.test(minBandwidth)) {
                 alert("上联带宽和保底带宽只能填入数字！");
                 return;
             }
-            if (parseInt(maxBandwidth) > 100000000 || parseInt(maxBandwidth) < 0){
+            if (parseInt(maxBandwidth) > 100000000 || parseInt(maxBandwidth) < 0) {
                 alert("上联带宽：0-100000000（0-100T，单位转换按1000算）");
-                return; 
+                return;
             }
-            if (parseInt(minBandwidth) > 100000000 || parseInt(minBandwidth) < 0){
+            if (parseInt(minBandwidth) > 100000000 || parseInt(minBandwidth) < 0) {
                 alert("保底带宽：0-100000000（0-100T，单位转换按1000算）");
-                return; 
+                return;
             }
-            if (parseInt(maxBandwidth) < parseInt(minBandwidth)){
+            if (parseInt(maxBandwidth) < parseInt(minBandwidth)) {
                 alert("上联带宽不能小于保底带宽！");
                 return;
             }
-            if (!re.test(maxBandwidthThreshold) || !re.test(minBandwidthThreshold)){
+            if (!re.test(maxBandwidthThreshold) || !re.test(minBandwidthThreshold)) {
                 alert("上联带宽阈值和保底带宽阈值只能填入数字！");
                 return;
             }
-            if (parseInt(maxBandwidthThreshold) < 0 || parseInt(maxBandwidthThreshold) > parseInt(maxBandwidth)){
+            if (parseInt(maxBandwidthThreshold) < 0 || parseInt(maxBandwidthThreshold) > parseInt(maxBandwidth)) {
                 alert("上联带宽阈值：0-上联带宽");
                 return;
             }
-            if (parseInt(minBandwidthThreshold) < 0 || parseInt(minBandwidthThreshold) > parseInt(maxBandwidth)){
+            if (parseInt(minBandwidthThreshold) < 0 || parseInt(minBandwidthThreshold) > parseInt(maxBandwidth)) {
                 alert("保底带宽阈值：0-上联带宽");
                 return;
             }
-            if (!re.test(unitPrice)){
+            if (!re.test(unitPrice)) {
                 alert("成本权值只能填入数字！");
                 return;
             }
-            if (parseInt(unitPrice) > 2147483647 || parseInt(unitPrice) < 0){
+            if (parseInt(unitPrice) > 2147483647 || parseInt(unitPrice) < 0) {
                 alert("成本权值不能小于0且大于长整型的最大值");
-                return; 
+                return;
             }
-            if (!outzabnameRe.test(outzabname) || outzabname.indexOf("-") === -1 || 
+            if (!outzabnameRe.test(outzabname) || outzabname.indexOf("-") === -1 ||
                 outzabname.indexOf("_") === -1 || outzabname.indexOf("[") === -1 ||
-                outzabname.indexOf("]") === -1 || !letterRe.test(outzabname)){
+                outzabname.indexOf("]") === -1 || !letterRe.test(outzabname)) {
                 alert("zabbix出口带宽英文、“-”、“_”、“[”、“]”为必填项，数字为可填项，即组合可包含数字，也可不包含数字");
-                return; 
+                return;
             }
             var args = {
-                "id"                 : this.model ? this.model.get("id") : 0,
-                "name"               : this.$el.find("#input-english").val().replace(/\s+/g, ""),
-                "chName"             : this.$el.find("#input-name").val().replace(/\s+/g, ""),
-                "operatorId"         : this.operatorId,
-                "operatorName"       : this.operatorName,
-                "minBandwidth"       : this.$el.find("#input-minbandwidth").val(),
-                "maxBandwidth"       : this.$el.find("#input-maxbandwidth").val(),
-                "maxBandwidthThreshold" : this.$el.find("#input-threshold").val(),
-                "minBandwidthThreshold" : this.$el.find("#input-minthreshold").val(),
-                "unitPrice"          : this.$el.find("#input-unitprice").val(),
-                "inZabName"          : this.$el.find("#input-inzabname").val().replace(/\s+/g, ""),
-                "outZabName"         : this.$el.find("#input-outzabname").val().replace(/\s+/g, ""),
-                "remark"             : this.$el.find("#textarea-comment").val(),
-                "startChargingTime"  : this.args.startChargingTime,
-                "chargingType"       : this.args.chargingType,
-                "cityId"             : this.cityId,
-                "lon"                : this.$el.find('#input-longitude-latitude').val().split("----")[0],
-                "lat"                : this.$el.find('#input-longitude-latitude').val().split("----")[1]   
+                "id": this.model ? this.model.get("id") : 0,
+                "name": this.$el.find("#input-english").val().replace(/\s+/g, ""),
+                "chName": this.$el.find("#input-name").val().replace(/\s+/g, ""),
+                "operatorId": this.operatorId,
+                "operatorName": this.operatorName,
+                "minBandwidth": this.$el.find("#input-minbandwidth").val(),
+                "maxBandwidth": this.$el.find("#input-maxbandwidth").val(),
+                "maxBandwidthThreshold": this.$el.find("#input-threshold").val(),
+                "minBandwidthThreshold": this.$el.find("#input-minthreshold").val(),
+                "unitPrice": this.$el.find("#input-unitprice").val(),
+                "inZabName": this.$el.find("#input-inzabname").val().replace(/\s+/g, ""),
+                "outZabName": this.$el.find("#input-outzabname").val().replace(/\s+/g, ""),
+                "remark": this.$el.find("#textarea-comment").val(),
+                "startChargingTime": this.args.startChargingTime,
+                "chargingType": this.args.chargingType,
+                "cityId": this.cityId,
+                "lon": this.$el.find('#input-longitude-latitude').val().split("----")[0],
+                "lat": this.$el.find('#input-longitude-latitude').val().split("----")[1]
             }
             return args;
         },
 
-        onGetOperatorSuccess: function(res){
+        onGetOperatorSuccess: function(res) {
             var nameList = [];
-            _.each(res.rows, function(el, index, list){
-                nameList.push({name: el.name, value:el.id})
+            _.each(res.rows, function(el, index, list) {
+                nameList.push({
+                    name: el.name,
+                    value: el.id
+                })
             });
-            Utility.initDropMenu(this.$el.find(".dropdown-operator"), nameList, function(value){
+            Utility.initDropMenu(this.$el.find(".dropdown-operator"), nameList, function(value) {
                 this.operatorId = value;
             }.bind(this));
-            if (this.isEdit){
-                var defaultValue = _.find(nameList, function(object){
+            if (this.isEdit) {
+                var defaultValue = _.find(nameList, function(object) {
                     return object.value === this.model.attributes.operatorId
                 }.bind(this));
 
-                if (defaultValue){
+                if (defaultValue) {
                     this.$el.find(".dropdown-operator .cur-value").html(defaultValue.name)
                     this.operatorId = defaultValue.value;
                     this.operatorName = defaultValue.name;
@@ -365,20 +381,28 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             }
         },
 
-        initDropList: function(list){
-            var nameList = [
-                {name: "95峰值", value: 1},
-                {name: "包端口", value: 2},
-                {name: "峰值", value: 3},
-                {name: "第三峰", value: 4}
+        initDropList: function(list) {
+            var nameList = [{
+                    name: "95峰值",
+                    value: 1
+                }, {
+                    name: "包端口",
+                    value: 2
+                }, {
+                    name: "峰值",
+                    value: 3
+                }, {
+                    name: "第三峰",
+                    value: 4
+                }
                 // {name: "免费", value: 0}
             ];
-            Utility.initDropMenu(this.$el.find(".dropdown-charging"), nameList, function(value){
+            Utility.initDropMenu(this.$el.find(".dropdown-charging"), nameList, function(value) {
                 this.args.chargingType = parseInt(value);
             }.bind(this));
 
-            if (this.isEdit){
-                var defaultValue = _.find(nameList, function(object){
+            if (this.isEdit) {
+                var defaultValue = _.find(nameList, function(object) {
                     return object.value === this.model.attributes.chargingType
                 }.bind(this));
                 this.$el.find(".dropdown-charging .cur-value").html(defaultValue.name)
@@ -391,29 +415,41 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             //this.collection.getAllCity();
         },
 
-        onGetAllContinent: function(list){
+        onGetAllContinent: function(list) {
             var nameList = [];
-            _.each(list.rows, function(el, inx, list){
-                nameList.push({name: el.name, value: el.id})
+            _.each(list.rows, function(el, inx, list) {
+                nameList.push({
+                    name: el.name,
+                    value: el.id
+                })
             }.bind(this))
-            Utility.initDropMenu(this.$el.find(".dropdown-continent"), nameList, function(value){
-                this.collection.getCountryByContinent({id: value})
+            Utility.initDropMenu(this.$el.find(".dropdown-continent"), nameList, function(value) {
+                this.collection.getCountryByContinent({
+                    id: value
+                })
             }.bind(this));
 
-            if (this.isEdit){
+            if (this.isEdit) {
                 this.$el.find(".dropdown-continent .cur-value").html(this.model.get("continentName"));
-                this.collection.getCountryByContinent({id: this.model.get("continentId")})
-                //this.$el.find("#dropdown-continent").prop("disabled", true)
+                this.collection.getCountryByContinent({
+                        id: this.model.get("continentId")
+                    })
+                    //this.$el.find("#dropdown-continent").prop("disabled", true)
             } else {
                 this.$el.find(".dropdown-continent .cur-value").html(nameList[0].name);
-                this.collection.getCountryByContinent({id: nameList[0].value})
+                this.collection.getCountryByContinent({
+                    id: nameList[0].value
+                })
             }
         },
 
-        onGetAllProvince: function(list){
+        onGetAllProvince: function(list) {
             var nameList = [];
-            _.each(list, function(el, inx, list){
-                nameList.push({name: el.name, value: el.id})
+            _.each(list, function(el, inx, list) {
+                nameList.push({
+                    name: el.name,
+                    value: el.id
+                })
             }.bind(this))
 
             var searchSelect = new SearchSelect({
@@ -423,30 +459,40 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 openSearch: true,
                 selectWidth: 200,
                 isDataVisible: false,
-                onOk: function(){},
+                onOk: function() {},
                 data: nameList,
                 callback: function(data) {
                     this.$el.find('#dropdown-province .cur-value').html(data.name);
-                    this.collection.getAllCityAndBigArea({provId: data.value})
+                    this.collection.getAllCityAndBigArea({
+                        provId: data.value
+                    })
                 }.bind(this)
             });
 
-            if (this.isEdit){
+            if (this.isEdit) {
                 this.$el.find(".dropdown-province .cur-value").html(this.model.get("provName") || nameList[0].name);
-                this.collection.getAllCityAndBigArea({provId: this.model.get("provId") || nameList[0].value})
+                this.collection.getAllCityAndBigArea({
+                    provId: this.model.get("provId") || nameList[0].value
+                })
             } else {
                 this.$el.find("#dropdown-province .cur-value").html(nameList[0].name);
-                this.collection.getAllCityAndBigArea({provId: nameList[0].value})
+                this.collection.getAllCityAndBigArea({
+                    provId: nameList[0].value
+                })
             }
         },
 
-        onGetAllCityAndBigArea: function(res){
+        onGetAllCityAndBigArea: function(res) {
             var area = res.cityProvArea.name,
                 list = res.list;
 
             var cityArray = [];
-            _.each(list, function(el, index, list){
-                cityArray.push({name:el.name, value: el.id, isDisplay: true})
+            _.each(list, function(el, index, list) {
+                cityArray.push({
+                    name: el.name,
+                    value: el.id,
+                    isDisplay: true
+                })
             }.bind(this))
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.dropdown-city').get(0),
@@ -455,38 +501,47 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 openSearch: true,
                 selectWidth: 200,
                 isDataVisible: true,
-                onOk: function(){},
+                onOk: function() {},
                 data: cityArray,
                 callback: function(data) {
                     this.$el.find('#dropdown-city .cur-value').html(data.name);
                     this.$el.find('#input-longitude-latitude').val("查找中...");
                     this.$el.find('#dropdown-city').attr("disabled", "disabled");
-                    this.collection.getLocation({addr: data.name});
-                    this.cityId = data.value; 
+                    this.collection.getLocation({
+                        addr: data.name
+                    });
+                    this.cityId = data.value;
                 }.bind(this)
             });
 
             this.$el.find('#input-longitude-latitude').val("查找中...");
             this.$el.find('#dropdown-region .cur-value').html(area);
-            if (this.isEdit){
+            if (this.isEdit) {
                 this.cityId = this.model.get("cityId") || cityArray[0].value;
                 this.$el.find('#dropdown-city .cur-value').html(this.model.get("cityName") || cityArray[0].name);
                 if (!this.model.get("lon") || !this.model.get("lat"))
-                    this.collection.getLocation({addr: this.model.get("cityName") || cityArray[0].name});
-                else 
+                    this.collection.getLocation({
+                        addr: this.model.get("cityName") || cityArray[0].name
+                    });
+                else
                     this.$el.find('#input-longitude-latitude').val(this.model.get("lon") + "----" + this.model.get("lat"));
             } else {
-                this.collection.getLocation({addr: cityArray[0].name});
+                this.collection.getLocation({
+                    addr: cityArray[0].name
+                });
                 this.$el.find('#dropdown-city').attr("disabled", "disabled");
                 this.$el.find('#dropdown-city .cur-value').html(cityArray[0].name);
-                this.cityId = cityArray[0].value; 
+                this.cityId = cityArray[0].value;
             }
         },
 
-        onGetCountryByContinent: function(res){
+        onGetCountryByContinent: function(res) {
             var nameList = [];
-            _.each(res.rows, function(el, index, list){
-                nameList.push({name: el.name, value:el.id})
+            _.each(res.rows, function(el, index, list) {
+                nameList.push({
+                    name: el.name,
+                    value: el.id
+                })
             });
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.dropdown-country').get(0),
@@ -495,28 +550,38 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 openSearch: true,
                 selectWidth: 200,
                 isDataVisible: false,
-                onOk: function(){},
+                onOk: function() {},
                 data: nameList,
                 callback: function(data) {
                     this.$el.find('#dropdown-country .cur-value').html(data.name);
-                    this.collection.getOperationByCountry({id: data.value})
+                    this.collection.getOperationByCountry({
+                        id: data.value
+                    })
                 }.bind(this)
             });
-            if (this.isEdit){
+            if (this.isEdit) {
                 this.$el.find(".dropdown-country .cur-value").html(this.model.get("countryName"));
-                this.collection.getOperationByCountry({id: this.model.get("countryId")})
-                //this.$el.find("#dropdown-country").prop("disabled", true)
+                this.collection.getOperationByCountry({
+                        id: this.model.get("countryId")
+                    })
+                    //this.$el.find("#dropdown-country").prop("disabled", true)
             } else {
                 this.$el.find('#dropdown-country .cur-value').html(nameList[0].name);
-                this.collection.getOperationByCountry({id: nameList[0].value});
+                this.collection.getOperationByCountry({
+                    id: nameList[0].value
+                });
             }
         },
 
-        onGetAllCity: function(res){
+        onGetAllCity: function(res) {
             var cityArray = [];
             res = _.uniq(res);
-            _.each(res, function(el, index, list){
-                cityArray.push({name:el, value: el, isDisplay: false})
+            _.each(res, function(el, index, list) {
+                cityArray.push({
+                    name: el,
+                    value: el,
+                    isDisplay: false
+                })
             }.bind(this))
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.dropdown-city').get(0),
@@ -525,22 +590,26 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 openSearch: true,
                 selectWidth: 200,
                 isDataVisible: true,
-                onOk: function(){},
+                onOk: function() {},
                 data: cityArray,
                 callback: function(data) {
                     this.$el.find('#dropdown-city .cur-value').html(data.name);
                     this.$el.find('#input-longitude-latitude').val("查找中...");
                     this.$el.find('#dropdown-city').attr("disabled", "disabled");
-                    this.collection.getLocation({addr: data.value})
+                    this.collection.getLocation({
+                        addr: data.value
+                    })
                 }.bind(this)
             });
             this.$el.find('#input-longitude-latitude').val("查找中...");
             this.$el.find('#dropdown-city').attr("disabled", "disabled");
-            this.collection.getLocation({addr: "北京"})
+            this.collection.getLocation({
+                addr: "北京"
+            })
         },
 
-        onGetLocation: function(res){
-            if (typeof res !== "string" && res.status !== 200){
+        onGetLocation: function(res) {
+            if (typeof res !== "string" && res.status !== 200) {
                 this.$el.find('#input-longitude-latitude').val("没有查到该城市的经纬度，请自己谷歌百度后填写！");
                 this.$el.find('#input-longitude-latitude').removeAttr("readonly");
             } else {
@@ -550,25 +619,26 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find('#dropdown-city').removeAttr("disabled");
         },
 
-        initChargeDatePicker: function(){
-            var startVal = null, endVal = null;
+        initChargeDatePicker: function() {
+            var startVal = null,
+                endVal = null;
             if (this.args.startChargingTime)
                 startVal = new Date(this.args.startChargingTime).format("yyyy/MM/dd");
             var startOption = {
-                lang:'ch',
+                lang: 'ch',
                 timepicker: false,
                 scrollInput: false,
-                format:'Y/m/d', 
-                value: startVal, 
-                onChangeDateTime: function(){
+                format: 'Y/m/d',
+                value: startVal,
+                onChangeDateTime: function() {
                     this.args.startChargingTime = new Date(arguments[0]).valueOf();
                 }.bind(this)
             };
             this.$el.find("#input-start").datetimepicker(startOption);
         },
 
-        onGetError: function(error){
-            if (error&&error.message)
+        onGetError: function(error) {
+            if (error && error.message)
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
@@ -592,22 +662,22 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
 
             this.collection.on("get.node.success", $.proxy(this.onNodeListSuccess, this));
             this.collection.on("get.node.error", $.proxy(this.onGetError, this));
-            this.collection.on("add.node.success", function(){
+            this.collection.on("add.node.success", function() {
                 alert("添加成功！")
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("add.node.error", $.proxy(this.onGetError, this));
-            this.collection.on("update.node.success", function(){
+            this.collection.on("update.node.success", function() {
                 alert("编辑成功！")
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("update.node.error", $.proxy(this.onGetError, this));
-            this.collection.on("delete.node.success", function(){
+            this.collection.on("delete.node.success", function() {
                 alert("删除成功！")
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("delete.node.error", $.proxy(this.onGetError, this));
-            this.collection.on("update.node.status.success", function(){
+            this.collection.on("update.node.status.success", function() {
                 alert("操作成功！")
                 this.onClickQueryButton();
             }.bind(this));
@@ -616,12 +686,12 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
 
             this.collection.on("operate.node.success", $.proxy(this.onOperateNodeSuccess, this));
-            this.collection.on("operate.node.error", function(res){
-                this.disablePopup&&this.disablePopup.$el.modal('hide');
+            this.collection.on("operate.node.error", function(res) {
+                this.disablePopup && this.disablePopup.$el.modal('hide');
                 this.onGetError(res)
             }.bind(this));
 
-            this.collection.on("add.assocateDispGroups.success", function(){
+            this.collection.on("add.assocateDispGroups.success", function() {
                 alert("操作成功！")
             }.bind(this));
             this.collection.on("add.assocateDispGroups.error", $.proxy(this.onGetError, this));
@@ -630,7 +700,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
             else
                 this.$el.find(".opt-ctn .create").remove();
-            if (AUTH_OBJ.QueryNode){
+            if (AUTH_OBJ.QueryNode) {
                 this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
                 this.enterKeyBindQuery();
             } else {
@@ -644,18 +714,18 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".opt-ctn .multi-delete").on("click", $.proxy(this.onClickMultiDelete, this));
 
             this.queryArgs = {
-                "page"    : 1,
-                "count"   : 10,
-                "chname"  : null,//节点名称
-                "operator": null,//运营商id
-                "status"  : null//节点状态
+                "page": 1,
+                "count": 10,
+                "chname": null, //节点名称
+                "operator": null, //运营商id
+                "status": null //节点状态
             }
             this.onClickQueryButton();
         },
 
-        enterKeyBindQuery:function(){
-            $(document).on('keydown', function(e){
-                if(e.keyCode == 13){
+        enterKeyBindQuery: function() {
+            $(document).on('keydown', function(e) {
+                if (e.keyCode == 13) {
                     e.stopPropagation();
                     e.preventDefault();
                     this.onClickQueryButton();
@@ -663,19 +733,19 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             }.bind(this));
         },
 
-        onGetError: function(error){
-            if (error&&error.message)
+        onGetError: function(error) {
+            if (error && error.message)
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
         },
 
-        onNodeListSuccess: function(){
+        onNodeListSuccess: function() {
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
         },
 
-        onClickQueryButton: function(){
+        onClickQueryButton: function() {
             this.isInitPaginator = false;
             this.queryArgs.page = 1;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
@@ -684,25 +754,25 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.getNodeList(this.queryArgs);
         },
 
-        onClickCreate: function(){
+        onClickCreate: function() {
             if (this.addNodePopup) $("#" + this.addNodePopup.modalId).remove();
 
             var addNodeView = new AddOrEditNodeView({
                 collection: this.collection,
-                list      : this.operatorList
+                list: this.operatorList
             });
             var options = {
-                title:"添加节点",
-                body : addNodeView,
-                backdrop : 'static',
-                type     : 2,
-                onOKCallback:  function(){
+                title: "添加节点",
+                body: addNodeView,
+                backdrop: 'static',
+                type: 2,
+                onOKCallback: function() {
                     var options = addNodeView.getArgs();
                     if (!options) return;
                     this.collection.addNode(options)
                     this.addNodePopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){
+                onHiddenCallback: function() {
                     if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
                 }.bind(this)
             }
@@ -710,19 +780,22 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             if (!AUTH_OBJ.ApplyCreateNode) this.addNodePopup.$el.find(".modal-footer .btn-primary").remove();
         },
 
-        initTable: function(){
+        initTable: function() {
             this.$el.find(".opt-ctn .multi-delete").attr("disabled", "disabled");
             this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
             this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
-            this.table = $(_.template(template['tpl/nodeManage/nodeManage.table.html'])({data: this.collection.models, permission:AUTH_OBJ}));
-            if (this.collection.models.length !== 0){
+            this.table = $(_.template(template['tpl/nodeManage/nodeManage.table.html'])({
+                data: this.collection.models,
+                permission: AUTH_OBJ
+            }));
+            if (this.collection.models.length !== 0) {
                 this.$el.find(".table-ctn").html(this.table[0]);
                 this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
                 this.table.find("tbody .node-name").on("click", $.proxy(this.onClickItemNodeName, this));
-                if(AUTH_OBJ.DeleteNode)
-                  this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+                if (AUTH_OBJ.DeleteNode)
+                    this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
                 else
-                  this.table.find("tbody .delete").remove();
+                    this.table.find("tbody .delete").remove();
                 this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
                 this.table.find("tbody .hangup").on("click", $.proxy(this.onClickItemHangup, this));
                 this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));
@@ -735,9 +808,10 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             }
         },
 
-        onClickDispGroupInfo: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
+        onClickDispGroupInfo: function(event) {
+            var eventTarget = event.srcElement || event.target,
+                id;
+            if (eventTarget.tagName == "SPAN") {
                 eventTarget = $(eventTarget).parent();
                 id = eventTarget.attr("id");
             } else {
@@ -748,24 +822,24 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             if (this.dispGroupPopup) $("#" + this.dispGroupPopup.modalId).remove();
 
             var dispGroupInfoView = new DispGroupInfoView({
-                collection: this.collection, 
-                model     : model,
-                isEdit    : true
+                collection: this.collection,
+                model: model,
+                isEdit: true
             });
             var options = {
                 title: model.get("chName") + "关联调度组信息",
-                body : dispGroupInfoView,
-                backdrop : 'static',
-                type     : 2,
+                body: dispGroupInfoView,
+                backdrop: 'static',
+                type: 2,
                 width: 800,
                 height: 500,
-                onOKCallback:  function(){
+                onOKCallback: function() {
                     var options = dispGroupInfoView.getArgs();
                     if (!options) return;
                     this.collection.addAssocateDispGroups(options, model.get("id"))
                     this.dispGroupPopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){
+                onHiddenCallback: function() {
                     this.enterKeyBindQuery();
                 }.bind(this)
             }
@@ -774,8 +848,8 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.dispGroupPopup.$el.find(".btn-primary").remove();
         },
 
-        onClickItemNodeName: function(event){
-            var eventTarget = event.srcElement || event.target, 
+        onClickItemNodeName: function(event) {
+            var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id"),
                 model = this.collection.get(id),
                 args = {
@@ -785,9 +859,10 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             window.location.hash = "#/deviceManage/" + JSON.stringify(args)
         },
 
-        onClickItemEdit: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
+        onClickItemEdit: function(event) {
+            var eventTarget = event.srcElement || event.target,
+                id;
+            if (eventTarget.tagName == "SPAN") {
                 eventTarget = $(eventTarget).parent();
                 id = eventTarget.attr("id");
             } else {
@@ -798,24 +873,24 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             if (this.editNodePopup) $("#" + this.editNodePopup.modalId).remove();
 
             var editNodeView = new AddOrEditNodeView({
-                collection: this.collection, 
-                model     : model,
-                isEdit    : true,
-                list      : this.operatorList
+                collection: this.collection,
+                model: model,
+                isEdit: true,
+                list: this.operatorList
             });
             var options = {
-                title:"编辑节点",
-                body : editNodeView,
-                backdrop : 'static',
-                type     : 2,
-                onOKCallback:  function(){
+                title: "编辑节点",
+                body: editNodeView,
+                backdrop: 'static',
+                type: 2,
+                onOKCallback: function() {
                     var options = editNodeView.getArgs();
                     if (!options) return;
                     var args = _.extend(model.attributes, options)
                     this.collection.updateNode(args)
                     this.editNodePopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){
+                onHiddenCallback: function() {
                     if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
                 }.bind(this)
             }
@@ -824,9 +899,10 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.editNodePopup.$el.find(".modal-footer .btn-primary").remove();
         },
 
-        onClickItemDelete: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
+        onClickItemDelete: function(event) {
+            var eventTarget = event.srcElement || event.target,
+                id;
+            if (eventTarget.tagName == "SPAN") {
                 eventTarget = $(eventTarget).parent();
                 id = eventTarget.attr("id");
             } else {
@@ -841,48 +917,61 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
                 type: "alert-info"
             }
             var options = {
-                title:"提示",
-                body : _.template(template['tpl/alert.message.html'])({data: opt}),
-                backdrop : 'static',
-                type     : 2,
-                onOKCallback:  function(){
+                title: "提示",
+                body: _.template(template['tpl/alert.message.html'])({
+                    data: opt
+                }),
+                backdrop: 'static',
+                type: 2,
+                onOKCallback: function() {
                     this.confirmDelete.$el.modal("hide");
                     var result = confirm("你真的确定要删除节点" + model.attributes.name + "吗？");
                     if (!result) return;
-                    this.collection.deleteNode({id:parseInt(id)})
+                    this.collection.deleteNode({
+                        id: parseInt(id)
+                    })
                 }.bind(this),
-                onHiddenCallback: function(){}.bind(this)
+                onHiddenCallback: function() {}.bind(this)
             }
             this.confirmDelete = new Modal(options);
         },
 
-        onClickItemPlay: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
+        onClickItemPlay: function(event) {
+            var eventTarget = event.srcElement || event.target,
+                id;
+            if (eventTarget.tagName == "SPAN") {
                 eventTarget = $(eventTarget).parent();
                 id = eventTarget.attr("id");
             } else {
                 id = $(eventTarget).attr("id");
             }
             //this.collection.updateNodeStatus({ids:[parseInt(id)], status:1})
-            this.collection.operateNode({nodeId: id, operator: 1, t: new Date().valueOf()})
+            this.collection.operateNode({
+                nodeId: id,
+                operator: 1,
+                t: new Date().valueOf()
+            })
         },
 
-        onClickMultiPlay: function(event){
+        onClickMultiPlay: function(event) {
             var checkedList = this.collection.filter(function(model) {
                 return model.get("isChecked") === true;
             })
             var ids = [];
-            _.each(checkedList, function(el, index, list){
+            _.each(checkedList, function(el, index, list) {
                 ids.push(el.attributes.id);
             })
             if (ids.length === 0) return;
-            this.collection.updateNodeStatus({ids:ids, status:1})
+            this.collection.updateNodeStatus({
+                ids: ids,
+                status: 1
+            })
         },
 
-        onClickItemHangup: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
+        onClickItemHangup: function(event) {
+            var eventTarget = event.srcElement || event.target,
+                id;
+            if (eventTarget.tagName == "SPAN") {
                 eventTarget = $(eventTarget).parent();
                 id = eventTarget.attr("id");
             } else {
@@ -890,12 +979,16 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             }
             var result = confirm("你确定要挂起节点吗？")
             if (!result) return
-            this.collection.updateNodeStatus({ids:[parseInt(id)], status:2})
+            this.collection.updateNodeStatus({
+                ids: [parseInt(id)],
+                status: 2
+            })
         },
 
-        onClickItemStop: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
+        onClickItemStop: function(event) {
+            var eventTarget = event.srcElement || event.target,
+                id;
+            if (eventTarget.tagName == "SPAN") {
                 eventTarget = $(eventTarget).parent();
                 id = eventTarget.attr("id");
             } else {
@@ -905,20 +998,24 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             if (!result) return
 
             this.currentPauseNodeId = id;
-            this.collection.operateNode({nodeId: id, operator: -1, t: new Date().valueOf()})
+            this.collection.operateNode({
+                nodeId: id,
+                operator: -1,
+                t: new Date().valueOf()
+            })
             this.showDisablePopup("服务端正在努力暂停中...")
-            // require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel){
-            //     this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, id)
-            // }.bind(this))        
+                // require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel){
+                //     this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, id)
+                // }.bind(this))        
         },
 
-        onOperateNodeSuccess: function(res){
+        onOperateNodeSuccess: function(res) {
             this.disablePopup.$el.modal('hide');
-            if (res.msg == "1" && res.status === 200){
+            if (res.msg == "1" && res.status === 200) {
                 alert("操作成功！")
                 this.onClickQueryButton();
-            } else if (res.msg == "-1" && res.status === 200){
-                require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel){
+            } else if (res.msg == "-1" && res.status === 200) {
+                require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel) {
                     this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, this.currentPauseNodeId)
                 }.bind(this))
             } else {
@@ -927,7 +1024,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             }
         },
 
-        onRequireDispSuggesttionModule: function(DispSuggesttionViews, DispSuggesttionModel, nodeId){//
+        onRequireDispSuggesttionModule: function(DispSuggesttionViews, DispSuggesttionModel, nodeId) { //
             if (!this.dispSuggesttionFailModel)
                 this.dispSuggesttionFailModel = new DispSuggesttionModel();
             this.hide();
@@ -940,33 +1037,36 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.dispSuggesttionView.render($('.ksc-content'));
         },
 
-        backFromDispSuggesttion: function(){
+        backFromDispSuggesttion: function() {
             this.dispSuggesttionView.remove();
             this.dispSuggesttionView = null;
             this.dispSuggesttionFailModel = null;
             this.update();
         },
 
-        onClickMultiStop : function(event){
+        onClickMultiStop: function(event) {
             var checkedList = this.collection.filter(function(model) {
                 return model.get("isChecked") === true;
             })
             var ids = [];
-            _.each(checkedList, function(el, index, list){
+            _.each(checkedList, function(el, index, list) {
                 ids.push(el.attributes.id);
             })
             if (ids.length === 0) return;
             var result = confirm("你确定要批量关闭选择的节点吗？")
             if (!result) return
-            this.collection.updateNodeStatus({ids:ids, status:3})
+            this.collection.updateNodeStatus({
+                ids: ids,
+                status: 3
+            })
         },
 
-        onClickMultiDelete: function(event){
+        onClickMultiDelete: function(event) {
             var checkedList = this.collection.filter(function(model) {
                 return model.get("isChecked") === true;
             })
             var ids = [];
-            _.each(checkedList, function(el, index, list){
+            _.each(checkedList, function(el, index, list) {
                 ids.push(el.attributes.id);
             })
             if (ids.length === 0) return;
@@ -975,17 +1075,17 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             alert(ids.join(",") + "。接口不支持，臣妾做不到啊！");
         },
 
-        initPaginator: function(){
+        initPaginator: function() {
             this.$el.find(".total-items span").html(this.collection.total)
             if (this.collection.total <= this.queryArgs.count) return;
-            var total = Math.ceil(this.collection.total/this.queryArgs.count);
+            var total = Math.ceil(this.collection.total / this.queryArgs.count);
 
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
                 visiblePages: 10,
                 currentPage: 1,
-                onPageChange: function (num, type) {
-                    if (type !== "init"){
+                onPageChange: function(num, type) {
+                    if (type !== "init") {
                         this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                         var args = _.extend(this.queryArgs);
                         args.page = num;
@@ -997,28 +1097,42 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.isInitPaginator = true;
         },
 
-        initNodeDropMenu: function(){
-            var statusArray = [
-                {name: "全部", value: "All"},
-                {name: "运行", value: 1},
-                {name: "挂起", value: 2},
-                {name: "暂停", value: 4}
-            ],
-            rootNode = this.$el.find(".dropdown-status");
-            Utility.initDropMenu(rootNode, statusArray, function(value){
+        initNodeDropMenu: function() {
+            var statusArray = [{
+                    name: "全部",
+                    value: "All"
+                }, {
+                    name: "运行",
+                    value: 1
+                }, {
+                    name: "挂起",
+                    value: 2
+                }, {
+                    name: "暂停",
+                    value: 4
+                }],
+                rootNode = this.$el.find(".dropdown-status");
+            Utility.initDropMenu(rootNode, statusArray, function(value) {
                 if (value !== "All")
                     this.queryArgs.status = parseInt(value);
                 else
                     this.queryArgs.status = null;
             }.bind(this));
 
-            var pageNum = [
-                {name: "10条", value: 10},
-                {name: "20条", value: 20},
-                {name: "50条", value: 50},
-                {name: "100条", value: 100}
-            ]
-            Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
+            var pageNum = [{
+                name: "10条",
+                value: 10
+            }, {
+                name: "20条",
+                value: 20
+            }, {
+                name: "50条",
+                value: 50
+            }, {
+                name: "100条",
+                value: 100
+            }]
+            Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value) {
                 this.queryArgs.count = value;
                 this.queryArgs.page = 1;
                 this.onClickQueryButton();
@@ -1027,13 +1141,19 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.getOperatorList();
         },
 
-        onGetOperatorSuccess: function(res){
+        onGetOperatorSuccess: function(res) {
             this.operatorList = res
-            var nameList = [{name: "全部", value: "All"}];
-            _.each(res.rows, function(el, index, list){
-                nameList.push({name: el.name, value:el.id})
+            var nameList = [{
+                name: "全部",
+                value: "All"
+            }];
+            _.each(res.rows, function(el, index, list) {
+                nameList.push({
+                    name: el.name,
+                    value: el.id
+                })
             });
-            Utility.initDropMenu(this.$el.find(".dropdown-operator"), nameList, function(value){
+            Utility.initDropMenu(this.$el.find(".dropdown-operator"), nameList, function(value) {
                 if (value !== "All")
                     this.queryArgs.operator = parseInt(value)
                 else
@@ -1041,7 +1161,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             }.bind(this));
         },
 
-        onItemCheckedUpdated: function(event){
+        onItemCheckedUpdated: function(event) {
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             var id = $(eventTarget).attr("id");
@@ -1066,14 +1186,14 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             }
         },
 
-        onAllCheckedUpdated: function(event){
+        onAllCheckedUpdated: function(event) {
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
-            this.collection.each(function(model){
+            this.collection.each(function(model) {
                 model.set("isChecked", eventTarget.checked);
             }.bind(this))
             this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
-            if (eventTarget.checked){
+            if (eventTarget.checked) {
                 this.$el.find(".opt-ctn .multi-delete").removeAttr("disabled", "disabled");
                 this.$el.find(".opt-ctn .multi-stop").removeAttr("disabled", "disabled");
                 this.$el.find(".opt-ctn .multi-play").removeAttr("disabled", "disabled");
@@ -1087,17 +1207,17 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
         showDisablePopup: function(msg) {
             if (this.disablePopup) $("#" + this.disablePopup.modalId).remove();
             var options = {
-                title    : "警告",
-                body     : '<div class="alert alert-danger"><strong>' + msg +'</strong></div>',
-                backdrop : 'static',
-                type     : 0,
+                title: "警告",
+                body: '<div class="alert alert-danger"><strong>' + msg + '</strong></div>',
+                backdrop: 'static',
+                type: 0,
             }
             this.disablePopup = new Modal(options);
             this.disablePopup.$el.find(".close").remove();
         },
 
-        hide: function(){
-            if (this.dispSuggesttionView){
+        hide: function() {
+            if (this.dispSuggesttionView) {
                 this.dispSuggesttionView.remove();
                 this.dispSuggesttionView = null;
                 this.dispSuggesttionFailModel = null;
@@ -1106,7 +1226,7 @@ define("nodeManage.view", ['require','exports', 'template', 'modal.view', 'utili
             $(document).off('keydown');
         },
 
-        update: function(){
+        update: function() {
             this.collection.off();
             this.collection.reset();
             this.$el.remove();

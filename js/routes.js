@@ -340,6 +340,26 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                 }
             },
 
+            setupLogSetupDomainManageNavbar: function(query, query2) {
+                var menu = [{
+                    id: 'customerSetup-domainList-openAPILogSetup',
+                    name: '日志配置',
+                    hash: 'index.html#/domainList/' + query + '/openAPILogSetup/' + query2,
+                    children: []
+                }];
+
+                if (!this.domainManageNavbar) {
+                    var menuOptions = {
+                        query: query,
+                        query2: query2,
+                        menuList: menu,
+                        backHash: 'index.html#/domainList/' + query
+                    }
+                    this.domainManageNavbar = new SubNavbar(menuOptions);
+                    this.domainManageNavbar.select(this.curPage);
+                }
+            },
+
             removeSubSideBar: function() {
                 //从域名列表页面、新域名管理页面进入到其他一级导航页面移除域名列表的二级导航、新域名管理的二级导航
                 if (this.curPage.indexOf("customerSetup-") == -1 &&

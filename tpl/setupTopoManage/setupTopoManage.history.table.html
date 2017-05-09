@@ -2,6 +2,7 @@
     <thead>
         <tr>
             <th>版本号</th>
+            <th>创建时间</th>
             <th>修改时间</th>
             <th>备注</th>
             <th>操作</th>
@@ -10,10 +11,9 @@
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].id%>" <% if (data[i].status === 1 ) { %> class="danger" <% } %>>
-                <td><%=data[i]["innerId"]%>
-                </td>
-                <td><%=data[i]["updateTimeFormated"]%>
-                </td>
+                <td><%=data[i]["innerId"]%></td>
+                <td><%=data[i]["createTimeFormated"]%></td>
+                <td><%=data[i]["updateTimeFormated"]%></td>
                 <td> 
                    <a href="javascript:void(0)" 
                       data-container="body" 

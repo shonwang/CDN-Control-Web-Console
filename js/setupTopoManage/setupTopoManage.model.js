@@ -51,7 +51,7 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
         },
 
         getTopoInfo: function(args) {
-            var url = BASE_URL + "/resource/topo/resource/topo?innerId=" + args,
+            var url = BASE_URL + "/resource/topo/getTopoVerionDetail?innerId=" + args,
                 successCallback = function(res) {
                     if (res) {
                         this.total = res.total;

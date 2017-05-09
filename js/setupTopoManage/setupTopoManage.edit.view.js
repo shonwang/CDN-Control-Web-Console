@@ -36,7 +36,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     this.collection.getTopoOrigininfo(this.model.get('id'));
                 } else if (!this.isEdit && this.isView){
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                    this.collection.getTopoOrigininfo(this.model.get('id'));
+                    this.collection.getTopoInfo(this.model.get('id'));
                     this.$el.find(".opt-ctn .save").hide();
                     this.$el.find('.all .add-node').hide();
                     this.$el.find('.upper .add-node').hide();

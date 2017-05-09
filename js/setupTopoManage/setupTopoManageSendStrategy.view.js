@@ -322,6 +322,8 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
             _.each(this.allNodes, function(el){
                 nodeNames[el.id] = el.name;
             }.bind(this))
+            if (this.defaultParam.nodeNames)
+                this.nodeNamesXHR = this.defaultParam.nodeNames
             this.defaultParam.nodeNames = nodeNames;
             console.log('节点名称: ', this.defaultParam.nodeNames)
         },
@@ -336,7 +338,8 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
             _.each(this.defaultParam.deliveryStrategyDef, function(step){
                 var nodeName = '';
                 _.each(step.nodeId, function(nodeId){
-                    nodeName = nodeName + this.defaultParam.nodeNames[nodeId] + '<br>'
+                    nodeName = nodeName + 
+                    (this.defaultParam.nodeNames[nodeId] || '<span class="text-danger">' + this.nodeNamesXHR[nodeId] +'</span>') + '<br>'
                 }.bind(this))
                 stepArray.push({
                     step: step.step,

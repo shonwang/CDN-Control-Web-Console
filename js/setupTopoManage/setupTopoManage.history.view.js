@@ -44,6 +44,8 @@ define("setupTopoManage.history.view", ['require', 'exports', 'template', 'modal
                 _.each(data, function(el, index, ls) {
                     if (el.updateTime)
                         el.updateTimeFormated = new Date(el.updateTime).format("yyyy/MM/dd hh:mm:ss");
+                    if (el.createTime)
+                        el.createTimeFormated = new Date(el.createTime).format("yyyy/MM/dd hh:mm:ss");
                 }.bind(this))
 
                 this.table = $(_.template(template['tpl/setupTopoManage/setupTopoManage.history.table.html'])({

@@ -68,7 +68,7 @@ define("setupTopoManage.history.view", ['require', 'exports', 'template', 'modal
                 this.table.find("[data-toggle='popover']").popover();
             },
 
-            onClickItemPublish: function() {
+            onClickItemPublish: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     version = $(eventTarget).attr("version");
 

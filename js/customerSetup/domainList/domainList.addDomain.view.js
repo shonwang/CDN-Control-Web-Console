@@ -598,32 +598,6 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 this.$el.find(".origin-protocol").hide();
             },
 
-            checkOrignTypeAndContent: function() {
-                //源站类型未选的提示
-                if (!this.args.OriginType || this.args.OriginType == 1) {
-                    this.$el.find("#cdn-originType-error").show();
-                    return false;
-                }
-                var _val = "";
-                if (this.args.OriginType == "ipaddr") {
-                    _val = this.$el.find("#cdn-originIP").val().replace(/\;+$/, '');
-                } else if (this.args.OriginType == "domain") {
-                    _val = this.$el.find("#cdn-originAddress").val().trim();
-
-                } else if (this.args.OriginType == "ksvideo") {
-                    return true;
-                }
-
-                this.args.Origin = _val;
-
-                var result = this.checkOrigin();
-                if (!result) {
-                    return false;
-                }
-
-                return true;
-            },
-
             setDropdownMenu: function() {
                 //直播的源站类型
                 this.args.OriginType = 1;
@@ -674,7 +648,9 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 } else if (originType == "ksvideo") {
                     this.$el.find(".cdn-originIP").hide();
                     this.$el.find(".cdn-originAddress").hide();
-                    this.$el.find(".cdn-originKsVideo").hide();
+                    this.$el.find(".cdn-originKsVideo").show();
+                    if (this.$el.find(".cdn-originKsVideo input").val() === "")
+                        this.$el.find(".cdn-originKsVideo input").val("uplive-orig.ks-cdn.com")
                 }
 
                 if (originType == "ipaddr" || originType == "domain") {

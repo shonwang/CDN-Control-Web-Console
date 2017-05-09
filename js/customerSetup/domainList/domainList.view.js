@@ -160,6 +160,7 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
 
             this.curType = model.get("type");
             this.curProtocol = model.get("protocol");
+            this.curSubType = model.get("subType");
 
             if (whereAreYouFrom === 2) {
                 this.alertChangeType(model.get("id"));
@@ -173,15 +174,25 @@ define("domainList.view", ['require','exports', 'template', 'utility', "modal.vi
             // type=1 protocol=0,4 下载
             // type=2 protocol=2 伪直播
             // type=2 protocol= 1,3真直播
-            if ((this.curType === 1 && this.curProtocol === 0) ||
-                (this.curType === 1 && this.curProtocol === 4) ||
-                (this.curType === 2 && this.curProtocol === 2)) {
-                window.location.hash = '#/domainList/' + this.args + "/basicInformation/" + this.args2
-            } else if ((this.curType === 2 && this.curProtocol === 1) ||
-                       (this.curType === 2 && this.curProtocol === 3)) {
-                window.location.hash = '#/domainList/' + this.args + "/liveBasicInformation/" + this.args2
+            // subType = 3 直播上行
+            if(this.curSubType === 3) {
+                window.location.hash = '#/domainList/' + this.args + "/liveUpBasicInformation/" + this.args2
             } else {
-                alert('type=1 protocol=0,4 下载<br>type=2 protocol=2 伪直播<br>type=2 protocol= 1,3真直播<br>当前返回的type为' + this.curType + "，protocol为" + this.curProtocol);
+                if ((this.curType === 1 && this.curProtocol === 0) ||
+                    (this.curType === 1 && this.curProtocol === 4) ||
+                    (this.curType === 2 && this.curProtocol === 2)) {
+                    window.location.hash = '#/domainList/' + this.args + "/basicInformation/" + this.args2
+                } else if ((this.curType === 2 && this.curProtocol === 1) ||
+                           (this.curType === 2 && this.curProtocol === 3)) {
+                    window.location.hash = '#/domainList/' + this.args + "/liveBasicInformation/" + this.args2
+                } else {
+                    var message = "type=1 protocol=0,4 下载<br>" + 
+                                  "type=2 protocol=2, 伪直播<br>" + 
+                                  "type=2 protocol= 1,3真直播<br>" + 
+                                  "subType = 3, 直播上行<br>" + 
+                                  "当前返回的type=" + this.curType + "，protocol=" + this.curProtocol + "，subType=" + this.curSubType;
+                    alert(message);
+                }
             }
         },
 

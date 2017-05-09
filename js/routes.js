@@ -38,6 +38,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                 "domainList/:query": "domainList",
                 "blockUrl/:query": "blockUrl",
                 "interfaceQuota/:query": "interfaceQuota",
+
                 "domainList/:query/basicInformation/:query2": "basicInformation",
                 "domainList/:query/urlBlackList/:query2": "urlBlackList",
                 "domainList/:query/domainSetup/:query2": "domainSetup",
@@ -57,6 +58,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                 "domainList/:query/refererAntiLeech/:query2": "refererAntiLeech",
                 "domainList/:query/timestamp/:query2": "timestamp",
                 "domainList/:query/openNgxLog/:query2": "openNgxLog",
+
                 "domainList/:query/liveBasicInformation/:query2": "liveBasicInformation",
                 "domainList/:query/liveDomainSetup/:query2": "liveDomainSetup",
                 "domainList/:query/liveCnameSetup/:query2": "liveCnameSetup",
@@ -73,6 +75,11 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                 "domainList/:query/liveRtmpOptimize/:query2": "liveRtmpOptimize",
                 "domainList/:query/liveSLAStatistics/:query2": "liveSLAStatistics",
                 "domainList/:query/liveFrequencyLog/:query2": "liveFrequencyLog",
+                //直播上行
+                "domainList/:query/liveUpBasicInformation/:query2": "liveUpBasicInformation",
+                "domainList/:query/liveUpBackOriginSetup/:query2": "liveUpBackOriginSetup",
+                "domainList/:query/liveUpFlowNameChange/:query2": "liveUpFlowNameChange",
+
                 "setupChannelManage": "setupChannelManage",
                 "setupAppManage": "setupAppManage",
                 "setupTopoManage": "setupTopoManage",
@@ -252,26 +259,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         name: 'PK优化配置',
                         hash: 'index.html#/domainList/' + query + '/liveHttpFlvOptimize/' + query2,
                         children: []
-                    },
-                    // {
-                    //     id: 'customerSetup-domainList-livePKOptimize',
-                    //     name: 'PK优化配置',
-                    //     hash: 'javascript:void(0)',
-                    //     children: [{
-                    //         id: 'customerSetup-domainList-liveHttpFlvOptimize',
-                    //         name: 'Http+Flv调优配置',
-                    //         hash: 'index.html#/domainList/' + query + '/liveHttpFlvOptimize/' + query2,
-                    //         active: false,
-                    //         children: []
-                    //     },{
-                    //         id: 'customerSetup-domainList-liveRtmpOptimize',
-                    //         name: 'Rtmp调优配置',
-                    //         hash: 'index.html#/domainList/' + query + '/liveRtmpOptimize/' + query2,
-                    //         active: false,
-                    //         children: []
-                    //     }]
-                    // },
-                    {
+                    },{
                         id: 'customerSetup-domainList-liveSLASetup',
                         name: '日志配置',
                         hash: 'javascript:void(0)',
@@ -288,6 +276,37 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                             active: false,
                             children: []
                         }]
+                    }
+                ];
+
+                if (!this.domainManageNavbar) {
+                    var menuOptions = {
+                        query: query,
+                        query2: query2,
+                        menuList: menu,
+                        backHash: 'index.html#/domainList/' + query
+                    }
+                    this.domainManageNavbar = new SubNavbar(menuOptions);
+                    this.domainManageNavbar.select(this.curPage);
+                }
+            },
+
+            setupLiveUpDomainManageNavbar: function(query, query2) {
+                var menu = [{
+                        id: 'customerSetup-domainList-liveUpBasicInformation',
+                        name: '基本信息',
+                        hash: 'index.html#/domainList/' + query + '/liveUpBasicInformation/' + query2,
+                        children: []
+                    }, {
+                        id: 'customerSetup-domainList-liveUpBackOriginSetup',
+                        name: '源站配置',
+                        hash: 'index.html#/domainList/' + query + '/liveUpBackOriginSetup/' + query2,
+                        children: []
+                    }, {
+                        id: 'customerSetup-domainList-liveUpFlowNameChange',
+                        name: '流名变换',
+                        hash: 'index.html#/domainList/' + query + '/liveUpFlowNameChange/' + query2,
+                        children: []
                     }
                 ];
 
@@ -364,6 +383,64 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     this.setupSendNavbar.$el.remove();
                     this.setupSendNavbar = null;
                 }
+            },
+
+            liveUpBackOriginSetup: function(query, query2) {
+                require(['liveUpBackOriginSetup.view', 'liveUpBackOriginSetup.model'], function(LiveUpBackOriginSetupView, LiveUpHttpsSetupModel) {
+                    this.navbarView.select('customerSetup');
+                    this.curPage = 'customerSetup-domainList-liveUpBackOriginSetup';
+                    this.setupLiveDomainManageNavbar(query, query2);
+                    var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                    if (!this.liveHttpsSetupModel)
+                        this.liveHttpsSetupModel = new LiveUpHttpsSetupModel();
+                    if (!this.liveUpBackOriginSetupView) {
+                        var options = {
+                            collection: this.liveHttpsSetupModel,
+                            query: query,
+                            query2: query2
+                        };
+                        this.liveUpBackOriginSetupView = new LiveUpBackOriginSetupView(options);
+                        this.liveUpBackOriginSetupView.render(renderTarget);
+                    } else {
+                        this.domainManageNavbar.select(this.curPage);
+                        this.liveUpBackOriginSetupView.update(query, query2, renderTarget);
+                    }
+                    this.curView = this.liveUpBackOriginSetupView;    
+                }.bind(this));
+            },
+
+            liveUpBasicInformation: function(query, query2) {
+                require(['liveUpBasicInformation.view', 'liveUpBasicInformation.model'], function(LiveUpBasicInformationView, LiveUpInformationModel) {
+                    //一级菜单选中域名配置
+                    this.navbarView.select('customerSetup');
+                    //设置当前页面ID
+                    this.curPage = 'customerSetup-domainList-liveUpBasicInformation';
+                    //移除用户域名列表二级菜单
+                    if (this.customerSetupNavbar) {
+                        this.customerSetupNavbar.$el.remove();
+                        this.customerSetupNavbar = null;
+                    }
+                    //生成直播域名管理三级菜单
+                    this.setupLiveDomainManageNavbar(query, query2);
+                    var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                    if (!this.liveUpBasicInformationModel)
+                        this.liveUpBasicInformationModel = new LiveUpInformationModel();
+                    if (!this.liveUpBasicInformationView) {
+                        var options = {
+                            collection: this.liveUpBasicInformationModel,
+                            query: query,
+                            query2: query2
+                        };
+                        this.liveUpBasicInformationView = new LiveUpBasicInformationView(options);
+                        this.liveUpBasicInformationView.render(renderTarget);
+                    } else {
+                        this.domainManageNavbar.select(this.curPage);
+                        this.liveUpBasicInformationView.update(query, query2, renderTarget);
+                    }
+                    this.curView = this.liveUpBasicInformationView;    
+                }.bind(this));
             },
 
             specialLayerManage: function() {

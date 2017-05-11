@@ -1,0 +1,127 @@
+<div>
+    <div>
+        <div class="form-horizontal">
+            <div class="form-group">
+                <label for="input-name" class="col-sm-3 control-label">名称</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="input-name" value='<%=data["sourceName"]%>'>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="origin-type" class="col-sm-3 control-label">源站类型</label>
+                <div class="col-sm-8 origin-type">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-origin-type" data-toggle="dropdown">
+                            <span class="cur-value">加载中...</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group origin-type">
+                <div class="col-sm-offset-3 col-sm-6">
+                    <textarea class="form-control" rows="3" id="textarea-origin-type" value='<%=data["originAddr"]%>'></textarea>
+                </div>
+                <div class="col-sm-2 btn-ctn" style="display:none">
+                    <a href="javascript:void(0)" class="btn btn-primary edit">编辑</a>
+                    <a href="javascript:void(0)" class="btn btn-info lock" style="display:none">确定</a>
+                </div>
+            </div>
+            <div class="form-group push-type">
+                <label for="push-type" class="col-sm-3 control-label">转推方式</label>
+                <div class="col-sm-8">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-push-type" data-toggle="dropdown">
+                            <span class="cur-value">加载中...</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="input-port" class="col-sm-3 control-label">转推端口</label>
+                <div class="col-sm-3">
+                    <input type="number" class="form-control" id="input-port" value='<%=data["pushPort"]%>'>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="input-push-address" class="col-sm-3 control-label">转推地址频道</label>
+                <div class="col-sm-2 push-address">
+                    <div class="togglebutton">
+                        <label>
+                            <input type="checkbox" id="pushAppFlag"><span class="toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="input-push-address" value='<%=data["pushAppName"]%>' style="display:none">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="alert alert-dismissable alert-info col-sm-offset-3 col-sm-8">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <strong>提示：</strong>频道设置的字符长度最大为：32位，支持字符：字母，数字；不支持大写，下划线；不支持转义字符和urlencode会处理的特殊字符，如:！ # $ % & ‘ （ ）* + , . / : ; = ? @ [ / ]
+                </div>
+            </div>
+            <div class="form-group origin-host">
+                <label for="input-origin-host" class="col-sm-3 control-label">回源host</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="input-origin-host" readonly="true" value='<%=data["backHost"]%>'>
+                </div>
+                <div class="col-sm-2">
+                    <a href="javascript:void(0)" class="btn btn-primary edit">编辑</a>
+                    <a href="javascript:void(0)" class="btn btn-info lock" style="display:none">确定</a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="input-push-args" class="col-sm-3 control-label">转推参数</label>
+                <div class="col-sm-2 push-args">
+                    <div class="togglebutton">
+                        <label>
+                            <input type="checkbox" id="pushArgsFlag"><span class="toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="input-push-args" value='<%=data["pushArgs"]%>' style="display:none">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="input-push-connect" class="col-sm-3 control-label">增加connect阶段参数</label>
+                <div class="col-sm-2 push-connect">
+                    <div class="togglebutton">
+                        <label>
+                            <input type="checkbox" id="connectArgsFlag"><span class="toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="input-push-connect" value='<%=data["connectArgs"]%>' style="display:none">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="input-push-reconnect" class="col-sm-3 control-label">转推重连参数</label>
+                <div class="col-sm-2 push-reconnect">
+                    <div class="togglebutton">
+                        <label>
+                            <input type="checkbox" id="reconnectArgsFlag"><span class="toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="input-push-reconnect" value='<%=data["reconnectArgs"]%>' style="display:none">
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <h4>回源检测</h4>
+    <div class="well">
+        <div class="row">
+            <div class="col-sm-12 origin-detection-ctn">
+            </div>
+        </div>
+    </div>
+</div>

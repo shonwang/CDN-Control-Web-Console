@@ -385,11 +385,36 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                 }
             },
 
+            liveUpFlowNameChange: function(query, query2) {
+                require(['liveUpFlowNameChange.view', 'liveUpFlowNameChange.model'], function (LiveUpFlowNameChangeView, LiveUpFlowNameChangeModel) {
+                    this.navbarView.select('customerSetup');
+                    this.curPage = 'customerSetup-domainList-liveUpFlowNameChange';
+                    this.setupLiveUpDomainManageNavbar(query, query2);
+                    var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                    if (!this.liveHttpsSetupModel)
+                        this.liveHttpsSetupModel = new LiveUpFlowNameChangeModel();
+                    if (!this.liveUpFlowNameChangeView) {
+                        var options = {
+                            collection: this.liveHttpsSetupModel,
+                            query: query,
+                            query2: query2
+                        };
+                        this.liveUpFlowNameChangeView = new LiveUpFlowNameChangeView(options);
+                        this.liveUpFlowNameChangeView.render(renderTarget);
+                    } else {
+                        this.domainManageNavbar.select(this.curPage);
+                        this.liveUpFlowNameChangeView.update(query, query2, renderTarget);
+                    }
+                    this.curView = this.liveUpFlowNameChangeView;    
+                }.bind(this));
+            },
+
             liveUpBackOriginSetup: function(query, query2) {
                 require(['liveUpBackOriginSetup.view', 'liveUpBackOriginSetup.model'], function(LiveUpBackOriginSetupView, LiveUpHttpsSetupModel) {
                     this.navbarView.select('customerSetup');
                     this.curPage = 'customerSetup-domainList-liveUpBackOriginSetup';
-                    this.setupLiveDomainManageNavbar(query, query2);
+                    this.setupLiveUpDomainManageNavbar(query, query2);
                     var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
 
                     if (!this.liveHttpsSetupModel)
@@ -422,7 +447,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.customerSetupNavbar = null;
                     }
                     //生成直播域名管理三级菜单
-                    this.setupLiveDomainManageNavbar(query, query2);
+                    this.setupLiveUpDomainManageNavbar(query, query2);
                     var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
 
                     if (!this.liveUpBasicInformationModel)

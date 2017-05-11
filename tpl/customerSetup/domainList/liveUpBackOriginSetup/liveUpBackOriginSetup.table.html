@@ -1,0 +1,42 @@
+<table class="table table-striped table-hover">
+    <thead> 
+      <tr>
+        <th>名称</th>
+        <th>源站地址</th>
+        <th>转推地址端口</th>
+        <th>类型</th>
+        <th>回源探测</th>
+        <th>操作</th>
+        <th></th>    
+      </tr>
+    </thead>
+    <tbody>
+        <% for(var i = 0; i < data.length; i++) { %>
+            <tr data-id="<%=data[i].get('id')%>">
+              <td><%=data[i].get("sourceName") || "————"%></td>
+              <td><%=data[i].get("originAddr") || "————"%></td>
+              <td><%=data[i].get("pushPort") || "————"%></td>
+              <td><%=data[i].get("pushTypeName") || "————"%></td>
+              <td><%=data[i].get("detectConfig").flagName || "————"%></td>
+              <td>
+                  <% if (data[i].get("sourceType") === 2 || data[i].get("sourceType") === 3) { %>
+                  <div class="togglebutton">
+                      <label>
+                          <input type="checkbox" id="<%=data[i].get('id')%>" <% if (data[i].get('openFlag') === 1) { %>checked="true" <% } %>>
+                          <span class="toggle"></span>
+                      </label>
+                  </div>
+                  <% } %>  
+              </td>
+              <td>
+                  <% if (data[i].get("sourceType") === 1 || data[i].get("sourceType") === 3) { %>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit">修改</a>
+                  <% } %> 
+                  <% if (data[i].get("sourceType") === 1) { %>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="delete">删除</a>
+                  <% } %>
+              </td>
+            </tr>
+        <% } %>  
+    </tbody>
+</table>

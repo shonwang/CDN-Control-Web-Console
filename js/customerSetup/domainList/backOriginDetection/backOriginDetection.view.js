@@ -38,8 +38,11 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
         },
 
         getDetecInfoSuccess: function(data){
+            var originId = "";
+            if (this.domainInfo) originId = this.domainInfo.id;
+
             this.defaultParam = {
-               originId:this.domainInfo.id,
+               originId: originId,
                flag:1,
                detectMethod:'HEAD',
                expectedResponse:"2xx,3xx,4xx",

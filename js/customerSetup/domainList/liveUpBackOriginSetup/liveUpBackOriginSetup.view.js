@@ -103,7 +103,8 @@ define("liveUpBackOriginSetup.view", ['require', 'exports', 'template', 'modal.v
                     var myAddEditItemView = new AddEditItemView({
                         collection: this.collection,
                         model: model,
-                        isEdit: true
+                        isEdit: true,
+                        userInfo: this.userInfo
                     });
 
                     var options = {
@@ -132,7 +133,8 @@ define("liveUpBackOriginSetup.view", ['require', 'exports', 'template', 'modal.v
                 if (this.addItemPopup) $("#" + this.addItemPopup.modalId).remove();
                 require(['liveUpBackOriginSetup.edit.view'], function(AddEditItemView) {
                     var myAddEditItemView = new AddEditItemView({
-                        collection: this.collection
+                        collection: this.collection,
+                        userInfo: this.userInfo
                     });
 
                     var options = {

@@ -33,9 +33,11 @@ define("setupTopoManage.history.view", ['require', 'exports', 'template', 'modal
             },
 
             onSetVersionSuccess: function() {
-                this.collection.getTopoVersion({
-                    innerId: this.curVersion
-                });
+                // this.collection.getTopoVersion({
+                //     innerId: this.curVersion
+                // });
+                this.onClickCancelButton();
+                this.options.onSaveCallback && this.options.onSaveCallback(this.curVersion);
             },
 
             initSetup: function(data) {
@@ -76,8 +78,6 @@ define("setupTopoManage.history.view", ['require', 'exports', 'template', 'modal
                 this.collection.changeTopoVersion({
                     innerId: version
                 });
-
-                alert("操作成功！")
             },
 
             onClickItemViews: function(event) {

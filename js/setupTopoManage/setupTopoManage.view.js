@@ -192,7 +192,9 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     var myHistoryView = new HistoryView({
                         collection: this.collection,
                         model: model,
-                        onSaveCallback: function() {}.bind(this),
+                        onSaveCallback: function() {
+                            setTimeout($.proxy(this.alertChangeType, this, model), 500);
+                        }.bind(this),
                         onCancelCallback: function() {
                             myHistoryView.$el.remove();
                             this.$el.find(".list-panel").show();

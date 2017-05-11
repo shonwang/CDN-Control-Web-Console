@@ -112,11 +112,11 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
             ],
             rootNode = this.$el.find(".way .way-type");
             Utility.initDropMenu(rootNode, baseArray, function(value){
-                this.defaultParam.originBaseType = parseInt(value)
+                this.defaultParam.detectMethod = value;
             }.bind(this));
 
             var defaultValue = _.find(baseArray, function(object){
-                return object.value === this.defaultParam.originBaseType;
+                return object.value === this.defaultParam.detectMethod;
             }.bind(this));
 
             if (defaultValue)

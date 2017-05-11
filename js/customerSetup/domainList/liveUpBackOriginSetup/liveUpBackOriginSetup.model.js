@@ -5,7 +5,7 @@ define("liveUpBackOriginSetup.model", ['require', 'exports', 'utility'], functio
             if (pushType === 1) this.set("pushTypeName", "边缘转推");
             if (pushType === 2) this.set("pushTypeName", "上层转推");
 
-            var flag = this.get('detectConfig').flag; //转推类型 1:边缘转推 2:上层转推
+            var flag = this.get('detectConfig').flag;
             if (flag === 1) this.get('detectConfig').flagName = '<span class="text-success">开启</span>';
             if (flag === 0) this.get('detectConfig').flagName = '<span class="text-danger">关闭</span>';
         }
@@ -61,7 +61,7 @@ define("liveUpBackOriginSetup.model", ['require', 'exports', 'utility'], functio
                         "updateTime": new Date().valueOf(),
                         "detectConfig": {
                             "pushId": null,
-                            "flag": 1,
+                            "flag": 0,
                             "detectMethod": null,
                             "expectedResponse": null,
                             "detectUrl": null,

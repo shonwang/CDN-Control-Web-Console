@@ -116,7 +116,6 @@ define("liveUpBackOriginSetup.view", ['require', 'exports', 'template', 'modal.v
                         onOKCallback: function() {
                             var postParam = myAddEditItemView.onSure();
                             if (!postParam) return;
-
                             _.each(postParam, function(value, key, ls) {
                                 model.set(key, value);
                             }.bind(this))
@@ -147,23 +146,7 @@ define("liveUpBackOriginSetup.view", ['require', 'exports', 'template', 'modal.v
                             var postParam = myAddEditItemView.onSure();
                             if (!postParam) return;
                             var model = new this.collection.model(postParam);
-                            var allFileArray = this.collection.filter(function(obj) {
-                                return obj.get('type') === 9;
-                            }.bind(this));
-
-                            var specifiedUrlArray = this.collection.filter(function(obj) {
-                                return obj.get('type') === 2;
-                            }.bind(this));
-
-                            var otherArray = this.collection.filter(function(obj) {
-                                return obj.get('type') !== 2 && obj.get('type') !== 9;
-                            }.bind(this));
-
-                            if (postParam.type === 9) allFileArray.push(model)
-                            if (postParam.type === 2) specifiedUrlArray.push(model)
-                            if (postParam.type !== 9 && postParam.type !== 2) otherArray.push(model)
-
-                            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
+                            this.collection.push(model);
                             this.collection.trigger("get.pushConf.success");
                             this.addItemPopup.$el.modal('hide');
                         }.bind(this),

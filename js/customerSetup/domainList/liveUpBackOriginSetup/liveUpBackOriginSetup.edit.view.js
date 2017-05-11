@@ -13,32 +13,41 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                 this.$el.find("h4").remove();
                 this.$el.find(".well").removeClass("well");
                 this.$el.removeClass("animated");
-                this.$el.find(".save").parent(".form-group").remove();
+                this.$el.find(".save-ctn").remove();
                 this.$el.find("hr").remove();
             },
 
-            onClickSaveBtn: function() {
+            setHostValue: function(value) {
+                var setupHost = this.$el.find(".host #setupHost");
+                setupHost.val(value);
+            },
+
+            getDetectionInfo: function() {
                 var reg = /^\//g;
-                if (reg.test(this.$el.find(".way #detectionFile").val()) == false) {
+                if (reg.test(this.$el.find(".way #detectionFile").val()) == false && this.defaultParam.flag === 1) {
                     alert('探测文件需以"/"开头');
-                    return;
+                    return false;
                 }
-                if (this.$el.find(".host #setupHost").val() == "") {
+                if (this.$el.find(".host #setupHost").val() == "" && this.defaultParam.flag === 1) {
                     alert('请求HOST头不能为空');
-                    return;
+                    return false;
                 }
 
                 var detectionFile = this.$el.find(".way #detectionFile");
                 var setupHost = this.$el.find(".host #setupHost");
                 var responseState = this.$el.find(".state #responseState");
                 var detectionFrequency = this.$el.find(".frequency #detectionFrequency");
+                var postParam = {};
+                postParam.host = setupHost.val();
+                postParam.detectUrl = detectionFile.val();
+                postParam.expectedResponse = responseState.val();
+                postParam.frequency = parseInt(detectionFrequency.val());
+                postParam.detectMethod = this.defaultParam.detectMethod;
+                postParam.flag = this.defaultParam.flag;
+                if (postParam.flag === 1) postParam.flagName = '<span class="text-success">开启</span>';
+                if (postParam.flag === 0) postParam.flagName = '<span class="text-danger">关闭</span>';
 
-                this.defaultParam.host = setupHost.val();
-                this.defaultParam.detectUrl = detectionFile.val();
-                this.defaultParam.expectedResponse = responseState.val();
-                this.defaultParam.frequency = parseInt(detectionFrequency.val());
-
-                //this.collection.addDetectInfo(this.defaultParam);
+                return postParam;
             },
         });
 
@@ -182,7 +191,7 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     else
                         this.$el.find("#dropdown-push-type .cur-value").html(pushTypeArray[0].name);
 
-                    this.$el.find("#textarea-origin-type").on("blur", $.proxy(this.onBlurOriginTypeTextarea, this))
+                    this.$el.find("#textarea-origin-type").on("blur", $.proxy(this.onBlurOriginTypeTextarea, this));
                 }
                 var toggleInputs = this.$el.find(".togglebutton input");
                 _.each(toggleInputs, function(el) {
@@ -193,6 +202,18 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                         $(el).parents(".col-sm-2").siblings(".col-sm-6").children().hide();
                 }.bind(this))
                 this.$el.find(".togglebutton input").on("click", $.proxy(this.onClickItemToggle, this));
+                this.$el.find("#input-push-address").on("blur", $.proxy(this.onBlurPushAddressInput, this));
+            },
+
+            onBlurPushAddressInput: function() {
+                var re = /^[0-9a-z]+$/,
+                    value = this.$el.find("#input-push-address").val();
+                if (value === "") return false;
+                if (!re.test(value) || value.length > 32) {
+                    alert("频道设置的字符长度最大为：32位，支持字符：字母，数字；不支持大写，下划线；不支持转义字符和urlencode会处理的特殊字符，如:！ # $ % & ‘ （ ）* + , . / : ; = ? @ [ / ]");
+                    return false
+                }
+                return true;
             },
 
             showOriginAddressAlert: function() {
@@ -211,11 +232,14 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
             },
 
             onClickItemToggle: function(event) {
-                var eventTarget = event.srcElement || event.target;
-                if (eventTarget.checked)
-                    $(eventTarget).parents(".col-sm-2").siblings(".col-sm-6").children().show();
-                else
-                    $(eventTarget).parents(".col-sm-2").siblings(".col-sm-6").children().hide();
+                var eventTarget = event.srcElement || event.target,
+                    inputElment = $(eventTarget).parents(".col-sm-2").siblings(".col-sm-6").children();
+                if (eventTarget.checked) {
+                    inputElment.show();
+                    inputElment.focus();
+                } else {
+                    inputElment.hide();
+                }
                 this.defaultParam[eventTarget.id] = eventTarget.checked ? 1 : 0
             },
 
@@ -227,10 +251,17 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
             },
 
             onLockInput: function(event) {
-                var eventTarget = event.srcElement || event.target;
-                $(eventTarget).parent(".col-sm-2").siblings(".col-sm-6").children().attr("readonly", "true");
-                $(eventTarget).hide();
-                $(eventTarget).siblings(".btn").show();
+                var eventTarget = event.srcElement || event.target,
+                    inputElment = $(eventTarget).parent(".col-sm-2").siblings(".col-sm-6").children(),
+                    result = this.checkBaseOrigin(inputElment.val(), 3);
+                if (result) {
+                    inputElment.attr("readonly", "true");
+                    $(eventTarget).hide();
+                    $(eventTarget).siblings(".btn").show();
+                    if (inputElment.get(0).id === "input-origin-host") {
+                        this.myLiveUpBackOriginDetectionView.setHostValue(inputElment.val())
+                    }
+                }
             },
 
             checkBaseOrigin: function(value, type) {
@@ -245,7 +276,7 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                         return false;
                     }
 
-                    var ipArray = originAddress.split(",");
+                    var ipArray = originAddress.split("\n");
                     if (ipArray.length > 10) {
                         alert("你的IP数是否超过了10个。");
                         return false;
@@ -304,38 +335,68 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                 return true;
             },
 
-            onSure: function() {
-                var matchConditionParam = this.matchConditionView.getMatchConditionParam(),
-                    hasOriginPolicy, expireTime, summary,
-                    cacheTimeType = parseInt(this.$el.find("[name='cacheTimeRadios']:checked").val());
-
-                if (!matchConditionParam) return false;
-
-                if (cacheTimeType === 1) {
-                    expireTime = 0,
-                        hasOriginPolicy = 0
-                    summary = "缓存时间：不缓存";
-                } else if (cacheTimeType === 2) {
-                    hasOriginPolicy = 0
-                    expireTime = this.defaultParam.cacheTime,
-                        summary = "缓存时间：" + Utility.timeFormat2(expireTime);
-                    //summary = "缓存时间：" + expireTime + "秒";
-                } else if (cacheTimeType === 3) {
-                    expireTime = this.defaultParam.cacheOriginTime,
-                        hasOriginPolicy = 1
-                    summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + Utility.timeFormat2(expireTime);
-                    //summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + expireTime + "秒";
-                }
-
+            onSure: function() {             
                 var postParam = {
-                    "id": this.isEdit ? this.model.get("id") : new Date().valueOf(),
-                    "type": matchConditionParam.type,
-                    "typeName": matchConditionParam.typeName,
-                    "policy": matchConditionParam.policy,
-                    "expireTime": expireTime,
-                    "hasOriginPolicy": hasOriginPolicy,
-                    "summary": summary
+                    "openFlag": this.defaultParam.openFlag, //源站配置 0:关 1:开
+                    "sourceType": this.defaultParam.sourceType, //1:用户源站 2:上层节点 3：视频云源站
+                    "sourceName": this.$el.find("#input-name").val().trim(),
+                    "originType": this.defaultParam.originType, //1:ip 2:域名 3:视频云源站
+                    "originAddr": this.$el.find("#textarea-origin-type").val().trim(),
+                    "pushPort": this.$el.find("#input-port").val().trim(),
+                    "pushAppFlag": this.defaultParam.pushAppFlag, //转推地址频道名称 0:关 1:开启
+                    "pushAppName": this.$el.find("#input-push-address").val().trim(),
+                    "pushType": this.defaultParam.pushType,
+                    "pushArgsFlag": this.defaultParam.pushArgsFlag,
+                    "pushArgs": this.$el.find("#input-push-args").val().trim(),
+                    "connectArgsFlag": this.defaultParam.connectArgsFlag,
+                    "connectArgs": this.$el.find("#input-push-connect").val().trim(),
+                    "reconnectArgsFlag": this.defaultParam.reconnectArgsFlag,
+                    "reconnectArgs": this.$el.find("#input-push-reconnect").val().trim(),
+                    "detectConfig": ""
+                };
+                if (postParam.sourceName === "") {
+                    alert("请输入名称！");
+                    return false;
                 }
+                var isCorrectBackHost,
+                    isCorrectOriginAddr = this.checkBaseOrigin(postParam.originAddr, postParam.originType);
+                if (!isCorrectOriginAddr) return false;
+                if (this.isEdit) {
+                    postParam.backHost = this.$el.find("#input-origin-host").val().trim();
+                    isCorrectBackHost = this.checkBaseOrigin(postParam.backHost, 3);
+                    if (!isCorrectBackHost) return false;
+                    postParam.id = this.model.get("id");
+                } else {
+                    postParam.id = new Date().valueOf();
+                }
+                if (postParam.pushPort === "") {
+                    alert("请输入正确的端口号");
+                    return false;
+                }
+                if (postParam.pushAppFlag === 1 && !this.onBlurPushAddressInput()) {
+                    alert("既然开启了转推地址频道, 就请输入正确的转推地址频道！");
+                    return false;
+                }
+                if (postParam.pushArgsFlag === 1 && postParam.pushArgs === "") {
+                    alert("既然开启了转推参数, 就请输入正确的转推参数！");
+                    return false;
+                }
+                if (postParam.connectArgsFlag === 1 && postParam.connectArgs === "") {
+                    alert("既然开启了增加connect阶段参数, 就请输入正确的增加connect阶段参数！");
+                    return false;
+                }
+                if (postParam.reconnectArgsFlag === 1 && postParam.reconnectArgs === "") {
+                    alert("既然开启了转推重连参数, 就请输入正确的转推重连参数！");
+                    return false;
+                }
+
+                var detectInfo = this.myLiveUpBackOriginDetectionView.getDetectionInfo();
+                if (!detectInfo)
+                    return false;
+                else
+                    postParam.detectConfig = detectInfo;
+
+                console.log(postParam)
                 return postParam
             },
 

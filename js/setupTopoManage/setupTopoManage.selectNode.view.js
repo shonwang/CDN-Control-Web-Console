@@ -114,7 +114,7 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
 
             onGetAllNode: function(res) {
                 _.each(res, function(el, index, list) {
-                    if (el.status !== 3 && el.status !== 2) {
+                    // if (el.status !== 3 && el.status !== 2) {
                         el.name = el.chName;
                         el.isDisplay = true;
                         el.isChecked = false;
@@ -126,7 +126,7 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                             }
                         }.bind(this))
                         this.allNodes.push(el);
-                    }
+                    // }
                 }.bind(this))
 
                 var tempArray = []

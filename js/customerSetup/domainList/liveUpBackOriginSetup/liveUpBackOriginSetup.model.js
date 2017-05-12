@@ -35,7 +35,7 @@ define("liveUpBackOriginSetup.model", ['require', 'exports', 'utility'], functio
                 errorCallback = function(response) {
                     this.trigger("get.pushConf.error", response)
                 }.bind(this);
-            //Utility.postAjax(url, args, successCallback, errorCallback);
+            //Utility.getAjax(url, args, successCallback, errorCallback);
             var tempData = {
                 "originId": 114,
                 "appLives": [{

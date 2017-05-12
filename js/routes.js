@@ -392,11 +392,11 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     this.setupLiveUpDomainManageNavbar(query, query2);
                     var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
 
-                    if (!this.liveHttpsSetupModel)
-                        this.liveHttpsSetupModel = new LiveUpFlowNameChangeModel();
+                    if (!this.liveUpFlowNameChangeModel)
+                        this.liveUpFlowNameChangeModel = new LiveUpFlowNameChangeModel();
                     if (!this.liveUpFlowNameChangeView) {
                         var options = {
-                            collection: this.liveHttpsSetupModel,
+                            collection: this.liveUpFlowNameChangeModel,
                             query: query,
                             query2: query2
                         };
@@ -411,17 +411,17 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
             },
 
             liveUpBackOriginSetup: function(query, query2) {
-                require(['liveUpBackOriginSetup.view', 'liveUpBackOriginSetup.model'], function(LiveUpBackOriginSetupView, LiveUpHttpsSetupModel) {
+                require(['liveUpBackOriginSetup.view', 'liveUpBackOriginSetup.model'], function(LiveUpBackOriginSetupView, LiveUpBackOriginSetupModel) {
                     this.navbarView.select('customerSetup');
                     this.curPage = 'customerSetup-domainList-liveUpBackOriginSetup';
                     this.setupLiveUpDomainManageNavbar(query, query2);
                     var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
 
-                    if (!this.liveHttpsSetupModel)
-                        this.liveHttpsSetupModel = new LiveUpHttpsSetupModel();
+                    if (!this.liveUpBackOriginSetupModel)
+                        this.liveUpBackOriginSetupModel = new LiveUpBackOriginSetupModel();
                     if (!this.liveUpBackOriginSetupView) {
                         var options = {
-                            collection: this.liveHttpsSetupModel,
+                            collection: this.liveUpBackOriginSetupModel,
                             query: query,
                             query2: query2
                         };

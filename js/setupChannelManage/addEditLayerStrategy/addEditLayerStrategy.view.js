@@ -352,7 +352,8 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                             tempArray.push({
                                 chiefType: el.chiefType,
                                 ipCorporation: el.ipCorporation,
-                                rsNodeMsgVo: rsNodeMsgVo
+                                rsNodeMsgVo: rsNodeMsgVo,
+                                id: el.id
                             })
                         }.bind(this))
                         this.defaultParam.upper = tempArray;

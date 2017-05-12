@@ -33,8 +33,8 @@ define("liveUpBackOriginSetup.view", ['require', 'exports', 'template', 'modal.v
                     originId: this.domainInfo.id
                 });
 
-                // this.collection.on("set.pushConf.success", $.proxy(this.onSaveSuccess, this));
-                // this.collection.on("set.pushConf.error", $.proxy(this.onGetError, this));
+                this.collection.on("set.pushConf.success", $.proxy(this.onSaveSuccess, this));
+                this.collection.on("set.pushConf.error", $.proxy(this.onGetError, this));
             },
 
             launchSendPopup: function() {
@@ -174,20 +174,32 @@ define("liveUpBackOriginSetup.view", ['require', 'exports', 'template', 'modal.v
                 var list = [];
                 this.collection.each(function(obj) {
                     list.push({
-                        "type": obj.get('type'),
-                        "pushConf": obj.get('pushConf'),
-                        "expireTime": obj.get('expireTime'),
-                        "hasOriginPolicy": obj.get('hasOriginPolicy'),
+                        "openFlag": obj.get('openFlag'),
+                        "sourceType": obj.get('sourceType'),
+                        "sourceName": obj.get('sourceName'),
+                        "originType": obj.get('originType'),
+                        "originAddr": obj.get('originAddr'),
+                        "pushPort": obj.get('pushPort'),
+                        "pushAppFlag": obj.get('pushAppFlag'),
+                        "pushAppName": obj.get('pushAppName'),
+                        "backHost": obj.get('backHost'),
+                        "pushType": obj.get('pushType'),
+                        "pushArgsFlag": obj.get('pushArgsFlag'),
+                        "pushArgs": obj.get('pushArgs'),
+                        "connectArgsFlag": obj.get('connectArgsFlag'),
+                        "connectArgs": obj.get('connectArgs'),
+                        "reconnectArgsFlag": obj.get('reconnectArgsFlag'),
+                        "reconnectArgs": obj.get('reconnectArgs'),
+                        "detectConfig": obj.get('detectConfig')
                     })
                 }.bind(this))
 
                 var postParam = {
                     "originId": this.domainInfo.id,
-                    "userId": this.clientInfo.uid,
-                    "list": list
+                    "pushList": list
                 }
-
-                this.collection.setPolicy(postParam)
+                console.log(postParam)
+                this.collection.setPushSourceConfig(postParam)
             },
 
             onSaveSuccess: function() {

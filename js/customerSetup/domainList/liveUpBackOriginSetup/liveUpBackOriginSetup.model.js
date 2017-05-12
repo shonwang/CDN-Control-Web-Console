@@ -74,12 +74,12 @@ define("liveUpBackOriginSetup.model", ['require', 'exports', 'utility'], functio
             successCallback(tempData);
         },
 
-        setHostHeaderConfig: function(args) {
-            var url = BASE_URL + "/channelManager/domain/setHostHeaderConfig";
-            Utility.getAjax(url, args, function(res) {
-                this.trigger("set.hostConfig.success");
+        setPushSourceConfig: function(args) {
+            var url = BASE_URL + "/channelManager/upLive/setPushSourceConfig";
+            Utility.postAjax(url, args, function(res) {
+                this.trigger("set.pushConf.success");
             }.bind(this), function(res) {
-                this.trigger("set.hostConfig.error", res);
+                this.trigger("set.pushConf.error", res);
             }.bind(this));
         },
     });

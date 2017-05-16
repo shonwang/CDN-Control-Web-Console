@@ -231,4 +231,13 @@ requirejs.onError = function () {
             backdrop:'static'
         };
     $errorPopup.modal(options);
-};
+};
+if (window.DEBUG === 1.1) {
+    window.SOCKET = io.connect("ws://127.0.0.1:3000");
+    window.SOCKET.on('debug', function(message){
+        console.log("Server: ", message)
+    });
+    window.SOCKET.on('connect_error', function(){
+        window.SOCKET.close();
+    });
+}

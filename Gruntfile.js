@@ -88,7 +88,8 @@ module.exports = function(grunt) {
                         "libs/searchSelect.js",
                         "libs/plupload.full.min.js",
                         "libs/async.min.js",
-                        "libs/bootstrap-switch.js"
+                        "libs/bootstrap-switch.js",
+                        "libs/socket.io-1.4.5.js"
                     ]
                 }
             },

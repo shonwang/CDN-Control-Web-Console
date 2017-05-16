@@ -16,7 +16,14 @@
                       </label>
                   </div>
               </td>
-              <td>备注</td>
+              <td>
+                  <a href="javascript:void(0)" 
+                      data-container="body" 
+                      data-toggle="popover" 
+                      data-placement="top" 
+                      data-content='<%=data[i]["mark"] || "无"%>' 
+                      data-trigger="hover">备注</a>
+              </td>
             </tr>
         <% } %>  
     </tbody>

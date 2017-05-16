@@ -148,10 +148,12 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                             this.$el.find(".main-list").show();
                         }.bind(this)
                     })
+
                     this.$el.find(".main-list").hide();
                     mySetupBillView.render(this.$el.find(".bill-panel"));
                 }.bind(this))
             },
+
 
             onClickItemlogSetup: function(event) {
                 var eventTarget = event.srcElement || event.target,

@@ -367,6 +367,7 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
         events: {},
 
         initialize: function(options) {
+            this.options = options;
             this.collection = options.collection;
             this.liveCollection = options.liveCollection;
 
@@ -419,8 +420,12 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
             this.$el.hide();
         },
 
-        update: function() {
-            this.$el.show();
+        update: function(target) {
+            this.collection.off();
+            this.collection.reset();
+            this.remove();
+            this.initialize(this.options);
+            this.render(target);
         },
 
         render: function(target) {

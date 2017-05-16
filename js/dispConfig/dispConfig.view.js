@@ -293,6 +293,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         events: {},
 
         initialize: function(options) {
+            this.options = options;
             this.collection = options.collection;
             this.dispGroupCollection = options.dispGroupCollection;
             this.diffCollection = options.diffCollection;
@@ -1082,10 +1083,12 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             $(document).off('keydown');
         },
 
-        update: function(){
-            this.$el.show();
-            this.collection.getDispGroupList();
-            if (AUTH_OBJ.QueryGslbConfig) this.enterKeyBindQuery();
+        update: function(target) {
+            this.collection.off();
+            this.collection.reset();
+            this.remove();
+            this.initialize(this.options);
+            this.render(target);
         },
 
         render: function(target) {

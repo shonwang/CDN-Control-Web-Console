@@ -1,0 +1,17 @@
+<%if(data.length>0){%>
+<% for(var i=0;i < data.length;i++) { %>
+	<tr>
+	   <!--td>
+	      <input type="checkbox">
+	   </td>
+	   <td>http://baidu.com</td-->
+	   <td><%=data[i].nodeName%></td>
+	   <td >屏蔽失败</td>
+	</tr>
+<% } %>	
+<%}else{%>
+	<tr>
+	   <td colspan="2" style="text-align:center;">无数据</td>
+	</tr>
+<%}%>
+	

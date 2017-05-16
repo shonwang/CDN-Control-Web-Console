@@ -1,4 +1,67 @@
 define('blockUrl.view',['utility','template'],function(Utility,template){
+    var DetailView = Backbone.View.extend({
+        events:{},
+        initialize:function(options){
+            this.collection = options.collection;
+            this.$el =  $(_.template(template['tpl/customerSetup/blockUrl/TabCurrentBlockDetailList.html'])());
+            this.queryArgs = {
+                id:options.id,
+                op:0,
+                searchUrl:"",
+                page:1,
+                rows:10,
+                success:function(data){
+                    this.initTable(data);
+                }.bind(this),
+                error:function(data){}.bind(this)
+            };
+            
+            this.getDetailData();
+        },
+
+        getDetailData:function(){
+            var args = this.queryArgs;
+            this.showloading();
+            this.collection.getCurrentBlockDetail(args);
+        },
+
+        showloading: function(){
+            this.$el.find(".pagination").html("");
+            this.$el.find(".ks-table tbody").html('<tr><td  colspan="2" class="text-center"><div class="domain-spinner">正在加载...</div></td></tr>');
+        },
+
+        initTable: function(res){
+           var data = JSON.parse(res);
+           var _data = data.taskBlockResult && data.taskBlockResult.resultList || [];
+           this.total = data.taskBlockResult && data.taskBlockResult.totalNumber || 0;
+           this.table = $(_.template(template['tpl/customerSetup/blockUrl/TabCurrentBlockDetailList.table.html'])({data:_data}));
+           this.$el.find('.ks-table tbody').html(this.table);
+           if(!this.isInitPaginator) this.initPaginator();
+        },
+        
+        initPaginator: function(){
+            //this.$el.find(".total-items span").html(this.collection.total)
+            if (this.total <= this.queryArgs.rows) return;
+            var total = Math.ceil(this.total/this.queryArgs.rows);
+            this.$el.find(".pagination").jqPaginator({
+                totalPages: total,
+                visiblePages: 5,
+                currentPage: 1,
+                onPageChange: function (num, type) {
+                    if (type !== "init"){
+                        this.$el.find(".ks-table tbody").html('<tr><td  colspan="6" class="text-center"><div class="domain-spinner">正在加载...</div></td></tr>');
+                        this.queryArgs.page = num;
+                        this.getDetailData();
+                    }
+                }.bind(this)
+            });
+            this.isInitPaginator = true;
+        },
+
+        render: function(target){
+           this.$el.appendTo(target);
+        }        
+    });
 	var TabBlockUrlView = Backbone.View.extend({
         events:{},
         initialize: function(options){
@@ -256,7 +319,15 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         },
         initblockListDropmenu: function(){
             var statusArray = [
-               {name:'全部',value:0},
+                {name:'全部',value:0},
+                {name:'屏蔽中',value:1},
+                {name:'解除屏蔽中',value:2},
+                {name:'屏蔽完成',value:3},
+                {name:'解除屏蔽完成',value:5},
+                {name:'刷新中',value:7},
+                {name:'刷新完成',value:9},
+                {name:'已失效',value:10}
+                /*
                {name:'屏蔽成功',value:3},
                {name:'屏蔽失败',value:4},
                {name:'屏蔽中',value:1},
@@ -265,6 +336,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                {name:'解除屏蔽失败',value:6},
                {name:'刷新中',value:7},
                {name:'刷新失败',value:8}
+               */
             ];
             rootNode = this.$el.find('.dropdown-state');
             Utility.initDropMenu(rootNode,statusArray,function(value){
@@ -312,9 +384,11 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
              var Reunblock = this.table.find('.Reunblock');
              var Rescreen = this.table.find('.Rescreen');
              var Refresh = this.table.find('.Refresh');
+             var ShowDetail = this.table.find('.ShowDetail');
              if(Reunblock) Reunblock.on('click',$.proxy(this.onclickReunblockButton,this));
              if(Rescreen)  Rescreen.on('click',$.proxy(this.onclickRescreenOrRefreshButton,this));
              if(Refresh) Refresh.on('click',$.proxy(this.onclickRescreenOrRefreshButton,this));
+             if(ShowDetail) ShowDetail.on('click',$.proxy(this.onClickShowDetail,this));
         },
         onclickRescreenOrRefreshButton: function(event){
             var eventTarget = event.target || event.srcElement;
@@ -330,6 +404,14 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.collection.retryBlockTas(defaultParam);
 
         },
+        onClickShowDetail:function(event){
+            var eventTarget = event.target || event.srcElement;
+            var id = $(eventTarget).parent().attr('id');
+            var url = $(eventTarget).parent().attr('data-url');
+            require(['modal.view'],function(Modal){
+                this.showDetailView(Modal,id,url);
+            }.bind(this));
+        },
         onclickReunblockButton: function(event){
              var eventTarget = event.target || event.srcElement;
              var id = $(eventTarget).parent().attr('id'),ids = [];
@@ -340,6 +422,35 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         setNoData:function(msg){
             this.$el.find(".ks-table tbody").html('<tr><td  colspan="8" class="text-center"><p class="text-muted text-center">'+msg+'</p></td></tr>');
         },
+
+        showDetailView:function(Modal,id,url){
+            if(this.detailViewPopup){
+                $("#" + this.detailViewPopup.modalId).remove();
+            }
+            var detailView = new DetailView({
+                collection:this.collection,
+                id:id
+            });
+            var options = {
+                title:url+"的详情",
+                width:1000,
+                zIndex:9999,
+                body : detailView,
+                backdrop : 'static',
+                type:0,
+                onOKCallback:  function(){
+                   
+                }.bind(this),
+                onShowCallback:function(){
+                    
+                }.bind(this),
+                onHideCallback:function(){
+
+                }.bind(this)
+            }
+            this.detailViewPopup = new Modal(options);   
+        },
+
         initPaginator: function(){
             this.$el.find(".total-items span").html(this.collection.total)
             if (this.collection.total <= this.queryArgs.rows) return;

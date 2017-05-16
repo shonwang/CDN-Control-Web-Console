@@ -4,15 +4,20 @@
 	      <input type="checkbox" value="<%= data[i].get('url')%>" id="<%= data[i].get('id')%>"><%= data[i].get('url') %>
 	   </td>
 	   <td><%= data[i].get('date') %></td>
-	   <td><%= data[i].get('status') %></td>
-	   <td id="<%= data[i].get('id') %>">
-           <% if(data[i].get('status') === '屏蔽失败'){ %>
-          	  <button type="button" class="btn btn-default btn-sm Rescreen">重新屏蔽</button>
-           <%} else if(data[i].get('status') === '解除屏蔽失败') { %>
-              <button type="button" class="btn btn-default btn-sm Reunblock">重新解除屏蔽</button>
-           <%} else if(data[i].get('isRefreshSuccess') === 1 ) { %>
-              <button type="button" class="btn btn-default btn-sm Refresh">重新刷新</button>
+	   <td><%= data[i].get('expireTime') %></td>
+	   <td><%= data[i].get('statusName') %></td>
+	   <td><%= data[i].get('general') %></td>
+	   <td id="<%= data[i].get('id') %>" data-url="<%= data[i].get('url') %>">
+           <% if(data[i].get('op') === 3 || data[i].get('op') === 5 || data[i].get('op') === 0 ){ %>
+          	  <button type="button" class="btn btn-default btn-sm Rescreen" style="margin-right:5px;">重新屏蔽</button>
+           <%} else if(data[i].get('op') === 5) { %>
+              <button type="button" class="btn btn-default btn-sm Reunblock" style="margin-right:5px;">重新解除屏蔽</button>
+           <%} else if(data[i].get('op') === 9 ) { %>
+              <button type="button" class="btn btn-default btn-sm Refresh" style="margin-right:5px;">重新刷新</button>
            <%}%>
+		   <%if(data[i].get('op') === 3 || data[i].get('op') === 5 || data[i].get('op') === 9){%>
+			<a href="javascript:void(0)" class="ShowDetail">查看详情</a>
+		   <%}%>
        </td>
 	  
 	   

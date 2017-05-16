@@ -1110,6 +1110,9 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 }, {
                     name: "暂停",
                     value: 4
+                },{
+                    name: "关闭",
+                    value: 3
                 }],
                 rootNode = this.$el.find(".dropdown-status");
             Utility.initDropMenu(rootNode, statusArray, function(value) {

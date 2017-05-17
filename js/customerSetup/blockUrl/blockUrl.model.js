@@ -2,7 +2,7 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
     var Model = Backbone.Model.extend({
         initialize: function(){
             var op=this.get("op");
-            var successRatioName = this.get("successRatio") ==-1?"---":this.get("successRatio")+"%";
+            var successRatioName = this.get("successRatio") ==-1?"":this.get("successRatio")+"%";
             if(op == 1){
                 this.set("statusName","屏蔽中");
                 this.set("general","下发中");
@@ -11,20 +11,27 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
                 this.set("statusName","解除屏蔽中");
                 this.set("general","下发中");
             }
-            else if(op == 7 ){
-                this.set("statusName","刷新中");
-                this.set("general","下发中");
-            }
-
             else if(op == 3 ){
                 this.set("statusName","屏蔽完成");
                 this.set("general",successRatioName);
+            }
+            else if(op == 4 ){
+                this.set("statusName","屏蔽失败");
             }
             else if(op == 5 ){
                 this.set("statusName","解除屏蔽完成");
                 this.set("general",successRatioName);
             }
-            
+            else if(op == 6 ){
+                this.set("statusName","解除屏蔽失败");
+            }
+            else if(op == 7 ){
+                this.set("statusName","刷新中");
+                this.set("general","下发中");
+            }
+            else if(op == 8 ){
+                this.set("statusName","刷新失败");
+            }
             else if(op == 9 ){
                 this.set("statusName","刷新完成");
                 this.set("general",successRatioName);

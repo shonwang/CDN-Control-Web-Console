@@ -323,8 +323,11 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 {name:'屏蔽中',value:1},
                 {name:'解除屏蔽中',value:2},
                 {name:'屏蔽完成',value:3},
+                {name:'屏蔽失败',value:4},//
                 {name:'解除屏蔽完成',value:5},
+                {name:'解除屏蔽失败',value:6},//
                 {name:'刷新中',value:7},
+                {name:'刷新失败',value:8},//
                 {name:'刷新完成',value:9},
                 {name:'已失效',value:10}
                 /*
@@ -333,9 +336,9 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                {name:'屏蔽中',value:1},
                {name:'解除屏蔽中',value:2},
               // {name:'解除屏蔽成功',value:5},
-               {name:'解除屏蔽失败',value:6},
+               
                {name:'刷新中',value:7},
-               {name:'刷新失败',value:8}
+               
                */
             ];
             rootNode = this.$el.find('.dropdown-state');

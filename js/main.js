@@ -79,6 +79,13 @@
   "liveSLAStatistics.view": "customerSetup/domainList/liveSLAStatistics/liveSLAStatistics.view",
   "liveTimestamp.model": "customerSetup/domainList/liveTimestamp/liveTimestamp.model",
   "liveTimestamp.view": "customerSetup/domainList/liveTimestamp/liveTimestamp.view",
+  "liveUpBackOriginSetup.edit.view": "customerSetup/domainList/liveUpBackOriginSetup/liveUpBackOriginSetup.edit.view",
+  "liveUpBackOriginSetup.model": "customerSetup/domainList/liveUpBackOriginSetup/liveUpBackOriginSetup.model",
+  "liveUpBackOriginSetup.view": "customerSetup/domainList/liveUpBackOriginSetup/liveUpBackOriginSetup.view",
+  "liveUpBasicInformation.model": "customerSetup/domainList/liveUpBasicInformation/liveUpBasicInformation.model",
+  "liveUpBasicInformation.view": "customerSetup/domainList/liveUpBasicInformation/liveUpBasicInformation.view",
+  "liveUpFlowNameChange.model": "customerSetup/domainList/liveUpFlowNameChange/liveUpFlowNameChange.model",
+  "liveUpFlowNameChange.view": "customerSetup/domainList/liveUpFlowNameChange/liveUpFlowNameChange.view",
   "matchCondition.model": "customerSetup/domainList/matchCondition/matchCondition.model",
   "matchCondition.view": "customerSetup/domainList/matchCondition/matchCondition.view",
   "openAPILogSetup.model": "customerSetup/domainList/openAPILogSetup/openAPILogSetup.model",
@@ -230,3 +237,13 @@ requirejs.onError = function () {
         };
     $errorPopup.modal(options);
 };
+
+if (window.DEBUG === 1.1) {
+    window.SOCKET = io.connect("ws://127.0.0.1:3000");
+    window.SOCKET.on('debug', function(message){
+        console.log("Server: ", message)
+    });
+    window.SOCKET.on('connect_error', function(){
+        window.SOCKET.close();
+    });
+}

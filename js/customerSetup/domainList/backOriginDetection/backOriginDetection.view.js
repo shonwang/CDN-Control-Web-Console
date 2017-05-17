@@ -38,8 +38,11 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
         },
 
         getDetecInfoSuccess: function(data){
+            var originId = "";
+            if (this.domainInfo) originId = this.domainInfo.id;
+
             this.defaultParam = {
-               originId:this.domainInfo.id,
+               originId: originId,
                flag:1,
                detectMethod:'HEAD',
                expectedResponse:"2xx,3xx,4xx",
@@ -109,11 +112,11 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
             ],
             rootNode = this.$el.find(".way .way-type");
             Utility.initDropMenu(rootNode, baseArray, function(value){
-                this.defaultParam.originBaseType = parseInt(value)
+                this.defaultParam.detectMethod = value;
             }.bind(this));
 
             var defaultValue = _.find(baseArray, function(object){
-                return object.value === this.defaultParam.originBaseType;
+                return object.value === this.defaultParam.detectMethod;
             }.bind(this));
 
             if (defaultValue)

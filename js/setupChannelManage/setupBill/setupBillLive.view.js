@@ -24,37 +24,6 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
                 _.each(this.appLives, function(el, index, ls){                  
                     var pushConf = el.pushConf || {};
 
-                    pushConf["pushList"] = [{
-                        "id": 1,
-                        "openFlag": 1, //源站配置 0:关 1:开
-                        "sourceType": 3, //1:用户源站 2:上层节点 3：视频云源站
-                        "sourceName": "视频云源站",
-                        "originType": 3, //1:ip 2:域名 3:视频云源站
-                        "originAddr": null,
-                        "pushPort": null,
-                        "pushAppFlag": 1, //转推地址频道名称 0:关 1:开启
-                        "pushAppName": "pushAppName",
-                        "backHost": null,
-                        "pushType": null,
-                        "pushArgsFlag": 1,
-                        "pushArgs": "pushArgs",
-                        "connectArgsFlag": 1,
-                        "connectArgs": "connectArgs",
-                        "reconnectArgsFlag": 1,
-                        "reconnectArgs": "reconnectArgs",
-                        "createTime": new Date().valueOf(),
-                        "updateTime": new Date().valueOf(),
-                        "detectConfig": {
-                            "pushId": null,
-                            "flag": 0,
-                            "detectMethod": null,
-                            "expectedResponse": null,
-                            "detectUrl": null,
-                            "frequency": null,
-                            "host": null
-                        }
-                    }]
-
                     var myLiveUpBackOriginSetupModel = new LiveUpBackOriginSetupModel();
                     _.each(pushConf.pushList, function(element, inx, list){
                         myLiveUpBackOriginSetupModel.push(new myLiveUpBackOriginSetupModel.model(element));

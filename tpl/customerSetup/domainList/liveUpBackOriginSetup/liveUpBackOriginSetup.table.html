@@ -18,7 +18,7 @@
               <td><%=data[i].get("originAddr") || "————"%></td>
               <td><%=data[i].get("pushPort") || "————"%></td>
               <td><%=data[i].get("pushTypeName") || "————"%></td>
-              <td><%=data[i].get("detectConfig").flagName || "————"%></td>
+              <td><%=data[i].get("detectConfig")&&data[i].get("detectConfig").flagName || "————"%></td>
               <td>
                   <% if (data[i].get("sourceType") === 2 || data[i].get("sourceType") === 3) { %>
                   <div class="togglebutton">

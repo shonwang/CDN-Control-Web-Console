@@ -24,19 +24,7 @@ define("liveUpFlowNameChange.model", ['require', 'exports', 'utility', 'basicInf
                     errorCallback = function(response) {
                         this.trigger("get.pushConfig.error", response)
                     }.bind(this);
-                //Utility.getAjax(url, args, successCallback, errorCallback);
-                var tempData = {
-                    "originId": 114,
-                    "appLives": [{
-                        "pushConf": {
-                            "id": null,
-                            "liveId": null,
-                            "aliasFlag": 0,
-                            "aliasName": "null"
-                        }
-                    }]
-                }
-                successCallback(tempData);
+                Utility.getAjax(url, args, successCallback, errorCallback);
             },
 
             setPushLiveConfig: function(args) {

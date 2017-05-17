@@ -4,10 +4,12 @@ define("liveUpBackOriginSetup.model", ['require', 'exports', 'utility'], functio
             var pushType = this.get('pushType'); //转推类型 1:边缘转推 2:上层转推
             if (pushType === 1) this.set("pushTypeName", "边缘转推");
             if (pushType === 2) this.set("pushTypeName", "上层转推");
-
-            var flag = this.get('detectConfig').flag;
-            if (flag === 1) this.get('detectConfig').flagName = '<span class="text-success">开启</span>';
-            if (flag === 0) this.get('detectConfig').flagName = '<span class="text-danger">关闭</span>';
+            var flag
+            if (this.get('detectConfig')) {
+                flag = this.get('detectConfig').flag;
+                if (flag === 1) this.get('detectConfig').flagName = '<span class="text-success">开启</span>';
+                if (flag === 0) this.get('detectConfig').flagName = '<span class="text-danger">关闭</span>';
+            }
         }
     });
 
@@ -18,7 +20,7 @@ define("liveUpBackOriginSetup.model", ['require', 'exports', 'utility'], functio
         initialize: function() {},
 
         getPushSourceConfig: function(args) {
-            var url = BASE_URL + "/nodejs/channelManager/upLive/getPushSourceConfig",
+            var url = BASE_URL + "/channelManager/upLive/getPushSourceConfig",
                 successCallback = function(res) {
                     this.reset();
                     if (res && res.appLives.length > 0) {
@@ -39,7 +41,7 @@ define("liveUpBackOriginSetup.model", ['require', 'exports', 'utility'], functio
         },
 
         setPushSourceConfig: function(args) {
-            var url = BASE_URL + "/nodejs/channelManager/upLive/setPushSourceConfig";
+            var url = BASE_URL + "/channelManager/upLive/setPushSourceConfig";
             Utility.postAjax(url, args, function(res) {
                 this.trigger("set.pushConf.success");
             }.bind(this), function(res) {

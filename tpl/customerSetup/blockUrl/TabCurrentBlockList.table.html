@@ -8,15 +8,18 @@
 	   <td><%= data[i].get('statusName') %></td>
 	   <td><%= data[i].get('general') %></td>
 	   <td id="<%= data[i].get('id') %>" data-url="<%= data[i].get('url') %>">
-           <% if(data[i].get('op') === 3 || data[i].get('op') === 5 || data[i].get('op') === 0 ){ %>
+           <% if(data[i].get('op') === 3 || data[i].get('op') === 5 || data[i].get('op') === 0 || data[i].get('op') === 4){ %>
           	  <button type="button" class="btn btn-default btn-sm Rescreen" style="margin-right:5px;">重新屏蔽</button>
-           <%} else if(data[i].get('op') === 5) { %>
+           <%} if(data[i].get('op') === 5 || data[i].get('op') === 6) { %>
               <button type="button" class="btn btn-default btn-sm Reunblock" style="margin-right:5px;">重新解除屏蔽</button>
-           <%} else if(data[i].get('op') === 9 ) { %>
+           <%}if(data[i].get('op') === 9 || data[i].get('op') === 8 ) { %>
               <button type="button" class="btn btn-default btn-sm Refresh" style="margin-right:5px;">重新刷新</button>
            <%}%>
+
 		   <%if(data[i].get('op') === 3 || data[i].get('op') === 5 || data[i].get('op') === 9){%>
-			<a href="javascript:void(0)" class="ShowDetail">查看详情</a>
+				<%if(data[i].get('successRatio')!==-1 && data[i].get('successRatio')!==0){%>
+				<a href="javascript:void(0)" class="ShowDetail">查看详情</a>
+				<%}%>
 		   <%}%>
        </td>
 	  

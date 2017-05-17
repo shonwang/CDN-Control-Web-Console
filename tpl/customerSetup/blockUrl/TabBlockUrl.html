@@ -5,4 +5,23 @@
 	<p style="margin-top:10px;">以协议://开头，如（http://）开头, 多个URL之间用英文半角分号分隔开。</p>
 	<p>示例：http://cdn.ksyun.com/index.html;http://cdn.ksyun.com/path1/test.jpg</p>
 	<a href="javascript:void(0)" class="btn btn-primary btn-primary active" id="submitBlock">提交屏蔽</a>
+
+	<div class="alert alert-dismissable alert-danger" style="margin-top:10px;">
+		<button type="button" class="close" data-dismiss="alert">×</button>
+		重要提示：<br>
+		1）只适用于支持“忽略问号缓存”的域名；<br>
+		2） “不忽略问号缓存”的域名，如果使用该功能将会忽略问号进行屏蔽，非常危险，请慎用；<br>
+		3）如果有“共享缓存”，那么需要输入可能访问的全部url；<br>
+		4） 如果有https访问，需要同时输入http的url和https的url；<br>
+		<br>
+		示例：<br>
+		end-user访问的URL：<br>
+		URL1：http://a.test.com/path1/path1/1beautiful.jpg?a=1&b=1<br>
+		URL2：http://a.test.com/path2/path2/2beautiful.jpg<br>
+		<br>
+		正确输入屏蔽方式：<br>
+		http://a.test.com/path1/path1/1beautiful.jpg<br>
+		http://a.test.com/path2/path2/2beautiful.jpg
+	</div>
+
 </div>

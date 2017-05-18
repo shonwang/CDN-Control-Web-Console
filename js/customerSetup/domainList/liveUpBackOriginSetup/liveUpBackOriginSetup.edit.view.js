@@ -317,11 +317,11 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                         alert("域名不能为空");
                         return false;
                     }
-                    if (domainName == originAddress) {
-                        //域名不能与填写的域名相同
-                        alert("源站地址不能与加速域名相同");
-                        return false;
-                    }
+                    // if (domainName == originAddress) {
+                    //     //域名不能与填写的域名相同
+                    //     alert("源站地址不能与加速域名相同");
+                    //     return false;
+                    // }
                     //域名校验
                     var result = Utility.isDomain(originAddress);
                     var isIPStr = Utility.isIP(originAddress);

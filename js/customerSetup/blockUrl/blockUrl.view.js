@@ -604,6 +604,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
 	var BlockUrlView = Backbone.View.extend({
 		events:{},
 		initialize: function(options){
+            this.options = options;
 			this.collection = options.collection;
             this.$el = $(_.template(template['tpl/customerSetup/blockUrl/blockUrl.html'])());
             this.$el.find('a[data-toggle="tab"]').on('shown.bs.tab', $.proxy(this.onShownTab, this));
@@ -614,6 +615,11 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 uid: clientInfo.uid
             }
 		},
+        update: function(target) {
+            this.$el.remove();
+            this.initialize(this.options);
+            this.render(target);
+        },
 		onShownTab: function(event){
 			var target = event.target || event.srcElement;
 			var id = $(target).attr('data-target');
@@ -623,8 +629,10 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                   break;
             	case '#blockUrlList':
             	  if(this.myTabCurrentBlockListView){
-                      this.myTabCurrentBlockListView.onClickQueryButton();
-            	  	  return;
+                      this.myTabCurrentBlockListView.$el.remove();
+                      this.myTabCurrentBlockListView = null;
+                      //this.myTabCurrentBlockListView.onClickQueryButton();
+            	  	  //return;
             	  }
             	  this.myTabCurrentBlockListView = new TabCurrentBlockListView({
             	  	collection:this.collection,
@@ -634,8 +642,10 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 break;
                 case '#history':
                   if(this.myTabHistoryView){
-                      this.myTabHistoryView.onClickQueryButton();
-                  	  return;
+                        this.myTabHistoryView.$el.remove();
+                        this.myTabHistoryView = null;
+                      //this.myTabHistoryView.onClickQueryButton();
+                  	  //return;
                   }
                   this.myTabHistoryView = new TabHistoryView({
                   	collection:this.collection,

@@ -17,7 +17,7 @@
            <%}%>
 
 		   <%if(data[i].get('op') === 3 || data[i].get('op') === 5 || data[i].get('op') === 9){%>
-				<%if(data[i].get('successRatio')!==-1 && data[i].get('successRatio')!==0){%>
+				<%if(data[i].get('successRatio')!==-1 && data[i].get('successRatio')!==0 && data[i].get('successRatio')!==100){%>
 				<a href="javascript:void(0)" class="ShowDetail">查看详情</a>
 				<%}%>
 		   <%}%>

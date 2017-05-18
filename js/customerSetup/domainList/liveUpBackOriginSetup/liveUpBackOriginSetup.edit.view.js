@@ -120,6 +120,10 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     }
                 }
 
+                if (this.defaultParam.sourceType === 2) {
+                    this.defaultParam.originAddress = "上层节点"
+                }
+
                 this.$el = $(_.template(template['tpl/customerSetup/domainList/liveUpBackOriginSetup/liveUpBackOriginSetup.add.html'])({
                     data: this.defaultParam
                 }));
@@ -257,7 +261,12 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
             onLockInput: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     inputElment = $(eventTarget).parent(".col-sm-2").siblings(".col-sm-6").children(),
-                    result = this.checkBaseOrigin(inputElment.val(), 3);
+                    result = false;
+                    if (inputElment.get(0).id === "input-origin-host") {
+                        result = this.checkBaseOrigin(inputElment.val(), 100);
+                    } else {
+                        result = this.checkBaseOrigin(inputElment.val(), 3);
+                    }
                 if (result) {
                     inputElment.attr("readonly", "true");
                     $(eventTarget).hide();
@@ -321,11 +330,11 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                         alert("域名不能为空");
                         return false;
                     }
-                    // if (domainName == originAddress) {
-                    //     //域名不能与填写的域名相同
-                    //     alert("源站地址不能与加速域名相同");
-                    //     return false;
-                    // }
+                    if (domainName == originAddress) {
+                        //域名不能与填写的域名相同
+                        alert("源站地址不能与加速域名相同");
+                        return false;
+                    }
                     //域名校验
                     var result = Utility.isDomain(originAddress);
                     var isIPStr = Utility.isIP(originAddress);
@@ -333,6 +342,21 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                         return true;
                     } else {
                         alert("域名填写错误");
+                        return false;
+                    }
+                } else if (originType == 100) {
+                    if (!originAddress) {
+                        //不能为空
+                        alert("回源host不能为空");
+                        return false;
+                    }
+                    //域名校验
+                    var result = Utility.isDomain(originAddress);
+                    var isIPStr = Utility.isIP(originAddress);
+                    if (result && !isIPStr && originAddress.substr(0, 1) !== "-" && originAddress.substr(-1, 1) !== "-") {
+                        return true;
+                    } else {
+                        alert("回源host填写错误");
                         return false;
                     }
                 }
@@ -367,7 +391,7 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                 if (!isCorrectOriginAddr) return false;
                 if (this.isEdit) {
                     postParam.backHost = this.$el.find("#input-origin-host").val().trim();
-                    isCorrectBackHost = this.checkBaseOrigin(postParam.backHost, 3);
+                    isCorrectBackHost = this.checkBaseOrigin(postParam.backHost, 100);
                     if (!isCorrectBackHost) return false;
                     postParam.id = this.model.get("id");
                 } else {

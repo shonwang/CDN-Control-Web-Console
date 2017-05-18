@@ -570,7 +570,11 @@ define("customerSetup.controller", ['require','exports'],
                     this.blockUrlModel.on('permissionsControl.success',$.proxy(this.permissionsControlSuccess,this));
                     this.blockUrlModel.on('permissionsControl.error',$.proxy(this.onGetError,this));
                     this.blockUrlModel.permissionsControl({userId:query.uid}); 
-                } 
+                }
+                else{
+                    this.customerSetupNavbar.select(this.curPage);
+                    this.blockUrlView.update(renderTarget);
+                }
 
             }.bind(this));
         },

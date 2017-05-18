@@ -424,7 +424,6 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                 else
                     postParam.detectConfig = detectInfo;
 
-                console.log(postParam)
                 return postParam
             },
 

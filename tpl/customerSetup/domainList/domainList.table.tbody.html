@@ -10,13 +10,10 @@
 		<td><%=data[i].get("updateTimeFormated")%></td>
 		<td><a href="javascript:void(0)" id="<%=data[i].id%>" class="log-setup">编辑</a></td>
 		<td>
-			<% if (data[i].get("protocol") !== 1 && data[i].get("protocol") !== 3 && data[i].get("confCustomType") === 3) { %>
-			<% } else { %>
-				<% if (data[i].get("auditStatus") !== 0 && data[i].get("auditStatus") !== 2) { %>
-				<a href="javascript:void(0)" id="<%=data[i].id%>" class="manage">管理</a>
-				<% } %>
-				<a href="javascript:void(0)" id="<%=data[i].id%>" class="setup-bill">配置单</a>
+			<% if (data[i].get("auditStatus") !== 0 && data[i].get("auditStatus") !== 2) { %>
+			<a href="javascript:void(0)" id="<%=data[i].id%>" class="manage">管理</a>
 			<% } %>
+			<a href="javascript:void(0)" id="<%=data[i].id%>" class="setup-bill">配置单</a>
 		</td>
 	</tr>
 <% } %>

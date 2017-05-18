@@ -1596,6 +1596,10 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                             userId: query.uid
                         });
                     }
+                    else{
+                        this.customerSetupNavbar.select(this.curPage);
+                        this.blockUrlView.update(renderTarget);
+                    }
                     this.curView = this.blockUrlView;
                 }.bind(this));
             },

@@ -88,6 +88,10 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                 };
 
                 if (this.isEdit) {
+                    if (this.model.get("openFlag") !== null && this.model.get("openFlag") !== undefined)
+                        this.defaultParam.openFlag = this.model.get("openFlag");
+                    if (this.model.get("sourceType") !== null && this.model.get("sourceType") !== undefined)
+                        this.defaultParam.sourceType = this.model.get("sourceType");
                     if (this.model.get("originType") !== null && this.model.get("originType") !== undefined)
                         this.defaultParam.originType = this.model.get("originType");
                     if (this.model.get("pushPort") !== null && this.model.get("pushPort") !== undefined)

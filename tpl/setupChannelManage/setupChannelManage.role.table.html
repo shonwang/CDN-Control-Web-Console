@@ -9,8 +9,24 @@
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].id%>">
-              <td><%=data[i]["localLayer"]%></td>
-              <td><span><%= data[i]["upperLayer"] %></span></td>
+              <td>
+                  <% if (data[i]["localLayer"].split("<br>").length > 1) { %>
+                    <%=data[i]["localLayer"].split("<br>")[0]%>
+                    <a href="javascript:void(0)" data-container="body" data-trigger="focus"
+                    data-toggle="popover" data-placement="right" data-content='<%=data[i]["localLayer"]%>' data-html="true">...更多(<%=data[i]["localLayer"].split("<br>").length%>)</a>
+                  <% } else { %>
+                    <%=data[i]["localLayer"]%>
+                  <% } %>
+              </td>
+              <td>
+                  <% if (data[i]["upperLayer"].split("<br>").length > 1) { %>
+                    <%=data[i]["upperLayer"].split("<br>")[0]%>
+                    <a href="javascript:void(0)" data-container="body" data-trigger="focus"
+                    data-toggle="popover" data-placement="right" data-content='<%=data[i]["upperLayer"]%>' data-html="true">...更多(<%=data[i]["upperLayer"].split("<br>").length%>)</a>
+                  <% } else { %>
+                    <%=data[i]["upperLayer"]%>
+                  <% } %>
+              </td>
               <td>
                 <a href="javascript:void(0)" class="edit" id="<%=data[i].id%>">编辑</a>
                 <a href="javascript:void(0)" class="delete" id="<%=data[i].id%>">删除</a>

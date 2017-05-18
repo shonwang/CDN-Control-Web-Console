@@ -1,0 +1,34 @@
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>版本号</th>
+            <th>创建时间</th>
+            <th>修改时间</th>
+            <th>备注</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% for(var i = 0; i < data.length; i++) { %>
+            <tr data-id="<%=data[i].id%>" <% if (data[i].status === 1 ) { %> class="danger" <% } %>>
+                <td><%=data[i]["innerId"]%></td>
+                <td><%=data[i]["createTimeFormated"]%></td>
+                <td><%=data[i]["updateTimeFormated"]%></td>
+                <td> 
+                   <a href="javascript:void(0)" 
+                      data-container="body" 
+                      data-toggle="popover" 
+                      data-placement="top" 
+                      data-content='<%=data[i]["mark"] || "无"%>' 
+                      data-trigger="hover">备注</a>
+                </td>
+                <td>
+                    <a href="javascript:void(0)" class="views" version='<%=data[i]["innerId"]%>'>查看</a>
+                    <% if (data[i].status !== 1 ) { %>
+                    <a href="javascript:void(0)" class="publish" version='<%=data[i]["innerId"]%>'>发布</a>
+                    <% } %>
+                </td>
+            </tr>
+            <% } %>
+    </tbody>
+</table>

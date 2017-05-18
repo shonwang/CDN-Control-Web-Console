@@ -781,6 +781,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
         events: {},
 
         initialize: function(options) {
+            this.options = options;
             this.collection = options.collection;
             this.query      = options.query;
             this.$el = $(_.template(template['tpl/deviceManage/deviceManage.html'])());
@@ -1382,42 +1383,17 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             }
         },
 
-        remove: function(){
-            if (this.importDevicePopup) $("#" + this.importDevicePopup.modalId).remove();
-            this.importDevicePopup = null;
-            if (this.ipManagePopup) $("#" + this.ipManagePopup.modalId).remove();
-            this.ipManagePopup = null;
-            if (this.addDevicePopup) $("#" + this.addDevicePopup.modalId).remove();
-            this.addDevicePopup = null;
-            this.collection.off();
-            this.$el.remove();
-            $(document).off('keydown');
-
-        },
-
         hide: function(){
             this.$el.hide();
         },
 
-        update: function(query){
-            this.$el.show();
-            this.query = query;
-            if (this.query !== "none"){
-                this.query = JSON.parse(this.query);
-                this.nodeId = this.query.nodeId;
-                //this.queryArgs.nodeId = this.nodeId;
-                this.nodesName = this.query.chName;
-                this.queryArgs.nodename = this.nodesName;
-                this.$el.find("#input-node").val(this.query.chName);
-            } else {
-                this.nodeId = -1;
-                //this.queryArgs.nodeId = this.nodeId;
-                this.nodesName = null;
-                this.queryArgs.nodename = this.nodesName;
-                this.$el.find("#input-node").val("");
-            }
-            this.onClickQueryButton();
-            if (AUTH_OBJ.QueryHost) this.enterKeyBindQuery();
+        update: function(query, target){
+            this.options.query = query;
+            this.collection.off();
+            this.collection.reset();
+            this.remove();
+            this.initialize(this.options);
+            this.render(target);
         },
 
         render: function(target) {

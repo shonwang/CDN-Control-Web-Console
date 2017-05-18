@@ -157,6 +157,7 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
         events: {},
 
         initialize: function(options) {
+            this.options = options;
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.html'])());
             
@@ -281,8 +282,12 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.$el.hide();
         },
 
-        update: function(){
-            this.$el.show();
+        update: function(target) {
+            this.collection.off();
+            this.collection.reset();
+            this.remove();
+            this.initialize(this.options);
+            this.render(target);
         },
 
         render: function(target) {

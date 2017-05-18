@@ -50,6 +50,22 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
+        getTopoInfo: function(args) {
+            var url = BASE_URL + "/resource/topo/getTopoVerionDetail?innerId=" + args,
+                successCallback = function(res) {
+                    if (res) {
+                        this.total = res.total;
+                        this.trigger("get.topo.OriginInfo.success", res);
+                    } else {
+                        this.trigger("get.topo.OriginInfo.error");
+                    }
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger('get.topo.OriginInfo.error', response)
+                }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
         getDeviceTypeList: function(args) {
             var url = BASE_URL + "/resource/rs/metaData/deviceType/list",
                 successCallback = function(res) {
@@ -117,6 +133,45 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
                     this.trigger("get.node.error", response);
                 }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+        getAreaList: function(args) {
+            var url = BASE_URL + "/rs/provCity/selectAllArea",
+                successCallback = function(res) {
+                    if (res)
+                        this.trigger("get.area.success", res);
+                    else
+                        this.trigger("get.area.error", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("get.area.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        getTopoVersion: function(args) {
+            var url = BASE_URL + "/resource/topo/getTopoVersion",//innerId
+                successCallback = function(res) {
+                    if (res)
+                        this.trigger("get.version.success", res);
+                    else
+                        this.trigger("get.version.error", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("get.version.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        changeTopoVersion: function(args) {
+            var url = BASE_URL + "/resource/topo/changeTopoVersion",//innerId
+                successCallback = function(res) {
+                    this.trigger("set.version.success", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("set.version.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         }
     });
 

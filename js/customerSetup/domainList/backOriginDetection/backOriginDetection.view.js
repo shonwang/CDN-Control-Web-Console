@@ -135,9 +135,10 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
         },
 
         onClickSaveBtn: function(){
-            var reg = /^\//g;
-            if(reg.test(this.$el.find(".way #detectionFile").val()) == false){
-                alert('探测文件需以"/"开头');
+            var reg = /^\//g,
+                detectionFile = this.$el.find(".way #detectionFile").val().trim();
+            if(reg.test(detectionFile) == false || detectionFile === "/"){
+                alert('探测文件需以"/"开头, 但是不能只输入“/”');
                 return;
             }
             if(this.$el.find(".host #setupHost").val() == ""){

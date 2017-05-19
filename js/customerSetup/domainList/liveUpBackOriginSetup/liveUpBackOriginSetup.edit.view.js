@@ -262,11 +262,11 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                 var eventTarget = event.srcElement || event.target,
                     inputElment = $(eventTarget).parent(".col-sm-2").siblings(".col-sm-6").children(),
                     result = false;
-                    if (inputElment.get(0).id === "input-origin-host") {
-                        result = this.checkBaseOrigin(inputElment.val(), 100);
-                    } else {
-                        result = this.checkBaseOrigin(inputElment.val(), 3);
-                    }
+                if (inputElment.get(0).id === "input-origin-host") {
+                    result = this.checkBaseOrigin(inputElment.val(), 100);
+                } else {
+                    result = this.checkBaseOrigin(inputElment.val(), 3);
+                }
                 if (result) {
                     inputElment.attr("readonly", "true");
                     $(eventTarget).hide();
@@ -363,7 +363,7 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                 return true;
             },
 
-            onSure: function() {             
+            onSure: function() {
                 var postParam = {
                     "openFlag": this.defaultParam.openFlag, //源站配置 0:关 1:开
                     "sourceType": this.defaultParam.sourceType, //1:用户源站 2:上层节点 3：视频云源站

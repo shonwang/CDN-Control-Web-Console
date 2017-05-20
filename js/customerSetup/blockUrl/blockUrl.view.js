@@ -247,6 +247,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.showloading();
             this.$el.find('thead input').prop('checked',false);
             this.queryArgs.searchUrl = $.trim(this.$el.find('#input-url').val());
+            console.log(this.queryArgs);
             this.collection.showCurrentBlockUrls(this.queryArgs);
         },
         onKeydownEnter: function(event){

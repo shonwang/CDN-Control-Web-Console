@@ -194,7 +194,16 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
         queryHistory: function(args){
-            var url = BASE_URL + "/blockurl/searchBlockHistory?userId="+args.userId+'&date='+args.date+'&op='+args.op+'&searchUrl='+args.searchUrl+'&page='+args.page+'&rows='+args.rows,
+            var _data = {
+                userId:args.userId,
+                date:args.date,
+                op:args.op,
+                searchUrl:args.searchUrl,
+                page:args.page,
+                rows:args.rows
+            };
+            //var url = BASE_URL + "/blockurl/searchBlockHistory?userId="+args.userId+'&date='+args.date+'&op='+args.op+'&searchUrl='+args.searchUrl+'&page='+args.page+'&rows='+args.rows,
+            var url = BASE_URL + "/blockurl/searchBlockHistory",
             successCallback = function(res){
                 this.reset();
                 if (res){
@@ -211,7 +220,7 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             errorCallback = function(response){
                 this.trigger("get.history.error", response); 
             }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
+            Utility.postAjax(url, _data, successCallback, errorCallback);
         }
         
     });

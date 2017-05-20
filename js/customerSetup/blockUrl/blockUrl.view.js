@@ -247,7 +247,6 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.showloading();
             this.$el.find('thead input').prop('checked',false);
             this.queryArgs.searchUrl = $.trim(this.$el.find('#input-url').val());
-            console.log(this.queryArgs);
             this.collection.showCurrentBlockUrls(this.queryArgs);
         },
         onKeydownEnter: function(event){
@@ -601,6 +600,13 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
            });
            this.isInitPaginator = true;
         },
+        onGetError: function(error){
+             if(error && error.message){
+             	alert(error.message);
+             }else{
+             	alert('网络阻塞，请刷新重试！')
+             }    
+        },        
         showloading: function(){
             this.$el.find(".pagination").html("");
             this.$el.find(".ks-table tbody").html('<tr><td  colspan="6" class="text-center"><div class="domain-spinner">正在加载...</div></td></tr>');

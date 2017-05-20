@@ -193,6 +193,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         initialize: function(options){
         	this.collection = options.collection;
             this.userInfo = options.userInfo;
+            console.log(this.userInfo);
             this.tab = options.tab;
             this.numberControl = 30; 
             this.$el = $(_.template(template['tpl/customerSetup/blockUrl/TabCurrentBlockList.html'])());
@@ -220,7 +221,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.collection.off('retry.blockTas.error');
             this.collection.on('retry.blockTas.success',$.proxy(this.retryblockTasSuccess,this));
             this.collection.on('retry.blockTas.error',$.proxy(this.onGetError,this));
-            
+            console.log(this.userInfo.uid);
             this.queryArgs = {
 	            page:1,
 	            rows:10,

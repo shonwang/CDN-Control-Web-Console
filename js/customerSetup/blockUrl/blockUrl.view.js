@@ -262,8 +262,11 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                     var inputs = this.table.find('input');
                     this.collection.each(function(model,index){
                         if(!model.get('isDisabled')){
-                          model.set("isChecked", eventTarget.checked);
-                          $(inputs[index]).prop('checked',eventTarget.checked);
+                          
+                          if(!$(inputs[index]).attr("disabled")){
+                            model.set("isChecked", eventTarget.checked);
+                            $(inputs[index]).prop('checked',eventTarget.checked);
+                          }
                         }
                     }.bind(this));
 

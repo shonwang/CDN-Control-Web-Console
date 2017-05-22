@@ -770,7 +770,7 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     "backSourceProtocol": protocols[result.OriginProtocol],
                     "region": result.Regions,
                     "originType": originTypes[result.OriginType],
-                    "originAddress": (result.CdnType === "liveUpward" && originTypes[result.OriginType] === 3) ? "" : _.uniq(result.Origin.split(',')).join(','),
+                    "originAddress": _.uniq(result.Origin.split(',')).join(','),
                     "originPort": result.OriginPort
                 }
 

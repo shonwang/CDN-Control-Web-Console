@@ -114,7 +114,15 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
         },
 
         showCurrentBlockUrls: function(args){
-            var url = BASE_URL + "/blockurl/showCurrentBlockUrls?userId="+args.userId+'&op='+args.op+'&searchUrl='+args.searchUrl+'&page='+args.page+'&rows='+args.rows,
+            var _data = {
+                userId:args.userId,
+                op:args.op,
+                searchUrl:args.searchUrl,
+                page:args.page,
+                rows:args.rows
+            };
+            //var url = BASE_URL + "/blockurl/showCurrentBlockUrls?userId="+args.userId+'&op='+args.op+'&searchUrl='+args.searchUrl+'&page='+args.page+'&rows='+args.rows,
+            var url = BASE_URL + "/blockurl/showCurrentBlockUrls",
             successCallback = function(res){
                 /*var res = {
                    "status":200,
@@ -155,7 +163,7 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             errorCallback = function(response){
                 this.trigger("get.blockList.error", response); 
             }.bind(this);
-            Utility.postAjax(url, '', successCallback, errorCallback);
+            Utility.postAjax(url, _data, successCallback, errorCallback);
         },
         removeBlockUrl: function(args){
             var url = BASE_URL + "/blockurl/removeBlockUrl",
@@ -186,7 +194,16 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
         queryHistory: function(args){
-            var url = BASE_URL + "/blockurl/searchBlockHistory?userId="+args.userId+'&date='+args.date+'&op='+args.op+'&searchUrl='+args.searchUrl+'&page='+args.page+'&rows='+args.rows,
+            var _data = {
+                userId:args.userId,
+                date:args.date,
+                op:args.op,
+                searchUrl:args.searchUrl,
+                page:args.page,
+                rows:args.rows
+            };
+            //var url = BASE_URL + "/blockurl/searchBlockHistory?userId="+args.userId+'&date='+args.date+'&op='+args.op+'&searchUrl='+args.searchUrl+'&page='+args.page+'&rows='+args.rows,
+            var url = BASE_URL + "/blockurl/searchBlockHistory",
             successCallback = function(res){
                 this.reset();
                 if (res){
@@ -203,7 +220,7 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             errorCallback = function(response){
                 this.trigger("get.history.error", response); 
             }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
+            Utility.postAjax(url, _data, successCallback, errorCallback);
         }
         
     });

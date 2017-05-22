@@ -13,12 +13,17 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 success:function(data){
                     this.initTable(data);
                 }.bind(this),
-                error:function(data){}.bind(this)
+                error:function(data){
+                    this.getDataError(data);
+                }.bind(this)
             };
             
             this.getDetailData();
         },
-
+        getDataError:function(){
+            this.$el.find(".pagination").html("");
+            this.$el.find(".ks-table tbody").html('<tr><td  colspan="2" class="text-center"><div class="domain-spinner">出现未知错误</div></td></tr>');            
+        },
         getDetailData:function(){
             var args = this.queryArgs;
             this.showloading();
@@ -113,7 +118,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 alert('URL不能为空');
                 return false;
             }else{
-                if(urls.indexOf(',') > -1 || urls.indexOf('；') > -1 || urls.indexOf('，') > -1) {alert('请以英文半角分号对URL进行分隔'); return false;}
+                if(urls.indexOf(',') > -1 || urls.indexOf('；') > -1 || urls.indexOf('，') > -1 || urls.indexOf(' ') > -1) {alert('请以英文半角分号对URL进行分隔'); return false;}
                 if(urls.indexOf(';') > -1){
                     url = urls.split(';');
                     var urlrepeat = [];
@@ -200,7 +205,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             
             this.UnblockButton = this.$el.find('.unblock');
             this.RefreshUrlButton = this.$el.find('.RefreshUrl')
-            
+            $(document).off('keydown');
             $(document).on('keydown',$.proxy(this.onKeydownEnter,this));
             this.$el.find('.query').on('click',$.proxy(this.onClickQueryButton,this));
             this.$el.find('.ks-table').on('change',$.proxy(this.onClickOptions,this));
@@ -220,7 +225,6 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.collection.off('retry.blockTas.error');
             this.collection.on('retry.blockTas.success',$.proxy(this.retryblockTasSuccess,this));
             this.collection.on('retry.blockTas.error',$.proxy(this.onGetError,this));
-            
             this.queryArgs = {
 	            page:1,
 	            rows:10,
@@ -262,8 +266,11 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                     var inputs = this.table.find('input');
                     this.collection.each(function(model,index){
                         if(!model.get('isDisabled')){
-                          model.set("isChecked", eventTarget.checked);
-                          $(inputs[index]).prop('checked',eventTarget.checked);
+                          
+                          if(!$(inputs[index]).attr("disabled")){
+                            model.set("isChecked", eventTarget.checked);
+                            $(inputs[index]).prop('checked',eventTarget.checked);
+                          }
                         }
                     }.bind(this));
 
@@ -329,7 +336,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 {name:'刷新中',value:7},
                 {name:'刷新失败',value:8},//
                 {name:'刷新完成',value:9},
-                {name:'已失效',value:10}
+                //{name:'已失效',value:10}
                 /*
                {name:'屏蔽成功',value:3},
                {name:'屏蔽失败',value:4},
@@ -493,6 +500,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         initialize: function(options){
             this.userInfo = options.userInfo;
         	this.$el = $(_.template(template['tpl/customerSetup/blockUrl/TabHistory.html'])());
+            $(document).off('keydown');
             $(document).on('keydown',$.proxy(this.onKeydownEnter,this));
             this.$el.find('.query').on('click',$.proxy(this.onClickQueryButton,this));
             this.collection.off('get.history.success');
@@ -592,6 +600,13 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
            });
            this.isInitPaginator = true;
         },
+        onGetError: function(error){
+             if(error && error.message){
+             	alert(error.message);
+             }else{
+             	alert('网络阻塞，请刷新重试！')
+             }    
+        },        
         showloading: function(){
             this.$el.find(".pagination").html("");
             this.$el.find(".ks-table tbody").html('<tr><td  colspan="6" class="text-center"><div class="domain-spinner">正在加载...</div></td></tr>');

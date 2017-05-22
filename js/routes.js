@@ -1560,6 +1560,10 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
 
                     if (!this.blockUrlModel)
                         this.blockUrlModel = new BlockUrlModel();
+                    if(this.blockUrlView){
+                        this.blockUrlView.remove();
+                        this.blockUrlView = null;
+                    }
                     if (!this.blockUrlView) {
                         var options = {
                             collection: this.blockUrlModel,

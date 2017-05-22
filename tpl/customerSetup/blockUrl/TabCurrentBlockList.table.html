@@ -1,7 +1,7 @@
 <% for(var i=0;i < data.length;i++) { %>
 	<tr id="<%= data[i].get('id') %>">
 	   <td>
-	      <input type="checkbox" value="<%= data[i].get('url')%>" id="<%= data[i].get('id')%>"><%= data[i].get('url') %>
+	      <input type="checkbox" <%if(data[i].get('op') === 1 || data[i].get('op') === 2 || data[i].get('op') === 4 || data[i].get('op') === 5 || data[i].get('op') === 7 || data[i].get('op') === 8){%>disabled<%}%> value="<%= data[i].get('url')%>" id="<%= data[i].get('id')%>"><%= data[i].get('url') %>
 	   </td>
 	   <td><%= data[i].get('date') %></td>
 	   <td><%= data[i].get('expireTime') %></td>

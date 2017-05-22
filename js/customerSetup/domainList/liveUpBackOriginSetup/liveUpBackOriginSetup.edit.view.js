@@ -69,8 +69,8 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     "pushPort": 1935,
                     "pushAppFlag": 0, //转推地址频道名称 0:关 1:开启
                     "pushAppName": null,
-                    "backHost": null,
-                    "pushType": null,
+                    "backHost": this.userInfo.domain,
+                    "pushType": 1,
                     "pushArgsFlag": 0,
                     "pushArgs": null,
                     "connectArgsFlag": 0,
@@ -78,12 +78,12 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     "reconnectArgsFlag": 0,
                     "reconnectArgs": null,
                     "detectConfig": {
-                        "flag": 0,
+                        "flag": 1,
                         "detectMethod": null,
                         "expectedResponse": null,
-                        "detectUrl": null,
+                        "detectUrl": "/check",
                         "frequency": null,
-                        "host": null
+                        "host": this.userInfo.domain
                     }
                 };
 
@@ -395,6 +395,7 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     if (!isCorrectBackHost) return false;
                     postParam.id = this.model.get("id");
                 } else {
+                    postParam.backHost = this.defaultParam.backHost;
                     postParam.id = new Date().valueOf();
                 }
                 if (postParam.pushPort === "") {

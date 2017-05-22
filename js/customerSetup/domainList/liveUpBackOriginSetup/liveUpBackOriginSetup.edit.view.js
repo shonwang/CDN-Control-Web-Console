@@ -69,8 +69,8 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     "pushPort": 1935,
                     "pushAppFlag": 0, //转推地址频道名称 0:关 1:开启
                     "pushAppName": null,
-                    "backHost": null,
-                    "pushType": null,
+                    "backHost": this.userInfo.domain,
+                    "pushType": 1,
                     "pushArgsFlag": 0,
                     "pushArgs": null,
                     "connectArgsFlag": 0,
@@ -78,16 +78,20 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     "reconnectArgsFlag": 0,
                     "reconnectArgs": null,
                     "detectConfig": {
-                        "flag": 0,
+                        "flag": 1,
                         "detectMethod": null,
                         "expectedResponse": null,
-                        "detectUrl": null,
+                        "detectUrl": "/check",
                         "frequency": null,
-                        "host": null
+                        "host": this.userInfo.domain
                     }
                 };
 
                 if (this.isEdit) {
+                    if (this.model.get("openFlag") !== null && this.model.get("openFlag") !== undefined)
+                        this.defaultParam.openFlag = this.model.get("openFlag");
+                    if (this.model.get("sourceType") !== null && this.model.get("sourceType") !== undefined)
+                        this.defaultParam.sourceType = this.model.get("sourceType");
                     if (this.model.get("originType") !== null && this.model.get("originType") !== undefined)
                         this.defaultParam.originType = this.model.get("originType");
                     if (this.model.get("pushPort") !== null && this.model.get("pushPort") !== undefined)
@@ -114,6 +118,10 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     if (detectConfigObj) {
                         this.defaultParam.detectConfig = _.extend({}, detectConfigObj)
                     }
+                }
+
+                if (this.defaultParam.sourceType === 2) {
+                    this.defaultParam.originAddress = "上层节点"
                 }
 
                 this.$el = $(_.template(template['tpl/customerSetup/domainList/liveUpBackOriginSetup/liveUpBackOriginSetup.add.html'])({
@@ -253,7 +261,12 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
             onLockInput: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     inputElment = $(eventTarget).parent(".col-sm-2").siblings(".col-sm-6").children(),
+                    result = false;
+                if (inputElment.get(0).id === "input-origin-host") {
+                    result = this.checkBaseOrigin(inputElment.val(), 100);
+                } else {
                     result = this.checkBaseOrigin(inputElment.val(), 3);
+                }
                 if (result) {
                     inputElment.attr("readonly", "true");
                     $(eventTarget).hide();
@@ -331,11 +344,26 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                         alert("域名填写错误");
                         return false;
                     }
+                } else if (originType == 100) {
+                    if (!originAddress) {
+                        //不能为空
+                        alert("回源host不能为空");
+                        return false;
+                    }
+                    //域名校验
+                    var result = Utility.isDomain(originAddress);
+                    var isIPStr = Utility.isIP(originAddress);
+                    if (result && !isIPStr && originAddress.substr(0, 1) !== "-" && originAddress.substr(-1, 1) !== "-") {
+                        return true;
+                    } else {
+                        alert("回源host填写错误");
+                        return false;
+                    }
                 }
                 return true;
             },
 
-            onSure: function() {             
+            onSure: function() {
                 var postParam = {
                     "openFlag": this.defaultParam.openFlag, //源站配置 0:关 1:开
                     "sourceType": this.defaultParam.sourceType, //1:用户源站 2:上层节点 3：视频云源站
@@ -363,10 +391,11 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                 if (!isCorrectOriginAddr) return false;
                 if (this.isEdit) {
                     postParam.backHost = this.$el.find("#input-origin-host").val().trim();
-                    isCorrectBackHost = this.checkBaseOrigin(postParam.backHost, 3);
+                    isCorrectBackHost = this.checkBaseOrigin(postParam.backHost, 100);
                     if (!isCorrectBackHost) return false;
                     postParam.id = this.model.get("id");
                 } else {
+                    postParam.backHost = this.defaultParam.backHost;
                     postParam.id = new Date().valueOf();
                 }
                 if (postParam.pushPort === "") {
@@ -396,7 +425,6 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                 else
                     postParam.detectConfig = detectInfo;
 
-                console.log(postParam)
                 return postParam
             },
 

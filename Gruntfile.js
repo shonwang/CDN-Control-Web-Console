@@ -88,7 +88,13 @@ module.exports = function(grunt) {
                         "libs/searchSelect.js",
                         "libs/plupload.full.min.js",
                         "libs/async.min.js",
-                        "libs/bootstrap-switch.js"
+                        "libs/bootstrap-switch.js",
+
+                        "libs/react.backbone.js",
+                        "libs/create-react-class.js",
+                        "libs/react.js",
+                        "libs/react-dom.js",
+                        "libs/react-bootstrap.js"
                     ]
                 }
             },

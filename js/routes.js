@@ -81,6 +81,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                 "setupSending": "setupSending",
                 "setupSendWaitCustomize": "setupSendWaitCustomize",
                 "setupSendWaitSend": "setupSendWaitSend",
+                "isomorphismManage": "isomorphismManage",
             },
 
             execute: function(callback, args) {
@@ -385,6 +386,27 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     this.setupSendNavbar.$el.remove();
                     this.setupSendNavbar = null;
                 }
+            },
+
+            isomorphismManage: function() {
+                //if (!AUTH_OBJ.OpenApiLogManager) return;
+                require(['isomorphismManage.view', 'isomorphismManage.model'], function(IsomorphismManageView, IsomorphismManageModel) {
+                    this.curPage = 'isomorphismManage';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    var renderTarget = $('.ksc-content')
+                    if (!this.isomorphismManageModel)
+                        this.isomorphismManageModel = new IsomorphismManageModel();
+                    if (!this.isomorphismManageView) {
+                        var options = {
+                            collection: this.isomorphismManageModel
+                        };
+                        this.isomorphismManageView = new IsomorphismManageView(options);
+                        this.isomorphismManageView.render(renderTarget);
+                    } else {
+                        this.isomorphismManageView.update(renderTarget);
+                    }
+                    this.curView = this.isomorphismManageView;
+                }.bind(this));
             },
 
             openAPILogSetup: function(query, query2) {

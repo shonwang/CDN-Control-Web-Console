@@ -1,4 +1,4 @@
-define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoManage.model'],
+define("isomorphismManage.model", ['require', 'exports', 'utility', 'setupTopoManage.model'],
     function(require, exports, Utility, SetupTopoManageCollection) {
         var Model = Backbone.Model.extend({
             initialize: function() {
@@ -15,7 +15,7 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
             }
         });
 
-        var SpecialLayerManageCollection = SetupTopoManageCollection.extend({
+        var IsomorphismManageCollection = SetupTopoManageCollection.extend({
 
             model: Model,
 
@@ -90,5 +90,5 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
             },
         });
 
-        return SpecialLayerManageCollection;
+        return IsomorphismManageCollection;
     });

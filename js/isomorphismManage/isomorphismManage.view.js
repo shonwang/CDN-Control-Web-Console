@@ -1,5 +1,5 @@
-define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view', 'utility'],
-    function(require, exports, template, Modal, Utility) {
+define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view', 'utility', 'isomorphismManage.react.table'],
+    function(require, exports, template, Modal, Utility, ReactTableComponent) {
 
         var AddEditLayerView = Backbone.View.extend({
             events: {},
@@ -11,7 +11,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.isEdit = options.isEdit;
                 this.isView = options.isView;
 
-                this.$el = $(_.template(template['tpl/specialLayerManage/specialLayerManage.edit.html'])({
+                this.$el = $(_.template(template['tpl/isomorphismManage/isomorphismManage.edit.html'])({
                     data: {}
                 }));
 
@@ -411,13 +411,13 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             }
         });
 
-        var SpecialLayerManageView = Backbone.View.extend({
+        var IsomorphismManageView = Backbone.View.extend({
             events: {},
 
             initialize: function(options) {
                 this.options = options;
                 this.collection = options.collection;
-                this.$el = $(_.template(template['tpl/specialLayerManage/specialLayerManage.html'])());
+                this.$el = $(_.template(template['tpl/isomorphismManage/isomorphismManage.html'])());
 
                 //获取所有的拓扑关系信息
                 this.collection.on("get.strategyList.success", $.proxy(this.onGetStrategySuccess, this));
@@ -427,6 +427,9 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 //获取应用类型
                 this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
                 this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
+                this.collection.on("add reset remove", function(){
+                    console.log("111111111111111111111111")
+                });      
 
                 // if (AUTH_OBJ.QueryTopos) {
                 this.$el.find(".opt-ctn .query").on("click", $.proxy(this.resetList, this));
@@ -477,31 +480,46 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             onClickQueryButton: function() {
-                this.isInitPaginator = false;
                 this.queryArgs.page = this.curPage;
                 this.queryArgs.name = this.$el.find("#input-topo-name").val();
                 if (this.queryArgs.name == "") this.queryArgs.name = null;
                 this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                this.$el.find(".pagination").html("");
+                if (this.isInitPaginator) this.$el.find(".pagination").jqPaginator('destroy');
+                this.isInitPaginator = false;
                 this.collection.getStrategyList(this.queryArgs);
             },
 
             initTable: function() {
-                this.table = $(_.template(template['tpl/specialLayerManage/specialLayerManage.table.html'])({
-                    data: this.collection.models,
-                    permission: AUTH_OBJ
-                }));
-                if (this.collection.models.length !== 0)
-                    this.$el.find(".table-ctn").html(this.table[0]);
-                else
-                    this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+                var ReactTableView = React.createFactory(ReactTableComponent);
+                var reactTableView = ReactTableView({collection: this.collection});
+                ReactDOM.render(reactTableView, this.$el.find(".table-ctn").get(0));
 
-                this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
+                // this.table = $(_.template(template['tpl/isomorphismManage/isomorphismManage.table.html'])({
+                //     data: this.collection.models,
+                //     permission: AUTH_OBJ
+                // }));
+                // if (this.collection.models.length !== 0)
+                //     this.$el.find(".table-ctn").html(this.table[0]);
+                // else
+                //     this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-                this.table.find("tbody .view").on("click", $.proxy(this.onClickItemView, this));
-                this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+                // this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
 
-                this.table.find("[data-toggle='popover']").popover();
+                // this.table.find("tbody .view").on("click", $.proxy(this.onClickItemView, this));
+                // this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+
+                // this.table.find("[data-toggle='popover']").popover();
+
+                setTimeout(function() {
+                            this.collection.push(new this.collection.model({
+                                "id": 156,
+                                "name": "zp-下载分层策略066666",
+                                "createTime": 1494409927775,
+                                "updateTime": 1494409927775,
+                                "type": 202,
+                                "remark": ""
+                            }))
+                    }.bind(this), 5000)
             },
 
             onClickAddRuleTopoBtn: function() {
@@ -701,5 +719,5 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             }
         });
 
-        return SpecialLayerManageView;
+        return IsomorphismManageView;
     });

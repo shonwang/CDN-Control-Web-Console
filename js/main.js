@@ -118,6 +118,9 @@
   "importDomainManage.view": "importDomainManage/importDomainManage.view",
   "ipManage.model": "ipManage/ipManage.model",
   "ipManage.view": "ipManage/ipManage.view",
+  "isomorphismManage.model": "isomorphismManage/isomorphismManage.model",
+  "isomorphismManage.react.table": "isomorphismManage/isomorphismManage.react.table",
+  "isomorphismManage.view": "isomorphismManage/isomorphismManage.view",
   "liveAllSetup.model": "liveAllSetup/liveAllSetup.model",
   "liveAllSetup.view": "liveAllSetup/liveAllSetup.view",
   "liveCurentSetup.model": "liveCurentSetup/liveCurentSetup.model",
@@ -229,4 +232,4 @@ requirejs.onError = function () {
             backdrop:'static'
         };
     $errorPopup.modal(options);
-};
+};

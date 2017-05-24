@@ -13,6 +13,16 @@ module.exports = function(grunt) {
                 }
             }
         },
+        react: {
+            single_file_output: {
+                files: [{
+                    expand: true,
+                    cwd: 'js/',
+                    src: ['**/*.jsx'],
+                    dest: 'js/'
+                }]
+            }
+        },
         cssmin: {
             target: {
                 files: {
@@ -206,6 +216,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     require("./build/hash")(grunt);
     require("./build/getPaths")(grunt);
+    grunt.loadNpmTasks('grunt-react');
 
     var modifyFile = function(filePath, key, val, setQeqPath) {
         grunt.log.writeln(filePath)
@@ -303,7 +314,7 @@ module.exports = function(grunt) {
         modifyFile("login.html", 'DEBUG', 'window.DEBUG = 1.1;');
     });
 
-    grunt.registerTask('temp', ["clean", 'underscore']);
+    grunt.registerTask('temp', ["clean", 'underscore', 'react']);
     grunt.registerTask('module', ["clean", 'underscore', 'getpaths', 'module-url']);
     grunt.registerTask('debug', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
         'copy:main','debug-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])

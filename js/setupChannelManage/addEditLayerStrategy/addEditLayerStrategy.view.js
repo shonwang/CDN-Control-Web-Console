@@ -333,7 +333,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 var mySelectNodeView = new SelectNodeView({
                     collection: this.collection,
                     selectedNodes: this.defaultParam.upper,
-                    nodesList: this.topoUpperNodes
+                    nodesList: this.topoAllNodes
                 });
                 var options = {
                     title: "选择节点",

@@ -25,6 +25,7 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                     "page": 1,
                     "size": 10
                 }
+                this.$el.find(".opt-ctn .diff").attr("disabled", "disabled");
                 this.onClickQueryButton();
                 this.initDeviceDropMenu();
             },
@@ -107,9 +108,22 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                     collection: this.collection,
                     theadNames: tableHeaderName,
                     rowFeilds: rowFeild,
-                    operationList: operationList
+                    operationList: operationList,
+                    onChangeCheckedBox: $.proxy(this.onChangeCheckedBox, this)
                 });
                 ReactDOM.render(reactTableView, this.$el.find(".table-ctn").get(0));
+            },
+
+            onChangeCheckedBox: function(){
+                var checkedList = this.collection.filter(function(model){
+                    return model.get("isChecked")
+                })
+
+                if (checkedList.length === 2) {
+                    this.$el.find(".opt-ctn .diff").removeAttr("disabled");
+                } else {
+                    this.$el.find(".opt-ctn .diff").attr("disabled", "disabled");
+                }
             },
 
             onClickItemEdit: function(event) {

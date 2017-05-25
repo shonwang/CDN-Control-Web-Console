@@ -4,15 +4,25 @@ define("react.table", ['require', 'exports'],
 
         var ReactTableRow = React.createBackboneClass({
 
+            handleClickCheckbox: function(event){
+                var model = this.getModel(),
+                    collection = this.getCollection();
+                model.set("isChecked", !model.get("isChecked"))
+
+                this.props.checkboxCallback&&this.props.checkboxCallback();
+            },
+
             render: function() {
                 var model = this.getModel();
                 var tds = this.props.rowFeilds.map(function(feildName, index){
                     var td = React.createElement("td", {key: index}, model.get(feildName));
                     if (feildName === "checkbox"){
-                        td = React.createElement("td", {key: index}, React.createElement("input", {type: "checkbox", id: model.get('id')}));
+                        td = React.createElement("td", {key: index}, 
+                                React.createElement("input", {type: "checkbox", checked: model.get('isChecked'), onChange: this.handleClickCheckbox})
+                             );
                     }
                     return td;
-                });
+                }.bind(this));
                 var buttons = this.props.operationList.map(function(operation, index){
                     return React.createElement("a", {key: index, 
                               href: "javascript:void(0)", 
@@ -32,19 +42,52 @@ define("react.table", ['require', 'exports'],
 
         var ReactTable = React.createBackboneClass({
 
+            getInitialState: function () {
+                return { isCheckedAll: false};
+            },
+
+            handleClickCheckbox: function(event){
+                this.setState({ isCheckedAll: !this.state.isCheckedAll });
+                var collection = this.getCollection();
+                collection.each(function(model){
+                    model.set("isChecked", event.target.checked)
+                })
+                this.props.onChangeCheckedBox&&this.props.onChangeCheckedBox(event);
+            },
+
+            handleItemClickCheckbox: function(event){
+                var collection = this.getCollection();
+                var checkedList = collection.filter(function(model){
+                    return model.get("isChecked")
+                })
+                if (checkedList.length === collection.models.length) {
+                    this.setState({ isCheckedAll: true });
+                } else {
+                    this.setState({ isCheckedAll: false });
+                }
+                this.props.onChangeCheckedBox&&this.props.onChangeCheckedBox(event);
+            },
+
             render: function() {
                 var operationList = this.props.operationList,
                     rowFeilds = this.props.rowFeilds;
-                var rows = this.getCollection().map(function(model, index){
-                    return React.createElement(ReactTableRow, {key: index, model: model, operationList: operationList, rowFeilds: rowFeilds});
-                });
+                var collection = this.getCollection();
+                var rows = collection.map(function(model, index){
+                    return React.createElement(ReactTableRow, {key: index, 
+                                          model: model, 
+                                          operationList: operationList, 
+                                          rowFeilds: rowFeilds, 
+                                          checkboxCallback: this.handleItemClickCheckbox});
+                }.bind(this));
                 var theadName = this.props.theadNames.map(function(name, index){
                     var th = React.createElement("th", {key: index}, name)
                     if (name === "checkbox"){
-                        th = React.createElement("th", {key: index}, React.createElement("input", {type: "checkbox"}))
+                        th = React.createElement("th", {key: index}, 
+                                React.createElement("input", {type: "checkbox", onChange: this.handleClickCheckbox, checked: this.state.isCheckedAll})
+                             )
                     }
                     return th;
-                });
+                }.bind(this));
 
                 var table = null;
                 if (rows.length > 0) {

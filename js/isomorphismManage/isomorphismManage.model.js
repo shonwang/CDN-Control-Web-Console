@@ -12,6 +12,8 @@ define("isomorphismManage.model", ['require', 'exports', 'utility', 'setupTopoMa
                 if (type === 201) this.set("typeName", 'Relay');
                 if (type === 202) this.set("typeName", 'Cache');
                 if (type === 203) this.set("typeName", 'Live');
+
+                this.set("isChecked", false);
             }
         });
 

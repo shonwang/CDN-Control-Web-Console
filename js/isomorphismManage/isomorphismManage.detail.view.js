@@ -1,16 +1,19 @@
-define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view', 'utility', 'react.table'],
+define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'modal.view', 'utility', 'react.table'],
     function(require, exports, template, Modal, Utility, ReactTableComponent) {
 
-        var IsomorphismManageView = Backbone.View.extend({
+        var IsomorphismManageDetailView = Backbone.View.extend({
             events: {
-                "click .opt-ctn .query": "resetList",
-                "keyup #input-domain-name": "onKeyupInput"
+                "click .opt-ctn .back": "onClickBackBtn",
+                "click .opt-ctn .diff": "onClickDiffBtn"
             },
 
             initialize: function(options) {
                 this.options = options;
                 this.collection = options.collection;
-                this.$el = $(_.template(template['tpl/isomorphismManage/isomorphismManage.html'])());
+                this.model = options.model;
+                this.$el = $(_.template(template['tpl/isomorphismManage/isomorphismManage.detail.html'])({
+                    data: this.model
+                }));
 
                 this.collection.on("get.strategyList.success", $.proxy(this.onGetStrategySuccess, this));
                 this.collection.on("get.strategyList.error", $.proxy(this.onGetError, this));
@@ -24,6 +27,14 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
                 }
                 this.onClickQueryButton();
                 this.initDeviceDropMenu();
+            },
+
+            onClickDiffBtn: function() {
+                this.options.onCancelCallback && this.options.onCancelCallback();
+            },
+
+            onClickBackBtn: function() {
+                this.options.onCancelCallback && this.options.onCancelCallback();
             },
 
             resetList: function() {
@@ -60,25 +71,35 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
 
             initTable: function() {
                 var tableHeaderName = [
-                    "加速域名",
-                    "业务类型",
-                    "使用协议",
-                    "状态",
-                    "异构版本数",
+                    "checkbox",
+                    "版本号",
+                    "创建时间",
+                    "已下发节点数"
                 ];
 
                 var rowFeild = [
-                    "name",
-                    "name",
+                    "checkbox",
                     "name",
                     "name",
                     "name"
                 ];
 
                 var operationList = [{
-                    className: "detail",
-                    callback: $.proxy(this.onClickItemDetail, this),
-                    name: "异构详情"
+                    className: "setup-file",
+                    callback: $.proxy(this.onClickItemEdit, this),
+                    name: "配置文件"
+                }, {
+                    className: "setup-bill",
+                    callback: $.proxy(this.onClickItemEdit, this),
+                    name: "配置单"
+                }, {
+                    className: "nodes",
+                    callback: $.proxy(this.onClickItemEdit, this),
+                    name: "已下发节点"
+                }, {
+                    className: "edit",
+                    callback: $.proxy(this.onClickItemEdit, this),
+                    name: "编辑"
                 }]
 
                 var ReactTableView = React.createFactory(ReactTableComponent);
@@ -91,24 +112,27 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
                 ReactDOM.render(reactTableView, this.$el.find(".table-ctn").get(0));
             },
 
-            onClickItemDetail: function(event) {
+            onClickItemEdit: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
                 var model = this.collection.get(id);
+                var myAddEditLayerView = new AddEditLayerView({
+                    collection: this.collection,
+                    model: model,
+                    isEdit: true,
+                    onSaveCallback: function() {
+                        myAddEditLayerView.$el.remove();
+                        this.$el.find(".list-panel").show();
+                        this.onClickQueryButton();
+                    }.bind(this),
+                    onCancelCallback: function() {
+                        myAddEditLayerView.$el.remove();
+                        this.$el.find(".list-panel").show();
+                    }.bind(this)
+                })
 
-                require(['isomorphismManage.detail.view'], function(IsomorphismManageDetailView) {
-                    var myIsomorphismManageDetailView = new IsomorphismManageDetailView({
-                        collection: this.collection,
-                        model: model,
-                        onCancelCallback: function() {
-                            myIsomorphismManageDetailView.$el.remove();
-                            this.$el.find(".list-panel").show();
-                        }.bind(this)
-                    })
-
-                    this.$el.find(".list-panel").hide();
-                    myIsomorphismManageDetailView.render(this.$el.find(".edit-panel"))
-                }.bind(this))
+                this.$el.find(".list-panel").hide();
+                myAddEditLayerView.render(this.$el.find(".edit-panel"))
             },
 
             initPaginator: function() {
@@ -191,7 +215,8 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
             render: function(target) {
                 this.$el.appendTo(target)
             }
+
         });
 
-        return IsomorphismManageView;
+        return IsomorphismManageDetailView;
     });

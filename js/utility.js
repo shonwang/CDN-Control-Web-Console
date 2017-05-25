@@ -468,7 +468,22 @@ define("utility", ['require','exports'], function(require, exports) {
             };
 
             $.ajax(defaultParas);
-        }
+        },
+
+        alerts: function(message, type, timeout){
+            require(['react.modal.alert'], function(ReactModalAlertComponent){
+                var ReactModalAlertView = React.createFactory(ReactModalAlertComponent);
+                var reactModalAlertView = ReactModalAlertView({
+                    showModal: true,
+                    backdrop: false,
+                    message: message || "Hello world!",
+                    type: type || 'danger',
+                    timeout: timeout || 4000
+                });
+                ReactDOM.render(reactModalAlertView, document.getElementById('react-modal'));
+            })
+        },
+
     };
     return Utility;
 });

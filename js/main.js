@@ -118,8 +118,8 @@
   "importDomainManage.view": "importDomainManage/importDomainManage.view",
   "ipManage.model": "ipManage/ipManage.model",
   "ipManage.view": "ipManage/ipManage.view",
+  "isomorphismManage.detail.view": "isomorphismManage/isomorphismManage.detail.view",
   "isomorphismManage.model": "isomorphismManage/isomorphismManage.model",
-  "isomorphismManage.react.table": "isomorphismManage/isomorphismManage.react.table",
   "isomorphismManage.view": "isomorphismManage/isomorphismManage.view",
   "liveAllSetup.model": "liveAllSetup/liveAllSetup.model",
   "liveAllSetup.view": "liveAllSetup/liveAllSetup.view",
@@ -171,11 +171,12 @@
   "utility": "utility",
   "modal.view": "views/modal.view",
   "navbar.view": "views/navbar.view",
+  "react.modal.alert": "views/react.modal.alert",
+  "react.table": "views/react.table",
   "subNavbar.view": "views/subNavbar.view"
 };
 //PATH END===
 window.DEBUG = 1.1;
-
 if (window.DEBUG === 1)
     window.BASE_URL = "http://develop.gateway.center.cdn.ksyun.com";
 else if (window.DEBUG === 1.1)
@@ -209,7 +210,7 @@ requirejs(['routes', 'utility'], function(routes, Utility) {
     Backbone.history.start();
 });
 requirejs.onError = function () {
-    console.log(arguments)
+    console.error(arguments)
     var errorPopup = $('#big-main-error').get(0);
     if (errorPopup) return;
     var message = "";
@@ -232,4 +233,4 @@ requirejs.onError = function () {
             backdrop:'static'
         };
     $errorPopup.modal(options);
-};
+};

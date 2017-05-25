@@ -1,25 +1,14 @@
 <div class="fadeInLeft animated">
     <div class="list-panel">
-        <h4>配置下发<small>/异构管理</small></h4>
+        <h4>异构管理<small>/异构详情</small></h4>
         <div class="well opt-ctn">
             <div class="form-inline">
+                <a href="javascript:void(0)" class="btn btn-default back">返回</a>
                 <div class="form-group">
                     <label for="input-domain-name">域名</label>
-                    <input type="text" class="form-control" id="input-domain-name">
+                    <p class="form-control-static" id="input-domain-name"><%=data.get("name")%></p>
                 </div>
-                <div class="form-group">
-                    <label for="dropdown-bus-type">业务类型</label>
-                </div>
-                <div class="form-group dropdown-bus-type">
-                    <div class="dropdown">
-                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-bus-type" data-toggle="dropdown">
-                            <span class="cur-value">全部</span>
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu"></ul>
-                    </div>
-                </div>
-                <a href="javascript:void(0)" class="btn btn-primary query"><span class="glyphicon glyphicon-search"></span>查询</a>
+                <button type="button" class="btn btn-success pull-right diff">查看DIFF</button>
             </div>
         </div>
         <div class="well">

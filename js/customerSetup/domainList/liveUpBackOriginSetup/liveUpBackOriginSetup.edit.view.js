@@ -109,6 +109,9 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
 
                     this.defaultParam.sourceName = this.model.get("sourceName") || "";
                     this.defaultParam.originAddr = this.model.get("originAddr") || "";
+                    if (this.defaultParam.originAddr.indexOf(",") > -1 && this.defaultParam.originType === 1) {
+                        this.defaultParam.originAddr = this.defaultParam.originAddr.split(",").join("\n");
+                    }
                     this.defaultParam.pushAppName = this.model.get("pushAppName") || "";
                     this.defaultParam.backHost = this.model.get("backHost") || "";
                     this.defaultParam.pushArgs = this.model.get("pushArgs") || "";
@@ -417,6 +420,9 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                 if (postParam.reconnectArgsFlag === 1 && postParam.reconnectArgs === "") {
                     alert("既然开启了转推重连参数, 就请输入正确的转推重连参数！");
                     return false;
+                }
+                if (postParam.originAddr.indexOf("\n") > -1 && postParam.originType === 1) {
+                    postParam.originAddr =postParam.originAddr.split("\n").join(",");
                 }
 
                 var detectInfo = this.myLiveUpBackOriginDetectionView.getDetectionInfo();

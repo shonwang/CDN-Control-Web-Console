@@ -422,7 +422,7 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     return false;
                 }
                 if (postParam.originAddr.indexOf("\n") > -1 && postParam.originType === 1) {
-                    postParam.originAddr =postParam.originAddr.split("\n").join(",");
+                    postParam.originAddr = postParam.originAddr.split("\n").join(",");
                 }
 
                 var detectInfo = this.myLiveUpBackOriginDetectionView.getDetectionInfo();

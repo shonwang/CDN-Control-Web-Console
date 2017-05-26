@@ -12,8 +12,8 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
                 this.collection = options.collection;
                 this.$el = $(_.template(template['tpl/isomorphismManage/isomorphismManage.html'])());
 
-                this.collection.on("get.strategyList.success", $.proxy(this.onGetStrategySuccess, this));
-                this.collection.on("get.strategyList.error", $.proxy(this.onGetError, this));
+                this.collection.on("get.channel.success", $.proxy(this.onGetStrategySuccess, this));
+                this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
 
                 this.curPage = 1;
                 this.queryArgs = {
@@ -55,7 +55,7 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
                 this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                 if (this.isInitPaginator) this.$el.find(".pagination").jqPaginator('destroy');
                 this.isInitPaginator = false;
-                this.collection.getStrategyList(this.queryArgs);
+                this.collection.queryChannel(this.queryArgs);
             },
 
             initTable: function() {
@@ -68,11 +68,11 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
                 ];
 
                 var rowFeild = [
-                    "name",
-                    "name",
-                    "name",
-                    "name",
-                    "name"
+                    "domain",
+                    "businessTypeName",
+                    "protocolName",
+                    "statusName",
+                    "id"
                 ];
 
                 var operationList = [{
@@ -101,7 +101,7 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
                         collection: this.collection,
                         model: model,
                         onCancelCallback: function() {
-                            myIsomorphismManageDetailView.$el.remove();
+                            myIsomorphismManageDetailView.remove();
                             this.$el.find(".list-panel").show();
                         }.bind(this)
                     })
@@ -126,7 +126,7 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
                             var args = _.extend(this.queryArgs);
                             args.page = num;
                             args.count = this.queryArgs.size;
-                            this.collection.getStrategyList(args);
+                            this.collection.queryChannel(args);
                             this.curPage = num
                         }
                     }.bind(this)
@@ -144,6 +144,9 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
                     value: 'all'
                 }, {
                     name: '直播',
+                    value: 'all'
+                }, {
+                    name: '直播推流',
                     value: 'all'
                 }];
 

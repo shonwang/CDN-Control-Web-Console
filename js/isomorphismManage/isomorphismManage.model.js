@@ -2,16 +2,38 @@ define("isomorphismManage.model", ['require', 'exports', 'utility', 'setupTopoMa
     function(require, exports, Utility, SetupTopoManageCollection) {
         var Model = Backbone.Model.extend({
             initialize: function() {
-                var createTime = this.get('createTime'),
-                    type = this.get('type'),
-                    updateTime = this.get('updateTime');
+                var businessType = this.get("subType"),
+                    status = this.get("auditStatus"),
+                    protocol = this.get("protocol"),
+                    cdnFactory = this.get("cdnFactory"),
+                    confCustomType = this.get("confCustomType");
 
-                createTime = this.set("createTimeStr", new Date(createTime).format("yyyy/MM/dd hh:mm"));
-                updateTime = this.set("updateTimeStr", new Date(updateTime).format("yyyy/MM/dd hh:mm"));
-                if (type === 200) this.set("typeName", 'LVS');
-                if (type === 201) this.set("typeName", 'Relay');
-                if (type === 202) this.set("typeName", 'Cache');
-                if (type === 203) this.set("typeName", 'Live');
+                if (status === 0) this.set("statusName", '<span class="text-primary">审核中</span>');
+                if (status === 1) this.set("statusName", '<span class="text-success">审核通过</span>');
+                if (status === -1) this.set("statusName", '<span class="text-danger">删除</span>');
+                if (status === 2) this.set("statusName", '<span class="text-danger">审核失败</span>');
+                if (status === 3) this.set("statusName", '<span class="text-danger">停止</span>');
+                if (status === 4) this.set("statusName", '<span class="text-primary">配置中</span>');
+                if (status === 6) this.set("statusName", '<span class="text-primary">编辑中</span>');
+                if (status === 14) this.set("statusName", '<span class="text-danger">配置失败</span>');
+                if (status === 7) this.set("statusName", '<span class="text-primary">待下发</span>');
+                if (status === 8) this.set("statusName", '<span class="text-primary">待定制</span>');
+                if (status === 9) this.set("statusName", '<span class="text-danger">定制化配置错误</span>');
+                if (status === 10) this.set("statusName", '<span class="text-primary">下发中</span>');
+                if (status === 11) this.set("statusName", '<span class="text-danger">下发失败</span>');
+                if (status === 12) this.set("statusName", '<span class="text-primary">下发成功</span>');
+                if (status === 13) this.set("statusName", '<span class="text-success">运行中</span>');
+
+                if (businessType === 1) this.set("businessTypeName", '下载加速');
+                if (businessType === 2) this.set("businessTypeName", '直播加速');
+                if (businessType === 3) this.set("businessTypeName", '直播推流加速');
+
+                if (protocol === 1) this.set("protocolName", "http+hlv");
+                if (protocol === 2) this.set("protocolName", "hls");
+                if (protocol === 3) this.set("protocolName", "rtmp");
+                if (protocol === 0) this.set("protocolName", "http");
+                if (protocol === 4) this.set("protocolName", "https");
+                if (protocol === null) this.set("protocolName", "后端返回为空");
 
                 this.set("isChecked", false);
             }
@@ -23,73 +45,40 @@ define("isomorphismManage.model", ['require', 'exports', 'utility', 'setupTopoMa
 
             initialize: function() {},
 
-            getStrategyList: function(args) {
-                var url = BASE_URL + "/resource/special/getStrategyList",
+            queryChannel: function(args) {
+                var url = BASE_URL + "/channelManager/domain/getChannelManager",
                     successCallback = function(res) {
                         this.reset();
                         if (res) {
-                            _.each(res.rows, function(element, index, list) {
+                            _.each(res.data, function(element, index, list) {
                                 this.push(new Model(element));
                             }.bind(this))
-                            this.total = res.total;
-                            this.trigger("get.strategyList.success");
+                            this.total = res.totalCount;
+                            this.trigger("get.channel.success");
                         } else {
-                            this.trigger("get.strategyList.error", res);
+                            this.trigger("get.channel.error");
                         }
                     }.bind(this),
                     errorCallback = function(response) {
-                        this.trigger('get.strategyList.error', response);
+                        this.trigger("get.channel.error", response);
                     }.bind(this);
                 Utility.postAjax(url, args, successCallback, errorCallback);
             },
 
-            getStrategyInfoById: function(args) {
-                var url = BASE_URL + "/resource/special/getStrategyConsoleInfo",
+            getVersionList: function(args) {
+                var url = BASE_URL + "/channelManager/configuration/getVersionList",
                     successCallback = function(res) {
                         if (res) {
-                            this.trigger("get.strategyInfoById.success", res);
+                            this.trigger("get.channel.history.success", res);
                         } else {
-                            this.trigger("get.strategyInfoById.error", res);
+                            this.trigger("get.channel.history.error", res);
                         }
                     }.bind(this),
                     errorCallback = function(response) {
-                        this.trigger('get.strategyInfoById.error', response);
+                        this.trigger("get.channel.history.error", response);
                     }.bind(this);
                 Utility.getAjax(url, args, successCallback, errorCallback);
-            },
-
-            addStrategy: function(args) {
-                var url = BASE_URL + "/resource/special/addStrategy",
-                    successCallback = function(res) {
-                        this.trigger("add.strategy.success", res);
-                    }.bind(this),
-                    errorCallback = function(response) {
-                        this.trigger('add.strategy.error', response);
-                    }.bind(this);
-                Utility.postAjax(url, args, successCallback, errorCallback);
-            },
-
-            modifyStrategy: function(args) {
-                var url = BASE_URL + "/resource/special/modifyStrategy",
-                    successCallback = function(res) {
-                        this.trigger("modify.strategy.success", res);
-                    }.bind(this),
-                    errorCallback = function(response) {
-                        this.trigger('modify.strategy.error', response);
-                    }.bind(this);
-                Utility.postAjax(url, args, successCallback, errorCallback);
-            },
-
-            deleteStrategy: function(args) {
-                var url = BASE_URL + "/resource/special/deleteStrategy",
-                    successCallback = function(res) {
-                        this.trigger("delete.strategy.success", res);
-                    }.bind(this),
-                    errorCallback = function(response) {
-                        this.trigger('delete.strategy.error', response);
-                    }.bind(this);
-                Utility.getAjax(url, args, successCallback, errorCallback);
-            },
+            }
         });
 
         return IsomorphismManageCollection;

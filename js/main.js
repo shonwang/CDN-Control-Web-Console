@@ -118,6 +118,7 @@
   "importDomainManage.view": "importDomainManage/importDomainManage.view",
   "ipManage.model": "ipManage/ipManage.model",
   "ipManage.view": "ipManage/ipManage.view",
+  "isomorphismManage.detail.model": "isomorphismManage/isomorphismManage.detail.model",
   "isomorphismManage.detail.view": "isomorphismManage/isomorphismManage.detail.view",
   "isomorphismManage.model": "isomorphismManage/isomorphismManage.model",
   "isomorphismManage.view": "isomorphismManage/isomorphismManage.view",

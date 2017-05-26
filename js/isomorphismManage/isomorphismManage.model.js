@@ -8,21 +8,51 @@ define("isomorphismManage.model", ['require', 'exports', 'utility', 'setupTopoMa
                     cdnFactory = this.get("cdnFactory"),
                     confCustomType = this.get("confCustomType");
 
-                if (status === 0) this.set("statusName", '<span class="text-primary">审核中</span>');
-                if (status === 1) this.set("statusName", '<span class="text-success">审核通过</span>');
-                if (status === -1) this.set("statusName", '<span class="text-danger">删除</span>');
-                if (status === 2) this.set("statusName", '<span class="text-danger">审核失败</span>');
-                if (status === 3) this.set("statusName", '<span class="text-danger">停止</span>');
-                if (status === 4) this.set("statusName", '<span class="text-primary">配置中</span>');
-                if (status === 6) this.set("statusName", '<span class="text-primary">编辑中</span>');
-                if (status === 14) this.set("statusName", '<span class="text-danger">配置失败</span>');
-                if (status === 7) this.set("statusName", '<span class="text-primary">待下发</span>');
-                if (status === 8) this.set("statusName", '<span class="text-primary">待定制</span>');
-                if (status === 9) this.set("statusName", '<span class="text-danger">定制化配置错误</span>');
-                if (status === 10) this.set("statusName", '<span class="text-primary">下发中</span>');
-                if (status === 11) this.set("statusName", '<span class="text-danger">下发失败</span>');
-                if (status === 12) this.set("statusName", '<span class="text-primary">下发成功</span>');
-                if (status === 13) this.set("statusName", '<span class="text-success">运行中</span>');
+                if (status === 0) this.set("statusName", React.createElement("span", {
+                    className: "text-primary"
+                }, null, "审核中"));
+                if (status === 1) this.set("statusName", React.createElement("span", {
+                    className: "text-success"
+                }, null, "审核通过"));
+                if (status === -1) this.set("statusName", React.createElement("span", {
+                    className: "text-danger"
+                }, null, "删除"));
+                if (status === 2) this.set("statusName", React.createElement("span", {
+                    className: "text-danger"
+                }, null, "审核失败"));
+                if (status === 3) this.set("statusName", React.createElement("span", {
+                    className: "text-danger"
+                }, null, "停止"));
+                if (status === 4) this.set("statusName", React.createElement("span", {
+                    className: "text-primary"
+                }, null, "配置中"));
+                if (status === 6) this.set("statusName", React.createElement("span", {
+                    className: "text-primary"
+                }, null, "编辑中"));
+                if (status === 14) this.set("statusName", React.createElement("span", {
+                    className: "text-danger"
+                }, null, "配置失败"));
+                if (status === 7) this.set("statusName", React.createElement("span", {
+                    className: "text-primary"
+                }, null, "待下发"));
+                if (status === 8) this.set("statusName", React.createElement("span", {
+                    className: "text-primary"
+                }, null, "待定制"));
+                if (status === 9) this.set("statusName", React.createElement("span", {
+                    className: "text-danger"
+                }, null, "定制化配置错误"));
+                if (status === 10) this.set("statusName", React.createElement("span", {
+                    className: "text-primary"
+                }, null, "下发中"));
+                if (status === 11) this.set("statusName", React.createElement("span", {
+                    className: "text-danger"
+                }, null, "下发失败"));
+                if (status === 12) this.set("statusName", React.createElement("span", {
+                    className: "text-primary"
+                }, null, "下发成功"));
+                if (status === 13) this.set("statusName", React.createElement("span", {
+                    className: "text-success"
+                }, null, "运行中"));
 
                 if (businessType === 1) this.set("businessTypeName", '下载加速');
                 if (businessType === 2) this.set("businessTypeName", '直播加速');
@@ -63,21 +93,6 @@ define("isomorphismManage.model", ['require', 'exports', 'utility', 'setupTopoMa
                         this.trigger("get.channel.error", response);
                     }.bind(this);
                 Utility.postAjax(url, args, successCallback, errorCallback);
-            },
-
-            getVersionList: function(args) {
-                var url = BASE_URL + "/channelManager/configuration/getVersionList",
-                    successCallback = function(res) {
-                        if (res) {
-                            this.trigger("get.channel.history.success", res);
-                        } else {
-                            this.trigger("get.channel.history.error", res);
-                        }
-                    }.bind(this),
-                    errorCallback = function(response) {
-                        this.trigger("get.channel.history.error", response);
-                    }.bind(this);
-                Utility.getAjax(url, args, successCallback, errorCallback);
             }
         });
 

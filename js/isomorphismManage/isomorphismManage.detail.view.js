@@ -15,19 +15,15 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                     data: this.model
                 }));
 
-                this.collection.on("get.strategyList.success", $.proxy(this.onGetStrategySuccess, this));
-                this.collection.on("get.strategyList.error", $.proxy(this.onGetError, this));
-
-                this.curPage = 1;
+                this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                 this.queryArgs = {
-                    "name": null,
-                    "type": null,
-                    "page": 1,
-                    "size": 10
+                    "originId": this.model.get("id"),
                 }
                 this.$el.find(".opt-ctn .diff").attr("disabled", "disabled");
-                this.onClickQueryButton();
-                this.initDeviceDropMenu();
+
+                this.collection.on("get.channel.history.success", $.proxy(this.onGetVersionListSuccess, this));
+                this.collection.on("get.channel.history.error", $.proxy(this.onGetError, this));
+                this.collection.getVersionList(this.queryArgs);
             },
 
             onClickDiffBtn: function() {
@@ -38,15 +34,6 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                 this.options.onCancelCallback && this.options.onCancelCallback();
             },
 
-            resetList: function() {
-                this.curPage = 1;
-                this.onClickQueryButton();
-            },
-
-            onKeyupInput: function(e) {
-                if (e.keyCode == 13) this.resetList();
-            },
-
             onGetError: function(error) {
                 if (error && error.message)
                     Utility.alerts(error.message);
@@ -54,20 +41,8 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                     Utility.alerts("网络阻塞，请刷新重试！");
             },
 
-            onGetStrategySuccess: function() {
+            onGetVersionListSuccess: function() {
                 this.initTable();
-                if (!this.isInitPaginator) this.initPaginator();
-            },
-
-            onClickQueryButton: function() {
-                this.queryArgs.page = this.curPage;
-                this.queryArgs.name = this.$el.find("#input-domain-name").val().trim();
-                if (this.queryArgs.name == "") this.queryArgs.name = null;
-                ReactDOM.unmountComponentAtNode(this.$el.find(".table-ctn").get(0))
-                this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                if (this.isInitPaginator) this.$el.find(".pagination").jqPaginator('destroy');
-                this.isInitPaginator = false;
-                this.collection.getStrategyList(this.queryArgs);
             },
 
             initTable: function() {
@@ -80,18 +55,18 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
 
                 var rowFeild = [
                     "checkbox",
-                    "name",
-                    "name",
-                    "name"
+                    "version",
+                    "createTimeStr",
+                    "id"
                 ];
 
                 var operationList = [{
                     className: "setup-file",
-                    callback: $.proxy(this.onClickItemEdit, this),
+                    callback: $.proxy(this.onClickItemConfig, this),
                     name: "配置文件"
                 }, {
                     className: "setup-bill",
-                    callback: $.proxy(this.onClickItemEdit, this),
+                    callback: $.proxy(this.onClickItemBill, this),
                     name: "配置单"
                 }, {
                     className: "nodes",
@@ -126,7 +101,7 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                 }
             },
 
-            onClickItemEdit: function(event) {
+            onClickItemConfig: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
                 var model = this.collection.get(id);
@@ -147,70 +122,6 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
 
                 this.$el.find(".list-panel").hide();
                 myAddEditLayerView.render(this.$el.find(".edit-panel"))
-            },
-
-            initPaginator: function() {
-                this.$el.find(".total-items span").html(this.collection.total)
-                if (this.collection.total <= this.queryArgs.size) return;
-                var total = Math.ceil(this.collection.total / this.queryArgs.size);
-                this.$el.find(".pagination").jqPaginator({
-                    totalPages: total,
-                    visiblePages: 10,
-                    currentPage: this.curPage,
-                    onPageChange: function(num, type) {
-                        if (type !== "init") {
-                            ReactDOM.unmountComponentAtNode(this.$el.find(".table-ctn").get(0))
-                            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                            var args = _.extend(this.queryArgs);
-                            args.page = num;
-                            args.count = this.queryArgs.size;
-                            this.collection.getStrategyList(args);
-                            this.curPage = num
-                        }
-                    }.bind(this)
-                });
-                this.isInitPaginator = true;
-            },
-
-            initDeviceDropMenu: function(res) {
-                this.deviceTypeArray = [];
-                var typeArray = [{
-                    name: '全部',
-                    value: 'all'
-                }, {
-                    name: '下载',
-                    value: 'all'
-                }, {
-                    name: '直播',
-                    value: 'all'
-                }];
-
-                var rootNode = this.$el.find(".dropdown-bus-type");
-                Utility.initDropMenu(rootNode, typeArray, function(value) {
-                    if (value !== "All")
-                        this.queryArgs.type = parseInt(value)
-                    else
-                        this.queryArgs.type = null
-                }.bind(this));
-
-                var pageNum = [{
-                    name: "10条",
-                    value: 10
-                }, {
-                    name: "20条",
-                    value: 20
-                }, {
-                    name: "50条",
-                    value: 50
-                }, {
-                    name: "100条",
-                    value: 100
-                }]
-                Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value) {
-                    this.queryArgs.size = parseInt(value);
-                    this.curPage = 1;
-                    this.onClickQueryButton();
-                }.bind(this));
             },
 
             hide: function() {

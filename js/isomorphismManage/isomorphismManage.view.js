@@ -12,10 +12,11 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
                 this.collection = options.collection;
                 this.$el = $(_.template(template['tpl/isomorphismManage/isomorphismManage.html'])());
 
-                this.collection.on("get.channel.success", $.proxy(this.onGetStrategySuccess, this));
+                this.collection.on("get.channel.success", $.proxy(this.onGetChannelSuccess, this));
                 this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
 
                 this.curPage = 1;
+                this.isInitPaginator = false;
                 this.queryArgs = {
                     "name": null,
                     "type": null,
@@ -42,7 +43,7 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
                     Utility.alerts("网络阻塞，请刷新重试！");
             },
 
-            onGetStrategySuccess: function() {
+            onGetChannelSuccess: function() {
                 this.initTable();
                 if (!this.isInitPaginator) this.initPaginator();
             },
@@ -96,19 +97,20 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
                     id = $(eventTarget).attr("id");
                 var model = this.collection.get(id);
 
-                require(['isomorphismManage.detail.view'], function(IsomorphismManageDetailView) {
-                    var myIsomorphismManageDetailView = new IsomorphismManageDetailView({
-                        collection: this.collection,
-                        model: model,
-                        onCancelCallback: function() {
-                            myIsomorphismManageDetailView.remove();
-                            this.$el.find(".list-panel").show();
-                        }.bind(this)
-                    })
+                require(['isomorphismManage.detail.view', 'isomorphismManage.detail.model'],
+                    function(IsomorphismManageDetailView, IsomorphismManageDetailModel) {
+                        var myIsomorphismManageDetailView = new IsomorphismManageDetailView({
+                            collection: new IsomorphismManageDetailModel(),
+                            model: model,
+                            onCancelCallback: function() {
+                                myIsomorphismManageDetailView.remove();
+                                this.$el.find(".list-panel").show();
+                            }.bind(this)
+                        })
 
-                    this.$el.find(".list-panel").hide();
-                    myIsomorphismManageDetailView.render(this.$el.find(".edit-panel"))
-                }.bind(this))
+                        this.$el.find(".list-panel").hide();
+                        myIsomorphismManageDetailView.render(this.$el.find(".edit-panel"))
+                    }.bind(this))
             },
 
             initPaginator: function() {

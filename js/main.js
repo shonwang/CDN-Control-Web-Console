@@ -172,6 +172,7 @@
   "utility": "utility",
   "modal.view": "views/modal.view",
   "navbar.view": "views/navbar.view",
+  "react.config.panel": "views/react.config.panel",
   "react.modal.alert": "views/react.modal.alert",
   "react.table": "views/react.table",
   "subNavbar.view": "views/subNavbar.view"

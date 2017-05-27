@@ -105,23 +105,22 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
                 var model = this.collection.get(id);
-                var myAddEditLayerView = new AddEditLayerView({
-                    collection: this.collection,
-                    model: model,
-                    isEdit: true,
-                    onSaveCallback: function() {
-                        myAddEditLayerView.$el.remove();
-                        this.$el.find(".list-panel").show();
-                        this.onClickQueryButton();
-                    }.bind(this),
-                    onCancelCallback: function() {
-                        myAddEditLayerView.$el.remove();
-                        this.$el.find(".list-panel").show();
-                    }.bind(this)
-                })
-
                 this.$el.find(".list-panel").hide();
-                myAddEditLayerView.render(this.$el.find(".edit-panel"))
+                require(["react.config.panel"], function(ReactConfigPanelComponent){
+                    var ReactTableView = React.createFactory(ReactConfigPanelComponent);
+                    var reactTableView = ReactTableView({
+                        collection: this.collection,
+                        version: model.get("version"),
+                        domain: this.model.get("domain"),
+                        onClickBackCallback: $.proxy(this.onClickBackCallback, this)
+                    });
+                    ReactDOM.render(reactTableView, this.$el.find(".edit-panel").get(0));
+                }.bind(this))
+            },
+
+            onClickBackCallback: function(){
+                ReactDOM.unmountComponentAtNode(this.$el.find(".edit-panel").get(0));
+                this.$el.find(".list-panel").show();
             },
 
             hide: function() {

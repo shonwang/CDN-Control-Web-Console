@@ -425,6 +425,10 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     postParam.originAddr = postParam.originAddr.split("\n").join(",");
                 }
 
+                var pushType = postParam.pushType; //转推类型 1:边缘转推 2:上层转推
+                if (pushType === 1) postParam.pushTypeName = "边缘转推";
+                if (pushType === 2) postParam.pushTypeName = "上层转推";
+
                 var detectInfo = this.myLiveUpBackOriginDetectionView.getDetectionInfo();
                 if (!detectInfo)
                     return false;

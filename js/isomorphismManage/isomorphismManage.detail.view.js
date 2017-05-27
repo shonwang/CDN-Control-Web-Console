@@ -101,6 +101,24 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                 }
             },
 
+            onClickItemEdit: function(event){
+                var eventTarget = event.srcElement || event.target,
+                    id = $(eventTarget).attr("id");
+                var model = this.collection.get(id);
+                this.$el.find(".list-panel").hide();
+                require(["react.config.panel"], function(ReactConfigPanelComponent){
+                    var ReactTableView = React.createFactory(ReactConfigPanelComponent);
+                    var reactTableView = ReactTableView({
+                        collection: this.collection,
+                        version: model.get("version"),
+                        domain: this.model.get("domain"),
+                        isEdit: true,
+                        onClickBackCallback: $.proxy(this.onClickBackCallback, this)
+                    });
+                    ReactDOM.render(reactTableView, this.$el.find(".edit-panel").get(0));
+                }.bind(this)) 
+            },
+
             onClickItemConfig: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
@@ -112,6 +130,7 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                         collection: this.collection,
                         version: model.get("version"),
                         domain: this.model.get("domain"),
+                        isEdit: false,
                         onClickBackCallback: $.proxy(this.onClickBackCallback, this)
                     });
                     ReactDOM.render(reactTableView, this.$el.find(".edit-panel").get(0));

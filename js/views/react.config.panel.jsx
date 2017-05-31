@@ -28,20 +28,31 @@ define("react.config.panel", ['require', 'exports', 'utility'],
 
                 componentDidMount: function() {
                     var props = this.props;
-
-                    require(['setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeModel){
-                        this.mySetupSendWaitCustomizeModel = new SetupSendWaitCustomizeModel();
-                        this.mySetupSendWaitCustomizeModel.on("get.channel.config.success", $.proxy(this.onGetApplicationType, this));
-                        this.mySetupSendWaitCustomizeModel.on("get.channel.config.error", $.proxy(this.onGetError, this));
-                        this.mySetupSendWaitCustomizeModel.getChannelConfig({
-                            domain: props.domain,
-                            version: props.version || props.domainVersion
-                        })
-                    }.bind(this)); 
+                    //1：配置文件只读；2，配置文件编辑；3：配置文件只读diff模式
+                    if (props.type === 3) {
+                        require(['setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeModel){
+                            this.mySetupSendWaitCustomizeModel = new SetupSendWaitCustomizeModel();
+                            this.mySetupSendWaitCustomizeModel.on("get.channel.config.success", $.proxy(this.onGetDiff, this));
+                            this.mySetupSendWaitCustomizeModel.on("get.channel.config.error", $.proxy(this.onGetError, this));
+                            this.mySetupSendWaitCustomizeModel.getChannelConfig({
+                                domain: props.domain,
+                                version: props.version || props.domainVersion
+                            })
+                        }.bind(this)); 
+                    } else {
+                        require(['setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeModel){
+                            this.mySetupSendWaitCustomizeModel = new SetupSendWaitCustomizeModel();
+                            this.mySetupSendWaitCustomizeModel.on("get.channel.config.success", $.proxy(this.onGetApplicationType, this));
+                            this.mySetupSendWaitCustomizeModel.on("get.channel.config.error", $.proxy(this.onGetError, this));
+                            this.mySetupSendWaitCustomizeModel.getChannelConfig({
+                                domain: props.domain,
+                                version: props.version || props.domainVersion
+                            })
+                        }.bind(this)); 
+                    }
                 },
 
                 componentWillUnmount: function() {
-                    console.log("componentWillUnmount!!!!!!!")
                     this.mySetupSendWaitCustomizeModel.off("get.all.config.success");
                     this.mySetupSendWaitCustomizeModel.off("get.all.config.error");
                     this.mySetupSendWaitCustomizeModel.off("get.channel.config.success");
@@ -65,7 +76,7 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                 },
 
                 getInitialState: function () {
-                    return {
+                    var defaultState = {
                         activeKeys: [], 
                         levelGroup: [], 
                         isLoading: true,
@@ -73,7 +84,19 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                         diffClassName: "",
                         isDiffLoading: false,
                         diffInfo: []
-                    };
+                    }
+
+                    if (this.props.panelClassName) {
+                        defaultState.editClassName = this.props.panelClassName;
+                    }
+
+                    if (this.props.type === 3) {
+                        defaultState.isLoading = false;
+                        defaultState.isDiffLoading = true;
+                        defaultState.editClassName = "";
+                        defaultState.diffClassName = this.props.panelClassName || "col-md-offset-2 col-md-8";
+                    }
+                    return defaultState;
                 },
 
                 sortData: function(data){
@@ -136,6 +159,13 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                     });
                 },
 
+                onGetError: function(error){
+                    if (error && error.message)
+                        Utility.alerts(error.message);
+                    else
+                        Utility.alerts("网络阻塞，请刷新重试！");
+                },
+
                 onGetDiff: function(data){
                     var diffInfo = this.sortData(data)
                     this.setState({ 
@@ -179,15 +209,15 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                     var view = _.map(data, function(group, index){
                         var myPanels = _.map(group.fileArray, function(fileObj, inx){
                                 var eventKey = randomStr + "_" + index + "_" +inx + "_" + fileObj.id,
-                                    fileContent = <pre><code>{fileObj.content || "无"}</code></pre>,
+                                    fileContent = <pre><code>{fileObj.content || ""}</code></pre>,
                                     alertMessage = "：文件不包含全部配置，请下发nginx文件",
                                     headerStr = fileObj.fileType;
                                     if (!fileObj.luaOnly) headerStr = headerStr + alertMessage;
 
-                                if (this.props.isEdit && !isDiff) {
+                                if (this.props.type === 2) {
                                     fileContent = (
                                         <FormControl 
-                                            componentClass="textarea" value={fileObj.content || "无"} 
+                                            componentClass="textarea" value={fileObj.content || ""} 
                                             rows="10" id={eventKey} onChange={this.onChangeTextarea}/>
                                     )
                                 }
@@ -201,7 +231,38 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                         }.bind(this))
 
                         return (
-                            <Panel key={index} header={group.topologyLevelName} bsStyle={!isDiff ? "primary" : "info"}>
+                            <Panel key={index} header={group.topologyLevelName} bsStyle="primary">
+                                <PanelGroup 
+                                    id={randomStr + index} 
+                                    activeKey={this.state.activeKeys[index]} 
+                                    onSelect={this.handleSelect} 
+                                    accordion={true}>{myPanels}</PanelGroup>
+                            </Panel>
+                        )
+                    }.bind(this));
+
+                    return view;
+                },
+
+                getViewFromDiffData: function(data){
+                    var view = _.map(data, function(group, index){
+                        var myPanels = _.map(group.fileArray, function(fileObj, inx){
+                                var eventKey = randomStr + "_" + index + "_" +inx + "_" + fileObj.id,
+                                    fileContent = <pre><code>{fileObj.content || ""}</code></pre>,
+                                    alertMessage = "：文件不包含全部配置，请下发nginx文件",
+                                    headerStr = fileObj.fileType;
+                                    if (!fileObj.luaOnly) headerStr = headerStr + alertMessage;
+
+                                return (
+                                    <Panel key={inx}
+                                    header={headerStr} 
+                                    eventKey={eventKey} 
+                                    id={eventKey}>{fileContent}</Panel>
+                                )
+                        }.bind(this))
+
+                        return (
+                            <Panel key={index} header={group.topologyLevelName} bsStyle="info">
                                 <PanelGroup 
                                     id={randomStr + index} 
                                     activeKey={this.state.activeKeys[index]} 
@@ -217,36 +278,45 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                 render: function() {
                     var myAccordions = null,
                         diffContent = null,
-                        editButtons = [];
+                        editButtons = [], optButtons = null;
 
                     if (this.state.isLoading) {
                         myAccordions = <ReactLoading />
                     } else {
-                        myAccordions = this.getViewFromData(this.state.levelGroup, false)
+                        myAccordions = this.getViewFromData(this.state.levelGroup)
                     }
 
                     if (this.state.isDiffLoading) {
                         diffContent = <ReactLoading />
                     } else {
-                        diffContent = this.getViewFromData(this.state.diffInfo, true)
+                        diffContent = this.getViewFromDiffData(this.state.diffInfo)
                     }
 
-                    if (this.props.isEdit) {
+                    if (this.props.type === 2) {
                         editButtons = [
                             <Button key={1} bsStyle="success" onClick={this.onClickDiff}>查看diff</Button>,
                             <Button key={2} bsStyle="primary" onClick={this.onClickBack}>发布</Button>
                         ]                
                     }
 
+                    if (this.props.isShowOpt) {
+                        optButtons = (
+                            <div>
+                                <ButtonToolbar>
+                                    <Button bsStyle="default" onClick={this.onClickBack}>返回</Button>
+                                    {editButtons}
+                                </ButtonToolbar>
+                                <hr />
+                            </div>
+                        )
+                    }
+
                     var reactConfigPanel = (
                             <div>
-                                <h4>配置文件<small>/{this.props.version}</small></h4>
+                                <h4>{this.props.headerStr}<small>/{this.props.version}</small></h4>
                                 <Well className="row">
-                                    <ButtonToolbar>
-                                        <Button bsStyle="default" onClick={this.onClickBack}>返回</Button>
-                                        {editButtons}
-                                    </ButtonToolbar>
-                                    <hr />
+                                    {optButtons}
+                                    
                                     <div className={this.state.editClassName}>
                                         {myAccordions}
                                     </div>

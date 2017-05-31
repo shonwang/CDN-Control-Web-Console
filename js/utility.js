@@ -480,7 +480,8 @@ define("utility", ['require','exports'], function(require, exports) {
                     type: type || 'danger',
                     timeout: timeout || 4000
                 });
-                ReactDOM.render(reactModalAlertView, document.getElementById('react-modal'));
+                ReactDOM.unmountComponentAtNode($("#react-modal").get(0))
+                ReactDOM.render(reactModalAlertView, $("#react-modal").get(0));
             })
         },
 

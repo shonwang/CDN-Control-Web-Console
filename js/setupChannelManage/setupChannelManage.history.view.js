@@ -32,6 +32,8 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                     data: {}
                 }));
 
+                this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+
                 this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
 
                 this.requirySetupSendWaitCustomizeModel();
@@ -169,23 +171,30 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                 var config = JSON.parse(curObj.config),
                     isCustom = config.domainConf.confCustomType === 3 ? true : false;
 
-                var clickedObj = {
-                    domain: this.model.get("domain"),
-                    domainVersion: version,
-                    isCustom: isCustom,
-                    platformId: this.applicationType
-                }
+                // var clickedObj = {
+                //     domain: this.model.get("domain"),
+                //     domainVersion: version,
+                //     isCustom: isCustom,
+                //     platformId: this.applicationType
+                // }
 
-                require(["setupSending.detail.view"], function(SendDetailView) {
-                    if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
-
-                    var myConfiFileDetailView = new SendDetailView.ConfiFileDetailView({
+                require(["react.config.panel"], function(ReactConfigPanelComponent){
+                    var ReactTableView = React.createFactory(ReactConfigPanelComponent);
+                    var reactTableView = ReactTableView({
                         collection: this.collection,
-                        model: clickedObj
+                        version: version,
+                        domain: this.model.get("domain"),
+                        type: 1,
+                        isCustom: isCustom,
+                        headerStr: "",
+                        panelClassName: "col-md-12",
+                        onClickBackCallback: $.proxy(this.onClickBackCallback, this)
                     });
+                    
+                    if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
                     var options = {
                         title: "配置文件详情",
-                        body: myConfiFileDetailView,
+                        body: "",
                         backdrop: 'static',
                         type: 1,
                         onOKCallback: function() {
@@ -194,7 +203,28 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                         onHiddenCallback: function() {}.bind(this)
                     }
                     this.configFilePopup = new Modal(options);
+                    ReactDOM.render(reactTableView, this.configFilePopup.$el.find(".modal-body").get(0));
                 }.bind(this))
+
+                // require(["setupSending.detail.view"], function(SendDetailView) {
+                //     if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
+
+                //     var myConfiFileDetailView = new SendDetailView.ConfiFileDetailView({
+                //         collection: this.collection,
+                //         model: clickedObj
+                //     });
+                //     var options = {
+                //         title: "配置文件详情",
+                //         body: myConfiFileDetailView,
+                //         backdrop: 'static',
+                //         type: 1,
+                //         onOKCallback: function() {
+                //             this.configFilePopup.$el.modal("hide");
+                //         }.bind(this),
+                //         onHiddenCallback: function() {}.bind(this)
+                //     }
+                //     this.configFilePopup = new Modal(options);
+                // }.bind(this))
             },
 
             onClickItemBill: function(event) {

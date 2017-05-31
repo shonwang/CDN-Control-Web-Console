@@ -27,7 +27,25 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
             },
 
             onClickDiffBtn: function() {
-                this.options.onCancelCallback && this.options.onCancelCallback();
+                var checkedList = this.collection.filter(function(obj){
+                    return obj.get("isChecked");
+                }.bind(this))
+
+                this.$el.find(".list-panel").hide();
+                require(["react.config.panel"], function(ReactConfigPanelComponent){
+                    var ReactTableView = React.createFactory(ReactConfigPanelComponent);
+                    var reactTableView = ReactTableView({
+                        collection: this.collection,
+                        version: checkedList[0].get("version"),
+                        domain: this.model.get("domain"),
+                        type: 3,
+                        //isCustom: true,
+                        isShowOpt: true,
+                        headerStr: "DIFF配置文件",
+                        onClickBackCallback: $.proxy(this.onClickBackCallback, this)
+                    });
+                    ReactDOM.render(reactTableView, this.$el.find(".edit-panel").get(0));
+                }.bind(this))
             },
 
             onClickBackBtn: function() {
@@ -112,7 +130,10 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                         collection: this.collection,
                         version: model.get("version"),
                         domain: this.model.get("domain"),
-                        isEdit: true,
+                        type: 2, //1：配置文件只读；2，配置文件编辑；3：配置文件只读diff模式
+                        //isCustom: true,
+                        isShowOpt: true,
+                        headerStr: "编辑配置文件",
                         onClickBackCallback: $.proxy(this.onClickBackCallback, this)
                     });
                     ReactDOM.render(reactTableView, this.$el.find(".edit-panel").get(0));
@@ -130,7 +151,10 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                         collection: this.collection,
                         version: model.get("version"),
                         domain: this.model.get("domain"),
-                        isEdit: false,
+                        type: 1,
+                        //isCustom: true,
+                        isShowOpt: true,
+                        headerStr: "配置文件",
                         onClickBackCallback: $.proxy(this.onClickBackCallback, this)
                     });
                     ReactDOM.render(reactTableView, this.$el.find(".edit-panel").get(0));

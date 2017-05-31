@@ -373,23 +373,51 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
                 return obj.id === id;
             })
 
-            if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
+            // if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
 
-            var myConfiFileDetailView = new ConfiFileDetailView({
-                collection: this.collection, 
-                model     : clickedObj
-            });
-            var options = {
-                title: "配置文件详情",
-                body : myConfiFileDetailView,
-                backdrop : 'static',
-                type     : 1,
-                onOKCallback:  function(){
-                    this.configFilePopup.$el.modal("hide");
-                }.bind(this),
-                onHiddenCallback: function(){}.bind(this)
-            }
-            this.configFilePopup = new Modal(options);
+            // var myConfiFileDetailView = new ConfiFileDetailView({
+            //     collection: this.collection, 
+            //     model     : clickedObj
+            // });
+            // var options = {
+            //     title: "配置文件详情",
+            //     body : myConfiFileDetailView,
+            //     backdrop : 'static',
+            //     type     : 1,
+            //     onOKCallback:  function(){
+            //         this.configFilePopup.$el.modal("hide");
+            //     }.bind(this),
+            //     onHiddenCallback: function(){}.bind(this)
+            // }
+            // this.configFilePopup = new Modal(options);
+
+            require(["react.config.panel"], function(ReactConfigPanelComponent){
+                var ReactTableView = React.createFactory(ReactConfigPanelComponent);
+                var reactTableView = ReactTableView({
+                    collection: this.collection,
+                    version: clickedObj.domainVersion,
+                    domain: clickedObj.domain,
+                    type: 1,
+                    isCustom: clickedObj.isCustom,
+                    headerStr: "",
+                    panelClassName: "col-md-12",
+                    onClickBackCallback: $.proxy(this.onClickBackCallback, this)
+                });
+                
+                if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
+                var options = {
+                    title: "配置文件详情",
+                    body: "",
+                    backdrop: 'static',
+                    type: 1,
+                    onOKCallback: function() {
+                        this.configFilePopup.$el.modal("hide");
+                    }.bind(this),
+                    onHiddenCallback: function() {}.bind(this)
+                }
+                this.configFilePopup = new Modal(options);
+                ReactDOM.render(reactTableView, this.configFilePopup.$el.find(".modal-body").get(0));
+            }.bind(this))
         },
 
         initPaginator: function(){

@@ -13056,7 +13056,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var modal = _this2.getDialogElement();
 
 	    if (modal && modal !== active && !(0, _contains2.default)(modal, active)) {
-	      modal.focus();
+	      //modal.focus();
 	    }
 	  };
 

@@ -86,81 +86,110 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
             this.initConfigFile(data);
         },
 
-        getConfigObj: function(data){
-            var upArray = [], downArray = [];
+        // getConfigObj: function(data){
+        //     var upArray = [], downArray = [];
 
-            _.each(data, function(el, key, ls){
-                if (key !== "applicationType"){
-                    _.each(el, function(fileObj, index, list){
-                        if (fileObj&&fileObj.topologyLevel === 1){
-                            upArray.push({
-                                id: fileObj.id,
-                                name: key,
-                                content: fileObj.content,
-                                luaOnly: fileObj.luaOnly === undefined ? true : fileObj.luaOnly
-                            })
-                        } else if (fileObj&&fileObj.topologyLevel === 2){
-                            downArray.push({
-                                id: fileObj.id,
-                                name: key,
-                                content: fileObj.content,
-                                luaOnly: fileObj.luaOnly === undefined ? true : fileObj.luaOnly
-                            })
-                        }
-                    }.bind(this))
-                }
-            }.bind(this))
+        //     _.each(data, function(el, key, ls){
+        //         if (key !== "applicationType"){
+        //             _.each(el, function(fileObj, index, list){
+        //                 if (fileObj&&fileObj.topologyLevel === 1){
+        //                     upArray.push({
+        //                         id: fileObj.id,
+        //                         name: key,
+        //                         content: fileObj.content,
+        //                         luaOnly: fileObj.luaOnly === undefined ? true : fileObj.luaOnly
+        //                     })
+        //                 } else if (fileObj&&fileObj.topologyLevel === 2){
+        //                     downArray.push({
+        //                         id: fileObj.id,
+        //                         name: key,
+        //                         content: fileObj.content,
+        //                         luaOnly: fileObj.luaOnly === undefined ? true : fileObj.luaOnly
+        //                     })
+        //                 }
+        //             }.bind(this))
+        //         }
+        //     }.bind(this))
 
-            return {up: upArray, down: downArray}
-        },
+        //     return {up: upArray, down: downArray}
+        // },
 
         initConfigFile: function(data){
-            this.autoConfigInfo = data;
+            require(["react.config.panel"], function(ReactConfigPanelComponent){
+                var ReactTableView = React.createFactory(ReactConfigPanelComponent);
+                var reactTableView = ReactTableView({
+                    collection: this.collection,
+                    version: this.model.get("version") || this.model.get("domainVersion"),
+                    domain: this.model.get("domain"),
+                    type: 1,
+                    isCustom: false,
+                    headerStr: "自动生成的配置文件",
+                    panelClassName: "col-md-12",
+                    onClickBackCallback: $.proxy(this.onClickBackCallback, this)
+                });
+                ReactDOM.render(reactTableView, this.$el.find(".automatic .file-ctn").get(0));
+            }.bind(this))
+            // this.autoConfigInfo = data;
 
-            var autoConfigObj = this.getConfigObj(data);
+            // var autoConfigObj = this.getConfigObj(data);
 
-            this.configReadOnly = $(_.template(template['tpl/setupChannelManage/setupChannelManage.editCfgFalse.html'])({
-                data: autoConfigObj,
-                panelId: Utility.randomStr(8)
-            }));
-            this.configReadOnly.appendTo(this.$el.find(".automatic"))
+            // this.configReadOnly = $(_.template(template['tpl/setupChannelManage/setupChannelManage.editCfgFalse.html'])({
+            //     data: autoConfigObj,
+            //     panelId: Utility.randomStr(8)
+            // }));
+            // this.configReadOnly.appendTo(this.$el.find(".automatic"))
 
             var isUseCustomized = this.model.get("tempUseCustomized");
             if (isUseCustomized === 1) return;
 
-            this.mySetupSendWaitCustomizeModel.off("get.all.config.success");
-            this.mySetupSendWaitCustomizeModel.off("get.all.config.error");
-            this.mySetupSendWaitCustomizeModel.on("get.all.config.success", $.proxy(this.initCustomizedSetupFile, this));
-            this.mySetupSendWaitCustomizeModel.on("get.all.config.error", $.proxy(this.onGetError, this));
-            this.mySetupSendWaitCustomizeModel.getAllConfig({
-                domain: this.model.get("domain"),
-                version: this.model.get("version") || this.model.get("domainVersion"),
-                manuallyModifed: true,
-                applicationType: data.applicationType.type
-            })
-        },
-
-        initCustomizedSetupFile: function(data){
-            this.cusConfigInfo = data;
-
-            _.each(this.cusConfigInfo, function(fileObj, inx, list){
-                _.each(fileObj, function(el, index, ls){
-                    if (!el.id) el.id = Utility.randomStr(8);
-                }.bind(this))
+            require(["react.config.panel"], function(ReactConfigPanelComponent){
+                var ReactTableView = React.createFactory(ReactConfigPanelComponent);
+                var reactTableView = ReactTableView({
+                    collection: this.collection,
+                    version: this.model.get("version") || this.model.get("domainVersion"),
+                    domain: this.model.get("domain"),
+                    type: this.isEdit ? 2 : 1,
+                    isCustom: true,
+                    headerStr: "定制化的配置文件",
+                    panelClassName: "col-md-12",
+                    onClickBackCallback: $.proxy(this.onClickBackCallback, this)
+                });
+                ReactDOM.render(reactTableView, this.$el.find(".customized .file-ctn").get(0));
             }.bind(this))
 
-            var cusConfigObj = this.getConfigObj(this.cusConfigInfo);
-
-            var tplPath = 'tpl/setupChannelManage/setupChannelManage.editCfgTrue.html';
-            if (!this.isEdit) tplPath = 'tpl/setupChannelManage/setupChannelManage.editCfgFalse.html'
-
-            this.configEdit = $(_.template(template[tplPath])({
-                data: cusConfigObj,
-                panelId: Utility.randomStr(8),
-                applicationType: this.applicationType
-            }));
-            this.configEdit.appendTo(this.$el.find(".customized"))
+            // this.mySetupSendWaitCustomizeModel.off("get.all.config.success");
+            // this.mySetupSendWaitCustomizeModel.off("get.all.config.error");
+            // this.mySetupSendWaitCustomizeModel.on("get.all.config.success", $.proxy(this.initCustomizedSetupFile, this));
+            // this.mySetupSendWaitCustomizeModel.on("get.all.config.error", $.proxy(this.onGetError, this));
+            // this.mySetupSendWaitCustomizeModel.getAllConfig({
+            //     domain: this.model.get("domain"),
+            //     version: this.model.get("version") || this.model.get("domainVersion"),
+            //     manuallyModifed: true,
+            //     applicationType: data.applicationType.type
+            // })
         },
+
+        // initCustomizedSetupFile: function(data){
+        //     this.cusConfigInfo = data;
+
+        //     _.each(this.cusConfigInfo, function(fileObj, inx, list){
+        //         _.each(fileObj, function(el, index, ls){
+        //             if (!el.id) el.id = Utility.randomStr(8);
+        //         }.bind(this))
+        //     }.bind(this))
+
+        //     var cusConfigObj = this.getConfigObj(this.cusConfigInfo);
+
+        //     var tplPath = 'tpl/setupChannelManage/setupChannelManage.editCfgTrue.html';
+        //     if (!this.isEdit) tplPath = 'tpl/setupChannelManage/setupChannelManage.editCfgFalse.html'
+
+        //     this.configEdit = $(_.template(template[tplPath])({
+        //         data: cusConfigObj,
+        //         panelId: Utility.randomStr(8),
+        //         applicationType: this.applicationType
+        //     }));
+        //     this.configEdit.appendTo(this.$el.find(".customized"))
+        // },
 
         onClickIsUseCustomizedBtn: function(event){
             var eventTarget = event.srcElement || event.target;

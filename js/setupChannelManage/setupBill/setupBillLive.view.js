@@ -243,6 +243,7 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
 
             _.each(this.appLives, function(el, index, ls){
                 var optimizeConf = el.optimizeConf;
+                if (!optimizeConf) return;
                 if (optimizeConf.gopType === 1) {
                     optimizeConf.gopTypeStr = "按时长";
                     optimizeConf.gopNumStr = "gop缓存时长：" + optimizeConf.gopNum + "秒";

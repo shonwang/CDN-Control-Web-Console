@@ -161,6 +161,29 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                 }.bind(this))
             },
 
+            onClickItemBill: function(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id = $(eventTarget).attr("id");
+                var model = this.collection.get(id);
+
+                require(['setupBillLive.view', 'setupBill.model'], function(SetupBillView, SetupBillModel) {
+                    var mySetupBillModel = new SetupBillModel();
+                    var mySetupBillView = new SetupBillView({
+                        collection: mySetupBillModel,
+                        originId: model.get("originId"),
+                        version: model.get("version"),
+                        onSaveCallback: function() {}.bind(this),
+                        onCancelCallback: function() {
+                            mySetupBillView.remove();
+                            this.$el.find(".list-panel").show();
+                        }.bind(this)
+                    })
+
+                    this.$el.find(".list-panel").hide();
+                    mySetupBillView.render(this.$el.find(".edit-panel"));
+                }.bind(this))
+            },
+
             onClickBackCallback: function(){
                 ReactDOM.unmountComponentAtNode(this.$el.find(".edit-panel").get(0));
                 this.$el.find(".list-panel").show();

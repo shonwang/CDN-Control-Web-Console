@@ -80,14 +80,10 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                         activeKeys: [], 
                         levelGroup: [], 
                         isLoading: true,
-                        editClassName: "col-md-offset-2 col-md-8",
+                        editClassName: this.props.panelClassName || "col-md-offset-2 col-md-8",
                         diffClassName: "",
                         isDiffLoading: false,
                         diffInfo: []
-                    }
-
-                    if (this.props.panelClassName) {
-                        defaultState.editClassName = this.props.panelClassName;
                     }
 
                     if (this.props.type === 3) {
@@ -190,7 +186,7 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                     }
                 },
 
-                 handleSelect(activeKey) {
+                handleSelect: function(activeKey) {
                     var index = activeKey.split("_")[1];
                     if (this.state.activeKeys[index] === activeKey) {
                         this.state.activeKeys[index] = ""
@@ -199,7 +195,7 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                     }
 
                     this.setState({ activeKeys: this.state.activeKeys });
-                 },
+                },
 
                 onClickBack: function(){
                     this.props.onClickBackCallback&&this.props.onClickBackCallback()

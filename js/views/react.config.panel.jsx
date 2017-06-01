@@ -80,14 +80,10 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                         activeKeys: [], 
                         levelGroup: [], 
                         isLoading: true,
-                        editClassName: "col-md-offset-2 col-md-8",
+                        editClassName: this.props.panelClassName || "col-md-offset-2 col-md-8",
                         diffClassName: "",
                         isDiffLoading: false,
                         diffInfo: []
-                    }
-
-                    if (this.props.panelClassName) {
-                        defaultState.editClassName = this.props.panelClassName;
                     }
 
                     if (this.props.type === 3) {

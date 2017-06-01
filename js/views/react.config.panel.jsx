@@ -190,7 +190,7 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                     }
                 },
 
-                 handleSelect(activeKey) {
+                handleSelect: function(activeKey) {
                     var index = activeKey.split("_")[1];
                     if (this.state.activeKeys[index] === activeKey) {
                         this.state.activeKeys[index] = ""
@@ -199,7 +199,7 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                     }
 
                     this.setState({ activeKeys: this.state.activeKeys });
-                 },
+                },
 
                 onClickBack: function(){
                     this.props.onClickBackCallback&&this.props.onClickBackCallback()

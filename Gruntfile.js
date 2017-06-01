@@ -99,6 +99,7 @@ module.exports = function(grunt) {
                         "libs/plupload.full.min.js",
                         "libs/async.min.js",
                         "libs/bootstrap-switch.js",
+                        "libs/socket.io-1.4.5.js"
                     ]
                 }
             },
@@ -328,22 +329,22 @@ module.exports = function(grunt) {
     // cssmin 压缩css文件到 dest/css/all.css
     // processhtml: 将html中的引用替换为 all.css 、libs.js
     // filerev & usemin: 生成 dest/js/main.js 、dest/libs/libs.js 和 dest/css/all.css 文件的MD5，并在文件中替换 
-    grunt.registerTask('set', ["clean", 'underscore', 'react', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('set', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
         'copy:main', 'set-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
-    grunt.registerTask('online', ["clean", 'underscore', 'react', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('online', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
         'copy:main', 'online-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
-    grunt.registerTask('test', ["clean", 'underscore', 'react', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('test', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
         'copy:main', 'test-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
-    grunt.registerTask('gray', ["clean", 'underscore', 'react', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('gray', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
         'copy:main', 'gray-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
-    grunt.registerTask('develop', ["clean", 'underscore', 'react', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('develop', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
         'copy:main', 'dev-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
-    grunt.registerTask('shanghai', ["clean", 'underscore', 'react', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('shanghai', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
         'copy:main', 'shanghai-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
-    grunt.registerTask('gatewaydevelop', ["clean", 'underscore', 'react', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('gatewaydevelop', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
         'copy:main', 'gateway-develop-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
-    grunt.registerTask('wuqing', ["clean", 'underscore', 'react', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('wuqing', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
         'copy:main', 'wuqing-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
-    grunt.registerTask('preonline', ["clean", 'underscore', 'react', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('preonline', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
         'copy:main', 'preonline-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
 };

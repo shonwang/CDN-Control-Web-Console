@@ -1,7 +1,7 @@
 dest/*
 temp/*
-node_modules/*
 js/data/*
+node_modules/*
 js/template.js
 .DS_Store
 .idea/

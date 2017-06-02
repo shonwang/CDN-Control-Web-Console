@@ -30,11 +30,13 @@ define("react.table", ['require', 'exports'],
                               id: model.get('id'), 
                               onClick: operation.callback}, operation.name);
                 });
+                var thOper = React.createElement("td", null, buttons);
 
+                if (this.props.noOperCol) thOper = null;
                 return (
                     React.createElement("tr", null, 
                         tds, 
-                        React.createElement("td", null, buttons)
+                        thOper
                     )
                 )
             }
@@ -69,13 +71,16 @@ define("react.table", ['require', 'exports'],
             },
 
             render: function() {
-                var operationList = this.props.operationList,
-                    rowFeilds = this.props.rowFeilds;
-                var collection = this.getCollection();
+                var operationList = this.props.operationList || [],
+                    rowFeilds = this.props.rowFeilds,
+                    collection = this.getCollection(),
+                    noOperCol = this.props.noOperCol;
+
                 var rows = collection.map(function(model, index){
                     return React.createElement(ReactTableRow, {key: index, 
                                           model: model, 
                                           operationList: operationList, 
+                                          noOperCol: noOperCol, 
                                           rowFeilds: rowFeilds, 
                                           checkboxCallback: this.handleItemClickCheckbox});
                 }.bind(this));
@@ -89,14 +94,16 @@ define("react.table", ['require', 'exports'],
                     return th;
                 }.bind(this));
 
-                var table = null;
+                var table = null, thOper = React.createElement("th", null, "操作");
+
+                if (noOperCol) thOper = null;
                 if (rows.length > 0) {
                     table = (
                         React.createElement(Table, {striped: true, hover: true}, 
                             React.createElement("thead", null, 
                                 React.createElement("tr", null, 
                                     theadName, 
-                                    React.createElement("th", null, "操作")
+                                    thOper
                                 )
                             ), 
                             React.createElement("tbody", null, 

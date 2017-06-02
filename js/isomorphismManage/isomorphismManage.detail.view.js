@@ -88,7 +88,7 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                     name: "配置单"
                 }, {
                     className: "nodes",
-                    callback: $.proxy(this.onClickItemEdit, this),
+                    callback: $.proxy(this.onClickItemNodes, this),
                     name: "已下发节点"
                 }, {
                     className: "edit",
@@ -117,6 +117,41 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                 } else {
                     this.$el.find(".opt-ctn .diff").attr("disabled", "disabled");
                 }
+            },
+
+            onClickItemNodes: function(){
+                var eventTarget = event.srcElement || event.target,
+                    id = $(eventTarget).attr("id");
+                var model = this.collection.get(id);
+
+                if (this.nodesPopup) $("#" + this.nodesPopup.modalId).remove();
+                var options = {
+                    title: "已下发节点",
+                    body: "",
+                    backdrop: 'static',
+                    type: 1,
+                    onOKCallback: function() {
+                        this.nodesPopup.$el.modal("hide");
+                    }.bind(this),
+                    onHiddenCallback: function() {}.bind(this)
+                }
+                this.nodesPopup = new Modal(options);
+                var tableHeaderName = [
+                    "节点名称",
+                ];
+
+                var rowFeild = [
+                    "version",
+                ];
+
+                var ReactTableView = React.createFactory(ReactTableComponent);
+                var reactTableView = ReactTableView({
+                    collection: this.collection,
+                    theadNames: tableHeaderName,
+                    rowFeilds: rowFeild,
+                    noOperCol: true
+                });
+                ReactDOM.render(reactTableView, this.nodesPopup.$el.find(".modal-body").get(0));
             },
 
             onClickItemEdit: function(event){

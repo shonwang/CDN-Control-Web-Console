@@ -30,11 +30,13 @@ define("react.table", ['require', 'exports'],
                               id={model.get('id')} 
                               onClick={operation.callback}>{operation.name}</a>;
                 });
+                var thOper = <td>{buttons}</td>;
 
+                if (this.props.noOperCol) thOper = null;
                 return (
                     <tr>
                         {tds}
-                        <td>{buttons}</td>
+                        {thOper}
                     </tr>
                 )
             }
@@ -69,13 +71,16 @@ define("react.table", ['require', 'exports'],
             },
 
             render: function() {
-                var operationList = this.props.operationList,
-                    rowFeilds = this.props.rowFeilds;
-                var collection = this.getCollection();
+                var operationList = this.props.operationList || [],
+                    rowFeilds = this.props.rowFeilds,
+                    collection = this.getCollection(),
+                    noOperCol = this.props.noOperCol;
+
                 var rows = collection.map(function(model, index){
                     return <ReactTableRow key={index} 
                                           model={model} 
-                                          operationList={operationList} 
+                                          operationList={operationList}
+                                          noOperCol={noOperCol} 
                                           rowFeilds={rowFeilds} 
                                           checkboxCallback={this.handleItemClickCheckbox}/>;
                 }.bind(this));
@@ -89,14 +94,16 @@ define("react.table", ['require', 'exports'],
                     return th;
                 }.bind(this));
 
-                var table = null;
+                var table = null, thOper = <th>操作</th>;
+
+                if (noOperCol) thOper = null;
                 if (rows.length > 0) {
                     table = (
                         <Table striped hover>
                             <thead>
                                 <tr>
                                     {theadName}
-                                    <th>操作</th>
+                                    {thOper}
                                 </tr>
                             </thead>
                             <tbody>

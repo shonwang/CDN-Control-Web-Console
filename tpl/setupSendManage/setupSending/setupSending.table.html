@@ -28,7 +28,7 @@
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].attributes.id%>">
               <td><input type="checkbox" id="<%=data[i].id%>"></td>
-              <td><%=data[i].get("creator") || "神秘人"%></td>
+              <td><%=data[i].get("creatorName") || "神秘人"%></td>
               <td><%=data[i].get("taskName")%></td>
               <td><%=data[i].get("taskTypeName")%></td>
               <td><%=data[i].get("platformName")%></td>

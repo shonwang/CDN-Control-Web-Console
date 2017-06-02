@@ -174,6 +174,7 @@
   "navbar.view": "views/navbar.view",
   "react.config.panel": "views/react.config.panel",
   "react.modal.alert": "views/react.modal.alert",
+  "react.modal.confirm": "views/react.modal.confirm",
   "react.table": "views/react.table",
   "subNavbar.view": "views/subNavbar.view"
 };

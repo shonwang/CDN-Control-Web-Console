@@ -119,7 +119,7 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                         this.collection.off('set.remark.success');
                         this.collection.off('set.remark.error');
                         this.collection.on('set.remark.success', function() {
-                            alert("修改成功");
+                            Utility.alerts("修改成功");
                             this.collection.getVersionList({
                                 "originId": this.model.get("id")
                             })
@@ -156,8 +156,14 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
             },
 
             onPostPredelivery: function() {
-                alert("发布成功！")
-                window.location.hash = '#/setupSendWaitSend';
+                Utility.alerts("发布成功！", "success")
+                
+                if (this.model.get("confCustomType") === 1)
+                    window.location.hash = '#/setupSendWaitSend';
+                else if (this.model.get("confCustomType") === 3)
+                    window.location.hash = '#/setupSendWaitCustomize';
+                else
+                    Utility.alerts('此域名的confCustomType为' + this.model.get("confCustomType") + '无法待下发或者是待定制')
             },
 
             onClickItemConfig: function(event) {
@@ -255,9 +261,9 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
 
             onGetError: function(error) {
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("网络阻塞，请刷新重试！")
             },
 
             render: function(target) {

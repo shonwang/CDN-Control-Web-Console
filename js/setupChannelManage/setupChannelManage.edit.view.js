@@ -261,7 +261,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                             JSON.parse(el.content)
                         }.bind(this))
                     } catch (e){
-                        alert("JSON 格式错误！")
+                        Utility.alerts("JSON 格式错误！")
                         return;
                     }
                     this.mySetupSendWaitCustomizeModel.setChannelLuaConfig(postParam)
@@ -300,7 +300,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
         },
 
         onSaveConfigSuccess: function(){
-            alert("操作成功！")
+            Utility.alerts("操作成功！", "success")
             this.onClickCancelButton();
         },
 
@@ -310,9 +310,9 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("网络阻塞，请刷新重试！")
         },
 
         render: function(target) {

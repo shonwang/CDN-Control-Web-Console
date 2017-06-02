@@ -23,7 +23,8 @@
               <td><%=data[i].get("statusName")%></td>
               <td>
     					<% if(data[i].get("status") == 3 && permission.RepeatSend) { %>
-    					<a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="repeat" title="重新发布">
+    					<a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="repeat"
+                 title="重新发布" data-toggle="tooltip" data-placement="bottom">
     					  <span class="glyphicon glyphicon-repeat"></span>
     					</a>
     					<% } %>

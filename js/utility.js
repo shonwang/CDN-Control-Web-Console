@@ -478,12 +478,26 @@ define("utility", ['require','exports'], function(require, exports) {
                     backdrop: false,
                     message: message || "Hello world!",
                     type: type || 'danger',
-                    timeout: timeout || 4000
+                    timeout: timeout || 3000
                 });
                 ReactDOM.unmountComponentAtNode($("#react-modal").get(0))
                 ReactDOM.render(reactModalAlertView, $("#react-modal").get(0));
             })
         },
+
+        confirm: function(message, callback){
+            require(['react.modal.confirm'], function(ReactModalConfirmComponent){
+                var ReactModalConfirmView = React.createFactory(ReactModalConfirmComponent);
+                var reactModalConfirmView = ReactModalConfirmView({
+                    showModal: true,
+                    backdrop: true,
+                    message: message || "Are you sure?",
+                    callback: callback
+                });
+                ReactDOM.unmountComponentAtNode($("#react-modal").get(0))
+                ReactDOM.render(reactModalConfirmView, $("#react-modal").get(0));
+            })
+        }
 
     };
     return Utility;

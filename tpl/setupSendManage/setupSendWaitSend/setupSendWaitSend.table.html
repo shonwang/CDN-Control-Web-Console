@@ -2,6 +2,7 @@
     <thead> 
       <tr>
         <th><input type="checkbox" id="inlineCheckbox6"></th>
+        <th>发布者</th>
         <th>加速域名</th>
         <th>下发类型</th>
         <th>是否定制化</th>
@@ -19,6 +20,7 @@
             <% if (data[i].get("isDisplay")) { %>
             <tr data-id="<%=data[i].attributes.id%>">
               <td><input type="checkbox" id="<%=data[i].id%>"></td>
+              <td><%=data[i].get("creator") || "神秘人"%></td>
               <td><%=data[i].get("domain")%></td>
               <td><%=data[i].get("configReasonName")%></td>
               <td><%=data[i].get("isCustomName")%></td>
@@ -27,20 +29,30 @@
               <td><%=data[i].get("specialruleName")%></td>
               <td><%=data[i].get("domainVersion")%></td>
               <td><%=data[i].get("createTimeFormated")%></td>
-              <td><%=data[i].get("description")%></td>
+              <td>
+                <a href="javascript:void(0)" class="remark" id="<%=data[i].attributes['id']%>"
+                   data-container="body" 
+                   data-toggle="popover"
+                   data-trigger="hover" 
+                   data-placement="top" 
+                   data-content='<%=data[i].get("description") || "无" %>'>备注</a>
+              </td>
               <td>
                   <% if(permission.ViewConfigDetails) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit" title="查看详情">
-                      <span class="glyphicon glyphicon-edit"></span>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit"
+                     title="查看详情" data-toggle="tooltip" data-placement="bottom">
+                      <span class="glyphicon glyphicon-eye-open"></span>
                   </a>
                   <% } %>
                   <% if(permission.SendToSending) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="send" title="下发">
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="send"
+                     title="下发" data-toggle="tooltip" data-placement="bottom">
                       <span class="glyphicon glyphicon-send"></span>
                   </a>
                   <% } %>
                   <% if(permission.SendBackInWS) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="reject" title="打回">
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="reject"
+                     title="打回" data-toggle="tooltip" data-placement="bottom">
                       <span class="glyphicon glyphicon-remove-circle"></span>
                   </a>
                   <% } %>

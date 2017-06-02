@@ -45,10 +45,12 @@ define("setupSending.view", ['require', 'exports', 'template', 'modal.view', 'ut
 
         onGetError: function(error) {
             this.disablePopup && this.disablePopup.$el.modal('hide');
-            if (error && error.message)
-                Utility.alerts(error.message)
-            else
-                Utility.alerts("网络阻塞，请刷新重试！")
+            setTimeout(function(){
+                if (error && error.message)
+                    Utility.alerts(error.message)
+                else
+                    Utility.alerts("网络阻塞，请刷新重试！")
+            }.bind(this), 500)
         },
 
         showDisablePopup: function(msg) {
@@ -140,12 +142,11 @@ define("setupSending.view", ['require', 'exports', 'template', 'modal.view', 'ut
 
                 var model = this.collection.get(id);
 
-                this.collection.nextTask({
-                    taskId: id,
-                    taskStepId: model.get("taskStepId")
-                })
-
                 setTimeout(function(){
+                    this.collection.nextTask({
+                        taskId: id,
+                        taskStepId: model.get("taskStepId")
+                    })
                     this.showDisablePopup("服务器正在努力处理中...")
                 }.bind(this), 500)
             }.bind(this))

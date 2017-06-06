@@ -102,7 +102,8 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                             _.each(el, function(fileObj, index, list){
                                 if (!fileObj) return;
                                 fileObj.fileType = key;
-                                fileObj.luaOnly === undefined ? true : fileObj.luaOnly;
+                                fileObj.luaOnly === undefined ? fileObj.luaOnly = true : "";
+                                fileObj.id ? "" : fileObj.id = Utility.randomStr(8);
                                 fileList.push(fileObj)
                                 topologyLevelArray.push(fileObj.topologyLevel)
                             }.bind(this))
@@ -134,6 +135,8 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                         isLoading: false,
                         activeKeys: tempArray
                     });
+
+                    this.props.onChangeTextarea&&this.props.onChangeTextarea(levelGroup)
                 },
 
                 onClickDiff: function(){
@@ -174,15 +177,16 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                     var indexArray = event.target.id.split("_"),
                         groupIndex = indexArray[1],
                         fileIndex = indexArray[2],
-                        fileId = parseInt(indexArray[3]);
+                        fileId = indexArray[3];
                     var levelGroup = this.state.levelGroup;
                     var fileObj = levelGroup[groupIndex].fileArray[fileIndex];
 
-                    if (fileObj.id === fileId) {
+                    if (fileObj.id == fileId) {
                         levelGroup[groupIndex].fileArray[fileIndex].content = event.target.value;
                         this.setState({ 
                             levelGroup: levelGroup
                         });
+                        this.props.onChangeTextarea&&this.props.onChangeTextarea(levelGroup)
                     }
                 },
 

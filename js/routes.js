@@ -82,6 +82,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                 "setupSendWaitCustomize": "setupSendWaitCustomize",
                 "setupSendWaitSend": "setupSendWaitSend",
                 "isomorphismManage": "isomorphismManage",
+                "sharedSetup/:query": "sharedSetup",
             },
 
             execute: function(callback, args) {
@@ -386,6 +387,28 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     this.setupSendNavbar.$el.remove();
                     this.setupSendNavbar = null;
                 }
+            },
+
+            sharedSetup: function(query) {
+                //if (!AUTH_OBJ.OpenApiLogManager) return;
+                require(['sharedSetup.view', 'sharedSetup.model'], function(SharedSetupView, SharedSetupModel) {
+                    this.curPage = 'sharedSetup';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    var renderTarget = $('.ksc-content')
+                    if (!this.sharedSetupModel)
+                        this.sharedSetupModel = new SharedSetupModel();
+                    if (!this.sharedSetupView) {
+                        var options = {
+                            collection: this.sharedSetupModel,
+                            query: query
+                        };
+                        this.sharedSetupView = new SharedSetupView(options);
+                        this.sharedSetupView.render(renderTarget);
+                    } else {
+                        this.sharedSetupView.update(renderTarget, query);
+                    }
+                    this.curView = this.sharedSetupView;
+                }.bind(this));
             },
 
             isomorphismManage: function() {

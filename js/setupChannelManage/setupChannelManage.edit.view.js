@@ -278,6 +278,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                 } else {
                     try {
                         _.each(postParam, function(el){
+                            if (el.content === "") return;
                             JSON.parse(el.content)
                         }.bind(this))
                     } catch (e){

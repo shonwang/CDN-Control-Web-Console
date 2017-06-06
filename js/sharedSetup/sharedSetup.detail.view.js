@@ -4,6 +4,7 @@ define("sharedSetup.detail.view", ['require', 'exports', 'template', 'modal.view
         var SharedSetupDetailView = Backbone.View.extend({
             events: {
                 "click .cancel": "onClickBackBtn",
+                "click .save": "onClickSaveBtn"
             },
 
             initialize: function(options) {
@@ -13,9 +14,10 @@ define("sharedSetup.detail.view", ['require', 'exports', 'template', 'modal.view
                 this.$el = $(_.template(template['tpl/sharedSetup/sharedSetup.detail.html'])({
                     data: this.model
                 }));
+                this.mainDomain = this.model ? this.model.get("mainDomain") : "";
+                this.sharedDomain = this.model ? this.model.get("sharedDomain")  : "";
 
                 this.initDoubleSelect();
-                this.mainDomain = this.model ? this.model.get("mainDomain") : null;
             },
 
             onClickBackBtn: function() {
@@ -33,10 +35,37 @@ define("sharedSetup.detail.view", ['require', 'exports', 'template', 'modal.view
                 var ReactTableView = React.createFactory(ReactDoubleSelectComponent);
                 var reactTableView = ReactTableView({
                     collection: this.collection,
-                    mainDomain: "jiangran.hdllive.ks-cdn.com",
-                    selected: "jiangran.hdllive.ks-cdn.com,jiangran.rtmplive.ks-cdn.com,jiangran.uplive.ks-cdn.com".split(",")
+                    mainDomain: this.mainDomain,
+                    selected: this.sharedDomain&&this.sharedDomain.split(","),
+                    onChangeMainDomain: $.proxy(this.onChangeMainDomain, this),
+                    onChangeSharedDomain: $.proxy(this.onChangeSharedDomain, this)
                 });
                 ReactDOM.render(reactTableView, this.$el.find(".select-domain-ctn").get(0));
+            },
+
+            onChangeMainDomain: function(domain){
+                this.mainDomain = domain;
+            },
+
+            onChangeSharedDomain: function(domains){
+                this.sharedDomain = domains.join(",");
+            },
+
+            onClickSaveBtn: function(){
+                if (this.mainDomain === "") {
+                    Utility.alerts("请选择主域名！")
+                    return;
+                }
+                var postParam = {
+                    name: this.$el.find("#input-setup-name").val().trim(),
+                    mainDomain: this.mainDomain,
+                    sharedDomain: this.sharedDomain
+                }
+
+                if (postParam.name === "") {
+                    Utility.alerts("请输入共享配置名称！")
+                    return;
+                }
             },
 
             render: function(target) {

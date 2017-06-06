@@ -2,8 +2,8 @@ define("sharedSetup.model", ['require', 'exports', 'utility', 'setupTopoManage.m
     function(require, exports, Utility, SetupTopoManageCollection) {
         var Model = Backbone.Model.extend({
             initialize: function() {
-                var businessType = this.get("subType"),
-                    status = this.get("auditStatus"),
+                var businessType = this.get("type"),
+                    createdTime= this.get("createdTime"),
                     sharedDomain = this.get("sharedDomain");
 
                 if (sharedDomain) this.set("sharedDomainNum", sharedDomain.split(',').length)
@@ -11,6 +11,8 @@ define("sharedSetup.model", ['require', 'exports', 'utility', 'setupTopoManage.m
                 if (businessType === 1) this.set("businessTypeName", '下载加速');
                 if (businessType === 2) this.set("businessTypeName", '直播加速');
                 if (businessType === 3) this.set("businessTypeName", '直播推流加速');
+
+                if (createdTime) this.set("createdTimeFormated", new Date(createdTime).format("yyyy/MM/dd hh:mm"));
             }
         });
 
@@ -20,8 +22,8 @@ define("sharedSetup.model", ['require', 'exports', 'utility', 'setupTopoManage.m
 
             initialize: function() {},
 
-            queryChannel: function(args) {
-                var url = BASE_URL + "/channelManager/domain/getChannelManager",
+            getConfigSharedGroup: function(args) {
+                var url = BASE_URL + "/nodejs/channelManager/configSharedGroup/getConfigSharedGroup",
                     successCallback = function(res) {
                         this.reset();
                         if (res) {
@@ -29,15 +31,15 @@ define("sharedSetup.model", ['require', 'exports', 'utility', 'setupTopoManage.m
                                 this.push(new Model(element));
                             }.bind(this))
                             this.total = res.totalCount;
-                            this.trigger("get.channel.success");
+                            this.trigger("get.configSharedGroup.success");
                         } else {
-                            this.trigger("get.channel.error");
+                            this.trigger("get.configSharedGroup.error");
                         }
                     }.bind(this),
                     errorCallback = function(response) {
-                        this.trigger("get.channel.error", response);
+                        this.trigger("get.configSharedGroup.error", response);
                     }.bind(this);
-                Utility.postAjax(url, args, successCallback, errorCallback);
+                Utility.getAjax(url, args, successCallback, errorCallback);
             }
         });
 

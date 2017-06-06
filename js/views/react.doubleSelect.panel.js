@@ -131,6 +131,7 @@ define("react.doubleSelect.panel", ['require', 'exports'],
                     this.setState({
                         selected: temp,
                     })
+                    this.props.onChangeSharedDomain&&this.props.onChangeSharedDomain(temp);
                 },
 
                 onClickSelectAll: function(){
@@ -142,6 +143,7 @@ define("react.doubleSelect.panel", ['require', 'exports'],
                     this.setState({
                         selected: temp,
                     })
+                    this.props.onChangeSharedDomain&&this.props.onChangeSharedDomain(temp);
                 },
 
                 onChangeInput: function(event){
@@ -164,6 +166,8 @@ define("react.doubleSelect.panel", ['require', 'exports'],
                     this.setState({
                         mainDomain: domain
                     })
+
+                    this.props.onChangeMainDomain&&this.props.onChangeMainDomain(domain)
                 },
 
                 onClickSelectDelete: function(domain){
@@ -171,12 +175,18 @@ define("react.doubleSelect.panel", ['require', 'exports'],
                     this.setState({
                         selected: temp
                     })
+                    this.props.onChangeSharedDomain&&this.props.onChangeSharedDomain(temp);
                 },
 
                 onClickClearAll: function(){
+                    var temp = _.filter(this.state.selected, function(domain){
+                        return this.state.mainDomain === domain
+                    }.bind(this))
+
                     this.setState({
-                        selected: []
+                        selected: temp
                     })
+                    this.props.onChangeSharedDomain&&this.props.onChangeSharedDomain(temp);
                 },
 
                 render: function() {

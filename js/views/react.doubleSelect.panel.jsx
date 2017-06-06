@@ -51,7 +51,7 @@ define("react.doubleSelect.panel", ['require', 'exports'],
                             <td>
                                 <Radio name="radioGroup" onChange={this.onClickMainDomain} id={this.props.domain} checked>{ this.props.domain }</Radio>
                             </td>
-                            <td></td>
+                            <td><span className="label label-success">主域名</span></td>
                         </tr>
                     );
                 }

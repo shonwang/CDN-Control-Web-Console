@@ -51,7 +51,7 @@ define("react.doubleSelect.panel", ['require', 'exports'],
                             React.createElement("td", null, 
                                 React.createElement(Radio, {name: "radioGroup", onChange: this.onClickMainDomain, id: this.props.domain, checked: true},  this.props.domain)
                             ), 
-                            React.createElement("td", null)
+                            React.createElement("td", null, React.createElement("span", {className: "label label-success"}, "主域名"))
                         )
                     );
                 }

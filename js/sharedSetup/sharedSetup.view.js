@@ -49,9 +49,14 @@ define("sharedSetup.view", ['require', 'exports', 'template', 'modal.view', 'uti
             onGetChannelSuccess: function() {
                 if (this.query !== "all") {
                     var model = this.collection.find(function(obj){
-                        return obj.get("domain") === this.query;
+                        return obj.get("mainDomain") === this.query || obj.get("sharedDomain").indexOf(this.query) > -1;
                     }.bind(this))
-                    this.onClickItemToView(null, model)
+                    if (model) {
+                        this.onClickItemToView(null, model)
+                    } else {
+                        Utility.alerts("未找到" + this.query + "的共享域名配置！")
+                        window.location.hash = "#/sharedSetup/all"
+                    }
                 } else {
                     this.initTable();
                     if (!this.isInitPaginator) this.initPaginator();
@@ -65,8 +70,8 @@ define("sharedSetup.view", ['require', 'exports', 'template', 'modal.view', 'uti
                 }
                 this.queryArgs.domain = this.$el.find("#input-domain-name").val().trim();
                 if (this.queryArgs.domain == "") this.queryArgs.domain = null;
-                // this.queryArgs.userId = this.$el.find("#input-customer-id").val().trim();
-                // if (this.queryArgs.userId == "") this.queryArgs.userId = null;
+                this.queryArgs.userId = this.$el.find("#input-customer-id").val().trim();
+                if (this.queryArgs.userId == "") this.queryArgs.userId = null;
                 ReactDOM.unmountComponentAtNode(this.$el.find(".table-ctn").get(0))
                 this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                 if (this.isInitPaginator) this.$el.find(".pagination").jqPaginator('destroy');

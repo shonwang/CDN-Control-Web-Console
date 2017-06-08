@@ -327,7 +327,7 @@ define("react.config.panel", ['require', 'exports', 'utility'],
 
                     if (this.props.type === 2) {
                         editButtons = [
-                            <Button key={1} bsStyle="success" onClick={this.onClickDiff}>查看diff</Button>,
+                            <Button key={1} bsStyle="success" onClick={this.onClickDiff}>查看DIFF</Button>,
                             <Button key={2} bsStyle="primary" onClick={this.onClickPublish}>发布</Button>
                         ]                
                     }

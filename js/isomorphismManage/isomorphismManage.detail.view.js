@@ -39,7 +39,7 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                     var ReactTableView = React.createFactory(ReactConfigPanelComponent);
                     var reactTableView = ReactTableView({
                         collection: this.collection,
-                        version: checkedList[0].get("version") + "," + checkedList[1].get("version"),
+                        version: checkedList[0].get("domainVersion") + "," + checkedList[1].get("domainVersion"),
                         domain: this.model.get("domain"),
                         type: 3,
                         isCustom: this.model.get("isCustom"),

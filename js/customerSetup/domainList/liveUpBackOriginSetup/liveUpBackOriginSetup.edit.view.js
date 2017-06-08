@@ -61,7 +61,7 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                 this.model = options.model;
                 this.userInfo = options.userInfo;
                 this.defaultParam = {
-                    "openFlag": 0, //源站配置 0:关 1:开
+                    "openFlag": 1, //源站配置 0:关 1:开
                     "sourceType": 1, //1:用户源站 2:上层节点 3：视频云源站
                     "sourceName": "",
                     "originType": 1, //1:ip 2:域名 3:视频云源站

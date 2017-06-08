@@ -127,25 +127,11 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                     id = $(eventTarget).attr("id");
                 var model = this.collection.get(id);
 
-                this.collection.nodelist({
-                    domain: this.model.get("domain"),
-                    domainversion: model.get("domainVersion")
-                })
-            },
-
-            onGetNodeListSuccess: function(data){
                 if (this.nodesPopup) $("#" + this.nodesPopup.modalId).remove();
-
-                var nodes = "";
-                _.each(data, function(el){
-                    nodes = nodes + '<li>' + el.nodeName + ' </li>'
-                }.bind(this))
-
-                var tplUl = '<ul class="list-unstyled">' + nodes + '</ul>';
 
                 var options = {
                     title: "已下发节点",
-                    body: tplUl,
+                    body: _.template(template['tpl/loading.html'])({}),
                     backdrop: 'static',
                     type: 1,
                     onOKCallback: function() {
@@ -155,22 +141,21 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                 }
                 this.nodesPopup = new Modal(options);
 
-                // var tableHeaderName = [
-                //     "节点名称",
-                // ];
+                this.collection.nodelist({
+                    domain: this.model.get("domain"),
+                    domainversion: model.get("domainVersion")
+                })
+            },
 
-                // var rowFeild = [
-                //     "nodeName",
-                // ];
+            onGetNodeListSuccess: function(data){
+                var nodes = "";
+                _.each(data, function(el){
+                    nodes = nodes + '<li class="list-group-item">' + el.nodeName + ' </li>'
+                }.bind(this))
 
-                // var ReactTableView = React.createFactory(ReactTableComponent);
-                // var reactTableView = ReactTableView({
-                //     collection: this.collection,
-                //     theadNames: tableHeaderName,
-                //     rowFeilds: rowFeild,
-                //     noOperCol: true
-                // });
-                // ReactDOM.render(reactTableView, this.nodesPopup.$el.find(".modal-body").get(0));
+                var tplUl = '<ul class="list-group">' + nodes + '</ul>';
+
+                this.nodesPopup.$el.find(".modal-body").html(tplUl)
             },
 
             onClickItemEdit: function(event){

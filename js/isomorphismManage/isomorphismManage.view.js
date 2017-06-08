@@ -18,8 +18,10 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
                 this.curPage = 1;
                 this.isInitPaginator = false;
                 this.queryArgs = {
-                    "currentPage": 1,
-                    "pageSize": 10
+                    "domain": null,
+                    "subType": null,
+                    "page": 1,
+                    "size": 10
                 }
                 this.onClickQueryButton();
                 this.initDeviceDropMenu();
@@ -47,9 +49,9 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
             },
 
             onClickQueryButton: function() {
-                this.queryArgs.currentPage = this.curPage;
-                this.queryArgs.name = this.$el.find("#input-domain-name").val().trim();
-                if (this.queryArgs.name == "") this.queryArgs.name = null;
+                this.queryArgs.page = this.curPage;
+                this.queryArgs.domain = this.$el.find("#input-domain-name").val().trim();
+                if (this.queryArgs.domain == "") this.queryArgs.domain = null;
                 ReactDOM.unmountComponentAtNode(this.$el.find(".table-ctn").get(0))
                 this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                 if (this.isInitPaginator) this.$el.find(".pagination").jqPaginator('destroy');
@@ -71,7 +73,7 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
                     "businessTypeName",
                     "protocolName",
                     "statusName",
-                    "id"
+                    "diffTotal"
                 ];
 
                 var operationList = [{
@@ -113,8 +115,8 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
 
             initPaginator: function() {
                 this.$el.find(".total-items span").html(this.collection.total)
-                if (this.collection.total <= this.queryArgs.pageSize) return;
-                var total = Math.ceil(this.collection.total / this.queryArgs.pageSize);
+                if (this.collection.total <= this.queryArgs.size) return;
+                var total = Math.ceil(this.collection.total / this.queryArgs.size);
                 this.$el.find(".pagination").jqPaginator({
                     totalPages: total,
                     visiblePages: 10,
@@ -124,8 +126,8 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
                             ReactDOM.unmountComponentAtNode(this.$el.find(".table-ctn").get(0))
                             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                             var args = _.extend(this.queryArgs);
-                            args.currentPage = num;
-                            args.pageSize = this.queryArgs.pageSize;
+                            args.page = num;
+                            args.size = this.queryArgs.size;
                             this.collection.queryChannel(args);
                             this.curPage = num
                         }
@@ -141,21 +143,21 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
                     value: 'all'
                 }, {
                     name: '下载',
-                    value: 'all'
+                    value: 1
                 }, {
                     name: '直播',
-                    value: 'all'
+                    value: 2
                 }, {
                     name: '直播推流',
-                    value: 'all'
+                    value: 3
                 }];
 
                 var rootNode = this.$el.find(".dropdown-bus-type");
                 Utility.initDropMenu(rootNode, typeArray, function(value) {
                     if (value !== "All")
-                        this.queryArgs.type = parseInt(value)
+                        this.queryArgs.subType = parseInt(value)
                     else
-                        this.queryArgs.type = null
+                        this.queryArgs.subType = null
                 }.bind(this));
 
                 var pageNum = [{
@@ -172,7 +174,7 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
                     value: 100
                 }]
                 Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value) {
-                    this.queryArgs.pageSize = parseInt(value);
+                    this.queryArgs.size = parseInt(value);
                     this.curPage = 1;
                     this.onClickQueryButton();
                 }.bind(this));

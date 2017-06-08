@@ -249,9 +249,9 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                         var myPanels = _.map(group.fileArray, function(fileObj, inx){
                                 var eventKey = randomStr + "_" + index + "_" +inx + "_" + fileObj.id,
                                     fileContent = <pre><code>{fileObj.content || ""}</code></pre>,
-                                    alertMessage = "：文件不包含全部配置，请下发nginx文件",
+                                    //alertMessage = "：文件不包含全部配置，请下发nginx文件",
                                     headerStr = fileObj.fileType;
-                                    if (!fileObj.luaOnly) headerStr = headerStr + alertMessage;
+                                    //if (!fileObj.luaOnly) headerStr = headerStr + alertMessage;
 
                                 return (
                                     <Panel key={inx}

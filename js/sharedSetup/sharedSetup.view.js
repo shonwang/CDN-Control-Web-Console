@@ -206,6 +206,7 @@ define("sharedSetup.view", ['require', 'exports', 'template', 'modal.view', 'uti
 
                 var nodeTpl = '';
                 _.each(model.get("sharedDomain")&&model.get("sharedDomain").split(","), function(el) {
+                    if (el === model.get("mainDomain")) return;
                     nodeTpl = '<li class="node-item">' +
                         '<span class="label label-info" id="' + Utility.randomStr(8) + '">' + el + '</span>' +
                         '</li>';

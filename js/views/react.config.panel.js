@@ -39,6 +39,8 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                             v2: props.version.split(",")[1]
                         })
                     } else {
+                        collection.on("get.publish.success", $.proxy(this.onGetPublishSuccess, this));
+                        collection.on("get.publish.error", $.proxy(this.onGetError, this));
                         require(['setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeModel){
                             this.mySetupSendWaitCustomizeModel = new SetupSendWaitCustomizeModel();
                             this.mySetupSendWaitCustomizeModel.on("get.channel.config.success", $.proxy(this.onGetApplicationType, this));
@@ -55,6 +57,8 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                     var collection = this.getCollection();
                     collection.off("get.compare.success");
                     collection.off("get.compare.error");
+                    collection.off("get.publish.success");
+                    collection.off("get.publish.error");
                     if (this.mySetupSendWaitCustomizeModel) {
                         this.mySetupSendWaitCustomizeModel.off("get.all.config.success");
                         this.mySetupSendWaitCustomizeModel.off("get.all.config.error");
@@ -120,6 +124,7 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                             return obj.topologyLevel === el
                         })
                         levelGroup.push({
+                            topologyLevel: el,
                             topologyLevelName: topologyLevelName[el],
                             fileArray: fileArray,
                             activeKey: randomStr + "_0_0_" + fileArray[0].id,
@@ -207,6 +212,30 @@ define("react.config.panel", ['require', 'exports', 'utility'],
 
                 onClickBack: function(){
                     this.props.onClickBackCallback&&this.props.onClickBackCallback()
+                },
+
+                onClickPublish: function(){
+                    var postParam = {
+                        domain: this.props.domain,
+                        originId: this.props.originId,
+                        domainVersion: this.props.version,
+                        platformId:this.applicationType,
+                        configs: []
+                    }
+                    _.each(this.state.levelGroup, function(levelGroup){
+                        _.each(levelGroup.fileArray, function(fileObj){
+                            postParam.configs.push({
+                                topologyLevel: levelGroup.topologyLevel,
+                                content: fileObj.content
+                            })
+                        }.bind(this))
+                    }.bind(this))
+
+                    this.getCollection().publishandsaveconfig(postParam)
+                },
+
+                onGetPublishSuccess: function(){
+                    Utility.alerts("操作成功！", 'success');
                 },
 
                 getViewFromData: function(data, isDiff){
@@ -299,7 +328,7 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                     if (this.props.type === 2) {
                         editButtons = [
                             React.createElement(Button, {key: 1, bsStyle: "success", onClick: this.onClickDiff}, "查看diff"),
-                            React.createElement(Button, {key: 2, bsStyle: "primary", onClick: this.onClickBack}, "发布")
+                            React.createElement(Button, {key: 2, bsStyle: "primary", onClick: this.onClickPublish}, "发布")
                         ]                
                     }
 

@@ -169,6 +169,7 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                         collection: this.collection,
                         version: model.get("domainVersion"),
                         domain: this.model.get("domain"),
+                        originId: this.model.get("originId"),
                         type: 2, //1：配置文件只读；2，配置文件编辑；3：配置文件只读diff模式
                         isCustom: this.model.get("isCustom"),
                         isShowOpt: true,

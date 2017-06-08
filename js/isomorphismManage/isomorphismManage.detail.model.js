@@ -62,7 +62,18 @@ define("isomorphismManage.detail.model", ['require', 'exports', 'utility'],
                         this.trigger("get.nodelist.error", response);
                     }.bind(this);
                 Utility.getAjax(url, args, successCallback, errorCallback);
-            }
+            },
+            
+            publishandsaveconfig: function(args) {
+                var url = BASE_URL + "/cg/domain/publishandsaveconfig",
+                    successCallback = function(res) {
+                        this.trigger("get.publish.success", res);
+                    }.bind(this),
+                    errorCallback = function(response) {
+                        this.trigger("get.publish.error", response);
+                    }.bind(this);
+                Utility.postAjax(url, args, successCallback, errorCallback);
+            },
         });
 
         return Collection;

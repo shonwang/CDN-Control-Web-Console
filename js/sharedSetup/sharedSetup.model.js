@@ -23,7 +23,7 @@ define("sharedSetup.model", ['require', 'exports', 'utility', 'setupTopoManage.m
             initialize: function() {},
 
             getConfigSharedGroup: function(args) {
-                var url = BASE_URL + "/nodejs/channelManager/configSharedGroup/getConfigSharedGroup",
+                var url = BASE_URL + "/channelManager/configSharedGroup/getConfigSharedGroup",
                     successCallback = function(res) {
                         this.reset();
                         if (res) {
@@ -40,7 +40,44 @@ define("sharedSetup.model", ['require', 'exports', 'utility', 'setupTopoManage.m
                         this.trigger("get.configSharedGroup.error", response);
                     }.bind(this);
                 Utility.getAjax(url, args, successCallback, errorCallback);
-            }
+            },
+
+            getDomains: function(args) {
+                var url = BASE_URL + "/channelManager/domain/getDomains",
+                    successCallback = function(res) {
+                        if (res) {
+                            this.trigger("get.domain.success", res);
+                        } else {
+                            this.trigger("get.domain.error", res);
+                        }
+                    }.bind(this),
+                    errorCallback = function(response) {
+                        this.trigger("get.domain.error", response);
+                    }.bind(this);
+                Utility.getAjax(url, args, successCallback, errorCallback);
+            },
+
+            addConfigSharedGroup: function(args) {
+                var url = BASE_URL + "/channelManager/configSharedGroup/addConfigSharedGroup",
+                    successCallback = function(res) {
+                        this.trigger("set.configSharedGroup.success", res);
+                    }.bind(this),
+                    errorCallback = function(response) {
+                        this.trigger("set.configSharedGroup.error", response);
+                    }.bind(this);
+                Utility.postAjax(url, args, successCallback, errorCallback);
+            },
+
+            deleteConfigSharedGroup: function(args) {
+                var url = BASE_URL + "/channelManager/configSharedGroup/deleteConfigSharedGroup",
+                    successCallback = function(res) {
+                        this.trigger("delete.configSharedGroup.success", res);
+                    }.bind(this),
+                    errorCallback = function(response) {
+                        this.trigger("delete.configSharedGroup.error", response);
+                    }.bind(this);
+                Utility.getAjax(url, args, successCallback, errorCallback);
+            },
         });
 
         return SharedSetupCollection;

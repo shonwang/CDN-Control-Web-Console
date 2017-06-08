@@ -17,6 +17,8 @@ define("sharedSetup.view", ['require', 'exports', 'template', 'modal.view', 'uti
 
                 this.collection.on("get.configSharedGroup.success", $.proxy(this.onGetChannelSuccess, this));
                 this.collection.on("get.configSharedGroup.error", $.proxy(this.onGetError, this));
+                this.collection.on("delete.configSharedGroup.success", $.proxy(this.onDeleteSuccess, this));
+                this.collection.on("delete.configSharedGroup.error", $.proxy(this.onGetError, this));
 
                 this.curPage = 1;
                 this.isInitPaginator = false;
@@ -69,9 +71,9 @@ define("sharedSetup.view", ['require', 'exports', 'template', 'modal.view', 'uti
                     this.$el.find("#input-domain-name").val(this.query)
                 }
                 this.queryArgs.domain = this.$el.find("#input-domain-name").val().trim();
-                if (this.queryArgs.domain == "") this.queryArgs.domain = null;
+                if (this.queryArgs.domain == "") delete this.queryArgs.domain;
                 this.queryArgs.userId = this.$el.find("#input-customer-id").val().trim();
-                if (this.queryArgs.userId == "") this.queryArgs.userId = null;
+                if (this.queryArgs.userId == "") delete this.queryArgs.userId;
                 ReactDOM.unmountComponentAtNode(this.$el.find(".table-ctn").get(0))
                 this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                 if (this.isInitPaginator) this.$el.find(".pagination").jqPaginator('destroy');
@@ -130,6 +132,7 @@ define("sharedSetup.view", ['require', 'exports', 'template', 'modal.view', 'uti
                                 if (this.query === "all") {
                                     mySharedSetupDetailView.remove();
                                     this.$el.find(".list-panel").show();
+                                    this.onClickQueryButton();
                                 } else {
                                     window.location.hash = "#/sharedSetup/all"
                                 }
@@ -158,6 +161,7 @@ define("sharedSetup.view", ['require', 'exports', 'template', 'modal.view', 'uti
                                 if (this.query === "all") {
                                     mySharedSetupDetailView.remove();
                                     this.$el.find(".list-panel").show();
+                                    this.onClickQueryButton();
                                 } else {
                                     window.location.hash = "#/sharedSetup/all"
                                 }
@@ -176,8 +180,12 @@ define("sharedSetup.view", ['require', 'exports', 'template', 'modal.view', 'uti
                 model = this.collection.get(id);
 
                 Utility.confirm("你确定要删除" + model.get("name") + "吗？" , function(){
-
+                    this.collection.deleteConfigSharedGroup({id:id})
                 }.bind(this))
+            },
+
+            onDeleteSuccess: function(){
+                Utility.alerts("操作成功", "success");
             },
 
             onClickItemToView: function(event, model) {

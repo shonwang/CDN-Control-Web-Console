@@ -77,9 +77,17 @@ define("react.doubleSelect.panel", ['require', 'exports'],
 
         var ReactDoubleSelect = React.createBackboneClass({
 
-                componentDidMount: function() {},
+                componentDidMount: function() {
+                    var collection = this.getCollection()
+                    collection.on("get.domain.success", $.proxy(this.onChannelListSuccess, this));
+                    collection.on("get.domain.error", $.proxy(this.onGetError, this));                    
+                },
 
-                componentWillUnmount: function() {},
+                componentWillUnmount: function() {
+                    var collection = this.getCollection()
+                    collection.off("get.domain.success");
+                    collection.off("get.domain.error");   
+                },
 
                 getInitialState: function () {
                     var defaultState = {
@@ -96,30 +104,21 @@ define("react.doubleSelect.panel", ['require', 'exports'],
                 onClickSearch: function () {
                     if (!this.state.keyword) return;
 
-                    require(['setupChannelManage.model'], function(SetupChannelManageModel){
-                        this.mySetupChannelManageModel = new SetupChannelManageModel();
-                        this.mySetupChannelManageModel.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
-                        this.mySetupChannelManageModel.on("get.channel.error", $.proxy(this.onGetError, this));
-                        this.mySetupChannelManageModel.queryChannel({
-                            "domain": this.state.keyword,
-                            "currentPage": 1,
-                            "pageSize": 99999
-                        })
-
-                        this.setState({
-                            isLoading: true
-                        })
-
-                    }.bind(this)); 
-                },
-
-                onChannelListSuccess: function(){
-                    var tempArray = this.mySetupChannelManageModel.map(function(model){
-                        return model.get("domain");
-                    }.bind(this))
+                    var collection = this.getCollection();
+                    collection.getDomains({
+                        "domain": this.state.keyword,
+                        "isCustom": true
+                    })
 
                     this.setState({
-                        search: tempArray,
+                        isLoading: true
+                    })
+
+                },
+
+                onChannelListSuccess: function(res){
+                    this.setState({
+                        search: res,
                         isLoading: false
                     })
                 },

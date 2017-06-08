@@ -14,6 +14,12 @@ define("sharedSetup.detail.view", ['require', 'exports', 'template', 'modal.view
                 this.$el = $(_.template(template['tpl/sharedSetup/sharedSetup.detail.html'])({
                     data: this.model
                 }));
+
+                this.collection.off("set.configSharedGroup.success");
+                this.collection.off("set.configSharedGroup.error"); 
+                this.collection.on("set.configSharedGroup.success", $.proxy(this.onSetConfigSharedGroupSuccess, this));
+                this.collection.on("set.configSharedGroup.error", $.proxy(this.onGetError, this));
+
                 this.mainDomain = this.model ? this.model.get("mainDomain") : "";
                 this.sharedDomain = this.model ? this.model.get("sharedDomain")  : "";
 
@@ -40,6 +46,7 @@ define("sharedSetup.detail.view", ['require', 'exports', 'template', 'modal.view
                     onChangeMainDomain: $.proxy(this.onChangeMainDomain, this),
                     onChangeSharedDomain: $.proxy(this.onChangeSharedDomain, this)
                 });
+                ReactDOM.unmountComponentAtNode(this.$el.find(".select-domain-ctn").get(0));
                 ReactDOM.render(reactTableView, this.$el.find(".select-domain-ctn").get(0));
             },
 
@@ -49,6 +56,11 @@ define("sharedSetup.detail.view", ['require', 'exports', 'template', 'modal.view
 
             onChangeSharedDomain: function(domains){
                 this.sharedDomain = domains.join(",");
+            },
+
+            onSetConfigSharedGroupSuccess: function(){
+                Utility.alerts("操作成功！", "success");
+                this.onClickBackBtn();
             },
 
             onClickSaveBtn: function(){
@@ -66,6 +78,11 @@ define("sharedSetup.detail.view", ['require', 'exports', 'template', 'modal.view
                     Utility.alerts("请输入共享配置名称！")
                     return;
                 }
+
+                if (this.model)
+                    postParam.id = this.model.get("id")
+
+                this.collection.addConfigSharedGroup(postParam)
             },
 
             render: function(target) {

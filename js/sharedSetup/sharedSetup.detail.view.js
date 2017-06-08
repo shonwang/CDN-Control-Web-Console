@@ -79,10 +79,12 @@ define("sharedSetup.detail.view", ['require', 'exports', 'template', 'modal.view
                     return;
                 }
 
-                if (this.model)
-                    postParam.id = this.model.get("id")
-
-                this.collection.addConfigSharedGroup(postParam)
+                if (this.model){
+                    postParam.id = this.model.get("id");
+                    this.collection.updateConfigSharedGroup(postParam)
+                } else {
+                    this.collection.addConfigSharedGroup(postParam)
+                }
             },
 
             render: function(target) {

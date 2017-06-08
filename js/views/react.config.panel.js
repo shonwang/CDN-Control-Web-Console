@@ -27,18 +27,17 @@ define("react.config.panel", ['require', 'exports', 'utility'],
         var ReactConfigPanel = React.createBackboneClass({
 
                 componentDidMount: function() {
-                    var props = this.props;
+                    var props = this.props,
+                        collection = this.getCollection();
                     //1：配置文件只读；2，配置文件编辑；3：配置文件只读diff模式
                     if (props.type === 3) {
-                        require(['setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeModel){
-                            this.mySetupSendWaitCustomizeModel = new SetupSendWaitCustomizeModel();
-                            this.mySetupSendWaitCustomizeModel.on("get.channel.config.success", $.proxy(this.onGetDiff, this));
-                            this.mySetupSendWaitCustomizeModel.on("get.channel.config.error", $.proxy(this.onGetError, this));
-                            this.mySetupSendWaitCustomizeModel.getChannelConfig({
-                                domain: props.domain,
-                                version: props.version || props.domainVersion
-                            })
-                        }.bind(this)); 
+                        collection.on("get.compare.success", $.proxy(this.onGetDiff, this));
+                        collection.on("get.compare.error", $.proxy(this.onGetError, this));
+                        collection.compare({
+                            domain: props.domain,
+                            v1: props.version.split(",")[0],
+                            v2: props.version.split(",")[1]
+                        })
                     } else {
                         require(['setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeModel){
                             this.mySetupSendWaitCustomizeModel = new SetupSendWaitCustomizeModel();
@@ -53,10 +52,15 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                 },
 
                 componentWillUnmount: function() {
-                    this.mySetupSendWaitCustomizeModel.off("get.all.config.success");
-                    this.mySetupSendWaitCustomizeModel.off("get.all.config.error");
-                    this.mySetupSendWaitCustomizeModel.off("get.channel.config.success");
-                    this.mySetupSendWaitCustomizeModel.off("get.channel.config.error");
+                    var collection = this.getCollection();
+                    collection.off("get.compare.success");
+                    collection.off("get.compare.error");
+                    if (this.mySetupSendWaitCustomizeModel) {
+                        this.mySetupSendWaitCustomizeModel.off("get.all.config.success");
+                        this.mySetupSendWaitCustomizeModel.off("get.all.config.error");
+                        this.mySetupSendWaitCustomizeModel.off("get.channel.config.success");
+                        this.mySetupSendWaitCustomizeModel.off("get.channel.config.error");
+                    }
                 },
 
                 onGetApplicationType: function(data){

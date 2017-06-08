@@ -17,12 +17,15 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
 
                 this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                 this.queryArgs = {
-                    "originId": this.model.get("id"),
+                    "domain": this.model.get("domain"),
+                    "subType": this.model.get("subType")
                 }
                 this.$el.find(".opt-ctn .diff").attr("disabled", "disabled");
 
-                this.collection.on("get.channel.history.success", $.proxy(this.onGetVersionListSuccess, this));
-                this.collection.on("get.channel.history.error", $.proxy(this.onGetError, this));
+                this.collection.on("get.domain.version.success", $.proxy(this.onGetVersionListSuccess, this));
+                this.collection.on("get.domain.version.error", $.proxy(this.onGetError, this));
+                this.collection.on("get.nodelist.success", $.proxy(this.onGetNodeListSuccess, this));
+                this.collection.on("get.nodelist.error", $.proxy(this.onGetError, this));
                 this.collection.getVersionList(this.queryArgs);
             },
 
@@ -36,10 +39,10 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                     var ReactTableView = React.createFactory(ReactConfigPanelComponent);
                     var reactTableView = ReactTableView({
                         collection: this.collection,
-                        version: checkedList[0].get("version"),
+                        version: checkedList[0].get("version") + "," + checkedList[1].get("version"),
                         domain: this.model.get("domain"),
                         type: 3,
-                        //isCustom: true,
+                        isCustom: this.model.get("isCustom"),
                         isShowOpt: true,
                         headerStr: "DIFF配置文件",
                         onClickBackCallback: $.proxy(this.onClickBackCallback, this)
@@ -73,9 +76,9 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
 
                 var rowFeild = [
                     "checkbox",
-                    "version",
+                    "domainVersion",
                     "createTimeStr",
-                    "id"
+                    "deliveryNodeTotal"
                 ];
 
                 var operationList = [{
@@ -119,15 +122,30 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                 }
             },
 
-            onClickItemNodes: function(){
+            onClickItemNodes: function(event){
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
                 var model = this.collection.get(id);
 
+                this.collection.nodelist({
+                    domain: this.model.get("domain"),
+                    domainversion: model.get("domainVersion")
+                })
+            },
+
+            onGetNodeListSuccess: function(data){
                 if (this.nodesPopup) $("#" + this.nodesPopup.modalId).remove();
+
+                var nodes = "";
+                _.each(data, function(el){
+                    nodes = nodes + '<li>' + el.nodeName + ' </li>'
+                }.bind(this))
+
+                var tplUl = '<ul class="list-unstyled">' + nodes + '</ul>';
+
                 var options = {
                     title: "已下发节点",
-                    body: "",
+                    body: tplUl,
                     backdrop: 'static',
                     type: 1,
                     onOKCallback: function() {
@@ -136,22 +154,23 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                     onHiddenCallback: function() {}.bind(this)
                 }
                 this.nodesPopup = new Modal(options);
-                var tableHeaderName = [
-                    "节点名称",
-                ];
 
-                var rowFeild = [
-                    "version",
-                ];
+                // var tableHeaderName = [
+                //     "节点名称",
+                // ];
 
-                var ReactTableView = React.createFactory(ReactTableComponent);
-                var reactTableView = ReactTableView({
-                    collection: this.collection,
-                    theadNames: tableHeaderName,
-                    rowFeilds: rowFeild,
-                    noOperCol: true
-                });
-                ReactDOM.render(reactTableView, this.nodesPopup.$el.find(".modal-body").get(0));
+                // var rowFeild = [
+                //     "nodeName",
+                // ];
+
+                // var ReactTableView = React.createFactory(ReactTableComponent);
+                // var reactTableView = ReactTableView({
+                //     collection: this.collection,
+                //     theadNames: tableHeaderName,
+                //     rowFeilds: rowFeild,
+                //     noOperCol: true
+                // });
+                // ReactDOM.render(reactTableView, this.nodesPopup.$el.find(".modal-body").get(0));
             },
 
             onClickItemEdit: function(event){
@@ -163,10 +182,10 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                     var ReactTableView = React.createFactory(ReactConfigPanelComponent);
                     var reactTableView = ReactTableView({
                         collection: this.collection,
-                        version: model.get("version"),
+                        version: model.get("domainVersion"),
                         domain: this.model.get("domain"),
                         type: 2, //1：配置文件只读；2，配置文件编辑；3：配置文件只读diff模式
-                        //isCustom: true,
+                        isCustom: this.model.get("isCustom"),
                         isShowOpt: true,
                         headerStr: "编辑配置文件",
                         onClickBackCallback: $.proxy(this.onClickBackCallback, this)
@@ -184,10 +203,10 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                     var ReactTableView = React.createFactory(ReactConfigPanelComponent);
                     var reactTableView = ReactTableView({
                         collection: this.collection,
-                        version: model.get("version"),
+                        version: model.get("domainVersion"),
                         domain: this.model.get("domain"),
                         type: 1,
-                        //isCustom: true,
+                        isCustom: this.model.get("isCustom"),
                         isShowOpt: true,
                         headerStr: "配置文件",
                         onClickBackCallback: $.proxy(this.onClickBackCallback, this)
@@ -206,7 +225,7 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                     var mySetupBillView = new SetupBillView({
                         collection: mySetupBillModel,
                         originId: model.get("originId"),
-                        version: model.get("version"),
+                        version: model.get("domainVersion"),
                         onSaveCallback: function() {}.bind(this),
                         onCancelCallback: function() {
                             mySetupBillView.remove();

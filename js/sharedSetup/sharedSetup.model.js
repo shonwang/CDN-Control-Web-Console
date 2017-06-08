@@ -68,6 +68,17 @@ define("sharedSetup.model", ['require', 'exports', 'utility', 'setupTopoManage.m
                 Utility.postAjax(url, args, successCallback, errorCallback);
             },
 
+            updateConfigSharedGroup: function(args) {
+                var url = BASE_URL + "/channelManager/configSharedGroup/updateConfigSharedGroup",
+                    successCallback = function(res) {
+                        this.trigger("set.configSharedGroup.success", res);
+                    }.bind(this),
+                    errorCallback = function(response) {
+                        this.trigger("set.configSharedGroup.error", response);
+                    }.bind(this);
+                Utility.postAjax(url, args, successCallback, errorCallback);
+            },
+
             deleteConfigSharedGroup: function(args) {
                 var url = BASE_URL + "/channelManager/configSharedGroup/deleteConfigSharedGroup",
                     successCallback = function(res) {

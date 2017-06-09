@@ -12,7 +12,7 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
 
             var subType = this.config.originDomain.subType;
 
-            if (!subType === 3) 
+            if (subType !== 3) 
                 this.initOriginSetup();
             else
                 this.initLiveUpBackOriginSetup();

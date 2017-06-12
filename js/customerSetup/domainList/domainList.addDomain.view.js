@@ -102,7 +102,7 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     }
 
                     var ipArray = originAddress.split(",");
-                    if (ipArray.length > 10) {
+                    if (ipArray.length > 1) {
                         this.$el.find("#cdn-originIP-error").html("你的IP数是否超过了10个。").show();
                         return false;
                     }
@@ -596,6 +596,84 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
 
                 this.$el.find(".non-rtmp").hide();
                 this.$el.find(".origin-protocol").hide();
+            },
+
+            checkOrigin: function() {
+                var originAddress = this.args.Origin;
+                var originType = this.args.OriginType;
+                var domainName = this.args.DomainName;
+                if (originType == "ipaddr") {
+                    //验证IP
+                    if (!originAddress) {
+                        //不能为空
+                        this.$el.find("#cdn-originIP-error").html("IP不能为空").show();
+                        return false;
+                    }
+
+                    var ipArray = originAddress.split(",");
+                    if (ipArray.length > 1) {
+                        this.$el.find("#cdn-originIP-error").html("你的IP数是否超过了1个。").show();
+                        return false;
+                    }
+                    for (var i = 0; i < ipArray.length; i++) {
+                        result = Utility.isIP(ipArray[i]);
+                        if (!result) {
+                            this.$el.find("#cdn-originIP-error").html("你的IP填写有误,请检查").show();
+                            return false;
+                        }
+                    }
+
+                } else if (originType == "domain") {
+                    //验证域名
+                    //验证IP
+                    if (!originAddress) {
+                        //不能为空
+                        this.$el.find("#cdn-originAddress-error").html("域名不能为空").show();
+                        return false;
+                    }
+                    if (domainName == originAddress) {
+                        //域名不能与填写的域名相同
+                        this.$el.find("#cdn-originAddress-error").html("源站地址不能与加速域名相同").show();
+                        return false;
+                    }
+                    //域名校验
+                    var result = Utility.isDomain(originAddress);
+                    var isIPStr = Utility.isIP(originAddress);
+                    if (result && !isIPStr && originAddress !== domainName && originAddress.substr(0, 1) !== "-" && originAddress.substr(-1, 1) !== "-") {
+                        return true;
+                    } else {
+                        this.$el.find("#cdn-originAddress-error").html("域名填写错误").show();
+                        return false;
+                    }
+
+                    return true;
+
+                } else if (originType == "ksvideo") {
+                    //验证KS3域名，此情况只能填一个
+                    //验证IP
+                    if (!originAddress) {
+                        //不能为空
+                        this.$el.find("#cdn-KS3Address-error").html("域名不能为空").show();
+                        return false;
+                    }
+                    if (domainName == originAddress) {
+                        //域名不能与填写的域名相同
+                        this.$el.find("#cdn-KS3Address-error").html("源站地址不能与加速域名相同").show();
+                        return false;
+                    }
+                    //域名校验
+                    var result = Utility.isDomain(originAddress);
+                    var isIPStr = Utility.isIP(originAddress);
+                    if (result && !isIPStr && originAddress !== domainName && originAddress.substr(0, 1) !== "-" && originAddress.substr(-1, 1) !== "-") {
+                        return true;
+                    } else {
+                        this.$el.find("#cdn-KS3Address-error").html("域名填写错误").show();
+                        return false;
+                    }
+
+                    return true;
+                }
+                return true;
             },
 
             setDropdownMenu: function() {

@@ -293,8 +293,8 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     }
 
                     var ipArray = originAddress.split("\n");
-                    if (ipArray.length > 10) {
-                        alert("你的IP数是否超过了10个。");
+                    if (ipArray.length > 1) {
+                        alert("你的IP数是否超过了1个。");
                         return false;
                     }
                     for (var i = 0; i < ipArray.length; i++) {

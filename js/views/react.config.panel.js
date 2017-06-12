@@ -69,7 +69,6 @@ define("react.config.panel", ['require', 'exports', 'utility'],
 
                 onGetApplicationType: function(data){
                     this.applicationType = data.applicationType.type
-                    console.log(this.props.isCustom)
                     if (this.props.isCustom) {
                         this.mySetupSendWaitCustomizeModel.on("get.all.config.success", $.proxy(this.initSetup, this));
                         this.mySetupSendWaitCustomizeModel.on("get.all.config.error", $.proxy(this.onGetError, this));
@@ -160,6 +159,7 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                     }
                     _.each(this.state.levelGroup, function(levelGroup){
                         _.each(levelGroup.fileArray, function(fileObj){
+                            if (fileObj.fileType !== "nginx.conf") return;
                             postParam.newContent.push({
                                 topologyLevel: levelGroup.topologyLevel,
                                 content: fileObj.content

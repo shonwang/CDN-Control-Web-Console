@@ -42,7 +42,7 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                         version: checkedList[0].get("domainVersion") + "," + checkedList[1].get("domainVersion"),
                         domain: this.model.get("domain"),
                         type: 3,
-                        isCustom: this.model.get("isCustom"),
+                        isCustom: model.get("isCustom") === 1 ? true : false,
                         isShowOpt: true,
                         headerStr: "DIFF配置文件",
                         onClickBackCallback: $.proxy(this.onClickBackCallback, this)
@@ -171,7 +171,7 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                         domain: this.model.get("domain"),
                         originId: this.model.get("originId"),
                         type: 2, //1：配置文件只读；2，配置文件编辑；3：配置文件只读diff模式
-                        isCustom: this.model.get("isCustom"),
+                        isCustom: model.get("isCustom") === 1 ? true : false,
                         isShowOpt: true,
                         headerStr: "编辑配置文件",
                         onClickBackCallback: $.proxy(this.onClickBackCallback, this)
@@ -192,7 +192,7 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                         version: model.get("domainVersion"),
                         domain: this.model.get("domain"),
                         type: 1,
-                        isCustom: this.model.get("isCustom"),
+                        isCustom: model.get("isCustom") === 1 ? true : false,
                         isShowOpt: true,
                         headerStr: "配置文件",
                         onClickBackCallback: $.proxy(this.onClickBackCallback, this)

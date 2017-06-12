@@ -49,6 +49,21 @@ define("isomorphismManage.detail.model", ['require', 'exports', 'utility'],
                 Utility.postAjax(url, args, successCallback, errorCallback);
             },
 
+            editCompare: function(args) {
+                var url = BASE_URL + "/cd/diffcfg/domain/editing/compare",
+                    successCallback = function(res) {
+                        if (res) {
+                            this.trigger("get.compare.success", res);
+                        } else {
+                            this.trigger("get.compare.error", res);
+                        }
+                    }.bind(this),
+                    errorCallback = function(response) {
+                        this.trigger("get.compare.error", response);
+                    }.bind(this);
+                Utility.postAjax(url, args, successCallback, errorCallback);
+            },
+
             nodelist: function(args) {
                 var url = BASE_URL + "/cd/api/domain/version/nodelist",
                     successCallback = function(res) {

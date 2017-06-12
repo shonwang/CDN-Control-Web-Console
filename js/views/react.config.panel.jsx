@@ -29,10 +29,10 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                 componentDidMount: function() {
                     var props = this.props,
                         collection = this.getCollection();
+                    collection.on("get.compare.success", $.proxy(this.onGetDiff, this));
+                    collection.on("get.compare.error", $.proxy(this.onGetError, this));
                     //1：配置文件只读；2，配置文件编辑；3：配置文件只读diff模式
                     if (props.type === 3) {
-                        collection.on("get.compare.success", $.proxy(this.onGetDiff, this));
-                        collection.on("get.compare.error", $.proxy(this.onGetError, this));
                         collection.compare({
                             domain: props.domain,
                             v1: props.version.split(",")[0],
@@ -85,7 +85,8 @@ define("react.config.panel", ['require', 'exports', 'utility'],
 
                 getInitialState: function () {
                     var defaultState = {
-                        activeKeys: [], 
+                        activeKeys: [],
+                        activeKeysDiff: [],
                         levelGroup: [], 
                         isLoading: true,
                         editClassName: this.props.panelClassName || "col-md-offset-2 col-md-8",
@@ -151,15 +152,21 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                 onClickDiff: function(){
                     var props = this.props;
 
-                    require(['setupSendWaitCustomize.model'], function(SetupSendWaitCustomizeModel){
-                        this.mySetupSendWaitCustomizeModel = new SetupSendWaitCustomizeModel();
-                        this.mySetupSendWaitCustomizeModel.on("get.channel.config.success", $.proxy(this.onGetDiff, this));
-                        this.mySetupSendWaitCustomizeModel.on("get.channel.config.error", $.proxy(this.onGetError, this));
-                        this.mySetupSendWaitCustomizeModel.getChannelConfig({
-                            domain: props.domain,
-                            version: props.version || props.domainVersion
-                        })
-                    }.bind(this)); 
+                    var postParam = {
+                        domain: this.props.domain,
+                        v1: this.props.version,
+                        newContent: []
+                    }
+                    _.each(this.state.levelGroup, function(levelGroup){
+                        _.each(levelGroup.fileArray, function(fileObj){
+                            postParam.newContent.push({
+                                topologyLevel: levelGroup.topologyLevel,
+                                content: fileObj.content
+                            })
+                        }.bind(this))
+                    }.bind(this))
+
+                    this.getCollection().editCompare(postParam)
                     this.setState({ 
                         isDiffLoading: true,
                         editClassName: "col-md-6",
@@ -175,10 +182,14 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                 },
 
                 onGetDiff: function(data){
-                    var diffInfo = this.sortData(data)
+                    var diffInfo = this.sortData(data);
+                    var tempArray = _.map(diffInfo, function(el){
+                        return el.activeKey
+                    })
                     this.setState({ 
                         diffInfo: diffInfo, 
-                        isDiffLoading: false
+                        isDiffLoading: false,
+                        activeKeysDiff: tempArray
                     });
                 },
 
@@ -197,6 +208,17 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                         });
                         this.props.onChangeTextarea&&this.props.onChangeTextarea(levelGroup)
                     }
+                },
+
+                handleDiffSelect: function(activeKey) {
+                    var index = activeKey.split("_")[1];
+                    if (this.state.activeKeysDiff[index] === activeKey) {
+                        this.state.activeKeysDiff[index] = ""
+                    } else {
+                        this.state.activeKeysDiff[index] = activeKey;
+                    }
+
+                    this.setState({ activeKeysDiff: this.state.activeKeysDiff });
                 },
 
                 handleSelect: function(activeKey) {
@@ -298,8 +320,8 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                             <Panel key={index} header={group.topologyLevelName} bsStyle="info">
                                 <PanelGroup 
                                     id={randomStr + index} 
-                                    activeKey={this.state.activeKeys[index]} 
-                                    onSelect={this.handleSelect} 
+                                    activeKey={this.state.activeKeysDiff[index]} 
+                                    onSelect={this.handleDiffSelect} 
                                     accordion={true}>{myPanels}</PanelGroup>
                             </Panel>
                         )

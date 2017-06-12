@@ -42,7 +42,7 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                         version: checkedList[0].get("domainVersion") + "," + checkedList[1].get("domainVersion"),
                         domain: this.model.get("domain"),
                         type: 3,
-                        isCustom: model.get("isCustom") === 1 ? true : false,
+                        isCustom: true,
                         isShowOpt: true,
                         headerStr: "DIFF配置文件",
                         onClickBackCallback: $.proxy(this.onClickBackCallback, this)

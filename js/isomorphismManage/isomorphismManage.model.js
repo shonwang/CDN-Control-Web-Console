@@ -3,7 +3,7 @@ define("isomorphismManage.model", ['require', 'exports', 'utility', 'setupTopoMa
         var Model = Backbone.Model.extend({
             initialize: function() {
                 var businessType = this.get("subType"),
-                    status = this.get("auditStatus"),
+                    status = this.get("status"),
                     protocol = this.get("protocol"),
                     cdnFactory = this.get("cdnFactory"),
                     confCustomType = this.get("confCustomType");

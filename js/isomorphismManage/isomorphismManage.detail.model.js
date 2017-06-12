@@ -46,7 +46,7 @@ define("isomorphismManage.detail.model", ['require', 'exports', 'utility'],
                     errorCallback = function(response) {
                         this.trigger("get.compare.error", response);
                     }.bind(this);
-                Utility.getAjax(url, args, successCallback, errorCallback);
+                Utility.postAjax(url, args, successCallback, errorCallback);
             },
 
             nodelist: function(args) {

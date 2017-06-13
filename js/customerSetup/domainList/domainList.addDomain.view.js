@@ -102,7 +102,7 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     }
 
                     var ipArray = originAddress.split(",");
-                    if (ipArray.length > 1) {
+                    if (ipArray.length > 10) {
                         this.$el.find("#cdn-originIP-error").html("你的IP数是否超过了10个。").show();
                         return false;
                     }

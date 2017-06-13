@@ -159,7 +159,6 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                     }
                     _.each(this.state.levelGroup, function(levelGroup){
                         _.each(levelGroup.fileArray, function(fileObj){
-                            if (fileObj.fileType !== "nginx.conf") return;
                             postParam.newContent.push({
                                 topologyLevel: levelGroup.topologyLevel,
                                 content: fileObj.content

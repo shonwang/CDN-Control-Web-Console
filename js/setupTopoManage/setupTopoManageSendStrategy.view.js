@@ -277,7 +277,8 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
             this.$el.find('#description').val(this.defaultParam.description);
             var remainderNodes = [], allStepNodes = [];
             _.each(this.defaultParam.deliveryStrategyDef, function(el){
-                allStepNodes = allStepNodes.concat(el.nodeId)
+                if (el.range !== 1)
+                    allStepNodes = allStepNodes.concat(el.nodeId)
             }.bind(this))
             console.log('编辑情况下所有步骤的节点: ', allStepNodes);
             _.each(this.allNodes, function(nodeObj){

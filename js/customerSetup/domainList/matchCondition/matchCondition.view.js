@@ -192,7 +192,7 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
         },
 
         onBlurUriTextarea: function(event){
-            var re = /^\/[^\/]{0,}([a-z0-9\_\-\.]|\/[^\/]){0,}[^\/]{0,}$/;
+            var re = /^\/[^\/]{0,}([a-zA-Z0-9\_\-\.]|\/[^\/]){0,}[^\/]{0,}$/;
             var eventTarget = event.srcElement || event.target, value = $(eventTarget).val();
 
             if (value.indexOf(",") > -1){

@@ -100,9 +100,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         initSetup: function(data) {
             this.allNodesArray = [];
             _.each(data, function(el, index, list) {
-                if (el.status !== 3 && el.status !== 2) {
+                // if (el.status !== 3 && el.status !== 2) {
                     this.allNodesArray.push(el);
-                }
+                // }
             }.bind(this))
 
             if (this.defaultParam.localType === 1) {
@@ -333,7 +333,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 var mySelectNodeView = new SelectNodeView({
                     collection: this.collection,
                     selectedNodes: this.defaultParam.upper,
-                    nodesList: this.topoUpperNodes
+                    nodesList: this.topoAllNodes
                 });
                 var options = {
                     title: "选择节点",

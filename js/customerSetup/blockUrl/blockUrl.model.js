@@ -1,6 +1,45 @@
 define("blockUrl.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
-        initialize: function(){}
+        initialize: function(){
+            var op=this.get("op");
+            var successRatioName = this.get("successRatio") ==-1?"":this.get("successRatio")+"%";
+            if(op == 1){
+                this.set("statusName","屏蔽中");
+                this.set("general","下发中");
+            }
+            else if(op == 2 ){
+                this.set("statusName","解除屏蔽中");
+                this.set("general","下发中");
+            }
+            else if(op == 3 ){
+                this.set("statusName","屏蔽完成");
+                this.set("general",successRatioName);
+            }
+            else if(op == 4 ){
+                this.set("statusName","屏蔽失败");
+            }
+            else if(op == 5 ){
+                this.set("statusName","解除屏蔽完成");
+                this.set("general",successRatioName);
+            }
+            else if(op == 6 ){
+                this.set("statusName","解除屏蔽失败");
+            }
+            else if(op == 7 ){
+                this.set("statusName","刷新中");
+                this.set("general","下发中");
+            }
+            else if(op == 8 ){
+                this.set("statusName","刷新失败");
+            }
+            else if(op == 9 ){
+                this.set("statusName","刷新完成");
+                this.set("general",successRatioName);
+            }
+            else if(op == 10 ){
+                this.set("statusName","已失效");
+            }
+        }
     });
 
     var BlockUrlCollection = Backbone.Collection.extend({
@@ -61,9 +100,54 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+        
+        getCurrentBlockDetail:function(args){
+            var _data = {
+                id:args.id,
+                page:args.page,
+                rows:args.rows
+            };
+            var url = BASE_URL + "/blockurl/blockNodeDetail",
+            successCallback = args.success;
+            errorCallback = args.error;
+            Utility.postAjax(url, _data, successCallback, errorCallback);
+        },
+
         showCurrentBlockUrls: function(args){
-            var url = BASE_URL + "/blockurl/showCurrentBlockUrls?userId="+args.userId+'&op='+args.op+'&searchUrl='+args.searchUrl+'&page='+args.page+'&rows='+args.rows,
+            var _data = {
+                userId:args.userId,
+                op:args.op,
+                searchUrl:args.searchUrl,
+                page:args.page,
+                rows:args.rows
+            };
+            //var url = BASE_URL + "/blockurl/showCurrentBlockUrls?userId="+args.userId+'&op='+args.op+'&searchUrl='+args.searchUrl+'&page='+args.page+'&rows='+args.rows,
+            var url = BASE_URL + "/blockurl/showCurrentBlockUrls",
             successCallback = function(res){
+                /*var res = {
+                   "status":200,
+                   "taskBlockResult":{
+                         "totalNumber":20,
+                          "resultList":[
+                                {
+                                    "id": 1,
+                                    "taskId" : "xxxxx",
+                                    "url" : "http://baidu.com",
+                                    "date" : "2016/12/05 12:00",
+                                    "status" : "屏蔽成功",
+                                    "isRefreshSuccess" :0
+                                },
+                                {
+                                    "id": 2,
+                                    "taskId" : "xxxxx",
+                                    "url" : "http://baidu.com",
+                                    "date" : "2016/12/05 12:00",
+                                    "status" : "屏蔽失败",
+                                    "isRefreshSuccess":1
+                                }
+                          ]
+                   }
+                }*/
                 this.reset();
                 if (res){
                     res = JSON.parse(res);
@@ -79,7 +163,7 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             errorCallback = function(response){
                 this.trigger("get.blockList.error", response); 
             }.bind(this);
-            Utility.postAjax(url, '', successCallback, errorCallback);
+            Utility.postAjax(url, _data, successCallback, errorCallback);
         },
         removeBlockUrl: function(args){
             var url = BASE_URL + "/blockurl/removeBlockUrl",
@@ -110,7 +194,16 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
         queryHistory: function(args){
-            var url = BASE_URL + "/blockurl/searchBlockHistory?userId="+args.userId+'&date='+args.date+'&op='+args.op+'&searchUrl='+args.searchUrl+'&page='+args.page+'&rows='+args.rows,
+            var _data = {
+                userId:args.userId,
+                date:args.date,
+                op:args.op,
+                searchUrl:args.searchUrl,
+                page:args.page,
+                rows:args.rows
+            };
+            //var url = BASE_URL + "/blockurl/searchBlockHistory?userId="+args.userId+'&date='+args.date+'&op='+args.op+'&searchUrl='+args.searchUrl+'&page='+args.page+'&rows='+args.rows,
+            var url = BASE_URL + "/blockurl/searchBlockHistory",
             successCallback = function(res){
                 this.reset();
                 if (res){
@@ -127,7 +220,7 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
             errorCallback = function(response){
                 this.trigger("get.history.error", response); 
             }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
+            Utility.postAjax(url, _data, successCallback, errorCallback);
         }
         
     });

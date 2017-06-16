@@ -1153,3 +1153,14 @@ td .table {
     word-break: normal;
     white-space: normal;
 }
+
+.ctrl-nav-container .nav-navbar>li:last-child .user-info li:first-child {
+	height:30px;line-height:30px;margin-top:8px;
+}
+
+.ctrl-nav-container .nav-navbar>li:last-child .user-info {
+	padding-bottom:8px;
+}
+.ctrl-nav-container .nav-navbar>li:last-child .user-info li:hover {
+	background-color:#efefef;
+}

@@ -1,4 +1,72 @@
 define('blockUrl.view',['utility','template'],function(Utility,template){
+    var DetailView = Backbone.View.extend({
+        events:{},
+        initialize:function(options){
+            this.collection = options.collection;
+            this.$el =  $(_.template(template['tpl/customerSetup/blockUrl/TabCurrentBlockDetailList.html'])());
+            this.queryArgs = {
+                id:options.id,
+                op:0,
+                searchUrl:"",
+                page:1,
+                rows:10,
+                success:function(data){
+                    this.initTable(data);
+                }.bind(this),
+                error:function(data){
+                    this.getDataError(data);
+                }.bind(this)
+            };
+            
+            this.getDetailData();
+        },
+        getDataError:function(){
+            this.$el.find(".pagination").html("");
+            this.$el.find(".ks-table tbody").html('<tr><td  colspan="2" class="text-center"><div class="domain-spinner">出现未知错误</div></td></tr>');            
+        },
+        getDetailData:function(){
+            var args = this.queryArgs;
+            this.showloading();
+            this.collection.getCurrentBlockDetail(args);
+        },
+
+        showloading: function(){
+            this.$el.find(".pagination").html("");
+            this.$el.find(".ks-table tbody").html('<tr><td  colspan="2" class="text-center"><div class="domain-spinner">正在加载...</div></td></tr>');
+        },
+
+        initTable: function(res){
+           var data = JSON.parse(res);
+           var _data = data.taskBlockResult && data.taskBlockResult.resultList || [];
+           this.total = data.taskBlockResult && data.taskBlockResult.totalNumber || 0;
+           this.table = $(_.template(template['tpl/customerSetup/blockUrl/TabCurrentBlockDetailList.table.html'])({data:_data}));
+           this.$el.find('.ks-table tbody').html(this.table);
+           if(!this.isInitPaginator) this.initPaginator();
+        },
+        
+        initPaginator: function(){
+            //this.$el.find(".total-items span").html(this.collection.total)
+            if (this.total <= this.queryArgs.rows) return;
+            var total = Math.ceil(this.total/this.queryArgs.rows);
+            this.$el.find(".pagination").jqPaginator({
+                totalPages: total,
+                visiblePages: 5,
+                currentPage: 1,
+                onPageChange: function (num, type) {
+                    if (type !== "init"){
+                        this.$el.find(".ks-table tbody").html('<tr><td  colspan="6" class="text-center"><div class="domain-spinner">正在加载...</div></td></tr>');
+                        this.queryArgs.page = num;
+                        this.getDetailData();
+                    }
+                }.bind(this)
+            });
+            this.isInitPaginator = true;
+        },
+
+        render: function(target){
+           this.$el.appendTo(target);
+        }        
+    });
 	var TabBlockUrlView = Backbone.View.extend({
         events:{},
         initialize: function(options){
@@ -50,7 +118,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 alert('URL不能为空');
                 return false;
             }else{
-                if(urls.indexOf(',') > -1 || urls.indexOf('；') > -1 || urls.indexOf('，') > -1) {alert('请以英文半角分号对URL进行分隔'); return false;}
+                if(urls.indexOf(',') > -1 || urls.indexOf('；') > -1 || urls.indexOf('，') > -1 || urls.indexOf(' ') > -1) {alert('请以英文半角分号对URL进行分隔'); return false;}
                 if(urls.indexOf(';') > -1){
                     url = urls.split(';');
                     var urlrepeat = [];
@@ -137,7 +205,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             
             this.UnblockButton = this.$el.find('.unblock');
             this.RefreshUrlButton = this.$el.find('.RefreshUrl')
-            
+            $(document).off('keydown');
             $(document).on('keydown',$.proxy(this.onKeydownEnter,this));
             this.$el.find('.query').on('click',$.proxy(this.onClickQueryButton,this));
             this.$el.find('.ks-table').on('change',$.proxy(this.onClickOptions,this));
@@ -157,7 +225,6 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.collection.off('retry.blockTas.error');
             this.collection.on('retry.blockTas.success',$.proxy(this.retryblockTasSuccess,this));
             this.collection.on('retry.blockTas.error',$.proxy(this.onGetError,this));
-            
             this.queryArgs = {
 	            page:1,
 	            rows:10,
@@ -199,8 +266,11 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                     var inputs = this.table.find('input');
                     this.collection.each(function(model,index){
                         if(!model.get('isDisabled')){
-                          model.set("isChecked", eventTarget.checked);
-                          $(inputs[index]).prop('checked',eventTarget.checked);
+                          
+                          if(!$(inputs[index]).attr("disabled")){
+                            model.set("isChecked", eventTarget.checked);
+                            $(inputs[index]).prop('checked',eventTarget.checked);
+                          }
                         }
                     }.bind(this));
 
@@ -256,15 +326,27 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         },
         initblockListDropmenu: function(){
             var statusArray = [
-               {name:'全部',value:0},
+                {name:'全部',value:0},
+                {name:'屏蔽中',value:1},
+                {name:'解除屏蔽中',value:2},
+                {name:'屏蔽完成',value:3},
+                {name:'屏蔽失败',value:4},//
+                {name:'解除屏蔽完成',value:5},
+                {name:'解除屏蔽失败',value:6},//
+                {name:'刷新中',value:7},
+                {name:'刷新失败',value:8},//
+                {name:'刷新完成',value:9},
+                //{name:'已失效',value:10}
+                /*
                {name:'屏蔽成功',value:3},
                {name:'屏蔽失败',value:4},
                {name:'屏蔽中',value:1},
                {name:'解除屏蔽中',value:2},
               // {name:'解除屏蔽成功',value:5},
-               {name:'解除屏蔽失败',value:6},
+               
                {name:'刷新中',value:7},
-               {name:'刷新失败',value:8}
+               
+               */
             ];
             rootNode = this.$el.find('.dropdown-state');
             Utility.initDropMenu(rootNode,statusArray,function(value){
@@ -312,9 +394,11 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
              var Reunblock = this.table.find('.Reunblock');
              var Rescreen = this.table.find('.Rescreen');
              var Refresh = this.table.find('.Refresh');
+             var ShowDetail = this.table.find('.ShowDetail');
              if(Reunblock) Reunblock.on('click',$.proxy(this.onclickReunblockButton,this));
              if(Rescreen)  Rescreen.on('click',$.proxy(this.onclickRescreenOrRefreshButton,this));
              if(Refresh) Refresh.on('click',$.proxy(this.onclickRescreenOrRefreshButton,this));
+             if(ShowDetail) ShowDetail.on('click',$.proxy(this.onClickShowDetail,this));
         },
         onclickRescreenOrRefreshButton: function(event){
             var eventTarget = event.target || event.srcElement;
@@ -330,6 +414,14 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
             this.collection.retryBlockTas(defaultParam);
 
         },
+        onClickShowDetail:function(event){
+            var eventTarget = event.target || event.srcElement;
+            var id = $(eventTarget).parent().attr('id');
+            var url = $(eventTarget).parent().attr('data-url');
+            require(['modal.view'],function(Modal){
+                this.showDetailView(Modal,id,url);
+            }.bind(this));
+        },
         onclickReunblockButton: function(event){
              var eventTarget = event.target || event.srcElement;
              var id = $(eventTarget).parent().attr('id'),ids = [];
@@ -340,6 +432,35 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         setNoData:function(msg){
             this.$el.find(".ks-table tbody").html('<tr><td  colspan="8" class="text-center"><p class="text-muted text-center">'+msg+'</p></td></tr>');
         },
+
+        showDetailView:function(Modal,id,url){
+            if(this.detailViewPopup){
+                $("#" + this.detailViewPopup.modalId).remove();
+            }
+            var detailView = new DetailView({
+                collection:this.collection,
+                id:id
+            });
+            var options = {
+                title:url+"的详情",
+                width:1000,
+                zIndex:9999,
+                body : detailView,
+                backdrop : 'static',
+                type:0,
+                onOKCallback:  function(){
+                   
+                }.bind(this),
+                onShowCallback:function(){
+                    
+                }.bind(this),
+                onHideCallback:function(){
+
+                }.bind(this)
+            }
+            this.detailViewPopup = new Modal(options);   
+        },
+
         initPaginator: function(){
             this.$el.find(".total-items span").html(this.collection.total)
             if (this.collection.total <= this.queryArgs.rows) return;
@@ -379,6 +500,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
         initialize: function(options){
             this.userInfo = options.userInfo;
         	this.$el = $(_.template(template['tpl/customerSetup/blockUrl/TabHistory.html'])());
+            $(document).off('keydown');
             $(document).on('keydown',$.proxy(this.onKeydownEnter,this));
             this.$el.find('.query').on('click',$.proxy(this.onClickQueryButton,this));
             this.collection.off('get.history.success');
@@ -478,6 +600,13 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
            });
            this.isInitPaginator = true;
         },
+        onGetError: function(error){
+             if(error && error.message){
+             	alert(error.message);
+             }else{
+             	alert('网络阻塞，请刷新重试！')
+             }    
+        },        
         showloading: function(){
             this.$el.find(".pagination").html("");
             this.$el.find(".ks-table tbody").html('<tr><td  colspan="6" class="text-center"><div class="domain-spinner">正在加载...</div></td></tr>');
@@ -490,6 +619,7 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
 	var BlockUrlView = Backbone.View.extend({
 		events:{},
 		initialize: function(options){
+            this.options = options;
 			this.collection = options.collection;
             this.$el = $(_.template(template['tpl/customerSetup/blockUrl/blockUrl.html'])());
             this.$el.find('a[data-toggle="tab"]').on('shown.bs.tab', $.proxy(this.onShownTab, this));
@@ -500,6 +630,11 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 uid: clientInfo.uid
             }
 		},
+        update: function(target) {
+            this.$el.remove();
+            this.initialize(this.options);
+            this.render(target);
+        },
 		onShownTab: function(event){
 			var target = event.target || event.srcElement;
 			var id = $(target).attr('data-target');
@@ -509,8 +644,10 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                   break;
             	case '#blockUrlList':
             	  if(this.myTabCurrentBlockListView){
-                      this.myTabCurrentBlockListView.onClickQueryButton();
-            	  	  return;
+                      this.myTabCurrentBlockListView.$el.remove();
+                      this.myTabCurrentBlockListView = null;
+                      //this.myTabCurrentBlockListView.onClickQueryButton();
+            	  	  //return;
             	  }
             	  this.myTabCurrentBlockListView = new TabCurrentBlockListView({
             	  	collection:this.collection,
@@ -520,8 +657,10 @@ define('blockUrl.view',['utility','template'],function(Utility,template){
                 break;
                 case '#history':
                   if(this.myTabHistoryView){
-                      this.myTabHistoryView.onClickQueryButton();
-                  	  return;
+                        this.myTabHistoryView.$el.remove();
+                        this.myTabHistoryView = null;
+                      //this.myTabHistoryView.onClickQueryButton();
+                  	  //return;
                   }
                   this.myTabHistoryView = new TabHistoryView({
                   	collection:this.collection,

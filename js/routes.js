@@ -1698,7 +1698,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                 }.bind(this));
             },
 
-            liveBasicDomainSetup: function(query, query2) {
+            liveDomainSetup: function(query, query2) {
                 require(['liveDomainSetup.view', 'liveDomainSetup.model'], function(LiveDomainSetupView, LiveDomainSetupModel) {
                     //一级菜单选中域名配置
                     this.navbarView.select('customerSetup');

@@ -409,15 +409,16 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     alert("既然开启了转推地址频道, 就请输入正确的转推地址频道！");
                     return false;
                 }
-                if (postParam.pushArgsFlag === 1 && postParam.pushArgs === "") {
+
+                if (postParam.pushArgsFlag === 1 && postParam.pushArgs === "" || !Utility.isKeyAndValue(postParam.pushArgs)) {
                     alert("既然开启了转推参数, 就请输入正确的转推参数！");
                     return false;
                 }
-                if (postParam.connectArgsFlag === 1 && postParam.connectArgs === "") {
+                if (postParam.connectArgsFlag === 1 && postParam.connectArgs === "" && !Utility.isKeyAndValue(postParam.connectArgs)) {
                     alert("既然开启了增加connect阶段参数, 就请输入正确的增加connect阶段参数！");
                     return false;
                 }
-                if (postParam.reconnectArgsFlag === 1 && postParam.reconnectArgs === "") {
+                if (postParam.reconnectArgsFlag === 1 && postParam.reconnectArgs === "" && !Utility.isKeyAndValue(postParam.reconnectArgs)) {
                     alert("既然开启了转推重连参数, 就请输入正确的转推重连参数！");
                     return false;
                 }

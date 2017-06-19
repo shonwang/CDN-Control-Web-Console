@@ -59,8 +59,9 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             console.log(this.config)
             this.baseInfo = {};
             //加速类型 1下载 2 直播
-            if (this.config.originDomain.type === 1) this.baseInfo.businessTypeStr = '下载加速';
-            if (this.config.originDomain.type  === 2) this.baseInfo.businessTypeStr = '直播加速';
+            if (this.config.originDomain.subType === 1) this.baseInfo.businessTypeStr = '下载加速';
+            if (this.config.originDomain.subType  === 2) this.baseInfo.businessTypeStr = '直播加速';
+            if (this.config.originDomain.subType  === 3) this.baseInfo.businessTypeStr = '直播推流加速';
             //加速区域
             var allRegion = this.allRegion || [
                     {"id":1.0,"region":"CN","name":"中国大陆","cdnFactory":"ksc"},

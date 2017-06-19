@@ -4,6 +4,67 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
     var SetupLiveBillView = SetupBillView.extend({
         events: {},
 
+        initCname: function() {
+            this.cnameTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.cname.html'])({
+                data: this.config.originDomain.cnameData
+            }));
+            this.cnameTable.appendTo(this.$el.find(".bill-ctn"));
+
+            var subType = this.config.originDomain.subType;
+
+            if (subType !== 3) 
+                this.initOriginSetup();
+            else
+                this.initLiveUpBackOriginSetup();
+        },
+
+        initLiveUpBackOriginSetup: function(){
+            this.appLives = this.config.appLives || [];
+            require(['liveUpBackOriginSetup.model'], function(LiveUpBackOriginSetupModel){
+                _.each(this.appLives, function(el, index, ls){                  
+                    var pushConf = el.pushConf || {};
+
+                    var myLiveUpBackOriginSetupModel = new LiveUpBackOriginSetupModel();
+                    _.each(pushConf.pushList, function(element, inx, list){
+                        myLiveUpBackOriginSetupModel.push(new myLiveUpBackOriginSetupModel.model(element));
+                    }.bind(this))
+
+                    this.liveUpBackOriginSetupTable = $(_.template(template['tpl/customerSetup/domainList/liveUpBackOriginSetup/liveUpBackOriginSetup.table.html'])({
+                        data: myLiveUpBackOriginSetupModel.models
+                    }));
+
+                    this.liveUpBackOriginSetupTable.appendTo(this.$el.find(".bill-ctn"));
+
+                    inputEl = this.liveUpBackOriginSetupTable.find("input");
+                    _.each(inputEl, function(el){
+                        if (el.checked)
+                            $(el).parents(".togglebutton").html('<span class="label label-success">开启</span>')
+                        else
+                            $(el).parents(".togglebutton").html('<span class="label label-danger">关闭</span>')
+                    }.bind(this))
+                    this.liveUpBackOriginSetupTable.find(".edit").remove();
+                    this.liveUpBackOriginSetupTable.find(".delete").remove();
+
+                    this.liveUpFlowNameChange()
+                }.bind(this))
+            }.bind(this));
+        },
+
+        liveUpFlowNameChange:function(){
+            _.each(this.appLives, function(el, index, ls){                  
+                var pushConf = el.pushConf || {};
+                if (pushConf.aliasFlag === 0)
+                    pushConf.aliasFlagStr = '<span class="label label-danger">关闭</span>';
+                else
+                    pushConf.aliasFlagStr = '<span class="label label-success">开启</span>';
+
+                this.liveUpFlowNameChangeTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveUpFlowNameChange.html'])({
+                    data: pushConf
+                }));
+                this.liveUpFlowNameChangeTable.appendTo(this.$el.find(".bill-ctn"));
+            }.bind(this))
+        },
+
         initOriginDetection: function(argument) {
             this.originDetectionInfo = this.config.detectOriginConfig || {};
 
@@ -206,7 +267,7 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
             //                 "gopType": 2, //1:按时长 2:按个数
             //                 "gopNum": 3,
             //                 "gopMaxDuration": 15,
-            //                 "gopMinSendFlag": 1,
+            //                 "aliasFlag": 1,
             //                 "gopMinSend": 2,
             //                 "noFlowTimeout": 21,
             //                 "delayClose": 6,

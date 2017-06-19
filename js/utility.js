@@ -468,6 +468,16 @@ define("utility", ['require','exports'], function(require, exports) {
             };
 
             $.ajax(defaultParas);
+        },
+        isKeyAndValue:function(str){
+            var _arr = str.split("&");
+            var reg = /^[0-9a-zA-Z\-_%]+\=[0-9a-zA-Z\-_%]/;
+            for(var i=0;i<_arr.length;i++){
+                if(!reg.test(_arr[i])){
+                    return false;
+                }
+            }
+            return true;
         }
     };
     return Utility;

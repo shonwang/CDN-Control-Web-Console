@@ -47,9 +47,9 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
         onGetError: function(error) {
             this.disablePopup && this.disablePopup.$el.modal('hide');
             if (error && error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("网络阻塞，请刷新重试！")
         },
 
         onChannelListSuccess: function() {
@@ -58,7 +58,7 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
         },
 
         onRollBackSuccess: function() {
-            alert("操作成功！");
+            Utility.alerts("操作成功！", "success");
             this.update(this.target)
         },
 
@@ -80,7 +80,7 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
             }.bind(this))
 
             if (tempArray.length !== checkedList.length) {
-                alert("你选择了不同的拓扑！")
+                Utility.alerts("你选择了不同的拓扑！")
                 return;
             } else {
                 this.currentModel = checkedList[0];
@@ -137,8 +137,10 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
 
         onCreatTaskSuccess: function() {
             this.disablePopup && this.disablePopup.$el.modal('hide');
-            alert("创建任务成功！");
-            this.update(this.target)
+            setTimeout(function(){
+                Utility.alerts("创建任务成功！", "success");
+                this.update(this.target)
+            }.bind(this), 500)
         },
 
         onClickQueryButton: function() {
@@ -168,53 +170,56 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
 
             this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+
+            this.table.find(".remark").popover();
+            this.table.find("[data-toggle='tooltip']").tooltip();
         },
 
         onClickItemSend: function(event) {
-            var result = confirm("你确定要下发吗？");
-            if (!result) return;
+            Utility.confirm("你确定要下发吗？", function(e){
+                if (!AUTH_OBJ.ApplySendMission) {
+                    Utility.alerts('没有权限');
+                    return;
+                }
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
 
-            if (!AUTH_OBJ.ApplySendMission) {
-                alert('没有权限');
-                return;
-            }
-            var eventTarget = event.srcElement || event.target,
-                id;
-            if (eventTarget.tagName == "SPAN") {
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
+                var model = this.collection.get(id);
 
-            var model = this.collection.get(id);
+                this.domainArray = [{
+                    domain: model.get("domain"),
+                    id: model.get("id")
+                }];
 
-            this.domainArray = [{
-                domain: model.get("domain"),
-                id: model.get("id")
-            }];
+                this.currentModel = this.collection.get(id)
 
-            this.currentModel = this.collection.get(id)
-
-            this.showSelectStrategyPopup();
+                setTimeout(function(){
+                    this.showSelectStrategyPopup();
+                }.bind(this), 500)
+            }.bind(this));
         },
 
         onClickItemReject: function(event) {
-            var result = confirm("你确定要打回吗？");
-            if (!result) return;
+            Utility.confirm("你确定要打回吗？", function(){
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
 
-            var eventTarget = event.srcElement || event.target,
-                id;
-            if (eventTarget.tagName == "SPAN") {
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
-
-            this.collection.rollBack({
-                predeliveryId: id
-            })
+                this.collection.rollBack({
+                    predeliveryId: id
+                })
+            }.bind(this))
         },
 
         onClickItemEdit: function(event) {

@@ -10,6 +10,7 @@ define("setupSendWaitCustomize.stratety.view", ['require','exports', 'template',
 
             this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({data: {name: "下发策略"}}));
 
+            this.$el.find("#input-task-name").val(this.domainArray[0].domain + "等" + this.domainArray.length + "个域名的下发任务")
             this.initDomainList();
             require(["setupTopoManageSendStrategy.model"], function(SetupTopoManageSendStrategy){
                 this.mySetupTopoManageSendStrategy = new SetupTopoManageSendStrategy();
@@ -46,12 +47,12 @@ define("setupSendWaitCustomize.stratety.view", ['require','exports', 'template',
         onSure: function(){
             var selectedStrategy = this.$el.find("input:checked");
             if (!selectedStrategy.get(0)){
-                alert("请选择一个下发策略")
+                Utility.alerts("请选择一个下发策略")
                 return false;
             }
             var taskName = this.$el.find("#input-task-name").val();
             if (taskName === ""){
-                alert("请输入任务名称")
+                Utility.alerts("请输入任务名称")
                 return false;
             }
 
@@ -73,9 +74,9 @@ define("setupSendWaitCustomize.stratety.view", ['require','exports', 'template',
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("网络阻塞，请刷新重试！")
         },
 
         render: function(target) {

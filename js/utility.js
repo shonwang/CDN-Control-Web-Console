@@ -441,6 +441,7 @@ define("utility", ['require','exports'], function(require, exports) {
 
             $.ajax(defaultParas);
         },
+
         deleteAjax: function(url, args, successCallback, errorCallback, timeout){
             var defaultParas = {
                 type: "DELETE",
@@ -469,6 +470,7 @@ define("utility", ['require','exports'], function(require, exports) {
 
             $.ajax(defaultParas);
         },
+
         isKeyAndValue:function(str){
             var _arr = str.split("&");
             var reg = /^[0-9a-zA-Z\-_%]+\=[0-9a-zA-Z\-_%]/;
@@ -478,6 +480,35 @@ define("utility", ['require','exports'], function(require, exports) {
                 }
             }
             return true;
+        },
+
+        alerts: function(message, type, timeout){
+            require(['react.modal.alert'], function(ReactModalAlertComponent){
+                var ReactModalAlertView = React.createFactory(ReactModalAlertComponent);
+                var reactModalAlertView = ReactModalAlertView({
+                    showModal: true,
+                    backdrop: false,
+                    message: message || "Hello world!",
+                    type: type || 'danger',
+                    timeout: timeout || 3000
+                });
+                ReactDOM.unmountComponentAtNode($("#react-modal").get(0))
+                ReactDOM.render(reactModalAlertView, $("#react-modal").get(0));
+            })
+        },
+
+        confirm: function(message, callback){
+            require(['react.modal.confirm'], function(ReactModalConfirmComponent){
+                var ReactModalConfirmView = React.createFactory(ReactModalConfirmComponent);
+                var reactModalConfirmView = ReactModalConfirmView({
+                    showModal: true,
+                    backdrop: true,
+                    message: message || "Are you sure?",
+                    callback: callback
+                });
+                ReactDOM.unmountComponentAtNode($("#react-modal").get(0))
+                ReactDOM.render(reactModalConfirmView, $("#react-modal").get(0));
+            })
         }
     };
     return Utility;

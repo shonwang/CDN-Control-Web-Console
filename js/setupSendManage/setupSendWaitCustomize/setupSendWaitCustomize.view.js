@@ -47,9 +47,9 @@ define("setupSendWaitCustomize.view", ['require', 'exports', 'template', 'modal.
         onGetError: function(error) {
             this.disablePopup && this.disablePopup.$el.modal('hide');
             if (error && error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("网络阻塞，请刷新重试！")
         },
 
         onChannelListSuccess: function() {
@@ -123,51 +123,38 @@ define("setupSendWaitCustomize.view", ['require', 'exports', 'template', 'modal.
 
             this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+
+            this.table.find(".remark").popover();
         },
 
         onClickItemSend: function(event) {
-            var result = confirm("你确定要发布到待下发吗？");
-            if (!result) return;
+            Utility.confirm("你确定要发布到待下发吗？", function(e){
+                var eventTarget = event.srcElement || event.target,
+                    id = $(eventTarget).attr("id");
 
-            var eventTarget = event.srcElement || event.target,
-                id = $(eventTarget).attr("id");
-            var model = this.collection.get(id);
+                this.domainArray = [{
+                    predeliveryId: id
+                }];
 
-            this.domainArray = [{
-                predeliveryId: model.get("id")
-            }];
-
-            this.collection.publish(this.domainArray)
+                this.collection.publish(this.domainArray)
+            }.bind(this))
         },
 
         onClickItemReject: function(event) {
-            var result = confirm("你确定要打回吗？");
-            if (!result) return;
+            Utility.confirm("你确定要打回吗？", function(e){
+                var eventTarget = event.srcElement || event.target,
+                    id = $(eventTarget).attr("id");
 
-            var eventTarget = event.srcElement || event.target,
-                id;
-            if (eventTarget.tagName == "SPAN") {
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
-
-            this.collection.rollBack({
-                predeliveryId: id
-            })
+                this.collection.rollBack({
+                    predeliveryId: id
+                })
+            }.bind(this));
         },
 
         onClickItemEdit: function(event) {
             require(['setupChannelManage.edit.view'], function(EditChannelView) {
                 var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "SPAN") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
                     id = $(eventTarget).attr("id");
-                }
 
                 var model = this.collection.get(id);
 

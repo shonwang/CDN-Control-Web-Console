@@ -2,6 +2,7 @@
     <thead> 
       <tr>
         <th><input type="checkbox" id="inlineCheckbox6"></th>
+        <th>发布人</th>
         <th>任务名称</th>
         <th>任务类型</th>
         <th>应用</th>
@@ -27,6 +28,7 @@
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].attributes.id%>">
               <td><input type="checkbox" id="<%=data[i].id%>"></td>
+              <td><%=data[i].get("creatorName") || "神秘人"%></td>
               <td><%=data[i].get("taskName")%></td>
               <td><%=data[i].get("taskTypeName")%></td>
               <td><%=data[i].get("platformName")%></td>
@@ -39,17 +41,20 @@
               <td><%=data[i].get("createTimeFormated")%></td>
               <td>
                   <% if(permission.ViewSendDetails) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="detail" title="详情">
-                      <span class="glyphicon glyphicon-tasks"></span>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="detail"
+                     title="详情" data-toggle="tooltip" data-placement="bottom">
+                      <span class="glyphicon glyphicon-list-alt"></span>
                   </a>
                   <% } %>
                   <% if(permission.SendToNextStep) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="send" title="进入下一步">
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="send"
+                     title="进入下一步" data-toggle="tooltip" data-placement="bottom">
                       <span class="glyphicon glyphicon-circle-arrow-right"></span>
                   </a>
                   <% } %>
                   <% if(permission.StopSending) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="reject" title="终止">
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="reject"
+                     title="终止" data-toggle="tooltip" data-placement="bottom">
                       <span class="glyphicon glyphicon-remove-circle"></span>
                   </a>
                   <% } %>

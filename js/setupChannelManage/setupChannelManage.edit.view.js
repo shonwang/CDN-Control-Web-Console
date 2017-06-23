@@ -15,7 +15,8 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
             this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
             this.$el.find(".use-customized .togglebutton input").on("click", $.proxy(this.onClickIsUseCustomizedBtn, this));
-            this.$el.find(".view-setup-list").on("click", $.proxy(this.onClickViewSetupBillBtn, this))
+            this.$el.find(".view-setup-list").on("click", $.proxy(this.onClickViewSetupBillBtn, this));
+            this.$el.find(".view-setup-shared").on("click", $.proxy(this.onClickViewSetupShared, this));
 
             if (this.isFromSend){
                 this.$el.find("#text-comment").attr("readonly", true)
@@ -86,80 +87,113 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
             this.initConfigFile(data);
         },
 
-        getConfigObj: function(data){
-            var upArray = [], downArray = [];
+        // getConfigObj: function(data){
+        //     var upArray = [], downArray = [];
 
-            _.each(data, function(el, key, ls){
-                if (key !== "applicationType"){
-                    _.each(el, function(fileObj, index, list){
-                        if (fileObj&&fileObj.topologyLevel === 1){
-                            upArray.push({
-                                id: fileObj.id,
-                                name: key,
-                                content: fileObj.content,
-                                luaOnly: fileObj.luaOnly === undefined ? true : fileObj.luaOnly
-                            })
-                        } else if (fileObj&&fileObj.topologyLevel === 2){
-                            downArray.push({
-                                id: fileObj.id,
-                                name: key,
-                                content: fileObj.content,
-                                luaOnly: fileObj.luaOnly === undefined ? true : fileObj.luaOnly
-                            })
-                        }
-                    }.bind(this))
-                }
-            }.bind(this))
+        //     _.each(data, function(el, key, ls){
+        //         if (key !== "applicationType"){
+        //             _.each(el, function(fileObj, index, list){
+        //                 if (fileObj&&fileObj.topologyLevel === 1){
+        //                     upArray.push({
+        //                         id: fileObj.id,
+        //                         name: key,
+        //                         content: fileObj.content,
+        //                         luaOnly: fileObj.luaOnly === undefined ? true : fileObj.luaOnly
+        //                     })
+        //                 } else if (fileObj&&fileObj.topologyLevel === 2){
+        //                     downArray.push({
+        //                         id: fileObj.id,
+        //                         name: key,
+        //                         content: fileObj.content,
+        //                         luaOnly: fileObj.luaOnly === undefined ? true : fileObj.luaOnly
+        //                     })
+        //                 }
+        //             }.bind(this))
+        //         }
+        //     }.bind(this))
 
-            return {up: upArray, down: downArray}
-        },
+        //     return {up: upArray, down: downArray}
+        // },
 
         initConfigFile: function(data){
-            this.autoConfigInfo = data;
+            require(["react.config.panel"], function(ReactConfigPanelComponent){
+                var ReactTableView = React.createFactory(ReactConfigPanelComponent);
+                var reactTableView = ReactTableView({
+                    collection: this.collection,
+                    version: this.model.get("version") || this.model.get("domainVersion"),
+                    domain: this.model.get("domain"),
+                    type: 1,
+                    isCustom: false,
+                    headerStr: "自动生成的配置文件",
+                    panelClassName: "col-md-12",
+                    onChangeTextarea: $.proxy(this.onChangeTextarea, this)
+                });
+                ReactDOM.render(reactTableView, this.$el.find(".automatic .file-ctn").get(0));
+            }.bind(this))
+            // this.autoConfigInfo = data;
 
-            var autoConfigObj = this.getConfigObj(data);
+            // var autoConfigObj = this.getConfigObj(data);
 
-            this.configReadOnly = $(_.template(template['tpl/setupChannelManage/setupChannelManage.editCfgFalse.html'])({
-                data: autoConfigObj,
-                panelId: Utility.randomStr(8)
-            }));
-            this.configReadOnly.appendTo(this.$el.find(".automatic"))
+            // this.configReadOnly = $(_.template(template['tpl/setupChannelManage/setupChannelManage.editCfgFalse.html'])({
+            //     data: autoConfigObj,
+            //     panelId: Utility.randomStr(8)
+            // }));
+            // this.configReadOnly.appendTo(this.$el.find(".automatic"))
 
             var isUseCustomized = this.model.get("tempUseCustomized");
             if (isUseCustomized === 1) return;
 
-            this.mySetupSendWaitCustomizeModel.off("get.all.config.success");
-            this.mySetupSendWaitCustomizeModel.off("get.all.config.error");
-            this.mySetupSendWaitCustomizeModel.on("get.all.config.success", $.proxy(this.initCustomizedSetupFile, this));
-            this.mySetupSendWaitCustomizeModel.on("get.all.config.error", $.proxy(this.onGetError, this));
-            this.mySetupSendWaitCustomizeModel.getAllConfig({
-                domain: this.model.get("domain"),
-                version: this.model.get("version") || this.model.get("domainVersion"),
-                manuallyModifed: true,
-                applicationType: data.applicationType.type
-            })
-        },
-
-        initCustomizedSetupFile: function(data){
-            this.cusConfigInfo = data;
-
-            _.each(this.cusConfigInfo, function(fileObj, inx, list){
-                _.each(fileObj, function(el, index, ls){
-                    if (!el.id) el.id = Utility.randomStr(8);
-                }.bind(this))
+            require(["react.config.panel"], function(ReactConfigPanelComponent){
+                var ReactTableView = React.createFactory(ReactConfigPanelComponent);
+                var reactTableView = ReactTableView({
+                    collection: this.collection,
+                    version: this.model.get("version") || this.model.get("domainVersion"),
+                    domain: this.model.get("domain"),
+                    type: this.isEdit ? 2 : 1,
+                    isCustom: true,
+                    headerStr: "定制化的配置文件",
+                    panelClassName: "col-md-12",
+                    onChangeTextarea: $.proxy(this.onChangeTextarea, this)
+                });
+                ReactDOM.render(reactTableView, this.$el.find(".customized .file-ctn").get(0));
             }.bind(this))
 
-            var cusConfigObj = this.getConfigObj(this.cusConfigInfo);
+            // this.mySetupSendWaitCustomizeModel.off("get.all.config.success");
+            // this.mySetupSendWaitCustomizeModel.off("get.all.config.error");
+            // this.mySetupSendWaitCustomizeModel.on("get.all.config.success", $.proxy(this.initCustomizedSetupFile, this));
+            // this.mySetupSendWaitCustomizeModel.on("get.all.config.error", $.proxy(this.onGetError, this));
+            // this.mySetupSendWaitCustomizeModel.getAllConfig({
+            //     domain: this.model.get("domain"),
+            //     version: this.model.get("version") || this.model.get("domainVersion"),
+            //     manuallyModifed: true,
+            //     applicationType: data.applicationType.type
+            // })
+        },
 
-            var tplPath = 'tpl/setupChannelManage/setupChannelManage.editCfgTrue.html';
-            if (!this.isEdit) tplPath = 'tpl/setupChannelManage/setupChannelManage.editCfgFalse.html'
+        // initCustomizedSetupFile: function(data){
+        //     this.cusConfigInfo = data;
 
-            this.configEdit = $(_.template(template[tplPath])({
-                data: cusConfigObj,
-                panelId: Utility.randomStr(8),
-                applicationType: this.applicationType
-            }));
-            this.configEdit.appendTo(this.$el.find(".customized"))
+        //     _.each(this.cusConfigInfo, function(fileObj, inx, list){
+        //         _.each(fileObj, function(el, index, ls){
+        //             if (!el.id) el.id = Utility.randomStr(8);
+        //         }.bind(this))
+        //     }.bind(this))
+
+        //     var cusConfigObj = this.getConfigObj(this.cusConfigInfo);
+
+        //     var tplPath = 'tpl/setupChannelManage/setupChannelManage.editCfgTrue.html';
+        //     if (!this.isEdit) tplPath = 'tpl/setupChannelManage/setupChannelManage.editCfgFalse.html'
+
+        //     this.configEdit = $(_.template(template[tplPath])({
+        //         data: cusConfigObj,
+        //         panelId: Utility.randomStr(8),
+        //         applicationType: this.applicationType
+        //     }));
+        //     this.configEdit.appendTo(this.$el.find(".customized"))
+        // },
+
+        onChangeTextarea: function(data){
+            this.cusConfigInfo = data;
         },
 
         onClickIsUseCustomizedBtn: function(event){
@@ -186,6 +220,10 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
             this.$el.find(".automatic").removeClass("col-md-offset-3");
         },
 
+        onClickViewSetupShared: function(){
+            window.location.hash = "#/sharedSetup/" + this.model.get("domain");
+        },
+
         onClickViewSetupBillBtn: function(){
             require(['setupBillLive.view', 'setupBill.model'], function(SetupBillView, SetupBillModel){
                 var mySetupBillModel = new SetupBillModel();
@@ -206,17 +244,28 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
 
         onClickSaveButton: function(){
             if (this.isEdit) {
-                var postParam = [], cusConfig = this.cusConfigInfo;
+                var postParam = [], ngPostParam = [],
+                    cusConfig = this.cusConfigInfo;
 
                 _.each(cusConfig, function(fileObj, inx, list){
-                    _.each(fileObj, function(el, index, ls){
-                        postParam.push({
-                            domain: this.model.get("domain"),
-                            version: this.model.get("version") || this.model.get("domainVersion"),
-                            "topologyLevel": el.topologyLevel,
-                            "manuallyModifed": true,
-                            "content": this.$el.find("#customized-file-" + el.id).val() || ""
-                        })
+                    _.each(fileObj.fileArray, function(el, index, ls){
+                        if (el.fileType !== "nginx.conf") {
+                            postParam.push({
+                                domain: this.model.get("domain"),
+                                version: this.model.get("version") || this.model.get("domainVersion"),
+                                "topologyLevel": el.topologyLevel,
+                                "manuallyModifed": true,
+                                "content": el.content || ""
+                            })
+                        } else {
+                            ngPostParam.push({
+                                domain: this.model.get("domain"),
+                                version: this.model.get("version") || this.model.get("domainVersion"),
+                                "topologyLevel": el.topologyLevel,
+                                "manuallyModifed": true,
+                                "content": el.content || ""
+                            })
+                        }
                     }.bind(this))
                 }.bind(this))
 
@@ -225,14 +274,15 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                 this.mySetupSendWaitCustomizeModel.on("set.channel.config.success", $.proxy(this.onSaveComment, this));
                 this.mySetupSendWaitCustomizeModel.on("set.channel.config.error", $.proxy(this.onGetError, this));
                 if (this.applicationType !== 203) {
-                    this.mySetupSendWaitCustomizeModel.setChannelNgConfig(postParam)
+                    this.mySetupSendWaitCustomizeModel.setChannelNgConfig(ngPostParam)
                 } else {
                     try {
                         _.each(postParam, function(el){
+                            if (el.content === "") return;
                             JSON.parse(el.content)
                         }.bind(this))
                     } catch (e){
-                        alert("JSON 格式错误！")
+                        Utility.alerts("JSON 格式错误！")
                         return;
                     }
                     this.mySetupSendWaitCustomizeModel.setChannelLuaConfig(postParam)
@@ -271,7 +321,7 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
         },
 
         onSaveConfigSuccess: function(){
-            alert("操作成功！")
+            Utility.alerts("操作成功！", "success")
             this.onClickCancelButton();
         },
 
@@ -281,9 +331,9 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("网络阻塞，请刷新重试！")
         },
 
         render: function(target) {

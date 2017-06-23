@@ -125,6 +125,10 @@
   "importDomainManage.view": "importDomainManage/importDomainManage.view",
   "ipManage.model": "ipManage/ipManage.model",
   "ipManage.view": "ipManage/ipManage.view",
+  "isomorphismManage.detail.model": "isomorphismManage/isomorphismManage.detail.model",
+  "isomorphismManage.detail.view": "isomorphismManage/isomorphismManage.detail.view",
+  "isomorphismManage.model": "isomorphismManage/isomorphismManage.model",
+  "isomorphismManage.view": "isomorphismManage/isomorphismManage.view",
   "liveAllSetup.model": "liveAllSetup/liveAllSetup.model",
   "liveAllSetup.view": "liveAllSetup/liveAllSetup.view",
   "liveCurentSetup.model": "liveCurentSetup/liveCurentSetup.model",
@@ -165,6 +169,9 @@
   "setupTopoManage.view": "setupTopoManage/setupTopoManage.view",
   "setupTopoManageSendStrategy.model": "setupTopoManage/setupTopoManageSendStrategy.model",
   "setupTopoManageSendStrategy.view": "setupTopoManage/setupTopoManageSendStrategy.view",
+  "sharedSetup.detail.view": "sharedSetup/sharedSetup.detail.view",
+  "sharedSetup.model": "sharedSetup/sharedSetup.model",
+  "sharedSetup.view": "sharedSetup/sharedSetup.view",
   "specialLayerManage.model": "specialLayerManage/specialLayerManage.model",
   "specialLayerManage.view": "specialLayerManage/specialLayerManage.view",
   "statisticsManage.model": "statisticsManage/statisticsManage.model",
@@ -175,11 +182,15 @@
   "utility": "utility",
   "modal.view": "views/modal.view",
   "navbar.view": "views/navbar.view",
+  "react.config.panel": "views/react.config.panel",
+  "react.doubleSelect.panel": "views/react.doubleSelect.panel",
+  "react.modal.alert": "views/react.modal.alert",
+  "react.modal.confirm": "views/react.modal.confirm",
+  "react.table": "views/react.table",
   "subNavbar.view": "views/subNavbar.view"
 };
 //PATH END===
 window.DEBUG = 1.1;
-
 if (window.DEBUG === 1)
     window.BASE_URL = "http://develop.gateway.center.cdn.ksyun.com";
 else if (window.DEBUG === 1.1)
@@ -213,7 +224,7 @@ requirejs(['routes', 'utility'], function(routes, Utility) {
     Backbone.history.start();
 });
 requirejs.onError = function () {
-    console.log(arguments)
+    console.error(arguments)
     var errorPopup = $('#big-main-error').get(0);
     if (errorPopup) return;
     var message = "";

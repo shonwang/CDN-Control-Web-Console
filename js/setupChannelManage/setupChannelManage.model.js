@@ -237,6 +237,28 @@ define("setupChannelManage.model", ['require', 'exports', 'utility'], function(r
                 }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+
+        hasBindingRule: function(args) {
+            var url = BASE_URL + '/channelManager/topology/hasBindingRole',
+                successCallback = function(res) {
+                    this.trigger("get.hasBindingRule.success", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger('get.hasBindingRule.error', response)
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        delTopologyRuleList: function(args) {
+            var url = BASE_URL + '/channelManager/topology/delTopologyRoleList',
+                successCallback = function(res) {
+                    this.trigger("get.delTopologyRuleList.success", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger('get.delTopologyRuleList.error', response)
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
     });
 
     return SetupChannelManageCollection;

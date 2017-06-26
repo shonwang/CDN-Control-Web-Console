@@ -27,7 +27,7 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                         name: null,
                         page: 1,
                         size: 99999,
-                        type: null
+                        type: this.options.applicationType
                     });
                 }.bind(this))
             },
@@ -127,7 +127,7 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                         name: null,
                         page: 1,
                         size: 99999,
-                        type: null
+                        type: this.options.applicationType
                     });
                 }.bind(this))
             },
@@ -137,7 +137,8 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                 this.$el.find(".layer-toggle .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
                 var mySelectLayerView = new SelectLayerView({
                     collection: this.collection,
-                    domainArray: this.domainArray
+                    domainArray: this.domainArray,
+                    applicationType: this.options.applicationType
                 });
 
                 mySelectLayerView.$el.find(".domain-list").remove()

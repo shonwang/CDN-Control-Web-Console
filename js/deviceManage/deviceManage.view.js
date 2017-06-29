@@ -552,6 +552,13 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.node.success", $.proxy(this.onGetNodeSuccess, this));
             this.collection.on("get.node.error", $.proxy(this.onGetError, this));
 
+            //新添，当operatorId == 9时，需要添加IP运营商
+            this.collection.off("operator.type.success");
+            this.collection.off("operator.type.error");
+            this.collection.on("operator.type.success", $.proxy(this.onGetOperatorTypeSuccess, this));
+            this.collection.on("operator.type.error", $.proxy(this.onGetError, this));
+
+
             if (this.isEdit){
                 this.$el.find("#input-name").val(this.model.attributes.name);
                 this.deviceType = this.model.attributes.type;
@@ -638,9 +645,11 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onClickAddIP: function(){
             var ip = this.$el.find("#input-ip").val();
+            var operatorId = this.operatorId || 0;
             var args = {
                 ip: ip,
-                type: this.ipType
+                type: this.ipType,
+                operatorId:operatorId
             }
             this.collection.addIp(args)
         },
@@ -691,10 +700,12 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onGetNodeSuccess: function(res){
             var nameList = [];
+            var isMultiwireList = {};
             _.each(res.rows, function(el, index, list){
                 nameList.push({name: el.chName, value:el.id})
+                isMultiwireList[el.id]= (el.operatorId == 9);
             });
-
+            this.isMultiwireList = isMultiwireList;
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.dropdown-node').get(0),
                 panelID: this.$el.find('#dropdown-node').get(0),
@@ -705,6 +716,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 callback: function(data) {
                     this.nodeId = data.value;
                     this.$el.find('#dropdown-node .cur-value').html(data.name);
+                    this.setIspList();
                 }.bind(this)
             });
             if (this.isEdit){
@@ -720,7 +732,58 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.nodeId = nameList[0].value;
 
                 this.collection.ipTypeList();
+                this.setIspList();
             } 
+            
+        },
+        
+        operatorList:{
+            //缓存运营商列表
+            hasData:false,
+            data:null
+        },
+
+        setIspList:function(){
+            //设置运营商下拉列表
+            var operatorList = this.operatorList;
+            var isMultiwireList = this.isMultiwireList;
+            if(!isMultiwireList[this.nodeId]){
+                //不是多线
+                this.$el.find('.ip-operator-type').hide();
+                this.$el.find('.ip-operator-default').show();
+                this.operatorId = 0;
+            }
+            else{
+                this.$el.find('.ip-operator-default').hide();
+                this.$el.find('.ip-operator-type').show();
+                if(!operatorList.hasData){
+                    this.collection.operatorTypeList();
+                }
+                else{
+                    this.setOperatorTypeList(operatorList.data);
+                }
+            }
+        },
+
+        onGetOperatorTypeSuccess:function(data){
+            this.operatorTypeList = data;
+            var typeOperatorArray = [];
+            _.each(this.operatorTypeList,function(el,key,ls){
+                typeOperatorArray.push({name:el.name,value:el.id})
+            });
+            this.operatorList.data = typeOperatorArray;
+            this.operatorList.hasData = true;
+            this.setOperatorTypeList(typeOperatorArray);
+            
+        },
+
+
+        setOperatorTypeList:function(typeOperatorArray){
+            Utility.initDropMenu(this.$el.find('.ip-operator-type'),typeOperatorArray,function(value){
+                this.operatorId = parseInt(value);
+            }.bind(this));     
+            this.operatorId = typeOperatorArray[0].value;
+            this.$el.find('.ip-operator-type .cur-value').html(typeOperatorArray[0].name);
         },
 
         onGetIpTypeSuccess: function(data){

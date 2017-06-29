@@ -1,0 +1,25 @@
+<%for(var i = 0;i<data.length;i++){%>
+<tr>
+	<!--td>运营商</td>
+	<td>计费方式</td>
+	<td>上联带宽</td>
+	<td>保底带宽</td>
+	<td>上联带宽阈值</td>
+	<td>保底带宽阈值</td>
+	<td>成本权值</td>
+	<td>出口带宽zabbix名称</td>
+	<td>入口带宽zabbix名称</td-->
+	<td><%=data[i].operatorName || '---'%></td>
+	<td><%=data[i].chargingTypeName || '---'%></td>
+	<td><%=data[i].maxBandwidth || '---'%></td>
+	<td><%=data[i].minBandwidth || '---'%></td>
+	<td><%=data[i].maxBandwidthThreshold || '---'%></td>
+	<td><%=data[i].minBandwidthThreshold || '---'%></td>
+	<td><%=data[i].unitPrice || '---'%></td>
+	<td><%=data[i].outZabName || '---'%></td>
+	<td><%=data[i].inZabName || '---'%></td>
+	<td>
+		<a href="javascript:void(0)" class="rsNodeCorpDtos-modify" data-id="<%=i%>">编辑</a><a href="javascript:void(0)" class="rsNodeCorpDtos-delete" data-id="<%=i%>">删除</a>
+	</td>
+<tr>
+<%}%>

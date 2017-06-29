@@ -4,6 +4,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             var status     = this.get("status"),
                 createTime = this.get("createTime"),
                 chargingType = this.get("chargingType"),
+                updateTime = this.get("updateTime"),
                 startChargingTime = this.get("startChargingTime");
             if (status === 3) this.set("statusName", '<span class="label label-danger">已关闭</span>');
             if (status === 4) this.set("statusName", '<span class="label label-danger">暂停</span>');
@@ -18,6 +19,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
 
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
             if (startChargingTime) this.set("startChargingTimeFormated", new Date(startChargingTime).format("yyyy/MM/dd hh:mm"));
+            if (updateTime) this.set("updateTimeFormated",new Date(updateTime).format("yyyy/MM/dd hh:mm"));
             this.set("isChecked", false);
         }
     });

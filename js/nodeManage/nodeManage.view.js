@@ -1,5 +1,463 @@
 define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
+    var IspTemplateView = Backbone.View.extend({
+        initialize:function(options){
+            this.operatorList = options.operatorList;
+            this.operatorListArrToObj();
+            this.ispIndex = options.index;//编辑的时候，需要用到ispIndex
+            this.model = options.model;
+            var args = options.args || {};
+            this.isEdit = options.isEdit || false;
+            this.isMultiwire = options.isMultiwire || false;//是否是多线
+            if (this.isEdit) {
+                this.args = {
+                    "index":this.ispIndex,
+                    "isMultiwire":this.isMultiwire,
+                    "operatorId":args.operatorId || 1,//运营商
+                    "chargingType": args.chargingType || 1,//计费方式
+                    "minBandwidth": args.minBandwidth || '',//保底带宽
+                    "maxBandwidth": args.maxBandwidth || '',//上联带宽
+                    "maxBandwidthThreshold":args.maxBandwidthThreshold || '',//上联带宽阈值
+                    "minBandwidthThreshold":args.minBandwidthThreshold || '',//保低带宽阈值
+                    "unitPrice": args.unitPrice || '',//成本权值
+                    "inZabName": args.inZabName || '',//入口带宽zabbix名称
+                    "outZabName": args.outZabName || '',//出口带宽zabbix名称
+                    //"startChargingTime": args.startChargingTime || '',//开始计费日期
+                    //"rsNodeCorpDtos":args.rsNodeCorpDtos  || ''                 //单项添加不需要此项
+               }
+
+            } else {
+                this.args = {
+                    "index":this.ispIndex || null,
+                    "isMultiwire":this.isMultiwire,
+                    "operatorId":1,//运营商
+                    "chargingType": 1,//计费方式
+                    "minBandwidth": '',//保底带宽
+                    "maxBandwidth": '',//上联带宽
+                    "maxBandwidthThreshold":'',//上联带宽阈值
+                    "minBandwidthThreshold":'',//保低带宽阈值
+                    "unitPrice": '',//成本权值
+                    "inZabName": '',//入口带宽zabbix名称
+                    "outZabName": '',//出口带宽zabbix名称
+                    //"startChargingTime": '',//开始计费日期
+                    //"rsNodeCorpDtos":[]//单项添加不需要此项
+                };
+            }
+            this.$el = $(_.template(template['tpl/nodeManage/nodeManage.isp.html'])({data:this.args}));
+            this.setDropDownList();
+            //this.initChargeDatePicker();
+            if(this.isMultiwire){
+                this.setOperatorDorpDownList();
+            }
+        },
+
+        setOperatorDorpDownList:function(){
+            var operatorList = this.operatorList;
+            Utility.initDropMenu(this.$el.find(".dropdown-ispList"), operatorList, function(value) {
+                this.args.operatorId = parseInt(value);
+            }.bind(this));
+            if (this.isEdit) {
+                var defaultValue = _.find(operatorList, function(object) {
+                    return object.value === this.args.operatorId;
+                }.bind(this));
+                this.$el.find(".dropdown-ispList .cur-value").html(defaultValue.name)
+            } else {
+                this.$el.find(".dropdown-ispList .cur-value").html(operatorList[0].name)
+            }    
+        },
+
+        operatorListArrToObj:function(){
+            var arr = this.operatorList;
+            var obj = {};
+            for(var i=0;i<arr.length;i++){
+                obj[arr[i]["value"]]=arr[i]["name"];
+            }
+            obj["9"] && delete obj["9"];
+            this.operatorListObj = obj;
+            this.reBuildOperatorList();
+        },
+
+        reBuildOperatorList:function(){
+            var operatorListObj = this.operatorListObj;
+            var arr=[];
+            for(var item in operatorListObj){
+                arr.push({
+                    name:operatorListObj[item],
+                    value:parseInt(item)
+                });
+            }
+            this.operatorList = arr;
+        },
+
+        setDropDownList:function(){
+            var nameList = [{
+                    name: "95峰值",
+                    value: 1
+                }, {
+                    name: "包端口",
+                    value: 2
+                }, {
+                    name: "峰值",
+                    value: 3
+                }, {
+                    name: "第三峰",
+                    value: 4
+                }
+                // {name: "免费", value: 0}
+            ];
+            Utility.initDropMenu(this.$el.find(".dropdown-charging"), nameList, function(value) {
+                this.args.chargingType = parseInt(value);
+            }.bind(this));
+
+            if (this.isEdit) {
+                var defaultValue = _.find(nameList, function(object) {
+                    return object.value === this.args.chargingType
+                }.bind(this));
+                this.$el.find(".dropdown-charging .cur-value").html(defaultValue.name)
+            } else {
+                this.$el.find(".dropdown-charging .cur-value").html(nameList[0].name)
+            }        
+        },
+
+        initChargeDatePicker: function() {
+            var startVal = null,
+                endVal = null;
+            if (this.args.startChargingTime)
+                startVal = new Date(this.args.startChargingTime).format("yyyy/MM/dd");
+            var startOption = {
+                lang: 'ch',
+                timepicker: false,
+                scrollInput: false,
+                format: 'Y/m/d',
+                value: startVal,
+                onChangeDateTime: function() {
+                    //this.args.startChargingTime = new Date(arguments[0]).valueOf();
+                }.bind(this)
+            };
+            this.$el.find("#input-start").datetimepicker(startOption);
+        },
+
+        getArgs:function(){
+            //var enName = this.$el.find("#input-english").val().replace(/\s+/g, ""),
+                //chName = this.$el.find("#input-name").val().replace(/\s+/g, ""),
+                var maxBandwidthThreshold = this.$el.find("#input-threshold").val(),//上联带宽阈值
+                minBandwidthThreshold = this.$el.find("#input-minthreshold").val(),//保底带宽阈值
+                maxBandwidth = this.$el.find("#input-maxbandwidth").val(),//上联带宽
+                minBandwidth = this.$el.find("#input-minbandwidth").val(),//保底带宽
+                unitPrice = this.$el.find("#input-unitprice").val(),//成本权值
+                //longitudeLatitude = this.$el.find('#input-longitude-latitude').val(),
+                outzabname = this.$el.find('#input-outzabname').val().replace(/\s+/g, ""),//出口带宽zabbix名称
+                inzabname = this.$el.find("#input-inzabname").val().replace(/\s+/g, ""),//入口带宽zabbix名称
+                re = /^\d+$/,
+                outzabnameRe = /^[0-9A-Za-z\-\[\]\_]+$/,
+                letterRe = /[A-Za-z]+/,
+                reLocation = /^\d+(\.\d+)?----\d+(\.\d+)?$/;
+
+            
+            if (!re.test(maxBandwidth) || !re.test(minBandwidth)) {
+                alert("上联带宽和保底带宽只能填入数字！");
+                return false;
+            }
+            if (parseInt(maxBandwidth) > 100000000 || parseInt(maxBandwidth) < 0) {
+                alert("上联带宽：0-100000000（0-100T，单位转换按1000算）");
+                return false;
+            }
+            if (parseInt(minBandwidth) > 100000000 || parseInt(minBandwidth) < 0) {
+                alert("保底带宽：0-100000000（0-100T，单位转换按1000算）");
+                return false;
+            }
+            if (parseInt(maxBandwidth) < parseInt(minBandwidth)) {
+                alert("上联带宽不能小于保底带宽！");
+                return false;
+            }
+            if (!re.test(maxBandwidthThreshold) || !re.test(minBandwidthThreshold)) {
+                alert("上联带宽阈值和保底带宽阈值只能填入数字！");
+                return false;
+            }
+            if (parseInt(maxBandwidthThreshold) < 0 || parseInt(maxBandwidthThreshold) > parseInt(maxBandwidth)) {
+                alert("上联带宽阈值：0-上联带宽");
+                return false;
+            }
+            if (parseInt(minBandwidthThreshold) < 0 || parseInt(minBandwidthThreshold) > parseInt(maxBandwidth)) {
+                alert("保底带宽阈值：0-上联带宽");
+                return false;
+            }
+            if (!re.test(unitPrice)) {
+                alert("成本权值只能填入数字！");
+                return false;
+            }
+            if (parseInt(unitPrice) > 2147483647 || parseInt(unitPrice) < 0) {
+                alert("成本权值不能小于0且大于长整型的最大值");
+                return false;
+            }
+            if (!outzabnameRe.test(outzabname) || outzabname.indexOf("-") === -1 ||
+                outzabname.indexOf("_") === -1 || outzabname.indexOf("[") === -1 ||
+                outzabname.indexOf("]") === -1 || !letterRe.test(outzabname)) {
+                alert("zabbix出口带宽英文、“-”、“_”、“[”、“]”为必填项，数字为可填项，即组合可包含数字，也可不包含数字");
+                return false;
+            }
+
+            this.args.minBandwidth = minBandwidth;
+            this.args.maxBandwidth = maxBandwidth;
+            this.args.maxBandwidthThreshold = maxBandwidthThreshold;
+            this.args.minBandwidthThreshold = minBandwidthThreshold;
+            this.args.unitPrice = unitPrice;
+            this.args.inZabName = inzabname;
+            this.args.outZabName =outzabname;
+
+
+            return this.args;
+        },
+
+        destroy:function(){
+            this.$el.remove();
+        },
+
+        render:function(target){
+            this.$el.appendTo(target);
+        }
+    });    
+
+
+    var MultiwireTemplateView = Backbone.View.extend({
+        initialize:function(options){
+            this.operatorList = options.operatorList;
+            this.operatorListArrToObj();
+            var args = options.args;
+            this.model = options.model;
+            this.isEdit = options.isEdit || false;
+            this.isMultiwire = true;
+            if (this.isEdit) {
+                this.args = {
+                    isMultiwire : true,
+                    "rsNodeCorpDtos":args.rsNodeCorpDtos || []//为了兼容老版库里没有数据的情况
+                }
+            } else {
+                this.args = {
+                    isMultiwire : true,
+                    "rsNodeCorpDtos":[]
+                };
+            }
+            this.$el = $(_.template(template['tpl/nodeManage/nodeManage.ispMultiwire.html'])({data:this.args}));   
+            this.$el.find(".addIsp").on("click",$.proxy(this.onAddIspClick,this));
+            this.setRsNodeCorpDtosList();
+        },
+        setRsNodeCorpDtosList:function(){
+            var rsNodeCorpDtos = this.args.rsNodeCorpDtos;
+            var obj = {};
+            for(var i=0;i<rsNodeCorpDtos.length;i++){
+                obj[i]=rsNodeCorpDtos[i];
+            }
+            this.rsNodeCorpDtosList = obj;
+            this.setRsNodeCorpDtosTbody();
+        },
+
+        formatRsNodeCorpDtosList:function(){
+            var rsNodeCorpDtosList = this.rsNodeCorpDtosList;
+            var arr=[];
+            for(var i in rsNodeCorpDtosList){
+                arr.push(parseInt(i));
+            }
+
+            arr.sort(function(a,b){
+                return a-b;
+            });
+
+            var newRsNodeCorpDtosList=[];
+            for(var i=0;i<arr.length;i++){
+                newRsNodeCorpDtosList.push(rsNodeCorpDtosList[arr[i]]);
+            }
+
+            var obj={};
+            for(var i=0;i<newRsNodeCorpDtosList.length;i++){
+                obj[i]=newRsNodeCorpDtosList[i];
+            }
+            this.rsNodeCorpDtosList = obj;
+            this.totalRsNodeCorpDtosListLength=newRsNodeCorpDtosList.length;
+            return newRsNodeCorpDtosList;
+        },
+
+        chargingNameList:{
+            1: "95峰值",
+            2: "包端口",
+            3: "峰值",
+            4: "第三峰",
+        },
+
+        setRsNodeCorpDtosTbody:function(){
+            var chargingNameList = this.chargingNameList;
+            var obj = this.formatRsNodeCorpDtosList();
+            _.each(obj,function(item){
+                item.chargingTypeName = chargingNameList[item.chargingType];
+                item.operatorName = item.operatorId && this.operatorListObj[item.operatorId] || "---";
+            }.bind(this));
+            var rsNodeCorpDtosList = $(_.template(template['tpl/nodeManage/nodeManage.ispTbody.html'])({data:obj}));
+            if(obj && obj.length==0){
+                this.$el.find(".isp-table tbody").html('<tr><td colspan="11" class="text-center">请添加运营商信息!</td></tr>');
+            }
+            else{
+                this.$el.find(".isp-table tbody").html(rsNodeCorpDtosList);
+            }            
+            rsNodeCorpDtosList.find(".rsNodeCorpDtos-modify").click($.proxy(this.toModify,this));
+            rsNodeCorpDtosList.find(".rsNodeCorpDtos-delete").click($.proxy(this.toDelete,this));
+        },
+
+        toModify:function(event){
+            var rsNodeCorpDtosList = this.formatRsNodeCorpDtosList();
+            var eventTarget = event.srcElement || event.target;
+            var id = parseInt($(eventTarget).attr("data-id"));
+            var _data = rsNodeCorpDtosList[id];
+            if (this.addIspPopup) $("#" + this.addIspPopup.modalId).remove();
+            var ispTemplateView = new IspTemplateView({
+                index:id,
+                operatorList: this.operatorList,
+                args:_data,
+                isEdit:true,
+                isMultiwire:true
+            });
+            var options = {
+                title: "编辑运营商",
+                body: ispTemplateView,
+                backdrop: 'static',
+                type: 2,
+                width:800,
+                height:800,
+                bg:true,
+                onOKCallback: function() {
+                    var result = ispTemplateView.getArgs();
+                    if(!result){
+                        return false;
+                    }
+                    var index = result.index;
+                    this.rsNodeCorpDtosList[index] = result;
+                    this.setRsNodeCorpDtosTbody();
+                    this.addIspPopup.$el.modal("hide");
+                }.bind(this)
+            }
+            this.addIspPopup = new Modal(options);           
+        },
+
+        toDelete:function(event){
+            var target = event.target || event.srcElement;
+            var id = $(target).attr("data-id");
+            var rsNodeCorpDtosList=this.rsNodeCorpDtosList;
+            delete rsNodeCorpDtosList[id];
+            this.setRsNodeCorpDtosTbody();            
+        },
+
+        onAddIspClick:function(){
+
+            var rsNodeCorpDtosList = this.formatRsNodeCorpDtosList();
+            var index = rsNodeCorpDtosList.length;
+
+            if (this.addIspPopup) $("#" + this.addIspPopup.modalId).remove();
+            var ispTemplateView = new IspTemplateView({
+                operatorList: this.operatorList,
+                args:null,
+                isEdit:false,
+                isMultiwire:true
+            });
+            var options = {
+                title: "添加运营商",
+                body: ispTemplateView,
+                backdrop: 'static',
+                type: 2,
+                width:800,
+                height:800,
+                bg:true,
+                onOKCallback: function() {
+                    var result = ispTemplateView.getArgs();
+                    if(!result){
+                        return false;
+                    }
+                    this.rsNodeCorpDtosList[index] = result;
+                    this.setRsNodeCorpDtosTbody();
+                    this.addIspPopup.$el.modal("hide");
+                }.bind(this)
+            }
+            this.addIspPopup = new Modal(options);        
+        },
+
+        operatorListArrToObj:function(){
+            var arr = this.operatorList;
+            var obj = {};
+            for(var i=0;i<arr.length;i++){
+                obj[arr[i]["value"]]=arr[i]["name"];
+            }
+            obj["9"] && delete obj["9"];
+            this.operatorListObj = obj;
+            this.reBuildOperatorList();
+        },
+
+        reBuildOperatorList:function(){
+            var operatorListObj = this.operatorListObj;
+            var arr=[];
+            for(var item in operatorListObj){
+                arr.push({
+                    name:operatorListObj[item],
+                    value:parseInt(item)
+                });
+            }
+            this.operatorList = arr;
+        },
+
+        destroy:function(){
+            this.$el.remove();
+        },
+
+        getArgs:function(){
+            this.args.rsNodeCorpDtos = this.formatRsNodeCorpDtosList();
+            if(this.args.rsNodeCorpDtos.length == 0){
+                alert("请添加运营商!");
+                return false;
+            }
+            return this.args;
+        },
+
+        render:function(target){
+            this.$el.appendTo(target);
+        }
+    });
+
+    var NodeTips = Backbone.View.extend({
+        initialize:function(options){
+            this.type = options.type;//type=1:暂停操作 type=2 查看详情,不可编辑
+            this.model = options.model;
+            this.args = {
+                opRemark:''
+            };
+            var obj={
+                type:options.type,
+                name:this.model.attributes.name || "---",
+                operator:this.model.attributes.operator || "---",
+                updateTime:this.model.attributes.updateTimeFormated || "---",
+                opRemark:this.model.attributes.opRemark || "---",
+                placeHolder:options.placeHolder || "请输入暂停原因"
+            };
+            this.$el = $(_.template(template['tpl/nodeManage/nodeManage.tips.html'])({data:obj}));
+            this.$el.find("#stop-reason").on("focus",$.proxy(this.onFocus,this));
+        },
+        
+        onFocus:function(){
+            this.$el.find("#stop-reason").css("-webkit-animation-name","");
+            this.$el.find("#stop-reason").removeClass("error-tip-input");
+        },
+
+        getArgs:function(){
+            var opRemark = this.$el.find("#stop-reason").val().trim();
+            if(!opRemark){
+                this.$el.find("#stop-reason").addClass("error-tip-input");
+                this.$el.find("#stop-reason").css("-webkit-animation-name","error-tip-input");
+                return false;
+            }
+            this.args.opRemark = opRemark;
+            return this.args;
+        },
+
+        render:function(target){
+            this.$el.appendTo(target);
+        }
+    });
     var DispGroupInfoView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
@@ -177,8 +635,12 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             this.collection = options.collection;
             this.isEdit = options.isEdit;
             this.model = options.model;
+            this.showParentList = options.showList;
+            this.onOKCallback = options.onOKCallback || null;
+            this.onHiddenCallback = options.onHiddenCallback || null;
 
             if (this.isEdit) {
+
                 this.args = {
                     "id": this.model.get("id"),
                     "name": this.model.get("name"),
@@ -195,7 +657,8 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     "remark": this.model.get("remark"),
                     "operatorId": this.model.get("operatorId"),
                     "operatorName": this.model.get("operatorName"),
-                    "startChargingTime": this.model.get("startChargingTime")
+                    "startChargingTime": this.model.get("startChargingTime"),
+                    "rsNodeCorpDtos":this.model.get("rsNodeCorpDtos")
                 }
             } else {
                 this.args = {
@@ -214,7 +677,8 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     "remark": "",
                     "operatorId": "",
                     "operatorName": "",
-                    "startChargingTime": new Date().valueOf()
+                    "startChargingTime": new Date().valueOf(),
+                    "rsNodeCorpDtos":[]
                 }
             }
 
@@ -257,20 +721,38 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             this.collection.on("get.cityByProvince.success", $.proxy(this.onGetAllCityAndBigArea, this));
             this.collection.on("get.cityByProvince.error", $.proxy(this.onGetError, this));
 
+            this.$el.find(".save").on("click",$.proxy(this.onSaveClick,this));
+            this.$el.find(".cancel").on("click",$.proxy(this.onCancelClick,this));
+
             this.initDropList(options.list);
             this.initChargeDatePicker();
+        },
+
+        onSaveClick:function(){
+            var args = this.getArgs();
+            if(!args){
+                return false;
+            }
+            this.onOKCallback && this.onOKCallback();
+            this.hide();
+            this.showParentList();
+        },
+
+        onCancelClick:function(){
+            this.destroy();
+            this.showParentList();
         },
 
         getArgs: function() {
             var enName = this.$el.find("#input-english").val().replace(/\s+/g, ""),
                 chName = this.$el.find("#input-name").val().replace(/\s+/g, ""),
-                maxBandwidthThreshold = this.$el.find("#input-threshold").val(),
-                minBandwidthThreshold = this.$el.find("#input-minthreshold").val(),
-                maxBandwidth = this.$el.find("#input-maxbandwidth").val(),
-                minBandwidth = this.$el.find("#input-minbandwidth").val(),
-                unitPrice = this.$el.find("#input-unitprice").val(),
+                //maxBandwidthThreshold = this.$el.find("#input-threshold").val(),
+                //minBandwidthThreshold = this.$el.find("#input-minthreshold").val(),
+                //maxBandwidth = this.$el.find("#input-maxbandwidth").val(),
+                //minBandwidth = this.$el.find("#input-minbandwidth").val(),
+                //unitPrice = this.$el.find("#input-unitprice").val(),
                 longitudeLatitude = this.$el.find('#input-longitude-latitude').val(),
-                outzabname = this.$el.find('#input-outzabname').val().replace(/\s+/g, ""),
+                //outzabname = this.$el.find('#input-outzabname').val().replace(/\s+/g, ""),
                 //inzabname = this.$el.find("#input-inzabname").val().replace(/\s+/g, ""),
                 re = /^\d+$/,
                 outzabnameRe = /^[0-9A-Za-z\-\[\]\_]+$/,
@@ -284,6 +766,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 alert("节点名称和英文名称都要填写！");
                 return;
             }
+            /*
             if (!re.test(maxBandwidth) || !re.test(minBandwidth)) {
                 alert("上联带宽和保底带宽只能填入数字！");
                 return;
@@ -320,28 +803,55 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 alert("成本权值不能小于0且大于长整型的最大值");
                 return;
             }
+            
             if (!outzabnameRe.test(outzabname) || outzabname.indexOf("-") === -1 ||
                 outzabname.indexOf("_") === -1 || outzabname.indexOf("[") === -1 ||
                 outzabname.indexOf("]") === -1 || !letterRe.test(outzabname)) {
                 alert("zabbix出口带宽英文、“-”、“_”、“[”、“]”为必填项，数字为可填项，即组合可包含数字，也可不包含数字");
                 return;
             }
+            */
+            var ispTempalteData = this.ispTemplate.getArgs();
+            if(!ispTempalteData){
+                return false;
+            }
+            var maxBandwidthThreshold = ispTempalteData.maxBandwidthThreshold || null;
+            var minBandwidthThreshold = ispTempalteData.minBandwidthThreshold || null;
+            var maxBandwidth = ispTempalteData.maxBandwidth || null;
+            var minBandwidth = ispTempalteData.minBandwidth || null;
+            var unitPrice = ispTempalteData.unitPrice || null;
+            var outZabName = ispTempalteData.outZabName || null;
+            var inZabName = ispTempalteData.inZabName || null;
+            var rsNodeCorpDtos = ispTempalteData.rsNodeCorpDtos || null;
+            var startChargingTime = ispTempalteData.startChargingTime || null;
+            var chargingType = ispTempalteData.chargingType || null;
             var args = {
                 "id": this.model ? this.model.get("id") : 0,
                 "name": this.$el.find("#input-english").val().replace(/\s+/g, ""),
                 "chName": this.$el.find("#input-name").val().replace(/\s+/g, ""),
                 "operatorId": this.operatorId,
                 "operatorName": this.operatorName,
-                "minBandwidth": this.$el.find("#input-minbandwidth").val(),
-                "maxBandwidth": this.$el.find("#input-maxbandwidth").val(),
-                "maxBandwidthThreshold": this.$el.find("#input-threshold").val(),
-                "minBandwidthThreshold": this.$el.find("#input-minthreshold").val(),
-                "unitPrice": this.$el.find("#input-unitprice").val(),
-                "inZabName": this.$el.find("#input-inzabname").val().replace(/\s+/g, ""),
-                "outZabName": this.$el.find("#input-outzabname").val().replace(/\s+/g, ""),
+                //"minBandwidth": this.$el.find("#input-minbandwidth").val(),
+                //"maxBandwidth": this.$el.find("#input-maxbandwidth").val(),
+                //"maxBandwidthThreshold": this.$el.find("#input-threshold").val(),
+                //"minBandwidthThreshold": this.$el.find("#input-minthreshold").val(),
+               // "unitPrice": this.$el.find("#input-unitprice").val(),
+                //"inZabName": this.$el.find("#input-inzabname").val().replace(/\s+/g, ""),
+                //"outZabName": this.$el.find("#input-outzabname").val().replace(/\s+/g, ""),
                 "remark": this.$el.find("#textarea-comment").val(),
                 "startChargingTime": this.args.startChargingTime,
-                "chargingType": this.args.chargingType,
+                //"chargingType": this.args.chargingType,
+
+                "minBandwidth":minBandwidth,
+                "maxBandwidth":maxBandwidth,
+                "maxBandwidthThreshold": maxBandwidthThreshold,
+                "minBandwidthThreshold": minBandwidthThreshold,
+                "unitPrice": unitPrice,
+                "inZabName":inZabName ,
+                "outZabName":outZabName,
+                //"startChargingTime": startChargingTime,
+                "chargingType":chargingType,
+                "rsNodeCorpDtos":this.operatorId == 9 ? rsNodeCorpDtos : [],
                 "cityId": this.cityId,
                 "lon": this.$el.find('#input-longitude-latitude').val().split("----")[0],
                 "lat": this.$el.find('#input-longitude-latitude').val().split("----")[1]
@@ -357,8 +867,10 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     value: el.id
                 })
             });
+            this.operatorList = nameList;
             Utility.initDropMenu(this.$el.find(".dropdown-operator"), nameList, function(value) {
                 this.operatorId = value;
+                this.setIspTemplate();
             }.bind(this));
             if (this.isEdit) {
                 var defaultValue = _.find(nameList, function(object) {
@@ -379,9 +891,41 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 this.operatorId = nameList[0].value;
                 this.operatorName = nameList[0].name;
             }
+            //添加运营商模板
+            this.setIspTemplate();
+        },
+
+        setIspTemplate:function(){
+            var isEdit = this.isEdit;
+            var operatorId = this.operatorId;
+            var args = this.args;
+            if(this.ispTemplate){
+                this.ispTemplate.destroy();
+                this.ispTemplate = null;
+            }
+            
+            if(operatorId==9){
+                //加载运营商为多线的模板
+                this.ispTemplate = new MultiwireTemplateView({
+                    operatorList:this.operatorList,
+                    isEdit:isEdit,
+                    args:args
+                });
+            }
+            else{
+                //加载单个运营商模板
+                this.ispTemplate = new IspTemplateView({
+                    operatorList:this.operatorList,
+                    isEdit:isEdit,
+                    args:args
+                });
+            }
+
+            this.ispTemplate.render(this.$el.find("#isp-template"));
         },
 
         initDropList: function(list) {
+            /*
             var nameList = [{
                     name: "95峰值",
                     value: 1
@@ -409,7 +953,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             } else {
                 this.$el.find(".dropdown-charging .cur-value").html(nameList[0].name)
             }
-
+            */
             this.collection.getAllContinent();
             this.collection.getAllProvince();
             //this.collection.getAllCity();
@@ -643,9 +1187,25 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             else
                 alert("网络阻塞，请刷新重试！")
         },
+        
+        destroy:function(){
+            //清除一些绑定什么的
+            this.$el.find(".save").off("click");
+            this.$el.find(".cancel").off("click");
+            this.$el.remove();
+        },
 
+        hide:function(){
+            this.destroy();
+        },
+
+        show:function(){
+            this.target.show();
+        },
         render: function(target) {
+            this.target = target;
             this.$el.appendTo(target);
+            this.show();
         }
     });
 
@@ -754,7 +1314,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             this.collection.getNodeList(this.queryArgs);
         },
 
-        onClickCreate: function() {
+        /*onClickCreate: function() {
             if (this.addNodePopup) $("#" + this.addNodePopup.modalId).remove();
 
             var addNodeView = new AddOrEditNodeView({
@@ -778,6 +1338,43 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             }
             this.addNodePopup = new Modal(options);
             if (!AUTH_OBJ.ApplyCreateNode) this.addNodePopup.$el.find(".modal-footer .btn-primary").remove();
+        },*/
+
+        onClickCreate: function() {
+            this.hideList();
+            if(this.addNodeView){
+                this.addNodeView.destroy();
+                this.addNodeView = null;
+            }
+            this.addNodeView = new AddOrEditNodeView({
+                collection: this.collection,
+                operatorList:this.operatorList,
+                showList:function(){
+                    this.showList();
+                }.bind(this),
+                onHiddenCallback:function(){
+                    this.showList();
+                    if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
+                }.bind(this),
+                onOKCallback:function(){
+                    var options = this.addNodeView.getArgs();
+                    if (!options) return;
+                    this.collection.addNode(options);
+                    this.showList();
+                    if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
+                }.bind(this)
+            });
+            this.addNodeView.render(this.$el.find(".node-manage-add-edit-pannel"));
+            if (!AUTH_OBJ.ApplyCreateNode) addNodeView.$el.find(".btn-primary").remove();
+
+        },
+         
+        showList:function(){
+            this.$el.find(".node-manage-list-pannel").show();
+        },
+        
+        hideList:function(){
+            this.$el.find(".node-manage-list-pannel").hide();
         },
 
         initTable: function() {
@@ -798,6 +1395,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     this.table.find("tbody .delete").remove();
                 this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
                 this.table.find("tbody .hangup").on("click", $.proxy(this.onClickItemHangup, this));
+                this.table.find("tbody .operateDetail").on("click", $.proxy(this.onClickDetail, this));
                 this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));
                 this.table.find("tbody .disp-info").on("click", $.proxy(this.onClickDispGroupInfo, this));
 
@@ -858,7 +1456,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 }
             window.location.hash = "#/deviceManage/" + JSON.stringify(args)
         },
-
+        /*
         onClickItemEdit: function(event) {
             var eventTarget = event.srcElement || event.target,
                 id;
@@ -897,6 +1495,48 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             this.editNodePopup = new Modal(options);
             if (!AUTH_OBJ.ApplyEditNode)
                 this.editNodePopup.$el.find(".modal-footer .btn-primary").remove();
+        },*/
+
+        onClickItemEdit: function(event) {
+            var eventTarget = event.srcElement || event.target,
+                id;
+            if (eventTarget.tagName == "SPAN") {
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+            var model = this.collection.get(id);
+
+
+            this.hideList();
+            if(this.editNodeView){
+                this.editNodeView.destroy();
+                this.editNodeView = null;
+            }
+            this.editNodeView = new AddOrEditNodeView({
+                collection: this.collection,
+                model:model,
+                isEdit:true,
+                operatorList:this.operatorList,
+                showList:function(){
+                    //show当前列表
+                    this.showList();
+                }.bind(this),
+                onHiddenCallback:function(){
+                    this.showList();
+                    if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
+                }.bind(this),
+                onOKCallback:function(){
+                    var options = this.editNodeView.getArgs();
+                    if (!options) return;
+                    this.collection.updateNode(options);
+                    this.showList();
+                    if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
+                }.bind(this)
+            });
+            this.editNodeView.render(this.$el.find(".node-manage-add-edit-pannel"));
+            if (!AUTH_OBJ.ApplyCreateNode) this.editNodeView.$el.find(".btn-primary").remove();
         },
 
         onClickItemDelete: function(event) {
@@ -910,8 +1550,32 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             }
             var model = this.collection.get(id);
 
-            if (this.confirmDelete) $("#" + this.confirmDelete.modalId).remove();
 
+            if (this.deleteNodeTipsPopup) $("#" + this.deleteNodeTipsPopup.modalId).remove();
+            var deleteNodeTips = new NodeTips({
+                type:1,
+                model:model,
+                placeHolder:"请输入删除的原因,并请您谨慎操作，一旦删除，不可恢复"
+            });
+            var options = {
+                title: "你确定要删除节点<span class='text-danger'>" + model.attributes.name + "</span>吗？删除后将不可恢复, 请谨慎操作！",
+                body: deleteNodeTips,
+                backdrop: 'static',
+                type: 2,
+                onOKCallback: function() {
+                    var options = deleteNodeTips.getArgs();
+                    if (!options) return;
+                    this.collection.deleteNode({
+                        id: parseInt(id),
+                        opRemark:options.opRemark
+                    })
+                    this.deleteNodeTipsPopup.$el.modal("hide");                 
+                }.bind(this)
+            }
+            this.deleteNodeTipsPopup = new Modal(options);
+            /*
+            return false;
+            if (this.confirmDelete) $("#" + this.confirmDelete.modalId).remove();
             var opt = {
                 message: "你确定要删除节点<span class='text-danger'>" + model.attributes.name + "</span>吗？删除后将不可恢复, 请谨慎操作！",
                 type: "alert-info"
@@ -934,6 +1598,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 onHiddenCallback: function() {}.bind(this)
             }
             this.confirmDelete = new Modal(options);
+            */
         },
 
         onClickItemPlay: function(event) {
@@ -947,6 +1612,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             }
             //this.collection.updateNodeStatus({ids:[parseInt(id)], status:1})
             this.collection.operateNode({
+                opRemark:'',
                 nodeId: id,
                 operator: 1,
                 t: new Date().valueOf()
@@ -985,6 +1651,35 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             })
         },
 
+    
+        onClickDetail:function(event){
+            var eventTarget = event.srcElement || event.target,
+                id;
+            if (eventTarget.tagName == "SPAN") {
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+            var model = this.collection.get(id);
+            if (this.detailTipsPopup) $("#" + this.detailTipsPopup.modalId).remove();
+            var detailTipsView = new NodeTips({
+                type:2,
+                model:model
+            });
+            var options = {
+                title: "操作说明",
+                body: detailTipsView,
+                backdrop: 'static',
+                type: 1,
+                onHiddenCallback: function() {
+                    
+                }.bind(this)
+            }
+            this.nodeTipsPopup = new Modal(options);
+            
+        },
+
         onClickItemStop: function(event) {
             var eventTarget = event.srcElement || event.target,
                 id;
@@ -994,6 +1689,41 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             } else {
                 id = $(eventTarget).attr("id");
             }
+
+            var model = this.collection.get(id);
+            if (this.nodeTipsPopup) $("#" + this.nodeTipsPopup.modalId).remove();
+
+            var stopNodeView = new NodeTips({
+                type:1,
+                model:model
+            });
+            var options = {
+                title: "暂停节点操作",
+                body: stopNodeView,
+                backdrop: 'static',
+                type: 2,
+                onOKCallback: function() {
+                    var options = stopNodeView.getArgs();
+                    if (!options) return;
+                    this.currentPauseNodeId = id;
+                    this.collection.operateNode({
+                        opRemark:options.opRemark,
+                        nodeId: id,
+                        operator: -1,
+                        t: new Date().valueOf()
+                    })
+                    this.nodeTipsPopup.$el.modal("hide");
+                    this.showDisablePopup("服务端正在努力暂停中...")
+                }.bind(this),
+                onHiddenCallback: function() {
+                    
+                }.bind(this)
+            }
+            this.nodeTipsPopup = new Modal(options);
+            /*
+
+            
+
             var result = confirm("你确定要暂停节点吗？")
             if (!result) return
 
@@ -1003,14 +1733,14 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 operator: -1,
                 t: new Date().valueOf()
             })
-            this.showDisablePopup("服务端正在努力暂停中...")
+            this.showDisablePopup("服务端正在努力暂停中...")*/
                 // require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel){
                 //     this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, id)
                 // }.bind(this))        
         },
 
         onOperateNodeSuccess: function(res) {
-            this.disablePopup.$el.modal('hide');
+            this.disablePopup && this.disablePopup.$el.modal('hide');
             if (res.msg == "1" && res.status === 200) {
                 alert("操作成功！")
                 this.onClickQueryButton();
@@ -1145,7 +1875,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
         },
 
         onGetOperatorSuccess: function(res) {
-            this.operatorList = res
+            this.operatorList = res.rows;
             var nameList = [{
                 name: "全部",
                 value: "All"

@@ -355,6 +355,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         backHash: "index.html#/customerSetup",
                         menuList: menu
                     };
+
                 if (!this.customerSetupNavbar) {
                     this.customerSetupNavbar = new SubNavbar(menuOptions);
                     this.customerSetupNavbar.select(this.curPage);
@@ -454,6 +455,12 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
             openAPILogSetup: function(query, query2) {
                 if (!AUTH_OBJ.OpenApiLogManager) return;
                 require(['openAPILogSetup.view', 'openAPILogSetup.model'], function(OpenAPILogSetupView, OpenAPILogSetupModel) {
+                    
+                    if (this.customerSetupNavbar) {
+                        this.customerSetupNavbar.$el.remove();
+                        this.customerSetupNavbar = null;
+                    }
+                    
                     this.navbarView.select('customerSetup');
                     this.curPage = 'customerSetup-domainList-openAPILogSetup';
                     this.setupLogSetupDomainManageNavbar(query, query2);

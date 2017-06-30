@@ -23,6 +23,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
                 this.$el.find(".multi-modify-topology").on("click", $.proxy(this.onClickMultiModifyTopology, this))
                 this.$el.find(".multi-modify-layer").on("click", $.proxy(this.onClickMultiModifyLayer, this))
+                this.$el.find(".multi-cancel-layer").on("click", $.proxy(this.onClickMultiCancelLayer, this))
                 this.enterKeyBindQuery();
 
                 this.queryArgs = {
@@ -73,6 +74,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             initTable: function() {
                 this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
                 this.$el.find(".multi-modify-layer").attr("disabled", "disabled");
+                this.$el.find(".multi-cancel-layer").attr("disabled", "disabled");
                 this.table = $(_.template(template['tpl/setupChannelManage/setupChannelManage.table.html'])({
                     data: this.collection.models,
                     permission: AUTH_OBJ
@@ -111,6 +113,15 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                         return model.get("isChecked") === true;
                     });
 
+                    var topoTypeDomains = _.filter(checkedList, function(model) {
+                        return model.get("applicationType") === checkedList[0].get("applicationType");
+                    });
+
+                    if (checkedList.length !== topoTypeDomains.length) {
+                        alert("所选域名关联的拓扑不是同一种应用类型，不能进行批量操作！");
+                        return;
+                    }
+
                     this.domainArray = [];
                     _.each(checkedList, function(el, index, ls) {
                         this.domainArray.push({
@@ -126,7 +137,8 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     var type = AUTH_OBJ.ApplyChangeTopo ? 2 : 1;
                     var mySelectTopoView = new setupChannelManageSelectView.SelectTopoView({
                         collection: this.collection,
-                        domainArray: this.domainArray
+                        domainArray: this.domainArray,
+                        applicationType: checkedList[0].get("applicationType")
                     });
                     var options = {
                         title: "选择拓扑关系",
@@ -158,6 +170,15 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                         return model.get("isChecked") === true;
                     });
 
+                    var layerTypeDomains = _.filter(checkedList, function(model) {
+                        return model.get("applicationType") === checkedList[0].get("applicationType");
+                    });
+
+                    if (checkedList.length !== layerTypeDomains.length) {
+                        alert("所选域名关联的特殊分层策略不是同一种应用类型，不能进行批量操作！");
+                        return;
+                    }
+
                     this.domainArray = [];
                     _.each(checkedList, function(el, index, ls) {
                         this.domainArray.push({
@@ -173,7 +194,8 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     //var type = AUTH_OBJ.ApplyChangeTopo ? 2 : 1;
                     var mySelectLayerView = new setupChannelManageSelectView.SelectLayerView({
                         collection: this.collection,
-                        domainArray: this.domainArray
+                        domainArray: this.domainArray,
+                        applicationType: checkedList[0].get("applicationType")
                     });
                     var options = {
                         title: "选择分层策略",
@@ -197,6 +219,64 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     }
                     this.selectLayerPopup = new Modal(options);
                 }.bind(this));
+            },
+
+            onClickMultiCancelLayer: function() {
+                require(["setupChannelManage.select.view"], function(setupChannelManageSelectView) {
+                    var checkedList = this.collection.filter(function(model) {
+                        return model.get("isChecked") === true;
+                    });
+
+                    this.domainArray = [];
+                    _.each(checkedList, function(el, index, ls) {
+                        this.domainArray.push({
+                            domain: el.get("domain"),
+                            version: el.get("version"),
+                            description: el.get("description"),
+                            id: el.get("id")
+                        });
+                    }.bind(this))
+
+                    if (this.confirmCancelPopup) $("#" + this.confirmCancelPopup.modalId).remove();
+
+                    var myConfirmCancelView = new setupChannelManageSelectView.CancelLayerView({
+                        collection: this.collection,
+                        domainArray: this.domainArray,
+                        applicationType: checkedList[0].get("applicationType")
+                    });
+                    var options = {
+                        title: "请确认",
+                        body: myConfirmCancelView,
+                        backdrop: 'static',
+                        type: 2,
+                        onOKCallback: function() {
+                            var ids = _.map(this.domainArray, function(el){
+                                return el.id
+                            }.bind(this)).join(",");
+                            this.collection.off("get.hasBindingRule.success");
+                            this.collection.off("get.hasBindingRule.error");
+                            this.collection.on("get.hasBindingRule.success", $.proxy(this.onGetHasBindingRule, this));
+                            this.collection.on("get.hasBindingRule.error", $.proxy(this.onGetError, this));
+                            this.collection.hasBindingRule({originIds: ids})
+                        }.bind(this),
+                        onHiddenCallback: function() {
+                            this.enterKeyBindQuery();
+                        }.bind(this)
+                    }
+                    this.confirmCancelPopup = new Modal(options);
+                }.bind(this));
+            },
+
+            onGetHasBindingRule: function(){
+                this.confirmCancelPopup.$el.modal("hide");
+                var ids = _.map(this.domainArray, function(el){
+                    return el.id
+                }.bind(this)).join(",");
+                this.collection.off("get.delTopologyRuleList.success");
+                this.collection.off("get.delTopologyRuleList.error");
+                this.collection.on("get.delTopologyRuleList.success", $.proxy(this.onAddChannelLayerSuccess, this));
+                this.collection.on("get.delTopologyRuleList.error", $.proxy(this.onGetError, this));
+                this.collection.delTopologyRuleList({originIds: ids})
             },
 
             showDisablePopup: function(msg) {
@@ -394,9 +474,11 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 if (checkedList.length === 0) {
                     this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
                     this.$el.find(".multi-modify-layer").attr("disabled", "disabled");
+                    this.$el.find(".multi-cancel-layer").attr("disabled", "disabled");
                 } else {
                     this.$el.find(".multi-modify-topology").removeAttr("disabled", "disabled");
                     this.$el.find(".multi-modify-layer").removeAttr("disabled", "disabled");
+                    this.$el.find(".multi-cancel-layer").removeAttr("disabled", "disabled");
                 }
             },
 
@@ -410,9 +492,11 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 if (eventTarget.checked) {
                     this.$el.find(".multi-modify-topology").removeAttr("disabled", "disabled");
                     this.$el.find(".multi-modify-layer").removeAttr("disabled", "disabled");
+                    this.$el.find(".multi-cancel-layer").removeAttr("disabled", "disabled");
                 } else {
                     this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
                     this.$el.find(".multi-modify-layer").attr("disabled", "disabled");
+                    this.$el.find(".multi-cancel-layer").attr("disabled", "disabled");
                 }
             },
 

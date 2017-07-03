@@ -7,7 +7,6 @@ define("react.modal.alert", ['require', 'exports'],
 
             componentDidMount: function() {
                 var timeout = parseInt(this.props.timeout);
-                console.log(timeout)
                 if (timeout < 0) return;
                 this.timerID = setTimeout(function(){
                     this.setState({ showModal: false });

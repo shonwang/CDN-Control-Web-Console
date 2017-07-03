@@ -478,7 +478,7 @@ define("utility", ['require','exports'], function(require, exports) {
                     backdrop: false,
                     message: message || "Hello world!",
                     type: type || 'danger',
-                    timeout: timeout || 3000
+                    timeout: timeout || -1
                 });
                 ReactDOM.unmountComponentAtNode($("#react-modal").get(0))
                 ReactDOM.render(reactModalAlertView, $("#react-modal").get(0));

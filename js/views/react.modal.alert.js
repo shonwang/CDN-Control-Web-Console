@@ -7,6 +7,7 @@ define("react.modal.alert", ['require', 'exports'],
 
             componentDidMount: function() {
                 var timeout = parseInt(this.props.timeout);
+                console.log(timeout)
                 if (timeout < 0) return;
                 this.timerID = setTimeout(function(){
                     this.setState({ showModal: false });
@@ -30,11 +31,16 @@ define("react.modal.alert", ['require', 'exports'],
                 this.setState({ showModal: true });
             },
 
+            createMarkup: function(){
+                 return {__html: this.props.message}; 
+            },
+
             render: function() {
                 var reactModalAlert = (
                             React.createElement(Modal, {show: this.state.showModal, onHide: this.close, backdrop: this.props.backdrop}, 
                                 React.createElement(Alert, {bsStyle: this.props.type, onDismiss: this.close, style: {marginBottom: 0}}, 
-                                    React.createElement("strong", {className: "glyphicon glyphicon-info-sign"}), this.props.message
+                                    React.createElement("strong", {className: "glyphicon glyphicon-info-sign"}), 
+                                    React.createElement("span", {dangerouslySetInnerHTML: this.createMarkup()})
                                 )
                             )
                         );

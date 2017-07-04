@@ -1548,7 +1548,8 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 onOKCallback:function(){
                     var options = this.editNodeView.getArgs();
                     if (!options) return;
-                    this.collection.updateNode(options);
+                    var args = _.extend(model.attributes, options)
+                    this.collection.updateNode(args);
                     this.showList();
                     if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
                 }.bind(this)

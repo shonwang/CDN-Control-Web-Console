@@ -1250,6 +1250,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 body : ipManageView,
                 backdrop : 'static',
                 type     : 1,
+                width: 700,
                 onOKCallback:  function(){},
                 onHiddenCallback: function(){
                     if (AUTH_OBJ.QueryHost) this.enterKeyBindQuery();

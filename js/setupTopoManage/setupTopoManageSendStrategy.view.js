@@ -288,7 +288,7 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
             console.log('编辑情况下过滤掉所有步骤节点后剩余的节点: ', remainderNodes);
             var lastStep = this.defaultParam.deliveryStrategyDef[this.defaultParam.deliveryStrategyDef.length - 1];
             if (lastStep.range === 1)
-                lastStep.nodeId = lastStep.nodeId.concat(remainderNodes)
+                lastStep.nodeId = _.uniq(lastStep.nodeId.concat(remainderNodes));
 
             this.initNodeName();
             this.initStepTable();

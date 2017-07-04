@@ -1019,6 +1019,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 body : addDeviceView,
                 backdrop : 'static',
                 type     : 2,
+                width : 700,
                 onOKCallback:  function(){
                     var options = addDeviceView.getArgs();
                     if (!options) return;

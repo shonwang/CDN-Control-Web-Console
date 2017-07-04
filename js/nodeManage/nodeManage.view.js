@@ -148,7 +148,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 //longitudeLatitude = this.$el.find('#input-longitude-latitude').val(),
                 outzabname = this.$el.find('#input-outzabname').val().replace(/\s+/g, ""),//出口带宽zabbix名称
                 inzabname = this.$el.find("#input-inzabname").val().replace(/\s+/g, ""),//入口带宽zabbix名称
-                re = /^\d+$/,
+                re = /^[0-9]+(.[0-9]+)?$/,
                 outzabnameRe = /^[0-9A-Za-z\-\[\]\_]+$/,
                 letterRe = /[A-Za-z]+/,
                 reLocation = /^\d+(\.\d+)?----\d+(\.\d+)?$/;

@@ -14,8 +14,8 @@
         <th>保底带宽阈值</th>  
         <th>入口带宽zabbix名称</th> 
         <th>出口带宽zabbix名称</th> 
+		<th>计费类型</th>
         <th>状态</th>
-        <th>计费类型</th>
         <th>开始计费时间</th> 
         <th>创建时间</th>
         <th>操作</th>   
@@ -45,8 +45,8 @@
               <td><%=data[i].attributes["minBandwidthThreshold"]%></td>
               <td><%=data[i].attributes["inZabName"]%></td>
               <td><%=data[i].attributes["outZabName"]%></td>
+			  <td><%=data[i].attributes["chargingTypeName"]%></td>
               <td><%=data[i].attributes["statusName"]%></td>
-              <td><%=data[i].attributes["chargingTypeName"]%></td>
               <td><%=data[i].attributes["startChargingTimeFormated"]%></td>
               <td><%=data[i].attributes["createTimeFormated"]%></td>
               <td>
@@ -114,11 +114,12 @@
 				  <td><%=data[i].attributes["rsNodeCorpDtos"][0]["minBandwidthThreshold"]%></td>
 				  <td><%=data[i].attributes["rsNodeCorpDtos"][0]["inZabName"]%></td>
 				  <td><%=data[i].attributes["rsNodeCorpDtos"][0]["outZabName"]%></td>
+				  <td><%=data[i].attributes["rsNodeCorpDtos"][0]["chargingTypeName"]%></td>
 			  <%}else{%>
-				<td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td>
+				<td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td>
 			  <%}%>
+			  <!--td rowspan="<%=data[i].attributes['rsNodeCorpDtos'].length%>"><%=data[i].attributes["chargingTypeName"]%></td-->
               <td rowspan="<%=data[i].attributes['rsNodeCorpDtos'].length%>"><%=data[i].attributes["statusName"]%></td>
-              <td rowspan="<%=data[i].attributes['rsNodeCorpDtos'].length%>"><%=data[i].attributes["chargingTypeName"]%></td>
               <td rowspan="<%=data[i].attributes['rsNodeCorpDtos'].length%>"><%=data[i].attributes["startChargingTimeFormated"]%></td>
               <td rowspan="<%=data[i].attributes['rsNodeCorpDtos'].length%>"><%=data[i].attributes["createTimeFormated"]%></td>
               <td rowspan="<%=data[i].attributes['rsNodeCorpDtos'].length%>">
@@ -171,6 +172,7 @@
 				<td><%=data[i].attributes["rsNodeCorpDtos"][j].minBandwidthThreshold%></td>
 				<td><%=data[i].attributes["rsNodeCorpDtos"][j].inZabName%></td>
 				<td><%=data[i].attributes["rsNodeCorpDtos"][j].outZabName%></td>
+				<td><%=data[i].attributes["rsNodeCorpDtos"][j].chargingTypeName%></td>
 			</tr>
 			<%}%>
 		</tbody>

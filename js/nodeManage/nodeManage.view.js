@@ -429,6 +429,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             var obj={
                 type:options.type,
                 name:this.model.attributes.name || "---",
+                chName:this.model.attributes.chName || "---",
                 operator:this.model.attributes.operator || "---",
                 updateTime:this.model.attributes.updateTimeFormated || "---",
                 opRemark:this.model.attributes.opRemark || "---",
@@ -1377,10 +1378,27 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             this.$el.find(".node-manage-list-pannel").hide();
         },
 
+        nameList : {
+            1: "95峰值",
+            2: "包端口",
+            3: "峰值",
+            4: "第三峰"
+        },
+
         initTable: function() {
+            var nameList = this.nameList;
             this.$el.find(".opt-ctn .multi-delete").attr("disabled", "disabled");
             this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
             this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
+            _.each(this.collection.models,function(item){
+                var _rsNodeCorpDtos = item.attributes.rsNodeCorpDtos && item.attributes.rsNodeCorpDtos.length > 0 && item.attributes.rsNodeCorpDtos || null;
+                if(_rsNodeCorpDtos){
+                    _.each(_rsNodeCorpDtos,function(i){
+                        i.chargingTypeName = nameList[i.chargingType];
+                    })
+                }
+            })
+            console.log(this.collection.models);
             this.table = $(_.template(template['tpl/nodeManage/nodeManage.table.html'])({
                 data: this.collection.models,
                 permission: AUTH_OBJ

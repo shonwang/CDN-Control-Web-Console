@@ -4,6 +4,56 @@ define("liveBackOriginDetection.view", ['require','exports', 'template', 'modal.
     var LiveBackOriginDetectionView = BackOriginDetectionView.extend({
         events: {},
 
+        initOriginSetup: function(){
+            
+            var backOriginSetupType = this.$el.find('.setup .backOriginSetupType');
+            var requestWay = this.$el.find('.way #requestWay');
+            var detectionFile = this.$el.find(".way #detectionFile");
+            var setupHost = this.$el.find(".host #setupHost");
+            var responseState =  this.$el.find(".state #responseState");
+            var detectionFrequency = this.$el.find(".frequency #detectionFrequency");
+            
+            if (this.defaultParam.flag === 1){
+                backOriginSetupType.bootstrapSwitch('state',true);
+            } else if (this.defaultParam.flag === 0) {
+                backOriginSetupType.bootstrapSwitch('state',false);
+                detectionFile.attr('readonly','readonly');
+                setupHost.attr('readonly','readonly');
+            }
+
+            detectionFile.val(this.defaultParam.detectUrl);
+            setupHost.val(this.defaultParam.host);
+            responseState.val(this.defaultParam.expectedResponse);
+            detectionFrequency.val(this.defaultParam.frequency);
+            
+            requestWay.attr('disabled','disabled');
+            responseState.attr('readonly','readonly');
+            detectionFrequency.attr('readonly','readonly');
+
+            this.initOriginTypeDropdown();
+        },
+
+        initOriginTypeDropdown: function(){
+            var  baseArray = [
+                {name: "HEAD", value: "HEAD"},
+                // {name: "GET", value: "GET"},
+                // {name: "POST", value: "POST"}
+            ],
+            rootNode = this.$el.find(".way .way-type");
+            Utility.initDropMenu(rootNode, baseArray, function(value){
+                this.defaultParam.detectMethod = value;
+            }.bind(this));
+
+            var defaultValue = _.find(baseArray, function(object){
+                return object.value === this.defaultParam.detectMethod;
+            }.bind(this));
+
+            if (defaultValue)
+                this.$el.find(".way #requestWay .cur-value").html(defaultValue.name);
+            else
+                this.$el.find(".way #requestWay .cur-value").html(baseArray[0].name);
+        },
+
         launchSendPopup: function(){
             require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
                 var mySaveThenSendView = new SaveThenSendView({

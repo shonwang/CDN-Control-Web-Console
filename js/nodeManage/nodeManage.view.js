@@ -182,6 +182,10 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 alert("保底带宽阈值：0-上联带宽");
                 return false;
             }
+            if(parseInt(minBandwidthThreshold)<parseInt(minBandwidth)){
+                alert("保底带宽阈值：只能>=保底带宽");
+                return false;
+            }
             if (!re.test(unitPrice)) {
                 alert("成本权值只能填入数字！");
                 return false;

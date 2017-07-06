@@ -401,16 +401,16 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
             // },
 
             addTopologyRuleSuccess: function() {
-                var result;
                 if (this.confCustomType === 1 || this.confCustomType === 2) {
-                    result = confirm("确定将域名放入待下发吗？");
+                    Utility.confirm("确定将域名放入待下发吗？", $.proxy(this.predelivery, this));
                 } else if (this.confCustomType === 3) {
-                    result = confirm("确定将域名放入待定制吗？");
+                    Utility.confirm("确定将域名放入待定制吗？",$.proxy(this.predelivery, this));
                 } else {
                     Utility.alerts('此域名的confCustomType为' + this.confCustomType + '无法待下发或者是待定制');
                 }
-                if (!result) return;
+            },
 
+            predelivery: function(){
                 var postParam = [{
                     domain: this.model.get("domain"),
                     version: this.model.get("version"),
@@ -422,12 +422,12 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                 this.collection.off("post.predelivery.error");
                 this.collection.on("post.predelivery.success", $.proxy(this.onPostPredelivery, this));
                 this.collection.on("post.predelivery.error", $.proxy(this.onGetError, this));
-                this.collection.predelivery(postParam)
+                this.collection.predelivery(postParam)                
             },
 
             onPostPredelivery: function(res) {
                 this.options.onSaveCallback && this.options.onSaveCallback();
-                Utility.alerts('操作成功', "success");
+                Utility.alerts('操作成功', "success", 3000);
                 if (this.confCustomType === 1)
                     window.location.hash = '#/setupSendWaitSend';
                 else if (this.confCustomType === 3)

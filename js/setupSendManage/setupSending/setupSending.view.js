@@ -66,7 +66,7 @@ define("setupSending.view", ['require', 'exports', 'template', 'modal.view', 'ut
         },
 
         onChannelTerminateSuccess: function() {
-            Utility.alerts("操作成功！", "success")
+            Utility.alerts("操作成功！", "success", 3000)
             this.update(this.target)
         },
 
@@ -74,7 +74,7 @@ define("setupSending.view", ['require', 'exports', 'template', 'modal.view', 'ut
             this.disablePopup && this.disablePopup.$el.modal('hide');
 
             setTimeout(function(){
-                Utility.alerts("操作成功！", "success")
+                Utility.alerts("操作成功！", "success", 3000)
                 this.update(this.target)
             }.bind(this), 500)
         },

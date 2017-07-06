@@ -87,12 +87,12 @@ define("setupSendWaitCustomize.view", ['require', 'exports', 'template', 'modal.
 
         onPublishSuccess: function() {
             this.disablePopup && this.disablePopup.$el.modal('hide');
-            alert("操作成功！");
+            Utility.alerts("操作成功！", "success", 3000);
             this.update(this.target)
         },
 
         onRollBackSuccess: function() {
-            alert("操作成功！");
+            Utility.alerts("操作成功！", "success", 3000);
             this.update(this.target)
         },
 

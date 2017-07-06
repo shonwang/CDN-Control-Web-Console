@@ -137,7 +137,7 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         rePublishSuccess:function(){
-            Utility.alerts("发布成功", "success");
+            Utility.alerts("发布成功", "success", 3000);
             this.onClickQueryButton();
         },
 

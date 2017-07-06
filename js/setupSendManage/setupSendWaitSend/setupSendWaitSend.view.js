@@ -58,7 +58,7 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
         },
 
         onRollBackSuccess: function() {
-            Utility.alerts("操作成功！", "success");
+            Utility.alerts("操作成功！", "success", 3000);
             this.update(this.target)
         },
 
@@ -138,7 +138,7 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
         onCreatTaskSuccess: function() {
             this.disablePopup && this.disablePopup.$el.modal('hide');
             setTimeout(function(){
-                Utility.alerts("创建任务成功！", "success");
+                Utility.alerts("创建任务成功！", "success", 3000);
                 this.update(this.target)
             }.bind(this), 500)
         },

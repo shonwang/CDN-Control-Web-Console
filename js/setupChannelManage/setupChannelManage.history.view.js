@@ -156,7 +156,7 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
             },
 
             onPostPredelivery: function() {
-                Utility.alerts("发布成功！", "success")
+                Utility.alerts("发布成功！", "success", 3000)
                 
                 if (this.model.get("confCustomType") === 1)
                     window.location.hash = '#/setupSendWaitSend';

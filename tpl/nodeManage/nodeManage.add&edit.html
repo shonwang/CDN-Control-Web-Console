@@ -4,13 +4,13 @@
 
 
 		<div class="form-group">
-			<label for="input-name" class="col-sm-4 control-label">名称</label>
+			<label for="input-name" class="col-sm-2 control-label">名称</label>
 			<div class="col-sm-6">
 				<input type="text" class="form-control" id="input-name" value="<%=data.chName%>">
 			</div>
 		</div>
 		<div class="form-group">
-			<label for="input-english" class="col-sm-4 control-label">英文缩写</label>
+			<label for="input-english" class="col-sm-2 control-label">英文缩写</label>
 			<div class="col-sm-6">
 				<input type="text" class="form-control" id="input-english" value="<%=data.name%>">
 			</div>
@@ -21,27 +21,23 @@
 			<strong>计费区域</strong>
 		</div>
 		<div class="form-group dropdown-continent">
-			<label for="dropdown-continent" class="col-sm-4 control-label">大洲</label>
-			<div class="dropdown col-sm-6">
+			<label class="col-sm-2 control-label">大洲</label>
+			<div class="dropdown col-sm-1">
 				<button class="btn btn-default dropdown-toggle" type="button" id="dropdown-continent" data-toggle="dropdown">
 					<span class="cur-value">加载中...</span>
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu"></ul>
 			</div>
-		</div>
-		<div class="form-group">
-			<label for="dropdown-country" class="col-sm-4 control-label">国家/地区</label>
-			<div class="dropdown col-sm-6 dropdown-country">
+			<label class="col-sm-2 control-label">国家/地区</label>
+			<div class="dropdown col-sm-1 dropdown-country">
 				<button class="btn btn-default" type="button" id="dropdown-country">
 					<span class="cur-value">加载中...</span>
 					<span class="caret"></span>
 				</button>
 			</div>
-		</div>
-		<div class="form-group dropdown-operator">
-			<label for="dropdown-operator" class="col-sm-4 control-label">运营商</label>
-			<div class="dropdown col-sm-6">
+			<label for="dropdown-operator" class="col-sm-1 control-label">运营商</label>
+			<div class="dropdown col-sm-1 dropdown-operator">
 				<button class="btn btn-default dropdown-toggle" type="button" id="dropdown-operator" data-toggle="dropdown">
 					<span class="cur-value">加载中...</span>
 					<span class="caret"></span>
@@ -51,24 +47,22 @@
 		</div>
 		<hr>
 		<div class="form-group">
-			<label for="dropdown-province" class="col-sm-4 control-label">省/州</label>
-			<div class="dropdown col-sm-3 dropdown-province">
+			<label for="dropdown-province" class="col-sm-2 control-label">省/州</label>
+			<div class="dropdown col-sm-2 dropdown-province">
 				<button class="btn btn-default" type="button" id="dropdown-province" style="width:170px">
 					<span class="cur-value">加载中...</span>
 					<span class="caret"></span>
 				</button>
 			</div>
-			<label for="dropdown-region" class="col-sm-2 control-label">大区</label>
-			<div class="dropdown col-sm-2 dropdown-region">
+			<label for="dropdown-region" class="col-sm-1 control-label">大区</label>
+			<div class="dropdown col-sm-1 dropdown-region">
 				<button class="btn btn-default" type="button" id="dropdown-region">
 					<span class="cur-value">加载中...</span>
 					<span class="caret"></span>
 				</button>
 			</div>
-		</div>
-		<div class="form-group">
-			<label for="dropdown-city" class="col-sm-4 control-label">城市</label>
-			<div class="dropdown col-sm-6 dropdown-city">
+			<label for="dropdown-city" class="col-sm-1 control-label">城市</label>
+			<div class="dropdown col-sm-1 dropdown-city">
 				<button class="btn btn-default" type="button" id="dropdown-city">
 					<span class="cur-value">加载中...</span>
 					<span class="caret"></span>
@@ -76,14 +70,13 @@
 			</div>
 		</div>
 		<div class="form-group">
-			<label for="input-longitude-latitude" class="col-sm-4 control-label">经纬度</label>
+			<label for="input-longitude-latitude" class="col-sm-2 control-label">经纬度</label>
 			<div class="col-sm-6">
 				<input type="text" class="form-control" id="input-longitude-latitude" value="" readonly="true">
 			</div>
 		</div>
-		<hr>
 		<div class="form-group">
-			<label for="input-start" class="col-sm-4 control-label">开始计费日期</label>
+			<label for="input-start" class="col-sm-2 control-label">开始计费日期</label>
 			<div class="col-sm-6">
 				<input type="text" class="form-control" id="input-start" readonly="true">
 			</div>
@@ -91,7 +84,7 @@
 		<hr>
 		<div id="isp-template">
 			<!--div class="form-group dropdown-charging">
-				<label for="dropdown-charging" class="col-sm-4 control-label">计费方式</label>
+				<label for="dropdown-charging" class="col-sm-2 control-label">计费方式</label>
 				<div class="dropdown col-sm-6">
 					<button class="btn btn-default dropdown-toggle" type="button" id="dropdown-charging" data-toggle="dropdown">
 						<span class="cur-value">加载中...</span>
@@ -101,56 +94,56 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="input-start" class="col-sm-4 control-label">开始计费日期</label>
+				<label for="input-start" class="col-sm-2 control-label">开始计费日期</label>
 				<div class="col-sm-6">
 					<input type="text" class="form-control" id="input-start" readonly="true">
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="input-maxbandwidth" class="col-sm-4 control-label">上联带宽</label>
+				<label for="input-maxbandwidth" class="col-sm-2 control-label">上联带宽</label>
 				<div class="col-sm-6">
 					<input type="text" class="form-control" id="input-maxbandwidth" value="<%=data.maxBandwidth%>" placeholder="单位: Gbps">
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="input-minbandwidth" class="col-sm-4 control-label">保底带宽</label>
+				<label for="input-minbandwidth" class="col-sm-2 control-label">保底带宽</label>
 				<div class="col-sm-6">
 					<input type="text" class="form-control" id="input-minbandwidth" value="<%=data.minBandwidth%>" placeholder="单位: Gbps">
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="input-threshold" class="col-sm-4 control-label">上联带宽阈值</label>
+				<label for="input-threshold" class="col-sm-2 control-label">上联带宽阈值</label>
 				<div class="col-sm-6">
 					<input type="text" class="form-control" id="input-threshold" value="<%=data.maxBandwidthThreshold%>" placeholder="单位: Gbps">
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="input-minthreshold" class="col-sm-4 control-label">保底带宽阈值</label>
+				<label for="input-minthreshold" class="col-sm-2 control-label">保底带宽阈值</label>
 				<div class="col-sm-6">
 					<input type="text" class="form-control" id="input-minthreshold" value="<%=data.minBandwidthThreshold%>" placeholder="单位: Gbps">
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="input-unitprice" class="col-sm-4 control-label">成本权值</label>
+				<label for="input-unitprice" class="col-sm-2 control-label">成本权值</label>
 				<div class="col-sm-6">
 					<input type="text" class="form-control" id="input-unitprice" value="<%=data.unitPrice%>">
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="input-outzabname" class="col-sm-4 control-label">出口带宽zabbix名称</label>
+				<label for="input-outzabname" class="col-sm-2 control-label">出口带宽zabbix名称</label>
 				<div class="col-sm-6">
 					<input type="text" class="form-control" id="input-outzabname" value="<%=data.outZabName%>">
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="input-inzabname" class="col-sm-4 control-label">入口带宽zabbix名称</label>
+				<label for="input-inzabname" class="col-sm-2 control-label">入口带宽zabbix名称</label>
 				<div class="col-sm-6">
 					<input type="text" class="form-control" id="input-inzabname" value="<%=data.inZabName%>">
 				</div>
 			</div-->
 		</div>
 		<div class="form-group">
-			<label for="textarea-comment" class="col-sm-4 control-label">备注</label>
+			<label for="textarea-comment" class="col-sm-2 control-label">备注</label>
 			<div class="col-sm-6">
 				<textarea class="form-control" rows="3" id="textarea-comment"><%=data.remark%></textarea>
 			</div>

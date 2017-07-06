@@ -80,9 +80,9 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("网络阻塞，请刷新重试！")
         },
 
         render: function(target) {
@@ -361,7 +361,7 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
                 this.disablePopup&&this.disablePopup.$el.modal('hide');
             }
             this.onClickQueryButton();
-            alert("跳过成功")
+            Utility.alerts("跳过成功！", "success", 3000)
             this.onClickQueryButton();
         },
 
@@ -449,9 +449,9 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
 
         onGetSkipError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("网络阻塞，请刷新重试！")
             if (this.isMultiSkip) {
                 this.isMultiSkip = false;
                 this.disablePopup&&this.disablePopup.$el.modal('hide');
@@ -461,9 +461,9 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("网络阻塞，请刷新重试！")
         },
 
         render: function(target) {

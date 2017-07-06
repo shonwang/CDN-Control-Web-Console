@@ -59,7 +59,7 @@ define("sharedSetup.detail.view", ['require', 'exports', 'template', 'modal.view
             },
 
             onSetConfigSharedGroupSuccess: function(){
-                Utility.alerts("操作成功！", "success");
+                Utility.alerts("操作成功！", "success", 3000);
                 this.onClickBackBtn();
             },
 

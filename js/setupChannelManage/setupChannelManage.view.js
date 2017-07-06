@@ -249,7 +249,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
             onPostPredelivery: function() {
                 this.disablePopup && this.disablePopup.$el.modal('hide');
-                Utility.alerts("批量操作成功！", "success")
+                Utility.alerts("批量操作成功！", "success", 3000)
 
                 window.location.hash = '#/setupSendWaitSend';
             },

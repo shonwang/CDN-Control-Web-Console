@@ -257,7 +257,7 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                 },
 
                 onGetPublishSuccess: function(){
-                    Utility.alerts("操作成功！", 'success');
+                    Utility.alerts("操作成功！", 'success', 3000);
                 },
 
                 getViewFromData: function(data, isDiff){

@@ -274,6 +274,15 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
                 this.mySetupSendWaitCustomizeModel.on("set.channel.config.success", $.proxy(this.onSaveComment, this));
                 this.mySetupSendWaitCustomizeModel.on("set.channel.config.error", $.proxy(this.onGetError, this));
                 if (this.applicationType !== 203) {
+                    var tempCount = 0;
+                    _.each(ngPostParam, function(el){
+                        if (el.content !== "") tempCount += 1;
+                    }.bind(this))
+                    if (tempCount !== ngPostParam.length && tempCount !== 0) {
+                        Utility.alerts("定制化配置文件上中下层需要全部填写完整配置，不能某一层为空！")
+                        return;
+                    }
+
                     this.mySetupSendWaitCustomizeModel.setChannelNgConfig(ngPostParam)
                 } else {
                     try {

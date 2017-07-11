@@ -18,31 +18,33 @@
         <p>涉及的域名</p>
         <div class="domain-ctn"></div>
     </div>
-    <hr>
-    <div>
-        <p>选择<%=data.name%></p>
-        <% if (data.name === "分层策略") { %>        
-        <input type="text" class="form-control" id="input-layer" placeholder="搜索">
+    <div class="topo-layer-ctn">
         <hr>
-        <% } %>
-        <div class="table-ctn table-responsive long-dropdown-menu"></div>
-    </div>
-    <% if (data.name === "拓扑关系") { %>
-    <div>
-        <hr>
-        <div class="form-horizontal">
-            <div class="form-group">
-                <label for="modify-host" class="col-sm-4 control-label">同时修改分层策略</label>
-                <div class="col-sm-4 layer-toggle">
-                    <div class="togglebutton" style="padding-top:5px;margin-right:0;">
-                        <label>
-                            <input type="checkbox"><span class="toggle"></span>
-                        </label>
+        <div>
+            <p>选择<%=data.name%></p>
+            <% if (data.name === "分层策略") { %>        
+            <input type="text" class="form-control" id="input-layer" placeholder="搜索">
+            <hr>
+            <% } %>
+            <div class="table-ctn table-responsive long-dropdown-menu"></div>
+        </div>
+        <% if (data.name === "拓扑关系") { %>
+        <div>
+            <hr>
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label for="modify-host" class="col-sm-4 control-label">同时修改分层策略</label>
+                    <div class="col-sm-4 layer-toggle">
+                        <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                            <label>
+                                <input type="checkbox"><span class="toggle"></span>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
+            <div class="layer-ctn" style="display:none"></div>
         </div>
-        <div class="layer-ctn" style="display:none"></div>
+        <% } %>
     </div>
-    <% } %>
 </div>

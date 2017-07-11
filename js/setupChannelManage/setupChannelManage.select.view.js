@@ -27,7 +27,7 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                         name: null,
                         page: 1,
                         size: 99999,
-                        type: null
+                        type: this.options.applicationType
                     });
                 }.bind(this))
             },
@@ -127,7 +127,7 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                         name: null,
                         page: 1,
                         size: 99999,
-                        type: null
+                        type: this.options.applicationType
                     });
                 }.bind(this))
             },
@@ -137,7 +137,8 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                 this.$el.find(".layer-toggle .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
                 var mySelectLayerView = new SelectLayerView({
                     collection: this.collection,
-                    domainArray: this.domainArray
+                    domainArray: this.domainArray,
+                    applicationType: this.options.applicationType
                 });
 
                 mySelectLayerView.$el.find(".domain-list").remove()
@@ -226,6 +227,47 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
             }
         });
 
+        var CancelLayerView = Backbone.View.extend({
+            events: {},
+
+            initialize: function(options) {
+                this.options = options;
+                this.collection = options.collection;
+                this.domainArray = options.domainArray;
+
+                this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({
+                    data: {
+                        name: "解除关联分层策略"
+                    }
+                }));
+
+                this.initDomainList();
+                this.$el.find(".topo-layer-ctn").remove();
+            },
+
+            initDomainList: function() {
+                this.domainList = $(_.template(template['tpl/setupSendManage/setupSending/setupSending.detail.domain.html'])({
+                    data: this.domainArray,
+                }));
+                if (this.domainArray.length !== 0)
+                    this.$el.find(".domain-ctn").html(this.domainList[0]);
+                else
+                    this.$el.find(".domain-ctn").html(_.template(template['tpl/empty.html'])());
+            },
+
+            onGetError: function(error) {
+                if (error && error.message)
+                    alert(error.message)
+                else
+                    alert("网络阻塞，请刷新重试！")
+            },
+
+            render: function(target) {
+                this.$el.appendTo(target);
+            }
+        });
+
         exports.SelectLayerView = SelectLayerView;
         exports.SelectTopoView = SelectTopoView;
+        exports.CancelLayerView = CancelLayerView;
     });

@@ -274,6 +274,7 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 this.$el.find("input[name=radio-port]").on("click", $.proxy(this.onRadioPortChange, this))
 
                 this.setDropdownMenu();
+                console.log(this.args)
             },
 
             onRadioPortChange: function(event) {
@@ -575,6 +576,8 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     this.$el.find(".cdn-originIP").hide();
                     this.$el.find(".cdn-originAddress").hide();
                     this.$el.find(".cdn-originKsVideo").show();
+                    if (this.$el.find(".cdn-originKsVideo input").val() === "")
+                        this.$el.find(".cdn-originKsVideo input").val(this.args.DomainName + ".live-orig.ks-cdn.com")
                 }
 
                 if (originType == "ipaddr" || originType == "domain") {
@@ -596,6 +599,8 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
 
                 this.$el.find(".non-rtmp").hide();
                 this.$el.find(".origin-protocol").hide();
+
+                console.log(this.args)
             },
 
             checkOrigin: function() {
@@ -728,7 +733,7 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     this.$el.find(".cdn-originAddress").hide();
                     this.$el.find(".cdn-originKsVideo").show();
                     if (this.$el.find(".cdn-originKsVideo input").val() === "")
-                        this.$el.find(".cdn-originKsVideo input").val("uplive-orig.ks-cdn.com")
+                        this.$el.find(".cdn-originKsVideo input").val(this.args.DomainName + ".uplive-orig.ks-cdn.com")
                 }
 
                 if (originType == "ipaddr" || originType == "domain") {
@@ -933,6 +938,7 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                         return false;
                     }
                     this.$el.find("#cdn-type-error").hide();
+                    this.args.DomainName = this.$el.find("#text-domainName").val();
                     if (cdnType == "download") {
                         this.downloadAndLiveView = new AddDownloadView({
                             collection: this.collection,

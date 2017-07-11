@@ -97,7 +97,7 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
             responseState.val(this.defaultParam.expectedResponse);
             detectionFrequency.val(this.defaultParam.frequency);
             
-            requestWay.attr('disabled','disabled');
+            //requestWay.attr('disabled','disabled');
             responseState.attr('readonly','readonly');
             detectionFrequency.attr('readonly','readonly');
 
@@ -107,8 +107,8 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
         initOriginTypeDropdown: function(){
             var  baseArray = [
                 {name: "HEAD", value: "HEAD"},
-                /*{name: "GET", value: "GET"},
-                {name: "POST", value: "POST"}*/
+                {name: "GET", value: "GET"},
+                // {name: "POST", value: "POST"}
             ],
             rootNode = this.$el.find(".way .way-type");
             Utility.initDropMenu(rootNode, baseArray, function(value){

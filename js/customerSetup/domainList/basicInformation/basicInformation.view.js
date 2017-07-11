@@ -33,6 +33,7 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
                     myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
             }.bind(this))
         },
+
         onGetDomainInfo: function(data){
             this.defaultParam = {
                 originId:this.domainInfo.id,
@@ -50,6 +51,7 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
 
             this.initSetup();
         },
+
         initSetup: function(){
             var confCustomType = this.$el.find(".Remarks-type");
             var Standard = this.$el.find(".Remarks-type #Standard");
@@ -70,6 +72,7 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
 
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
         },
+
         onClickRadio: function(event){
             var target = event.target || event.srcElement;
             if(target.tagName != 'INPUT') return;
@@ -85,6 +88,7 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
 
             this.defaultParam.confCustomType = value;
         },
+        
         onClickSaveButton: function(){
             this.defaultParam.description = this.$el.find("#Remarks").val();
             this.collection.modifyDomainBasic(this.defaultParam);

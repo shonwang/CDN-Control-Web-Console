@@ -41,6 +41,21 @@ define("saveThenSend.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onSendSuccess: function(res) {
+            var message = "";
+            if (res.mainDomain) {
+                this.modalRoot.modal('hide');
+                message = "域名" + this.options.domainInfo.domain + "存在共享配置，此操作只能修改回源配置，" + 
+                          "如需要修改nginx配置请发布共享配置组中的主域名" + res.mainDomain + "，是否确定执行修改回源配置的操作。"
+                Utility.confirm(message, function(){
+                    this.excutePreDelivery(res);
+                }.bind(this))
+            } else {
+                this.excutePreDelivery(res)
+            }
+
+        },
+
+        excutePreDelivery: function(res){
             require(["setupChannelManage.model"], function(SetupChannelManageModel){
                 this.mySetupChannelManageModel = new SetupChannelManageModel();
 
@@ -60,7 +75,7 @@ define("saveThenSend.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onPostPredelivery: function(){
-            alert("配置已发布，生成配置文件后将进入待下发阶段!")
+            Utility.alerts("配置已发布，生成配置文件后将进入待下发阶段!", "success", 3000)
             this.options.onSendSuccess && this.options.onSendSuccess();
         },
 
@@ -70,14 +85,13 @@ define("saveThenSend.view", ['require','exports', 'template', 'modal.view', 'uti
             this.modalRoot.find(".ok").remove();
             this.modalRoot.find(".cancel").remove();
             this.modalRoot.find(".close").remove();
-
         },
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("网络阻塞，请刷新重试！")
             this.options.onSendSuccess && this.options.onSendSuccess();
         },
 

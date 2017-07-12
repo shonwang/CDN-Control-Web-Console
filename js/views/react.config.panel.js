@@ -258,6 +258,7 @@ define("react.config.panel", ['require', 'exports', 'utility'],
 
                 onGetPublishSuccess: function(){
                     Utility.alerts("操作成功！", 'success', 3000);
+                    window.location.hash = '#/setupSendWaitSend';
                 },
 
                 getViewFromData: function(data, isDiff){

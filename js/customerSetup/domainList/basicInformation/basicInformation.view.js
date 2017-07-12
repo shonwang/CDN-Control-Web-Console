@@ -33,6 +33,7 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
                     myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
             }.bind(this))
         },
+
         onGetDomainInfo: function(data){
             this.defaultParam = {
                 originId:this.domainInfo.id,
@@ -48,9 +49,10 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
                 this.defaultParam.description = data.originDomain.description;
             }
 
-            this.initSetup();
+            this.initSetup(data);
         },
-        initSetup: function(){
+
+        initSetup: function(data){
             var confCustomType = this.$el.find(".Remarks-type");
             var Standard = this.$el.find(".Remarks-type #Standard");
             var Customization = this.$el.find(".Remarks-type #Customization");
@@ -65,11 +67,17 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
             
             description.val(this.defaultParam.description);
 
+            var isYigouText = data.originDomain&&data.originDomain.hasDifConfig,
+                isSharedText =  data.originDomain&&data.originDomain.hasSharedConfig;
+            this.$el.find(".is-yigou").html(isYigouText ? "是" : "否");
+            this.$el.find(".is-shared").html(isSharedText ? "是" : "否");
+
             this.$el.find(".Remarks-type").on('click',$.proxy(this.onClickRadio,this));
             this.$el.find(".save").on('click',$.proxy(this.onClickSaveButton,this));
 
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
         },
+
         onClickRadio: function(event){
             var target = event.target || event.srcElement;
             if(target.tagName != 'INPUT') return;
@@ -85,6 +93,7 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
 
             this.defaultParam.confCustomType = value;
         },
+        
         onClickSaveButton: function(){
             this.defaultParam.description = this.$el.find("#Remarks").val();
             this.collection.modifyDomainBasic(this.defaultParam);

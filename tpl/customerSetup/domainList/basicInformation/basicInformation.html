@@ -4,9 +4,10 @@
     <div class="well" >
         <div class="row">
             <div class="col-sm-12">
-                <form>
+                <form class="form-horizontal">
                    <div class="form-group">
-                       <div class="Remarks-type">
+                       <label class="col-sm-3 control-label">域名配置类型</label>
+                       <div class="Remarks-type col-sm-3">
                           <label class="radio-inline">
                             <input type="radio" name="remarksRadio" id="Standard" value="1" checked> 标准配置
                           </label>
@@ -15,13 +16,29 @@
                           </label>
                        </div>
                   </div>
+                  <div class="form-group">
+                      <label class="col-sm-3 control-label">是否存在异构配置</label>
+                      <div class="col-sm-3">
+                        <p class="form-control-static is-yigou">加载中...</p>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label class="col-sm-3 control-label">是否存在共享配置</label>
+                      <div class="col-sm-3">
+                        <p class="form-control-static is-shared">加载中...</p>
+                      </div>
+                  </div>
                    <div class="form-group margin-top40">
-                      <label for="Remarks">添加备注:</label>
-                      <textarea class="form-control" rows="8" id="Remarks" placeholder="请添加配置信息" style="width:50%;"></textarea>
+                      <label for="Remarks" class="col-sm-3 control-label">添加备注:</label>
+                      <div class="col-sm-8">
+                        <textarea class="form-control" rows="8" id="Remarks" placeholder="请添加配置信息" style="width:50%;"></textarea>
+                      </div>
                   </div>
                   <hr>
                    <div class="form-group">
-                       <a href="javascript:void(0)" class="btn btn-primary save"><span class="glyphicon glyphicon-save"></span>保存</a>
+                      <div class="col-sm-offset-3 col-sm-3">
+                        <a href="javascript:void(0)" class="btn btn-primary save"><span class="glyphicon glyphicon-save"></span>保存</a>
+                      </div>
                   </div>
                 </form>
             </div>

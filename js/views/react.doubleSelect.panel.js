@@ -107,7 +107,8 @@ define("react.doubleSelect.panel", ['require', 'exports'],
                     var collection = this.getCollection();
                     collection.getDomains({
                         "domain": this.state.keyword,
-                        "isCustom": true
+                        "isCustom": true,
+                        "type": 202
                     })
 
                     this.setState({

@@ -1153,3 +1153,8 @@ td .table {
     word-break: normal;
     white-space: normal;
 }
+
+.close {
+    font-size: 40px;
+    line-height: 0.5;
+}

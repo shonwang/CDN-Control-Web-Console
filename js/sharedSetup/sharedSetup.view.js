@@ -186,6 +186,7 @@ define("sharedSetup.view", ['require', 'exports', 'template', 'modal.view', 'uti
 
             onDeleteSuccess: function(){
                 Utility.alerts("操作成功", "success", 3000);
+                this.onClickQueryButton();
             },
 
             onClickItemToView: function(event, model) {

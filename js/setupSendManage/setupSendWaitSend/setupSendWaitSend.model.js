@@ -61,6 +61,17 @@ define("setupSendWaitSend.model", ['require','exports', 'utility'], function(req
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
+        checkdiff: function(args){
+            var url = BASE_URL + "/cd/diffcfg/domain/checkdiff",
+            successCallback = function(res){
+                this.trigger("check.diff.success", res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("check.diff.error", response); 
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
         rollBack: function(args){
             var url = BASE_URL + "/cd/predelivery/rollback",
             successCallback = function(res){

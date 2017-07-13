@@ -71,7 +71,8 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
             _.each(checkedList, function(el, index, ls) {
                 this.domainArray.push({
                     domain: el.get("domain"),
-                    id: el.get("id")
+                    id: el.get("id"),
+                    platformId: el.get("platformId")
                 });
             }.bind(this));
 
@@ -117,15 +118,13 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
                     backdrop: 'static',
                     type: type,
                     onOKCallback: function() {
-                        var result = mySelectStrategyView.onSure();
-                        if (!result) return;
-                        this.collection.off("create.task.success");
-                        this.collection.off("create.task.error");
-                        this.collection.on("create.task.success", $.proxy(this.onCreatTaskSuccess, this));
-                        this.collection.on("create.task.error", $.proxy(this.onGetError, this));
-                        this.collection.createTask(result);
-                        this.selectStrategyPopup.$el.modal('hide')
-                        this.showDisablePopup("服务器正在努力处理中...")
+                        this.createTaskParam = mySelectStrategyView.onSure();
+                        if (!this.createTaskParam) return;
+                        this.collection.off("check.diff.success");
+                        this.collection.off("check.diff.error");
+                        this.collection.on("check.diff.success", $.proxy(this.onCheckDiffSuccess, this));
+                        this.collection.on("check.diff.error", $.proxy(this.onGetError, this));
+                        this.collection.checkdiff(this.domainArray);
                     }.bind(this),
                     onHiddenCallback: function() {
                         this.enterKeyBindQuery();
@@ -133,6 +132,26 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
                 }
                 this.selectStrategyPopup = new Modal(options);
             }.bind(this))
+        },
+
+        onCheckDiffSuccess: function(data){
+            var message = data.diffdomain&&data.diffdomain.split(",").join('<br>');
+            if (!data.result){
+                message = message + "线上节点存在异构版本，本次下发将覆盖之前版本，是否确定进行下发！"
+                Utility.confirm(message, $.proxy(this.excuteCreatTask, this))
+            } else {
+                this.excuteCreatTask();
+            }
+        },
+
+        excuteCreatTask: function(){
+            this.collection.off("create.task.success");
+            this.collection.off("create.task.error");
+            this.collection.on("create.task.success", $.proxy(this.onCreatTaskSuccess, this));
+            this.collection.on("create.task.error", $.proxy(this.onGetError, this));
+            this.collection.createTask(this.createTaskParam);
+            this.selectStrategyPopup.$el.modal('hide')
+            this.showDisablePopup("服务器正在努力处理中...")
         },
 
         onCreatTaskSuccess: function() {

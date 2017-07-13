@@ -93,11 +93,15 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                     className: "nodes",
                     callback: $.proxy(this.onClickItemNodes, this),
                     name: "已下发节点"
-                }, {
-                    className: "edit",
-                    callback: $.proxy(this.onClickItemEdit, this),
-                    name: "编辑"
-                }]
+                }];
+
+                if (this.model.get("isMaster") !== 0) {
+                        operationList.push({
+                        className: "edit",
+                        callback: $.proxy(this.onClickItemEdit, this),
+                        name: "编辑"
+                    })
+                }
 
                 var ReactTableView = React.createFactory(ReactTableComponent);
                 var reactTableView = ReactTableView({

@@ -213,7 +213,8 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
 
                 this.domainArray = [{
                     domain: model.get("domain"),
-                    id: model.get("id")
+                    id: model.get("id"),
+                    platformId: model.get("platformId")
                 }];
 
                 this.currentModel = this.collection.get(id)

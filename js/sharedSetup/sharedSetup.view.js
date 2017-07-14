@@ -26,7 +26,7 @@ define("sharedSetup.view", ['require', 'exports', 'template', 'modal.view', 'uti
                     "domain": null,
                     "userId": null,
                     "page": 1,
-                    "size": 10
+                    "size": 1
                 }
                 this.onClickQueryButton();
                 this.initDeviceDropMenu();
@@ -186,6 +186,8 @@ define("sharedSetup.view", ['require', 'exports', 'template', 'modal.view', 'uti
 
             onDeleteSuccess: function(){
                 Utility.alerts("操作成功", "success", 3000);
+                if (this.collection.models.length === 1 && this.curPage > 1) 
+                    this.curPage -= 1
                 this.onClickQueryButton();
             },
 

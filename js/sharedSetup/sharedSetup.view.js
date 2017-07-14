@@ -26,7 +26,7 @@ define("sharedSetup.view", ['require', 'exports', 'template', 'modal.view', 'uti
                     "domain": null,
                     "userId": null,
                     "page": 1,
-                    "size": 10
+                    "size": 1
                 }
                 this.onClickQueryButton();
                 this.initDeviceDropMenu();
@@ -227,10 +227,11 @@ define("sharedSetup.view", ['require', 'exports', 'template', 'modal.view', 'uti
                 this.$el.find(".total-items span").html(this.collection.total)
                 if (this.collection.total <= this.queryArgs.size) return;
                 var total = Math.ceil(this.collection.total / this.queryArgs.size);
+
                 this.$el.find(".pagination").jqPaginator({
                     totalPages: total,
                     visiblePages: 10,
-                    page: this.curPage,
+                    currentPage: this.curPage,
                     onPageChange: function(num, type) {
                         if (type !== "init") {
                             ReactDOM.unmountComponentAtNode(this.$el.find(".table-ctn").get(0))

@@ -97,6 +97,12 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
                     id = $(eventTarget).attr("id");
                 var model = this.collection.get(id);
 
+                var status = model.get("status");
+                if (status === -1) {
+                    Utility.alerts("该域名已删除！");
+                    return;
+                }
+
                 require(['isomorphismManage.detail.view', 'isomorphismManage.detail.model'],
                     function(IsomorphismManageDetailView, IsomorphismManageDetailModel) {
                         var myIsomorphismManageDetailView = new IsomorphismManageDetailView({

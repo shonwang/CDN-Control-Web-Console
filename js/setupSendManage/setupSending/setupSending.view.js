@@ -24,6 +24,7 @@ define("setupSending.view", ['require', 'exports', 'template', 'modal.view', 'ut
 
             this.queryArgs = {
                 "name": null,
+                "domain": null,
                 "platformId": null,
                 "topologyId": null,
                 "deliveryStrategyDefId": null,
@@ -102,6 +103,8 @@ define("setupSending.view", ['require', 'exports', 'template', 'modal.view', 'ut
             this.queryArgs.page = 1;
             this.queryArgs.name = this.$el.find("#input-task-name").val().trim();
             if (this.queryArgs.name == "") this.queryArgs.name = null;
+            this.queryArgs.domain = this.$el.find("#input-domain").val().trim();
+            if (this.queryArgs.domain == "") this.queryArgs.domain = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
             this.collection.querySendingChannel(this.queryArgs);

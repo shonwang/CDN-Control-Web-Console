@@ -26,7 +26,7 @@ define("sharedSetup.view", ['require', 'exports', 'template', 'modal.view', 'uti
                     "domain": null,
                     "userId": null,
                     "page": 1,
-                    "size": 1
+                    "size": 10
                 }
                 this.onClickQueryButton();
                 this.initDeviceDropMenu();

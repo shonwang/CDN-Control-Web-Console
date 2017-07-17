@@ -95,13 +95,13 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                     name: "已下发节点"
                 }];
 
-                if (this.model.get("isMaster") !== 0) {
+                if ((this.model.get("isShare") === 0) || (this.model.get("isShare") === 1 && this.model.get("isMaster") === 1)) {
                         operationList.push({
                         className: "edit",
                         callback: $.proxy(this.onClickItemEdit, this),
                         name: "编辑"
                     })
-                }
+                } 
 
                 var ReactTableView = React.createFactory(ReactTableComponent);
                 var reactTableView = ReactTableView({

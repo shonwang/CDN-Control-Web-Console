@@ -104,6 +104,8 @@
   "urlBlackList.view": "customerSetup/domainList/urlBlackList/urlBlackList.view",
   "interfaceQuota.model": "customerSetup/interfaceQuota/interfaceQuota.model",
   "interfaceQuota.view": "customerSetup/interfaceQuota/interfaceQuota.view",
+  "pnoSetup.model": "customerSetup/pnoSetup/pnoSetup.model",
+  "pnoSetup.view": "customerSetup/pnoSetup/pnoSetup.view",
   "deviceManage.model": "deviceManage/deviceManage.model",
   "deviceManage.view": "deviceManage/deviceManage.view",
   "dispConfig.model": "dispConfig/dispConfig.model",
@@ -246,4 +248,4 @@ if (window.DEBUG === 1.1) {
     window.SOCKET.on('connect_error', function(){
         window.SOCKET.close();
     });
-}
+}

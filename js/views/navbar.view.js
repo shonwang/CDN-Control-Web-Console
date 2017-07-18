@@ -183,7 +183,8 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
                 data.errorCallBack&&data.errorCallBack(response, msg)
             }
 
-            $.ajax(defaultParas);
+            if (this.request) this.request.abort();
+            this.request = $.ajax(defaultParas);
         },
 
         render: function() {

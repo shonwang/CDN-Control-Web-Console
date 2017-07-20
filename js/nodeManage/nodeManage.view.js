@@ -1402,7 +1402,6 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     })
                 }
             })
-            console.log(this.collection.models);
             this.table = $(_.template(template['tpl/nodeManage/nodeManage.table.html'])({
                 data: this.collection.models,
                 permission: AUTH_OBJ

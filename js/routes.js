@@ -38,6 +38,7 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                 "domainList/:query": "domainList",
                 "blockUrl/:query": "blockUrl",
                 "interfaceQuota/:query": "interfaceQuota",
+                "pnoSetup/:query": "pnoSetup",
 
                 "domainList/:query/basicInformation/:query2": "basicInformation",
                 "domainList/:query/urlBlackList/:query2": "urlBlackList",
@@ -349,6 +350,12 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                             hash: 'index.html#/interfaceQuota/' + query,
                             active: false,
                             children: []
+                        },{
+                            id: 'customerSetup-pnoSetup',
+                            name: 'PNO列表配置',
+                            hash: 'index.html#/pnoSetup/' + query,
+                            active: false,
+                            children: []
                         }]
                     }],
                     menuOptions = {
@@ -477,9 +484,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.openAPILogSetupView = new OpenAPILogSetupView(options);
                         this.openAPILogSetupView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.openAPILogSetupView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.openAPILogSetupView;
                 }.bind(this));
             },
@@ -502,9 +509,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.liveUpFlowNameChangeView = new LiveUpFlowNameChangeView(options);
                         this.liveUpFlowNameChangeView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.liveUpFlowNameChangeView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveUpFlowNameChangeView;    
                 }.bind(this));
             },
@@ -527,9 +534,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.liveUpBackOriginSetupView = new LiveUpBackOriginSetupView(options);
                         this.liveUpBackOriginSetupView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.liveUpBackOriginSetupView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveUpBackOriginSetupView;    
                 }.bind(this));
             },
@@ -560,9 +567,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.liveUpBasicInformationView = new LiveUpBasicInformationView(options);
                         this.liveUpBasicInformationView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.liveUpBasicInformationView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveUpBasicInformationView;    
                 }.bind(this));
             },
@@ -1103,9 +1110,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.openNgxLogView = new OpenNgxLogView(options);
                         this.openNgxLogView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.openNgxLogView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.openNgxLogView;
                 }.bind(this));
             },
@@ -1129,9 +1136,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.timestampView = new TimestampView(options);
                         this.timestampView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.timestampView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.timestampView;
                 }.bind(this));
             },
@@ -1155,9 +1162,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.refererAntiLeechView = new RefererAntiLeechView(options);
                         this.refererAntiLeechView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.refererAntiLeechView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.refererAntiLeechView;
                 }.bind(this));
             },
@@ -1181,9 +1188,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.ipBlackWhiteListView = new IpBlackWhiteListView(options);
                         this.ipBlackWhiteListView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.ipBlackWhiteListView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.ipBlackWhiteListView;
                 }.bind(this));
             },
@@ -1206,9 +1213,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.requestArgsModifyView = new RequestArgsModifyView(options);
                         this.requestArgsModifyView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.requestArgsModifyView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.requestArgsModifyView;
                 }.bind(this));
             },
@@ -1232,9 +1239,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.httpHeaderCtrView = new HttpHeaderCtrView(options);
                         this.httpHeaderCtrView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.httpHeaderCtrView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.httpHeaderCtrView;
                 }.bind(this));
             },
@@ -1258,9 +1265,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.httpHeaderOptView = new HttpHeaderOptView(options);
                         this.httpHeaderOptView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.httpHeaderOptView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.httpHeaderOptView;
                 }.bind(this));
             },
@@ -1284,9 +1291,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.clientLimitSpeedView = new ClientLimitSpeedView(options);
                         this.clientLimitSpeedView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.clientLimitSpeedView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.clientLimitSpeedView;
                 }.bind(this));
             },
@@ -1310,9 +1317,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.dragPlayView = new DragPlayView(options);
                         this.dragPlayView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.dragPlayView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.dragPlayView;
                 }.bind(this));
             },
@@ -1335,9 +1342,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.following302View = new Following302View(options);
                         this.following302View.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.following302View.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.following302View;
                 }.bind(this));
             },
@@ -1360,9 +1367,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.backOriginDetectionView = new BackOriginDetectionView(options);
                         this.backOriginDetectionView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.backOriginDetectionView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.backOriginDetectionView;
                 }.bind(this));
             },
@@ -1385,9 +1392,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.backOriginSetupView = new BackOriginSetupView(options);
                         this.backOriginSetupView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.backOriginSetupView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.backOriginSetupView;
                 }.bind(this));
             },
@@ -1410,9 +1417,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.cnameSetupView = new CnameSetupView(options);
                         this.cnameSetupView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.cnameSetupView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.cnameSetupView;
                 }.bind(this));
             },
@@ -1435,9 +1442,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.cacheKeySetupView = new CacheKeySetupView(options);
                         this.cacheKeySetupView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.cacheKeySetupView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.cacheKeySetupView;
                 }.bind(this));
             },
@@ -1460,9 +1467,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.delMarkCacheView = new DelMarkCacheView(options);
                         this.delMarkCacheView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.delMarkCacheView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.delMarkCacheView;
                 }.bind(this));
             },
@@ -1485,9 +1492,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.cacheRuleView = new CacheRuleView(options);
                         this.cacheRuleView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.cacheRuleView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.cacheRuleView;
                 }.bind(this));
             },
@@ -1515,9 +1522,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.basicInformationView = new BasicInformationView(options);
                         this.basicInformationView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.basicInformationView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.basicInformationView;
                 }.bind(this));
             },
@@ -1545,9 +1552,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.urlBlackListView = new UrlBlackListView(options);
                         this.urlBlackListView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.urlBlackListView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.urlBlackListView;
                 }.bind(this));
             },
@@ -1571,9 +1578,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainSetupView = new DomainSetupView(options);
                         this.domainSetupView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.domainSetupView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.domainSetupView;
                 }.bind(this));
             },
@@ -1596,9 +1603,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.domainListView = new DomainListView(options);
                         this.domainListView.render(renderTarget);
                     } else {
-                        this.customerSetupNavbar.select(this.curPage);
                         this.domainListView.update(query, renderTarget);
                     }
+                    this.customerSetupNavbar.select(this.curPage);
                     this.curView = this.domainListView;
                 }.bind(this));
             },
@@ -1651,36 +1658,60 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.blockUrlModel.permissionsControl({
                             userId: query.uid
                         });
-                    }
-                    else{
-                        this.customerSetupNavbar.select(this.curPage);
+                    } else {
                         this.blockUrlView.update(renderTarget);
                     }
+                    this.customerSetupNavbar.select(this.curPage);
                     this.curView = this.blockUrlView;
+                }.bind(this));
+            },
+
+            pnoSetup: function(query) {
+                if (!AUTH_OBJ.DomainLists || !AUTH_OBJ.ManageCustomer ) return;
+                require(['pnoSetup.view', 'pnoSetup.model'], function(PNOSetupView, PNOSetupModel) {
+                    this.curPage = 'customerSetup-pnoSetup';
+                    this.navbarView.select('customerSetup', $.proxy(this.removeSubSideBar, this));
+                    this.setupCustomerSetupNavbar(query)
+                    var renderTarget = this.customerSetupNavbar.$el.find('.sub-content');
+
+                    if (!this.pnoSetupModel)
+                        this.pnoSetupModel = new PNOSetupModel();
+                    if (!this.pnoSetupView) {
+                        var options = {
+                            collection: this.pnoSetupModel,
+                            query: query
+                        };
+                        this.pnoSetupView = new PNOSetupView(options);
+                        this.pnoSetupView.render(renderTarget);
+                    } else {
+                        this.pnoSetupView.update(query, renderTarget);
+                    }
+                    this.customerSetupNavbar.select(this.curPage);
+                    this.curView = this.pnoSetupView;
                 }.bind(this));
             },
 
             interfaceQuota: function(query) {
                 if (!AUTH_OBJ.DomainLists || !AUTH_OBJ.ManageCustomer || !AUTH_OBJ.OpenApiQuota) return;
-                require(['interfaceQuota.view', 'interfaceQuota.model'], function(DomainListView, DomainListModel) {
+                require(['interfaceQuota.view', 'interfaceQuota.model'], function(InterfaceQuotaView, InterfaceQuotaModel) {
                     this.curPage = 'customerSetup-interfaceQuota';
                     this.navbarView.select('customerSetup', $.proxy(this.removeSubSideBar, this));
                     this.setupCustomerSetupNavbar(query)
                     var renderTarget = this.customerSetupNavbar.$el.find('.sub-content');
 
                     if (!this.interfaceQuotaModel)
-                        this.interfaceQuotaModel = new DomainListModel();
+                        this.interfaceQuotaModel = new InterfaceQuotaModel();
                     if (!this.interfaceQuotaView) {
                         var options = {
                             collection: this.interfaceQuotaModel,
                             query: query
                         };
-                        this.interfaceQuotaView = new DomainListView(options);
+                        this.interfaceQuotaView = new InterfaceQuotaView(options);
                         this.interfaceQuotaView.render(renderTarget);
                     } else {
-                        this.customerSetupNavbar.select(this.curPage);
                         this.interfaceQuotaView.update(query, renderTarget);
                     }
+                    this.customerSetupNavbar.select(this.curPage);
                     this.curView = this.interfaceQuotaView;
                 }.bind(this));
             },
@@ -1723,9 +1754,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.setupSendDoneView = new SetupSendDoneView(options);
                         this.setupSendDoneView.render(renderTarget);
                     } else {
-                        this.setupSendNavbar.select(this.curPage);
                         this.setupSendDoneView.update(renderTarget);
                     }
+                    this.setupSendNavbar.select(this.curPage);
                     this.curView = this.setupSendDoneView;
                 }.bind(this));
             },
@@ -1748,9 +1779,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.setupSendingView = new SetupSendingView(options);
                         this.setupSendingView.render(renderTarget);
                     } else {
-                        this.setupSendNavbar.select(this.curPage);
                         this.setupSendingView.update(renderTarget);
                     }
+                    this.setupSendNavbar.select(this.curPage);
                     this.curView = this.setupSendingView;
                 }.bind(this));
             },
@@ -1773,9 +1804,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.setupSendWaitCustomizeView = new SetupSendWaitCustomizeView(options);
                         this.setupSendWaitCustomizeView.render(renderTarget);
                     } else {
-                        this.setupSendNavbar.select(this.curPage);
                         this.setupSendWaitCustomizeView.update(renderTarget);
                     }
+                    this.setupSendNavbar.select(this.curPage);
                     this.curView = this.setupSendWaitCustomizeView;
                 }.bind(this));
             },
@@ -1798,9 +1829,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.setupSendWaitSendView = new SetupSendWaitSendView(options);
                         this.setupSendWaitSendView.render(renderTarget);
                     } else {
-                        this.setupSendNavbar.select(this.curPage);
                         this.setupSendWaitSendView.update(renderTarget);
                     }
+                    this.setupSendNavbar.select(this.curPage);
                     this.curView = this.setupSendWaitSendView;
                 }.bind(this));
             },
@@ -1825,9 +1856,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.liveDomainSetupView = new LiveDomainSetupView(options);
                         this.liveDomainSetupView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.liveDomainSetupView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveDomainSetupView;
                 }.bind(this));
             },
@@ -1850,9 +1881,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.liveCnameSetupView = new LiveCnameSetupView(options);
                         this.liveCnameSetupView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.liveCnameSetupView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveCnameSetupView;
                 }.bind(this));
             },
@@ -1875,9 +1906,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.liveHttpsSetupView = new LiveHttpsSetupView(options);
                         this.liveHttpsSetupView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.liveHttpsSetupView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveHttpsSetupView;
                 }.bind(this));
             },
@@ -1900,9 +1931,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.liveBackOriginSetupView = new LiveBackOriginSetupView(options);
                         this.liveBackOriginSetupView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.liveBackOriginSetupView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveBackOriginSetupView;
                 }.bind(this));
             },
@@ -1925,9 +1956,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.liveBackOriginDetectionView = new LiveBackOriginDetectionView(options);
                         this.liveBackOriginDetectionView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.liveBackOriginDetectionView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveBackOriginDetectionView;
                 }.bind(this));
             },
@@ -1950,9 +1981,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.liveRefererAntiLeechView = new LiveRefererAntiLeechView(options);
                         this.liveRefererAntiLeechView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.liveRefererAntiLeechView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveRefererAntiLeechView;
                 }.bind(this));
             },
@@ -1975,9 +2006,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.liveTimestampView = new LiveTimestampView(options);
                         this.liveTimestampView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.liveTimestampView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveTimestampView;
                 }.bind(this));
             },
@@ -2008,9 +2039,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.liveBasicInformationView = new LiveBasicInformationView(options);
                         this.liveBasicInformationView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.liveBasicInformationView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveBasicInformationView;
                 }.bind(this));
             },
@@ -2033,9 +2064,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.liveBusOptimizeView = new LiveBusOptimizeView(options);
                         this.liveBusOptimizeView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.liveBusOptimizeView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveBusOptimizeView;
                 }.bind(this));
             },
@@ -2058,9 +2089,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.liveH265SetupView = new LiveH265SetupView(options);
                         this.liveH265SetupView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.liveH265SetupView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveH265SetupView;
                 }.bind(this));
             },
@@ -2083,9 +2114,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.liveAudioOnlyView = new LiveAudioOnlyView(options);
                         this.liveAudioOnlyView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.liveAudioOnlyView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveAudioOnlyView;
                 }.bind(this));
             },
@@ -2108,9 +2139,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.liveEdge302View = new LiveEdge302View(options);
                         this.liveEdge302View.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.liveEdge302View.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveEdge302View;
                 }.bind(this));
             },
@@ -2133,9 +2164,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.liveHttpFlvOptimizeView = new LiveHttpFlvOptimizeView(options);
                         this.liveHttpFlvOptimizeView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.liveHttpFlvOptimizeView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveHttpFlvOptimizeView;
                 }.bind(this));
             },
@@ -2158,9 +2189,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.liveRtmpOptimizeView = new LiveRtmpOptimizeView(options);
                         this.liveRtmpOptimizeView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.liveRtmpOptimizeView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveRtmpOptimizeView;
                 }.bind(this));
             },
@@ -2183,9 +2214,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.liveSLAStatisticsView = new LiveSLAStatisticsView(options);
                         this.liveSLAStatisticsView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.liveSLAStatisticsView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveSLAStatisticsView;
                 }.bind(this));
             },
@@ -2208,9 +2239,9 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                         this.liveFrequencyLogView = new LiveFrequencyLogView(options);
                         this.liveFrequencyLogView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.liveFrequencyLogView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveFrequencyLogView;
                 }.bind(this));
             },

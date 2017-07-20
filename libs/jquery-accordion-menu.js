@@ -29,12 +29,12 @@
             function(e) {
                 e.stopPropagation();
                 e.preventDefault();
-                $(me.element).children("ul").find("li").removeClass("active");
+                //$(me.element).children("ul").find("li").removeClass("active");
                 var eventTarget = e.srcElement || e.target;
-                if (eventTarget.tagName !== "LI")
-                    $(eventTarget).parent().addClass("active");
-                else
-                    $(eventTarget).addClass("active");
+                // if (eventTarget.tagName !== "LI")
+                //     $(eventTarget).parent().addClass("active");
+                // else
+                //     $(eventTarget).addClass("active");
                 if ($(this).children(".submenu").length > 0) {
                     if ($(this).children(".submenu").css("display") == "none") {
                         $(this).children(".submenu").delay(defaults.showDelay).slideDown(defaults.speed);

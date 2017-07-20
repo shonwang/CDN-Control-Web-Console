@@ -104,6 +104,8 @@
   "urlBlackList.view": "customerSetup/domainList/urlBlackList/urlBlackList.view",
   "interfaceQuota.model": "customerSetup/interfaceQuota/interfaceQuota.model",
   "interfaceQuota.view": "customerSetup/interfaceQuota/interfaceQuota.view",
+  "pnoSetup.model": "customerSetup/pnoSetup/pnoSetup.model",
+  "pnoSetup.view": "customerSetup/pnoSetup/pnoSetup.view",
   "deviceManage.model": "deviceManage/deviceManage.model",
   "deviceManage.view": "deviceManage/deviceManage.view",
   "dispConfig.model": "dispConfig/dispConfig.model",
@@ -191,6 +193,7 @@
 };
 //PATH END===
 window.DEBUG = 1.1;
+
 if (window.DEBUG === 1)
     window.BASE_URL = "http://develop.gateway.center.cdn.ksyun.com";
 else if (window.DEBUG === 1.1)

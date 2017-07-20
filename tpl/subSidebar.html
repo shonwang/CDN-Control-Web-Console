@@ -5,16 +5,16 @@
     <div id="sub-jquery-accordion-menu" class="jquery-accordion-menu white bar-content">
         <div class="jquery-accordion-menu-header" id="form"></div>
         <ul id="demo-list">
-            <li class="back"><a href='<%=backHash%>'><i class="glyphicon glyphicon-chevron-left"></i>返回</a></li>
+            <li class="back"><a href="javascript:void(0)" path='<%=backHash%>'><i class="glyphicon glyphicon-chevron-left"></i>返回</a></li>
             <% for(var i = 0; i < data.length; i++) { %>
 			<%if(data[i].notShow){continue;}%>
-            <li id='<%=data[i].id%>'><a href='<%=data[i].hash%>'><%=data[i].name%></a>
+            <li id='<%=data[i].id%>'><a href="javascript:void(0)" path='<%=data[i].hash%>'><%=data[i].name%></a>
                 <% if (data[i].children.length > 0) { %>
                 <ul class="submenu">
                     <% for(var k = 0; k < data[i].children.length; k++) { %> 
 					<%if(data[i].children[k].notShow){continue;}%>
                     <li id='<%=data[i].children[k].id%>' <% if (data[i].children[k].active){ %> class="active" <% } %>>
-                        <a href='<%=data[i].children[k].hash%>'><%=data[i].children[k].name%></a>
+                        <a href="javascript:void(0)" path='<%=data[i].children[k].hash%>'><%=data[i].children[k].name%></a>
                     </li>
                     <% } %>
                 </ul>

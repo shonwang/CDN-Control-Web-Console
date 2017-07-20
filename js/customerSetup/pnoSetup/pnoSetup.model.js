@@ -11,41 +11,35 @@ define("pnoSetup.model", ['require', 'exports', 'utility'], function(require, ex
 
         initialize: function() {},
 
-        queryChannel: function(args) {
-            var url = "/2017-4-1/quota/query",
+        queryParamsList: function(args) {
+            var url = "/2017-4-1/custom/params/query",
                 successCallback = function(res) {
                     this.reset();
                     if (res) {
-                        _.each(res, function(element, index, list) {
+                        if (!res.pno) res.pno = [];
+                        _.each(res.pno, function(element, index, list) {
                             this.push(new Model(element));
                         }.bind(this))
-                        this.total = res.length;
-                        this.trigger("get.user.success");
+                        this.trigger("get.params.success");
                     } else {
-                        this.trigger("get.user.error");
+                        this.trigger("get.params.error");
                     }
                 }.bind(this),
                 errorCallback = function(response) {
-                    this.trigger("get.user.error", response);
+                    this.trigger("get.params.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        updateParamsList: function(args) {
+            var url = "/2017-4-1/custom/params/update",
+                successCallback = function(res) {
+                    this.trigger("set.params.success");
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("set.params.error", response);
                 }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
-        },
-        updateQuota: function(args) {
-            var url = "/2017-4-1/quota/set?userId=" + args.userId + "&quotaName=" + args.quotaName + "&quotaValue=" + args.quotaValue + "&interfaceCaller=" + args.interfaceCaller;
-            var defaultParas = {
-                type: "GET",
-                url: url,
-                async: true,
-            };
-            defaultParas.success = function() {
-                this.trigger('update.quota.success');
-            }.bind(this);
-            defaultParas.error = function(response, msg) {
-                if (response && response.responseText)
-                    response = JSON.parse(response.responseText);
-                this.trigger("update.quota.error", response);
-            }.bind(this);
-            $.ajax(defaultParas);
         }
     });
 

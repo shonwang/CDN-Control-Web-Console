@@ -9,8 +9,8 @@
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].get('id')%>">
-              <td><%=data[i].get("quotaName")%></td>
-              <td><%=data[i].get("quotaTimes")%></td>
+              <td><%=data[i].get("name")%></td>
+              <td><%=data[i].get("param")%></td>
               <td>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit" title="修改">
                       <span class="glyphicon glyphicon-edit"></span>

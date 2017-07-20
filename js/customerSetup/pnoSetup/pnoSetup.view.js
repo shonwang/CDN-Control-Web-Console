@@ -11,13 +11,13 @@ define("pnoSetup.view", ['require', 'exports', 'template', 'utility', "modal.vie
 
                 if (this.isEdit) {
                     this.args = {
-                        "quotaName": this.model.get("quotaName"),
-                        "quotaTimes": this.model.get("quotaTimes"),
+                        "param": this.model.get("param"),
+                        "name": this.model.get("name"),
                     }
                 } else {
                     this.args = {
-                        "quotaName": "",
-                        "quotaTimes": "",
+                        "param": "",
+                        "name": "",
                     }
                 }
 
@@ -26,20 +26,33 @@ define("pnoSetup.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 }));
             },
 
-            getArgs: function(id, popUp, userid) {
-                var newQuota = this.$el.find("#input-name").val();
-                if (!newQuota.length || isNaN(newQuota) || newQuota <= 0) {
-                    this.$el.find("#check").show();
-                    return
+            getArgs: function() {
+                var name = this.$el.find("#param-label").val().trim(),
+                    value = this.$el.find("#input-value").val().trim();
+
+                if (name === "" || value === "") {
+                    alert("不能为空！")
+                    return false;
                 }
-                var quotaName = popUp.get('quotaName');
-                var args = {
-                    "userId": id,
-                    "quotaName": quotaName,
-                    "quotaValue": newQuota,
-                    "interfaceCaller": userid,
-                };
-                return args
+
+                var repeatList = this.collection.filter(function(model){
+                    return model.get("name") === name
+                }.bind(this))
+
+                if (repeatList.length > 0) {
+                    alert(name + " 控制台显示值已经添加过了!")
+                    return false
+                }
+
+                if (this.isEdit) {
+                    this.model.set("param", value);
+                    this.model.set("name", name);
+                } else {
+                    this.collection.push(new this.collection.model({
+                        "param": value,
+                        "name": name
+                    }))
+                }
             },
 
             render: function(target) {
@@ -66,25 +79,44 @@ define("pnoSetup.view", ['require', 'exports', 'template', 'utility', "modal.vie
 
                 this.queryArgs = {
                     "userId": clientInfo.uid,
-                    "quotaname": null,
+                    "types": "pno",
                 }
 
-                this.collection.queryChannel(this.queryArgs);
-
-                this.collection.on("get.user.success", $.proxy(this.onChannelListSuccess, this));
-                this.collection.on("get.user.error", $.proxy(this.onGetError, this));
-                this.collection.on("update.quota.success", function() {
-                    alert("修改配额成功！")
+                this.collection.on("get.params.success", $.proxy(this.onParamsListSuccess, this));
+                this.collection.on("get.params.error", $.proxy(this.onGetError, this));
+                this.collection.on("set.params.success", function() {
+                    alert("修改成功！")
                     this.onClickQueryButton();
                 }.bind(this));
-                this.collection.on('update.quota.error', $.proxy(this.onGetError, this));
+                this.collection.on('set.params.error', $.proxy(this.onGetError, this));
 
-                this.$el.find(".add").on("click", $.proxy(this.onClickAdd, this))
+                this.$el.find(".add").on("click", $.proxy(this.onClickAdd, this));
+                this.$el.find(".save").on("click", $.proxy(this.onClickSave, this));
+
+                this.onClickQueryButton();
+            },
+
+            onClickSave:function(){
+                window.IS_ALERT_SAVE = false;
+                var list = _.map(this.collection.models, function(obj){
+                    var name = obj.get("name"),
+                        param = obj.get("param");
+                    return {"name": name, "param": param}
+                })
+
+                var postParam = {
+                    "userId": this.userInfo.uid,
+                    "type": "pno",
+                    "interfaceCaller": $(".user-name").html(),
+                    "params": list
+                }
+
+                this.collection.updateParamsList(postParam);
             },
 
             onClickQueryButton: function() {
                 this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                this.collection.queryChannel(this.queryArgs);
+                this.collection.queryParamsList(this.queryArgs);
             },
 
             onGetError: function(error) {
@@ -94,31 +126,25 @@ define("pnoSetup.view", ['require', 'exports', 'template', 'utility', "modal.vie
                     alert("网络阻塞，请刷新重试！")
             },
 
-            onChannelListSuccess: function() {
-                this.total = this.collection.total || 0;
-                if (this.collection.models.length == 0) {
-                    this.setNoData("未查到符合条件的数据，请重新查询");
-                } else {
-                    this.initTable();
-                }
+            onParamsListSuccess: function() {
                 this.initTable();
-            },
-
-            setNoData: function(msg) {
-                this.$el.find(".table tbody").html('<tr><td  colspan="8" class="text-center"><p class="text-muted text-center">' + msg + '</p></td></tr>');
             },
 
             initTable: function() {
                 this.table = $(_.template(template['tpl/customerSetup/pnoSetup/pnoSetup.table.html'])({
-                    data: this.collection.models,
-                    permission: AUTH_OBJ
+                    data: this.collection.models
                 }));
-                if (this.collection.models.length !== 0)
+                if (this.collection.models.length !== 0) {
                     this.$el.find(".table-ctn").html(this.table[0]);
-                else
-                    this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-                this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemNodeName, this));
-                this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemNodeName, this));
+                } else {
+                    this.$el.find(".table-ctn").html(_.template(template['tpl/empty-2.html'])({
+                        data: {
+                            message: "暂无数据"
+                        }
+                    }));
+                }
+                this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
+                this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
             },
 
             onClickAdd: function(event) {
@@ -133,9 +159,9 @@ define("pnoSetup.view", ['require', 'exports', 'template', 'utility', "modal.vie
                     type: 2,
                     isEdit: false,
                     onOKCallback: function() {
-                        var options = editView.getArgs(this.uid, model, this.userId);
-                        if (!options) return;
-                        this.collection.updateQuota(options);
+                        window.IS_ALERT_SAVE = true;
+                        editView.getArgs();
+                        this.initTable();
                         this.pnoSetupPopup.$el.modal("hide");
                     }.bind(this),
                     onHiddenCallback: function(){}.bind(this)
@@ -143,7 +169,7 @@ define("pnoSetup.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 this.pnoSetupPopup = new Modal(options);
             },
 
-            onClickItemNodeName: function(event) {
+            onClickItemEdit: function(event) {
                 var eventTarget = event.srcElement || event.target, id;
                 if (eventTarget.tagName == "SPAN") {
                     eventTarget = $(eventTarget).parent();
@@ -164,14 +190,30 @@ define("pnoSetup.view", ['require', 'exports', 'template', 'utility', "modal.vie
                     backdrop: 'static',
                     type: 2,
                     onOKCallback: function() {
-                        var options = editView.getArgs(this.uid, model, this.userId);
-                        if (!options) return;
-                        this.collection.updateQuota(options);
+                        window.IS_ALERT_SAVE = true;
+                        editView.getArgs();
+                        this.initTable();
                         this.pnoSetupPopup.$el.modal("hide");
                     }.bind(this),
                     onHiddenCallback: function(){}.bind(this)
                 };
                 this.pnoSetupPopup = new Modal(options);
+            },
+
+            onClickItemDelete: function(event){
+                var eventTarget = event.srcElement || event.target, id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                };
+
+                this.collection.models = this.collection.filter(function(model){
+                    return model.get("id") !== id
+                }.bind(this))
+                this.initTable();
+                window.IS_ALERT_SAVE = true;
             },
 
             hide: function() {

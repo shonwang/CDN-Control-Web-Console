@@ -16,6 +16,9 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                     myNodeManageModel.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
                     myNodeManageModel.on("get.operator.error", $.proxy(this.onGetError, this));
                     myNodeManageModel.getOperatorList();
+                    myNodeManageModel.on("get.province.success", $.proxy(this.onGetProvinceSuccess, this));
+                    myNodeManageModel.on("get.province.error", $.proxy(this.onGetError, this));
+                    myNodeManageModel.getAllProvince();
                     myNodeManageModel.on("get.node.success", $.proxy(this.onGetAllNode, this));
                     myNodeManageModel.on("get.node.error", $.proxy(this.onGetError, this));
                     myNodeManageModel.getNodeList({
@@ -36,6 +39,7 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                 this.allNodes = [];
                 this.curOperator = null;
                 this.curArea = null;
+                this.curProv = null;
                 console.log("打勾的节点：", this.selectedNodes)
             },
 
@@ -44,10 +48,17 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                 var keyWord = this.$el.find("#input-name").val();
 
                 _.each(this.allNodes, function(model, index, list) {
-                    if ((this.curOperator === model.operatorId && this.curArea === model.areaId) ||
-                        (this.curOperator === null && this.curArea === model.areaId) ||
-                        (this.curOperator === model.operatorId && this.curArea === null) ||
-                        (this.curOperator === null && this.curArea === null)) {
+                    if ((this.curOperator === model.operatorId && this.curArea === model.areaId && this.curProv === model.provId) ||
+
+                        (this.curOperator === null && this.curArea === model.areaId && this.curProv === model.provId) ||
+                        (this.curOperator === model.operatorId && this.curArea === null && this.curProv === model.provId) ||
+                        (this.curOperator === model.operatorId && this.curArea === model.areaId && this.curProv === null) ||
+
+                        (this.curOperator === null && this.curArea === null && this.curProv === model.provId) ||
+                        (this.curOperator === model.operatorId && this.curArea === null && this.curProv === null) ||
+                        (this.curOperator === null && this.curArea === model.areaId && this.curProv === null) ||
+
+                        (this.curOperator === null && this.curArea === null && this.curProv === null)) {
                         if (keyWord === "") {
                             model.isDisplay = true;
                         } else if (model.chName.indexOf(keyWord) > -1) {
@@ -61,6 +72,47 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                 }.bind(this));
 
                 this.initTable();
+            },
+
+            onGetProvinceSuccess: function(res) {
+                this.provList = res
+                var nameList = [{
+                    name: "全部",
+                    value: "All"
+                }];
+                _.each(res, function(el, index, list) {
+                    nameList.push({
+                        name: el.name,
+                        value: el.id
+                    })
+                });
+
+                var searchSelect = new SearchSelect({
+                    containerID: this.$el.find('.dropdown-prov').get(0),
+                    panelID: this.$el.find('#dropdown-prov').get(0),
+                    isSingle: true,
+                    openSearch: true,
+                    selectWidth: 200,
+                    isDataVisible: false,
+                    onOk: function() {},
+                    data: nameList,
+                    callback: function(data) {
+                        this.$el.find('#dropdown-prov .cur-value').html(data.name);
+                        if (data.value !== "All")
+                            this.curProv = parseInt(data.value)
+                        else
+                            this.curProv = null;
+                        this.onKeyupNodeNameFilter();
+                    }.bind(this)
+                });
+
+                // Utility.initDropMenu(this.$el.find(".dropdown-prov"), nameList, function(value) {
+                //     if (value !== "All")
+                //         this.curProv = parseInt(value)
+                //     else
+                //         this.curProv = null;
+                //     this.onKeyupNodeNameFilter();
+                // }.bind(this));
             },
 
             onGetOperatorSuccess: function(res) {

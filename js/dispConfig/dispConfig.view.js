@@ -613,7 +613,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.find(".opt-panel").hide();
         },
 
-        getSendData: function(){
+        getSendData: function(postParam){
             var tempArray = [];
 
             _.each(this.collection.models, function(el, index, list){
@@ -628,6 +628,9 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                     tempArray.push(tempObj)
                 }.bind(this))
             }.bind(this))
+
+            if (postParam) tempArray = postParam
+
             var args = {
                 groupId : this.queryArgs.groupId,
                 list    : tempArray
@@ -636,9 +639,8 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         onSureSending: function(postParam){
-            var args = this.getSendData();
-            if (!postParam) postParam = args;
-            this.collection.dispDns(postParam)
+            var args = this.getSendData(postParam);
+            this.collection.dispDns(args)
             this.showDisablePopup("下发中，请耐心等待...")
         },
 

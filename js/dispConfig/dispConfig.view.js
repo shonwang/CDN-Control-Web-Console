@@ -45,10 +45,48 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             }
         },
 
+        getSendData: function(){
+            var type1Array = [], type2Array = [];
+
+            _.each(this.diffCollection.models, function(el, index, list){
+                _.each(el.get("listFormated"), function(el1, index1, list1){
+                    var tempObj =  {
+                      "dgroupId" : el1.get("dispGroup.id") || this.queryArgs.groupId,
+                      "nodeId"   : el1.get("node.id"),
+                      "regionId" : el.get("region.id"),
+                      "ttl"      : el.get("dispGroup.ttl"),
+                      "ipNum"    : el1.get("dispConfIpInfo.currNum"),
+                      "nodeName" : el1.get("node.chName")
+                    };
+                    if (el1.get("type") === 1) {
+                        type1Array.push(tempObj)
+                    } else if (el1.get("type") === -1) {
+                        type2Array.push(tempObj)
+                    }
+                }.bind(this))
+            }.bind(this))
+
+            var temp3Array = [];
+            _.each(type2Array, function(el2){
+                var tempObj = _.find(type1Array, function(el3){
+                    return el2.nodeId === el3.nodeId && el2.regionId === el3.regionId
+                }.bind(this))
+                if (!tempObj) {
+                    el2.ipNum = 0
+                    temp3Array.push(el2)
+                }
+            }.bind(this))
+
+            type1Array = type1Array.concat(temp3Array)
+
+            return type1Array;
+        },
+
         onClickOK: function(){
             var result = confirm("你确定要下发DNSPod吗？");
             if (!result) return
-            this.options.okCallback&&this.options.okCallback();
+            var postParam = this.getSendData()
+            this.options.okCallback&&this.options.okCallback(postParam);
         },
 
         onGetError: function(error){
@@ -565,8 +603,8 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                     this.$el.find(".opt-panel").slideDown(200);
                     Utility.showMainList(this.$el, ".main-list", ".diff-send-panel", ".diff-send-ctn");
                 }.bind(this),
-                okCallback:  function(options){
-                    this.onSureSending();
+                okCallback:  function(postParam){
+                    this.onSureSending(postParam);
                 }.bind(this)
             });
             diffBeforeSendView.render(this.$el.find(".diff-send-panel"));
@@ -597,9 +635,10 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
             return args;
         },
 
-        onSureSending: function(){
+        onSureSending: function(postParam){
             var args = this.getSendData();
-            this.collection.dispDns(args)
+            if (!postParam) postParam = args;
+            this.collection.dispDns(postParam)
             this.showDisablePopup("下发中，请耐心等待...")
         },
 

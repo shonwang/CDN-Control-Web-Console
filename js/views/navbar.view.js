@@ -35,6 +35,7 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
             this.initGlobleSearch();
             this.isRender = false;
             this.isLogin = false;
+            window.IS_ALERT_SAVE = false;
         },
 
         initGlobleSearch: function(){
@@ -182,14 +183,45 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
                 data.errorCallBack&&data.errorCallBack(response, msg)
             }
 
-            $.ajax(defaultParas);
+            if (this.request) this.request.abort();
+            this.request = $.ajax(defaultParas);
         },
 
         render: function() {
             this.$el = $(_.template(template['tpl/sidebar.html'])({permission:AUTH_OBJ}));
             this.$el.appendTo($('.jquery-accordion-menu'));
+            this.$el.find("li a").on("click", $.proxy(this.onClickItem, this))
             $("#jquery-accordion-menu").jqueryAccordionMenu();
             this.isRender = true;
+        },
+
+        onClickItem: function(event){
+            var eventTarget = event.srcElement || event.target, path, result;
+            if (eventTarget.tagName == "SPAN" || eventTarget.tagName == "I") {
+                eventTarget = $(eventTarget).parent();
+                path = eventTarget.attr("path");
+            } else {
+                path = $(eventTarget).attr("path");
+            };
+            if (!path) return;
+
+            if (window.IS_ALERT_SAVE && path.indexOf(location.hash) === -1) {
+                result = confirm("你还没有保存，确定离开本页面吗？")
+                if (result) {
+                    this.redirectHash(path)
+                    window.IS_ALERT_SAVE = false
+                } 
+            } else {
+                this.redirectHash(path)
+            }
+        },
+
+        redirectHash: function(path){
+            if (path.indexOf("map.html") > -1) {
+                location.href = path
+            } else {
+                location.href = path
+            }
         }
 
     });

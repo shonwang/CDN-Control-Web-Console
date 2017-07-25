@@ -229,6 +229,7 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
         render: function() {
             if (!this.menuList && !this.backHash) this.initDefaultMenu(this.query, this.query2);
             this.$el = $(_.template(template['tpl/subSidebar.html'])({data: this.menuList, backHash: this.backHash}));
+            this.$el.find("li a").on("click", $.proxy(this.onClickItem, this));
             this.$el.appendTo($('.ksc-content'));
             if(!AUTH_OBJ.LogServer){
                 this.$el.find('#customerSetup-domainList-logServer').remove();
@@ -257,6 +258,35 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                     this.$el.find(".sub-content").css("padding", "0 0 0 15px")
                 }
             }.bind(this))
+        },
+
+        onClickItem: function(event){
+            var eventTarget = event.srcElement || event.target, path, result;
+            if (eventTarget.tagName == "SPAN" || eventTarget.tagName == "I") {
+                eventTarget = $(eventTarget).parent();
+                path = eventTarget.attr("path");
+            } else {
+                path = $(eventTarget).attr("path");
+            };
+            if (!path) return;
+
+            if (window.IS_ALERT_SAVE && path.indexOf(location.hash) === -1) {
+                result = confirm("你还没有保存，确定离开本页面吗？")
+                if (result) {
+                    this.redirectHash(path)
+                    window.IS_ALERT_SAVE = false
+                } 
+            } else {
+                this.redirectHash(path)
+            }
+        },
+
+        redirectHash: function(path){
+            if (path.indexOf("map.html") > -1) {
+                location.href = path
+            } else {
+                location.href = path
+            }
         }
 
     });

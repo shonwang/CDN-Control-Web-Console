@@ -1,6 +1,32 @@
 define("routes.customerSetup", ['require', 'exports'], 
     function(require, exports) {
         var RouterCustomerSetup = {
+
+            pnoSetup: function(query) {
+                if (!AUTH_OBJ.DomainLists || !AUTH_OBJ.ManageCustomer ) return;
+                require(['pnoSetup.view', 'pnoSetup.model'], function(PNOSetupView, PNOSetupModel) {
+                    this.curPage = 'customerSetup-pnoSetup';
+                    this.navbarView.select('customerSetup', $.proxy(this.removeSubSideBar, this));
+                    this.setupCustomerSetupNavbar(query)
+                    var renderTarget = this.customerSetupNavbar.$el.find('.sub-content');
+
+                    if (!this.pnoSetupModel)
+                        this.pnoSetupModel = new PNOSetupModel();
+                    if (!this.pnoSetupView) {
+                        var options = {
+                            collection: this.pnoSetupModel,
+                            query: query
+                        };
+                        this.pnoSetupView = new PNOSetupView(options);
+                        this.pnoSetupView.render(renderTarget);
+                    } else {
+                        this.pnoSetupView.update(query, renderTarget);
+                    }
+                    this.customerSetupNavbar.select(this.curPage);
+                    this.curView = this.pnoSetupView;
+                }.bind(this));
+            },
+
             openAPILogSetup: function(query, query2) {
                 if (!AUTH_OBJ.OpenApiLogManager) return;
                 require(['openAPILogSetup.view', 'openAPILogSetup.model'], function(OpenAPILogSetupView, OpenAPILogSetupModel) {

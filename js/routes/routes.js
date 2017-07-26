@@ -53,6 +53,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "domainList/:query": "domainList",
                 "blockUrl/:query": "blockUrl",
                 "interfaceQuota/:query": "interfaceQuota",
+                "pnoSetup/:query": "pnoSetup",
 
                 //Lua 下载域名配置
                 "domainList/:query/luaBasicInformation/:query2": "basicInformation",

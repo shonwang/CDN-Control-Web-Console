@@ -245,6 +245,12 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                             hash: 'index.html#/interfaceQuota/' + query,
                             active: false,
                             children: []
+                        },{
+                            id: 'customerSetup-pnoSetup',
+                            name: 'PNO列表配置',
+                            hash: 'index.html#/pnoSetup/' + query,
+                            active: false,
+                            children: []
                         }]
                     }],
                     menuOptions = {

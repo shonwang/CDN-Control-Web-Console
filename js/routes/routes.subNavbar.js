@@ -112,15 +112,15 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                         active: false,
                         children: []
                     }, {
-                        id: 'customerSetup-domainList-delMarkCache',
+                        id: 'customerSetup-domainList-luaDelMarkCache',
                         name: '去问号缓存',
-                        hash: 'index.html#/domainList/' + query + '/delMarkCache/' + query2,
+                        hash: 'index.html#/domainList/' + query + '/luaDelMarkCache/' + query2,
                         active: false,
                         children: []
                     }, {
-                        id: 'customerSetup-domainList-cacheKeySetup',
+                        id: 'customerSetup-domainList-luaCacheKeySetup',
                         name: '设置 Cache Key',
-                        hash: 'index.html#/domainList/' + query + '/cacheKeySetup/' + query2,
+                        hash: 'index.html#/domainList/' + query + '/luaCacheKeySetup/' + query2,
                         active: false,
                         children: []
                     }]
@@ -130,9 +130,9 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     //notShow: !AUTH_OBJ.OndemandOptimization,
                     hash: 'javascript:void(0)',
                     children: [{
-                        id: 'customerSetup-domainList-dragPlay',
+                        id: 'customerSetup-domainList-luaDragPlay',
                         name: '拖拽播放',
-                        hash: 'index.html#/domainList/' + query + '/dragPlay/' + query2,
+                        hash: 'index.html#/domainList/' + query + '/luaDragPlay/' + query2,
                         active: false,
                         children: []
                     }]
@@ -142,9 +142,9 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     //notShow: !AUTH_OBJ.SpeedLimit,
                     hash: 'javascript:void(0)',
                     children: [{
-                        id: 'customerSetup-domainList-clientLimitSpeed',
+                        id: 'customerSetup-domainList-luaClientLimitSpeed',
                         name: '客户端限速',
-                        hash: 'index.html#/domainList/' + query + '/clientLimitSpeed/' + query2,
+                        hash: 'index.html#/domainList/' + query + '/luaClientLimitSpeed/' + query2,
                         active: false,
                         children: []
                     }]
@@ -154,15 +154,15 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     //notShow: !AUTH_OBJ.HttpheadControl,
                     hash: 'javascript:void(0)',
                     children: [{
-                        id: 'customerSetup-domainList-httpHeaderOpt',
+                        id: 'customerSetup-domainList-luaHttpHeaderOpt',
                         name: 'HTTP头的增删改查',
-                        hash: 'index.html#/domainList/' + query + '/httpHeaderOpt/' + query2,
+                        hash: 'index.html#/domainList/' + query + '/luaHttpHeaderOpt/' + query2,
                         active: false,
                         children: []
                     }, {
-                        id: 'customerSetup-domainList-httpHeaderCtr',
+                        id: 'customerSetup-domainList-luaHttpHeaderCtr',
                         name: '常用HTTP头控制功能',
-                        hash: 'index.html#/domainList/' + query + '/httpHeaderCtr/' + query2,
+                        hash: 'index.html#/domainList/' + query + '/luaHttpHeaderCtr/' + query2,
                         active: false,
                         children: []
                     }]

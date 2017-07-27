@@ -21,9 +21,9 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
                         this.openNgxLogView = new OpenNgxLogView(options);
                         this.openNgxLogView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.openNgxLogView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.openNgxLogView;
                 }.bind(this));
             },
@@ -47,9 +47,9 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
                         this.timestampView = new TimestampView(options);
                         this.timestampView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.timestampView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.timestampView;
                 }.bind(this));
             },
@@ -73,9 +73,9 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
                         this.refererAntiLeechView = new RefererAntiLeechView(options);
                         this.refererAntiLeechView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.refererAntiLeechView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.refererAntiLeechView;
                 }.bind(this));
             },
@@ -99,9 +99,9 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
                         this.ipBlackWhiteListView = new IpBlackWhiteListView(options);
                         this.ipBlackWhiteListView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.ipBlackWhiteListView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.ipBlackWhiteListView;
                 }.bind(this));
             },
@@ -124,114 +124,62 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
                         this.requestArgsModifyView = new RequestArgsModifyView(options);
                         this.requestArgsModifyView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.requestArgsModifyView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.requestArgsModifyView;
                 }.bind(this));
             },
 
-            httpHeaderCtr: function(query, query2) {
-                if (!AUTH_OBJ.HttpheadControl) return;
+            luaHttpHeaderCtr: function(query, query2) {
+                //if (!AUTH_OBJ.HttpheadControl) return;
                 require(['httpHeaderCtr.view', 'httpHeaderCtr.model'], function(HttpHeaderCtrView, HttpHeaderCtrModel) {
                     this.navbarView.select('customerSetup');
-                    this.curPage = 'customerSetup-domainList-httpHeaderCtr';
+                    this.curPage = 'customerSetup-domainList-luaHttpHeaderCtr';
                     this.setupLuaDomainManageNavbar(query, query2);
                     var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
 
-                    if (!this.httpHeaderCtrModel)
-                        this.httpHeaderCtrModel = new HttpHeaderCtrModel();
-                    if (!this.httpHeaderCtrView) {
+                    if (!this.luaHttpHeaderCtrModel)
+                        this.luaHttpHeaderCtrModel = new HttpHeaderCtrModel();
+                    if (!this.luaHttpHeaderCtrView) {
                         var options = {
-                            collection: this.httpHeaderCtrModel,
+                            collection: this.luaHttpHeaderCtrModel,
                             query: query,
                             query2: query2
                         };
-                        this.httpHeaderCtrView = new HttpHeaderCtrView(options);
-                        this.httpHeaderCtrView.render(renderTarget);
+                        this.luaHttpHeaderCtrView = new HttpHeaderCtrView(options);
+                        this.luaHttpHeaderCtrView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
-                        this.httpHeaderCtrView.update(query, query2, renderTarget);
+                        this.luaHttpHeaderCtrView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.httpHeaderCtrView;
+                    this.domainManageNavbar.select(this.curPage);
+                    this.curView = this.luaHttpHeaderCtrView;
                 }.bind(this));
             },
 
-            httpHeaderOpt: function(query, query2) {
-                if (!AUTH_OBJ.HttpheadControl) return;
-                require(['httpHeaderOpt.view', 'httpHeaderOpt.model'], function(HttpHeaderOptView, HttpHeaderOptModel) {
+            luaHttpHeaderOpt: function(query, query2) {
+                //if (!AUTH_OBJ.HttpheadControl) return;
+                require(['luaHttpHeaderOpt.view', 'luaHttpHeaderOpt.model'], function(HttpHeaderOptView, HttpHeaderOptModel) {
                     this.navbarView.select('customerSetup');
-                    this.curPage = 'customerSetup-domainList-httpHeaderOpt';
+                    this.curPage = 'customerSetup-domainList-luaHttpHeaderOpt';
                     this.setupLuaDomainManageNavbar(query, query2);
                     var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
 
-                    if (!this.httpHeaderOptModel)
-                        this.httpHeaderOptModel = new HttpHeaderOptModel();
-                    if (!this.httpHeaderOptView) {
+                    if (!this.luaHttpHeaderOptModel)
+                        this.luaHttpHeaderOptModel = new HttpHeaderOptModel();
+                    if (!this.luaHttpHeaderOptView) {
                         var options = {
-                            collection: this.httpHeaderOptModel,
+                            collection: this.luaHttpHeaderOptModel,
                             query: query,
                             query2: query2
                         };
-                        this.httpHeaderOptView = new HttpHeaderOptView(options);
-                        this.httpHeaderOptView.render(renderTarget);
+                        this.luaHttpHeaderOptView = new HttpHeaderOptView(options);
+                        this.luaHttpHeaderOptView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
-                        this.httpHeaderOptView.update(query, query2, renderTarget);
+                        this.luaHttpHeaderOptView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.httpHeaderOptView;
-                }.bind(this));
-            },
-
-            clientLimitSpeed: function(query, query2) {
-                if (!AUTH_OBJ.SpeedLimit) return;
-                require(['clientLimitSpeed.view', 'clientLimitSpeed.model'], function(ClientLimitSpeedView, ClientLimitSpeedModel) {
-                    this.navbarView.select('customerSetup');
-                    this.curPage = 'customerSetup-domainList-clientLimitSpeed';
-                    this.setupLuaDomainManageNavbar(query, query2);
-                    var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
-
-                    if (!this.clientLimitSpeedModel)
-                        this.clientLimitSpeedModel = new ClientLimitSpeedModel();
-                    if (!this.clientLimitSpeedView) {
-                        var options = {
-                            collection: this.clientLimitSpeedModel,
-                            query: query,
-                            query2: query2
-                        };
-                        this.clientLimitSpeedView = new ClientLimitSpeedView(options);
-                        this.clientLimitSpeedView.render(renderTarget);
-                    } else {
-                        this.domainManageNavbar.select(this.curPage);
-                        this.clientLimitSpeedView.update(query, query2, renderTarget);
-                    }
-                    this.curView = this.clientLimitSpeedView;
-                }.bind(this));
-            },
-
-            dragPlay: function(query, query2) {
-                if (!AUTH_OBJ.OndemandOptimization) return;
-                require(['dragPlay.view', 'dragPlay.model'], function(DragPlayView, DragPlayModel) {
-                    this.navbarView.select('customerSetup');
-                    this.curPage = 'customerSetup-domainList-dragPlay';
-                    this.setupLuaDomainManageNavbar(query, query2);
-                    var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
-
-                    if (!this.dragPlayModel)
-                        this.dragPlayModel = new DragPlayModel();
-                    if (!this.dragPlayView) {
-                        var options = {
-                            collection: this.dragPlayModel,
-                            query: query,
-                            query2: query2
-                        };
-                        this.dragPlayView = new DragPlayView(options);
-                        this.dragPlayView.render(renderTarget);
-                    } else {
-                        this.domainManageNavbar.select(this.curPage);
-                        this.dragPlayView.update(query, query2, renderTarget);
-                    }
-                    this.curView = this.dragPlayView;
+                    this.domainManageNavbar.select(this.curPage);
+                    this.curView = this.luaHttpHeaderOptView;
                 }.bind(this));
             },
 
@@ -253,60 +201,112 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
                         this.following302View = new Following302View(options);
                         this.following302View.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.following302View.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.following302View;
                 }.bind(this));
             },
 
-            cacheKeySetup: function(query, query2) {
-                require(['cacheKeySetup.view', 'cacheKeySetup.model'], function(CacheKeySetupView, CacheKeySetupModel) {
+            luaClientLimitSpeed: function(query, query2) {
+                //if (!AUTH_OBJ.SpeedLimit) return;
+                require(['luaClientLimitSpeed.view', 'luaClientLimitSpeed.model'], function(ClientLimitSpeedView, ClientLimitSpeedModel) {
                     this.navbarView.select('customerSetup');
-                    this.curPage = 'customerSetup-domainList-cacheKeySetup';
+                    this.curPage = 'customerSetup-domainList-luaClientLimitSpeed';
                     this.setupLuaDomainManageNavbar(query, query2);
                     var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
 
-                    if (!this.cacheKeySetupModel)
-                        this.cacheKeySetupModel = new CacheKeySetupModel();
-                    if (!this.cacheKeySetupView) {
+                    if (!this.luaClientLimitSpeedModel)
+                        this.luaClientLimitSpeedModel = new ClientLimitSpeedModel();
+                    if (!this.luaClientLimitSpeedView) {
                         var options = {
-                            collection: this.cacheKeySetupModel,
+                            collection: this.luaClientLimitSpeedModel,
                             query: query,
                             query2: query2
                         };
-                        this.cacheKeySetupView = new CacheKeySetupView(options);
-                        this.cacheKeySetupView.render(renderTarget);
+                        this.luaClientLimitSpeedView = new ClientLimitSpeedView(options);
+                        this.luaClientLimitSpeedView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
-                        this.cacheKeySetupView.update(query, query2, renderTarget);
+                        this.luaClientLimitSpeedView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.cacheKeySetupView;
+                    this.domainManageNavbar.select(this.curPage);
+                    this.curView = this.luaClientLimitSpeedView;
                 }.bind(this));
             },
 
-            delMarkCache: function(query, query2) {
-                require(['delMarkCache.view', 'delMarkCache.model'], function(DelMarkCacheView, DelMarkCacheModel) {
+            luaDragPlay: function(query, query2) {
+                //if (!AUTH_OBJ.OndemandOptimization) return;
+                require(['dragPlay.view', 'dragPlay.model'], function(DragPlayView, DragPlayModel) {
                     this.navbarView.select('customerSetup');
-                    this.curPage = 'customerSetup-domainList-delMarkCache';
+                    this.curPage = 'customerSetup-domainList-luaDragPlay';
                     this.setupLuaDomainManageNavbar(query, query2);
                     var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
 
-                    if (!this.delMarkCacheModel)
-                        this.delMarkCacheModel = new DelMarkCacheModel();
-                    if (!this.delMarkCacheView) {
+                    if (!this.luaDragPlayModel)
+                        this.luaDragPlayModel = new DragPlayModel();
+                    if (!this.luaDragPlayView) {
                         var options = {
-                            collection: this.delMarkCacheModel,
+                            collection: this.luaDragPlayModel,
                             query: query,
                             query2: query2
                         };
-                        this.delMarkCacheView = new DelMarkCacheView(options);
-                        this.delMarkCacheView.render(renderTarget);
+                        this.luaDragPlayView = new DragPlayView(options);
+                        this.luaDragPlayView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
-                        this.delMarkCacheView.update(query, query2, renderTarget);
+                        this.luaDragPlayView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.delMarkCacheView;
+                    this.domainManageNavbar.select(this.curPage);
+                    this.curView = this.luaDragPlayView;
+                }.bind(this));
+            },
+
+            luaCacheKeySetup: function(query, query2) {
+                require(['cacheKeySetup.view', 'cacheKeySetup.model'], function(CacheKeySetupView, CacheKeySetupModel) {
+                    this.navbarView.select('customerSetup');
+                    this.curPage = 'customerSetup-domainList-luaCacheKeySetup';
+                    this.setupLuaDomainManageNavbar(query, query2);
+                    var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                    if (!this.luaCacheKeySetupModel)
+                        this.luaCacheKeySetupModel = new CacheKeySetupModel();
+                    if (!this.luaCacheKeySetupView) {
+                        var options = {
+                            collection: this.luaCacheKeySetupModel,
+                            query: query,
+                            query2: query2
+                        };
+                        this.luaCacheKeySetupView = new CacheKeySetupView(options);
+                        this.luaCacheKeySetupView.render(renderTarget);
+                    } else {
+                        this.luaCacheKeySetupView.update(query, query2, renderTarget);
+                    }
+                    this.domainManageNavbar.select(this.curPage);
+                    this.curView = this.luaCacheKeySetupView;
+                }.bind(this));
+            },
+
+            luaDelMarkCache: function(query, query2) {
+                require(['luaDelMarkCache.view', 'luaDelMarkCache.model'], function(DelMarkCacheView, DelMarkCacheModel) {
+                    this.navbarView.select('customerSetup');
+                    this.curPage = 'customerSetup-domainList-luaDelMarkCache';
+                    this.setupLuaDomainManageNavbar(query, query2);
+                    var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                    if (!this.luaDelMarkCacheModel)
+                        this.luaDelMarkCacheModel = new DelMarkCacheModel();
+                    if (!this.luaDelMarkCacheView) {
+                        var options = {
+                            collection: this.luaDelMarkCacheModel,
+                            query: query,
+                            query2: query2
+                        };
+                        this.luaDelMarkCacheView = new DelMarkCacheView(options);
+                        this.luaDelMarkCacheView.render(renderTarget);
+                    } else {
+                        this.luaDelMarkCacheView.update(query, query2, renderTarget);
+                    }
+                    this.domainManageNavbar.select(this.curPage);
+                    this.curView = this.luaDelMarkCacheView;
                 }.bind(this));
             },
 
@@ -328,9 +328,9 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
                         this.luaCacheRuleView = new LuaCacheRuleView(options);
                         this.luaCacheRuleView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.luaCacheRuleView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.luaCacheRuleView;
                 }.bind(this));
             },
@@ -353,9 +353,9 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
                         this.backOriginSetupView = new BackOriginSetupView(options);
                         this.backOriginSetupView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.backOriginSetupView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.backOriginSetupView;
                 }.bind(this));
             },
@@ -378,9 +378,9 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
                         this.backOriginDetectionView = new BackOriginDetectionView(options);
                         this.backOriginDetectionView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.backOriginDetectionView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.backOriginDetectionView;
                 }.bind(this));
             },
@@ -403,9 +403,9 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
                         this.cnameSetupView = new CnameSetupView(options);
                         this.cnameSetupView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.cnameSetupView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.cnameSetupView;
                 }.bind(this));
             },
@@ -429,9 +429,9 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
                         this.domainSetupView = new DomainSetupView(options);
                         this.domainSetupView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.domainSetupView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.domainSetupView;
                 }.bind(this));
             },
@@ -459,9 +459,9 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
                         this.basicInformationView = new BasicInformationView(options);
                         this.basicInformationView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.basicInformationView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.basicInformationView;
                 }.bind(this));
             },

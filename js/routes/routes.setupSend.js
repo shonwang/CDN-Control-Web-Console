@@ -39,9 +39,9 @@ define("routes.setupSend", ['require', 'exports'],
                         this.setupSendDoneView = new SetupSendDoneView(options);
                         this.setupSendDoneView.render(renderTarget);
                     } else {
-                        this.setupSendNavbar.select(this.curPage);
                         this.setupSendDoneView.update(renderTarget);
                     }
+                    this.setupSendNavbar.select(this.curPage);
                     this.curView = this.setupSendDoneView;
                 }.bind(this));
             },
@@ -64,9 +64,9 @@ define("routes.setupSend", ['require', 'exports'],
                         this.setupSendingView = new SetupSendingView(options);
                         this.setupSendingView.render(renderTarget);
                     } else {
-                        this.setupSendNavbar.select(this.curPage);
                         this.setupSendingView.update(renderTarget);
                     }
+                    this.setupSendNavbar.select(this.curPage);
                     this.curView = this.setupSendingView;
                 }.bind(this));
             },
@@ -89,9 +89,9 @@ define("routes.setupSend", ['require', 'exports'],
                         this.setupSendWaitCustomizeView = new SetupSendWaitCustomizeView(options);
                         this.setupSendWaitCustomizeView.render(renderTarget);
                     } else {
-                        this.setupSendNavbar.select(this.curPage);
                         this.setupSendWaitCustomizeView.update(renderTarget);
                     }
+                    this.setupSendNavbar.select(this.curPage);
                     this.curView = this.setupSendWaitCustomizeView;
                 }.bind(this));
             },
@@ -114,9 +114,9 @@ define("routes.setupSend", ['require', 'exports'],
                         this.setupSendWaitSendView = new SetupSendWaitSendView(options);
                         this.setupSendWaitSendView.render(renderTarget);
                     } else {
-                        this.setupSendNavbar.select(this.curPage);
                         this.setupSendWaitSendView.update(renderTarget);
                     }
+                    this.setupSendNavbar.select(this.curPage);
                     this.curView = this.setupSendWaitSendView;
                 }.bind(this));
             },

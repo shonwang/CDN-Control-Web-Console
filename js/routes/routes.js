@@ -64,6 +64,12 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "domainList/:query/luaBackOriginDetection/:query2": "luaBackOriginDetection",
                 "domainList/:query/luaBackOriginSetup/:query2": "luaBackOriginSetup",
                 "domainList/:query/luaCacheRule/:query2": "luaCacheRule",
+                "domainList/:query/luaDelMarkCache/:query2": "luaDelMarkCache",
+                "domainList/:query/luaCacheKeySetup/:query2": "luaCacheKeySetup",
+                "domainList/:query/luaDragPlay/:query2": "luaDragPlay",
+                "domainList/:query/luaClientLimitSpeed/:query2": "luaClientLimitSpeed",
+                "domainList/:query/luaHttpHeaderOpt/:query2": "luaHttpHeaderOpt",
+                "domainList/:query/luaHttpHeaderCtr/:query2": "luaHttpHeaderCtr",
 
                 //直播域名配置
                 "domainList/:query/liveBasicInformation/:query2": "liveBasicInformation",

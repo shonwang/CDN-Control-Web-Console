@@ -1,15 +1,6 @@
 define("luaCacheRule.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-            //0文件后缀，1目录，2具体url,3正则预留,4url包含指定参数9全局默认缓存配置项
-            var type = this.get('type');
-            if (type === 0) this.set("typeName", "文件类型");
-            if (type === 1) this.set("typeName", "指定目录");
-            if (type === 2) this.set("typeName", "指定URI");
-            if (type === 3) this.set("typeName", "正则匹配");
-            if (type === 4) this.set("typeName", "urI包含指定参数");
-            if (type === 9) this.set("typeName", "全部文件");
-
             var hasOriginPolicy = this.get('hasOriginPolicy'),
                 expireTime = this.get('expireTime'), summary = '';
 

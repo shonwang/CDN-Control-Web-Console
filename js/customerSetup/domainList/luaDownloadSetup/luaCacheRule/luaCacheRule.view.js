@@ -6,7 +6,12 @@ define("luaCacheRule.view", ['require','exports', 'template', 'modal.view', 'uti
         initialize: function(options) {
             this.collection = options.collection;
             this.options = options;
-            this.$el = $(_.template(template['tpl/customerSetup/domainList/luaDownloadSetup/cacheRule/cacheRule.html'])());
+            this.$el = $(_.template(template['tpl/customerSetup/domainList/luaDownloadSetup/mainCtn.html'])({
+                data: {
+                    mainTitle: "缓存优化",
+                    subTitle: "缓存规则"
+                }
+            }));
             var clientInfo = JSON.parse(options.query), 
                 domainInfo = JSON.parse(options.query2),
                 userInfo = {

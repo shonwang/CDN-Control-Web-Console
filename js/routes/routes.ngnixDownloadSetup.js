@@ -21,9 +21,9 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                         this.openNgxLogView = new OpenNgxLogView(options);
                         this.openNgxLogView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.openNgxLogView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.openNgxLogView;
                 }.bind(this));
             },
@@ -47,9 +47,9 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                         this.timestampView = new TimestampView(options);
                         this.timestampView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.timestampView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.timestampView;
                 }.bind(this));
             },
@@ -73,9 +73,9 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                         this.refererAntiLeechView = new RefererAntiLeechView(options);
                         this.refererAntiLeechView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.refererAntiLeechView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.refererAntiLeechView;
                 }.bind(this));
             },
@@ -99,9 +99,9 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                         this.ipBlackWhiteListView = new IpBlackWhiteListView(options);
                         this.ipBlackWhiteListView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.ipBlackWhiteListView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.ipBlackWhiteListView;
                 }.bind(this));
             },
@@ -124,15 +124,15 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                         this.requestArgsModifyView = new RequestArgsModifyView(options);
                         this.requestArgsModifyView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.requestArgsModifyView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.requestArgsModifyView;
                 }.bind(this));
             },
 
             httpHeaderCtr: function(query, query2) {
-                if (!AUTH_OBJ.HttpheadControl) return;
+                //if (!AUTH_OBJ.HttpheadControl) return;
                 require(['httpHeaderCtr.view', 'httpHeaderCtr.model'], function(HttpHeaderCtrView, HttpHeaderCtrModel) {
                     this.navbarView.select('customerSetup');
                     this.curPage = 'customerSetup-domainList-httpHeaderCtr';
@@ -150,15 +150,15 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                         this.httpHeaderCtrView = new HttpHeaderCtrView(options);
                         this.httpHeaderCtrView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.httpHeaderCtrView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.httpHeaderCtrView;
                 }.bind(this));
             },
 
             httpHeaderOpt: function(query, query2) {
-                if (!AUTH_OBJ.HttpheadControl) return;
+                //if (!AUTH_OBJ.HttpheadControl) return;
                 require(['httpHeaderOpt.view', 'httpHeaderOpt.model'], function(HttpHeaderOptView, HttpHeaderOptModel) {
                     this.navbarView.select('customerSetup');
                     this.curPage = 'customerSetup-domainList-httpHeaderOpt';
@@ -176,9 +176,9 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                         this.httpHeaderOptView = new HttpHeaderOptView(options);
                         this.httpHeaderOptView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.httpHeaderOptView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.httpHeaderOptView;
                 }.bind(this));
             },
@@ -202,9 +202,9 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                         this.clientLimitSpeedView = new ClientLimitSpeedView(options);
                         this.clientLimitSpeedView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.clientLimitSpeedView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.clientLimitSpeedView;
                 }.bind(this));
             },
@@ -228,9 +228,9 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                         this.dragPlayView = new DragPlayView(options);
                         this.dragPlayView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.dragPlayView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.dragPlayView;
                 }.bind(this));
             },
@@ -253,9 +253,9 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                         this.following302View = new Following302View(options);
                         this.following302View.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.following302View.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.following302View;
                 }.bind(this));
             },
@@ -278,9 +278,9 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                         this.backOriginDetectionView = new BackOriginDetectionView(options);
                         this.backOriginDetectionView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.backOriginDetectionView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.backOriginDetectionView;
                 }.bind(this));
             },
@@ -303,9 +303,9 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                         this.backOriginSetupView = new BackOriginSetupView(options);
                         this.backOriginSetupView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.backOriginSetupView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.backOriginSetupView;
                 }.bind(this));
             },
@@ -328,9 +328,9 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                         this.cnameSetupView = new CnameSetupView(options);
                         this.cnameSetupView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.cnameSetupView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.cnameSetupView;
                 }.bind(this));
             },
@@ -353,9 +353,9 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                         this.cacheKeySetupView = new CacheKeySetupView(options);
                         this.cacheKeySetupView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.cacheKeySetupView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.cacheKeySetupView;
                 }.bind(this));
             },
@@ -378,9 +378,9 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                         this.delMarkCacheView = new DelMarkCacheView(options);
                         this.delMarkCacheView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.delMarkCacheView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.delMarkCacheView;
                 }.bind(this));
             },
@@ -403,9 +403,9 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                         this.cacheRuleView = new CacheRuleView(options);
                         this.cacheRuleView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.cacheRuleView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.cacheRuleView;
                 }.bind(this));
             },
@@ -433,9 +433,9 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                         this.basicInformationView = new BasicInformationView(options);
                         this.basicInformationView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.basicInformationView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.basicInformationView;
                 }.bind(this));
             },
@@ -463,9 +463,9 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                         this.urlBlackListView = new UrlBlackListView(options);
                         this.urlBlackListView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.urlBlackListView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.urlBlackListView;
                 }.bind(this));
             },
@@ -489,9 +489,9 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                         this.domainSetupView = new DomainSetupView(options);
                         this.domainSetupView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.domainSetupView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.domainSetupView;
                 }.bind(this));
             },

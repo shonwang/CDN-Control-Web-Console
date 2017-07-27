@@ -52,9 +52,9 @@ define("routes.customerSetup", ['require', 'exports'],
                         this.openAPILogSetupView = new OpenAPILogSetupView(options);
                         this.openAPILogSetupView.render(renderTarget);
                     } else {
-                        this.domainManageNavbar.select(this.curPage);
                         this.openAPILogSetupView.update(query, query2, renderTarget);
                     }
+                    this.domainManageNavbar.select(this.curPage);
                     this.curView = this.openAPILogSetupView;
                 }.bind(this));
             },
@@ -77,9 +77,9 @@ define("routes.customerSetup", ['require', 'exports'],
                         this.domainListView = new DomainListView(options);
                         this.domainListView.render(renderTarget);
                     } else {
-                        this.customerSetupNavbar.select(this.curPage);
                         this.domainListView.update(query, renderTarget);
                     }
+                    this.customerSetupNavbar.select(this.curPage);
                     this.curView = this.domainListView;
                 }.bind(this));
             },
@@ -132,11 +132,10 @@ define("routes.customerSetup", ['require', 'exports'],
                         this.blockUrlModel.permissionsControl({
                             userId: query.uid
                         });
-                    }
-                    else{
-                        this.customerSetupNavbar.select(this.curPage);
+                    } else {
                         this.blockUrlView.update(renderTarget);
                     }
+                    this.customerSetupNavbar.select(this.curPage);
                     this.curView = this.blockUrlView;
                 }.bind(this));
             },
@@ -159,9 +158,9 @@ define("routes.customerSetup", ['require', 'exports'],
                         this.interfaceQuotaView = new DomainListView(options);
                         this.interfaceQuotaView.render(renderTarget);
                     } else {
-                        this.customerSetupNavbar.select(this.curPage);
                         this.interfaceQuotaView.update(query, renderTarget);
                     }
+                    this.customerSetupNavbar.select(this.curPage);
                     this.curView = this.interfaceQuotaView;
                 }.bind(this));
             },

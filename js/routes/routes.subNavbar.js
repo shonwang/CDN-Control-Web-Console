@@ -59,6 +59,174 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     this.domainManageNavbar = new SubNavbar(menuOptions);
                     this.domainManageNavbar.select(this.curPage);
                 }
+            },         
+
+            setupLuaDomainManageNavbar: function(query, query2) {
+                var menu = [{
+                    id: 'customerSetup-domainList-luaBasicInformation',
+                    name: '基本信息',
+                    hash: 'index.html#/domainList/' + query + '/luaBasicInformation/' + query2,
+                    children: []
+                }, {
+                    id: '',
+                    name: '域名设置',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'customerSetup-domainList-luaDomainSetup',
+                        name: '域名基础设置',
+                        hash: 'index.html#/domainList/' + query + '/luaDomainSetup/' + query2,
+                        active: true,
+                        children: []
+                    }, {
+                        id: 'customerSetup-domainList-luaCnameSetup',
+                        name: 'CNAME设置',
+                        hash: 'index.html#/domainList/' + query + '/luaCnameSetup/' + query2,
+                        active: false,
+                        children: []
+                    }]
+                }, {
+                    id: '',
+                    name: '源站配置',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'customerSetup-domainList-luaBackOriginDetection',
+                        name: '回源检测',
+                        hash: 'index.html#/domainList/' + query + '/luaBackOriginDetection/' + query2,
+                        active: false,
+                        children: []
+                    }, {
+                        id: 'customerSetup-domainList-backOriginSetup',
+                        name: '回源配置',
+                        hash: 'index.html#/domainList/' + query + '/backOriginSetup/' + query2,
+                        active: false,
+                        children: []
+                    }]
+                }, {
+                    id: '',
+                    name: '缓存优化',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'customerSetup-domainList-cacheRule',
+                        name: '缓存规则',
+                        hash: 'index.html#/domainList/' + query + '/cacheRule/' + query2,
+                        active: false,
+                        children: []
+                    }, {
+                        id: 'customerSetup-domainList-delMarkCache',
+                        name: '去问号缓存',
+                        hash: 'index.html#/domainList/' + query + '/delMarkCache/' + query2,
+                        active: false,
+                        children: []
+                    }, {
+                        id: 'customerSetup-domainList-cacheKeySetup',
+                        name: '设置 Cache Key',
+                        hash: 'index.html#/domainList/' + query + '/cacheKeySetup/' + query2,
+                        active: false,
+                        children: []
+                    }]
+                }, {
+                    id: '',
+                    name: '点播优化',
+                    //notShow: !AUTH_OBJ.OndemandOptimization,
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'customerSetup-domainList-dragPlay',
+                        name: '拖拽播放',
+                        hash: 'index.html#/domainList/' + query + '/dragPlay/' + query2,
+                        active: false,
+                        children: []
+                    }]
+                }, {
+                    id: '',
+                    name: '限速',
+                    //notShow: !AUTH_OBJ.SpeedLimit,
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'customerSetup-domainList-clientLimitSpeed',
+                        name: '客户端限速',
+                        hash: 'index.html#/domainList/' + query + '/clientLimitSpeed/' + query2,
+                        active: false,
+                        children: []
+                    }]
+                }, {
+                    id: '',
+                    name: 'HTTP头控制',
+                    //notShow: !AUTH_OBJ.HttpheadControl,
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'customerSetup-domainList-httpHeaderOpt',
+                        name: 'HTTP头的增删改查',
+                        hash: 'index.html#/domainList/' + query + '/httpHeaderOpt/' + query2,
+                        active: false,
+                        children: []
+                    }, {
+                        id: 'customerSetup-domainList-httpHeaderCtr',
+                        name: '常用HTTP头控制功能',
+                        hash: 'index.html#/domainList/' + query + '/httpHeaderCtr/' + query2,
+                        active: false,
+                        children: []
+                    }]
+                }, {
+                    id: '',
+                    name: 'URL控制',
+                    //notShow: !AUTH_OBJ.UrlControl,
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'customerSetup-domainList-requestArgsModify',
+                        name: '请求参数的改写',
+                        hash: 'index.html#/domainList/' + query + '/requestArgsModify/' + query2,
+                        active: false,
+                        children: []
+                    }]
+                }, {
+                    id: '',
+                    name: '访问控制',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'customerSetup-domainList-ipBlackWhiteList',
+                        name: 'IP黑白名单',
+                        hash: 'index.html#/domainList/' + query + '/ipBlackWhiteList/' + query2,
+                        //--notShow:!AUTH_OBJ.IPMatchingCondition,
+                        active: false,
+                        children: []
+                    }, {
+                        id: 'customerSetup-domainList-refererAntiLeech',
+                        name: 'Referer防盗链',
+                        hash: 'index.html#/domainList/' + query + '/refererAntiLeech/' + query2,
+                        //--notShow:!AUTH_OBJ.referIPMatchingCondition,
+                        active: false,
+                        children: []
+                    }, {
+                        id: 'customerSetup-domainList-timestamp',
+                        name: '时间戳+共享秘钥防盗链',
+                        hash: 'index.html#/domainList/' + query + '/timestamp/' + query2,
+                        //notShow: !AUTH_OBJ.TimeSafetychain,
+                        active: false,
+                        children: []
+                    }]
+                }, {
+                    id: 'customerSetup-domainList-logServer',
+                    name: '日志服务',
+                    hash: 'javascript:void(0)',
+                    children: [{
+                        id: 'customerSetup-domainList-openNgxLog',
+                        name: '开启Nginx计费日志',
+                        hash: 'index.html#/domainList/' + query + '/openNgxLog/' + query2,
+                        active: false,
+                        children: []
+                    }]
+                }];
+
+                if (!this.domainManageNavbar) {
+                    var menuOptions = {
+                        query: query,
+                        query2: query2,
+                        menuList: menu,
+                        backHash: 'index.html#/domainList/' + query
+                    }
+                    this.domainManageNavbar = new SubNavbar(menuOptions);
+                    this.domainManageNavbar.select(this.curPage);
+                }
             },
 
             setupLiveDomainManageNavbar: function(query, query2) {

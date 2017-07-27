@@ -2,6 +2,7 @@ define("routes", ['require', 'exports', 'navbar.view',
         'routes.subNavbar',
         'routes.resourceManage',
         'routes.ngnixDownloadSetup',
+        'routes.luaDownloadSetup',
         'routes.liveSetup',
         'routes.dispSetup',
         'routes.customerSetup',
@@ -12,6 +13,7 @@ define("routes", ['require', 'exports', 'navbar.view',
         RouterSubNavbar,
         RouterResourceManage,
         RouterNgnixDownloadSetup,
+        RouterLuaDownloadSetup,
         RouterLiveSetup,
         RouterDispSetup,
         RouterCustomerSetup,
@@ -56,7 +58,10 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "pnoSetup/:query": "pnoSetup",
 
                 //Lua 下载域名配置
-                "domainList/:query/luaBasicInformation/:query2": "basicInformation",
+                "domainList/:query/luaBasicInformation/:query2": "luaBasicInformation",
+                "domainList/:query/luaDomainSetup/:query2": "luaDomainSetup",
+                "domainList/:query/luaCnameSetup/:query2": "luaCnameSetup",
+                "domainList/:query/luaBackOriginDetection/:query2": "luaBackOriginDetection",
 
                 //直播域名配置
                 "domainList/:query/liveBasicInformation/:query2": "liveBasicInformation",
@@ -139,6 +144,7 @@ define("routes", ['require', 'exports', 'navbar.view',
         Workspace = Workspace.extend(RouterSubNavbar);
         Workspace = Workspace.extend(RouterResourceManage);
         Workspace = Workspace.extend(RouterNgnixDownloadSetup);
+        Workspace = Workspace.extend(RouterLuaDownloadSetup);
         Workspace = Workspace.extend(RouterLiveSetup);
         Workspace = Workspace.extend(RouterDispSetup);
         Workspace = Workspace.extend(RouterCustomerSetup);

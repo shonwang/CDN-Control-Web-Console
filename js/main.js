@@ -139,6 +139,7 @@
   "routes.dispSetup": "routes/routes.dispSetup",
   "routes": "routes/routes",
   "routes.liveSetup": "routes/routes.liveSetup",
+  "routes.luaDownloadSetup": "routes/routes.luaDownloadSetup",
   "routes.ngnixDownloadSetup": "routes/routes.ngnixDownloadSetup",
   "routes.other": "routes/routes.other",
   "routes.resourceManage": "routes/routes.resourceManage",

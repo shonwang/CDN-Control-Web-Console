@@ -62,6 +62,8 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "domainList/:query/luaDomainSetup/:query2": "luaDomainSetup",
                 "domainList/:query/luaCnameSetup/:query2": "luaCnameSetup",
                 "domainList/:query/luaBackOriginDetection/:query2": "luaBackOriginDetection",
+                "domainList/:query/luaBackOriginSetup/:query2": "luaBackOriginSetup",
+                "domainList/:query/luaCacheRule/:query2": "luaCacheRule",
 
                 //直播域名配置
                 "domainList/:query/liveBasicInformation/:query2": "liveBasicInformation",

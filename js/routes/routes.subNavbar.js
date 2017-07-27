@@ -95,9 +95,9 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                         active: false,
                         children: []
                     }, {
-                        id: 'customerSetup-domainList-backOriginSetup',
+                        id: 'customerSetup-domainList-luaBackOriginSetup',
                         name: '回源配置',
-                        hash: 'index.html#/domainList/' + query + '/backOriginSetup/' + query2,
+                        hash: 'index.html#/domainList/' + query + '/luaBackOriginSetup/' + query2,
                         active: false,
                         children: []
                     }]
@@ -106,9 +106,9 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     name: '缓存优化',
                     hash: 'javascript:void(0)',
                     children: [{
-                        id: 'customerSetup-domainList-cacheRule',
+                        id: 'customerSetup-domainList-luaCacheRule',
                         name: '缓存规则',
-                        hash: 'index.html#/domainList/' + query + '/cacheRule/' + query2,
+                        hash: 'index.html#/domainList/' + query + '/luaCacheRule/' + query2,
                         active: false,
                         children: []
                     }, {

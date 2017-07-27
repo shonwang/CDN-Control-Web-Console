@@ -310,28 +310,28 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
                 }.bind(this));
             },
 
-            cacheRule: function(query, query2) {
-                require(['cacheRule.view', 'cacheRule.model'], function(CacheRuleView, CacheRuleModel) {
+            luaCacheRule: function(query, query2) {
+                require(['luaCacheRule.view', 'luaCacheRule.model'], function(LuaCacheRuleView, LuaCacheRuleModel) {
                     this.navbarView.select('customerSetup');
-                    this.curPage = 'customerSetup-domainList-cacheRule';
+                    this.curPage = 'customerSetup-domainList-luaCacheRule';
                     this.setupLuaDomainManageNavbar(query, query2);
                     var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
 
-                    if (!this.cacheRuleModel)
-                        this.cacheRuleModel = new CacheRuleModel();
-                    if (!this.cacheRuleView) {
+                    if (!this.luaCacheRuleModel)
+                        this.luaCacheRuleModel = new LuaCacheRuleModel();
+                    if (!this.luaCacheRuleView) {
                         var options = {
-                            collection: this.cacheRuleModel,
+                            collection: this.luaCacheRuleModel,
                             query: query,
                             query2: query2
                         };
-                        this.cacheRuleView = new CacheRuleView(options);
-                        this.cacheRuleView.render(renderTarget);
+                        this.luaCacheRuleView = new LuaCacheRuleView(options);
+                        this.luaCacheRuleView.render(renderTarget);
                     } else {
                         this.domainManageNavbar.select(this.curPage);
-                        this.cacheRuleView.update(query, query2, renderTarget);
+                        this.luaCacheRuleView.update(query, query2, renderTarget);
                     }
-                    this.curView = this.cacheRuleView;
+                    this.curView = this.luaCacheRuleView;
                 }.bind(this));
             },
 

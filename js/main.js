@@ -58,6 +58,8 @@
   "liveUpBasicInformation.view": "customerSetup/domainList/liveSetup/liveUpBasicInformation/liveUpBasicInformation.view",
   "liveUpFlowNameChange.model": "customerSetup/domainList/liveSetup/liveUpFlowNameChange/liveUpFlowNameChange.model",
   "liveUpFlowNameChange.view": "customerSetup/domainList/liveSetup/liveUpFlowNameChange/liveUpFlowNameChange.view",
+  "luaCacheRule.model": "customerSetup/domainList/luaDownloadSetup/luaCacheRule/luaCacheRule.model",
+  "luaCacheRule.view": "customerSetup/domainList/luaDownloadSetup/luaCacheRule/luaCacheRule.view",
   "backOriginDetection.model": "customerSetup/domainList/nginxDownloadSetup/backOriginDetection/backOriginDetection.model",
   "backOriginDetection.view": "customerSetup/domainList/nginxDownloadSetup/backOriginDetection/backOriginDetection.view",
   "backOriginSetup.model": "customerSetup/domainList/nginxDownloadSetup/backOriginSetup/backOriginSetup.model",

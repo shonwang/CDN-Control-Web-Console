@@ -26,13 +26,20 @@ define("react.modal.confirm", ['require', 'exports'],
                 this.props.callback&&this.props.callback(event);
             },
 
+            createMarkup: function(){
+                 return {__html: this.props.message}; 
+            },
+
             render: function() {
                 var reactModalConfirm = (
                             <Modal show={this.state.showModal} onHide={this.close} backdrop={this.props.backdrop}>
                                 <Modal.Header>
                                     <Modal.Title>请确认</Modal.Title>
                                 </Modal.Header>
-                                <Modal.Body><span className="glyphicon glyphicon-question-sign"></span>{this.props.message}</Modal.Body>
+                                <Modal.Body>
+                                    <span className="glyphicon glyphicon-question-sign"></span>
+                                    <span dangerouslySetInnerHTML={this.createMarkup()} />
+                                </Modal.Body>
                                 <Modal.Footer>
                                     <Button bsStyle="primary" onClick={this.onClickSure}>确定</Button>
                                     <Button onClick={this.close}>取消</Button>

@@ -26,13 +26,20 @@ define("react.modal.confirm", ['require', 'exports'],
                 this.props.callback&&this.props.callback(event);
             },
 
+            createMarkup: function(){
+                 return {__html: this.props.message}; 
+            },
+
             render: function() {
                 var reactModalConfirm = (
                             React.createElement(Modal, {show: this.state.showModal, onHide: this.close, backdrop: this.props.backdrop}, 
                                 React.createElement(Modal.Header, null, 
                                     React.createElement(Modal.Title, null, "请确认")
                                 ), 
-                                React.createElement(Modal.Body, null, React.createElement("span", {className: "glyphicon glyphicon-question-sign"}), this.props.message), 
+                                React.createElement(Modal.Body, null, 
+                                    React.createElement("span", {className: "glyphicon glyphicon-question-sign"}), 
+                                    React.createElement("span", {dangerouslySetInnerHTML: this.createMarkup()})
+                                ), 
                                 React.createElement(Modal.Footer, null, 
                                     React.createElement(Button, {bsStyle: "primary", onClick: this.onClickSure}, "确定"), 
                                     React.createElement(Button, {onClick: this.close}, "取消")

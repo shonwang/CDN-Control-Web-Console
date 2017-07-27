@@ -92,7 +92,8 @@ define("openNgxLog.view", ['require','exports', 'template', 'modal.view', 'utili
                 "chargingOpen": this.defaultParam.chargingOpen,
                 t: new Date().valueOf()
             }
-            this.collection.setChargingOpen(postParam)
+            this.collection.setChargingOpen(postParam);
+            Utility.onContentSave();
         },
 
         onClickToggle: function(){
@@ -103,6 +104,7 @@ define("openNgxLog.view", ['require','exports', 'template', 'modal.view', 'utili
             } else {
                 this.defaultParam.chargingOpen = 0;
             }
+            Utility.onContentChange();
         },
 
         onGetError: function(error){

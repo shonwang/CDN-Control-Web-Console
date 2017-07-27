@@ -351,6 +351,7 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
                     }.bind(this))
                     this.collection.trigger("get.IPSafetyChainList.success");
                     this.addRolePopup.$el.modal('hide');
+                    Utility.onContentChange();
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
@@ -389,6 +390,7 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
                     this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
                     this.collection.trigger("get.IPSafetyChainList.success");
                     this.addRolePopup.$el.modal('hide');
+                    Utility.onContentChange();
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
@@ -410,7 +412,8 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
 
             this.collection.models = Utility.adjustElement(this.collection.models, modelIndex, true)
 
-            this.collection.trigger("get.IPSafetyChainList.success")
+            this.collection.trigger("get.IPSafetyChainList.success");
+            Utility.onContentChange();
         },
 
         onClickItemDown: function(event){
@@ -428,7 +431,8 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
 
             this.collection.models = Utility.adjustElement(this.collection.models, modelIndex, false)
 
-            this.collection.trigger("get.IPSafetyChainList.success")
+            this.collection.trigger("get.IPSafetyChainList.success");
+            Utility.onContentChange();
         },
         onClickSaveBtn: function(){
             var list = [];
@@ -445,10 +449,12 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
                 "list": list
             }
             this.collection.setIPSafetyChain(postParam);
+            Utility.onContentSave();
         },
         onClickItemDelete: function(event){
             var result = confirm("你确定要删除吗？");
             if (!result) return;
+            Utility.onContentChange();
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
             for (var i = 0; i < this.collection.models.length; i++){
@@ -458,6 +464,7 @@ define("ipBlackWhiteList.view", ['require','exports', 'template', 'modal.view', 
                     return;
                 }
             }
+            
         },
         
         hide: function(){

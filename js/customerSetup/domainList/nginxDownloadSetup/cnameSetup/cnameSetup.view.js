@@ -27,6 +27,8 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
                     myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
                     myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
             }.bind(this))
+            
+            this.$el.find("#cname-set").on("focus",Utility.onContentChange);
         },
 
         onGetDomainInfo: function(data){
@@ -97,6 +99,7 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
                 cname: this.$el.find("#cname-set").val().trim(),
             };
             this.collection.modifyDomainCname(postParam);
+            Utility.onContentSave();
         },
 
         onGetError: function(error){

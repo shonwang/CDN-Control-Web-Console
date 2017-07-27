@@ -69,7 +69,13 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
             this.$el.find(".save").on('click',$.proxy(this.onClickSaveButton,this));
 
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
+            this.$el.find('#Remarks').on("focus",Utility.onContentChange);
+            this.$el.find('input[name=remarksRadio]').on("change",Utility.onContentChange);
         },
+        
+
+
         onClickRadio: function(event){
             var target = event.target || event.srcElement;
             if(target.tagName != 'INPUT') return;
@@ -88,6 +94,7 @@ define("basicInformation.view", ['require','exports', 'template', 'modal.view', 
         onClickSaveButton: function(){
             this.defaultParam.description = this.$el.find("#Remarks").val();
             this.collection.modifyDomainBasic(this.defaultParam);
+            Utility.onContentSave();
         },
 
         onSaveSuccess: function(){

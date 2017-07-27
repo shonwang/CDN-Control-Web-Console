@@ -341,7 +341,8 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
                 "list": list
             }
 
-            this.collection.setReferSafetyChains(postParam)
+            this.collection.setReferSafetyChains(postParam);
+            Utility.onContentSave();
         },
 
         onGetError: function(error){
@@ -418,6 +419,7 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
                     }.bind(this))
                     this.collection.trigger("get.refer.success");
                     this.addRolePopup.$el.modal('hide');
+                    Utility.onContentChange();
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
@@ -457,6 +459,7 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
                     this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
                     this.collection.trigger("get.refer.success");
                     this.addRolePopup.$el.modal('hide');
+                    Utility.onContentChange();
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
@@ -468,6 +471,7 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
             if (!result) return;
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
+            Utility.onContentChange();
             for (var i = 0; i < this.collection.models.length; i++){
                 if (this.collection.models[i].get("id") === parseInt(id)){
                     this.collection.models.splice(i, 1);
@@ -507,7 +511,8 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
 
             this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
-            this.collection.trigger("get.refer.success")
+            this.collection.trigger("get.refer.success");
+            Utility.onContentChange();
         },
 
         onClickItemDown: function(event){
@@ -540,7 +545,8 @@ define("refererAntiLeech.view", ['require','exports', 'template', 'modal.view', 
 
             this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
-            this.collection.trigger("get.refer.success")
+            this.collection.trigger("get.refer.success");
+            Utility.onContentChange();
         },
 
         hide: function(){

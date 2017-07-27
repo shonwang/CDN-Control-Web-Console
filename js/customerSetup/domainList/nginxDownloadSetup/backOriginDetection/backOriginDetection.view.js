@@ -100,7 +100,8 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
             //requestWay.attr('disabled','disabled');
             responseState.attr('readonly','readonly');
             detectionFrequency.attr('readonly','readonly');
-
+            detectionFile.on("focus",Utility.onContentChange);
+            setupHost.on("focus",Utility.onContentChange);
             this.initOriginTypeDropdown();
         },
 
@@ -113,6 +114,7 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
             rootNode = this.$el.find(".way .way-type");
             Utility.initDropMenu(rootNode, baseArray, function(value){
                 this.defaultParam.detectMethod = value;
+                Utility.onContentChange();
             }.bind(this));
 
             var defaultValue = _.find(baseArray, function(object){
@@ -135,6 +137,7 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
                 this.$el.find(".host #setupHost").removeAttr('readonly');
             }
             this.defaultParam.flag = (state == true) ? 1:0;
+            Utility.onContentChange();
         },
 
         onClickSaveBtn: function(){
@@ -160,6 +163,7 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
             this.defaultParam.frequency = parseInt(detectionFrequency.val());
             
             this.collection.addDetectInfo(this.defaultParam);
+            Utility.onContentSave();
         },
 
         onSaveSuccess: function(){

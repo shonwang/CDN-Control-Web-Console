@@ -204,6 +204,9 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
             }
             this.$el.find("#set-limit").val(this.defaultParam.limitSpeed);
             this.updateTimeLimitTable();
+
+            this.$el.find("#byte-limit").on("focus",Utility.onContentChange);
+            this.$el.find("#set-limit").on("focus",Utility.onContentChange);
         },
 
         updateTimeLimitTable: function(){
@@ -226,6 +229,7 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
 
             this.defaultParam.timeLimitList = filterArray;
             this.updateTimeLimitTable();
+            Utility.onContentChange();
         },
 
         onClickAddTimeLimit: function(){
@@ -245,6 +249,7 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
                     this.defaultParam.timeLimitList.push(aTimeLimit);
                     this.updateTimeLimitTable();
                     this.addTimeLimitPopup.$el.modal("hide");
+                    Utility.onContentChange();
                 }.bind(this),
                 onHiddenCallback: function(){
                 }.bind(this)
@@ -282,6 +287,7 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
                 this.$el.find(".byte-limit").hide();
                 this.defaultParam.byteNotLimit = 1;
             }
+            Utility.onContentChange();
         },
 
         onClickSetLimitToggle: function(){
@@ -294,6 +300,7 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
                 this.$el.find(".set-limit").hide();
                 this.defaultParam.limitSpeedToggle = 1;
             }
+            Utility.onContentChange();
         },
 
         onSure: function(){

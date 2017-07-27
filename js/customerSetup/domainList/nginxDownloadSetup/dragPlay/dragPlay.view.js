@@ -80,7 +80,8 @@ define("dragPlay.view", ['require','exports', 'template', 'modal.view', 'utility
                 })
             }.bind(this))
 
-            this.collection.setDragConf(list)
+            this.collection.setDragConf(list);
+            Utility.onContentSave();
         },
 
         onDragListSuccess: function(){
@@ -136,7 +137,8 @@ define("dragPlay.view", ['require','exports', 'template', 'modal.view', 'utility
             var id = $(eventTarget).attr("id"),
                 model = this.collection.get(id);
 
-            model.set("status", eventTarget.checked ? 1 : 0)
+            model.set("status", eventTarget.checked ? 1 : 0);
+            Utility.onContentChange();
         },
 
         onGetError: function(error){

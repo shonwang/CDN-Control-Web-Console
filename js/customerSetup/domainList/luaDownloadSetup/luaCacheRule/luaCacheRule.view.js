@@ -121,6 +121,9 @@ define("luaCacheRule.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find("#cacheTimeRadios3").get(0).checked = true;
             }
             this.initTimeDropdown();
+            this.$el.find("input[name=cacheTimeRadios]").on("change",Utility.onContentChange);
+            this.$el.find("#yes-cache-time").on("focus",Utility.onContentChange);
+            this.$el.find("#origin-cache-time").on("focus",Utility.onContentChange);
         },
 
         initTimeDropdown: function(){
@@ -140,6 +143,7 @@ define("luaCacheRule.view", ['require','exports', 'template', 'modal.view', 'uti
 
             Utility.initDropMenu(rootNode, timeArray, function(value){
                 this.defaultParam.cacheTime = parseInt(curInputEl.val()) * parseInt(value);
+                Utility.onContentChange();
             }.bind(this));
 
             curInputEl.on("click", function(){curInputEl.focus()}.bind(this))

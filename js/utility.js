@@ -478,6 +478,12 @@ define("utility", ['require','exports'], function(require, exports) {
                 }
             }
             return true;
+        },
+        onContentChange:function(){
+            window.IS_ALERT_SAVE = true;
+        },
+        onContentSave:function(){
+            window.IS_ALERT_SAVE = false;
         }
     };
     return Utility;

@@ -2,132 +2,106 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
     function(require, exports) {
         var RouterLuaDownloadSetup = {
 
-            openNgxLog: function(query, query2) {
-                if (!AUTH_OBJ.LogServer) return;
-                require(['openNgxLog.view', 'openNgxLog.model'], function(OpenNgxLogView, OpenNgxLogModel) {
+            luaTimestamp: function(query, query2) {
+                //if (!AUTH_OBJ.TimeSafetychain) return;
+                require(['luaTimestamp.view', 'luaTimestamp.model'], function(TimestampView, TimestampModel) {
                     this.navbarView.select('customerSetup');
-                    this.curPage = 'customerSetup-domainList-openNgxLog';
+                    this.curPage = 'customerSetup-domainList-luaTimestamp';
                     this.setupLuaDomainManageNavbar(query, query2);
                     var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
 
-                    if (!this.openNgxLogModel)
-                        this.openNgxLogModel = new OpenNgxLogModel();
-                    if (!this.openNgxLogView) {
+                    if (!this.luaTimestampModel)
+                        this.luaTimestampModel = new TimestampModel();
+                    if (!this.luaTimestampView) {
                         var options = {
-                            collection: this.openNgxLogModel,
+                            collection: this.luaTimestampModel,
                             query: query,
                             query2: query2
                         };
-                        this.openNgxLogView = new OpenNgxLogView(options);
-                        this.openNgxLogView.render(renderTarget);
+                        this.luaTimestampView = new TimestampView(options);
+                        this.luaTimestampView.render(renderTarget);
                     } else {
-                        this.openNgxLogView.update(query, query2, renderTarget);
+                        this.luaTimestampView.update(query, query2, renderTarget);
                     }
                     this.domainManageNavbar.select(this.curPage);
-                    this.curView = this.openNgxLogView;
+                    this.curView = this.luaTimestampView;
                 }.bind(this));
             },
 
-            timestamp: function(query, query2) {
-                if (!AUTH_OBJ.TimeSafetychain) return;
-                require(['timestamp.view', 'timestamp.model'], function(TimestampView, TimestampModel) {
-                    this.navbarView.select('customerSetup');
-                    this.curPage = 'customerSetup-domainList-timestamp';
-                    this.setupLuaDomainManageNavbar(query, query2);
-                    var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
-
-                    if (!this.timestampModel)
-                        this.timestampModel = new TimestampModel();
-                    if (!this.timestampView) {
-                        var options = {
-                            collection: this.timestampModel,
-                            query: query,
-                            query2: query2
-                        };
-                        this.timestampView = new TimestampView(options);
-                        this.timestampView.render(renderTarget);
-                    } else {
-                        this.timestampView.update(query, query2, renderTarget);
-                    }
-                    this.domainManageNavbar.select(this.curPage);
-                    this.curView = this.timestampView;
-                }.bind(this));
-            },
-
-            refererAntiLeech: function(query, query2) {
+            luaRefererAntiLeech: function(query, query2) {
                 //if(!AUTH_OBJ.referIPMatchingCondition) return;
-                require(['refererAntiLeech.view', 'refererAntiLeech.model'], function(RefererAntiLeechView, RefererAntiLeechModel) {
+                require(['luaRefererAntiLeech.view', 'luaRefererAntiLeech.model'], function(RefererAntiLeechView, RefererAntiLeechModel) {
                     this.navbarView.select('customerSetup');
-                    this.curPage = 'customerSetup-domainList-refererAntiLeech';
+                    this.curPage = 'customerSetup-domainList-luaRefererAntiLeech';
                     this.setupLuaDomainManageNavbar(query, query2);
                     var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
 
-                    if (!this.refererAntiLeechModel)
-                        this.refererAntiLeechModel = new RefererAntiLeechModel();
-                    if (!this.refererAntiLeechView) {
+                    if (!this.luaRefererAntiLeechModel)
+                        this.luaRefererAntiLeechModel = new RefererAntiLeechModel();
+                    if (!this.luaRefererAntiLeechView) {
                         var options = {
-                            collection: this.refererAntiLeechModel,
+                            collection: this.luaRefererAntiLeechModel,
                             query: query,
                             query2: query2
                         };
-                        this.refererAntiLeechView = new RefererAntiLeechView(options);
-                        this.refererAntiLeechView.render(renderTarget);
+                        this.luaRefererAntiLeechView = new RefererAntiLeechView(options);
+                        this.luaRefererAntiLeechView.render(renderTarget);
                     } else {
-                        this.refererAntiLeechView.update(query, query2, renderTarget);
+                        this.luaRefererAntiLeechView.update(query, query2, renderTarget);
                     }
                     this.domainManageNavbar.select(this.curPage);
-                    this.curView = this.refererAntiLeechView;
+                    this.curView = this.luaRefererAntiLeechView;
                 }.bind(this));
             },
 
-            ipBlackWhiteList: function(query, query2) {
+            luaIpBlackWhiteList: function(query, query2) {
                 //if(!AUTH_OBJ.IPMatchingCondition) return;
-                require(['ipBlackWhiteList.view', 'ipBlackWhiteList.model'], function(IpBlackWhiteListView, IpBlackWhiteListModel) {
+                require(['luaIpBlackWhiteList.view', 'luaIpBlackWhiteList.model'], function(IpBlackWhiteListView, IpBlackWhiteListModel) {
                     this.navbarView.select('customerSetup');
-                    this.curPage = 'customerSetup-domainList-ipBlackWhiteList';
+                    this.curPage = 'customerSetup-domainList-luaIpBlackWhiteList';
                     this.setupLuaDomainManageNavbar(query, query2);
                     var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
 
-                    if (!this.ipBlackWhiteListModel)
-                        this.ipBlackWhiteListModel = new IpBlackWhiteListModel();
-                    if (!this.ipBlackWhiteListView) {
+                    if (!this.luaIpBlackWhiteListModel)
+                        this.luaIpBlackWhiteListModel = new IpBlackWhiteListModel();
+                    if (!this.luaIpBlackWhiteListView) {
                         var options = {
-                            collection: this.ipBlackWhiteListModel,
+                            collection: this.luaIpBlackWhiteListModel,
                             query: query,
                             query2: query2
                         };
-                        this.ipBlackWhiteListView = new IpBlackWhiteListView(options);
-                        this.ipBlackWhiteListView.render(renderTarget);
+                        this.luaIpBlackWhiteListView = new IpBlackWhiteListView(options);
+                        this.luaIpBlackWhiteListView.render(renderTarget);
                     } else {
-                        this.ipBlackWhiteListView.update(query, query2, renderTarget);
+                        this.luaIpBlackWhiteListView.update(query, query2, renderTarget);
                     }
                     this.domainManageNavbar.select(this.curPage);
-                    this.curView = this.ipBlackWhiteListView;
+                    this.curView = this.luaIpBlackWhiteListView;
                 }.bind(this));
             },
 
-            requestArgsModify: function(query, query2) {
+            luaRequestArgsModify: function(query, query2) {
                 require(['requestArgsModify.view', 'requestArgsModify.model'], function(RequestArgsModifyView, RequestArgsModifyModel) {
                     this.navbarView.select('customerSetup');
-                    this.curPage = 'customerSetup-domainList-requestArgsModify';
+                    this.curPage = 'customerSetup-domainList-luaRequestArgsModify';
                     this.setupLuaDomainManageNavbar(query, query2);
                     var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
 
-                    if (!this.requestArgsModifyModel)
-                        this.requestArgsModifyModel = new RequestArgsModifyModel();
-                    if (!this.requestArgsModifyView) {
+                    if (!this.luaRequestArgsModifyModel)
+                        this.luaRequestArgsModifyModel = new RequestArgsModifyModel();
+                    if (!this.luaRequestArgsModifyView) {
                         var options = {
-                            collection: this.requestArgsModifyModel,
+                            collection: this.luaRequestArgsModifyModel,
                             query: query,
                             query2: query2
                         };
-                        this.requestArgsModifyView = new RequestArgsModifyView(options);
-                        this.requestArgsModifyView.render(renderTarget);
+                        this.luaRequestArgsModifyView = new RequestArgsModifyView(options);
+                        this.luaRequestArgsModifyView.render(renderTarget);
                     } else {
-                        this.requestArgsModifyView.update(query, query2, renderTarget);
+                        this.luaRequestArgsModifyView.update(query, query2, renderTarget);
                     }
                     this.domainManageNavbar.select(this.curPage);
-                    this.curView = this.requestArgsModifyView;
+                    this.curView = this.luaRequestArgsModifyView;
                 }.bind(this));
             },
 
@@ -180,31 +154,6 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
                     }
                     this.domainManageNavbar.select(this.curPage);
                     this.curView = this.luaHttpHeaderOptView;
-                }.bind(this));
-            },
-
-            following302: function(query, query2) {
-                require(['following302.view', 'following302.model'], function(Following302View, Following302Model) {
-                    this.navbarView.select('customerSetup');
-                    this.curPage = 'customerSetup-domainList-following302';
-                    this.setupLuaDomainManageNavbar(query, query2);
-                    var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
-
-                    if (!this.following302Model)
-                        this.following302Model = new Following302Model();
-                    if (!this.following302View) {
-                        var options = {
-                            collection: this.following302Model,
-                            query: query,
-                            query2: query2
-                        };
-                        this.following302View = new Following302View(options);
-                        this.following302View.render(renderTarget);
-                    } else {
-                        this.following302View.update(query, query2, renderTarget);
-                    }
-                    this.domainManageNavbar.select(this.curPage);
-                    this.curView = this.following302View;
                 }.bind(this));
             },
 

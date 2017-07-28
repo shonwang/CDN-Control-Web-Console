@@ -70,6 +70,10 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "domainList/:query/luaClientLimitSpeed/:query2": "luaClientLimitSpeed",
                 "domainList/:query/luaHttpHeaderOpt/:query2": "luaHttpHeaderOpt",
                 "domainList/:query/luaHttpHeaderCtr/:query2": "luaHttpHeaderCtr",
+                "domainList/:query/luaRequestArgsModify/:query2": "luaRequestArgsModify",
+                "domainList/:query/luaIpBlackWhiteList/:query2": "luaIpBlackWhiteList",
+                "domainList/:query/luaRefererAntiLeech/:query2": "luaRefererAntiLeech",
+                "domainList/:query/luaTimestamp/:query2": "luaTimestamp",
 
                 //直播域名配置
                 "domainList/:query/liveBasicInformation/:query2": "liveBasicInformation",

@@ -74,7 +74,7 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
             this.domainInfo = domainInfo;
             this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
                 data: userInfo,
-                notShowBtn: false
+                notShowBtn: true
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
             this.clientLimitSpeed = $(_.template(template['tpl/customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.add.html'])());

@@ -3,6 +3,16 @@
     <hr>
     <form class="form-horizontal">
         <div class="form-group">
+            <label for="open-referer" class="col-sm-3 control-label">Referer防盗链</label>
+            <div class="col-sm-4 open-referer">
+                <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                    <label>
+                        <input type="checkbox"><span class="toggle"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
             <label for="referer-type" class="col-sm-3 control-label">referer类型</label>
             <div class="col-sm-7 referer-type">
                 <div class="dropdown">
@@ -12,6 +22,14 @@
                     </button>
                     <ul class="dropdown-menu"></ul>
                 </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="alert alert-dismissable alert-info col-sm-offset-3">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                提示：<br>
+                1.不需要输入网址符http://，最多可以设置100条。<br>
+                2.多个域名使用英文半角逗号分隔。<br>
             </div>
         </div>
         <div class="form-group white-list">
@@ -31,12 +49,6 @@
             <div class="col-sm-7">
                 <textarea class="form-control" rows="3" id="black-domain"></textarea>
             </div>
-        </div>
-        <div class="alert alert-dismissable alert-info">
-            <button type="button" class="close" data-dismiss="alert">×</button>
-            提示：<br>
-            1.不需要输入网址符http://，最多可以设置100条。<br>
-            2.多个域名使用英文半角逗号分隔。<br>
         </div>
         <div class="form-group">
             <label for="null-referer" class="col-sm-3 control-label">允许空referer</label>

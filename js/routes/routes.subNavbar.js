@@ -215,6 +215,11 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                         active: false,
                         children: []
                     }]
+                },{
+                    id: 'customerSetup-domainList-luaConfig',
+                    name: '高级配置',
+                    hash: 'index.html#/domainList/' + query + '/luaAdvanceConfig/' + query2,
+                    children: []
                 }];
 
                 if (!this.domainManageNavbar) {

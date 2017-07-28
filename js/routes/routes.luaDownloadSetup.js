@@ -465,6 +465,32 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
                     this.curView = this.basicInformationView;
                 }.bind(this));
             },
+
+            luaAdvanceConfig: function(query, query2) {
+                require(['luaAdvanceConfig.view', 'luaAdvanceConfig.model'], function(LuaAdvanceConfigView, LuaAdvanceConfigModel) {
+                    console.log('xxx');
+                    this.navbarView.select('customerSetup');
+                    this.curPage = 'customerSetup-domainList-luaConfig';
+                    this.setupLuaDomainManageNavbar(query, query2);
+                    var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                    if (!this.luaAdvanceConfigModel)
+                        this.luaAdvanceConfigModel = new LuaAdvanceConfigModel();
+                    if (!this.luaAdvanceConfigView) {
+                        var options = {
+                            collection: this.luaAdvanceConfigModel,
+                            query: query,
+                            query2: query2
+                        };
+                        this.luaAdvanceConfigView = new LuaAdvanceConfigView(options);
+                        this.luaAdvanceConfigView.render(renderTarget);
+                    } else {
+                        this.luaAdvanceConfigView.update(query, query2, renderTarget);
+                    }
+                    this.domainManageNavbar.select(this.curPage);
+                    this.curView = this.luaAdvanceConfigView;
+                }.bind(this));
+            },            
         }
 
         return RouterLuaDownloadSetup

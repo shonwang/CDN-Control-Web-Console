@@ -64,6 +64,8 @@
   "luaCacheRule.view": "customerSetup/domainList/luaDownloadSetup/luaCacheRule/luaCacheRule.view",
   "luaClientLimitSpeed.model": "customerSetup/domainList/luaDownloadSetup/luaClientLimitSpeed/luaClientLimitSpeed.model",
   "luaClientLimitSpeed.view": "customerSetup/domainList/luaDownloadSetup/luaClientLimitSpeed/luaClientLimitSpeed.view",
+  "luaConfigListEdit.model": "customerSetup/domainList/luaDownloadSetup/luaConfigListEdit/luaConfigListEdit.model",
+  "luaConfigListEdit.view": "customerSetup/domainList/luaDownloadSetup/luaConfigListEdit/luaConfigListEdit.view",
   "luaDelMarkCache.model": "customerSetup/domainList/luaDownloadSetup/luaDelMarkCache/luaDelMarkCache.model",
   "luaDelMarkCache.view": "customerSetup/domainList/luaDownloadSetup/luaDelMarkCache/luaDelMarkCache.view",
   "luaHttpHeaderOpt.model": "customerSetup/domainList/luaDownloadSetup/luaHttpHeaderOpt/luaHttpHeaderOpt.model",

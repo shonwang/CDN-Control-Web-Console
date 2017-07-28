@@ -52,10 +52,11 @@ define("routes", ['require', 'exports', 'navbar.view',
                 // 客户配置
                 "": "customerSetup",
                 "customerSetup": "customerSetup",
-                "domainList/:query": "domainList",
                 "blockUrl/:query": "blockUrl",
                 "interfaceQuota/:query": "interfaceQuota",
                 "pnoSetup/:query": "pnoSetup",
+                "domainList/:query": "domainList",
+                "domainList/:query/openAPILogSetup/:query2": "openAPILogSetup",
 
                 //Lua 下载域名配置
                 "domainList/:query/luaBasicInformation/:query2": "luaBasicInformation",
@@ -94,7 +95,6 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "domainList/:query/liveRtmpOptimize/:query2": "liveRtmpOptimize",
                 "domainList/:query/liveSLAStatistics/:query2": "liveSLAStatistics",
                 "domainList/:query/liveFrequencyLog/:query2": "liveFrequencyLog",
-                "domainList/:query/openAPILogSetup/:query2": "openAPILogSetup",
 
                 //直播上行域名配置
                 "domainList/:query/liveUpBasicInformation/:query2": "liveUpBasicInformation",

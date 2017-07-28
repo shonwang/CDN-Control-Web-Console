@@ -172,9 +172,9 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     //notShow: !AUTH_OBJ.UrlControl,
                     hash: 'javascript:void(0)',
                     children: [{
-                        id: 'customerSetup-domainList-requestArgsModify',
+                        id: 'customerSetup-domainList-luaRequestArgsModify',
                         name: '请求参数的改写',
-                        hash: 'index.html#/domainList/' + query + '/requestArgsModify/' + query2,
+                        hash: 'index.html#/domainList/' + query + '/luaRequestArgsModify/' + query2,
                         active: false,
                         children: []
                     }]
@@ -183,35 +183,24 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     name: '访问控制',
                     hash: 'javascript:void(0)',
                     children: [{
-                        id: 'customerSetup-domainList-ipBlackWhiteList',
+                        id: 'customerSetup-domainList-luaIpBlackWhiteList',
                         name: 'IP黑白名单',
-                        hash: 'index.html#/domainList/' + query + '/ipBlackWhiteList/' + query2,
+                        hash: 'index.html#/domainList/' + query + '/luaIpBlackWhiteList/' + query2,
                         //--notShow:!AUTH_OBJ.IPMatchingCondition,
                         active: false,
                         children: []
                     }, {
-                        id: 'customerSetup-domainList-refererAntiLeech',
+                        id: 'customerSetup-domainList-luaRefererAntiLeech',
                         name: 'Referer防盗链',
-                        hash: 'index.html#/domainList/' + query + '/refererAntiLeech/' + query2,
+                        hash: 'index.html#/domainList/' + query + '/luaRefererAntiLeech/' + query2,
                         //--notShow:!AUTH_OBJ.referIPMatchingCondition,
                         active: false,
                         children: []
                     }, {
-                        id: 'customerSetup-domainList-timestamp',
+                        id: 'customerSetup-domainList-luaTimestamp',
                         name: '时间戳+共享秘钥防盗链',
-                        hash: 'index.html#/domainList/' + query + '/timestamp/' + query2,
+                        hash: 'index.html#/domainList/' + query + '/luaTimestamp/' + query2,
                         //notShow: !AUTH_OBJ.TimeSafetychain,
-                        active: false,
-                        children: []
-                    }]
-                }, {
-                    id: 'customerSetup-domainList-logServer',
-                    name: '日志服务',
-                    hash: 'javascript:void(0)',
-                    children: [{
-                        id: 'customerSetup-domainList-openNgxLog',
-                        name: '开启Nginx计费日志',
-                        hash: 'index.html#/domainList/' + query + '/openNgxLog/' + query2,
                         active: false,
                         children: []
                     }]

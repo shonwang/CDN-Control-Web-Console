@@ -105,7 +105,8 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
                 "list": list
             }
 
-            this.collection.setUrlParameter(postParam)
+            this.collection.setUrlParameter(postParam);
+            Utility.onContentSave();
         },
 
         onSaveSuccess: function(){
@@ -152,6 +153,9 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
                 this.$el.find(".add-args .togglebutton input").get(0).checked = false;
             }
             this.updateAddArgsTable();
+            this.$el.find("#delete-args").on("focus",Utility.onContentChange);
+            this.$el.find(".add-args #args").on("focus",Utility.onContentChange);
+            this.$el.find(".add-args #value").on("focus",Utility.onContentChange);
         },
 
         updateAddArgsTable: function(){
@@ -180,6 +184,7 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
                 return
             }
             this.updateAddArgsTable();
+            Utility.onContentChange();
         },
 
         onClickAddArgsTableItemDelete: function(event){
@@ -192,6 +197,7 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
 
             this.defaultParam.addParamList = filterArray;
             this.updateAddArgsTable();
+            Utility.onContentChange();
         },
 
         onClickAddToggle: function(event){
@@ -202,6 +208,7 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
             } else {
                 this.defaultParam.addParam = 1;
             }
+            Utility.onContentChange();
         },
 
         onClickDeleteToggle: function(event){
@@ -212,6 +219,7 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
             } else {
                 this.defaultParam.deleteParam = 1;
             }
+            Utility.onContentChange();
         },
 
         onGetError: function(error){

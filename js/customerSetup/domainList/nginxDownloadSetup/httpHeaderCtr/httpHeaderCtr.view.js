@@ -118,7 +118,7 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
                 "removeCookie": this.defaultParam.removeCookie,
                 "removeKs3": this.defaultParam.removeKs3
             }
-
+            Utility.onContentSave();
             this.collection.setHttpHeaderControl(postParam)
         },
 
@@ -140,6 +140,7 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
             else if (this.defaultParam.removeCookie === 1)
                 this.$el.find(".delete-cookie-header .togglebutton input").get(0).checked = true;
             this.initDropDown();
+            this.$el.find("#custom-type").on("focus",Utility.onContentChange);
         },
 
         initDropDown: function(){
@@ -157,6 +158,7 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
                     this.$el.find("#custom-type").show();
                     this.defaultParam.obtIpCustom = this.$el.find("#custom-type").val();
                 }
+                Utility.onContentChange();
             }.bind(this));
 
             var defaultValue = _.find(baseArray, function(object){
@@ -182,6 +184,7 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
                 this.defaultParam.obtainIp = 0;
                 this.$el.find(".get-ip-type").hide();
             }
+            Utility.onContentChange();
         },
 
         onClickDelCookieToggle: function(event){
@@ -192,6 +195,7 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
             } else {
                 this.defaultParam.removeCookie = 0;
             }
+            Utility.onContentChange();
         },
 
         onClickAddCrosToggle: function(event){
@@ -202,6 +206,7 @@ define("httpHeaderCtr.view", ['require','exports', 'template', 'modal.view', 'ut
             } else {
                 this.defaultParam.addCors = 0;
             }
+            Utility.onContentChange();
         },
 
         onGetError: function(error){

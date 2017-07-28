@@ -111,6 +111,7 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
                 }
             }
             this.regionList = obj;
+            Utility.onContentChange();
         },
 
         onGetError: function(error){
@@ -136,6 +137,7 @@ define("domainSetup.view", ['require','exports', 'template', 'modal.view', 'util
                 "region": this.getRegion().join(",")
             }
             this.collection.modifyDomainBasic(postParam);
+            Utility.onContentSave();
         },
 
         onSaveSuccess: function(){

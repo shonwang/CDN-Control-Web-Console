@@ -301,6 +301,7 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
                     }.bind(this))
                     this.collection.trigger("get.header.success");
                     this.addRolePopup.$el.modal('hide');
+                    Utility.onContentChange();
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
@@ -358,6 +359,7 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
                     return;
                 }
             }
+            Utility.onContentChange();
         },
 
         onClickItemUp: function(event){

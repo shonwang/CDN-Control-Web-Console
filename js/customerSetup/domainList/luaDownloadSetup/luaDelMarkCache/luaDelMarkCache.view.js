@@ -112,6 +112,9 @@ define("luaDelMarkCache.view", ['require','exports', 'template', 'modal.view', '
             } else if (this.defaultParam.markType === 2) {
                 this.$el.find("#delMarkRadio3").get(0).checked = true;
             }
+
+            this.$el.find("input[name=delMarkRadio]").on("change",Utility.onContentChange);
+            this.$el.find("#sp-param").on("focus",Utility.onContentChange);
         },
 
         onSure: function(){

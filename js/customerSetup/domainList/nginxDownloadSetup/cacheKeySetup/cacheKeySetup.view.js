@@ -86,6 +86,9 @@ define("cacheKeySetup.view", ['require','exports', 'template', 'modal.view', 'ut
 
             if (data.domainConf && data.domainConf.cacheKey)
                 this.$el.find("#modify-cache-host").val(data.domainConf.cacheKey)
+
+            this.$el.find(".cache-key .togglebutton input").on("click",Utility.onContentChange);      
+            this.$el.find("#modify-cache-host").on("focus",Utility.onContentChange);//modify-cache-host      
         },
 
         onClickToggle: function(){
@@ -120,6 +123,7 @@ define("cacheKeySetup.view", ['require','exports', 'template', 'modal.view', 'ut
                 cacheKeyFlag: this.defaultParam.cacheKeyFlag
             };
             this.collection.setCacheKey(postParam);
+            Utility.onContentSave();
         },
 
         onGetError: function(error){

@@ -132,6 +132,18 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find(".base #textarea-origin-type").on("blur", $.proxy(this.onBlurTextarea, this))
             this.$el.find(".advanced textarea").on("blur", $.proxy(this.onBlurAdvancedTextarea, this))
             this.$el.find(".strategy input[name='strategyRadios']").on("click", $.proxy(this.onClickStrategyRadio, this))
+            this.$el.find(".default #primary").on("focus",Utility.onContentChange);
+            this.$el.find(".unicom #primary").on("focus",Utility.onContentChange);
+            this.$el.find(".telecom #primary").on("focus",Utility.onContentChange);
+            this.$el.find(".mobile #primary").on("focus",Utility.onContentChange);
+
+            this.$el.find(".default #secondary").on("focus",Utility.onContentChange);
+            this.$el.find(".unicom #secondary").on("focus",Utility.onContentChange);
+            this.$el.find(".telecom #secondary").on("focus",Utility.onContentChange);
+            this.$el.find(".mobile #secondary").on("focus",Utility.onContentChange);
+
+            this.$el.find(".base #textarea-origin-type").on("focus",Utility.onContentChange);
+            this.$el.find("#textarea-host-domain").on("focus",Utility.onContentChange);
         },
 
         initOriginTypeDropdown: function(){
@@ -148,6 +160,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 baseArray.push({name: "KS3回源", value: 3})
 
             Utility.initDropMenu(rootNode, baseArray, function(value){
+                Utility.onContentChange();
                 this.defaultParam.originBaseType = parseInt(value)
             }.bind(this));
 
@@ -175,6 +188,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 } else {
                     this.$el.find("textarea[id='secondary']").show();
                 }
+                Utility.onContentChange();
             }.bind(this));
 
             var defaultOtherValue = _.find(advancedArray, function(object){
@@ -196,6 +210,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             this.defaultParam.originStrategy = parseInt($(eventTarget).val())
+            Utility.onContentChange();
         },
 
         onBlurTextarea: function(event){
@@ -225,6 +240,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 this.$el.find(".advanced").hide();
                 this.$el.find(".base").show();
             }
+            Utility.onContentChange();
         },
 
         onClickSaveBtn: function(){
@@ -282,6 +298,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 }]
             }
             this.collection.setBackSourceConfig(postParam)
+            Utility.onContentSave();
         },
 
         onSaveSuccess: function(){
@@ -443,7 +460,8 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 "hostType": this.defaultParamModifyHost.domainType,
                 "hostFlag": this.isModifyHost ? 1 : 0
             };
-            this.collection.setHostHeaderConfig(postParam)
+            this.collection.setHostHeaderConfig(postParam);
+            Utility.onContentSave();
         },
 
         initModifyHostSetup: function(){
@@ -479,6 +497,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
             ],
             rootNode = this.$el.find(".origin-domain");
             Utility.initDropMenu(rootNode, domainTypeArray, function(value){
+                Utility.onContentChange();
                 this.defaultParamModifyHost.domainType = parseInt(value);
                 this.initModifyHostSetup();
             }.bind(this));

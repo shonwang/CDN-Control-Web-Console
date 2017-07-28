@@ -49,98 +49,7 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
                 }
                 this.matchConditionView = new MatchConditionView(matchConditionOption);
                 this.matchConditionView.render(this.$el.find(".match-condition-ctn"));
-
-                //this.initSetup();
             }.bind(this))
-        },
-
-        initSetup: function(){
-            if (this.defaultParam.cacheTimeType === 1){
-                this.$el.find("#cacheTimeRadios1").get(0).checked = true;
-            } else if (this.defaultParam.cacheTimeType === 2) {
-                this.$el.find("#cacheTimeRadios2").get(0).checked = true;
-            } else if (this.defaultParam.cacheTimeType === 3){
-                this.$el.find("#cacheTimeRadios3").get(0).checked = true;
-            }
-            this.initTimeDropdown();
-        },
-
-        initTimeDropdown: function(){
-            var  timeArray = [
-                {"value": 1, "name": "秒"},
-                {"value": 60, "name": "分"},
-                {"value": 60 * 60, "name": "时"},
-                {"value": 60 * 60 * 24, "name": "天"},
-                {"value": 60 * 60 * 24 * 30, "name": "月"},
-                {"value": 60 * 60 * 24 * 30 * 12, "name": "年"},
-            ];
-            
-            var input = this.defaultParam.cacheTime,
-                rootNode = this.$el.find(".yes-cache");
-                curEl = this.$el.find("#dropdown-yes-cache .cur-value"),
-                curInputEl = this.$el.find("#yes-cache-time");
-
-            Utility.initDropMenu(rootNode, timeArray, function(value){
-                this.defaultParam.cacheTime = parseInt(curInputEl.val()) * parseInt(value);
-            }.bind(this));
-
-            curInputEl.on("click", function(){curInputEl.focus()}.bind(this))
-            curInputEl.on("blur", function(){
-                var unit = _.find(timeArray, function(obj){
-                    return obj.name === curEl.html();
-                }.bind(this));
-                this.defaultParam.cacheTime = unit.value * parseInt(curInputEl.val());
-            }.bind(this))
-
-            this.timeFormatWithUnit(input, curEl, curInputEl);
-
-            //若源站无缓存时间，则缓存
-            var inputNum = this.defaultParam.cacheOriginTime,
-                rootOtherNode = this.$el.find(".origin-cache")
-                curEl2 = this.$el.find("#dropdown-origin-cache .cur-value"),
-                curInputEl2 = this.$el.find("#origin-cache-time");
-
-            Utility.initDropMenu(rootOtherNode, timeArray, function(value){
-                this.defaultParam.cacheOriginTime = parseInt(curInputEl2.val()) * parseInt(value);
-            }.bind(this));
-
-            curInputEl2.on("click", function(){curInputEl2.focus()}.bind(this))
-            curInputEl2.on("blur", function(){
-                var unit = _.find(timeArray, function(obj){
-                    return obj.name === curEl2.html();
-                }.bind(this));
-                this.defaultParam.cacheOriginTime = unit.value * parseInt(curInputEl2.val());
-            }.bind(this))
-
-            this.timeFormatWithUnit(inputNum, curEl2, curInputEl2);
-        },
-
-        timeFormatWithUnit: function(input, curEl, curInputEl) {
-            var num = parseInt(input);
-            if (num !== 60 * 60 * 24 * 30){
-                curInputEl.val(num);
-                curEl.html('秒');
-                return;
-            }
-            if (input >= 60 && input < 60 * 60) {
-                num = Math.ceil(input / 60)
-                curEl.html('分');
-            } else if (input >= 60 * 60 && input < 60 * 60 * 24) {
-                num = Math.ceil(input / 60 / 60);
-                curEl.html('时');
-            } else if (input >= 60 * 60 * 24 && input < 60 * 60 * 24 * 30) {
-                num = Math.ceil(input / 60 / 60 / 24);
-                curEl.html('天');
-            } else if (input >= 60 * 60 * 24 * 30 && input < 60 * 60 * 24 * 30 * 12) {
-                num = Math.ceil(input / 60 / 60 / 24 / 30);
-                curEl.html('月');
-            } else if (input >= 60 * 60 * 24 * 30 * 12){
-                num = Math.ceil(input / 60 / 60 / 24 / 30 / 12);
-                curEl.html('年');
-            } else {
-                curEl.html('秒');
-            }
-            curInputEl.val(num)
         },
 
         onSure: function(){
@@ -288,19 +197,6 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
         },
 
         initTable: function(){
-            var allFileArray = this.collection.filter(function(obj){
-                return obj.get('type') === 9;
-            }.bind(this));
-
-            var specifiedUrlArray = this.collection.filter(function(obj){
-                return obj.get('type') === 2;
-            }.bind(this));
-
-            var otherArray = this.collection.filter(function(obj){
-                return obj.get('type') !== 2 && obj.get('type') !== 9;
-            }.bind(this));
-
-            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
             this.table = $(_.template(template['tpl/customerSetup/domainList/luaAdvanceConfig/luaAdvanceConfig.table.html'])({
                 data: this.collection.models,
@@ -415,25 +311,13 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
             }
             var model = this.collection.get(id), modelIndex;
 
-            var allFileArray = this.collection.filter(function(obj){
-                return obj.get('type') === 9;
-            }.bind(this));
-
-            var specifiedUrlArray = this.collection.filter(function(obj){
-                return obj.get('type') === 2;
-            }.bind(this));
-
-            var otherArray = this.collection.filter(function(obj){
-                return obj.get('type') !== 2 && obj.get('type') !== 9;
-            }.bind(this));
-
-            _.each(otherArray, function(el, index, list){
+            _.each(this.collection.models, function(el, index, list){
                 if (el.get("id") === parseInt(id)) modelIndex = index; 
             }.bind(this))
 
-            otherArray = Utility.adjustElement(otherArray, modelIndex, true)
+            this.collection.models = Utility.adjustElement(this.collection.models, modelIndex, true)
 
-            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
+            //this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
             this.collection.trigger("get.policy.success")
         },
@@ -447,27 +331,12 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
                 id = $(eventTarget).attr("id");
             }
             var model = this.collection.get(id), modelIndex;
-
-            var allFileArray = this.collection.filter(function(obj){
-                return obj.get('type') === 9;
-            }.bind(this));
-
-            var specifiedUrlArray = this.collection.filter(function(obj){
-                return obj.get('type') === 2;
-            }.bind(this));
-
-            var otherArray = this.collection.filter(function(obj){
-                return obj.get('type') !== 2 && obj.get('type') !== 9;
-            }.bind(this));
-
-            _.each(otherArray, function(el, index, list){
+            _.each(this.collection.models, function(el, index, list){
                 if (el.get("id") === parseInt(id)) modelIndex = index; 
             }.bind(this))
 
-            otherArray = Utility.adjustElement(otherArray, modelIndex, false)
-
-            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
-
+            this.collection.models = Utility.adjustElement(this.collection.models, modelIndex, false)
+            //this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
             this.collection.trigger("get.policy.success")
         },
 

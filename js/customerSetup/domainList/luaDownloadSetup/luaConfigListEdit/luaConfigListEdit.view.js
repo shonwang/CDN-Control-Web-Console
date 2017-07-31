@@ -6,14 +6,16 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
         initialize: function(options) {
             this.collection = options.collection;
             this.options = options;
-            this.$el = $(_.template(template['tpl/customerSetup/domainList/luaConfigListEdit/luaConfigListEdit.html'])());
+            this.path = 'index.html#/domainList/'+options.query+"/luaAdvanceConfig/"+options.query2;
             var clientInfo = JSON.parse(options.query), 
                 domainInfo = JSON.parse(options.query2),
+                configListInfo = JSON.parse(options.query3),
                 userInfo = {
                     clientName: clientInfo.clientName,
                     domain: domainInfo.domain,
                     uid: clientInfo.uid
                 }
+            this.$el = $(_.template(template['tpl/customerSetup/domainList/luaConfigListEdit/luaConfigListEdit.html'])());
             this.domainInfo = domainInfo;
             this.clientInfo = clientInfo;
             this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
@@ -26,9 +28,24 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
 
             this.$el.find('a[data-toggle="tab"]').on('shown.bs.tab', $.proxy(this.onShownTab, this));
+            this.$el.find(".return").on("click",$.proxy(this.onReturnClick,this));
             
         },
-
+        onReturnClick:function(e){
+            var eventTarget = e.target;
+            var IS_ALERT_SAVE = window.IS_ALERT_SAVE;
+            if(IS_ALERT_SAVE){
+                if (confirm("你确定提交吗？")) {  
+                    window.location.href= this.path;
+                }  
+                else {  
+                    return false;
+                }  
+            }
+            else{
+                window.location.href= this.path;
+            }
+        },
         onShownTab: function (e) {
             var eventTarget = e.target;
             var id = $(eventTarget).attr("data-target");
@@ -124,9 +141,10 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
             this.$el.hide();
         },
 
-        update: function(query, query2, target){
+        update: function(query, query2,query3, target){
             this.options.query = query;
             this.options.query2 = query2;
+            this.options.query3 = query3;
             this.collection.off();
             this.collection.reset();
             this.$el.remove();

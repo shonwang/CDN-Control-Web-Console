@@ -216,7 +216,9 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
         onClickItemEdit: function(event){
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
-
+            window.location.href+="/luaConfigListEdit/"+id;
+            /*
+            如下为编辑的代码，不要删除，说不定以后出了个让编辑此项的需求，直接开启就OK
             var model = this.collection.find(function(obj){
                 return obj.get("id") === parseInt(id)
             }.bind(this));
@@ -246,6 +248,7 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
                 onHiddenCallback: function(){}.bind(this)
             }
             this.addRolePopup = new Modal(options);
+            */
         },
 
         onClickAddRole: function(event){

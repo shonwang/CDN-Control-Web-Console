@@ -216,6 +216,9 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
         onClickItemEdit: function(event){
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
+            window.location.href+="/luaConfigListEdit/"+id;
+            return false;
+
 
             var model = this.collection.find(function(obj){
                 return obj.get("id") === parseInt(id)

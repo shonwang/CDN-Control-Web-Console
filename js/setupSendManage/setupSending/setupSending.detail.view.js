@@ -80,9 +80,9 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("网络阻塞，请刷新重试！")
         },
 
         render: function(target) {
@@ -361,7 +361,7 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
                 this.disablePopup&&this.disablePopup.$el.modal('hide');
             }
             this.onClickQueryButton();
-            alert("跳过成功")
+            Utility.alerts("跳过成功！", "success", 3000)
             this.onClickQueryButton();
         },
 
@@ -373,23 +373,51 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
                 return obj.id === id;
             })
 
-            if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
+            // if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
 
-            var myConfiFileDetailView = new ConfiFileDetailView({
-                collection: this.collection, 
-                model     : clickedObj
-            });
-            var options = {
-                title: "配置文件详情",
-                body : myConfiFileDetailView,
-                backdrop : 'static',
-                type     : 1,
-                onOKCallback:  function(){
-                    this.configFilePopup.$el.modal("hide");
-                }.bind(this),
-                onHiddenCallback: function(){}.bind(this)
-            }
-            this.configFilePopup = new Modal(options);
+            // var myConfiFileDetailView = new ConfiFileDetailView({
+            //     collection: this.collection, 
+            //     model     : clickedObj
+            // });
+            // var options = {
+            //     title: "配置文件详情",
+            //     body : myConfiFileDetailView,
+            //     backdrop : 'static',
+            //     type     : 1,
+            //     onOKCallback:  function(){
+            //         this.configFilePopup.$el.modal("hide");
+            //     }.bind(this),
+            //     onHiddenCallback: function(){}.bind(this)
+            // }
+            // this.configFilePopup = new Modal(options);
+
+            require(["react.config.panel"], function(ReactConfigPanelComponent){
+                var ReactTableView = React.createFactory(ReactConfigPanelComponent);
+                var reactTableView = ReactTableView({
+                    collection: this.collection,
+                    version: clickedObj.domainVersion,
+                    domain: clickedObj.domain,
+                    type: 1,
+                    isCustom: clickedObj.isCustom,
+                    headerStr: "",
+                    panelClassName: "col-md-12",
+                    onClickBackCallback: $.proxy(this.onClickBackCallback, this)
+                });
+                
+                if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
+                var options = {
+                    title: "配置文件详情",
+                    body: "",
+                    backdrop: 'static',
+                    type: 1,
+                    onOKCallback: function() {
+                        this.configFilePopup.$el.modal("hide");
+                    }.bind(this),
+                    onHiddenCallback: function() {}.bind(this)
+                }
+                this.configFilePopup = new Modal(options);
+                ReactDOM.render(reactTableView, this.configFilePopup.$el.find(".modal-body").get(0));
+            }.bind(this))
         },
 
         initPaginator: function(){
@@ -421,9 +449,9 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
 
         onGetSkipError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("网络阻塞，请刷新重试！")
             if (this.isMultiSkip) {
                 this.isMultiSkip = false;
                 this.disablePopup&&this.disablePopup.$el.modal('hide');
@@ -433,9 +461,9 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("网络阻塞，请刷新重试！")
         },
 
         render: function(target) {

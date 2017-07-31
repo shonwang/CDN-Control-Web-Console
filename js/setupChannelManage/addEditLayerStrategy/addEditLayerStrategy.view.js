@@ -243,7 +243,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     body: mySelectNodeView,
                     backdrop: 'static',
                     type: 2,
-                    height: 500,
+                    width: 800,
                     onOKCallback: function() {
                         this.defaultParam.local = mySelectNodeView.getArgs();
                         this.selectNodePopup.$el.modal("hide");
@@ -340,7 +340,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     body: mySelectNodeView,
                     backdrop: 'static',
                     type: 2,
-                    height: 500,
+                    width: 800,
                     onOKCallback: function() {
                         this.defaultParam.upper = mySelectNodeView.getArgs();
                         var tempArray = []

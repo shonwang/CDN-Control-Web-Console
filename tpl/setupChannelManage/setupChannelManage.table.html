@@ -35,17 +35,23 @@
                    data-trigger="hover" 
                    data-placement="top" 
                    data-content='<%=data[i].get("description") || "无" %>'>备注</a>
-
               </td>
               <td>
-                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit" title="编辑">
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit"
+                     title="编辑" data-toggle="tooltip" data-placement="bottom">
                       <span class="glyphicon glyphicon-edit"></span>
                   </a>
-                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="strategy" title="特殊分层策略管理">
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="strategy"
+                     title="特殊分层策略管理" data-toggle="tooltip" data-placement="bottom">
                       <span class="glyphicon glyphicon-tasks"></span>
                   </a>
-                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="history" title="历史记录">
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="history" 
+                     title="历史记录" data-toggle="tooltip" data-placement="bottom">
                       <span class="glyphicon glyphicon-time"></span>
+                  </a>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="isomorphism"
+                     title="异构管理" data-toggle="tooltip" data-placement="bottom">
+                      <span class="glyphicon glyphicon-cutlery"></span>
                   </a>
               </td>
             </tr>

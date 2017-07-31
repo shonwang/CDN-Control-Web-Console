@@ -46,9 +46,9 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("网络阻塞，请刷新重试！")
         },
 
         onChannelListSuccess: function(){
@@ -78,6 +78,7 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
 
             this.table.find("tbody .repeat").on("click", $.proxy(this.onClickRePublish, this));
             this.table.find("tbody .detail").on("click", $.proxy(this.onShowDetail, this));
+            this.table.find("[data-toggle='tooltip']").tooltip();
         },
 
         onShowDetail: function(event){
@@ -136,45 +137,30 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         rePublishSuccess:function(){
-            alert("发布成功");
+            Utility.alerts("发布成功", "success", 3000);
             this.onClickQueryButton();
         },
 
         rePublishError:function(res){
             var msg = res.message || "重新发布失败";
-            alert(msg);
-        },
-
-        onClickItemSend: function(event){
-            var result = confirm("你确定要下发吗？");
-            if (!result) return;
-
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
-
-            var model = this.collection.get(id);
+            Utility.alerts(msg);
         },
 
         onClickRePublish: function(event){
-            var result = confirm("重新发布后，任务包含的频道将返回至待定制和待下发页面，可重新进行下发，是否确定重新发布？？");
-            if (!result) return;
+            Utility.confirm("重新发布后，任务包含的频道将返回至待定制和待下发页面，可重新进行下发，是否确定重新发布？",
+                function(e){
+                    var eventTarget = event.srcElement || event.target, id;
+                    if (eventTarget.tagName == "SPAN"){
+                        eventTarget = $(eventTarget).parent();
+                        id = eventTarget.attr("id");
+                    } else {
+                        id = $(eventTarget).attr("id");
+                    }
 
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
-
-            var model = this.collection.get(id);
-            var domains = model.get("domains");
-            this.rePublish(id);
+                    var model = this.collection.get(id);
+                    var domains = model.get("domains");
+                    this.rePublish(id);
+                }.bind(this))
         },
 
         onClickItemEdit: function(event){

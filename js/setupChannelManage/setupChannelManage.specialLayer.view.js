@@ -128,9 +128,9 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                     this.notEditId = [];
                     this.setLayerDefaultData();
                 } else if (error && error.message && error.status != 404) {
-                    alert(error.message);
+                    Utility.alerts(error.message);
                 } else {
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("网络阻塞，请刷新重试！")
                 }
             },
 
@@ -244,7 +244,7 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                 }.bind(this))
 
                 if (!this.curEditRule) {
-                    alert("找不到此行的数据，无法编辑");
+                    Utility.alerts("找不到此行的数据，无法编辑");
                     return;
                 }
                 require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
@@ -311,7 +311,7 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
             //点击保存按钮-> isTopoStrategyMatch -> addTopologyRuleSuccess -> onPostPredelivery
             onClickSaveButton: function() {
                 if (this.defaultParam.rule.length == 0) {
-                    alert('请添加规则');
+                    Utility.alerts('请添加规则');
                     return;
                 }
 
@@ -401,16 +401,16 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
             // },
 
             addTopologyRuleSuccess: function() {
-                var result;
                 if (this.confCustomType === 1 || this.confCustomType === 2) {
-                    result = confirm("确定将域名放入待下发吗？");
+                    Utility.confirm("确定将域名放入待下发吗？", $.proxy(this.predelivery, this));
                 } else if (this.confCustomType === 3) {
-                    result = confirm("确定将域名放入待定制吗？");
+                    Utility.confirm("确定将域名放入待定制吗？",$.proxy(this.predelivery, this));
                 } else {
-                    alert('此域名的confCustomType为' + this.confCustomType + '无法待下发或者是待定制');
+                    Utility.alerts('此域名的confCustomType为' + this.confCustomType + '无法待下发或者是待定制');
                 }
-                if (!result) return;
+            },
 
+            predelivery: function(){
                 var postParam = [{
                     domain: this.model.get("domain"),
                     version: this.model.get("version"),
@@ -422,12 +422,12 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                 this.collection.off("post.predelivery.error");
                 this.collection.on("post.predelivery.success", $.proxy(this.onPostPredelivery, this));
                 this.collection.on("post.predelivery.error", $.proxy(this.onGetError, this));
-                this.collection.predelivery(postParam)
+                this.collection.predelivery(postParam)                
             },
 
             onPostPredelivery: function(res) {
                 this.options.onSaveCallback && this.options.onSaveCallback();
-                alert('操作成功');
+                Utility.alerts('操作成功', "success", 3000);
                 if (this.confCustomType === 1)
                     window.location.hash = '#/setupSendWaitSend';
                 else if (this.confCustomType === 3)
@@ -484,9 +484,9 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
 
             onGetError: function(error) {
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！");
+                    Utility.alerts("网络阻塞，请刷新重试！");
             },
 
             render: function(target) {

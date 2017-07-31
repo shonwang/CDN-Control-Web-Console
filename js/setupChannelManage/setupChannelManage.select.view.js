@@ -72,7 +72,7 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
             onSure: function() {
                 var selectedTopo = this.$el.find("input:checked");
                 if (!selectedTopo.get(0)) {
-                    alert("请选择一个拓扑关系")
+                    Utility.alerts("请选择一个分层策略")
                     return false;
                 }
                 var topoId = selectedTopo.get(0).id,
@@ -94,9 +94,9 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
 
             onGetError: function(error) {
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("网络阻塞，请刷新重试！")
             },
 
             render: function(target) {
@@ -180,7 +180,7 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
             onSure: function() {
                 var selectedTopo = this.$el.find(".topo input:checked");
                 if (!selectedTopo.get(0)) {
-                    alert("请选择一个拓扑关系")
+                    Utility.alerts("请选择一个拓扑关系")
                     return false;
                 }
                 var topoId = selectedTopo.get(0).id,
@@ -203,7 +203,7 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                 if (isOpenLayer) {
                     var selectedLayer = this.$el.find(".layer input:checked");
                     if (!selectedLayer.get(0)) {
-                        alert("请选择一个分层策略")
+                        Utility.alerts("请选择一个分层策略")
                         return false;
                     }
                     var layerId = selectedLayer.get(0).id;
@@ -217,9 +217,9 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
 
             onGetError: function(error) {
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("网络阻塞，请刷新重试！")
             },
 
             render: function(target) {

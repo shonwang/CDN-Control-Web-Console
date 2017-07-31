@@ -24,6 +24,7 @@ define("setupSending.view", ['require', 'exports', 'template', 'modal.view', 'ut
 
             this.queryArgs = {
                 "name": null,
+                "domain": null,
                 "platformId": null,
                 "topologyId": null,
                 "deliveryStrategyDefId": null,
@@ -45,10 +46,12 @@ define("setupSending.view", ['require', 'exports', 'template', 'modal.view', 'ut
 
         onGetError: function(error) {
             this.disablePopup && this.disablePopup.$el.modal('hide');
-            if (error && error.message)
-                alert(error.message)
-            else
-                alert("网络阻塞，请刷新重试！")
+            setTimeout(function(){
+                if (error && error.message)
+                    Utility.alerts(error.message)
+                else
+                    Utility.alerts("网络阻塞，请刷新重试！")
+            }.bind(this), 500)
         },
 
         showDisablePopup: function(msg) {
@@ -64,14 +67,17 @@ define("setupSending.view", ['require', 'exports', 'template', 'modal.view', 'ut
         },
 
         onChannelTerminateSuccess: function() {
-            alert("操作成功！")
+            Utility.alerts("操作成功！", "success", 3000)
             this.update(this.target)
         },
 
         onChannelNextSuccess: function() {
             this.disablePopup && this.disablePopup.$el.modal('hide');
-            alert("操作成功！")
-            this.update(this.target)
+
+            setTimeout(function(){
+                Utility.alerts("操作成功！", "success", 3000)
+                this.update(this.target)
+            }.bind(this), 500)
         },
 
         onChannelListSuccess: function() {
@@ -97,6 +103,8 @@ define("setupSending.view", ['require', 'exports', 'template', 'modal.view', 'ut
             this.queryArgs.page = 1;
             this.queryArgs.name = this.$el.find("#input-task-name").val().trim();
             if (this.queryArgs.name == "") this.queryArgs.name = null;
+            this.queryArgs.domain = this.$el.find("#input-domain").val().trim();
+            if (this.queryArgs.domain == "") this.queryArgs.domain = null;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
             this.collection.querySendingChannel(this.queryArgs);
@@ -121,47 +129,47 @@ define("setupSending.view", ['require', 'exports', 'template', 'modal.view', 'ut
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
 
             this.table.find(".glyphicon-question-sign").popover();
+            this.table.find("[data-toggle='tooltip']").tooltip();
         },
 
         onClickItemSend: function(event) {
-            var result = confirm("你确定要进入下一步吗？");
-            if (!result) return;
+            Utility.confirm("你确定要进入下一步吗？", function(e){
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
 
-            var eventTarget = event.srcElement || event.target,
-                id;
-            if (eventTarget.tagName == "SPAN") {
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
+                var model = this.collection.get(id);
 
-            var model = this.collection.get(id);
-
-            this.collection.nextTask({
-                taskId: id,
-                taskStepId: model.get("taskStepId")
-            })
-
-            this.showDisablePopup("服务器正在努力处理中...")
+                setTimeout(function(){
+                    this.collection.nextTask({
+                        taskId: id,
+                        taskStepId: model.get("taskStepId")
+                    })
+                    this.showDisablePopup("服务器正在努力处理中...")
+                }.bind(this), 500)
+            }.bind(this))
         },
 
         onClickItemReject: function(event) {
-            var result = confirm("你确定要终止吗？");
-            if (!result) return;
+             Utility.confirm("你确定要终止吗？", function(){
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
 
-            var eventTarget = event.srcElement || event.target,
-                id;
-            if (eventTarget.tagName == "SPAN") {
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
-
-            this.collection.terminateTask({
-                taskId: id
-            })
+                this.collection.terminateTask({
+                    taskId: id
+                })
+             }.bind(this))
         },
 
         onClickItemEdit: function(event) {

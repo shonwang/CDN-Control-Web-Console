@@ -232,7 +232,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         body: mySelectNodeView,
                         backdrop: 'static',
                         type: 2,
-                        height: 500,
+                        width: 800,
                         onOKCallback: function() {
                             this.defaultParam.allNodes = mySelectNodeView.getArgs();
                             this.selectNodePopup.$el.modal("hide");
@@ -301,7 +301,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         body: mySelectNodeView,
                         backdrop: 'static',
                         type: 2,
-                        height: 500,
+                        width: 800,
                         onOKCallback: function() {
                             this.defaultParam.upperNodes = mySelectNodeView.getArgs();
                             this.selectNodePopup.$el.modal("hide");

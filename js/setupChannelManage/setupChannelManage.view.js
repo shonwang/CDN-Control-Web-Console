@@ -51,9 +51,9 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
             onGetError: function(error) {
                 this.disablePopup && this.disablePopup.$el.modal('hide');
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("网络阻塞，请刷新重试！")
             },
 
             onChannelListSuccess: function() {
@@ -98,11 +98,13 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
                 this.table.find("tbody .strategy").on("click", $.proxy(this.onClickItemSpecialLayer, this));
                 this.table.find("tbody .history").on("click", $.proxy(this.onClickItemHistory, this));
+                this.table.find("tbody .isomorphism").on("click", $.proxy(this.onClickItemIsomorphism, this));
 
                 this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
                 this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
 
                 this.table.find(".remark").popover();
+                this.table.find("[data-toggle='tooltip']").tooltip();
             },
 
             onClickMultiModifyTopology: function() {
@@ -327,9 +329,36 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
             onPostPredelivery: function() {
                 this.disablePopup && this.disablePopup.$el.modal('hide');
-                alert("批量操作成功！")
+                Utility.alerts("批量操作成功！", "success", 3000)
 
                 window.location.hash = '#/setupSendWaitSend';
+            },
+
+            onClickItemIsomorphism: function(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+
+                var model = this.collection.get(id);
+                require(['isomorphismManage.detail.view', 'isomorphismManage.detail.model'],
+                    function(IsomorphismManageDetailView, IsomorphismManageDetailModel) {
+                        var myIsomorphismManageDetailView = new IsomorphismManageDetailView({
+                            collection: new IsomorphismManageDetailModel(),
+                            model: model,
+                            onCancelCallback: function() {
+                                myIsomorphismManageDetailView.remove();
+                                this.$el.find(".list-panel").show();
+                            }.bind(this)
+                        })
+
+                        this.$el.find(".list-panel").hide();
+                        myIsomorphismManageDetailView.render(this.$el.find(".edit-panel"))
+                    }.bind(this))
             },
 
             onClickItemHistory: function(event) {
@@ -372,7 +401,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 var model = this.collection.get(id);
 
                 if (model.get('topologyId') == null) {
-                    alert('该域名未指定拓扑关系，无法添加特殊分层策略');
+                    Utility.alerts('该域名未指定拓扑关系，无法添加特殊分层策略');
                     return;
                 }
 

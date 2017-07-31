@@ -32,6 +32,8 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                     data: {}
                 }));
 
+                this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+
                 this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
 
                 this.requirySetupSendWaitCustomizeModel();
@@ -117,7 +119,7 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                         this.collection.off('set.remark.success');
                         this.collection.off('set.remark.error');
                         this.collection.on('set.remark.success', function() {
-                            alert("修改成功");
+                            Utility.alerts("修改成功");
                             this.collection.getVersionList({
                                 "originId": this.model.get("id")
                             })
@@ -154,8 +156,14 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
             },
 
             onPostPredelivery: function() {
-                alert("发布成功！")
-                window.location.hash = '#/setupSendWaitSend';
+                Utility.alerts("发布成功！", "success", 3000)
+                
+                if (this.model.get("confCustomType") === 1)
+                    window.location.hash = '#/setupSendWaitSend';
+                else if (this.model.get("confCustomType") === 3)
+                    window.location.hash = '#/setupSendWaitCustomize';
+                else
+                    Utility.alerts('此域名的confCustomType为' + this.model.get("confCustomType") + '无法待下发或者是待定制')
             },
 
             onClickItemConfig: function(event) {
@@ -169,23 +177,30 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                 var config = JSON.parse(curObj.config),
                     isCustom = config.domainConf.confCustomType === 3 ? true : false;
 
-                var clickedObj = {
-                    domain: this.model.get("domain"),
-                    domainVersion: version,
-                    isCustom: isCustom,
-                    platformId: this.applicationType
-                }
+                // var clickedObj = {
+                //     domain: this.model.get("domain"),
+                //     domainVersion: version,
+                //     isCustom: isCustom,
+                //     platformId: this.applicationType
+                // }
 
-                require(["setupSending.detail.view"], function(SendDetailView) {
-                    if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
-
-                    var myConfiFileDetailView = new SendDetailView.ConfiFileDetailView({
+                require(["react.config.panel"], function(ReactConfigPanelComponent){
+                    var ReactTableView = React.createFactory(ReactConfigPanelComponent);
+                    var reactTableView = ReactTableView({
                         collection: this.collection,
-                        model: clickedObj
+                        version: version,
+                        domain: this.model.get("domain"),
+                        type: 1,
+                        isCustom: isCustom,
+                        headerStr: "",
+                        panelClassName: "col-md-12",
+                        onClickBackCallback: $.proxy(this.onClickBackCallback, this)
                     });
+                    
+                    if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
                     var options = {
                         title: "配置文件详情",
-                        body: myConfiFileDetailView,
+                        body: "",
                         backdrop: 'static',
                         type: 1,
                         onOKCallback: function() {
@@ -194,7 +209,28 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
                         onHiddenCallback: function() {}.bind(this)
                     }
                     this.configFilePopup = new Modal(options);
+                    ReactDOM.render(reactTableView, this.configFilePopup.$el.find(".modal-body").get(0));
                 }.bind(this))
+
+                // require(["setupSending.detail.view"], function(SendDetailView) {
+                //     if (this.configFilePopup) $("#" + this.configFilePopup.modalId).remove();
+
+                //     var myConfiFileDetailView = new SendDetailView.ConfiFileDetailView({
+                //         collection: this.collection,
+                //         model: clickedObj
+                //     });
+                //     var options = {
+                //         title: "配置文件详情",
+                //         body: myConfiFileDetailView,
+                //         backdrop: 'static',
+                //         type: 1,
+                //         onOKCallback: function() {
+                //             this.configFilePopup.$el.modal("hide");
+                //         }.bind(this),
+                //         onHiddenCallback: function() {}.bind(this)
+                //     }
+                //     this.configFilePopup = new Modal(options);
+                // }.bind(this))
             },
 
             onClickItemBill: function(event) {
@@ -225,9 +261,9 @@ define("setupChannelManage.history.view", ['require', 'exports', 'template', 'mo
 
             onGetError: function(error) {
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("网络阻塞，请刷新重试！")
             },
 
             render: function(target) {

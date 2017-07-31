@@ -33,7 +33,18 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
         },
         onReturnClick:function(e){
             var eventTarget = e.target;
-            window.location.href= this.path;
+            var IS_ALERT_SAVE = window.IS_ALERT_SAVE;
+            if(IS_ALERT_SAVE){
+                if (confirm("你确定提交吗？")) {  
+                    window.location.href= this.path;
+                }  
+                else {  
+                    return false;
+                }  
+            }
+            else{
+                window.location.href= this.path;
+            }
         },
         onShownTab: function (e) {
             var eventTarget = e.target;

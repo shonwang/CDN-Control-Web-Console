@@ -1,16 +1,6 @@
 define("luaCacheRule.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
-        initialize: function(){
-            var hasOriginPolicy = this.get('hasOriginPolicy'),
-                expireTime = this.get('expireTime'), summary = '';
-
-            if (expireTime === 0 && hasOriginPolicy === 0) summary = "缓存时间：不缓存";
-            if (expireTime !== 0 && hasOriginPolicy === 0) summary = "缓存时间：" + Utility.timeFormat2(expireTime);
-            if (expireTime !== 0 && hasOriginPolicy === 1) summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + Utility.timeFormat2(expireTime);
-            // if (expireTime !== 0 && hasOriginPolicy === 0) summary = "缓存时间：" + expireTime + "秒";
-            // if (expireTime !== 0 && hasOriginPolicy === 1) summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + expireTime + "秒";
-            this.set("summary", summary);
-        }
+        initialize: function(){}
     });
 
     var CacheRuleCollection = Backbone.Collection.extend({
@@ -19,8 +9,8 @@ define("luaCacheRule.model", ['require','exports', 'utility'], function(require,
 
         initialize: function(){},
 
-        setPolicy: function(args){
-            var url = BASE_URL + "/channelManager/cache/setPolicy",
+        setCachePolicyBatch: function(args){
+            var url = BASE_URL + "/channelManager/cache/setCachePolicyBatch",
             successCallback = function(res){
                 this.trigger("set.policy.success", res)
             }.bind(this),
@@ -30,18 +20,13 @@ define("luaCacheRule.model", ['require','exports', 'utility'], function(require,
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
-        getPolicyList: function(args){
-            var url = BASE_URL + "/channelManager/cache/getPolicyList",
+        getCachePolicy: function(args){
+            var url = BASE_URL + "/channelManager/cache/getCachePolicy",
             successCallback = function(res){
-                this.reset();
                 if (res){
-                    _.each(res, function(element, index, list){
-                        this.push(new Model(element));
-                    }.bind(this))
-                    this.total = res.total;
-                    this.trigger("get.policy.success");
+                    this.trigger("get.policy.success", res);
                 } else {
-                    this.trigger("get.policy.error"); 
+                    this.trigger("get.policy.error", res); 
                 } 
             }.bind(this),
             errorCallback = function(response){

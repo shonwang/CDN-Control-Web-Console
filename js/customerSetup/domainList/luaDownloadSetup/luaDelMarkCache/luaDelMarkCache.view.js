@@ -25,25 +25,25 @@ define("luaDelMarkCache.view", ['require','exports', 'template', 'modal.view', '
                 data: userInfo,
                 notShowBtn: true
             }));
-            this.optHeader.appendTo(this.$el.find(".opt-ctn"))
-            this.luaCacheRuleEl = $(_.template(template['tpl/customerSetup/domainList/luaDownloadSetup/luaDelMarkCache/delMarkCache.add.html'])());
-            this.luaCacheRuleEl.appendTo(this.$el.find(".main-ctn"));
+            this.optHeader.appendTo(this.$el.find(".opt-ctn"));
+
+            this.$el.find(".main-ctn").html(_.template(template['tpl/loading.html'])({}));
+
 
             this.defaultParam = {
                 markType: 1,
                 markValue: "",
-                type: 9,
-                policy: ""
             };  
 
-            // this.collection.on("get.mark.success", $.proxy(this.onChannelListSuccess, this));
-            // this.collection.on("get.mark.error", $.proxy(this.onGetError, this));
-            // this.collection.on("set.mark.success", $.proxy(this.onSaveSuccess, this));
-            // this.collection.on("set.mark.error", $.proxy(this.onGetError, this));
-            // this.onClickQueryButton();
+            this.collection.on("get.mark.success", $.proxy(this.onChannelListSuccess, this));
+            this.collection.on("get.mark.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.mark.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.mark.error", $.proxy(this.onGetError, this));
+            this.collection.getCacheQuestionMark({originId: this.domainInfo.id});
 
-            // this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
             this.initSetup();
         },
 
@@ -79,21 +79,19 @@ define("luaDelMarkCache.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onClickSaveBtn: function(){
-            var list = [];
-            this.collection.each(function(obj){
-                list.push({
-                    "matchingType": obj.get('matchingType'),
-                    "matchingValue": obj.get('matchingValue'),
-                    "markType": obj.get('markType'),
-                })
-            }.bind(this))
+            var markType = parseInt(this.$el.find("[name='delMarkRadio']:checked").val()),
+                spParam = this.$el.find("#sp-param").val().trim();
 
             var postParam = {
                 "originId": this.domainInfo.id,
-                "list": list
+                "list": [{
+                    "markType": markType,
+                    "markValue": spParam,
+                    "locationId": this.defaultParam.locationId
+                }]
             }
 
-            this.collection.setCacheQuestionMark(postParam)
+            this.collection.setCacheQuestionMarkBatch(postParam)
         },
 
         onGetError: function(error){
@@ -103,7 +101,15 @@ define("luaDelMarkCache.view", ['require','exports', 'template', 'modal.view', '
                 alert("网络阻塞，请刷新重试！")
         },
 
-        initSetup: function(){
+        initSetup: function(data){
+            if (data) {
+                this.defaultParam.locationId = data.locationId;
+                this.defaultParam.markType = data.markType;
+                this.defaultParam.markValue = data.markValue || "";
+            }
+            this.luaCacheRuleEl = $(_.template(template['tpl/customerSetup/domainList/luaDownloadSetup/luaDelMarkCache/delMarkCache.add.html'])());
+            this.$el.find(".main-ctn").html(this.luaCacheRuleEl.get(0))
+
             if (this.defaultParam.markType === 1){
                 this.$el.find("#delMarkRadio1").get(0).checked = true;
             } else if (this.defaultParam.markType === 0) {
@@ -115,40 +121,6 @@ define("luaDelMarkCache.view", ['require','exports', 'template', 'modal.view', '
 
             this.$el.find("input[name=delMarkRadio]").on("change",Utility.onContentChange);
             this.$el.find("#sp-param").on("focus",Utility.onContentChange);
-        },
-
-        onSure: function(){
-            var matchConditionParam = this.matchConditionView.getMatchConditionParam(),
-                markTypeName,
-                markType = parseInt(this.$el.find("[name='delMarkRadio']:checked").val()),
-                spParam = this.$el.find("#sp-param").val();
-
-            if (!matchConditionParam) return false;
-
-            if (markType === 1) {
-                markTypeName = "是否去问号缓存：是";
-            } else if (markType === 0){
-                if (spParam === "") {
-                    alert("指定缓存的参数没有填");
-                    return false;
-                } else {
-                    markTypeName = "是否去问号缓存：否; 指定缓存的参数：" + spParam;
-                }
-                markTypeName = "是否去问号缓存：否";
-            } else if (markType === 2){
-                markTypeName = "是否去问号缓存：否";
-            }
-
-            var postParam = {
-                "id": this.isEdit ? this.model.get("id") : new Date().valueOf(),
-                "matchingType": matchConditionParam.type,
-                "typeName": matchConditionParam.typeName,
-                "matchingValue": matchConditionParam.policy,
-                "markType": markType,
-                "markValue": spParam,
-                "markTypeName": markTypeName || ""
-            }
-            return postParam
         },
 
         hide: function(){

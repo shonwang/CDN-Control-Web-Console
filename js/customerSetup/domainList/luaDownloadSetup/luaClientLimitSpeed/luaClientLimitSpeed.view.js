@@ -85,8 +85,8 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
             // this.collection.on("set.speed.success", $.proxy(this.onSaveSuccess, this));
             // this.collection.on("set.speed.error", $.proxy(this.onGetError, this));
             // this.onClickQueryButton();
-            //this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
 
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
             this.$el.find(".byte-limit-toggle .togglebutton input").on("click", $.proxy(this.onClickByteLimitToggle, this));
             this.$el.find(".set-limit-toggle .togglebutton input").on("click", $.proxy(this.onClickSetLimitToggle, this));

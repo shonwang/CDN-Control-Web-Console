@@ -27,23 +27,21 @@ define("luaCacheRule.view", ['require','exports', 'template', 'modal.view', 'uti
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"));
 
-            this.luaCacheRuleEl = $(_.template(template['tpl/customerSetup/domainList/cacheRule/cacheRule.add.html'])());
-            this.luaCacheRuleEl.appendTo(this.$el.find(".main-ctn"));
+            this.$el.find(".main-ctn").html(_.template(template['tpl/loading.html'])({}));
 
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
 
-            // this.collection.on("get.policy.success", $.proxy(this.onChannelListSuccess, this));
-            // this.collection.on("get.policy.error", $.proxy(this.onGetError, this));
-            // this.collection.on("set.policy.success", $.proxy(this.onSaveSuccess, this));
-            // this.collection.on("set.policy.error", $.proxy(this.onGetError, this));
-            // this.onClickQueryButton();
+            this.collection.on("get.policy.success", $.proxy(this.initSetup, this));
+            this.collection.on("get.policy.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.policy.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.policy.error", $.proxy(this.onGetError, this));
+            this.collection.getCachePolicy({originId: this.domainInfo.id});
 
             this.defaultParam = {
                 cacheTimeType: 1,
                 cacheTime: 60 * 60 * 24 * 30,
                 cacheOriginTime: 60 * 60 * 24 * 30,
-                type: 9,
-                policy: ""
             };
 
             this.initSetup();            
@@ -81,23 +79,31 @@ define("luaCacheRule.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onClickSaveBtn: function(){
-            var list = [];
-            this.collection.each(function(obj){
-                list.push({
-                    "type": obj.get('type'),
-                    "policy": obj.get('policy'),
-                    "expireTime": obj.get('expireTime'),
-                    "hasOriginPolicy": obj.get('hasOriginPolicy'),
-                })
-            }.bind(this))
+            var hasOriginPolicy, expireTime,
+                cacheTimeType = parseInt(this.$el.find("[name='cacheTimeRadios']:checked").val());
+
+            if (cacheTimeType === 1) {
+                expireTime = 0,
+                hasOriginPolicy = 0
+            } else if (cacheTimeType === 2){
+                hasOriginPolicy = 0
+                expireTime = this.defaultParam.cacheTime
+            } else if (cacheTimeType === 3) {
+                expireTime = this.defaultParam.cacheOriginTime,
+                hasOriginPolicy = 1
+            }
 
             var postParam = {
                 "originId": this.domainInfo.id,
                 "userId": this.clientInfo.uid,
-                "list": list
+                "list": [{
+                    "expireTime": expireTime,
+                    "hasOriginPolicy": hasOriginPolicy,
+                    "locationId": this.defaultParam.locationId
+                }]
             }
 
-            this.collection.setPolicy(postParam)
+            this.collection.setCachePolicyBatch(postParam)
         },
 
         onGetError: function(error){
@@ -107,12 +113,24 @@ define("luaCacheRule.view", ['require','exports', 'template', 'modal.view', 'uti
                 alert("网络阻塞，请刷新重试！")
         },
 
-        onClickQueryButton: function(){
-            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.collection.getPolicyList({originId: this.domainInfo.id});
-        },
+        initSetup: function(data){
+            if (data) {
+                this.defaultParam.locationId = data.locationId;
+                if (data.expireTime === 0 && data.hasOriginPolicy === 0)
+                    this.defaultParam.cacheTimeType = 1;
+                if (data.expireTime !== 0 && data.hasOriginPolicy === 0){
+                    this.defaultParam.cacheTimeType = 2;
+                    this.defaultParam.cacheTime = data.expireTime || 60 * 60 * 24 * 30;
+                }
+                if (data.expireTime !== 0 && data.hasOriginPolicy === 1){
+                    this.defaultParam.cacheTimeType = 3;
+                    this.defaultParam.cacheOriginTime = data.expireTime || 60 * 60 * 24 * 30;
+                }
+            }
 
-        initSetup: function(){
+            this.luaCacheRuleEl = $(_.template(template['tpl/customerSetup/domainList/cacheRule/cacheRule.add.html'])());
+            this.$el.find(".main-ctn").html(this.luaCacheRuleEl.get(0))
+
             if (this.defaultParam.cacheTimeType === 1){
                 this.$el.find("#cacheTimeRadios1").get(0).checked = true;
             } else if (this.defaultParam.cacheTimeType === 2) {
@@ -203,41 +221,6 @@ define("luaCacheRule.view", ['require','exports', 'template', 'modal.view', 'uti
                 curEl.html('秒');
             }
             curInputEl.val(num)
-        },
-
-        onSure: function(){
-            var matchConditionParam = this.matchConditionView.getMatchConditionParam(),
-                hasOriginPolicy, expireTime, summary,
-                cacheTimeType = parseInt(this.$el.find("[name='cacheTimeRadios']:checked").val());
-
-            if (!matchConditionParam) return false;
-
-            if (cacheTimeType === 1) {
-                expireTime = 0,
-                hasOriginPolicy = 0
-                summary = "缓存时间：不缓存";
-            } else if (cacheTimeType === 2){
-                hasOriginPolicy = 0
-                expireTime = this.defaultParam.cacheTime,
-                summary = "缓存时间：" + Utility.timeFormat2(expireTime);
-                //summary = "缓存时间：" + expireTime + "秒";
-            } else if(cacheTimeType === 3){
-                expireTime = this.defaultParam.cacheOriginTime,
-                hasOriginPolicy = 1
-                summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + Utility.timeFormat2(expireTime);
-                //summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + expireTime + "秒";
-            }
-
-            var postParam = {
-                "id": this.isEdit ? this.model.get("id") : new Date().valueOf(),
-                "type": matchConditionParam.type,
-                "typeName": matchConditionParam.typeName,
-                "policy": matchConditionParam.policy,
-                "expireTime": expireTime,
-                "hasOriginPolicy": hasOriginPolicy,
-                "summary": summary
-            }
-            return postParam
         },
 
         hide: function(){

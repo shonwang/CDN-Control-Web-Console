@@ -417,7 +417,6 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
 
             luaAdvanceConfig: function(query, query2) {
                 require(['luaAdvanceConfig.view', 'luaAdvanceConfig.model'], function(LuaAdvanceConfigView, LuaAdvanceConfigModel) {
-                    console.log('xxx');
                     this.navbarView.select('customerSetup');
                     this.curPage = 'customerSetup-domainList-luaConfig';
                     this.setupLuaDomainManageNavbar(query, query2);

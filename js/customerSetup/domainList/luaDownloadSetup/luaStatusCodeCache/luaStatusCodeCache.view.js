@@ -1,4 +1,4 @@
-define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+define("luaStatusCodeCache.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
     var AddEditHttpHeaderView = Backbone.View.extend({
         events: {},
@@ -8,7 +8,7 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
             this.collection = options.collection;
             this.isEdit = options.isEdit;
             this.model = options.model;
-            this.$el = $(_.template(template['tpl/customerSetup/domainList/luaDownloadSetup/luaHttpHeaderOpt/httpHeaderOpt.add.html'])());
+            this.$el = $(_.template(template['tpl/customerSetup/domainList/luaDownloadSetup/luaStatusCodeCache/luaStatusCodeCache.add.html'])());
 
             this.defaultParam = {
                 directionType: 1, //    1:客户端到CDN 2：CDN到源站 3：源站到CDN 4：CDN到客户端
@@ -138,13 +138,13 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
     });
 
 
-    var HttpHeaderOptView = Backbone.View.extend({
+    var LuaStatusCodeCacheView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
             this.collection = options.collection;
             this.options = options;
-            this.$el = $(_.template(template['tpl/customerSetup/domainList/luaDownloadSetup/luaHttpHeaderOpt/httpHeaderOpt.html'])());
+            this.$el = $(_.template(template['tpl/customerSetup/domainList/luaDownloadSetup/luaStatusCodeCache/luaStatusCodeCache.html'])());
             var clientInfo = JSON.parse(options.query), 
                 domainInfo = JSON.parse(options.query2),
                 userInfo = {
@@ -268,7 +268,7 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/customerSetup/domainList/luaDownloadSetup/luaHttpHeaderOpt/httpHeaderOpt.table.html'])({
+            this.table = $(_.template(template['tpl/customerSetup/domainList/luaDownloadSetup/luaStatusCodeCache/luaStatusCodeCache.table.html'])({
                 data: this.collection.models
             }));
             if (this.collection.models.length !== 0)
@@ -455,5 +455,5 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
         }
     });
 
-    return HttpHeaderOptView;
+    return LuaStatusCodeCacheView;
 });

@@ -1,4 +1,4 @@
-define("luaHttpHeaderOpt.model", ['require','exports', 'utility'], function(require, exports, Utility) {
+define("luaStatusCodeCache.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
             var directionType = this.get("directionType"), directionTypeName;
@@ -14,7 +14,7 @@ define("luaHttpHeaderOpt.model", ['require','exports', 'utility'], function(requ
         }
     });
 
-    var HttpHeaderOptCollection = Backbone.Collection.extend({
+    var LuaStatusCodeCacheCollection = Backbone.Collection.extend({
         
         model: Model,
 
@@ -75,5 +75,5 @@ define("luaHttpHeaderOpt.model", ['require','exports', 'utility'], function(requ
         
     });
 
-    return HttpHeaderOptCollection;
+    return LuaStatusCodeCacheCollection;
 });

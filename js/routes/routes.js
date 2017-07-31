@@ -77,6 +77,8 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "domainList/:query/luaRefererAntiLeech/:query2": "luaRefererAntiLeech",
                 "domainList/:query/luaTimestamp/:query2": "luaTimestamp",
                 "domainList/:query/luaAdvanceConfig/:query2/luaConfigListEdit/:query3": "luaConfigListEdit",
+                "domainList/:query/luaStatusCodeCache/:query2": "luaStatusCodeCache",
+                 
 
                 //直播域名配置
                 "domainList/:query/liveBasicInformation/:query2": "liveBasicInformation",

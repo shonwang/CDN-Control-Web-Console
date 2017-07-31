@@ -118,6 +118,12 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                         active: false,
                         children: []
                     }, {
+                        id: 'customerSetup-domainList-luaStatusCodeCache',
+                        name: '状态码缓存',
+                        hash: 'index.html#/domainList/' + query + '/luaStatusCodeCache/' + query2,
+                        active: false,
+                        children: []
+                    }, {
                         id: 'customerSetup-domainList-luaCacheKeySetup',
                         name: '设置 Cache Key',
                         hash: 'index.html#/domainList/' + query + '/luaCacheKeySetup/' + query2,

@@ -74,6 +74,8 @@
   "luaIpBlackWhiteList.view": "customerSetup/domainList/luaDownloadSetup/luaIpBlackWhiteList/luaIpBlackWhiteList.view",
   "luaRefererAntiLeech.model": "customerSetup/domainList/luaDownloadSetup/luaRefererAntiLeech/luaRefererAntiLeech.model",
   "luaRefererAntiLeech.view": "customerSetup/domainList/luaDownloadSetup/luaRefererAntiLeech/luaRefererAntiLeech.view",
+  "luaStatusCodeCache.model": "customerSetup/domainList/luaDownloadSetup/luaStatusCodeCache/luaStatusCodeCache.model",
+  "luaStatusCodeCache.view": "customerSetup/domainList/luaDownloadSetup/luaStatusCodeCache/luaStatusCodeCache.view",
   "luaTimestamp.model": "customerSetup/domainList/luaDownloadSetup/luaTimestamp/luaTimestamp.model",
   "luaTimestamp.view": "customerSetup/domainList/luaDownloadSetup/luaTimestamp/luaTimestamp.view",
   "backOriginDetection.model": "customerSetup/domainList/nginxDownloadSetup/backOriginDetection/backOriginDetection.model",

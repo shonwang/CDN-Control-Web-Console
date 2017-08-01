@@ -11,85 +11,17 @@ define("luaStatusCodeCache.view", ['require','exports', 'template', 'modal.view'
             this.$el = $(_.template(template['tpl/customerSetup/domainList/luaDownloadSetup/luaStatusCodeCache/luaStatusCodeCache.add.html'])());
 
             this.defaultParam = {
-                directionType: 1, //    1:客户端到CDN 2：CDN到源站 3：源站到CDN 4：CDN到客户端
-                actionType: 1, //动作类型 1:增加 2:修改 3:隐藏
-                headerKey: "",
-                headerValue: "",
+                code: "",
+                expireTime: "",
                 locationId:''//编辑时的id
             }; 
 
             if (this.isEdit){
-                this.defaultParam.directionType = this.model.get("directionType");
-                this.defaultParam.actionType = this.model.get("actionType");
-                this.defaultParam.headerKey = this.model.get("headerKey") || "";
-                this.defaultParam.headerValue = this.model.get("headerValue") || "";
+                this.defaultParam.code = this.model.get("code") || "";
+                this.defaultParam.expireTime = this.model.get("expireTime") || "";
                 this.defaultParam.locationId = this.model.get("locationId");
             }
 
-            this.initDirectionDropdown();
-        },
-
-        initDirectionDropdown: function(){
-            var  directionArray = [
-                {name: "1.客户端到CDN", value: 1},
-                {name: "2.CDN到源站", value: 2},
-                {name: "3.源到CDN", value: 3},
-                {name: "4.CDN到客户端", value: 4}
-            ],
-            rootNode = this.$el.find(".direction");
-            Utility.initDropMenu(rootNode, directionArray, function(value){
-                this.defaultParam.directionType = parseInt(value)
-                this.initActionDropdown();
-            }.bind(this));
-
-            var defaultValue = _.find(directionArray, function(object){
-                return object.value === this.defaultParam.directionType;
-            }.bind(this));
-
-            if (defaultValue){
-                this.$el.find("#dropdown-direction .cur-value").html(defaultValue.name);
-                this.defaultParam.directionType = defaultValue.value;
-            } else {
-                this.$el.find("#dropdown-direction .cur-value").html(directionArray[0].name);
-                this.defaultParam.directionType = directionArray[0].value;
-            }
-            this.initActionDropdown();
-        },
-
-        initActionDropdown: function(){
-            var  actionArray;
-            if (this.defaultParam.directionType === 1 || this.defaultParam.directionType === 4){
-                actionArray = [
-                    {name: "增加", value: 1},
-                    {name: "隐藏", value: 3},
-                    {name: "修改", value: 2}
-                ]
-            } else if (this.defaultParam.directionType === 2){
-                actionArray = [
-                    {name: "增加", value: 1},
-                    {name: "修改", value: 2}
-                ]
-            } else if (this.defaultParam.directionType === 3){
-                actionArray = [
-                    {name: "隐藏", value: 3}
-                ]
-            }
-            var rootOtherNode = this.$el.find(".action");
-            Utility.initDropMenu(rootOtherNode, actionArray, function(value){
-                this.defaultParam.actionType = parseInt(value)
-            }.bind(this));
-
-            var defaultOtherValue = _.find(actionArray, function(object){
-                return object.value === this.defaultParam.actionType;
-            }.bind(this));
-
-            if (defaultOtherValue){
-                this.$el.find("#dropdown-action .cur-value").html(defaultOtherValue.name);
-                this.defaultParam.actionType = defaultOtherValue.value;
-            } else {
-                this.$el.find("#dropdown-action .cur-value").html(actionArray[0].name);
-                this.defaultParam.actionType = actionArray[0].value;
-            }
         },
 
         onSure: function(){
@@ -98,36 +30,22 @@ define("luaStatusCodeCache.view", ['require','exports', 'template', 'modal.view'
             if (!matchConditionParam) return false;
             */
 
-            var headerKey = this.$el.find("#args").val(), headerValue = this.$el.find("#values").val();
-            if (headerKey === "" || headerValue === ""){
-                alert("参数和值不能为空");
+            var code = this.$el.find("#args").val(), expireTime = this.$el.find("#values").val();
+            if (code === "" || expireTime === ""){
+                alert("状态码和缓存时间不能为空");
                 return false
-            } else {
-                var headerKeyName = "参数: " + headerKey + "<br>",
-                    headerValueName = "值: " + headerValue + "<br>";
+            } 
+            if(!Utility.isNumber(expireTime)){
+                alert("缓存时间只能填数字");
+                return false;
             }
 
-            var directionTypeName = "";
-            if (this.defaultParam.directionType === 1) directionTypeName = "方向：客户端到CDN<br>";
-            if (this.defaultParam.directionType === 2) directionTypeName = "方向：CDN到源站<br>";
-            if (this.defaultParam.directionType === 3) directionTypeName = "方向：源到CDN<br>";
-            if (this.defaultParam.directionType === 4) directionTypeName = "方向：CDN到客户端<br>";
-
-            var actionTypeName = "";
-            if (this.defaultParam.actionType === 1) actionTypeName = "动作：增加<br>";
-            if (this.defaultParam.actionType === 2) actionTypeName = "动作：修改<br>";
-            if (this.defaultParam.actionType === 3) actionTypeName = "动作：隐藏<br>";
-
-            var summary = directionTypeName + actionTypeName + headerKeyName + headerValueName
 
             var postParam = {
                 "id": this.isEdit ? this.model.get("id") : new Date().valueOf(),
                 "locationId": this.defaultParam.locationId,
-                "directionType": this.defaultParam.directionType,
-                "actionType": this.defaultParam.actionType,
-                "headerKey": headerKey,
-                "headerValue": headerValue,
-                "summary": summary
+                "code": code,
+                "expireTime": expireTime
             }
             return postParam
         },
@@ -313,7 +231,7 @@ define("luaStatusCodeCache.view", ['require','exports', 'template', 'modal.view'
                         "headerKey":  postParam.headerKey,
                         "headerValue":  postParam.headerValue
                     };
-                    //this.collection.trigger("get.header.success");
+                    this.collection.trigger("get.header.success");
                     this.collection.modifyHttpHeader(args);
                     this.addRolePopup.$el.modal('hide');
                     Utility.onContentChange();
@@ -348,8 +266,13 @@ define("luaStatusCodeCache.view", ['require','exports', 'template', 'modal.view'
                             }    
                         ]
                     };
-                    this.collection.setHttpHeader(args);
+                    
+                    //下边三行用于测试数据
+                    var model = new this.collection.model(postParam);
+                    this.collection.push(model);
                     this.collection.trigger("get.header.success");
+
+                    this.collection.setHttpHeader(args);
                     this.addRolePopup.$el.modal('hide');
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)

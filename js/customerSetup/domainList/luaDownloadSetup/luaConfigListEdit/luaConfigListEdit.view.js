@@ -76,6 +76,17 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
 
         httpHeaderControl:function(){
             //http头控制
+            if(this.httpHeaderOptView){
+                var clientInfo = this.clientInfo;
+                var domainInfo = this.domainInfo;
+                this.httpHeaderOptView.update(clientInfo,domainInfo,this.$el.find("#luaconfig-http-header-control"));
+                return false;    
+            }
+            require(["luaAdvanceConfigHttpHeaderOpt.view","luaAdvanceConfigHttpHeaderOpt.model"],function(LuaAdvanceConfigHttpHeaderOptView,LuaAdvanceConfigHttpHeaderOptModel){
+                //this.httpHeaderOptView = LuaAdvanceConfigHttpHeaderOptView;
+                this.setHttpHeader(LuaAdvanceConfigHttpHeaderOptView,LuaAdvanceConfigHttpHeaderOptModel);
+            }.bind(this));
+
         },
 
         referSet:function(){
@@ -88,6 +99,17 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
 
         onSaveSuccess: function(){
             alert("保存成功！")
+        },
+
+        setHttpHeader:function(HttpHeaderOptView,HttpHeaderOptModel){
+           var M = new HttpHeaderOptModel();
+           this.httpHeaderOptView = new HttpHeaderOptView({
+                collection:M,
+                domainInfo:this.domainInfo,
+                clientInfo:this.clientInfo
+            });
+
+            this.httpHeaderOptView.render(this.$el.find("#luaconfig-http-header-control"));
         },
 
         launchSendPopup: function(){

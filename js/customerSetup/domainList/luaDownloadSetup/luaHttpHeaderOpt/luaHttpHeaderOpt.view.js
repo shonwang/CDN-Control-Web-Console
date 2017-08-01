@@ -349,7 +349,7 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
                         ]
                     };
                     this.collection.setHttpHeader(args);
-                    this.collection.trigger("get.header.success");
+                    //this.collection.trigger("get.header.success");
                     this.addRolePopup.$el.modal('hide');
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)

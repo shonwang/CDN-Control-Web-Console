@@ -217,38 +217,6 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
             window.location.href+="/luaConfigListEdit/"+id;
-            /*
-            如下为编辑的代码，不要删除，说不定以后出了个让编辑此项的需求，直接开启就OK
-            var model = this.collection.find(function(obj){
-                return obj.get("id") === parseInt(id)
-            }.bind(this));
-            if (this.addRolePopup) $("#" + this.addRolePopup.modalId).remove();
-
-            var myAddEditRoleView = new AddEditRoleView({
-                collection: this.collection,
-                model: model,
-                isEdit: true
-            });
-
-            var options = {
-                title:"匹配条件",
-                body : myAddEditRoleView,
-                backdrop : 'static',
-                type     : 2,
-                onOKCallback: function(){
-                    var postParam = myAddEditRoleView.onSure();
-                    if (!postParam) return;
-
-                    _.each(postParam, function(value, key, ls){
-                        model.set(key, value);
-                    }.bind(this))
-                    this.collection.trigger("get.policy.success");
-                    this.addRolePopup.$el.modal('hide');
-                }.bind(this),
-                onHiddenCallback: function(){}.bind(this)
-            }
-            this.addRolePopup = new Modal(options);
-            */
         },
 
         onClickAddRole: function(event){

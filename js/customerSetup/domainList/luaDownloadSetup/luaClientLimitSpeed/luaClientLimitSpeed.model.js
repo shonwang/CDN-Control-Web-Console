@@ -24,8 +24,8 @@ define("luaClientLimitSpeed.model", ['require','exports', 'utility'], function(r
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        setClientSpeed: function(args){
-            var url = BASE_URL + "/channelManager/clientSpeed/setClientSpeed",
+        setClientSpeedBatch: function(args){
+            var url = BASE_URL + "/channelManager/clientSpeed/setClientSpeedBatch",
             successCallback = function(res){
                 this.trigger("set.speed.success", res)
             }.bind(this),

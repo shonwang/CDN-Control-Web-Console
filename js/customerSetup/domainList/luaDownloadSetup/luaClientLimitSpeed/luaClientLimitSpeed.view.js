@@ -60,8 +60,8 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
             this.options = options;
             this.$el = $(_.template(template['tpl/customerSetup/domainList/luaDownloadSetup/mainCtn.html'])({
                 data: {
-                    mainTitle: "缓存优化",
-                    subTitle: "去问号缓存"
+                    mainTitle: "限速",
+                    subTitle: "客户端限速"
                 }
             }));
             var clientInfo = JSON.parse(options.query), 
@@ -77,20 +77,17 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
                 notShowBtn: true
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
-            this.clientLimitSpeed = $(_.template(template['tpl/customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.add.html'])());
-            this.clientLimitSpeed.appendTo(this.$el.find(".main-ctn"));
 
-            // this.collection.on("get.speed.success", $.proxy(this.onChannelListSuccess, this));
+            this.$el.find(".main-ctn").html(_.template(template['tpl/loading.html'])({}));
+
+            // this.collection.on("get.speed.success", $.proxy(this.initSetup, this));
             // this.collection.on("get.speed.error", $.proxy(this.onGetError, this));
             // this.collection.on("set.speed.success", $.proxy(this.onSaveSuccess, this));
             // this.collection.on("set.speed.error", $.proxy(this.onGetError, this));
-            // this.onClickQueryButton();
+            // this.collection.getClientSpeed({originId: this.domainInfo.id});
 
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
-            this.$el.find(".byte-limit-toggle .togglebutton input").on("click", $.proxy(this.onClickByteLimitToggle, this));
-            this.$el.find(".set-limit-toggle .togglebutton input").on("click", $.proxy(this.onClickSetLimitToggle, this));
-            this.$el.find(".add-time-limit").on("click", $.proxy(this.onClickAddTimeLimit, this));
 
             this.defaultParam = {
                 byteNotLimit: 1,
@@ -99,25 +96,8 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
                 limitSpeed: 0,
                 preUnlimit: 0,
                 timeLimitList: [],
-                type: 9,
-                policy: ""
             }
 
-            // this.defaultParam.type = this.model.get("matchingType") || 0;
-            // this.defaultParam.policy = this.model.get("matchingValue") || "";
-            // this.defaultParam.byteNotLimit = this.model.get("preFlag") === 0 ? 1 : 2;
-            // this.defaultParam.byteNotLimitUnit = this.model.get("preUnlimit") >= 1024 ? 2 : 1;
-            // this.defaultParam.preUnlimit = this.model.get("preUnlimit") || 0;
-            // this.defaultParam.limitSpeedToggle = this.model.get("speedFlag") === 0 ? 1 : 2;
-            // this.defaultParam.limitSpeed = this.model.get("speedLimit") || 0;
-            // _.each(this.model.get("timeLimit"), function(el, index, ls){
-            //     this.defaultParam.timeLimitList.push({
-            //         id: el.id,
-            //         start: el.startTime,
-            //         end: el.endTime,
-            //         limitSpeed: el.speedLimit
-            //     })
-            // }.bind(this))
             this.initSetup();
         },
 
@@ -153,25 +133,36 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
         },
 
         onClickSaveBtn: function(){
-            var list = [];
-            this.collection.each(function(obj){
-                list.push({
-                    "matchingType": obj.get('matchingType'),
-                    "matchingValue": obj.get('matchingValue'),
-                    "preUnlimit": obj.get('preUnlimit'),
-                    "speedLimit": obj.get('speedLimit'),
-                    "timeLimit": obj.get('timeLimit'),
-                    "preFlag": obj.get('preFlag'),
-                    "speedFlag": obj.get('speedFlag')
+            var preUnlimit = parseInt(this.$el.find("#byte-limit").val());
+
+            if (this.defaultParam.byteNotLimitUnit === 2)
+                preUnlimit = preUnlimit * 1024
+
+            var speedLimit = parseInt(this.$el.find("#set-limit").val()), 
+                timeLimit = [], nowDate = new Date().format("yyyy/MM/dd");
+
+            _.each(this.defaultParam.timeLimitList, function(el, index, ls){
+                timeLimit.push({
+                    "id": el.id,
+                    "startTime" : el.start,
+                    "endTime" : el.end,
+                    "speedLimit": el.limitSpeed
                 })
-            }.bind(this))
+            })
 
             var postParam = {
                 "originId": this.domainInfo.id,
-                "list": list
+                "list": [{
+                    "preUnlimit": preUnlimit,
+                    "speedLimit": speedLimit,
+                    "timeLimit": timeLimit,
+                    "preFlag": this.defaultParam.byteNotLimit === 1 ? 0 : 1,
+                    "speedFlag": this.defaultParam.limitSpeedToggle === 1 ? 0 : 1,
+                    "locationId": this.defaultParam.locationId
+                }]
             }
 
-            this.collection.setClientSpeed(postParam)
+            this.collection.setClientSpeedBatch(postParam)
         },
 
         onGetError: function(error){
@@ -181,7 +172,31 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
                 alert("网络阻塞，请刷新重试！")
         },
 
-        initSetup: function(){
+        initSetup: function(data){
+            if (data) {
+                this.defaultParam.locationId = data.locationId;
+                this.defaultParam.byteNotLimit = data.preFlag === 0 ? 1 : 2;
+                this.defaultParam.byteNotLimitUnit = data.preUnlimit >= 1024 ? 2 : 1;
+                this.defaultParam.preUnlimit = data.preUnlimit || 0;
+                this.defaultParam.limitSpeedToggle = data.speedFlag === 0 ? 1 : 2;
+                this.defaultParam.limitSpeed = data.speedLimit || 0;
+                _.each(data.timeLimit, function(el, index, ls){
+                    this.defaultParam.timeLimitList.push({
+                        id: el.id,
+                        start: el.startTime,
+                        end: el.endTime,
+                        limitSpeed: el.speedLimit
+                    })
+                }.bind(this))
+            }
+
+            this.clientLimitSpeed = $(_.template(template['tpl/customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.add.html'])());
+            this.$el.find(".main-ctn").html(this.clientLimitSpeed.get(0));
+
+            this.$el.find(".byte-limit-toggle .togglebutton input").on("click", $.proxy(this.onClickByteLimitToggle, this));
+            this.$el.find(".set-limit-toggle .togglebutton input").on("click", $.proxy(this.onClickSetLimitToggle, this));
+            this.$el.find(".add-time-limit").on("click", $.proxy(this.onClickAddTimeLimit, this));
+
             this.initUnitDropdown();
             if (this.defaultParam.byteNotLimit === 1){
                 this.$el.find(".byte-limit-toggle .togglebutton input").get(0).checked = false;
@@ -301,60 +316,6 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
                 this.defaultParam.limitSpeedToggle = 1;
             }
             Utility.onContentChange();
-        },
-
-        onSure: function(){
-            var matchConditionParam = this.matchConditionView.getMatchConditionParam();
-            if (!matchConditionParam) return false;
-
-            var preUnlimit = parseInt(this.$el.find("#byte-limit").val());
-
-            if (this.defaultParam.byteNotLimitUnit === 2)
-                preUnlimit = preUnlimit * 1024
-
-            var speedLimit = parseInt(this.$el.find("#set-limit").val()), 
-            summary = '', timeLimit = [], nowDate = new Date().format("yyyy/MM/dd");
-
-            if (preUnlimit === 0) summary = "指定不限速字节数：关闭。" ;
-            if (preUnlimit !== 0) summary = "指定不限速字节数：" + preUnlimit + "KB。" 
-            if (this.defaultParam.byteNotLimit === 1) summary = "指定不限速字节数：关闭。" ;
-
-
-            if (this.defaultParam.limitSpeedToggle === 1) {
-                summary = summary + "限速字节数：关闭<br>";
-            } else {
-                if (speedLimit === 0) summary = summary + "限速字节数：关闭<br>";
-                if (speedLimit !== 0) summary = summary + "限速字节数：" + speedLimit + "KB/s<br>";
-            }
-
-
-            _.each(this.defaultParam.timeLimitList, function(el, index, ls){
-                var startTime = el.start,
-                    endTime = el.end,
-                    speedLimit2 = el.limitSpeed + "KB/s<br>"
-                var timeStr = "限速时间段：" + startTime + "至" + endTime + "，限速字节数：" + speedLimit2;
-                summary = summary + timeStr;
-                timeLimit.push({
-                    "id": el.id,
-                    "startTime" : el.start,
-                    "endTime" : el.end,
-                    "speedLimit": el.limitSpeed
-                })
-            })
-
-            var postParam = {
-                "id": this.isEdit ? this.model.get("id") : new Date().valueOf(),
-                "matchingType": matchConditionParam.type,
-                "typeName": matchConditionParam.typeName,
-                "matchingValue": matchConditionParam.policy,
-                "preUnlimit": preUnlimit,
-                "speedLimit": speedLimit,
-                "timeLimit": timeLimit,
-                "summary": summary,
-                "preFlag": this.defaultParam.byteNotLimit === 1 ? 0 : 1,
-                "speedFlag": this.defaultParam.limitSpeedToggle === 1 ? 0 : 1,
-            }
-            return postParam
         },
 
         hide: function(){

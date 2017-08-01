@@ -60,6 +60,8 @@
   "liveUpFlowNameChange.view": "customerSetup/domainList/liveSetup/liveUpFlowNameChange/liveUpFlowNameChange.view",
   "luaAdvanceConfig.model": "customerSetup/domainList/luaDownloadSetup/luaAdvanceConfig/luaAdvanceConfig.model",
   "luaAdvanceConfig.view": "customerSetup/domainList/luaDownloadSetup/luaAdvanceConfig/luaAdvanceConfig.view",
+  "luaAdvanceConfigHttpHeaderOpt.model": "customerSetup/domainList/luaDownloadSetup/luaAdvanceConfigHttpHeaderOpt/luaAdvanceConfigHttpHeaderOpt.model",
+  "luaAdvanceConfigHttpHeaderOpt.view": "customerSetup/domainList/luaDownloadSetup/luaAdvanceConfigHttpHeaderOpt/luaAdvanceConfigHttpHeaderOpt.view",
   "luaCacheRule.model": "customerSetup/domainList/luaDownloadSetup/luaCacheRule/luaCacheRule.model",
   "luaCacheRule.view": "customerSetup/domainList/luaDownloadSetup/luaCacheRule/luaCacheRule.view",
   "luaClientLimitSpeed.model": "customerSetup/domainList/luaDownloadSetup/luaClientLimitSpeed/luaClientLimitSpeed.model",

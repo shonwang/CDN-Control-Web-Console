@@ -49,8 +49,9 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
         },
 
         onClickSaveBtn: function(){
-            var result = this.checkEverything();
-            if (!result) return false;
+            if (this.defaultParam.openFlag === 1) {
+                if (!this.checkEverything()) return false;
+            }
 
             var whiteIpValue = this.conversionFormat(this.$el.find("#white-IP").val(), 1),
                 blackIpValue = this.conversionFormat(this.$el.find("#black-IP").val(), 1);

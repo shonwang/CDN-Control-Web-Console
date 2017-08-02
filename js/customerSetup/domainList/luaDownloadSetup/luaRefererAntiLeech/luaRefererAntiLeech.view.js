@@ -114,8 +114,9 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
         },
 
         onClickSaveBtn: function(){
-            var result = this.checkEverything();
-            if (!result) return false;
+            if (this.defaultParam.openFlag === 1) {
+                if (!this.checkEverything()) return false;
+            }
 
             var domains = '';
             

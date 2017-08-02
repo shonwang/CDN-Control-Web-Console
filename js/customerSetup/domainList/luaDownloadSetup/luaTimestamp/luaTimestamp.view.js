@@ -218,29 +218,82 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onClickSaveBtn: function(){
-            var list = [];
-            this.collection.each(function(obj){
-                list.push({
-                    "matchingType": obj.get('matchingType'),
-                    "matchingValue": obj.get('matchingValue'),
-                    "confType": obj.get('confType'),
-                    "protectionType": obj.get('protectionType'),
-                    "timeParam": obj.get('timeParam'),
-                    "hashParam": obj.get('hashParam'),
-                    "timeType": obj.get('timeType'),
-                    "expirationTime": obj.get('expirationTime'),
-                    "authDivisorList": obj.get('authDivisorList'),
-                    "md5Truncate": obj.get('md5Truncate'),
-                    "authKeyList": obj.get('authKeyList'),
+            if (this.defaultParam.openFlag === 1){
+                if (!this.checkBalabala()) return false;
+            }
+
+            var protectionType, confType, expirationTime, md5Truncate;
+            confType = this.defaultParam.isBaseSetup === 1 ? 0 : 1
+            if (confType === 0){
+                protectionType = this.defaultParam.antiLeech;
+            } else if (confType === 1 && this.defaultParam.encryption === 1){
+                protectionType = 1;
+            } else if (confType === 1 && this.defaultParam.encryption === 2){
+                protectionType = this.defaultParam.mtPosition;
+            }
+
+            var advancedTimeInput = this.$el.find(".advanced-setup #deadline-time").val(),
+                baseTimeInput = this.$el.find(".base-setup #deadline-time").val()
+
+            if ((this.defaultParam.baseDeadline === 1 && confType === 0) || 
+                (this.defaultParam.advancedDeadline === 1 && confType === 1)){
+                expirationTime = 0;
+            } else if (this.defaultParam.baseDeadline === 2 && confType === 0) {
+                expirationTime = baseTimeInput;
+            } else if (this.defaultParam.advancedDeadline === 2 && confType === 1) {
+                expirationTime = advancedTimeInput;
+            }
+
+            if (this.defaultParam.spliceMd5 === 1) {
+                md5Truncate = "";
+            } else {
+                md5Truncate = this.$el.find("#md5-start").val() + "," + this.$el.find("#md5-end").val()
+            }
+            var authKeyList = [];
+
+            if (confType === 0){
+                authKeyList.push({
+                    id: new Date().valueOf(),
+                    authKey: this.$el.find(".base-setup #secret-key-primary").val()
                 })
-            }.bind(this))
+                _.each(this.defaultParam.baseSecretKeyBackup, function(el, index, ls){
+                    authKeyList.push({
+                        id: el.id,
+                        authKey: el.backupKey
+                    })
+                }.bind(this))
+            } else {
+                authKeyList.push({
+                    id: new Date().valueOf(),
+                    authKey: this.$el.find(".advanced-setup #secret-key-primary").val()
+                })
+                _.each(this.defaultParam.advancedSecretKeyBackup, function(el, index, ls){
+                    authKeyList.push({
+                        id: el.id,
+                        authKey: el.backupKey
+                    })
+                }.bind(this))
+            }
 
             var postParam = {
                 "originId": this.domainInfo.id,
-                "list": list
+                "list": [{
+                    "confType": confType,
+                    "protectionType": protectionType,
+                    "timeParam": this.$el.find("#key_time").val(),
+                    "hashParam": this.$el.find("#key_hash").val(),
+                    "timeType": this.defaultParam.timestampType,
+                    "expirationTime": expirationTime,
+                    //"authFactor": this.$el.find("#atuth-divisor").val(),
+                    "authDivisorList": this.defaultParam.atuthDivisorArray,
+                    "md5Truncate": md5Truncate,
+                    "authKeyList": authKeyList,
+                    "openFlag": this.defaultParam.openFlag,
+                    "locationId": this.defaultParam.locationId
+                }]
             }
 
-            this.collection.setStandardProtection(postParam)
+            this.collection.setStandardProtectionBatch(postParam)
         },
 
         onGetError: function(error){
@@ -621,107 +674,6 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
             }
             return result;
         },
-
-        onSure: function(){
-            var result = this.checkBalabala();
-            if (!result) return false;
-
-            var matchConditionParam = this.matchConditionView.getMatchConditionParam();
-            if (!matchConditionParam) return false;
-
-            var protectionType, confType, expirationTime, md5Truncate;
-            confType = this.defaultParam.isBaseSetup === 1 ? 0 : 1
-            if (confType === 0){
-                protectionType = this.defaultParam.antiLeech;
-            } else if (confType === 1 && this.defaultParam.encryption === 1){
-                protectionType = 1;
-            } else if (confType === 1 && this.defaultParam.encryption === 2){
-                protectionType = this.defaultParam.mtPosition;
-            }
-
-            var advancedTimeInput = this.$el.find(".advanced-setup #deadline-time").val(),
-                baseTimeInput = this.$el.find(".base-setup #deadline-time").val()
-
-            if ((this.defaultParam.baseDeadline === 1 && confType === 0) || 
-                (this.defaultParam.advancedDeadline === 1 && confType === 1)){
-                expirationTime = 0;
-            } else if (this.defaultParam.baseDeadline === 2 && confType === 0) {
-                expirationTime = baseTimeInput;
-            } else if (this.defaultParam.advancedDeadline === 2 && confType === 1) {
-                expirationTime = advancedTimeInput;
-            }
-
-            if (this.defaultParam.spliceMd5 === 1) {
-                md5Truncate = "";
-            } else {
-                md5Truncate = this.$el.find("#md5-start").val() + "," + this.$el.find("#md5-end").val()
-            }
-            var authKeyList = [];
-
-            if (confType === 0){
-                authKeyList.push({
-                    id: new Date().valueOf(),
-                    authKey: this.$el.find(".base-setup #secret-key-primary").val()
-                })
-                _.each(this.defaultParam.baseSecretKeyBackup, function(el, index, ls){
-                    authKeyList.push({
-                        id: el.id,
-                        authKey: el.backupKey
-                    })
-                }.bind(this))
-            } else {
-                authKeyList.push({
-                    id: new Date().valueOf(),
-                    authKey: this.$el.find(".advanced-setup #secret-key-primary").val()
-                })
-                _.each(this.defaultParam.advancedSecretKeyBackup, function(el, index, ls){
-                    authKeyList.push({
-                        id: el.id,
-                        authKey: el.backupKey
-                    })
-                }.bind(this))
-            }
-
-            var confTypeName;
-            if (confType === 0) confTypeName = "配置类型：标准配置<br>";
-            if (confType === 1) confTypeName = "配置类型：高级配置<br>";
-
-            var protectionTypeName;
-            if (protectionType === 1 && confType === 0) protectionTypeName = "防盗链格式：TypeA<br>";
-            if (protectionType === 2 && confType === 0) protectionTypeName = "防盗链格式：TypeB<br>";
-            if (protectionType === 3 && confType === 0) protectionTypeName = "防盗链格式：TypeC<br>";
-            if (protectionType === 1 && confType === 1) protectionTypeName = "加密URL形式：形式1：加密字符串在参数中<br>";
-            if (protectionType === 2 && confType === 1) protectionTypeName = "加密URL形式：形式2：加密字符串在路径中<br>";
-            if (protectionType === 3 && confType === 1) protectionTypeName = "加密URL形式：形式2：加密字符串在路径中<br>";
-
-            var authKeyListName;
-            authKeyListName = "共享秘钥：1主，" + (authKeyList.length - 1) + "备<br>";
-
-            var expirationTimeName;
-            if (expirationTime === 0) expirationTimeName = "失效时间：时间戳时间<br>";
-            if (expirationTime !== 0) expirationTimeName = "失效时间：时间戳时间+过期时间：" + expirationTime + "秒<br>";
-
-            var summary = confTypeName + protectionTypeName + authKeyListName + expirationTimeName;
-
-            var postParam = {
-                "matchingType": matchConditionParam.type,
-                "matchingValue": matchConditionParam.policy,
-                "typeName": matchConditionParam.typeName,
-                "confType": confType,
-                "protectionType": protectionType,
-                "timeParam": this.$el.find("#key_time").val(),
-                "hashParam": this.$el.find("#key_hash").val(),
-                "timeType": this.defaultParam.timestampType,
-                "expirationTime": expirationTime,
-                //"authFactor": this.$el.find("#atuth-divisor").val(),
-                "authDivisorList": this.defaultParam.atuthDivisorArray,
-                "md5Truncate": md5Truncate,
-                "authKeyList": authKeyList,
-                "summary": summary
-            }
-            return postParam;
-        },
-
 
         hide: function(){
             this.$el.hide();

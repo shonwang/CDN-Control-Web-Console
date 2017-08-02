@@ -9,18 +9,13 @@ define("luaIpBlackWhiteList.model", ['require','exports', 'utility'], function(r
 
         initialize: function(){},
 
-        getIPSafetyChainList: function(args){
-           var url = BASE_URL + "/channelManager/safety/getIPSafetyChainList",
+        getIPSafetyChain: function(args){
+           var url = BASE_URL + "/channelManager/safety/download/getIPSafetyChain",
             successCallback = function(res){
-                this.reset();
                 if (res){
-                    _.each(res, function(element, index, list){
-                        this.push(new Model(element));
-                    }.bind(this))
-                    this.total = res.total;
-                    this.trigger("get.IPSafetyChainList.success");
+                    this.trigger("get.IPSafetyChainList.success", res);
                 } else {
-                    this.trigger("get.IPSafetyChainList.error"); 
+                    this.trigger("get.IPSafetyChainList.error", res); 
                 } 
             }.bind(this),
             errorCallback = function(response){
@@ -28,8 +23,9 @@ define("luaIpBlackWhiteList.model", ['require','exports', 'utility'], function(r
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
-        setIPSafetyChain: function(args){
-            var url = BASE_URL + "/channelManager/safety/setIPSafetyChain",
+        
+        setIPSafetyChainBatch: function(args){
+            var url = BASE_URL + "/channelManager/safety/download/setIPSafetyChainBatch",
             successCallback = function(res){
                 this.trigger("set.IPSafetyChain.success", res)
             }.bind(this),

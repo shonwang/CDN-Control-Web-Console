@@ -28,33 +28,37 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
             this.luaRefererAntiLeechEl = $(_.template(template['tpl/customerSetup/domainList/refererAntiLeech/refererAntiLeech.add.html'])());
             this.luaRefererAntiLeechEl.appendTo(this.$el.find(".main-ctn"));
-
-            // this.collection.on("get.refer.success", $.proxy(this.onChannelListSuccess, this));
-            // this.collection.on("get.refer.error", $.proxy(this.onGetError, this));
-            // this.collection.on("set.refer.success", $.proxy(this.onSaveSuccess, this));
-            // this.collection.on("set.refer.error", $.proxy(this.onGetError, this));
-            // this.onClickQueryButton();
-
-            // this.$el.find(".add").on("click", $.proxy(this.onClickAddRule, this));
-            // this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
-
-            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
-
             this.defaultParam = {
                 refererType: 1,
                 domains: "",
                 nullReferer: 0,
-                type: 9,
-                policy: ""
+                openFlag: 0
             };
+            // this.collection.on("get.refer.success", $.proxy(this.onChannelListSuccess, this));
+            // this.collection.on("get.refer.error", $.proxy(this.onGetError, this));
+            // this.collection.on("set.refer.success", $.proxy(this.onSaveSuccess, this));
+            // this.collection.on("set.refer.error", $.proxy(this.onGetError, this));
+            // this.collection.getReferSafetyChain({originId: this.domainInfo.id});
 
-            // if (this.isEdit){
-            //     this.defaultParam.type = this.model.get("matchingType");
-            //     this.defaultParam.policy = this.model.get("matchingValue") || "";
-            //     this.defaultParam.refererType = this.model.get("type");
-            //     this.defaultParam.domains = this.model.get("domains") || "";
-            //     this.defaultParam.nullReferer = this.model.get("nullReferer");
-            // }
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
+            this.initSetup();
+        },
+
+        initSetup: function(data){
+            if (data){
+                this.defaultParam.locationId = data.locationId;
+                this.defaultParam.openFlag = data.openFlag;
+                this.defaultParam.refererType = data.type;
+                this.defaultParam.domains = data.domains || "";
+                this.defaultParam.nullReferer = data.nullReferer;
+            }
+            if (this.defaultParam.openFlag === 1){
+                this.$el.find(".setup-content").show();
+            } else {
+                this.$el.find(".setup-content").hide();
+            }
             if (this.defaultParam.refererType === 1) {
                 this.$el.find(".black-list").hide();
                 this.$el.find("#white-domain").val(this.defaultParam.domains)
@@ -70,7 +74,7 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
             }
 
             this.initTypeDropdown();
-
+            this.$el.find(".open-referer .togglebutton input").on("click", $.proxy(this.onClickSetupToggle, this));
             // this.$el.find("#white-domain").on("blur", $.proxy(this.onBlurDomainInput, this));
             // this.$el.find("#white-url").on("blur", $.proxy(this.onBlurUrlInput, this));
             // this.$el.find("#black-domain").on("blur", $.proxy(this.onBlurDomainInput, this));
@@ -110,23 +114,28 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
         },
 
         onClickSaveBtn: function(){
-            var list = [];
-            this.collection.each(function(obj){
-                list.push({
-                    "matchingType": obj.get('matchingType'),
-                    "matchingValue": obj.get('matchingValue'),
-                    type: obj.get('type'),
-                    domains: obj.get('domains'),
-                    nullReferer: obj.get('nullReferer'),
-                })
-            }.bind(this))
+            var result = this.checkEverything();
+            if (!result) return false;
+
+            var domains = '';
+            
+            if (this.defaultParam.refererType === 1) 
+                domains = _.uniq(this.$el.find("#white-domain").val().split(',')).join(',')
+            else
+                domains = _.uniq(this.$el.find("#black-domain").val().split(',')).join(',')
 
             var postParam = {
                 "originId": this.domainInfo.id,
-                "list": list
+                "list": [{
+                    type: this.defaultParam.refererType,
+                    domains: domains,
+                    nullReferer: this.defaultParam.nullReferer,
+                    openFlag: this.defaultParam.openFlag,
+                    locationId: this.defaultParam.locationId
+                }]
             }
 
-            this.collection.setReferSafetyChains(postParam)
+            this.collection.setReferSafetyChainsBatch(postParam)
         },
 
         onGetError: function(error){
@@ -134,6 +143,18 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
+        },
+
+        onClickSetupToggle: function(){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            if (eventTarget.checked){
+                this.$el.find(".setup-content").show(200);
+                this.defaultParam.openFlag = 1;
+            } else {
+                this.defaultParam.openFlag = 0;
+                this.$el.find(".setup-content").hide(200);
+            }
         },
 
         initTypeDropdown: function(){
@@ -262,54 +283,6 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
             //     //result = this.onBlurUrlInput({target: this.$el.find("#black-url").get(0)})
             // }
             return result;
-        },
-
-        onSure: function(){
-            var result = this.checkEverything();
-            if (!result) return false;
-            var matchConditionParam = this.matchConditionView.getMatchConditionParam();
-            if (!matchConditionParam) return false;
-
-            var matchingType = matchConditionParam.type, matchingTypeName;
-            if (matchingType === 0) matchingTypeName = "文件类型";
-            if (matchingType === 1) matchingTypeName = "指定目录";
-            if (matchingType === 2) matchingTypeName = "指定URL";
-            if (matchingType === 3) matchingTypeName = "正则匹配";
-            if (matchingType === 4) matchingTypeName = "url包含指定参数";
-            if (matchingType === 9) matchingTypeName = "全部文件";
-
-            var type = this.defaultParam.refererType, typeName;
-            if (type === 1) typeName = "Referer类型：白名单<br>";
-            if (type === 2) typeName = "Referer类型：黑名单<br>";
-
-            var domains = '', domainsName = '';
-            
-            if (this.defaultParam.refererType === 1) 
-                domains = _.uniq(this.$el.find("#white-domain").val().split(',')).join(',')
-            else
-                domains = _.uniq(this.$el.find("#black-domain").val().split(',')).join(',')
-
-            if (domains&&type === 1) domainsName = "合法域名：" + domains + "<br>";
-            if (domains&&type === 1) domainsName = "非法域名：" + domains + "<br>";
-
-            var nullReferer = this.defaultParam.nullReferer, nullRefererName;
-            if (nullReferer === 0) nullRefererName = "是否允许空引用：否<br>";
-            if (nullReferer === 1) nullRefererName = "是否允许空引用：是<br>";
-
-            var summary = typeName + domainsName + nullRefererName;
-
-            var postParam = {
-                type: type,
-                domains: domains,
-                nullReferer: this.defaultParam.nullReferer,
-                id: this.isEdit ? this.model.get("id") : new Date().valueOf(),
-                matchingType: matchingType,
-                matchingValue: matchConditionParam.policy,
-                summary: summary,
-                matchingTypeName: matchingTypeName
-            }
-
-            return postParam
         },
 
         hide: function(){

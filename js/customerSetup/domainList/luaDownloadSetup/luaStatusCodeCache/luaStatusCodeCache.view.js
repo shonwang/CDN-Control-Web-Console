@@ -1,6 +1,6 @@
 define("luaStatusCodeCache.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
-    var AddEditHttpHeaderView = Backbone.View.extend({
+    var AddEditStatusCodeView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
@@ -11,27 +11,36 @@ define("luaStatusCodeCache.view", ['require','exports', 'template', 'modal.view'
             this.$el = $(_.template(template['tpl/customerSetup/domainList/luaDownloadSetup/luaStatusCodeCache/luaStatusCodeCache.add.html'])());
 
             this.defaultParam = {
-                code: "",
+                id:"",
+                codes: "",
                 expireTime: "",
                 locationId:''//编辑时的id
             }; 
 
             if (this.isEdit){
-                this.defaultParam.code = this.model.get("code") || "";
+                this.defaultParam.codes = this.model.get("codes") || "";
                 this.defaultParam.expireTime = this.model.get("expireTime") || "";
-                this.defaultParam.locationId = this.model.get("locationId");
+                this.defaultParam.id = this.model.get("id");
             }
 
-        },
+            this.initEditTemplate();
 
+        },
+        initEditTemplate:function(){
+            console.log(this.defaultParam);
+            if(this.isEdit){
+                this.$el.find("#args").val(this.defaultParam.codes);
+                this.$el.find("#values").val(this.defaultParam.expireTime);
+            }
+        },
         onSure: function(){
             /*
             var matchConditionParam = this.matchConditionView.getMatchConditionParam();
             if (!matchConditionParam) return false;
             */
 
-            var code = this.$el.find("#args").val(), expireTime = this.$el.find("#values").val();
-            if (code === "" || expireTime === ""){
+            var codes = this.$el.find("#args").val(), expireTime = this.$el.find("#values").val();
+            if (codes === "" || expireTime === ""){
                 alert("状态码和缓存时间不能为空");
                 return false
             } 
@@ -44,8 +53,8 @@ define("luaStatusCodeCache.view", ['require','exports', 'template', 'modal.view'
             var postParam = {
                 "id": this.isEdit ? this.model.get("id") : new Date().valueOf(),
                 "locationId": this.defaultParam.locationId,
-                "code": code,
-                "expireTime": expireTime
+                "codes": codes,
+                "expireTime": parseInt(expireTime)
             }
             return postParam
         },
@@ -79,8 +88,8 @@ define("luaStatusCodeCache.view", ['require','exports', 'template', 'modal.view'
             this.optHeader.find(".save").remove();
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
-            this.collection.on("get.header.success", $.proxy(this.onChannelListSuccess, this));
-            this.collection.on("get.header.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.statusCode.success", $.proxy(this.onStatusCodeSuccess, this));
+            this.collection.on("get.statusCode.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".add").on("click", $.proxy(this.onClickAddRule, this));
             //this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
@@ -88,36 +97,27 @@ define("luaStatusCodeCache.view", ['require','exports', 'template', 'modal.view'
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
 
             this.onClickQueryButton();
-            this.collection.on("set.header.success", $.proxy(this.onSaveSuccess, this));
-            this.collection.on("set.header.error", $.proxy(this.onGetError, this));
-            this.collection.on("modify.header.success", $.proxy(this.onModifySuccess, this));
-            this.collection.on("modify.header.error", $.proxy(this.onGetError, this));
-            this.collection.on("del.header.success", $.proxy(this.onDelSuccess, this));
-            this.collection.on("del.header.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.statusCode.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.statusCode.error", $.proxy(this.onGetError, this));
+            this.collection.on("modify.statusCode.success", $.proxy(this.onModifySuccess, this));
+            this.collection.on("modify.statusCode.error", $.proxy(this.onGetError, this));
+            this.collection.on("del.statusCode.success", $.proxy(this.onDelSuccess, this));
+            this.collection.on("del.statusCode.error", $.proxy(this.onGetError, this));
         },
 
         onSaveSuccess: function(){
             alert("保存成功！");
-            var args = {
-                originId:this.domainInfo.id
-            };
-            this.collection.getHeaderList(args);
+            this.onClickQueryButton();
         },
         
         onModifySuccess: function(){
             alert("修改成功！");
-            var args = {
-                originId:this.domainInfo.id
-            };
-            this.collection.getHeaderList(args);
+            this.onClickQueryButton();
         },
 
         onDelSuccess: function(){
             alert("删除成功！");
-            var args = {
-                originId:this.domainInfo.id
-            };
-            this.collection.getHeaderList(args);
+            this.onClickQueryButton();
         },
 
         launchSendPopup: function(){
@@ -146,28 +146,6 @@ define("luaStatusCodeCache.view", ['require','exports', 'template', 'modal.view'
                 this.sendPopup = new Modal(options);
             }.bind(this))
         },
-        /*
-        onClickSaveBtn: function(){
-            var list = [];
-            this.collection.each(function(obj){
-                list.push({
-                    "matchingType": obj.get('matchingType'),
-                    "matchingValue": obj.get('matchingValue'),
-                    "directionType": obj.get('directionType'),
-                    "actionType": obj.get('actionType'),
-                    "headerKey": obj.get('headerKey'),
-                    "headerValue": obj.get('headerValue')
-                })
-            }.bind(this))
-
-            var postParam = {
-                "originId": this.domainInfo.id,
-                "list": list
-            }
-
-            this.collection.setHttpHeader(postParam)
-        },
-        */
 
         onGetError: function(error){
             if (error&&error.message)
@@ -176,13 +154,13 @@ define("luaStatusCodeCache.view", ['require','exports', 'template', 'modal.view'
                 alert("网络阻塞，请刷新重试！")
         },
 
-        onChannelListSuccess: function(){
+        onStatusCodeSuccess: function(){
             this.initTable();
         },
 
         onClickQueryButton: function(){
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.collection.getHeaderList({originId:this.domainInfo.id});
+            this.collection.getStatusCodeList({originId:this.domainInfo.id});
         },
 
         initTable: function(){
@@ -195,8 +173,6 @@ define("luaStatusCodeCache.view", ['require','exports', 'template', 'modal.view'
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-            this.table.find("tbody .up").on("click", $.proxy(this.onClickItemUp, this));
-            this.table.find("tbody .down").on("click", $.proxy(this.onClickItemDown, this));
             this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
         },
 
@@ -209,32 +185,28 @@ define("luaStatusCodeCache.view", ['require','exports', 'template', 'modal.view'
             }.bind(this));
             if (this.addRolePopup) $("#" + this.addRolePopup.modalId).remove();
 
-            var myAddEditHttpHeaderView = new AddEditHttpHeaderView({
+            var myAddEditStatusCodeView = new AddEditStatusCodeView({
                 collection: this.collection,
                 model: model,
                 isEdit: true
             });
 
             var options = {
-                title:"HTTP头的增删该查",
-                body : myAddEditHttpHeaderView,
+                title:"状态码缓存",
+                body : myAddEditStatusCodeView,
                 backdrop : 'static',
                 type     : 2,
                 onOKCallback: function(){
-                    var postParam = myAddEditHttpHeaderView.onSure();
+                    var postParam = myAddEditStatusCodeView.onSure();
                     if (!postParam) return;
                     var args = {
+                        "id": postParam.id,
                         "originId":this.domainInfo.id,
-                        "locationId": postParam.locationId,
-                        "directionType":  postParam.directionType,
-                        "actionType": postParam.actionType,
-                        "headerKey":  postParam.headerKey,
-                        "headerValue":  postParam.headerValue
+                        "codes":  postParam.codes,
+                        "expireTime": postParam.expireTime
                     };
-                    this.collection.trigger("get.header.success");
-                    this.collection.modifyHttpHeader(args);
+                    this.collection.modifyStatusCode(args);
                     this.addRolePopup.$el.modal('hide');
-                    Utility.onContentChange();
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
@@ -244,35 +216,22 @@ define("luaStatusCodeCache.view", ['require','exports', 'template', 'modal.view'
         onClickAddRule: function(event){
             if (this.addRolePopup) $("#" + this.addRolePopup.modalId).remove();
 
-            var myAddEditHttpHeaderView = new AddEditHttpHeaderView({collection: this.collection});
+            var myAddEditStatusCodeView = new AddEditStatusCodeView({collection: this.collection});
 
             var options = {
                 title:"HTTP头的增删该查",
-                body : myAddEditHttpHeaderView,
+                body : myAddEditStatusCodeView,
                 backdrop : 'static',
                 type     : 2,
                 onOKCallback: function(){
-                    var postParam = myAddEditHttpHeaderView.onSure();
+                    var postParam = myAddEditStatusCodeView.onSure();
                     if (!postParam) return;
                     var args = {
-                        originId:this.domainInfo.id,
-                        list:[
-                            {
-                                "locationId": postParam.locationId,
-                                "directionType":  postParam.directionType,
-                                "actionType": postParam.actionType,
-                                "headerKey":  postParam.headerKey,
-                                "headerValue":  postParam.headerValue
-                            }    
-                        ]
+                        "originId":this.domainInfo.id,
+                        "codes":  postParam.codes,
+                        "expireTime": postParam.expireTime
                     };
-                    
-                    //下边三行用于测试数据
-                    var model = new this.collection.model(postParam);
-                    this.collection.push(model);
-                    this.collection.trigger("get.header.success");
-
-                    this.collection.setHttpHeader(args);
+                    this.collection.addStatusCode(args);
                     this.addRolePopup.$el.modal('hide');
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
@@ -287,76 +246,11 @@ define("luaStatusCodeCache.view", ['require','exports', 'template', 'modal.view'
                 id = $(eventTarget).attr("id");
             var model = this.collection.get(id);
             var args = {
-                locationId:model.atrributes.locationId
+                id:id,
+                originId:model.attributes.originId
             };
             
-            this.collection.deleteHttpHeader(args);
-        },
-
-        onClickItemUp: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
-            var model = this.collection.get(id), modelIndex;
-
-            var allFileArray = this.collection.filter(function(obj){
-                return obj.get('matchingType') === 9;
-            }.bind(this));
-
-            var specifiedUrlArray = this.collection.filter(function(obj){
-                return obj.get('matchingType') === 2;
-            }.bind(this));
-
-            var otherArray = this.collection.filter(function(obj){
-                return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
-            }.bind(this));
-
-            _.each(otherArray, function(el, index, list){
-                if (el.get("id") === parseInt(id)) modelIndex = index; 
-            }.bind(this))
-
-            otherArray = Utility.adjustElement(otherArray, modelIndex, true)
-
-            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
-
-            this.collection.trigger("get.header.success")
-        },
-
-        onClickItemDown: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
-            var model = this.collection.get(id), modelIndex;
-
-            var allFileArray = this.collection.filter(function(obj){
-                return obj.get('matchingType') === 9;
-            }.bind(this));
-
-            var specifiedUrlArray = this.collection.filter(function(obj){
-                return obj.get('matchingType') === 2;
-            }.bind(this));
-
-            var otherArray = this.collection.filter(function(obj){
-                return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
-            }.bind(this));
-
-            _.each(otherArray, function(el, index, list){
-                if (el.get("id") === parseInt(id)) modelIndex = index; 
-            }.bind(this))
-
-            otherArray = Utility.adjustElement(otherArray, modelIndex, false)
-
-            this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
-
-            this.collection.trigger("get.header.success")
+            this.collection.delStatusCode(args);
         },
 
         hide: function(){

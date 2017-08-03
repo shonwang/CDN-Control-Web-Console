@@ -27,12 +27,24 @@ define("luaAdvanceConfigCommonTab.view", ['require','exports', 'template', 'moda
             this.bindEvents();
         },
 
+        getTemplateContainer:function(){
+            return this.$el.find("#advanceCommonTabsRight");
+        },
+
         bindEvents:function(){
             this.$el.find("input[name=advanceCommonTabs]").on("change",$.proxy(this.onRadiosChange,this));
         },
 
-        onRadiosChange:function(){
-            
+        onRadiosChange:function(event){
+            var eventTarget = event.target || event.srcElement;
+            var value = $(eventTarget).val();
+            console.log(value);
+            if(value == 1){
+                this.onGlobalCallback && this.onGlobalCallback();
+            }
+            else if(value == 2){
+                this.onCustomCallback && this.onCustomCallback();
+            }
         },
 
         update: function(target){

@@ -11,6 +11,7 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
             this.$el = $(_.template(template['tpl/customerSetup/domainList/luaDownloadSetup/luaHttpHeaderOpt/httpHeaderOpt.add.html'])());
 
             this.defaultParam = {
+                id:'',
                 directionType: 1, //    1:客户端到CDN 2：CDN到源站 3：源站到CDN 4：CDN到客户端
                 actionType: 1, //动作类型 1:增加 2:修改 3:隐藏
                 headerKey: "",
@@ -19,6 +20,7 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
             }; 
 
             if (this.isEdit){
+                this.defaultParam.id = this.model.get("id");
                 this.defaultParam.directionType = this.model.get("directionType");
                 this.defaultParam.actionType = this.model.get("actionType");
                 this.defaultParam.headerKey = this.model.get("headerKey") || "";
@@ -27,6 +29,14 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
             }
 
             this.initDirectionDropdown();
+            this.initForEditTemplate();
+        },
+
+        initForEditTemplate:function(){
+            if(this.isEdit){
+                this.$el.find("#args").val(this.defaultParam.headerKey);
+                this.$el.find("#values").val(this.defaultParam.headerValue);
+            }
         },
 
         initDirectionDropdown: function(){
@@ -228,28 +238,6 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
                 this.sendPopup = new Modal(options);
             }.bind(this))
         },
-        /*
-        onClickSaveBtn: function(){
-            var list = [];
-            this.collection.each(function(obj){
-                list.push({
-                    "matchingType": obj.get('matchingType'),
-                    "matchingValue": obj.get('matchingValue'),
-                    "directionType": obj.get('directionType'),
-                    "actionType": obj.get('actionType'),
-                    "headerKey": obj.get('headerKey'),
-                    "headerValue": obj.get('headerValue')
-                })
-            }.bind(this))
-
-            var postParam = {
-                "originId": this.domainInfo.id,
-                "list": list
-            }
-
-            this.collection.setHttpHeader(postParam)
-        },
-        */
 
         onGetError: function(error){
             if (error&&error.message)
@@ -311,12 +299,12 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
                         "directionType":  postParam.directionType,
                         "actionType": postParam.actionType,
                         "headerKey":  postParam.headerKey,
-                        "headerValue":  postParam.headerValue
+                        "headerValue":  postParam.headerValue,
+                        "id":  postParam.id
                     };
                     //this.collection.trigger("get.header.success");
                     this.collection.modifyHttpHeader(args);
                     this.addRolePopup.$el.modal('hide');
-                    Utility.onContentChange();
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
@@ -363,8 +351,11 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
             var model = this.collection.get(id);
+ 
             var args = {
-                locationId:model.atrributes.locationId
+                locationId:model.attributes.locationId,
+                originId:model.attributes.originId,
+                id:id
             };
             
             this.collection.deleteHttpHeader(args);

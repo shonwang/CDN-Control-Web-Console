@@ -20,15 +20,14 @@ define("luaAdvanceConfigCacheSetup.view", ['require','exports', 'template', 'mod
         setCacheTimeView:function(){
             //加载缓存时间视图
             if(this.cacheTimeView){
-                this.cacheTimeView.update(this.$el.find(".advance-config-cacheSetup-panel-content-cacheTime"));
+                this.cacheTimeView.updateCacheTime(this.$el.find(".advance-config-cacheSetup-panel-content-cacheTime"));
                 return false;
             }
 
-            require(["luaAdvanceConfigCommonTab.view"],function(LuaAdvanceConfigCommonTabView){
-                this.cacheTimeView = new LuaAdvanceConfigCommonTabView({
-                    title:"缓存时间",
-                    collection:this.collection,
-                    onSaveCallback:function(){},
+            require(["luaAdvanceConfigCacheSetupCacheTime.view","luaAdvanceConfigCacheSetupCacheTime.model"],function(LuaAdvanceConfigCacheSetupCacheTimeView,LuaAdvanceConfigCacheSetupCacheTimeModel){
+                var M = new LuaAdvanceConfigCacheSetupCacheTimeModel();
+                this.cacheTimeView = new LuaAdvanceConfigCacheSetupCacheTimeView({
+                    collection:M,
                     target:this.$el.find(".advance-config-cacheSetup-panel-content-cacheTime")
                 });
             }.bind(this));

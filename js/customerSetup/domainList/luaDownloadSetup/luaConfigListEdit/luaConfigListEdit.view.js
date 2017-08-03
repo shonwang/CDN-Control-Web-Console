@@ -29,8 +29,16 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
 
             this.$el.find('a[data-toggle="tab"]').on('shown.bs.tab', $.proxy(this.onShownTab, this));
             this.$el.find(".return").on("click",$.proxy(this.onReturnClick,this));
+
+            this.initSetup();
             
         },
+
+        initSetup:function(){
+            //上来加载缓存页
+            this.luaConfigCacheSetup();
+        },
+
         onReturnClick:function(e){
             var eventTarget = e.target;
             var IS_ALERT_SAVE = window.IS_ALERT_SAVE;
@@ -46,6 +54,7 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
                 window.location.href= this.path;
             }
         },
+
         onShownTab: function (e) {
             var eventTarget = e.target;
             var id = $(eventTarget).attr("data-target");
@@ -53,7 +62,7 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
             switch(id){
                 case "#luaconfig-cache-set":
                     this.currentTab = "#luaconfig-cache-set";
-                    this.luaConfigSet();
+                    this.luaConfigCacheSetup();
                     break;
                 case "#luaconfig-http-header-control":
                     this.currentTab = "#luaconfig-http-header-control";
@@ -70,8 +79,19 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
             }
         },
 
-        luaConfigSet:function(){
+        luaConfigCacheSetup:function(){
             //缓存设置
+            if(this.cacheSetupView){
+                this.cacheSetupView.update(this.$el.find("#luaconfig-cache-set"));
+                return false;
+            }
+            require(["luaAdvanceConfigCacheSetup.view","luaAdvanceConfigCacheSetup.model"],function(LuaAdvanceConfigCacheSetupView,LuaAdvanceConfigCacheSetupModel){
+                var M = new LuaAdvanceConfigCacheSetupModel();
+                this.cacheSetupView = new LuaAdvanceConfigCacheSetupView({
+                    collection:M
+                });
+                this.cacheSetupView.render(this.$el.find("#luaconfig-cache-set"));
+            }.bind(this));
         },
 
         httpHeaderControl:function(){
@@ -82,8 +102,13 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
                 return false;    
             }
             require(["luaAdvanceConfigHttpHeaderOpt.view","luaAdvanceConfigHttpHeaderOpt.model"],function(LuaAdvanceConfigHttpHeaderOptView,LuaAdvanceConfigHttpHeaderOptModel){
-                //this.httpHeaderOptView = LuaAdvanceConfigHttpHeaderOptView;
-                this.setHttpHeader(LuaAdvanceConfigHttpHeaderOptView,LuaAdvanceConfigHttpHeaderOptModel);
+               var M = new LuaAdvanceConfigHttpHeaderOptModel();
+               this.httpHeaderOptView = new LuaAdvanceConfigHttpHeaderOptView({
+                    collection:M,
+                    domainId:this.domainInfo.id
+                });
+
+                this.httpHeaderOptView.render(this.$el.find("#luaconfig-http-header-control"));
             }.bind(this));
 
         },
@@ -98,16 +123,6 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
 
         onSaveSuccess: function(){
             alert("保存成功！")
-        },
-
-        setHttpHeader:function(HttpHeaderOptView,HttpHeaderOptModel){
-           var M = new HttpHeaderOptModel();
-           this.httpHeaderOptView = new HttpHeaderOptView({
-                collection:M,
-                domainId:this.domainInfo.id
-            });
-
-            this.httpHeaderOptView.render(this.$el.find("#luaconfig-http-header-control"));
         },
 
         launchSendPopup: function(){

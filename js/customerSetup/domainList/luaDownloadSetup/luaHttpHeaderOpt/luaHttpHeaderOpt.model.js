@@ -21,7 +21,7 @@ define("luaHttpHeaderOpt.model", ['require','exports', 'utility'], function(requ
         initialize: function(){},
 
         getHeaderList: function(args){
-            var url = BASE_URL + "/channelManager/httpHeader/getHeaderList",
+            var url = BASE_URL + "/channelManager/httpHeader/getHttpHeader",
             successCallback = function(res){
                 this.reset();
                 if (res){

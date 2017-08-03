@@ -72,13 +72,15 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
                 this.defaultParam.locationId = data.locationId;
                 this.defaultParam.openFlag = data.openFlag;
                 this.defaultParam.ips = data.ips;
-                this.defaultParam.refererType = data.refererType;
+                this.defaultParam.refererType = data.type;
             }
 
             if (this.defaultParam.openFlag === 1){
                 this.$el.find(".setup-content").show();
+                this.$el.find(".ip-list .togglebutton input").get(0).checked = true;
             } else {
                 this.$el.find(".setup-content").hide();
+                this.$el.find(".ip-list .togglebutton input").get(0).checked = false;
             }
 
             if (this.defaultParam.refererType === 1) {

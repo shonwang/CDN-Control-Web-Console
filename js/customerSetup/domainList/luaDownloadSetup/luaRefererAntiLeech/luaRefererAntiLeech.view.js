@@ -54,8 +54,10 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
             }
             if (this.defaultParam.openFlag === 1){
                 this.$el.find(".setup-content").show();
+                this.$el.find(".open-referer .togglebutton input").get(0).checked = true
             } else {
                 this.$el.find(".setup-content").hide();
+                this.$el.find(".open-referer .togglebutton input").get(0).checked = false
             }
             if (this.defaultParam.refererType === 1) {
                 this.$el.find(".black-list").hide();

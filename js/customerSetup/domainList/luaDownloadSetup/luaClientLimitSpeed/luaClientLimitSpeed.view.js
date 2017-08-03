@@ -80,11 +80,11 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
 
             this.$el.find(".main-ctn").html(_.template(template['tpl/loading.html'])({}));
 
-            // this.collection.on("get.speed.success", $.proxy(this.initSetup, this));
-            // this.collection.on("get.speed.error", $.proxy(this.onGetError, this));
-            // this.collection.on("set.speed.success", $.proxy(this.onSaveSuccess, this));
-            // this.collection.on("set.speed.error", $.proxy(this.onGetError, this));
-            // this.collection.getClientSpeed({originId: this.domainInfo.id});
+            this.collection.on("get.speed.success", $.proxy(this.initSetup, this));
+            this.collection.on("get.speed.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.speed.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.speed.error", $.proxy(this.onGetError, this));
+            this.collection.getClientSpeed({originId: this.domainInfo.id});
 
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
@@ -97,8 +97,6 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
                 preUnlimit: 0,
                 timeLimitList: [],
             }
-
-            this.initSetup();
         },
 
         onSaveSuccess: function(){

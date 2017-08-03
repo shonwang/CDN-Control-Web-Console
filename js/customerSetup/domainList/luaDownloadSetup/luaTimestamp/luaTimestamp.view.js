@@ -29,11 +29,11 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
             this.luaTimestampEl = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.add.html'])());
             this.luaTimestampEl.appendTo(this.$el.find(".main-ctn"));
 
-            // this.collection.on("get.protection.success", $.proxy(this.onChannelListSuccess, this));
-            // this.collection.on("get.protection.error", $.proxy(this.onGetError, this));
-            // this.collection.on("set.protection.success", $.proxy(this.onSaveSuccess, this));
-            // this.collection.on("set.protection.error", $.proxy(this.onGetError, this));
-            // this.collection.getStandardProtection({originId: this.domainInfo.id})
+            this.collection.on("get.protection.success", $.proxy(this.initSetup, this));
+            this.collection.on("get.protection.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.protection.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.protection.error", $.proxy(this.onGetError, this));
+            this.collection.getStandardProtection({originId: this.domainInfo.id})
 
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
@@ -67,8 +67,6 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
                 }],
                 md5Truncate: "",
             };
-
-            this.initSetup();
         },
 
         initSetup: function(data){
@@ -165,8 +163,10 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
 
             if (this.defaultParam.openFlag === 1){
                 this.$el.find(".setup-content").show();
+                this.$el.find(".open-timestamp .togglebutton input").get(0).checked = true;
             } else {
                 this.$el.find(".setup-content").hide();
+                this.$el.find(".open-timestamp .togglebutton input").get(0).checked = false;
             }
 
             this.$el.find(".open-timestamp .togglebutton input").on("click", $.proxy(this.onClickSetupToggle, this));
@@ -360,7 +360,7 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
             if (data)
                 this.$el.find(".deadline-time #deadline-time").val(data.expirationTime)
 
-            if (this.defaultParam.md5Truncate.indexOf(",") !== -1){
+            if (this.defaultParam.md5Truncate&&this.defaultParam.md5Truncate.indexOf(",") !== -1){
                 this.$el.find("#md5-start").val(this.defaultParam.md5Truncate.split(",")[0])
                 this.$el.find("#md5-end").val(this.defaultParam.md5Truncate.split(",")[1])
             } 
@@ -657,12 +657,14 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
             }
             var spliceMd5Min = this.$el.find("#md5-start").val(),
                 spliceMd5Max = this.$el.find("#md5-end").val();
-            if (this.defaultParam.spliceMd5 === 2 && 
-                (spliceMd5Max === "" || spliceMd5Min === "" || 
-                 parseInt(spliceMd5Max) - parseInt(spliceMd5Min) < 0) || 
-                spliceMd5Min < 1 || spliceMd5Max > 32){
-                alert("你选择了高级设置截取MD5值，需要填写正确的取值范围！");
-                return;
+            if (this.defaultParam.isBaseSetup === 2) {
+                if (this.defaultParam.spliceMd5 === 2 && 
+                    (spliceMd5Max === "" || spliceMd5Min === "" || 
+                     parseInt(spliceMd5Max) - parseInt(spliceMd5Min) < 0) || 
+                    spliceMd5Min < 1 || spliceMd5Max > 32){
+                    alert("你选择了高级设置截取MD5值，需要填写正确的取值范围！");
+                    return;
+                }
             }
             var result = true;
             if (this.defaultParam.isBaseSetup === 1){

@@ -12,11 +12,7 @@ define("luaRefererAntiLeech.model", ['require','exports', 'utility'], function(r
         getReferSafetyChain: function(args){
             var url = BASE_URL + "/channelManager/safety/download/getReferSafetyChain",
             successCallback = function(res){
-                if (res){
-                    this.trigger("get.refer.success", res);
-                } else {
-                    this.trigger("get.refer.error", res); 
-                } 
+                this.trigger("get.refer.success", res);
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("get.refer.error", response);  

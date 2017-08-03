@@ -36,16 +36,14 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
                 openFlag: 0
             };
             
-            // this.collection.on("get.IPSafetyChainList.success", $.proxy(this.initSetup, this));
-            // this.collection.on("get.IPSafetyChainList.error", $.proxy(this.onGetError, this));
-            // this.collection.on("set.IPSafetyChain.success", $.proxy(this.onSaveSuccess, this));
-            // this.collection.on("set.IPSafetyChain.error", $.proxy(this.onGetError, this));
-            // this.collection.getIPSafetyChain({originId: this.domainInfo.id})
+            this.collection.on("get.IPSafetyChainList.success", $.proxy(this.initSetup, this));
+            this.collection.on("get.IPSafetyChainList.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.IPSafetyChain.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.IPSafetyChain.error", $.proxy(this.onGetError, this));
+            this.collection.getIPSafetyChain({originId: this.domainInfo.id})
 
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
-
-            this.initSetup();
         },
 
         onClickSaveBtn: function(){
@@ -74,13 +72,15 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
                 this.defaultParam.locationId = data.locationId;
                 this.defaultParam.openFlag = data.openFlag;
                 this.defaultParam.ips = data.ips;
-                this.defaultParam.refererType = data.refererType;
+                this.defaultParam.refererType = data.type;
             }
 
             if (this.defaultParam.openFlag === 1){
                 this.$el.find(".setup-content").show();
+                this.$el.find(".ip-list .togglebutton input").get(0).checked = true;
             } else {
                 this.$el.find(".setup-content").hide();
+                this.$el.find(".ip-list .togglebutton input").get(0).checked = false;
             }
 
             if (this.defaultParam.refererType === 1) {

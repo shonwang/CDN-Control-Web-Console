@@ -34,16 +34,14 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
                 nullReferer: 0,
                 openFlag: 0
             };
-            // this.collection.on("get.refer.success", $.proxy(this.onChannelListSuccess, this));
-            // this.collection.on("get.refer.error", $.proxy(this.onGetError, this));
-            // this.collection.on("set.refer.success", $.proxy(this.onSaveSuccess, this));
-            // this.collection.on("set.refer.error", $.proxy(this.onGetError, this));
-            // this.collection.getReferSafetyChain({originId: this.domainInfo.id});
+            this.collection.on("get.refer.success", $.proxy(this.initSetup, this));
+            this.collection.on("get.refer.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.refer.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.refer.error", $.proxy(this.onGetError, this));
+            this.collection.getReferSafetyChain({originId: this.domainInfo.id});
 
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
-
-            this.initSetup();
         },
 
         initSetup: function(data){
@@ -56,8 +54,10 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
             }
             if (this.defaultParam.openFlag === 1){
                 this.$el.find(".setup-content").show();
+                this.$el.find(".open-referer .togglebutton input").get(0).checked = true
             } else {
                 this.$el.find(".setup-content").hide();
+                this.$el.find(".open-referer .togglebutton input").get(0).checked = false
             }
             if (this.defaultParam.refererType === 1) {
                 this.$el.find(".black-list").hide();

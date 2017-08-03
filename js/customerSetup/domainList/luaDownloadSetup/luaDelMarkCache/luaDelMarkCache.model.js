@@ -12,11 +12,7 @@ define("luaDelMarkCache.model", ['require','exports', 'utility'], function(requi
         getCacheQuestionMark: function(args){
             var url = BASE_URL + "/channelManager/cache/getCacheQuestionMark",
             successCallback = function(res){
-                if (res){
-                    this.trigger("get.mark.success", res);
-                } else {
-                    this.trigger("get.mark.error", res); 
-                } 
+                this.trigger("get.mark.success", res);
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("get.mark.error", response);  

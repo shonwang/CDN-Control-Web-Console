@@ -12,11 +12,7 @@ define("luaClientLimitSpeed.model", ['require','exports', 'utility'], function(r
         getClientSpeed: function(args){
             var url = BASE_URL + "/channelManager/clientSpeed/getClientSpeed",
             successCallback = function(res){
-                if (res){
-                    this.trigger("get.speed.success", res);
-                } else {
-                    this.trigger("get.speed.error", res); 
-                } 
+                this.trigger("get.speed.success", res);
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("get.speed.error", response);  

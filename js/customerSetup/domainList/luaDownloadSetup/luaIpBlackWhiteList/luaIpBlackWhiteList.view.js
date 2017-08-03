@@ -26,28 +26,62 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
                 notShowBtn: true
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
+
             this.luaIpBlackWhiteListEl = $(_.template(template['tpl/customerSetup/domainList/ipBlackWhiteList/ipBlackWhiteList.add.html'])());
             this.luaIpBlackWhiteListEl.appendTo(this.$el.find(".main-ctn"));
-            
-            // this.collection.off("get.IPSafetyChainList.success");
-            // this.collection.off("get.IPSafetyChainList.error");
-            // this.collection.on("get.IPSafetyChainList.success", $.proxy(this.onGetIPSafetyChainListSuccess, this));
-            // this.collection.on("get.IPSafetyChainList.error", $.proxy(this.onGetError, this));
-            // this.collection.on("set.IPSafetyChain.success", $.proxy(this.onSaveSuccess, this));
-            // this.collection.on("set.IPSafetyChain.error", $.proxy(this.onGetError, this));
-            // this.onClickQueryButton();
-
-            // this.$el.find(".add").on("click", $.proxy(this.onClickAddRole, this));
-            // this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
-
-            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
 
             this.defaultParam = {
                 refererType: 1,
                 ips: "",
-                type: 9,
-                policy: ""
+                openFlag: 0
             };
+            
+            // this.collection.on("get.IPSafetyChainList.success", $.proxy(this.initSetup, this));
+            // this.collection.on("get.IPSafetyChainList.error", $.proxy(this.onGetError, this));
+            // this.collection.on("set.IPSafetyChain.success", $.proxy(this.onSaveSuccess, this));
+            // this.collection.on("set.IPSafetyChain.error", $.proxy(this.onGetError, this));
+            // this.collection.getIPSafetyChain({originId: this.domainInfo.id})
+
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
+
+            this.initSetup();
+        },
+
+        onClickSaveBtn: function(){
+            if (this.defaultParam.openFlag === 1) {
+                if (!this.checkEverything()) return false;
+            }
+
+            var whiteIpValue = this.conversionFormat(this.$el.find("#white-IP").val(), 1),
+                blackIpValue = this.conversionFormat(this.$el.find("#black-IP").val(), 1);
+            var ips = this.defaultParam.refererType === 1 ? whiteIpValue : blackIpValue;
+            
+            var postParam = {
+                "originId": this.domainInfo.id,
+                "list": [{
+                    locationId: this.defaultParam.locationId,
+                    type: this.defaultParam.refererType,
+                    ips: _.uniq(ips.split(',')).join(','),
+                    openFlag: this.defaultParam.openFlag
+                }]
+            }
+            this.collection.setIPSafetyChainBatch(postParam)
+        },
+
+        initSetup: function(data){
+            if (data) {
+                this.defaultParam.locationId = data.locationId;
+                this.defaultParam.openFlag = data.openFlag;
+                this.defaultParam.ips = data.ips;
+                this.defaultParam.refererType = data.refererType;
+            }
+
+            if (this.defaultParam.openFlag === 1){
+                this.$el.find(".setup-content").show();
+            } else {
+                this.$el.find(".setup-content").hide();
+            }
 
             if (this.defaultParam.refererType === 1) {
                 this.$el.find(".black-list").hide();
@@ -58,10 +92,10 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
             }
 
             this.initTypeDropdown();
-            this.$el.find("#dropdown-contorl-action-type").attr('disabled','disabled');
-            
+    
+            this.$el.find(".ip-list .togglebutton input").on("click", $.proxy(this.onClickSetupToggle, this));
             this.$el.find("#white-IP").on("blur", $.proxy(this.onBlurIPInput, this));
-            this.$el.find("#black-IP").on("blur", $.proxy(this.onBlurIPInput, this));
+            this.$el.find("#black-IP").on("blur", $.proxy(this.onBlurIPInput, this));            
         },
 
         onSaveSuccess: function(){
@@ -94,6 +128,7 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
                 this.sendPopup = new Modal(options);
             }.bind(this))
         },
+
         onGetError: function(error){
             if (error&&error.message)
                 alert(error.message)
@@ -101,7 +136,19 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
                 alert("网络阻塞，请刷新重试！")
         },
 
-         initTypeDropdown: function(){
+        onClickSetupToggle: function(){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            if (eventTarget.checked){
+                this.$el.find(".setup-content").show(200);
+                this.defaultParam.openFlag = 1;
+            } else {
+                this.defaultParam.openFlag = 0;
+                this.$el.find(".setup-content").hide(200);
+            }
+        },
+
+        initTypeDropdown: function(){
             var  timeArray = [
                 {name: "白名单", value: 1},
                 {name: "黑名单", value: 2}
@@ -126,18 +173,8 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
                 this.$el.find("#dropdown-referer-type .cur-value").html(defaultValue.name);
             else
                 this.$el.find("#dropdown-referer-type .cur-value").html(timeArray[0].name);
-
-            /*var controlArray = [
-               {name:"直接禁止", value: null},
-               {name:"设置友好界面",value: null}
-            ];
-            rootNode = this.$el.find(".control-action-type");
-            Utility.initDropMenu(rootNode, controlArray, function(value){
-               
-            }.bind(this));
-            this.$el.find("#dropdown-contorl-action-type .cur-value").html(controlArray[0].name);*/
-            
         },
+
         conversionFormat: function(data,type){
             if(type == 1){
                 data = data.split("\n")
@@ -151,6 +188,7 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
             }
             return data;
         },
+
         onBlurIPInput: function(event){
             var eventTarget = event.srcElement || event.target,
                 value = eventTarget.value, ips = [], error;
@@ -196,42 +234,6 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
                 result = this.onBlurIPInput({target: this.$el.find("#black-IP").get(0)});
             }
             return result;
-        },
-
-        onSure: function(){
-            var result = this.checkEverything();
-            if (!result) return false;
-            var matchConditionParam = this.matchConditionView.getMatchConditionParam();
-            if (!matchConditionParam) return false;
-
-            var matchingType = matchConditionParam.type, matchingTypeName;
-            if (matchingType === 0) matchingTypeName = "文件类型";
-            if (matchingType === 1) matchingTypeName = "指定目录";
-            if (matchingType === 2) matchingTypeName = "指定URL";
-            if (matchingType === 3) matchingTypeName = "正则匹配";
-            if (matchingType === 4) matchingTypeName = "url包含指定参数";
-            if (matchingType === 9) matchingTypeName = "全部文件";
-
-            var type = this.defaultParam.refererType, typeName;
-            if (type === 1) typeName = "IP：白名单<br>";
-            if (type === 2) typeName = "IP：黑名单<br>";
-            
-            var whiteIpValue = this.conversionFormat(this.$el.find("#white-IP").val(),1),
-                blackIpValue = this.conversionFormat(this.$el.find("#black-IP").val(),1);
-            var ips = this.defaultParam.refererType === 1 ? whiteIpValue : blackIpValue;
-            var summary = typeName;
-
-            var postParam = {
-                type: type,
-                ips: _.uniq(ips.split(',')).join(','),
-                id: this.isEdit ? this.model.get("id") : new Date().valueOf(),
-                matchingType: matchingType,
-                matchingValue: matchConditionParam.policy,
-                summary: summary,
-                matchingTypeName: matchingTypeName
-            }
-
-            return postParam
         },
 
         hide: function(){

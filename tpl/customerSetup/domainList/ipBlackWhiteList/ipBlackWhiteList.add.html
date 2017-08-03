@@ -12,38 +12,40 @@
                 </div>
             </div>
         </div>
-        <div class="form-group">
-            <label for="referer-type" class="col-sm-3 control-label">类型</label>
-            <div class="col-sm-7 referer-type">
-                <div class="dropdown">
-                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-referer-type" data-toggle="dropdown">
-                        <span class="cur-value">加载中...</span>
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu"></ul>
+        <div class="setup-content">
+            <div class="form-group">
+                <label for="referer-type" class="col-sm-3 control-label">类型</label>
+                <div class="col-sm-7 referer-type">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-referer-type" data-toggle="dropdown">
+                            <span class="cur-value">加载中...</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu"></ul>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="form-group">
-            <div class="alert alert-dismissable alert-info col-sm-offset-3">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                提示：<br>
-                1、可以设置IP白名单或黑名单的方式，最多可以设置100条。<br>
-                2、支持单个IP的配置方式<br>
-                示例：192.168.1.1<br>
-                3、多个IP用回车分隔<br>
+            <div class="form-group">
+                <div class="alert alert-dismissable alert-info col-sm-offset-3">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    提示：<br>
+                    1、可以设置IP白名单或黑名单的方式，最多可以设置100条。<br>
+                    2、支持单个IP的配置方式<br>
+                    示例：192.168.1.1<br>
+                    3、多个IP用回车分隔<br>
+                </div>
             </div>
-        </div>
-        <div class="form-group white-list">
-            <label for="white-IP" class="col-sm-3 control-label">合法IP</label>
-            <div class="col-sm-7">
-                <textarea class="form-control" rows="3" id="white-IP"></textarea>
+            <div class="form-group white-list">
+                <label for="white-IP" class="col-sm-3 control-label">合法IP</label>
+                <div class="col-sm-7">
+                    <textarea class="form-control" rows="3" id="white-IP"></textarea>
+                </div>
             </div>
-        </div>
-        <div class="form-group black-list">
-            <label for="black-IP" class="col-sm-3 control-label">非法IP</label>
-            <div class="col-sm-7">
-                <textarea class="form-control" rows="3" id="black-IP"></textarea>
+            <div class="form-group black-list">
+                <label for="black-IP" class="col-sm-3 control-label">非法IP</label>
+                <div class="col-sm-7">
+                    <textarea class="form-control" rows="3" id="black-IP"></textarea>
+                </div>
             </div>
         </div>
     </form>

@@ -12,11 +12,7 @@ define("luaIpBlackWhiteList.model", ['require','exports', 'utility'], function(r
         getIPSafetyChain: function(args){
            var url = BASE_URL + "/channelManager/safety/download/getIPSafetyChain",
             successCallback = function(res){
-                if (res){
-                    this.trigger("get.IPSafetyChainList.success", res);
-                } else {
-                    this.trigger("get.IPSafetyChainList.error", res); 
-                } 
+                this.trigger("get.IPSafetyChainList.success", res);
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("get.IPSafetyChainList.error", response);  

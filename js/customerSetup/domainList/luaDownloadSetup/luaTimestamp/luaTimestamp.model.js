@@ -12,11 +12,7 @@ define("luaTimestamp.model", ['require','exports', 'utility'], function(require,
         getStandardProtection: function(args){
             var url = BASE_URL + "/channelManager/safety/download/getStandardProtection",
             successCallback = function(res){
-                if (res){
-                    this.trigger("get.protection.success", res);
-                } else {
-                    this.trigger("get.protection.error", res); 
-                } 
+                this.trigger("get.protection.success", res);
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("get.protection.error", response);  

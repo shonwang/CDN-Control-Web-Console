@@ -36,16 +36,14 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
                 openFlag: 0
             };
             
-            // this.collection.on("get.IPSafetyChainList.success", $.proxy(this.initSetup, this));
-            // this.collection.on("get.IPSafetyChainList.error", $.proxy(this.onGetError, this));
-            // this.collection.on("set.IPSafetyChain.success", $.proxy(this.onSaveSuccess, this));
-            // this.collection.on("set.IPSafetyChain.error", $.proxy(this.onGetError, this));
-            // this.collection.getIPSafetyChain({originId: this.domainInfo.id})
+            this.collection.on("get.IPSafetyChainList.success", $.proxy(this.initSetup, this));
+            this.collection.on("get.IPSafetyChainList.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.IPSafetyChain.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.IPSafetyChain.error", $.proxy(this.onGetError, this));
+            this.collection.getIPSafetyChain({originId: this.domainInfo.id})
 
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
-
-            this.initSetup();
         },
 
         onClickSaveBtn: function(){

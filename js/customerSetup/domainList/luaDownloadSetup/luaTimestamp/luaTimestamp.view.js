@@ -29,11 +29,11 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
             this.luaTimestampEl = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.add.html'])());
             this.luaTimestampEl.appendTo(this.$el.find(".main-ctn"));
 
-            // this.collection.on("get.protection.success", $.proxy(this.onChannelListSuccess, this));
-            // this.collection.on("get.protection.error", $.proxy(this.onGetError, this));
-            // this.collection.on("set.protection.success", $.proxy(this.onSaveSuccess, this));
-            // this.collection.on("set.protection.error", $.proxy(this.onGetError, this));
-            // this.collection.getStandardProtection({originId: this.domainInfo.id})
+            this.collection.on("get.protection.success", $.proxy(this.initSetup, this));
+            this.collection.on("get.protection.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.protection.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.protection.error", $.proxy(this.onGetError, this));
+            this.collection.getStandardProtection({originId: this.domainInfo.id})
 
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
@@ -67,8 +67,6 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
                 }],
                 md5Truncate: "",
             };
-
-            this.initSetup();
         },
 
         initSetup: function(data){

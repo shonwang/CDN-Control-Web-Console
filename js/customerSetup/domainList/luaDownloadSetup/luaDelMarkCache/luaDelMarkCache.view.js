@@ -35,7 +35,7 @@ define("luaDelMarkCache.view", ['require','exports', 'template', 'modal.view', '
                 markValue: "",
             };  
 
-            this.collection.on("get.mark.success", $.proxy(this.onChannelListSuccess, this));
+            this.collection.on("get.mark.success", $.proxy(this.initSetup, this));
             this.collection.on("get.mark.error", $.proxy(this.onGetError, this));
             this.collection.on("set.mark.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.mark.error", $.proxy(this.onGetError, this));
@@ -43,8 +43,6 @@ define("luaDelMarkCache.view", ['require','exports', 'template', 'modal.view', '
 
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
-
-            this.initSetup();
         },
 
         onSaveSuccess: function(){
@@ -112,10 +110,10 @@ define("luaDelMarkCache.view", ['require','exports', 'template', 'modal.view', '
 
             if (this.defaultParam.markType === 1){
                 this.$el.find("#delMarkRadio1").get(0).checked = true;
-            } else if (this.defaultParam.markType === 0) {
+            } else if (this.defaultParam.markType === 2) {
                 this.$el.find("#delMarkRadio2").get(0).checked = true;
                 this.$el.find("#sp-param").val(this.defaultParam.markValue)
-            } else if (this.defaultParam.markType === 2) {
+            } else if (this.defaultParam.markType === 0) {
                 this.$el.find("#delMarkRadio3").get(0).checked = true;
             }
 

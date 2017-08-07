@@ -7,6 +7,7 @@ define("luaAdvanceConfigCacheSetup.view", ['require','exports', 'template', 'mod
             this.collection = options.collection;
             this.locationId = options.locationId;
             this.domainInfo = options.domainInfo;
+            this.clientInfo = options.clientInfo;
             this.options = options;
             this.$el = $(_.template(template['tpl/customerSetup/domainList/luaDownloadSetup/luaAdvanceConfigCacheSetup/cacheSetup.html'])());
 
@@ -22,7 +23,7 @@ define("luaAdvanceConfigCacheSetup.view", ['require','exports', 'template', 'mod
         setCacheTimeView:function(){
             //加载缓存时间视图
             if(this.cacheTimeView){
-                this.cacheTimeView.updateCacheTime(this.$el.find(".advance-config-cacheSetup-panel-content-cacheTime"),this.locationId,this.domainInfo);
+                this.cacheTimeView.updateCacheTime(this.$el.find(".advance-config-cacheSetup-panel-content-cacheTime"),this.locationId,this.domainInfo,this.clientInfo);
                 return false;
             }
 
@@ -32,6 +33,7 @@ define("luaAdvanceConfigCacheSetup.view", ['require','exports', 'template', 'mod
                     collection:M,
                     locationId:this.locationId,
                     domainInfo:this.domainInfo,
+                    clientInfo:this.clientInfo,
                     target:this.$el.find(".advance-config-cacheSetup-panel-content-cacheTime")
                 });
             }.bind(this));
@@ -44,7 +46,6 @@ define("luaAdvanceConfigCacheSetup.view", ['require','exports', 'template', 'mod
                 return false;
             }
             require(["luaAdvanceConfigCacheSetupDelMark.view","luaAdvanceConfigCacheSetupDelMark.model"],function(LuaAdvanceConfigCacheSetupDelMarkView,LuaAdvanceConfigCacheSetupDelMarkModel){
-                console.log('222222');
                 var M = new LuaAdvanceConfigCacheSetupDelMarkModel();
                 this.delMarkView = new LuaAdvanceConfigCacheSetupDelMarkView({
                     collection:M,
@@ -70,6 +71,7 @@ define("luaAdvanceConfigCacheSetup.view", ['require','exports', 'template', 'mod
             this.$el.remove();
             this.options.domainInfo = domainInfo;
             this.options.locationId = locationId;
+            this.options.clientInfo = clientInfo;
             this.initialize(this.options);
             this.render(target);
         },

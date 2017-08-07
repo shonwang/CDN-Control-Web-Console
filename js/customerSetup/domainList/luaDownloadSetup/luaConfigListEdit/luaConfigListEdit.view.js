@@ -81,7 +81,7 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
         luaConfigCacheSetup:function(){
             //缓存设置
             if(this.cacheSetupView){
-                this.cacheSetupView.update(this.$el.find("#luaconfig-cache-set"),this.locationId,this.domainInfo);
+                this.cacheSetupView.update(this.$el.find("#luaconfig-cache-set"),this.locationId,this.domainInfo,this.clientInfo);
                 return false;
             }
             require(["luaAdvanceConfigCacheSetup.view","luaAdvanceConfigCacheSetup.model"],function(LuaAdvanceConfigCacheSetupView,LuaAdvanceConfigCacheSetupModel){
@@ -89,7 +89,8 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
                 this.cacheSetupView = new LuaAdvanceConfigCacheSetupView({
                     collection:M,
                     locationId:this.locationId,
-                    domainInfo:this.domainInfo
+                    domainInfo:this.domainInfo,
+                    clientInfo:this.clientInfo
                 });
                 this.cacheSetupView.render(this.$el.find("#luaconfig-cache-set"));
             }.bind(this));

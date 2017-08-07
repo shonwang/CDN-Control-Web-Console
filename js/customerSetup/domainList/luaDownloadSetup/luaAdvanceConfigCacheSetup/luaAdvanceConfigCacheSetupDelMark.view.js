@@ -16,6 +16,7 @@ define("luaAdvanceConfigCacheSetupDelMark.view", ['require','exports', 'template
         initSetupDelMarkView:function(){
             if(this.delMarkView){
                 this.delMarkView.update(this.target);
+                this.onRequireDelMarkMessage();
                 return false;
             }
 

@@ -10,6 +10,7 @@ define("luaAdvanceConfigCacheSetupCacheTime.view", ['require','exports', 'templa
             this.options = options;
             this.locationId = options.locationId;
             this.domainInfo = options.domainInfo;
+            this.clientInfo = options.clientInfo;
             
             this.target = options.target;
             this.initSetupCacheView();
@@ -18,6 +19,7 @@ define("luaAdvanceConfigCacheSetupCacheTime.view", ['require','exports', 'templa
         initSetupCacheView:function(){
             if(this.cacheTimeView){
                 this.cacheTimeView.update(this.target);
+                this.onRequireCacheMessage();
                 return false;
             }
 
@@ -100,10 +102,11 @@ define("luaAdvanceConfigCacheSetupCacheTime.view", ['require','exports', 'templa
             this.$el.find("#origin-cache-time").on("focus",Utility.onContentChange);
         },
 
-        updateCacheTime: function(target,locationId,domainInfo){
+        updateCacheTime: function(target,locationId,domainInfo,clientInfo){
             this.options.target = target;
             this.options.locationId = locationId;
             this.options.domainInfo = domainInfo;
+            this.options.clientInfo = clientInfo;
             this.collection.off();
             this.initialize(this.options);
         }

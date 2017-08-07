@@ -115,8 +115,8 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
             
             
-            this.collection.on("get.policy.success", $.proxy(this.onChannelListSuccess, this));
-            this.collection.on("get.policy.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.advanceLocation.success", $.proxy(this.onGetAdvanceLocationListSuccess, this));
+            this.collection.on("get.advanceLocation.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".add").on("click", $.proxy(this.onClickAddRole, this))
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this))
@@ -187,20 +187,19 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
                 alert("网络阻塞，请刷新重试！")
         },
 
-        onChannelListSuccess: function(){
+        onGetAdvanceLocationListSuccess: function(){
             this.initTable();
         },
 
         onClickQueryButton: function(){
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.collection.getPolicyList({originId: this.domainInfo.id});
+            this.collection.getAdvanceLocationList({originId: this.domainInfo.id});
         },
 
         initTable: function(){
 
             this.table = $(_.template(template['tpl/customerSetup/domainList/luaAdvanceConfig/luaAdvanceConfig.table.html'])({
-                data: this.collection.models,
-                hideAction: false
+                data: this.collection.models
             }));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);

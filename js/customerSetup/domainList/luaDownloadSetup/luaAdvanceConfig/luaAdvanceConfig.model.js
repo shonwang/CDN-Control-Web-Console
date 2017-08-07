@@ -39,8 +39,8 @@ define("luaAdvanceConfig.model", ['require','exports', 'utility'], function(requ
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
-        getPolicyList: function(args){
-            var url = BASE_URL + "/channelManager/cache/getPolicyList",
+        getAdvanceLocationList: function(args){
+            var url = BASE_URL + "/channelManager/location/getAdvanceLocationList",
             successCallback = function(res){
                 this.reset();
                 if (res){
@@ -48,9 +48,9 @@ define("luaAdvanceConfig.model", ['require','exports', 'utility'], function(requ
                         this.push(new Model(element));
                     }.bind(this))
                     this.total = res.total;
-                    this.trigger("get.policy.success");
+                    this.trigger("get.advanceLocation.success");
                 } else {
-                    this.trigger("get.policy.error"); 
+                    this.trigger("get.advanceLocation.error"); 
                 } 
             }.bind(this),
             errorCallback = function(response){

@@ -114,6 +114,9 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
 
         referSet:function(){
             //防盗链
+            this.getAdvanceIpBlackWhiteList();
+            this.getAdvanceRefererAntiLeech();
+            this.getAdvanceTimestamp();
         },
 
         speedSet:function(){
@@ -132,6 +135,66 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
                     });
 
                     this.luaAdvanceClientLimitSpeedView.render(this.$el.find("#luaconfig-speed-set"));
+            }.bind(this));
+        },
+
+        getAdvanceIpBlackWhiteList: function(){
+            var tabNode = this.$el.find("#luaconfig-refer-set #collapseOne .panel-body")
+
+            if(this.luaAdvanceIpBlackWhiteListView){
+                this.luaAdvanceIpBlackWhiteListView.update(this.domainInfo, this.locationId, tabNode);
+                return false;    
+            }
+            require(["luaAdvanceIpBlackWhiteList.view","luaIpBlackWhiteList.model"],
+                function(LuaAdvanceIpBlackWhiteListView,LuaAdvanceIpBlackWhiteListModel){
+                   var myLuaAdvanceIpBlackWhiteListModel = new LuaAdvanceIpBlackWhiteListModel();
+                   this.luaAdvanceIpBlackWhiteListView = new LuaAdvanceIpBlackWhiteListView({
+                        collection: myLuaAdvanceIpBlackWhiteListModel,
+                        domainInfo: this.domainInfo,
+                        locationId: this.locationId
+                    });
+
+                    this.luaAdvanceIpBlackWhiteListView.render(tabNode);
+            }.bind(this));
+        },
+
+        getAdvanceRefererAntiLeech: function(){
+            var tabNode = this.$el.find("#luaconfig-refer-set #collapseTwo .panel-body")
+
+            if(this.luaAdvanceRefererAntiLeechView){
+                this.luaAdvanceRefererAntiLeechView.update(this.domainInfo, this.locationId, tabNode);
+                return false;    
+            }
+            require(["luaAdvanceRefererAntiLeech.view","luaRefererAntiLeech.model"],
+                function(LuaAdvanceRefererAntiLeechView,LuaAdvanceRefererAntiLeechModel){
+                   var myLuaAdvanceRefererAntiLeechModel = new LuaAdvanceRefererAntiLeechModel();
+                   this.luaAdvanceRefererAntiLeechView = new LuaAdvanceRefererAntiLeechView({
+                        collection: myLuaAdvanceRefererAntiLeechModel,
+                        domainInfo: this.domainInfo,
+                        locationId: this.locationId
+                    });
+                   
+                    this.luaAdvanceRefererAntiLeechView.render(tabNode);
+            }.bind(this));
+        },
+
+        getAdvanceTimestamp: function(){
+            var tabNode = this.$el.find("#luaconfig-refer-set #collapseThree .panel-body")
+
+            if(this.luaAdvanceTimestampView){
+                this.luaAdvanceTimestampView.update(this.domainInfo, this.locationId, tabNode);
+                return false;    
+            }
+            require(["luaAdvanceTimestamp.view","luaTimestamp.model"],
+                function(LuaAdvanceTimestampView,LuaAdvanceTimestampModel){
+                   var myLuaAdvanceTimestampModel = new LuaAdvanceTimestampModel();
+                   this.luaAdvanceTimestampView = new LuaAdvanceTimestampView({
+                        collection: myLuaAdvanceTimestampModel,
+                        domainInfo: this.domainInfo,
+                        locationId: this.locationId
+                    });
+                   
+                    this.luaAdvanceTimestampView.render(tabNode);
             }.bind(this));
         },
 

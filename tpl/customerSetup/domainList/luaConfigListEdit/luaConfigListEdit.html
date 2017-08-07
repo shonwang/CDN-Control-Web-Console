@@ -11,7 +11,45 @@
 		<div class="tab-content">
 			<div class="tab-pane well fade in active" id="luaconfig-cache-set"></div>
 			<div class="tab-pane well fade in" id="luaconfig-http-header-control"></div>
-			<div class="tab-pane well fade in" id="luaconfig-refer-set">cccccc</div>
+			<div class="tab-pane well fade in" id="luaconfig-refer-set">
+				<div class="panel-group" id="accordion">
+				    <div class="panel panel-default">
+				        <div class="panel-heading" role="tab" id="headingOne">
+				            <h4 class="panel-title">
+				                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">IP黑白名单</a>
+				            </h4>
+				        </div>
+				        <div id="collapseOne" class="panel-collapse collapse in">
+				            <div class="panel-body"></div>
+				        </div>
+				    </div>
+				    <div class="panel panel-default">
+				        <div class="panel-heading" role="tab" id="headingTwo">
+				            <h4 class="panel-title">
+				                <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Referer防盗链</a>
+				            </h4>
+				        </div>
+				        <div id="collapseTwo" class="panel-collapse collapse">
+				            <div class="panel-body"></div>
+				        </div>
+				    </div>
+				    <div class="panel panel-default">
+				        <div class="panel-heading" role="tab" id="headingThree">
+				            <h4 class="panel-title">
+				                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree">时间戳+共享秘钥防盗链</a>
+				            </h4>
+				        </div>
+				        <div id="collapseThree" class="panel-collapse collapse">
+				            <div class="panel-body"></div>
+				        </div>
+				    </div>
+				</div>
+<!-- 		        <div class="row">
+		            <div class="col-md-offset-2 col-md-8">
+		                <a href="javascript:void(0)" class="btn btn-primary save"><span class="glyphicon glyphicon-save"></span>保存</a>
+		            </div>
+		        </div> -->
+			</div>
 			<div class="tab-pane well fade in" id="luaconfig-speed-set"></div>
 		</div>
 	</div>

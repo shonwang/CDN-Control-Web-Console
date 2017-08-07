@@ -20,8 +20,8 @@
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].get('id')%>">
               <td><%=data[i].get("typeName")%></td>
-              <td><%=data[i].get("policy")%></td>
-              <td><%=data[i].get("summary")%></td>
+              <td><%=data[i].get("matchingValue")%></td>
+              <td><%=data[i].get("configName")%></td>
               <td>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="up"><span class="glyphicon glyphicon-arrow-up"></span></a>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="down"><span class="glyphicon glyphicon-arrow-down"></span></a>

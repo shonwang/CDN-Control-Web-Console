@@ -66,6 +66,7 @@
   "luaAdvanceConfigCacheSetup.view": "customerSetup/domainList/luaDownloadSetup/luaAdvanceConfigCacheSetup/luaAdvanceConfigCacheSetup.view",
   "luaAdvanceConfigCacheSetupCacheTime.model": "customerSetup/domainList/luaDownloadSetup/luaAdvanceConfigCacheSetup/luaAdvanceConfigCacheSetupCacheTime.model",
   "luaAdvanceConfigCacheSetupCacheTime.view": "customerSetup/domainList/luaDownloadSetup/luaAdvanceConfigCacheSetup/luaAdvanceConfigCacheSetupCacheTime.view",
+  "luaAdvanceConfigCacheSetupDelMark.model": "customerSetup/domainList/luaDownloadSetup/luaAdvanceConfigCacheSetup/luaAdvanceConfigCacheSetupDelMark.model",
   "luaAdvanceConfigCacheSetupDelMark.view": "customerSetup/domainList/luaDownloadSetup/luaAdvanceConfigCacheSetup/luaAdvanceConfigCacheSetupDelMark.view",
   "luaAdvanceConfigCommonTab.view": "customerSetup/domainList/luaDownloadSetup/luaAdvanceConfigCacheSetup/luaAdvanceConfigCommonTab.view",
   "luaAdvanceConfigHttpHeaderOpt.model": "customerSetup/domainList/luaDownloadSetup/luaAdvanceConfigHttpHeaderOpt/luaAdvanceConfigHttpHeaderOpt.model",

@@ -2,7 +2,7 @@ define("luaAdvanceConfig.model", ['require','exports', 'utility'], function(requ
     var Model = Backbone.Model.extend({
         initialize: function(){
             //0文件后缀，1目录，2具体url,3正则预留,4url包含指定参数9全局默认缓存配置项
-            var type = this.get('type');
+            var type = this.get('matchingType');
             if (type === 0) this.set("typeName", "文件类型");
             if (type === 1) this.set("typeName", "指定目录");
             if (type === 2) this.set("typeName", "指定URI");
@@ -10,15 +10,9 @@ define("luaAdvanceConfig.model", ['require','exports', 'utility'], function(requ
             if (type === 4) this.set("typeName", "urI包含指定参数");
             if (type === 9) this.set("typeName", "全部文件");
 
-            var hasOriginPolicy = this.get('hasOriginPolicy'),
-                expireTime = this.get('expireTime'), summary = '';
-
-            if (expireTime === 0 && hasOriginPolicy === 0) summary = "缓存时间：不缓存";
-            if (expireTime !== 0 && hasOriginPolicy === 0) summary = "缓存时间：" + Utility.timeFormat2(expireTime);
-            if (expireTime !== 0 && hasOriginPolicy === 1) summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + Utility.timeFormat2(expireTime);
-            // if (expireTime !== 0 && hasOriginPolicy === 0) summary = "缓存时间：" + expireTime + "秒";
-            // if (expireTime !== 0 && hasOriginPolicy === 1) summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + expireTime + "秒";
-            this.set("summary", summary);
+            var configNames = this.get("configNames");
+            var configName = configNames.replace(/\//g,"<br />");
+            this.set("configName",configName);
         }
     });
 

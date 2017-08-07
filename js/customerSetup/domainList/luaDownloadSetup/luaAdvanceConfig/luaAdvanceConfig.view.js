@@ -265,7 +265,7 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
             for (var i = 0; i < this.collection.models.length; i++){
                 if (this.collection.models[i].get("id") === parseInt(id)){
                     this.collection.models.splice(i, 1);
-                    this.collection.trigger("get.policy.success")
+                    this.collection.trigger("get.advanceLocation.success")
                     return;
                 }
             }
@@ -289,7 +289,7 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
 
             //this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
-            this.collection.trigger("get.policy.success")
+            this.collection.trigger("get.advanceLocation.success")
         },
 
         onClickItemDown: function(event){
@@ -307,7 +307,7 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
 
             this.collection.models = Utility.adjustElement(this.collection.models, modelIndex, false)
             //this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
-            this.collection.trigger("get.policy.success")
+            this.collection.trigger("get.advanceLocation.success")
         },
 
         hide: function(){

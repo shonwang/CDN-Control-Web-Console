@@ -9,7 +9,6 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
             this.path = 'index.html#/domainList/'+options.query+"/luaAdvanceConfig/"+options.query2;
             var clientInfo = JSON.parse(options.query), 
                 domainInfo = JSON.parse(options.query2),
-                configListInfo = JSON.parse(options.query3),
                 userInfo = {
                     clientName: clientInfo.clientName,
                     domain: domainInfo.domain,
@@ -18,12 +17,12 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
             this.$el = $(_.template(template['tpl/customerSetup/domainList/luaConfigListEdit/luaConfigListEdit.html'])());
             this.domainInfo = domainInfo;
             this.clientInfo = clientInfo;
+            this.locationId = JSON.parse(options.query3),
             this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
                 data: userInfo,
                 notShowBtn: true
             }));
-            this.optHeader.appendTo(this.$el.find(".opt-ctn"))
-            
+            this.optHeader.appendTo(this.$el.find(".opt-ctn"));
             
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
 
@@ -119,6 +118,21 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
 
         speedSet:function(){
             //限速
+            if(this.luaAdvanceClientLimitSpeedView){
+                this.luaAdvanceClientLimitSpeedView.update(this.domainInfo, this.locationId, this.$el.find("#luaconfig-speed-set"));
+                return false;    
+            }
+            require(["luaAdvanceClientLimitSpeed.view","luaAdvanceClientLimitSpeed.model"],
+                function(LuaAdvanceClientLimitSpeedView,LuaAdvanceClientLimitSpeedModel){
+                   var myLuaAdvanceClientLimitSpeedModel = new LuaAdvanceClientLimitSpeedModel();
+                   this.luaAdvanceClientLimitSpeedView = new LuaAdvanceClientLimitSpeedView({
+                        collection: myLuaAdvanceClientLimitSpeedModel,
+                        domainInfo: this.domainInfo,
+                        locationId: this.locationId
+                    });
+
+                    this.luaAdvanceClientLimitSpeedView.render(this.$el.find("#luaconfig-speed-set"));
+            }.bind(this));
         },
 
         onSaveSuccess: function(){

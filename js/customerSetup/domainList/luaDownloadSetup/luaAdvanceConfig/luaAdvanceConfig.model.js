@@ -11,8 +11,10 @@ define("luaAdvanceConfig.model", ['require','exports', 'utility'], function(requ
             if (type === 9) this.set("typeName", "全部文件");
 
             var configNames = this.get("configNames");
-            var configName = configNames.replace(/\//g,"<br />");
-            this.set("configName",configName);
+            if(configNames){
+                var configName = configNames.replace(/\//g,"<br />");
+                this.set("configName",configName);
+            }
         }
     });
 
@@ -48,7 +50,7 @@ define("luaAdvanceConfig.model", ['require','exports', 'utility'], function(requ
                 } 
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("get.policy.error", response);  
+                this.trigger("get.advanceLocation.error", response);  
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         }

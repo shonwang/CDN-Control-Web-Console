@@ -11,26 +11,15 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
             this.$el = $(_.template(template['tpl/customerSetup/domainList/luaAdvanceConfig/luaAdvanceConfig.add.html'])());
 
             this.defaultParam = {
-                cacheTimeType: 1,
-                cacheTime: 60 * 60 * 24 * 30,
-                cacheOriginTime: 60 * 60 * 24 * 30,
-                type: 0,
-                policy: ""
+                configNames:"",
+                matchingType: 0,
+                matchingValue: ""
             };            
 
             if (this.isEdit){
-                if (this.model.get("expireTime") === 0 && this.model.get("hasOriginPolicy") === 0)
-                    this.defaultParam.cacheTimeType = 1;
-                if (this.model.get("expireTime") !== 0 && this.model.get("hasOriginPolicy") === 0){
-                    this.defaultParam.cacheTimeType = 2;
-                    this.defaultParam.cacheTime = this.model.get("expireTime") || 60 * 60 * 24 * 30;
-                }
-                if (this.model.get("expireTime") !== 0 && this.model.get("hasOriginPolicy") === 1){
-                    this.defaultParam.cacheTimeType = 3;
-                    this.defaultParam.cacheOriginTime = this.model.get("expireTime") || 60 * 60 * 24 * 30;
-                }
-                this.defaultParam.type = this.model.get("type");
-                this.defaultParam.policy = this.model.get("policy") || "";
+              
+                this.defaultParam.matchingType = this.model.get("matchingType");
+                this.defaultParam.matchingValue = this.model.get("matchingValue") || "";
             }
 
             require(['matchCondition.view', 'matchCondition.model'], function(MatchConditionView, MatchConditionModel){
@@ -43,8 +32,8 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
                     {name: "正则匹配", value: 3},
                 ], matchConditionOption = {
                     collection: new MatchConditionModel(),
-                    defaultCondition : this.defaultParam.type,
-                    defaultPolicy: this.defaultParam.policy,
+                    defaultCondition : this.defaultParam.matchingType,
+                    defaultPolicy: this.defaultParam.matchingValue,
                     matchConditionArray: matchConditionArray
                 }
                 this.matchConditionView = new MatchConditionView(matchConditionOption);
@@ -53,38 +42,14 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
         },
 
         onSure: function(){
-            var matchConditionParam = this.matchConditionView.getMatchConditionParam(),
-                hasOriginPolicy, expireTime, summary,
-                cacheTimeType = parseInt(this.$el.find("[name='cacheTimeRadios']:checked").val());
-
+            var matchConditionParam = this.matchConditionView.getMatchConditionParam();
             if (!matchConditionParam) return false;
-
-            if (cacheTimeType === 1) {
-                expireTime = 0,
-                hasOriginPolicy = 0
-                summary = "缓存时间：不缓存";
-            } else if (cacheTimeType === 2){
-                hasOriginPolicy = 0
-                expireTime = this.defaultParam.cacheTime,
-                summary = "缓存时间：" + Utility.timeFormat2(expireTime);
-                //summary = "缓存时间：" + expireTime + "秒";
-            } else if(cacheTimeType === 3){
-                expireTime = this.defaultParam.cacheOriginTime,
-                hasOriginPolicy = 1
-                summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + Utility.timeFormat2(expireTime);
-                //summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + expireTime + "秒";
-            }
-
             var postParam = {
                 "id": this.isEdit ? this.model.get("id") : new Date().valueOf(),
-                "type": matchConditionParam.type,
-                "typeName": matchConditionParam.typeName,
-                "policy": matchConditionParam.policy,
-                "expireTime": expireTime,
-                "hasOriginPolicy": hasOriginPolicy,
-                "summary": summary
+                "matchingType": matchConditionParam.type,
+                "matchingValue": matchConditionParam.policy
             }
-            return postParam
+            return postParam;
         },
 
         render: function(target) {
@@ -232,24 +197,8 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
                     var postParam = myAddEditRoleView.onSure();
                     if (!postParam) return;
                     var model = new this.collection.model(postParam);
-                    var allFileArray = this.collection.filter(function(obj){
-                        return obj.get('type') === 9;
-                    }.bind(this));
-
-                    var specifiedUrlArray = this.collection.filter(function(obj){
-                        return obj.get('type') === 2;
-                    }.bind(this));
-
-                    var otherArray = this.collection.filter(function(obj){
-                        return obj.get('type') !== 2 && obj.get('type') !== 9;
-                    }.bind(this));
-
-                    if (postParam.type === 9) allFileArray.push(model)
-                    if (postParam.type === 2) specifiedUrlArray.push(model)
-                    if (postParam.type !== 9 && postParam.type !== 2) otherArray.push(model)
-  
-                    this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
-                    this.collection.trigger("get.policy.success");
+                    this.collection.models.push(model);
+                    this.collection.trigger("get.advanceLocation.success");
                     this.addRolePopup.$el.modal('hide');
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)

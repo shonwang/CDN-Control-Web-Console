@@ -65,6 +65,12 @@ define("luaAdvanceConfigCacheSetupDelMark.view", ['require','exports', 'template
         },
 
         initSetup: function(data){
+            if(data.code==100){
+                //无数据，表示遵循全局配置
+                this.delMarkView.select(1);
+                return false;
+            }
+            this.delMarkView.select(2);
             if (data) {
                 this.defaultParam.locationId = data.locationId;
                 this.defaultParam.markType = data.markType;

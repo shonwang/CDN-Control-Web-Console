@@ -52,7 +52,14 @@ define("luaAdvanceConfigCommonTab.view", ['require','exports', 'template', 'moda
                 this.onCustomCallback && this.onCustomCallback();
             }
         },
-
+        select:function(i){
+            if(i==1){
+                this.$el.find("#advanceCommonTabs1").click();
+            }
+            else if(i==2){
+                this.$el.find("#advanceCommonTabs2").click();
+            }
+        },
         update: function(target){
             this.options.target = target;
             this.collection.off();

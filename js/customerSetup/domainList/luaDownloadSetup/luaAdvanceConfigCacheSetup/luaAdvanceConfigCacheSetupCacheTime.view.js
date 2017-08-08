@@ -11,7 +11,7 @@ define("luaAdvanceConfigCacheSetupCacheTime.view", ['require','exports', 'templa
             this.locationId = options.locationId;
             this.domainInfo = options.domainInfo;
             this.clientInfo = options.clientInfo;
-            
+            this.cacheTimeType = 1;//默认全局，请求接口和点击来改变 2：自定义
             this.target = options.target;
             this.initSetupCacheView();
         },
@@ -30,9 +30,11 @@ define("luaAdvanceConfigCacheSetupCacheTime.view", ['require','exports', 'templa
                     collection:this.collection,
                     onGlobalCallback:function(){
                         this.onGlobalClick();
+                        this.cacheTimeType = 1;
                     }.bind(this),
                     onCustomCallback:function(){
                         //this.onCustomClick();
+                        this.cacheTimeType = 2;
                     }.bind(this),
                     onSaveCallback:function(){
                         this.onClickSaveBtn();
@@ -72,6 +74,12 @@ define("luaAdvanceConfigCacheSetupCacheTime.view", ['require','exports', 'templa
         },
 
         initSetup: function(data){
+            if(data.code==100){
+                //无数据，表示遵循全局配置
+                this.cacheTimeView.select(1);
+                return false;
+            }
+            this.cacheTimeView.select(2);
             if (data) {
                 this.defaultParam.locationId = data.locationId;
                 if (data.expireTime === 0 && data.hasOriginPolicy === 0)

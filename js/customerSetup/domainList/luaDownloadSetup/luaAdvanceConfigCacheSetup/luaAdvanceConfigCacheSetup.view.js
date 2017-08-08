@@ -65,7 +65,7 @@ define("luaAdvanceConfigCacheSetup.view", ['require','exports', 'template', 'mod
             */
         },
 
-        update: function(target,locationId,domainInfo){
+        update: function(target,locationId,domainInfo,clientInfo){
             this.collection.off();
             this.collection.reset();
             this.$el.remove();

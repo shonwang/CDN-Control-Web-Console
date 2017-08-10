@@ -42,7 +42,7 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
             var eventTarget = e.target;
             var IS_ALERT_SAVE = window.IS_ALERT_SAVE;
             if(IS_ALERT_SAVE){
-                if (confirm("你确定提交吗？")) {  
+                if (confirm("你还没有保存，确定离开本页返回上一层吗？")) {  
                     window.location.href= this.path;
                 }  
                 else {  

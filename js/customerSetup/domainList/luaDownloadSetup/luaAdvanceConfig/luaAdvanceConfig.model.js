@@ -24,13 +24,13 @@ define("luaAdvanceConfig.model", ['require','exports', 'utility'], function(requ
 
         initialize: function(){},
 
-        setPolicy: function(args){
-            var url = BASE_URL + "/channelManager/cache/setPolicy",
+        addAdvanceLocation: function(args){
+            var url = BASE_URL + "/channelManager/location/addAdvanceLocation",
             successCallback = function(res){
-                this.trigger("set.policy.success", res)
+                this.trigger("set.advanceLocation.success", res)
             }.bind(this),
             errorCallback = function(response){
-                this.trigger("set.policy.error", response)
+                this.trigger("set.advanceLocation.error", response)
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },

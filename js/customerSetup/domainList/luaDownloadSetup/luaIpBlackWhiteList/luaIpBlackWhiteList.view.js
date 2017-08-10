@@ -64,7 +64,8 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
                     openFlag: this.defaultParam.openFlag
                 }]
             }
-            this.collection.setIPSafetyChainBatch(postParam)
+            this.collection.setIPSafetyChainBatch(postParam);
+            Utility.onContentSave();
         },
 
         initSetup: function(data){
@@ -95,7 +96,9 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
     
             this.$el.find(".ip-list .togglebutton input").on("click", $.proxy(this.onClickSetupToggle, this));
             this.$el.find("#white-IP").on("blur", $.proxy(this.onBlurIPInput, this));
-            this.$el.find("#black-IP").on("blur", $.proxy(this.onBlurIPInput, this));            
+            this.$el.find("#black-IP").on("blur", $.proxy(this.onBlurIPInput, this));  
+            this.$el.find("#white-IP").on("focus", Utility.onContentChange);
+            this.$el.find("#black-IP").on("focus", Utility.onContentChange);  
         },
 
         onSaveSuccess: function(){
@@ -146,6 +149,7 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
                 this.defaultParam.openFlag = 0;
                 this.$el.find(".setup-content").hide(200);
             }
+            Utility.onContentChange();
         },
 
         initTypeDropdown: function(){
@@ -163,6 +167,7 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
                     this.$el.find(".white-list").hide();
                 }
                 this.defaultParam.refererType = parseInt(value);
+                Utility.onContentChange();
             }.bind(this));
 
             var defaultValue = _.find(timeArray, function(object){

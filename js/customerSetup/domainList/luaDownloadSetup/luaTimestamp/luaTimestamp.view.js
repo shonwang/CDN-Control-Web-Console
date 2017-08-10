@@ -293,7 +293,8 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
                 }]
             }
 
-            this.collection.setStandardProtectionBatch(postParam)
+            this.collection.setStandardProtectionBatch(postParam);
+            Utility.onContentSave();
         },
 
         onGetError: function(error){
@@ -313,6 +314,7 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.defaultParam.openFlag = 0;
                 this.$el.find(".setup-content").hide(200);
             }
+            Utility.onContentChange();
         },
 
         initBaseAdvancedSetup: function(data){
@@ -375,7 +377,8 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
             ],
             rootNode = this.$el.find(".mt-position");
             Utility.initDropMenu(rootNode, mtPositionArray, function(value){
-                this.defaultParam.mtPosition = parseInt(value)
+                this.defaultParam.mtPosition = parseInt(value);
+                Utility.onContentChange();
             }.bind(this));
 
             var defaultValue = _.find(mtPositionArray, function(object){
@@ -394,7 +397,8 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
             ],
             rootOtherNode = this.$el.find(".timestamp-type");
             Utility.initDropMenu(rootOtherNode, timeTypeArray, function(value){
-                this.defaultParam.timestampType = parseInt(value)
+                this.defaultParam.timestampType = parseInt(value);
+                Utility.onContentChange();
             }.bind(this));
 
             var defaultOtherValue = _.find(timeTypeArray, function(object){
@@ -432,6 +436,7 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
                     this.$el.find("#atuth-divisor-param").hide();
                     this.$el.find("#atuth-divisor-param").val("");
                 }
+                Utility.onContentChange();
             }.bind(this));
         },
 
@@ -443,6 +448,7 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find(".advanced-setup").show();
                 this.$el.find(".base-setup").hide();
             }
+            Utility.onContentChange();
         },
 
         onClickSetupRadio: function(event){
@@ -451,6 +457,7 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
             this.defaultParam.isBaseSetup = parseInt($(eventTarget).val())
 
             this.hideOrShowSetup();
+            Utility.onContentChange();
         },
 
         onBlurSecretKeyInput: function(event){
@@ -462,6 +469,7 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
                 alert("KEY只能由大小写字母，数字组成，长度6到32位")
                 return false
             }
+            Utility.onContentChange();
             return true;
         },
 
@@ -487,6 +495,7 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.defaultParam.baseSecretKeyBackup = filterArray;
             this.updateBaseKeyTable();
+            Utility.onContentChange();
         },
 
         onClickBaseNewKey: function(event){
@@ -502,19 +511,22 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
                 backupKey: newKey
             });
             this.updateBaseKeyTable();
-            this.$el.find(".base-setup #new-backup-key").val("")
+            this.$el.find(".base-setup #new-backup-key").val("");
+            Utility.onContentChange();
         },
 
         onClickAntiLeechRadio: function(event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             this.defaultParam.antiLeech = parseInt($(eventTarget).val());
+            Utility.onContentChange();
         },
 
         onClickBaseDeadlineRadio: function(event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
-            this.defaultParam.baseDeadline = parseInt($(eventTarget).val())
+            this.defaultParam.baseDeadline = parseInt($(eventTarget).val());
+            Utility.onContentChange();
         },
 
         //高级配置====================================================
@@ -523,18 +535,21 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             this.defaultParam.encryption = parseInt($(eventTarget).val());
+            Utility.onContentChange();
         },
 
         onClickAdvancedDeadlineRadio: function(event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
-            this.defaultParam.advancedDeadline = parseInt($(eventTarget).val())
+            this.defaultParam.advancedDeadline = parseInt($(eventTarget).val());
+            Utility.onContentChange();
         },
 
         onClickSpliceMd5Radio: function(event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
-            this.defaultParam.spliceMd5 = parseInt($(eventTarget).val())
+            this.defaultParam.spliceMd5 = parseInt($(eventTarget).val());
+            Utility.onContentChange();
         },
 
         onClickAddAtuthDivisor: function(event){
@@ -561,7 +576,8 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
                 divisorParam: this.curAtuthDivisorParam
             });
             this.updateAtuthDivisorTable();
-            this.$el.find("#atuth-divisor-param").val("")
+            this.$el.find("#atuth-divisor-param").val("");
+            Utility.onContentChange();
         },
 
         updateAtuthDivisorTable: function(){
@@ -627,6 +643,7 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
             });
             this.updateAdvancedKeyTable();
             this.$el.find(".advanced-setup #new-backup-key").val("");
+            Utility.onContentChange();
         },
 
         checkBalabala: function(){

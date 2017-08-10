@@ -19,9 +19,9 @@ define("luaAdvanceTimestamp.view", ['require','exports', 'template', 'modal.view
             this.collection.on("get.protection.error", $.proxy(this.onGetError, this));
             this.collection.on("set.protection.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.protection.error", $.proxy(this.onGetError, this));
-            this.collection.getStandardProtection({originId: this.domainInfo.id})
+            this.collection.getStandardProtection({originId: this.domainInfo.id,locationId: this.locationId})
 
-            this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
+            this.$el.find(".save").on("click", $.proxy(this.onBeforeClickSaveBtn, this));
 
             this.defaultParam = {
                 isBaseSetup: 1,
@@ -53,7 +53,10 @@ define("luaAdvanceTimestamp.view", ['require','exports', 'template', 'modal.view
                 md5Truncate: "",
             };
         },
-
+        onBeforeClickSaveBtn:function(){
+            this.defaultParam.locationId = this.locationId;
+            this.onClickSaveBtn();
+        },
         update: function(domainInfo, locationId, target) {
             this.options.domainInfo = domainInfo;
             this.options.locationId = locationId;

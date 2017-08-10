@@ -29,15 +29,13 @@ define("luaAdvanceConfigCacheSetupCacheTime.view", ['require','exports', 'templa
                     title:"缓存时间",
                     collection:this.collection,
                     onGlobalCallback:function(){
-                        this.onGlobalClick();
                         this.cacheTimeType = 1;
                     }.bind(this),
                     onCustomCallback:function(){
-                        //this.onCustomClick();
                         this.cacheTimeType = 2;
                     }.bind(this),
                     onSaveCallback:function(){
-                        this.onClickSaveBtn();
+                        this.onBeforeClickSaveBtn();
                     }.bind(this),
                     target:this.target
                 });
@@ -46,8 +44,15 @@ define("luaAdvanceConfigCacheSetupCacheTime.view", ['require','exports', 'templa
             this.onRequireCacheMessage();
         },
 
-        onGlobalClick:function(){
-        
+        onBeforeClickSaveBtn:function(){
+            if(this.cacheTimeType == 1){
+                //全局
+                this.collection.delCachePolicy({originId:this.domainInfo.id,locationId:this.locationId});
+            }
+            else{
+                this.defaultParam.locationId = this.locationId;
+                this.onClickSaveBtn();
+            }
         },
 
         onRequireCacheMessage:function(){
@@ -55,13 +60,18 @@ define("luaAdvanceConfigCacheSetupCacheTime.view", ['require','exports', 'templa
             this.collection.off("get.policy.error");
             this.collection.off("set.policy.success");
             this.collection.off("set.policy.error");
+            this.collection.off("set.delCachePolicy.success");
+            this.collection.off("set.delCachePolicy.error");
             //this.$cacheRoleView = $(_.template(template['tpl/customerSetup/domainList/cacheRule/cacheRule.add.html'])());
             //this.$cacheRoleView.appendTo(container);
             this.collection.on("get.policy.success", $.proxy(this.initSetup, this));
             this.collection.on("get.policy.error", $.proxy(this.onGetError, this));
             this.collection.on("set.policy.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.policy.error", $.proxy(this.onGetError, this));
-            this.collection.getCachePolicy({originId: this.domainInfo.id});
+            this.collection.on("set.delCachePolicy.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.delCachePolicy.error", $.proxy(this.onGetError, this));
+
+            this.collection.getCachePolicy({originId: this.domainInfo.id,locationId:this.locationId});
 
             this.defaultParam = {
                 cacheTimeType: 1,
@@ -74,12 +84,16 @@ define("luaAdvanceConfigCacheSetupCacheTime.view", ['require','exports', 'templa
         },
 
         initSetup: function(data){
-            if(data.code==100){
+            var data = data.data;
+            if(!data){
                 //无数据，表示遵循全局配置
+                this.cacheTimeType = 1;
                 this.cacheTimeView.select(1);
-                return false;
             }
-            this.cacheTimeView.select(2);
+            else{
+                this.cacheTimeView.select(2);
+                this.cacheTimeType = 2;
+            }
             if (data) {
                 this.defaultParam.locationId = data.locationId;
                 if (data.expireTime === 0 && data.hasOriginPolicy === 0)
@@ -96,7 +110,6 @@ define("luaAdvanceConfigCacheSetupCacheTime.view", ['require','exports', 'templa
             var container = this.cacheTimeView.getTemplateContainer();
             this.$el = $(_.template(template['tpl/customerSetup/domainList/cacheRule/cacheRule.add.html'])());
             container.html(this.$el.get(0));
-
             if (this.defaultParam.cacheTimeType === 1){
                 this.$el.find("#cacheTimeRadios1").get(0).checked = true;
             } else if (this.defaultParam.cacheTimeType === 2) {

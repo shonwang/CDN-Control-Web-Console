@@ -238,68 +238,58 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.initCacheRule();
         },
 
-        initCacheRule: function() {
-            require(['cacheRule.model'], function(CacheRuleModel){
-                var myCacheRuleModel = new CacheRuleModel();
-                _.each(this.config.cachePolicyList, function(element, index, list){
-                    myCacheRuleModel.push(new myCacheRuleModel.model(element));
-                }.bind(this))
-                var allFileArray = myCacheRuleModel.filter(function(obj){
-                    return obj.get('type') === 9;
-                }.bind(this));
+        initCacheRule: function(data, isAdvanced) {
+            data = {
+                "expireTime":3333,
+                "hasOriginPolicy":1
+            }
 
-                var specifiedUrlArray = myCacheRuleModel.filter(function(obj){
-                    return obj.get('type') === 2;
-                }.bind(this));
+            if (this.config.globalConfig && this.config.globalConfig.cachePolicy && !isAdvanced) {
+                data = this.config.globalConfig.cachePolicy
+            }
 
-                var otherArray = myCacheRuleModel.filter(function(obj){
-                    return obj.get('type') !== 2 && obj.get('type') !== 9;
-                }.bind(this));
+            var hasOriginPolicy = data.hasOriginPolicy,
+                expireTime = data.expireTime, summary = '';
 
-                myCacheRuleModel.models = specifiedUrlArray.concat(otherArray, allFileArray)
+            if (expireTime === 0 && hasOriginPolicy === 0) summary = "缓存时间：不缓存";
+            if (expireTime !== 0 && hasOriginPolicy === 0) summary = "缓存时间：" + Utility.timeFormat2(expireTime);
+            if (expireTime !== 0 && hasOriginPolicy === 1) summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + Utility.timeFormat2(expireTime);
 
-                if (myCacheRuleModel.models.length > 0) {
-                    this.cacheRuleTable = $(_.template(template['tpl/customerSetup/domainList/cacheRule/cacheRule.table.html'])({
-                        data: myCacheRuleModel.models,
-                        hideAction: true
-                    }));
-                    this.cacheRuleTable.appendTo(this.$el.find(".bill-ctn"));
-                } 
-                this.initDelMarkCache();
-            }.bind(this))
+            this.cacheRuleTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.luaCache.html'])({
+                data: {
+                    name: "缓存规则",
+                    summary: summary
+                }
+            }));
+            this.cacheRuleTable.appendTo(this.$el.find(".bill-ctn"));
+
+            this.initDelMarkCache();
         },
 
-        initDelMarkCache: function() {
-            require(['delMarkCache.model'], function(DelMarkCacheModel){
-                var myDelMarkCacheModel = new DelMarkCacheModel();
-                _.each(this.config.cacheQuestionMarkList, function(element, index, list){
-                    myDelMarkCacheModel.push(new myDelMarkCacheModel.model(element));
-                }.bind(this))
+        initDelMarkCache: function(data, isAdvanced) {
+            data = {
+                "markType":2,
+                "markValue":1233
+            }
 
-                var allFileArray = myDelMarkCacheModel.filter(function(obj){
-                    return obj.get('matchingType') === 9;
-                }.bind(this));
+            if (this.config.globalConfig && this.config.globalConfig.cacheQuestionMark && !isAdvanced) {
+                data = this.config.globalConfig.cacheQuestionMark
+            }
 
-                var specifiedUrlArray = myDelMarkCacheModel.filter(function(obj){
-                    return obj.get('matchingType') === 2;
-                }.bind(this));
+            var markType = data.markType, markTypeName;
+            if (markType === 2) markTypeName = "指定缓存的参数：" + data.markValue;
+            if (markType === 1) markTypeName = "去问号缓存";
+            if (markType === 0) markTypeName = "不去问号缓存";
 
-                var otherArray = myDelMarkCacheModel.filter(function(obj){
-                    return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
-                }.bind(this));
-
-                myDelMarkCacheModel.models = specifiedUrlArray.concat(otherArray, allFileArray)
-
-                if (myDelMarkCacheModel.models.length > 0) {
-                    this.delMarkCacheTable = $(_.template(template['tpl/customerSetup/domainList/delMarkCache/delMarkCache.table.html'])({
-                        data: myDelMarkCacheModel.models,
-                        hideAction: true
-                    }));
-                    this.delMarkCacheTable.appendTo(this.$el.find(".bill-ctn"));
+            this.delMarkCacheTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.luaCache.html'])({
+                data: {
+                    name: "去问号缓存",
+                    summary: markTypeName
                 }
+            }));
+            this.delMarkCacheTable.appendTo(this.$el.find(".bill-ctn"));
 
-                this.initDragPlay();
-            }.bind(this));
+            this.initCacheKey();
         },
 
         initDragPlay: function() {
@@ -315,9 +305,14 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                 }));
 
                 this.dragPlayTable.appendTo(this.$el.find(".bill-ctn"));
-                this.dragPlayTable.find("input").attr("disabled", "disabled");
-
-                this.initCacheKey();
+                inputEl = this.dragPlayTable.find("input");
+                _.each(inputEl, function(el){
+                    if (el.checked)
+                        $(el).parents(".togglebutton").html('<span class="label label-success">开启</span>')
+                    else
+                        $(el).parents(".togglebutton").html('<span class="label label-danger">关闭</span>')
+                }.bind(this))
+                this.initClientLimitSpeed();
             }.bind(this));
         },
 
@@ -326,42 +321,106 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                 data: this.config.domainConf.cacheKey
             }));
             this.cacheKeyTable.appendTo(this.$el.find(".bill-ctn"));
-
-            this.initClientLimitSpeed();
+            this.initStatusCodeCache();
         },
 
-        initClientLimitSpeed: function() {
-            require(['clientLimitSpeed.model'], function(ClientLimitSpeedModel){
-                var myClientLimitSpeedModel = new ClientLimitSpeedModel();
-                _.each(this.config.clientSpeedLimit, function(element, index, list){
-                    myClientLimitSpeedModel.push(new myClientLimitSpeedModel.model(element));
+        initStatusCodeCache: function() {
+            var data = [{
+                "id": 5222,
+                "originId": 120,
+                "codes": "404",
+                "expireTime": 100,
+                "createTime": 1501750752000,
+                "updateTime": 1501750752000
+            }, {
+                "id": 5228,
+                "originId": 120,
+                "codes": "401",
+                "expireTime": 100,
+                "createTime": 1502181605000,
+                "updateTime": 1502181605000
+            }]
+
+            require(['luaStatusCodeCache.model'], function(LuaStatusCodeCacheModel){
+                var myLuaStatusCodeCache = new LuaStatusCodeCacheModel();
+
+                _.each(data, function(element, index, list){
+                    myLuaStatusCodeCache.push(new myLuaStatusCodeCache.model(element));
                 }.bind(this))
 
-                var allFileArray = myClientLimitSpeedModel.filter(function(obj){
-                    return obj.get('matchingType') === 9;
-                }.bind(this));
+                this.luaStatusCodeCacheTable = $(_.template(template['tpl/customerSetup/domainList/luaDownloadSetup/luaStatusCodeCache/luaStatusCodeCache.table.html'])({
+                    data: myLuaStatusCodeCache.models
+                }));
 
-                var specifiedUrlArray = myClientLimitSpeedModel.filter(function(obj){
-                    return obj.get('matchingType') === 2;
-                }.bind(this));
+                this.luaStatusCodeCacheTable.find(".operation").remove();
+                this.luaStatusCodeCacheTable.appendTo(this.$el.find(".bill-ctn"));
 
-                var otherArray = myClientLimitSpeedModel.filter(function(obj){
-                    return obj.get('matchingType') !== 2 && obj.get('matchingType') !== 9;
-                }.bind(this));
-
-                myClientLimitSpeedModel.models = specifiedUrlArray.concat(otherArray, allFileArray)
-
-                if (myClientLimitSpeedModel.models.length > 0) {
-                    this.clientLimitSpeedTable = $(_.template(template['tpl/customerSetup/domainList/clientLimitSpeed/clientLimitSpeed.table.html'])({
-                        data: myClientLimitSpeedModel.models,
-                        hideAction: true
-                    }));
-
-                    this.clientLimitSpeedTable.appendTo(this.$el.find(".bill-ctn"));
-                }
-
-                this.initHttpHeaderOpt();
+                this.initDragPlay();
             }.bind(this));
+        },
+
+        initClientLimitSpeed: function(data) {
+            data = {
+                "preUnlimit": 2000,
+                "speedLimit": 400,
+                "preFlag": 1,
+                "speedFlag": 1,
+                "timeLimit": [{
+                    "startTime": "02:02:03",
+                    "endTime": "02:02:04",
+                    "speedLimit": 100
+                },{
+                    "startTime": "02:02:03",
+                    "endTime": "02:02:04",
+                    "speedLimit": 100
+                }]
+            }
+
+            if (this.config.globalConfig && this.config.globalConfig.clientSpeedLimit && !isAdvanced) {
+                data = this.config.globalConfig.clientSpeedLimit
+            }
+
+            var preUnlimit = data.preUnlimit, preUnlimitSummary = ''
+                speedLimit = data.speedLimit, speedLimitSummary = '',
+                preFlag = data.preFlag,
+                speedFlag = data.speedFlag;
+
+
+            if (preFlag === 0) {
+                preUnlimitSummary = '指定不限速字节数：<span class="label label-danger">关闭</span>';
+            } else {
+                if (preUnlimit === 0) preUnlimitSummary = '指定不限速字节数：<span class="label label-danger">关闭</span>';
+                if (preUnlimit !== 0) preUnlimitSummary = '指定不限速字节数：' + preUnlimit + 'KB。';
+            }
+
+            if (speedFlag === 0) {
+                speedLimitSummary = '限速字节数：<span class="label label-danger">关闭</span>';
+            } else {
+                if (speedLimit === 0) speedLimitSummary = '限速字节数：<span class="label label-danger">关闭</span>';
+                if (speedLimit !== 0) speedLimitSummary = '限速字节数：' + speedLimit + 'KB/s';
+            }
+
+            var timeLimit = data.timeLimit, timeLimitSummary = "限速时间段：<br>";
+            _.each(timeLimit, function(el, index, ls){
+                var startTime = el.startTime,
+                    endTime = el.endTime,
+                    speedLimit2 = el.speedLimit + "KB/s<br>"
+                var timeStr = startTime + "至" + endTime + "，限速字节数：" + speedLimit2;
+                timeLimitSummary = timeLimitSummary + timeStr
+            })
+
+            if (timeLimit.length === 0) timeLimitSummary = "限速时间段：无";
+
+            this.clientLimitSpeedTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.luaSpeedLimit.html'])({
+                data: {
+                    preUnlimitSummary: preUnlimitSummary,
+                    speedLimitSummary: speedLimitSummary,
+                    timeLimitSummary: timeLimitSummary
+                }
+            }));
+            this.clientLimitSpeedTable.appendTo(this.$el.find(".bill-ctn"));
+
+            this.initHttpHeaderOpt();
         },
 
         initHttpHeaderOpt: function(){

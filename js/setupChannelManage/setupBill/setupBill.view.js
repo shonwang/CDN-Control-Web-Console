@@ -359,7 +359,7 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             }.bind(this));
         },
 
-        initClientLimitSpeed: function(data) {
+        initClientLimitSpeed: function(data, isAdvanced) {
             data = {
                 "preUnlimit": 2000,
                 "speedLimit": 400,
@@ -521,7 +521,45 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.requestArgsModifyTable.appendTo(this.$el.find(".bill-ctn"));
             }
 
-            this.initRefererAntiLeech();
+            this.initLuaIpBlackWhiteList();
+        },
+
+        initLuaIpBlackWhiteList: function(data, isAdvanced){
+            data = {
+                "ips":"ssss",
+                "type":1,
+                "openFlag":1,
+            }
+            if (this.config.globalConfig && this.config.globalConfig.ipSafetyChain && !isAdvanced) {
+                data = this.config.globalConfig.ipSafetyChain
+            }
+            var tempTpl = '', openFlagStr, type;
+            if (!data.openFlag){
+                    tempTpl = '<table class="table table-striped table-hover">' + 
+                                    '<tbody>' +
+                                        '<tr>' +
+                                          '<td>IP防盗链</td>' +
+                                          '<td><span class="label label-danger">关闭</span></td>' +
+                                        '</tr>' +
+                                    '</tbody>' +
+                                '</table>'
+                this.ipSafetyChainTable = $(tempTpl)
+            } else {
+                openFlagStr = '<span class="label label-success">开启</span>';
+                type = data.type;
+                if (type === 1) typeStr = "白名单";
+                if (type === 2) typeStr = "黑名单";
+                this.ipSafetyChainTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.luaIpBlackWhiteList.html'])({
+                    data: {
+                        "openFlagStr": openFlagStr,
+                        "typeStr": typeStr,
+                        "ips": data.ips
+                    }
+                }));
+            }
+            this.ipSafetyChainTable.appendTo(this.$el.find(".bill-ctn"));
+
+            //this.initRefererAntiLeech();
         },
 
         initRefererAntiLeech: function(){

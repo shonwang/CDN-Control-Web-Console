@@ -64,6 +64,17 @@ define("luaAdvanceConfig.model", ['require','exports', 'utility'], function(requ
                 this.trigger("del.location.error", response);  
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        saveSort: function(args){
+            var url = BASE_URL + "/channelManager/location/saveSort",
+            successCallback = function(){
+                this.trigger("sort.location.success");
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("sort.location.error", response);  
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         }
 
     });

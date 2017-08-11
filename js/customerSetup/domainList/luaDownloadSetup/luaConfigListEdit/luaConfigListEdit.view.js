@@ -100,13 +100,14 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
             //http头控制
             if(this.httpHeaderOptView){
                 var domainId = this.domainInfo.id;
-                this.httpHeaderOptView.update(domainId,this.$el.find("#luaconfig-http-header-control"));
+                this.httpHeaderOptView.update(domainId,this.locationId,this.$el.find("#luaconfig-http-header-control"));
                 return false;    
             }
             require(["luaAdvanceConfigHttpHeaderOpt.view","luaAdvanceConfigHttpHeaderOpt.model"],function(LuaAdvanceConfigHttpHeaderOptView,LuaAdvanceConfigHttpHeaderOptModel){
                var M = new LuaAdvanceConfigHttpHeaderOptModel();
                this.httpHeaderOptView = new LuaAdvanceConfigHttpHeaderOptView({
                     collection:M,
+                    locationId:this.locationId,
                     domainId:this.domainInfo.id
                 });
 

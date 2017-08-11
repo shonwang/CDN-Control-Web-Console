@@ -209,7 +209,8 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
         onDelSuccess: function(){
             alert("删除成功！");
             var args = {
-                originId:this.domainInfo.id
+                originId:this.domainInfo.id,
+                locationId:this.locationId || null
             };
             this.collection.getHeaderList(args);
         },

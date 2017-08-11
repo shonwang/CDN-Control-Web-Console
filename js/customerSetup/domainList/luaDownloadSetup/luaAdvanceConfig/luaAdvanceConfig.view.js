@@ -92,6 +92,13 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
             this.collection.on("set.advanceLocation.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.advanceLocation.error", $.proxy(this.onGetError, this));
             
+            this.collection.on("del.location.success", $.proxy(this.onDeleteLocationSuccess, this));
+            this.collection.on("del.location.error", $.proxy(this.onGetError, this));
+        },
+
+        onDeleteLocationSuccess:function(){
+            alert("删除成功");
+            this.onClickQueryButton();
         },
 
         onSaveSuccess: function(){
@@ -219,6 +226,7 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
             if (!result) return;
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
+            /*
             for (var i = 0; i < this.collection.models.length; i++){
                 if (this.collection.models[i].get("id") === parseInt(id)){
                     this.collection.models.splice(i, 1);
@@ -226,6 +234,12 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
                     return;
                 }
             }
+            */
+            var args = {
+                originId: this.domainInfo.id,
+                locationId:id
+            };
+            this.collection.delLocation(args);
         },
 
         onClickItemUp: function(event){

@@ -53,7 +53,19 @@ define("luaAdvanceConfig.model", ['require','exports', 'utility'], function(requ
                 this.trigger("get.advanceLocation.error", response);  
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        delLocation: function(args){
+            var url = BASE_URL + "/channelManager/location/delLocation",
+            successCallback = function(){
+                this.trigger("del.location.success");
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("del.location.error", response);  
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         }
+
     });
 
     return LuaAdvanceConfigCollection;

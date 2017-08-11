@@ -9,7 +9,6 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
             this.path = 'index.html#/domainList/'+options.query+"/luaAdvanceConfig/"+options.query2;
             var clientInfo = JSON.parse(options.query), 
                 domainInfo = JSON.parse(options.query2),
-                configListInfo = JSON.parse(options.query3),
                 userInfo = {
                     clientName: clientInfo.clientName,
                     domain: domainInfo.domain,
@@ -18,12 +17,12 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
             this.$el = $(_.template(template['tpl/customerSetup/domainList/luaConfigListEdit/luaConfigListEdit.html'])());
             this.domainInfo = domainInfo;
             this.clientInfo = clientInfo;
+            this.locationId = JSON.parse(options.query3),
             this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
                 data: userInfo,
                 notShowBtn: true
             }));
-            this.optHeader.appendTo(this.$el.find(".opt-ctn"))
-            
+            this.optHeader.appendTo(this.$el.find(".opt-ctn"));
             
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
 
@@ -43,7 +42,7 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
             var eventTarget = e.target;
             var IS_ALERT_SAVE = window.IS_ALERT_SAVE;
             if(IS_ALERT_SAVE){
-                if (confirm("你确定提交吗？")) {  
+                if (confirm("你还没有保存，确定离开本页返回上一层吗？")) {  
                     window.location.href= this.path;
                 }  
                 else {  
@@ -82,13 +81,16 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
         luaConfigCacheSetup:function(){
             //缓存设置
             if(this.cacheSetupView){
-                this.cacheSetupView.update(this.$el.find("#luaconfig-cache-set"));
+                this.cacheSetupView.update(this.$el.find("#luaconfig-cache-set"),this.locationId,this.domainInfo,this.clientInfo);
                 return false;
             }
             require(["luaAdvanceConfigCacheSetup.view","luaAdvanceConfigCacheSetup.model"],function(LuaAdvanceConfigCacheSetupView,LuaAdvanceConfigCacheSetupModel){
                 var M = new LuaAdvanceConfigCacheSetupModel();
                 this.cacheSetupView = new LuaAdvanceConfigCacheSetupView({
-                    collection:M
+                    collection:M,
+                    locationId:this.locationId,
+                    domainInfo:this.domainInfo,
+                    clientInfo:this.clientInfo
                 });
                 this.cacheSetupView.render(this.$el.find("#luaconfig-cache-set"));
             }.bind(this));
@@ -98,13 +100,14 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
             //http头控制
             if(this.httpHeaderOptView){
                 var domainId = this.domainInfo.id;
-                this.httpHeaderOptView.update(domainId,this.$el.find("#luaconfig-http-header-control"));
+                this.httpHeaderOptView.update(domainId,this.locationId,this.$el.find("#luaconfig-http-header-control"));
                 return false;    
             }
             require(["luaAdvanceConfigHttpHeaderOpt.view","luaAdvanceConfigHttpHeaderOpt.model"],function(LuaAdvanceConfigHttpHeaderOptView,LuaAdvanceConfigHttpHeaderOptModel){
                var M = new LuaAdvanceConfigHttpHeaderOptModel();
                this.httpHeaderOptView = new LuaAdvanceConfigHttpHeaderOptView({
                     collection:M,
+                    locationId:this.locationId,
                     domainId:this.domainInfo.id
                 });
 
@@ -115,10 +118,88 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
 
         referSet:function(){
             //防盗链
+            this.getAdvanceIpBlackWhiteList();
+            this.getAdvanceRefererAntiLeech();
+            this.getAdvanceTimestamp();
         },
 
         speedSet:function(){
             //限速
+            if(this.luaAdvanceClientLimitSpeedView){
+                this.luaAdvanceClientLimitSpeedView.update(this.domainInfo, this.locationId, this.$el.find("#luaconfig-speed-set"));
+                return false;    
+            }
+            require(["luaAdvanceClientLimitSpeed.view","luaAdvanceClientLimitSpeed.model"],
+                function(LuaAdvanceClientLimitSpeedView,LuaAdvanceClientLimitSpeedModel){
+                   var myLuaAdvanceClientLimitSpeedModel = new LuaAdvanceClientLimitSpeedModel();
+                   this.luaAdvanceClientLimitSpeedView = new LuaAdvanceClientLimitSpeedView({
+                        collection: myLuaAdvanceClientLimitSpeedModel,
+                        domainInfo: this.domainInfo,
+                        locationId: this.locationId
+                    });
+
+                    this.luaAdvanceClientLimitSpeedView.render(this.$el.find("#luaconfig-speed-set"));
+            }.bind(this));
+        },
+
+        getAdvanceIpBlackWhiteList: function(){
+            var tabNode = this.$el.find("#luaconfig-refer-set #collapseOne .panel-body")
+
+            if(this.luaAdvanceIpBlackWhiteListView){
+                this.luaAdvanceIpBlackWhiteListView.update(this.domainInfo, this.locationId, tabNode);
+                return false;    
+            }
+            require(["luaAdvanceIpBlackWhiteList.view","luaIpBlackWhiteList.model"],
+                function(LuaAdvanceIpBlackWhiteListView,LuaAdvanceIpBlackWhiteListModel){
+                   var myLuaAdvanceIpBlackWhiteListModel = new LuaAdvanceIpBlackWhiteListModel();
+                   this.luaAdvanceIpBlackWhiteListView = new LuaAdvanceIpBlackWhiteListView({
+                        collection: myLuaAdvanceIpBlackWhiteListModel,
+                        domainInfo: this.domainInfo,
+                        locationId: this.locationId
+                    });
+
+                    this.luaAdvanceIpBlackWhiteListView.render(tabNode);
+            }.bind(this));
+        },
+
+        getAdvanceRefererAntiLeech: function(){
+            var tabNode = this.$el.find("#luaconfig-refer-set #collapseTwo .panel-body")
+
+            if(this.luaAdvanceRefererAntiLeechView){
+                this.luaAdvanceRefererAntiLeechView.update(this.domainInfo, this.locationId, tabNode);
+                return false;    
+            }
+            require(["luaAdvanceRefererAntiLeech.view","luaRefererAntiLeech.model"],
+                function(LuaAdvanceRefererAntiLeechView,LuaAdvanceRefererAntiLeechModel){
+                   var myLuaAdvanceRefererAntiLeechModel = new LuaAdvanceRefererAntiLeechModel();
+                   this.luaAdvanceRefererAntiLeechView = new LuaAdvanceRefererAntiLeechView({
+                        collection: myLuaAdvanceRefererAntiLeechModel,
+                        domainInfo: this.domainInfo,
+                        locationId: this.locationId
+                    });
+                   
+                    this.luaAdvanceRefererAntiLeechView.render(tabNode);
+            }.bind(this));
+        },
+
+        getAdvanceTimestamp: function(){
+            var tabNode = this.$el.find("#luaconfig-refer-set #collapseThree .panel-body")
+
+            if(this.luaAdvanceTimestampView){
+                this.luaAdvanceTimestampView.update(this.domainInfo, this.locationId, tabNode);
+                return false;    
+            }
+            require(["luaAdvanceTimestamp.view","luaTimestamp.model"],
+                function(LuaAdvanceTimestampView,LuaAdvanceTimestampModel){
+                   var myLuaAdvanceTimestampModel = new LuaAdvanceTimestampModel();
+                   this.luaAdvanceTimestampView = new LuaAdvanceTimestampView({
+                        collection: myLuaAdvanceTimestampModel,
+                        domainInfo: this.domainInfo,
+                        locationId: this.locationId
+                    });
+                   
+                    this.luaAdvanceTimestampView.render(tabNode);
+            }.bind(this));
         },
 
         onSaveSuccess: function(){

@@ -11,26 +11,15 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
             this.$el = $(_.template(template['tpl/customerSetup/domainList/luaAdvanceConfig/luaAdvanceConfig.add.html'])());
 
             this.defaultParam = {
-                cacheTimeType: 1,
-                cacheTime: 60 * 60 * 24 * 30,
-                cacheOriginTime: 60 * 60 * 24 * 30,
-                type: 0,
-                policy: ""
+                configNames:"",
+                matchingType: 0,
+                matchingValue: ""
             };            
 
             if (this.isEdit){
-                if (this.model.get("expireTime") === 0 && this.model.get("hasOriginPolicy") === 0)
-                    this.defaultParam.cacheTimeType = 1;
-                if (this.model.get("expireTime") !== 0 && this.model.get("hasOriginPolicy") === 0){
-                    this.defaultParam.cacheTimeType = 2;
-                    this.defaultParam.cacheTime = this.model.get("expireTime") || 60 * 60 * 24 * 30;
-                }
-                if (this.model.get("expireTime") !== 0 && this.model.get("hasOriginPolicy") === 1){
-                    this.defaultParam.cacheTimeType = 3;
-                    this.defaultParam.cacheOriginTime = this.model.get("expireTime") || 60 * 60 * 24 * 30;
-                }
-                this.defaultParam.type = this.model.get("type");
-                this.defaultParam.policy = this.model.get("policy") || "";
+              
+                this.defaultParam.matchingType = this.model.get("matchingType");
+                this.defaultParam.matchingValue = this.model.get("matchingValue") || "";
             }
 
             require(['matchCondition.view', 'matchCondition.model'], function(MatchConditionView, MatchConditionModel){
@@ -43,8 +32,8 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
                     {name: "正则匹配", value: 3},
                 ], matchConditionOption = {
                     collection: new MatchConditionModel(),
-                    defaultCondition : this.defaultParam.type,
-                    defaultPolicy: this.defaultParam.policy,
+                    defaultCondition : this.defaultParam.matchingType,
+                    defaultPolicy: this.defaultParam.matchingValue,
                     matchConditionArray: matchConditionArray
                 }
                 this.matchConditionView = new MatchConditionView(matchConditionOption);
@@ -53,38 +42,14 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
         },
 
         onSure: function(){
-            var matchConditionParam = this.matchConditionView.getMatchConditionParam(),
-                hasOriginPolicy, expireTime, summary,
-                cacheTimeType = parseInt(this.$el.find("[name='cacheTimeRadios']:checked").val());
-
+            var matchConditionParam = this.matchConditionView.getMatchConditionParam();
             if (!matchConditionParam) return false;
-
-            if (cacheTimeType === 1) {
-                expireTime = 0,
-                hasOriginPolicy = 0
-                summary = "缓存时间：不缓存";
-            } else if (cacheTimeType === 2){
-                hasOriginPolicy = 0
-                expireTime = this.defaultParam.cacheTime,
-                summary = "缓存时间：" + Utility.timeFormat2(expireTime);
-                //summary = "缓存时间：" + expireTime + "秒";
-            } else if(cacheTimeType === 3){
-                expireTime = this.defaultParam.cacheOriginTime,
-                hasOriginPolicy = 1
-                summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + Utility.timeFormat2(expireTime);
-                //summary = "使用源站缓存, 若源站无缓存时间，则缓存：" + expireTime + "秒";
-            }
-
             var postParam = {
                 "id": this.isEdit ? this.model.get("id") : new Date().valueOf(),
-                "type": matchConditionParam.type,
-                "typeName": matchConditionParam.typeName,
-                "policy": matchConditionParam.policy,
-                "expireTime": expireTime,
-                "hasOriginPolicy": hasOriginPolicy,
-                "summary": summary
+                "matchingType": matchConditionParam.type,
+                "matchingValue": matchConditionParam.policy
             }
-            return postParam
+            return postParam;
         },
 
         render: function(target) {
@@ -115,8 +80,8 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
             
             
-            this.collection.on("get.policy.success", $.proxy(this.onChannelListSuccess, this));
-            this.collection.on("get.policy.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.advanceLocation.success", $.proxy(this.onGetAdvanceLocationListSuccess, this));
+            this.collection.on("get.advanceLocation.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".add").on("click", $.proxy(this.onClickAddRole, this))
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this))
@@ -124,13 +89,14 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
 
             this.onClickQueryButton();
 
-            this.collection.on("set.policy.success", $.proxy(this.onSaveSuccess, this));
-            this.collection.on("set.policy.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.advanceLocation.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.advanceLocation.error", $.proxy(this.onGetError, this));
             
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            alert("保存成功！");
+            this.onClickQueryButton();
         },
 
         launchSendPopup: function(){
@@ -187,20 +153,19 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
                 alert("网络阻塞，请刷新重试！")
         },
 
-        onChannelListSuccess: function(){
+        onGetAdvanceLocationListSuccess: function(){
             this.initTable();
         },
 
         onClickQueryButton: function(){
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.collection.getPolicyList({originId: this.domainInfo.id});
+            this.collection.getAdvanceLocationList({originId: this.domainInfo.id});
         },
 
         initTable: function(){
 
             this.table = $(_.template(template['tpl/customerSetup/domainList/luaAdvanceConfig/luaAdvanceConfig.table.html'])({
-                data: this.collection.models,
-                hideAction: false
+                data: this.collection.models
             }));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
@@ -232,25 +197,16 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
                 onOKCallback: function(){
                     var postParam = myAddEditRoleView.onSure();
                     if (!postParam) return;
-                    var model = new this.collection.model(postParam);
-                    var allFileArray = this.collection.filter(function(obj){
-                        return obj.get('type') === 9;
-                    }.bind(this));
 
-                    var specifiedUrlArray = this.collection.filter(function(obj){
-                        return obj.get('type') === 2;
-                    }.bind(this));
-
-                    var otherArray = this.collection.filter(function(obj){
-                        return obj.get('type') !== 2 && obj.get('type') !== 9;
-                    }.bind(this));
-
-                    if (postParam.type === 9) allFileArray.push(model)
-                    if (postParam.type === 2) specifiedUrlArray.push(model)
-                    if (postParam.type !== 9 && postParam.type !== 2) otherArray.push(model)
-  
-                    this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
-                    this.collection.trigger("get.policy.success");
+                    //var model = new this.collection.model(postParam);
+                    //this.collection.models.push(model);
+                    var args = {
+                        originId:this.domainInfo.id,
+                        matchingType:postParam.matchingType,
+                        matchingValue:postParam.matchingValue
+                    };
+                    this.collection.addAdvanceLocation(args);
+                    //this.collection.trigger("get.advanceLocation.success");
                     this.addRolePopup.$el.modal('hide');
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
@@ -266,7 +222,7 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
             for (var i = 0; i < this.collection.models.length; i++){
                 if (this.collection.models[i].get("id") === parseInt(id)){
                     this.collection.models.splice(i, 1);
-                    this.collection.trigger("get.policy.success")
+                    this.collection.trigger("get.advanceLocation.success")
                     return;
                 }
             }
@@ -290,7 +246,7 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
 
             //this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
-            this.collection.trigger("get.policy.success")
+            this.collection.trigger("get.advanceLocation.success")
         },
 
         onClickItemDown: function(event){
@@ -308,7 +264,7 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
 
             this.collection.models = Utility.adjustElement(this.collection.models, modelIndex, false)
             //this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
-            this.collection.trigger("get.policy.success")
+            this.collection.trigger("get.advanceLocation.success")
         },
 
         hide: function(){

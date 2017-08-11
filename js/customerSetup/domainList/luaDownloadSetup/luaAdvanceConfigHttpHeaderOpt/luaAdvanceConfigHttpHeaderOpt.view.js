@@ -6,6 +6,7 @@ define("luaAdvanceConfigHttpHeaderOpt.view", ['require','exports', 'template', '
         initialize: function(options) {
             this.collection = options.collection;
             this.options = options;
+            this.locationId = options.locationId;
             this.$el = $(_.template(template['tpl/customerSetup/domainList/luaDownloadSetup/luaAdvanceConfigHttpHeaderOpt/httpHeaderOpt.html'])());
             var domainInfo = {id:options.domainId};
             this.domainInfo = domainInfo;
@@ -29,8 +30,15 @@ define("luaAdvanceConfigHttpHeaderOpt.view", ['require','exports', 'template', '
             this.collection.on("del.header.error", $.proxy(this.onGetError, this));
         },
 
-        update: function(domainId, target){
+        onClickQueryButton: function(){
+            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+
+            this.collection.getHeaderList({originId:this.domainInfo.id,locationId:this.locationId});
+        },
+
+        update: function(domainId, locationId, target){
             this.options.domainId = domainId;
+            this.options.locationId = locationId;
             this.collection.off();
             this.collection.reset();
             this.$el.remove();

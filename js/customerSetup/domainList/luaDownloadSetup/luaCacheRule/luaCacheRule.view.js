@@ -42,9 +42,7 @@ define("luaCacheRule.view", ['require','exports', 'template', 'modal.view', 'uti
                 cacheTimeType: 1,
                 cacheTime: 60 * 60 * 24 * 30,
                 cacheOriginTime: 60 * 60 * 24 * 30,
-            };
-
-            this.initSetup();            
+            };          
         },
 
         onSaveSuccess: function(){
@@ -93,6 +91,15 @@ define("luaCacheRule.view", ['require','exports', 'template', 'modal.view', 'uti
                 hasOriginPolicy = 1
             }
 
+            var cacheTimeValue = this.$el.find("#yes-cache-time").val();
+            var cacheOriginTime = this.$el.find("#origin-cache-time").val();
+            var reg = /^\d+$/;
+            if(cacheTimeType === 2 && !reg.test(cacheTimeValue) || cacheTimeType===3 && !reg.test(cacheOriginTime)){
+                alert("只能输入正整数");
+                return false;
+            }
+
+    
             var postParam = {
                 "originId": this.domainInfo.id,
                 "userId": this.clientInfo.uid,
@@ -103,7 +110,8 @@ define("luaCacheRule.view", ['require','exports', 'template', 'modal.view', 'uti
                 }]
             }
 
-            this.collection.setCachePolicyBatch(postParam)
+            this.collection.setCachePolicyBatch(postParam);
+            Utility.onContentSave();
         },
 
         onGetError: function(error){
@@ -114,6 +122,7 @@ define("luaCacheRule.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initSetup: function(data){
+            var data = data.data;
             if (data) {
                 this.defaultParam.locationId = data.locationId;
                 if (data.expireTime === 0 && data.hasOriginPolicy === 0)

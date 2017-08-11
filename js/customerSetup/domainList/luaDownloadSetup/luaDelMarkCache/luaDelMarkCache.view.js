@@ -89,7 +89,8 @@ define("luaDelMarkCache.view", ['require','exports', 'template', 'modal.view', '
                 }]
             }
 
-            this.collection.setCacheQuestionMarkBatch(postParam)
+            this.collection.setCacheQuestionMarkBatch(postParam);
+            Utility.onContentSave();
         },
 
         onGetError: function(error){
@@ -100,6 +101,7 @@ define("luaDelMarkCache.view", ['require','exports', 'template', 'modal.view', '
         },
 
         initSetup: function(data){
+            var data = data.data;
             if (data) {
                 this.defaultParam.locationId = data.locationId;
                 this.defaultParam.markType = data.markType;

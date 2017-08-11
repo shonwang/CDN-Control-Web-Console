@@ -95,7 +95,7 @@ define("luaCacheRule.view", ['require','exports', 'template', 'modal.view', 'uti
             var cacheOriginTime = this.$el.find("#origin-cache-time").val();
             var reg = /^\d+$/;
             if(cacheTimeType === 2 && !reg.test(cacheTimeValue) || cacheTimeType===3 && !reg.test(cacheOriginTime)){
-                alert("只能输入整数");
+                alert("只能输入正整数");
                 return false;
             }
 

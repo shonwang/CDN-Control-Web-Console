@@ -24,7 +24,7 @@ define("luaAdvanceClientLimitSpeed.view", ['require', 'exports', 'template', 'mo
                     locationId: this.locationId
                 });
 
-                this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
+                this.$el.find(".save").on("click", $.proxy(this.onBeforeClickSaveBtn, this));
 
                 this.defaultParam = {
                     byteNotLimit: 1,
@@ -34,6 +34,11 @@ define("luaAdvanceClientLimitSpeed.view", ['require', 'exports', 'template', 'mo
                     preUnlimit: 0,
                     timeLimitList: [],
                 }
+            },
+
+            onBeforeClickSaveBtn:function(){
+                this.defaultParam.locationId = this.locationId;
+                this.onClickSaveBtn();
             },
 
             update: function(domainInfo, locationId, target) {

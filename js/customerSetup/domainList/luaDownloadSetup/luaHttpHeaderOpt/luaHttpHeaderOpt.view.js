@@ -191,7 +191,8 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
         onSaveSuccess: function(){
             alert("保存成功！");
             var args = {
-                originId:this.domainInfo.id
+                originId:this.domainInfo.id,
+                locationId:this.locationId || null
             };
             this.collection.getHeaderList(args);
         },
@@ -199,7 +200,8 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
         onModifySuccess: function(){
             alert("修改成功！");
             var args = {
-                originId:this.domainInfo.id
+                originId:this.domainInfo.id,
+                locationId:this.locationId || null
             };
             this.collection.getHeaderList(args);
         },
@@ -328,7 +330,7 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
                         originId:this.domainInfo.id,
                         list:[
                             {
-                                "locationId": postParam.locationId,
+                                "locationId": this.locationId || null,
                                 "directionType":  postParam.directionType,
                                 "actionType": postParam.actionType,
                                 "headerKey":  postParam.headerKey,

@@ -42,9 +42,7 @@ define("luaCacheRule.view", ['require','exports', 'template', 'modal.view', 'uti
                 cacheTimeType: 1,
                 cacheTime: 60 * 60 * 24 * 30,
                 cacheOriginTime: 60 * 60 * 24 * 30,
-            };
-
-            this.initSetup();            
+            };          
         },
 
         onSaveSuccess: function(){
@@ -103,7 +101,8 @@ define("luaCacheRule.view", ['require','exports', 'template', 'modal.view', 'uti
                 }]
             }
 
-            this.collection.setCachePolicyBatch(postParam)
+            this.collection.setCachePolicyBatch(postParam);
+            Utility.onContentSave();
         },
 
         onGetError: function(error){
@@ -114,6 +113,7 @@ define("luaCacheRule.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initSetup: function(data){
+            var data = data.data;
             if (data) {
                 this.defaultParam.locationId = data.locationId;
                 if (data.expireTime === 0 && data.hasOriginPolicy === 0)

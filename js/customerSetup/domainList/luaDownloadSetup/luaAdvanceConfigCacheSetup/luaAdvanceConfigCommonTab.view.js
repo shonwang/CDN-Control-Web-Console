@@ -51,13 +51,18 @@ define("luaAdvanceConfigCommonTab.view", ['require','exports', 'template', 'moda
                 this.$el.find("#advanceCommonTabsRight").show();
                 this.onCustomCallback && this.onCustomCallback();
             }
+            Utility.onContentChange();
         },
         select:function(i){
             if(i==1){
-                this.$el.find("#advanceCommonTabs1").click();
+                this.$el.find("#advanceCommonTabs1").attr("checked",true);
+                this.$el.find("#advanceCommonTabsLeft").show();
+                this.$el.find("#advanceCommonTabsRight").hide();
             }
             else if(i==2){
-                this.$el.find("#advanceCommonTabs2").click();
+                this.$el.find("#advanceCommonTabs2").attr("checked",true);
+                this.$el.find("#advanceCommonTabsLeft").hide();
+                this.$el.find("#advanceCommonTabsRight").show();
             }
         },
         update: function(target){

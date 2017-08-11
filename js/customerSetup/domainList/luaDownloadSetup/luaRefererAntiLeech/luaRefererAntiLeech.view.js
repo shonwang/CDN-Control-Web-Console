@@ -79,6 +79,9 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
             // this.$el.find("#white-url").on("blur", $.proxy(this.onBlurUrlInput, this));
             // this.$el.find("#black-domain").on("blur", $.proxy(this.onBlurDomainInput, this));
             // this.$el.find("#black-url").on("blur", $.proxy(this.onBlurUrlInput, this));
+
+            this.$el.find("#white-domain").on("focus", Utility.onContentChange);
+            this.$el.find("#black-domain").on("focus", Utility.onContentChange);
             this.$el.find(".null-referer .togglebutton input").on("click", $.proxy(this.onClickIsNullReferer, this));
         },
 
@@ -136,7 +139,8 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
                 }]
             }
 
-            this.collection.setReferSafetyChainsBatch(postParam)
+            this.collection.setReferSafetyChainsBatch(postParam);
+            Utility.onContentSave();
         },
 
         onGetError: function(error){
@@ -156,6 +160,7 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
                 this.defaultParam.openFlag = 0;
                 this.$el.find(".setup-content").hide(200);
             }
+            Utility.onContentChange();
         },
 
         initTypeDropdown: function(){
@@ -173,6 +178,7 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
                     this.$el.find(".white-list").hide();
                 }
                 this.defaultParam.refererType = parseInt(value);
+                Utility.onContentChange();
             }.bind(this));
 
             var defaultValue = _.find(timeArray, function(object){
@@ -193,6 +199,7 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
             } else {
                 this.defaultParam.nullReferer = 0;
             }
+            Utility.onContentChange();
         },
 
         onBlurDomainInput: function(event){

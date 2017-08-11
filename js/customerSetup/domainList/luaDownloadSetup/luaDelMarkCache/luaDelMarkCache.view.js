@@ -89,7 +89,8 @@ define("luaDelMarkCache.view", ['require','exports', 'template', 'modal.view', '
                 }]
             }
 
-            this.collection.setCacheQuestionMarkBatch(postParam)
+            this.collection.setCacheQuestionMarkBatch(postParam);
+            Utility.onContentSave();
         },
 
         onGetError: function(error){

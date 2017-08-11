@@ -89,13 +89,14 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
 
             this.onClickQueryButton();
 
-            this.collection.on("set.policy.success", $.proxy(this.onSaveSuccess, this));
-            this.collection.on("set.policy.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.advanceLocation.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.advanceLocation.error", $.proxy(this.onGetError, this));
             
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            alert("保存成功！");
+            this.onClickQueryButton();
         },
 
         launchSendPopup: function(){
@@ -196,9 +197,16 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
                 onOKCallback: function(){
                     var postParam = myAddEditRoleView.onSure();
                     if (!postParam) return;
-                    var model = new this.collection.model(postParam);
-                    this.collection.models.push(model);
-                    this.collection.trigger("get.advanceLocation.success");
+
+                    //var model = new this.collection.model(postParam);
+                    //this.collection.models.push(model);
+                    var args = {
+                        originId:this.domainInfo.id,
+                        matchingType:postParam.matchingType,
+                        matchingValue:postParam.matchingValue
+                    };
+                    this.collection.addAdvanceLocation(args);
+                    //this.collection.trigger("get.advanceLocation.success");
                     this.addRolePopup.$el.modal('hide');
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)

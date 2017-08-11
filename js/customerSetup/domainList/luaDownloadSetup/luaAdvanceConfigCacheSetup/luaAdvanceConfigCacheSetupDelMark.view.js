@@ -4,7 +4,6 @@ define("luaAdvanceConfigCacheSetupDelMark.view", ['require','exports', 'template
         events: {},
 
         initialize: function(options) {
-            console.log('xxx');
             this.collection = options.collection;
             this.options = options;
             this.locationId = options.locationId;
@@ -26,13 +25,13 @@ define("luaAdvanceConfigCacheSetupDelMark.view", ['require','exports', 'template
                     title:"去问号缓存",
                     collection:this.collection,
                     onGlobalCallback:function(){
-                        this.onGlobalClick();
+                        this.cacheTimeType = 1;
                     }.bind(this),
                     onCustomCallback:function(){
-                        //this.onCustomClick();
+                        this.cacheTimeType = 2;
                     }.bind(this),
                     onSaveCallback:function(){
-                        this.onClickSaveBtn();
+                        this.onBeforeClickSaveBtn();
                     }.bind(this),
                     target:this.target
                 });
@@ -41,8 +40,14 @@ define("luaAdvanceConfigCacheSetupDelMark.view", ['require','exports', 'template
             this.onRequireDelMarkMessage();
         },
 
-        onGlobalClick:function(){
-            
+        onBeforeClickSaveBtn:function(){
+            if(this.cacheTimeType == 1){
+                this.collection.delCacheQuestionMark({originId:this.domainInfo.id,locationId:this.locationId});
+            }
+            else{
+                this.defaultParam.locationId = this.locationId;
+                this.onClickSaveBtn();
+            }
         },
 
         onRequireDelMarkMessage:function(){
@@ -51,6 +56,8 @@ define("luaAdvanceConfigCacheSetupDelMark.view", ['require','exports', 'template
             this.collection.off("get.mark.error");
             this.collection.off("set.mark.success");
             this.collection.off("set.mark.error");
+            this.collection.off("set.delCacheQuestionMark.success");
+            this.collection.off("set.delCacheQuestionMark.error");
             this.defaultParam = {
                 markType: 1,
                 markValue: "",
@@ -60,17 +67,23 @@ define("luaAdvanceConfigCacheSetupDelMark.view", ['require','exports', 'template
             this.collection.on("get.mark.error", $.proxy(this.onGetError, this));
             this.collection.on("set.mark.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.mark.error", $.proxy(this.onGetError, this));
-            this.collection.getCacheQuestionMark({originId: this.domainInfo.id});
+            this.collection.on("set.delCacheQuestionMark.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.delCacheQuestionMark.error", $.proxy(this.onGetError, this));
+            this.collection.getCacheQuestionMark({originId: this.domainInfo.id,locationId:this.locationId});
 
         },
 
         initSetup: function(data){
-            if(data.code==100){
+            var data = data.data;
+            if(!data){
                 //无数据，表示遵循全局配置
+                this.delMarkType = 1;
                 this.delMarkView.select(1);
-                return false;
             }
-            this.delMarkView.select(2);
+            else{
+                this.delMarkType = 2;
+                this.delMarkView.select(2);
+            }
             if (data) {
                 this.defaultParam.locationId = data.locationId;
                 this.defaultParam.markType = data.markType;

@@ -91,6 +91,15 @@ define("luaCacheRule.view", ['require','exports', 'template', 'modal.view', 'uti
                 hasOriginPolicy = 1
             }
 
+            var cacheTimeValue = this.$el.find("#yes-cache-time").val();
+            var cacheOriginTime = this.$el.find("#origin-cache-time").val();
+            var reg = /^\d+$/;
+            if(cacheTimeType === 2 && !reg.test(cacheTimeValue) || cacheTimeType===3 && !reg.test(cacheOriginTime)){
+                alert("只能输入整数");
+                return false;
+            }
+
+    
             var postParam = {
                 "originId": this.domainInfo.id,
                 "userId": this.clientInfo.uid,

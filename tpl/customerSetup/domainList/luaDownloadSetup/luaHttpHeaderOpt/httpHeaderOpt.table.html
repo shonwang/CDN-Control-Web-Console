@@ -6,7 +6,7 @@
         <th>动作</th>
         <th>http头</th>
         <th>值</th>
-        <th>操作</th>    
+        <th class="operation">操作</th>    
       </tr>
     </thead>
     <tbody>
@@ -16,7 +16,7 @@
               <td><%=data[i].get("actionTypeName")%></td>
               <td><%=data[i].get("headerKey")%></td>
               <td><%=data[i].get("headerValue")%></td>
-              <td>
+              <td class="operation">
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit">修改</a>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="delete">删除</a>
               </td>

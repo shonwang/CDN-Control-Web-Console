@@ -183,7 +183,7 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
                 } else {
                     el.openFlagStr = '<span class="label label-success">开启</span>';
 
-                    if (el.protectionType === 1)  el.protectionTypeStr = "typeA";
+                    if (el.protectionType === 1)  el.protectionTypeStr = "typeA: " + "$key_time=" + el.timeParam + ", $key_hash=" + el.hashParam;
                     if (el.protectionType === 2)  el.protectionTypeStr = "typeB";
                     if (el.protectionType === 3)  el.protectionTypeStr = "typeC";
 

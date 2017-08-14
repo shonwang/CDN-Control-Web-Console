@@ -7,20 +7,7 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.collection = options.collection;
             this.options = options;
             this.$el = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.html'])());
-            // var clientInfo = JSON.parse(options.query), 
-            //     domainInfo = JSON.parse(options.query2),
-            //     userInfo = {
-            //         clientName: clientInfo.clientName,
-            //         domain: domainInfo.domain,
-            //         uid: clientInfo.uid
-            //     }
-            // this.optHeader = $(_.template(template['tpl/customerSetup/domainList/domainManage.header.html'])({
-            //     data: userInfo,
-            //     notShowBtn: true
-            // }));
-            // this.optHeader.appendTo(this.$el.find(".opt-ctn"))
             this.$el.find(".bill-ctn").html('<tr><td  colspan="6" class="text-center"><div class="domain-spinner">正在加载...</div></td></tr>');
-
             this.$el.find(".cancel").on("click", $.proxy(this.onClickBackButton, this))
 
             require(["domainList.model"], function(DomainListModel){
@@ -679,7 +666,7 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         initAdvancedConfig: function(){
             if (!this.config.configLocationList || this.config.configLocationList.length === 0) {
-                //return;
+                return;
             } else {
                 configLocationList = this.config.configLocationList;
             }
@@ -714,11 +701,6 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                 }
                 tempTpl.appendTo(this.$el.find(".bill-ctn"))
             }.bind(this))
-
-            if (this.config.configLocationList && !this.config.configLocationList.advanceMatchingConfig) {
-                data = this.config.globalConfig.standardProtection
-            }
-
         },
 
         initOpenNgxLog: function() {

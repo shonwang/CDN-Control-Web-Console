@@ -295,7 +295,7 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
             });
 
             var options = {
-                title:"HTTP头的增删该查",
+                title:"HTTP头的增删改",
                 body : myAddEditHttpHeaderView,
                 backdrop : 'static',
                 type     : 2,
@@ -326,7 +326,7 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
             var myAddEditHttpHeaderView = new AddEditHttpHeaderView({collection: this.collection});
 
             var options = {
-                title:"HTTP头的增删该查",
+                title:"HTTP头的增删改",
                 body : myAddEditHttpHeaderView,
                 backdrop : 'static',
                 type     : 2,

@@ -219,7 +219,7 @@ define("luaStatusCodeCache.view", ['require','exports', 'template', 'modal.view'
             var myAddEditStatusCodeView = new AddEditStatusCodeView({collection: this.collection});
 
             var options = {
-                title:"HTTP头的增删该查",
+                title:"状态码缓存",
                 body : myAddEditStatusCodeView,
                 backdrop : 'static',
                 type     : 2,

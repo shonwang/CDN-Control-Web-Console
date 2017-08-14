@@ -92,10 +92,25 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
             this.collection.on("set.advanceLocation.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.advanceLocation.error", $.proxy(this.onGetError, this));
             
+            this.collection.on("del.location.success", $.proxy(this.onDeleteLocationSuccess, this));
+            this.collection.on("del.location.error", $.proxy(this.onGetError, this));
+
+            this.collection.on("sort.location.success", $.proxy(this.onSortSuccess, this));
+            this.collection.on("sort.location.error", $.proxy(this.onGetError, this));
+        },
+
+        onDeleteLocationSuccess:function(){
+            alert("删除成功");
+            this.onClickQueryButton();
+        },
+
+        onSortSuccess:function(){
+            alert("保存成功");
+            this.onClickQueryButton();
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！");
+            alert("添加成功！");
             this.onClickQueryButton();
         },
 
@@ -129,21 +144,15 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
         onClickSaveBtn: function(){
             var list = [];
             this.collection.each(function(obj){
-                list.push({
-                    "type": obj.get('type'),
-                    "policy": obj.get('policy'),
-                    "expireTime": obj.get('expireTime'),
-                    "hasOriginPolicy": obj.get('hasOriginPolicy'),
-                })
+                list.push(obj.get("id"))
             }.bind(this))
 
             var postParam = {
                 "originId": this.domainInfo.id,
-                "userId": this.clientInfo.uid,
-                "list": list
+                "ids": list.join(",")
             }
-
-            this.collection.setPolicy(postParam)
+            this.collection.saveSort(postParam);
+            Utility.onContentSave();
         },
 
         onGetError: function(error){
@@ -179,6 +188,10 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
         },
 
         onClickItemEdit: function(event){
+            if(window.IS_ALERT_SAVE){
+                var result = confirm("顺序已更改，但您没有保存，你确定要去配置吗？");
+                if (!result) return;
+            }
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
             window.location.href+="/luaConfigListEdit/"+id;
@@ -219,6 +232,7 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
             if (!result) return;
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
+            /*
             for (var i = 0; i < this.collection.models.length; i++){
                 if (this.collection.models[i].get("id") === parseInt(id)){
                     this.collection.models.splice(i, 1);
@@ -226,6 +240,12 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
                     return;
                 }
             }
+            */
+            var args = {
+                originId: this.domainInfo.id,
+                locationId:id
+            };
+            this.collection.delLocation(args);
         },
 
         onClickItemUp: function(event){
@@ -246,7 +266,8 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
 
             //this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
 
-            this.collection.trigger("get.advanceLocation.success")
+            this.collection.trigger("get.advanceLocation.success");
+            Utility.onContentChange();
         },
 
         onClickItemDown: function(event){
@@ -264,7 +285,8 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
 
             this.collection.models = Utility.adjustElement(this.collection.models, modelIndex, false)
             //this.collection.models = specifiedUrlArray.concat(otherArray, allFileArray)
-            this.collection.trigger("get.advanceLocation.success")
+            this.collection.trigger("get.advanceLocation.success");
+            Utility.onContentChange();
         },
 
         hide: function(){

@@ -676,9 +676,11 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
                 spliceMd5Max = this.$el.find("#md5-end").val();
             if (this.defaultParam.isBaseSetup === 2) {
                 if (this.defaultParam.spliceMd5 === 2 && 
-                    (spliceMd5Max === "" || spliceMd5Min === "" || 
-                     parseInt(spliceMd5Max) - parseInt(spliceMd5Min) < 0) || 
-                    spliceMd5Min < 1 || spliceMd5Max > 32){
+                    (spliceMd5Max === "" || 
+                     spliceMd5Min === "" || 
+                     parseInt(spliceMd5Max) - parseInt(spliceMd5Min) < 0 || 
+                     spliceMd5Min < 1 || 
+                     spliceMd5Max > 32)) {
                     alert("你选择了高级设置截取MD5值，需要填写正确的取值范围！");
                     return;
                 }

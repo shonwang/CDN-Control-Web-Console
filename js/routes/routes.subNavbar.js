@@ -161,7 +161,7 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     hash: 'javascript:void(0)',
                     children: [{
                         id: 'customerSetup-domainList-luaHttpHeaderOpt',
-                        name: 'HTTP头的增删改查',
+                        name: 'HTTP头的增删改',
                         hash: 'index.html#/domainList/' + query + '/luaHttpHeaderOpt/' + query2,
                         active: false,
                         children: []

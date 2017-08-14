@@ -368,9 +368,9 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
 
             this.clientLimitSpeedTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.luaSpeedLimit.html'])({
                 data: {
-                    preUnlimitSummary: preUnlimitSummary,
-                    speedLimitSummary: speedLimitSummary,
-                    timeLimitSummary: timeLimitSummary
+                    "preUnlimitSummary": preUnlimitSummary,
+                    "speedLimitSummary": speedLimitSummary,
+                    "timeLimitSummary": timeLimitSummary
                 }
             }));
 
@@ -698,6 +698,7 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                         this.initRefererAntiLeech(el.advanceMatchingConfig.referSafetyChain, true).appendTo(target)
                     if (el.advanceMatchingConfig.standardProtection) 
                         this.initTimestamp(el.advanceMatchingConfig.standardProtection, true).appendTo(target)
+                    if (target.html() === "") target.html("遵循全局");
                 }
                 tempTpl.appendTo(this.$el.find(".bill-ctn"))
             }.bind(this))

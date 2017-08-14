@@ -117,6 +117,12 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
                     headerValueName = "值: " + headerValue + "<br>";
             }
 
+            var reg = /^[a-zA-Z]+[a-zA-Z\d\_]+$/;
+            if(!reg.test(headerKey)){
+                alert("http头中只能输入字母、数字、”-“,必须以字母开头");
+                return false;
+            }
+
             var directionTypeName = "";
             if (this.defaultParam.directionType === 1) directionTypeName = "方向：客户端到CDN<br>";
             if (this.defaultParam.directionType === 2) directionTypeName = "方向：CDN到源站<br>";
@@ -289,7 +295,7 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
             });
 
             var options = {
-                title:"HTTP头的增删该查",
+                title:"HTTP头的增删改",
                 body : myAddEditHttpHeaderView,
                 backdrop : 'static',
                 type     : 2,
@@ -320,7 +326,7 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
             var myAddEditHttpHeaderView = new AddEditHttpHeaderView({collection: this.collection});
 
             var options = {
-                title:"HTTP头的增删该查",
+                title:"HTTP头的增删改",
                 body : myAddEditHttpHeaderView,
                 backdrop : 'static',
                 type     : 2,

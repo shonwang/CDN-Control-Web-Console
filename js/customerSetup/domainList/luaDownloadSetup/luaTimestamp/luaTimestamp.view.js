@@ -448,7 +448,7 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find(".advanced-setup").show();
                 this.$el.find(".base-setup").hide();
             }
-            Utility.onContentChange();
+            //Utility.onContentChange();
         },
 
         onClickSetupRadio: function(event){

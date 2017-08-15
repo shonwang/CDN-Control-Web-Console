@@ -364,7 +364,7 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                 timeLimitSummary = timeLimitSummary + timeStr
             })
 
-            if (timeLimit.length === 0) timeLimitSummary = "限速时间段：无";
+            if (timeLimit && timeLimit.length === 0) timeLimitSummary = "限速时间段：无";
 
             this.clientLimitSpeedTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.luaSpeedLimit.html'])({
                 data: {

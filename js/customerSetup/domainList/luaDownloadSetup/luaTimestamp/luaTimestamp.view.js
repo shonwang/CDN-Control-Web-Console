@@ -145,7 +145,7 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
                     {value: 2, name: "uri：用户请求的uri"},
                     {value: 3, name: "url：不带参数"},
                     {value: 4, name: "arg&name:请求url中的参数名称"},
-                    {value: 5, name: "time：请求url中是时间戳"},
+                    {value: 5, name: "time：请求url中的时间戳"},
                     {value: 6, name: "key：秘钥"},
                     {value: 7, name: "filename：文件名称，带后缀"},
                     {value: 8, name: "filenameno：文件名称，不带后缀"},

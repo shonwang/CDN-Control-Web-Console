@@ -1,5 +1,7 @@
 //PATH START=== 
  var REQ_PATH = {
+  "applicationChange.model": "applicationChange/applicationChange.model",
+  "applicationChange.view": "applicationChange/applicationChange.view",
   "businessManage.model": "businessManage/businessManage.model",
   "businessManage.view": "businessManage/businessManage.view",
   "channelManage.model": "channelManage/channelManage.model",

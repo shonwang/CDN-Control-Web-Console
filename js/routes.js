@@ -91,6 +91,8 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                 "setupSendWaitSend": "setupSendWaitSend",
                 "isomorphismManage": "isomorphismManage",
                 "sharedSetup/:query": "sharedSetup",
+                //平台切换
+                "applicationChange":"applicationChange",
             },
 
             execute: function(callback, args) {
@@ -2243,6 +2245,27 @@ define("routes", ['require', 'exports', 'navbar.view', 'subNavbar.view'],
                     }
                     this.domainManageNavbar.select(this.curPage);
                     this.curView = this.liveFrequencyLogView;
+                }.bind(this));
+            },
+
+            applicationChange:function(){
+                //this.curPage = 'applicationChange';
+                //this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                require(['applicationChange.view', 'applicationChange.model'], function(ApplicationChangeView, ApplicationChangeModel) {
+                    this.curPage = 'applicationChange';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    if (!this.applicationChangeModel)
+                        this.applicationChangeModel = new ApplicationChangeModel();
+                    if (!this.applicationChangeView) {
+                        var options = {
+                            collection: this.applicationChangeModel
+                        };
+                        this.applicationChangeView = new ApplicationChangeView(options);
+                        this.applicationChangeView.render($('.ksc-content'));
+                    } else {
+                        this.applicationChangeView.update();
+                    }
+                    this.curView = this.applicationChangeView;
                 }.bind(this));
             },
         });

@@ -12,13 +12,25 @@ define("applicationChange.view", ['require','exports', 'template', 'modal.view',
 
             this.collection.on("get.topoInfo.success",$.proxy(this.getTopuInfoSuccess,this));
             this.collection.on("get.topoInfo.error",$.proxy(this.onGetError,this));
-            
 
-
+            this.$el.find(".query").on("click",$.proxy(this.onClickQueryButton,this));
             this.initDropdownMenu();
             this.args = {};
         },
         
+        onClickQueryButton:function(){
+            var val = this.$el.find("#input-domain").val();
+            if(!val){
+                alert("请输入要查询的域名");
+                return false;
+            }
+            var args = {
+                
+            };
+            
+        
+        },
+
         topuList:{
             202:null,//cache
             203:null//live

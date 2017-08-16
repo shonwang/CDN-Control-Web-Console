@@ -204,7 +204,7 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
             var myAddEditRoleView = new AddEditRoleView({collection: this.collection});
 
             var options = {
-                title:"缓存规则",
+                title:"高级配置",
                 body : myAddEditRoleView,
                 backdrop : 'static',
                 type     : 2,

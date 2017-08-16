@@ -44,10 +44,11 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
         onSure: function(){
             var matchConditionParam = this.matchConditionView.getMatchConditionParam();
             if (!matchConditionParam) return false;
+            var policy = _.uniq(matchConditionParam.policy.split(","));
             var postParam = {
                 "id": this.isEdit ? this.model.get("id") : new Date().valueOf(),
                 "matchingType": matchConditionParam.type,
-                "matchingValue": matchConditionParam.policy
+                "matchingValue": policy.join(",")
             }
             return postParam;
         },

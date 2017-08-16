@@ -18,6 +18,11 @@ define("applicationChange.view", ['require','exports', 'template', 'modal.view',
             this.initDropdownMenu();
             this.args = {};
         },
+        
+        topuList:{
+            202:null,//cache
+            203:null//live
+        },
 
         initDropdownMenu:function(){
             var applicationList = [
@@ -26,33 +31,54 @@ define("applicationChange.view", ['require','exports', 'template', 'modal.view',
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-application"), applicationList, function(value) {
                 this.args.applicationType = parseInt(value);
+                this.toSetTopuList(parseInt(value));
             }.bind(this));   
-            this.getTopuList();
         },
 
-        getTopuList:function(){
+        toSetTopuList:function(value){
+            var topuList = this.topuList;
+            if(topuList[value]){
+                this.setTopuList(value);
+            }else{
+                this.getTopuList(value);
+            }
+        },
+
+        getTopuList:function(type){
+            this.$el.find(".dropdown-topuList .cur-value").html("加载中...");
             this.collection.getTopoinfo({
                 name:null,
                 page:1,
                 size:9999,
-                type:null
+                type:type
             });
         },
 
         getTopuInfoSuccess:function(data){
             var _data = data.rows;
-            var topuInfo = {};
             var cache202List = [];
+            var type = null;
             _.each(_data,function(el){
                 el.value = el.id;
- 
+                type = el.type;
             })
-
-            Utility.initDropMenu(this.$el.find(".dropdown-topuList"), _data, function(value) {
+            this.topuList[type]=_data;
+            this.setTopuList(type);
+        },
+        
+        setTopuList:function(type){
+            var topuList = this.topuList;
+            var data = topuList[type];
+            var topuInfo = {};
+            _.each(data,function(el){
+                topuInfo[el.id] = el;
+            });
+            Utility.initDropMenu(this.$el.find(".dropdown-topuList"), data, function(value) {
                 this.args.topologyId = parseInt(value);
                 this.args.topologyName = topuInfo[value].name;
-            }.bind(this));  
-            
+            }.bind(this));     
+            this.$el.find(".dropdown-topuList .cur-value").html("请选择");
+
         },
 
         onGetError: function(error){

@@ -169,6 +169,7 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                 this.curType = model.get("type");
                 this.curProtocol = model.get("protocol");
                 this.curSubType = model.get("subType");
+                this.applicationType = model.get("applicationType");
 
                 if (whereAreYouFrom === 2) {
                     this.alertChangeType(model.get("id"));
@@ -178,7 +179,7 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                 this.redirectToManage();
             },
 
-
+            /* 备份原始的
             redirectToManage: function() {
                 // type=1 protocol=0,4 下载
                 // type=2 protocol=2 伪直播
@@ -203,7 +204,19 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                         alert(message);
                     }
                 }
-            },
+            },*/
+
+            redirectToManage: function() {
+                // 202 下载
+                // 203 直播
+                var applicationType = this.applicationType;
+                if(applicationType == 202){
+                    window.location.hash = '#/domainList/' + this.args1 + "/liveBasicInformation/" + this.args2
+                }
+                else if(applicationType == 203){
+                    window.location.hash = '#/domainList/' + this.args1 + "/liveUpBasicInformation/" + this.args2
+                }
+            },    
 
             onClickItemlogSetup: function(event) {
                 var eventTarget = event.srcElement || event.target,

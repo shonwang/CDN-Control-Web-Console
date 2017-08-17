@@ -13,11 +13,39 @@ define("applicationChange.view", ['require','exports', 'template', 'modal.view',
             this.collection.on("get.topoInfo.success",$.proxy(this.getTopuInfoSuccess,this));
             this.collection.on("get.topoInfo.error",$.proxy(this.onGetError,this));
 
+            this.collection.on("get.applicaction.success",$.proxy(this.getApplicationSuccess,this));
+            this.collection.on("get.applicaction.error",$.proxy(this.onGetError,this));
+
+            this.collection.on("modify.application.success",$.proxy(this.setApplicationSuccess,this));
+            this.collection.on("modify.application.error",$.proxy(this.onGetError,this));
+
             this.$el.find(".query").on("click",$.proxy(this.onClickQueryButton,this));
             this.initDropdownMenu();
             this.args = {};
+            
+            this.$el.find(".save").on("click",$.proxy(this.onClickSaveButton,this));;
+            //this.collection.trigger("get.applicaction.success",{});
         },
-        
+
+        onClickSaveButton:function(){
+            var args = this.args;
+            if(!args.originId){
+                alert("请先查询你的域名是否存在");
+                return false;
+            }
+            if(!args.applicationType){
+                alert("请选择平台");
+                return false;
+            }
+
+            if(!args.topologyId){
+                alert("请选择拓扑");
+                return false;
+            }
+
+            this.collection.modifyApplication(args);
+        },
+
         onClickQueryButton:function(){
             var val = this.$el.find("#input-domain").val();
             if(!val){
@@ -25,10 +53,36 @@ define("applicationChange.view", ['require','exports', 'template', 'modal.view',
                 return false;
             }
             var args = {
-                
+                domain:val
             };
-            
-        
+            this.showLoading();
+            this.collection.getApplication(args);
+        },
+
+        getApplicationSuccess:function(){
+            var _data = this.collection.models[0].attributes.originId;//如果没有oringinId说明不存在这个域名
+            if(!_data){
+                this.$el.find(".table").html(_.template(template['tpl/empty.html'])());
+                return false;
+            }
+
+            this.initTable();
+        },
+
+        setApplicationSuccess:function(){
+            alert("保存成功");
+        },
+
+        showLoading:function(){
+            this.$el.find(".table").html(_.template(template['tpl/loading.html'])());
+        },
+
+        initTable:function(){
+            var _data =this.collection.models[0].attributes ;
+            this.table = $(_.template(template['tpl/applicationChange/applicationChange.table.html'])({data:_data}));
+            this.$el.find(".table-ctn").html(this.table[0]);
+            this.args.originId = _data.originId;
+            this.$el.find("#input-topu-domain").val(_data.domain);
         },
 
         topuList:{

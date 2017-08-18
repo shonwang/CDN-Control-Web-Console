@@ -286,7 +286,7 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
             },
 
             backOriginSetup: function(query, query2) {
-                require(['backOriginSetup.view', 'backOriginSetup.model'], function(BackOriginSetupView, BackOriginSetupModel) {
+                require(['notStandardBackOriginSetup.view', 'notStandardBackOriginSetup.model'], function(BackOriginSetupView, BackOriginSetupModel) {
                     this.navbarView.select('customerSetup');
                     this.curPage = 'customerSetup-domainList-backOriginSetup';
                     this.setupDomainManageNavbar(query, query2);

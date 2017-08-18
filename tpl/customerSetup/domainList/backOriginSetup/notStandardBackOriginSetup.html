@@ -1,0 +1,250 @@
+<div class="back-origin-panel fadeInLeft animated">
+    <h4>源站配置<small>/回源配置</small></h4>
+    <div class="well opt-ctn"></div>
+    <div class="well">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="use-advance" class="col-sm-2 control-label">使用高级回源</label>
+                        <div class="col-sm-2 use-advance">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="alert alert-dismissable alert-info col-sm-offset-2 col-sm-8">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            <strong>提示：</strong>回源域名不能与加速域名相同，回源域名只能有一个，多个回源IP以英文半角逗号分隔，最多不超过10个。
+                        </div>
+                    </div>
+                    <div class="form-group base">
+                        <label for="origin-type" class="col-sm-2 control-label">源站类型</label>
+                        <div class="col-sm-8 origin-type">
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-origin-type" data-toggle="dropdown">
+                                    <span class="cur-value">加载中...</span>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu"></ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group base">
+                        <div class="col-sm-offset-2 col-sm-8">
+                            <textarea class="form-control" rows="3" id="textarea-origin-type"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group advanced">
+                        <label for="origin-type" class="col-sm-2 control-label">源站类型</label>
+                        <div class="col-sm-8 origin-type">
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-origin-type" data-toggle="dropdown">
+                                    <span class="cur-value">加载中...</span>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu"></ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group advanced">
+                        <div class="col-md-offset-2 col-md-8">
+                            <table class="table table-bordered">
+                                <thead> 
+                                  <tr>
+                                    <th>回源线路</th>
+                                    <th>主源</th>
+                                    <th>备源</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="default">
+                                        <td>默认源（必填）</td>
+                                        <td><textarea class="form-control" rows="3" id="primary-1"></textarea></td>
+                                        <td  class="backup" rowspan="4">
+                                            <a href="javascript:void(0)" class="btn btn-success add">
+                                                <span class="glyphicon glyphicon-plus"></span>添加备源
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr class="unicom">
+                                        <td>联通源（可选）</td>
+                                        <td><textarea class="form-control" rows="3" id="primary-2"></textarea></td>
+                                    </tr>
+                                    <tr class="telecom">
+                                        <td>电信源（可选）</td>
+                                        <td><textarea class="form-control" rows="3" id="primary-3"></textarea></td>
+                                    </tr>
+                                    <tr class="mobile">
+                                        <td>移动源（可选）</td>
+                                        <td><textarea class="form-control" rows="3" id="primary-4"></textarea></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="form-group advanced strategy">
+                        <label for="origin-strategy" class="col-sm-2 control-label" style="margin-right:0">回源策略</label>
+                        <div class="col-sm-8 poll">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="strategyRadios" id="strategyRadios1" value="1" checked>轮询
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group advanced strategy">
+                        <div class="col-sm-offset-2 col-sm-2 quality">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="strategyRadios" id="strategyRadios2" value="2">质量最优
+                                </label>
+                            </div>
+                        </div>
+                        <label for="ip-num" class="col-sm-2 control-label">最优IP数量</label>
+                        <div class="col-sm-2">
+                            <input type="number" class="form-control" id="ip-num" min="1" max="10">
+                        </div>
+                    </div>
+                    <div class="form-group advanced">
+                        <label for="advance-strategy" class="col-sm-2 control-label">高级回源策略</label>
+                        <div class="col-sm-2 advance-strategy">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group advanced strategy-table">
+                        <div class="col-md-offset-2 col-md-8">
+                            <table class="table table-bordered">
+                                <thead> 
+                                  <tr>
+                                    <th>回源线路</th>
+                                    <th>回源策略</th>
+                                    <th>状态</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="unicom" id="originline-2">
+                                        <td>联通源</td>
+                                        <td>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="unicom-option" id="unicom-1" value="1">轮询
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="unicom-option" id="unicom-2" value="2">质量最优, 最优IP数量 
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="number" class="form-control" id="unicom-ip-num" min="1" max="10">
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <div class="togglebutton">
+                                                <label>
+                                                    <input type="checkbox"><span class="toggle"></span>
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="telecom" id="originline-3">
+                                        <td>电信源</td>
+                                        <td>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="telecom-option" id="telecom-1" value="1">轮询
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="telecom-option" id="telecom-2" value="2">质量最优, 最优IP数量 
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="number" class="form-control" id="telecom-ip-num" min="1" max="10">
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <div class="togglebutton">
+                                                <label>
+                                                    <input type="checkbox"><span class="toggle"></span>
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="mobile" id="originline-4">
+                                        <td>移动源</td>
+                                        <td>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="mobile-option" id="mobile-1" value="1">轮询
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="mobile-option" id="mobile-2" value="2">质量最优, 最优IP数量 
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="number" class="form-control" id="mobile-ip-num" min="1" max="10">
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <div class="togglebutton">
+                                                <label>
+                                                    <input type="checkbox"><span class="toggle"></span>
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <div class="col-sm-offset-3">
+                            <a href="javascript:void(0)" class="btn btn-primary save"><span class="glyphicon glyphicon-save"></span>保存</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="well">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="modify-host" class="col-sm-2 control-label">修改回源Host</label>
+                        <div class="col-sm-2 modify-host">
+                            <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                    <input type="checkbox"><span class="toggle"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group origin-domain">
+                        <div class="col-sm-offset-2 col-sm-8">
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-origin-domain" data-toggle="dropdown">
+                                    <span class="cur-value">加载中...</span>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu"></ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group origin-domain">
+                        <div class="col-sm-offset-2 col-sm-8">
+                            <textarea class="form-control" rows="3" id="textarea-host-domain"></textarea>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <div class="col-sm-offset-3">
+                            <a href="javascript:void(0)" class="btn btn-primary host-save"><span class="glyphicon glyphicon-save"></span>保存</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

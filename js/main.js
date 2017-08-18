@@ -122,6 +122,8 @@
   "ipBlackWhiteList.view": "customerSetup/domainList/nginxDownloadSetup/ipBlackWhiteList/ipBlackWhiteList.view",
   "matchCondition.model": "customerSetup/domainList/nginxDownloadSetup/matchCondition/matchCondition.model",
   "matchCondition.view": "customerSetup/domainList/nginxDownloadSetup/matchCondition/matchCondition.view",
+  "notStandardBackOriginSetup.model": "customerSetup/domainList/nginxDownloadSetup/notStandardBackOriginSetup/notStandardBackOriginSetup.model",
+  "notStandardBackOriginSetup.view": "customerSetup/domainList/nginxDownloadSetup/notStandardBackOriginSetup/notStandardBackOriginSetup.view",
   "openNgxLog.model": "customerSetup/domainList/nginxDownloadSetup/openNgxLog/openNgxLog.model",
   "openNgxLog.view": "customerSetup/domainList/nginxDownloadSetup/openNgxLog/openNgxLog.view",
   "refererAntiLeech.model": "customerSetup/domainList/nginxDownloadSetup/refererAntiLeech/refererAntiLeech.model",

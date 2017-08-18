@@ -215,7 +215,7 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                 }
                 else{
                     if(applicationType == 202){//Cache_APP--下载
-                        window.location.hash = '#/domainList/' + this.args1 + "/liveBasicInformation/" + this.args2
+                        window.location.hash = '#/domainList/' + this.args1 + "/liveUpBasicInformation/" + this.args2
                     }
                     else if(applicationType == 203){//LIVE_APP-- 直播
                         if(this.curType == 1){

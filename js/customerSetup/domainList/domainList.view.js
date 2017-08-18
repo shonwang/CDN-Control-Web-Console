@@ -230,7 +230,7 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                             var message = "type=1 下载<br>" +
                                 "type=2 直播<br>" +
                                 "subType = 3, 直播上行<br>" +
-                                "当前返回的type=" + this.curType + "，protocol=" + this.curProtocol + "，subType=" + this.curSubType;
+                                "当前返回的type=" + this.curType + "，subType=" + this.curSubType;
                             alert(message);
                         }
                         

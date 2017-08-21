@@ -1,6 +1,82 @@
 define("speedMeasure.view", ['require','exports', 'template', 'modal.view', 'utility'], 
     function(require, exports, template, Modal, Utility) {
 
+    var SpeedMeasureSetupView = Backbone.View.extend({
+        events: {},
+
+        initialize: function(options) {
+            this.collection = options.collection;
+            this.imageParam = options.imageParam;
+            this.typeData = options.typeData
+            this.$el = $(_.template(template['tpl/speedMeasure/speedMeasure.table.html'])());
+            this.initTable();
+
+            this.$el.find("input").on("blur", $.proxy(this.onBlurInput, this));
+        },
+
+        initTable: function(){
+            this.$el.find("#test-dir").val(this.imageParam.testDir)
+            var domainNodes = this.$el.find(".domain-field input"),
+                inputNodes = this.$el.find(".input-field input");
+            _.each(this.typeData, function(el, index){
+                _.each(domainNodes, function(node, nodeIndex){
+                    if (index === nodeIndex)
+                        node.value = el.typeDomain
+                }.bind(this))
+                _.each(inputNodes, function(node, nodeIndex){
+                    if (index === nodeIndex)
+                        node.value = el.typeParam
+                }.bind(this))
+            }.bind(this))
+        },
+
+        onBlurInput: function(event){
+            var eventTarget = event.srcElement || event.target,
+                id = eventTarget.id, 
+                trNode = $(eventTarget).parents("tr")
+            switch(id){
+                case "test-dir":
+                    this.imageParam.testDir = eventTarget.value;
+                    break;
+                case "upload":
+                    if (trNode.hasClass("domain-field"))
+                        this.typeData[0].typeDomain = eventTarget.value;
+                    else
+                        this.typeData[0].typeParam = eventTarget.value;
+                    break;
+                case "download":
+                    if (trNode.hasClass("domain-field"))
+                        this.typeData[1].typeDomain = eventTarget.value;
+                    else
+                        this.typeData[1].typeParam = eventTarget.value;
+                    break;
+                case "push":
+                    if (trNode.hasClass("domain-field"))
+                        this.typeData[2].typeDomain = eventTarget.value;
+                    else
+                        this.typeData[2].typeParam = eventTarget.value;
+                    break;
+                case "pull":
+                    if (trNode.hasClass("domain-field"))
+                        this.typeData[3].typeDomain = eventTarget.value;
+                    else
+                        this.typeData[3].typeParam = eventTarget.value;
+                    break;
+            }
+        },
+
+        onSure: function(){
+            localStorage["SPEED_MEASURE_TEST_DIR"] = this.imageParam.testDir;
+            localStorage["SPEED_MEASURE_TYPE_DATA"] = JSON.stringify(this.typeData);
+            alert("已经成功保存至你的电脑！")
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target)
+            this.target = target;
+        }
+    });
+
     var SpeedMeasureSharedView = Backbone.View.extend({
         events: {},
 
@@ -37,8 +113,8 @@ define("speedMeasure.view", ['require','exports', 'template', 'modal.view', 'uti
             } else if (this.collection.models.length === 1){
                 this.$el.find('.image-ctn').html("")
                 var url = "http://" + this.imageParam.typeDomain + '/' + 
-                          this.imageParam.testDir + '/' +
-                          this.imageParam.typeParam + '?domain=' +
+                          this.imageParam.testDir + 
+                          this.imageParam.typeParam + '/index.html?host=' +
                           this.imageParam.domain;
 
                 this.$el.find("#url").val(url)
@@ -90,46 +166,57 @@ define("speedMeasure.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/speedMeasure/speedMeasure.html'])());
             this.$el.find(".create").on('click', $.proxy(this.onClickCreateBtn, this));
+            this.$el.find(".setup").on('click', $.proxy(this.onClickSetupBtn, this));
 
             this.typeData = [{
-                typeDomain: "domain name1",
-                typeParam: "upload_speed"
+                typeDomain: "speedtest.ksc-test.com",
+                typeParam: "upload"
             },{
-                typeDomain: "domain name2",
-                typeParam: "download_speed"
+                typeDomain: "speedtest.ksc-test.com",
+                typeParam: "download"
             },{
                 typeDomain: "domain name3",
-                typeParam: "push_speed"
+                typeParam: "push"
             },{
                 typeDomain: "domain name4",
-                typeParam: "pull_speed"
+                typeParam: "pull"
             }]
 
             this.defaultParam = {
                 domain: "",
-                type: 0,
-                typeDomain: this.typeData[0].typeDomain,
-                typeParam: this.typeData[0].typeParam,
-                testDir: "kcdn-speedtest"
+                type: 1,
+                typeDomain: this.typeData[1].typeDomain,
+                typeParam: this.typeData[1].typeParam,
+                testDir: ""
             }
+
+            var testDir = localStorage["SPEED_MEASURE_TEST_DIR"],
+                typeDataStr = localStorage["SPEED_MEASURE_TYPE_DATA"];
+
+            if (testDir) this.defaultParam.testDir = testDir;
+            if (typeDataStr) this.typeData = JSON.parse(typeDataStr);
 
             this.initDropdown();
         },
 
         initDropdown: function(){
-            var protocolArray = [{
-                    name: "点播上传",
-                    value: 0
-                }, {
+            var protocolArray = [
+                // {
+                //     name: "点播上传",
+                //     value: 0
+                // }, 
+                {
                     name: "点播下载",
                     value: 1
-                }, {
-                    name: "直播上传",
-                    value: 2
-                }, {
-                    name: "直播下载",
-                    value: 3
-                }],
+                }, 
+                // {
+                //     name: "直播推流",
+                //     value: 2
+                // }, {
+                //     name: "直播拉流",
+                //     value: 3
+                // }
+                ],
                 rootNode = this.$el.find(".dropdown-type");
             Utility.initDropMenu(rootNode, protocolArray, function(value) {
                 this.defaultParam.type = parseInt(value)
@@ -158,6 +245,29 @@ define("speedMeasure.view", ['require','exports', 'template', 'modal.view', 'uti
                 backdrop: 'static',
                 type: 1,
                 onOKCallback: function() {
+                    this.selectTopoPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function() {}.bind(this)
+            }
+            this.selectTopoPopup = new Modal(options);
+        },
+
+        onClickSetupBtn: function() {
+            if (this.selectTopoPopup) $("#" + this.selectTopoPopup.modalId).remove();
+
+            var mySelectTopoView = new SpeedMeasureSetupView({
+                collection: this.collection,
+                imageParam: this.defaultParam,
+                typeData: this.typeData
+            });
+            var options = {
+                title: "设置",
+                body: mySelectTopoView,
+                backdrop: 'static',
+                type: 2,
+                width: 800,
+                onOKCallback: function() {
+                    mySelectTopoView.onSure();
                     this.selectTopoPopup.$el.modal("hide");
                 }.bind(this),
                 onHiddenCallback: function() {}.bind(this)

@@ -18,7 +18,7 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
             },
 
             initOriginSetup: function(){
-                
+                this.$el.find(".port").hide();
                 var backOriginSetupType = this.$el.find('.setup .backOriginSetupType');
                 var requestWay = this.$el.find('.way #requestWay');
                 var detectionFile = this.$el.find(".way #detectionFile");

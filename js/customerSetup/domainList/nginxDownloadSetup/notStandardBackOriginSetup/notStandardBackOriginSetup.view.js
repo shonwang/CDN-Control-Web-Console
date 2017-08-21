@@ -107,7 +107,8 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
                     "backupOriginType":1,//备源站类型 1:IP源站 2:域名源站 3：自定义
                     "backsourcePolicy":1,//1:rr轮训 2:quality按质量最优的topN来轮训回源 
                     "backsourceBestcount":1,//当OriginPolicy是quality时，该项必填。取值1-10
-                    "strategyOpenFlag":1,//高级回源策略开关
+                    "strategyOpenFlag": 1,//高级回源策略开关
+                    "edgeOpenFlag": 0,//边缘回源设置
                     "backsourceCustom": "",
                     "advanceConfigList":[],
                     "strategyAdvanceList":[]
@@ -189,6 +190,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
                     "backsourcePolicy": 2, //1:rr轮训 2:quality按质量最优的topN来轮训回源 
                     "backsourceBestcount": 1, //当OriginPolicy是quality时，该项必填。取值1-10
                     "strategyOpenFlag": 1, //高级回源策略开关
+                    "edgeOpenFlag": 1,//边缘回源设置
                     "backsourceCustom": "",
                     "advanceConfigList": [{
                         "originLine": 1,
@@ -302,6 +304,24 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
 
             this.$el.find(".base #textarea-origin-type").on("focus", Utility.onContentChange);
             this.$el.find(".advanced textarea").on("focus", Utility.onContentChange)
+
+            if (this.defaultParam.backsourceAdvance.edgeOpenFlag === 1){
+                this.$el.find(".edge-open .togglebutton input").get(0).checked = true;
+            } else {
+                this.$el.find(".edge-open .togglebutton input").get(0).checked = false;
+            }
+            this.$el.find(".edge-open .togglebutton input").on("click", $.proxy(this.onClickAdvanceEdgeBtn, this));
+        },
+
+        onClickAdvanceEdgeBtn: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            if (eventTarget.checked){
+                this.defaultParam.backsourceAdvance.edgeOpenFlag = 1;
+            } else {
+                this.defaultParam.backsourceAdvance.edgeOpenFlag = 0;
+            }
+            Utility.onContentChange();
         },
 
         initStrategyAdvanceList: function(){
@@ -516,7 +536,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){
                 this.defaultParam.backsourceAdvance.strategyOpenFlag = 1;
-                this.$el.find(".strategy-table").show();;
+                this.$el.find(".strategy-table").show();
             } else {
                 this.defaultParam.backsourceAdvance.strategyOpenFlag = 0;
                 this.$el.find(".strategy-table").hide();

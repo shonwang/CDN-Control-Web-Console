@@ -70,13 +70,32 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initSetup: function(){
-            if (this.defaultParam.following === 0)
+            if (this.defaultParam.following === 0) {
                 this.$el.find(".following302 .togglebutton input").get(0).checked = false;
-            else
+                this.$el.find(".domain-ctn").hide();
+            } else {
                 this.$el.find(".following302 .togglebutton input").get(0).checked = true;
+                this.$el.find(".domain-ctn").show();
+            }
         },
 
         onClickSaveBtn: function(){
+            var domainArray = this.$el.find("#domain").val().split("\n"), domain, result;
+            if (this.defaultParam.following === 1) {
+                for (var i = 0; i < domainArray.length; i++) {
+                    domain = domainArray[i];
+                    if (domain === "") {
+                        alert("第" + (i+1) + "个域名为空！");
+                        return;
+                    }
+                    result = Utility.isDomain(domain)
+                    if (!result) {
+                        alert("第" + (i+1) + "个域名输错了！");
+                        return;
+                    }
+                }
+            }
+
             var postParam =  {
                 "originId": this.domainInfo.id,
                 "following": this.defaultParam.following
@@ -89,8 +108,10 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){
                 this.defaultParam.following = 1;
+                this.$el.find(".domain-ctn").show();
             } else {
                 this.defaultParam.following = 0;
+                this.$el.find(".domain-ctn").hide();
             }
         },
 

@@ -1,6 +1,25 @@
 define("routes.other", ['require', 'exports', 'subNavbar.view'], 
     function(require, exports, SubNavbar) {
         var RouterOther = {
+            speedMeasure: function() {
+                require(['speedMeasure.view', 'speedMeasure.model'], function(SpeedMeasureView, SpeedMeasureModel) {
+                    this.curPage = 'speedMeasure';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    if (!this.speedMeasureModel)
+                        this.speedMeasureModel = new SpeedMeasureModel();
+                    if (!this.speedMeasureView) {
+                        var options = {
+                            collection: this.speedMeasureModel
+                        };
+                        this.speedMeasureView = new SpeedMeasureView(options);
+                        this.speedMeasureView.render($('.ksc-content'));
+                    } else {
+                        this.speedMeasureView.update();
+                    }
+                    this.curView = this.speedMeasureView;
+                }.bind(this));
+            },
+
             customMaintenance: function() {
                 require(['customMaintenance.view', 'customMaintenance.model'], function(CustomMaintenanceView, CustomMaintenanceModel) {
                     this.curPage = 'customMaintenance';

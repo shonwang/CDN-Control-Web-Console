@@ -112,6 +112,8 @@
   "domainSetup.view": "customerSetup/domainList/nginxDownloadSetup/domainSetup/domainSetup.view",
   "dragPlay.model": "customerSetup/domainList/nginxDownloadSetup/dragPlay/dragPlay.model",
   "dragPlay.view": "customerSetup/domainList/nginxDownloadSetup/dragPlay/dragPlay.view",
+  "edgeOptimize.model": "customerSetup/domainList/nginxDownloadSetup/edgeOptimize/edgeOptimize.model",
+  "edgeOptimize.view": "customerSetup/domainList/nginxDownloadSetup/edgeOptimize/edgeOptimize.view",
   "following302.model": "customerSetup/domainList/nginxDownloadSetup/following302/following302.model",
   "following302.view": "customerSetup/domainList/nginxDownloadSetup/following302/following302.view",
   "httpHeaderCtr.model": "customerSetup/domainList/nginxDownloadSetup/httpHeaderCtr/httpHeaderCtr.model",

@@ -36,6 +36,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "setupAppManage": "setupAppManage",
                 "setupTopoManage": "setupTopoManage",
                 "specialLayerManage": "specialLayerManage",
+                "speedMeasure" : "speedMeasure",
 
                 // 调度配置
                 "dispGroup": "dispGroup",

@@ -219,6 +219,8 @@
   "sharedSetup.view": "sharedSetup/sharedSetup.view",
   "specialLayerManage.model": "specialLayerManage/specialLayerManage.model",
   "specialLayerManage.view": "specialLayerManage/specialLayerManage.view",
+  "speedMeasure.model": "speedMeasure/speedMeasure.model",
+  "speedMeasure.view": "speedMeasure/speedMeasure.view",
   "statisticsManage.model": "statisticsManage/statisticsManage.model",
   "statisticsManage.view": "statisticsManage/statisticsManage.view",
   "template": "template",

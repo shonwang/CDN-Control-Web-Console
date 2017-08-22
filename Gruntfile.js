@@ -84,6 +84,7 @@ module.exports = function(grunt) {
                 files: {
                     'dest/libs/libs.js': [
                         "libs/jquery.min.js",
+                        "libs/jquery.qrcode.min.js",
                         "libs/bootstrap.min.js",
                         "libs/jqPaginator.js",
                         "libs/jquery.datetimepicker.js",

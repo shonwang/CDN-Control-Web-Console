@@ -413,7 +413,7 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
         },
 
         getDeviceTypeList: function(){
-            var url = BASE_URL + "/seed/metaData/devicetype/list";
+            var url = BASE_URL + "/rs/device/type/list";
             var defaultParas = {
                 type: "GET",
                 url: url,

@@ -10,11 +10,29 @@ define("notStandardBackOriginSetup.model", ['require','exports', 'utility'], fun
         initialize: function(){},
 
         setBackSourceConfig: function(args){
-            var url = BASE_URL + "/channelManager/domain/setBackSourceConfig";
+            var url = BASE_URL + "/channelManager/domain/download/setBackSourceConfig";
             Utility.postAjax(url, args, function(res){
                 this.trigger("set.backSourceConfig.success");
             }.bind(this),function(res){
                 this.trigger("set.backSourceConfig.error", res);
+            }.bind(this));
+        },
+
+        setEdgeOpenFlag: function(args){
+            var url = BASE_URL + "/channelManager/domain/download/setEdgeOpenFlag";
+            Utility.getAjax(url, args, function(res){
+                this.trigger("set.edgeOpen.success", res);
+            }.bind(this),function(res){
+                this.trigger("set.edgeOpen.error", res);
+            }.bind(this));
+        },
+
+        getBackSourceConfig: function(args){
+            var url = BASE_URL + "/channelManager/domain/download/getBackSourceConfig";
+            Utility.getAjax(url, args, function(res){
+                this.trigger("get.backSourceConfig.success", res);
+            }.bind(this),function(res){
+                this.trigger("get.backSourceConfig.error", res);
             }.bind(this));
         },
 

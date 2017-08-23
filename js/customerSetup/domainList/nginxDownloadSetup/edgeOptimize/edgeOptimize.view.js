@@ -29,20 +29,16 @@ define("edgeOptimize.view", ['require','exports', 'template', 'modal.view', 'uti
             }.bind(this))
             
             this.$el.find("#edge-set").on("focus",Utility.onContentChange);
+            this.$el.find(".save").on("click", $.proxy(this.onClickSaveButton, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
         },
 
         onGetDomainInfo: function(data){
-            this.$el.find(".save").on("click", $.proxy(this.onClickSaveButton, this));
-
-            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
-
-            this.collection.on("modify.cname.success", $.proxy(this.onSaveSuccess, this));
-            this.collection.on("modify.cname.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.edgeIpCount.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.edgeIpCount.error", $.proxy(this.onGetError, this));
             
-            var cname = _.find(data.originDomain.cnameData, function(obj) {
-                return obj.type === 1
-            }.bind(this))
-            if (cname) this.$el.find("#edge-set").val(cname.name);
+            if (data.domainConf.edgeIpCount) 
+                this.$el.find("#edge-set").val(data.domainConf.edgeIpCount);
         },
 
         onSaveSuccess: function(){
@@ -84,9 +80,9 @@ define("edgeOptimize.view", ['require','exports', 'template', 'modal.view', 'uti
             }
             var postParam = {
                 originId:this.domainInfo.id,
-                cname: value,
+                edgeIpCount : value
             };
-            this.collection.modifyDomainCname(postParam);
+            this.collection.setEdgeIpCount(postParam);
             Utility.onContentSave();
         },
 

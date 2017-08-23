@@ -9,12 +9,12 @@ define("edgeOptimize.model", ['require','exports', 'utility'], function(require,
 
         initialize: function(){},
 
-        modifyDomainCname: function(args){
-            var url = BASE_URL + "/channelManager/domain/modifyDomainCname";
-            Utility.postAjax(url, args, function(res){
-                this.trigger("modify.cname.success");
+        setEdgeIpCount: function(args){
+            var url = BASE_URL + "/channelManager/domain/download/setEdgeIpCount";
+            Utility.getAjax(url, args, function(res){
+                this.trigger("set.edgeIpCount.success");
             }.bind(this),function(res){
-                this.trigger("modify.cname.error", res);
+                this.trigger("set.edgeIpCount.error", res);
             }.bind(this));
         },
     });

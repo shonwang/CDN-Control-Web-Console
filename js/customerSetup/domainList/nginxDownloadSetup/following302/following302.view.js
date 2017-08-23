@@ -98,7 +98,8 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
 
             var postParam =  {
                 "originId": this.domainInfo.id,
-                "following": this.defaultParam.following
+                "following": this.defaultParam.following,
+                "locationDomain": domainArray.join(",")
             }
             this.collection.setFollowing(postParam)
         },

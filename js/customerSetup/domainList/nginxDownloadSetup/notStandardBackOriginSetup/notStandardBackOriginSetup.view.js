@@ -107,7 +107,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
                     "backupOriginType":1,//备源站类型 1:IP源站 2:域名源站 3：自定义
                     "backsourcePolicy":1,//1:rr轮训 2:quality按质量最优的topN来轮训回源 
                     "backsourceBestcount":1,//当OriginPolicy是quality时，该项必填。取值1-10
-                    "strategyOpenFlag": 1,//高级回源策略开关
+                    "strategyOpenFlag": 0,//高级回源策略开关
                     "edgeOpenFlag": 0,//边缘回源设置
                     "backsourceCustom": "",
                     "advanceConfigList":[],
@@ -156,6 +156,10 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
 
             this.collection.on("set.backSourceConfig.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.backSourceConfig.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.backSourceConfig.success", $.proxy(this.onGetBackSourceConfig, this));
+            this.collection.on("get.backSourceConfig.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.edgeOpen.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.edgeOpen.error", $.proxy(this.onGetError, this));
 
             require(["domainSetup.model"], function(DomainSetupModel){
                 var myDomainSetupModel = new DomainSetupModel();
@@ -170,42 +174,15 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
             this.hostType = data.domainConf.hostType;
             this.busnessType = data.originDomain.type;
             this.protocol = data.domainConf.protocol;
-
-            this.onGetBackSourceConfig()
+            this.collection.getBackSourceConfig({originId: this.domainInfo.id})
         },
 
-        onGetBackSourceConfig: function(){
-            this.initOriginSetup();
+        onGetBackSourceConfig: function(data){
+            this.initOriginSetup(data);
             this.initModifyHost(this.domainInfoData);
         },
         
         initOriginSetup: function(data){
-            data = {
-                "backsourceFlag": 1, //高级回源策略开关 0:关 1:开
-                "originType": 1, //普通回源回源类型1.IP,  2.源站域名,3.金山云域名
-                "originAddress": "1.1.1.1", //回源地址
-                "backsourceAdvance": { //高级回源
-                    "hostOriginType": 1, //主源站类型 1:IP源站 2:域名源站
-                    "backupOriginType": 1, //备源站类型 1:IP源站 2:域名源站 3：自定义
-                    "backsourcePolicy": 2, //1:rr轮训 2:quality按质量最优的topN来轮训回源 
-                    "backsourceBestcount": 1, //当OriginPolicy是quality时，该项必填。取值1-10
-                    "strategyOpenFlag": 1, //高级回源策略开关
-                    "edgeOpenFlag": 1,//边缘回源设置
-                    "backsourceCustom": "",
-                    "advanceConfigList": [{
-                        "originLine": 1,
-                        "originAddress": "1.1.1.1",
-                        "addressBackup": "1.1.1.1"
-                    }],
-                    "strategyAdvanceList": [{ //高级回源策略
-                        "originLine": 2, //源站线路，1:default默认源； 2:un联通源; 3:ct电信源; 4:cm移动源
-                        "backsourcePolicy": 2, //1:rr轮训 2:quality按质量最优的topN来轮训回源 
-                        "backsourceBestcount": 1, //当OriginPolicy是quality时，该项必填。取值1-10
-                        "openFlag": 1, //0:关闭  1:开启
-                    }]
-                }
-            }
-
             if (data) {
                 this.defaultParam = _.extend(this.defaultParam, data)
             }
@@ -282,7 +259,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
                 this.$el.find(".poll .radio input").get(0).checked = false;
                 this.$el.find(".quality .radio input").get(0).checked = true;
             }
-            this.$el.find("#ip-num").val(this.defaultParam.backsourceBestcount);
+            this.$el.find("#ip-num").val(this.defaultParam.backsourceAdvance.backsourceBestcount);
 
             if (this.defaultParam.backsourceAdvance.strategyOpenFlag === 1){
                 this.$el.find(".advance-strategy .togglebutton input").get(0).checked = true;
@@ -311,6 +288,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
                 this.$el.find(".edge-open .togglebutton input").get(0).checked = false;
             }
             this.$el.find(".edge-open .togglebutton input").on("click", $.proxy(this.onClickAdvanceEdgeBtn, this));
+            this.$el.find(".edge-save").on("click", $.proxy(this.onClickEdgeSaveBtn, this));
         },
 
         onClickAdvanceEdgeBtn: function(event){
@@ -322,6 +300,14 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
                 this.defaultParam.backsourceAdvance.edgeOpenFlag = 0;
             }
             Utility.onContentChange();
+        },
+
+        onClickEdgeSaveBtn: function(){
+            this.collection.setEdgeOpenFlag({
+                originId: this.domainInfo.id,
+                edgeOpenFlag: this.defaultParam.backsourceAdvance.edgeOpenFlag
+            });
+            Utility.onContentSave();
         },
 
         initStrategyAdvanceList: function(){
@@ -510,7 +496,12 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
 
         onBlurAdvancedTextarea: function(event){
             var eventTarget = event.srcElement || event.target,
-                value = eventTarget.value.trim();
+                value = eventTarget.value.trim(), 
+                originLine = eventTarget.id.split("-")[1];
+            var result = _.find(this.defaultParam.backsourceAdvance.advanceConfigList, function(obj){
+                return obj.originLine === parseInt(originLine)
+            }.bind(this))
+            result.originAddress = value;
             if (value === "") return;
             this.checkBaseOrigin(value, this.defaultParam.backsourceAdvance.hostOriginType);
         },
@@ -610,8 +601,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
                     "strategyAdvanceList": this.defaultParam.backsourceAdvance.strategyAdvanceList
                 }
             }
-            console.log(postParam)
-            //this.collection.setBackSourceConfig(postParam)
+            this.collection.setBackSourceConfig(postParam)
             Utility.onContentSave();
         },
 

@@ -124,7 +124,7 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
                     this.defaultParam.advancedDeadline = 2;
                 }
 
-                if (md5Truncate === ""){
+                if (md5Truncate === "" || !md5Truncate){
                     this.defaultParam.spliceMd5 = 1;
                 } else {
                     this.defaultParam.spliceMd5 = 2;

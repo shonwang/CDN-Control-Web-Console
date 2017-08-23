@@ -595,6 +595,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
                     "hostOriginType": this.defaultParam.backsourceAdvance.hostOriginType,
                     "backupOriginType": this.defaultParam.backsourceAdvance.backupOriginType,
                     "backsourcePolicy": this.defaultParam.backsourceAdvance.backsourcePolicy,
+                    "backsourceCustom": this.defaultParam.backsourceAdvance.backsourceCustom,
                     "backsourceBestcount": this.$el.find("#ip-num").val().trim(),
                     "strategyOpenFlag": this.defaultParam.backsourceAdvance.strategyOpenFlag,
                     "advanceConfigList": this.defaultParam.backsourceAdvance.advanceConfigList,

@@ -30,18 +30,27 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onGetDomainInfo: function(data){
-            this.defaultParam = {following: 0}
+            this.defaultParam = {
+                following: 0,
+                locationDomain: ""
+            }
 
             if (data.domainConf && data.domainConf.following !== null && data.domainConf.following !== undefined)
                 this.defaultParam.following = data.domainConf.following //0:关闭 1:开启
+            if (data.domainConf && data.domainConf.locationDomain !== null && data.domainConf.locationDomain !== undefined)
+                this.defaultParam.locationDomain = data.domainConf.locationDomain
 
             this.initSetup();
 
             this.$el.find(".following302 .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
 
-            this.collection.on("set.following.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.following.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.following.error", $.proxy(this.onGetError, this));
+        },
+
+        onSaveSuccess: function(){
+            alert("保存成功！")
         },
 
         launchSendPopup: function(){
@@ -77,6 +86,7 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find(".following302 .togglebutton input").get(0).checked = true;
                 this.$el.find(".domain-ctn").show();
             }
+            this.$el.find("#domain").val(this.defaultParam.locationDomain.split(",").join("\n"))
         },
 
         onClickSaveBtn: function(){

@@ -102,7 +102,8 @@ define("speedMeasure.view", ['require','exports', 'template', 'modal.view', 'uti
                         message: "该测速域名不是服务域名，请核实后重新输入"
                     }
                 }));
-            } else if (this.collection.models.length === 1){
+            } else if (this.collection.models.length === 1 && 
+                this.collection.models[0].get("auditStatus") === 13){
                 this.$el.find('.image-ctn').html("")
                 var url = "http://" + this.imageParam.typeDomain + '/' + 
                           this.imageParam.testDir + 

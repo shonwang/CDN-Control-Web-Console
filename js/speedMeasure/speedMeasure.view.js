@@ -90,15 +90,7 @@ define("speedMeasure.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
             this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
             this.queryArgs = {
-                "domain": this.imageParam.domain,
-                "type": null,
-                "protocol": null,
-                "cdnFactory": null,
-                "auditStatus": 13, //运行中
-                "topologyId": null,
-                "roleId": null,
-                "currentPage": 1,
-                "pageSize": 99999
+                "domain": this.imageParam.domain
             }
             this.collection.queryChannel(this.queryArgs);
         },

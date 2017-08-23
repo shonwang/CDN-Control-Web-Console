@@ -90,15 +90,7 @@ define("speedMeasure.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.channel.success", $.proxy(this.onChannelListSuccess, this));
             this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
             this.queryArgs = {
-                "domain": this.imageParam.domain,
-                "type": null,
-                "protocol": null,
-                "cdnFactory": null,
-                "auditStatus": 13, //运行中
-                "topologyId": null,
-                "roleId": null,
-                "currentPage": 1,
-                "pageSize": 99999
+                "domain": this.imageParam.domain
             }
             this.collection.queryChannel(this.queryArgs);
         },
@@ -110,7 +102,8 @@ define("speedMeasure.view", ['require','exports', 'template', 'modal.view', 'uti
                         message: "该测速域名不是服务域名，请核实后重新输入"
                     }
                 }));
-            } else if (this.collection.models.length === 1){
+            } else if (this.collection.models.length === 1 && 
+                this.collection.models[0].get("auditStatus") === 13){
                 this.$el.find('.image-ctn').html("")
                 var url = "http://" + this.imageParam.typeDomain + '/' + 
                           this.imageParam.testDir + 

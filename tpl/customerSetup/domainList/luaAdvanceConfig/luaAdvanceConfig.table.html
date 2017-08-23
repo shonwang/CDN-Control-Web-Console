@@ -1,0 +1,36 @@
+<table class="table table-striped table-hover">
+    <caption>
+		<div class="alert alert-dismissable alert-info" style="width:90%;margin:0 auto 10px;">
+		<button type="button" class="close" data-dismiss="alert">×</button>
+		<p>提示：</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;1、指定匹配条件的高级配置按照列表从上至下顺序，采取优先匹配原则</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;2、发布前请检查优先级顺序，以免造成配置冲突</p>
+		</div>	
+	</caption>
+    <thead> 
+      <tr>
+        <th>匹配类型</th>
+        <th>类型配置</th>
+        <th>概要配置</th>
+        <th>优先级</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+        <% for(var i = 0; i < data.length; i++) { %>
+            <tr data-id="<%=data[i].get('id')%>">
+              <td><%=data[i].get("typeName")%></td>
+              <td><%=data[i].get("matchingValue")%></td>
+              <td><%=data[i].get("configName")%></td>
+              <td>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="up"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="down"><span class="glyphicon glyphicon-arrow-down"></span></a>
+              </td>
+              <td>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit">配置</a>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="delete">删除</a>
+              </td>
+            </tr>
+        <% } %>  
+    </tbody>
+</table>

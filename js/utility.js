@@ -441,6 +441,7 @@ define("utility", ['require','exports'], function(require, exports) {
 
             $.ajax(defaultParas);
         },
+
         deleteAjax: function(url, args, successCallback, errorCallback, timeout){
             var defaultParas = {
                 type: "DELETE",
@@ -508,8 +509,15 @@ define("utility", ['require','exports'], function(require, exports) {
                 ReactDOM.unmountComponentAtNode($("#react-modal").get(0))
                 ReactDOM.render(reactModalConfirmView, $("#react-modal").get(0));
             })
-        }
+        },
 
+        onContentChange:function(){
+            window.IS_ALERT_SAVE = true;
+        },
+        
+        onContentSave:function(){
+            window.IS_ALERT_SAVE = false;
+        }
     };
     return Utility;
 });

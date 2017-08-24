@@ -36,7 +36,7 @@ define("liveBackOriginDetection.view", ['require','exports', 'template', 'modal.
         initOriginTypeDropdown: function(){
             var  baseArray = [
                 {name: "HEAD", value: "HEAD"},
-                // {name: "GET", value: "GET"},
+                {name: "GET", value: "GET"},
                 // {name: "POST", value: "POST"}
             ],
             rootNode = this.$el.find(".way .way-type");

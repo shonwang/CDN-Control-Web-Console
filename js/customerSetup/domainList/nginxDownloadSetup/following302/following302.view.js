@@ -44,6 +44,7 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.$el.find(".following302 .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
 
             this.collection.on("set.following.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.following.error", $.proxy(this.onGetError, this));
@@ -60,6 +61,7 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
                     domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
                     }.bind(this)
                 });
                 var options = {
@@ -67,6 +69,7 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
+                    width: 1000,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),

@@ -124,23 +124,27 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.originSetupInfo.originTypeStr = 'KS3';
             if (originDomain.type === 2 && domainConf.originType === 3 && domainConf.backsourceFlag === 0) 
                 this.originSetupInfo.originTypeStr = 'KSVideo';
-            //"advanceOriginType": 高级回源设置的源站类型 1:IP源站 2:域名源站
-            if (this.config.backsourceAdvance.hostOriginType === 1 && domainConf.backsourceFlag === 1) 
-                this.originSetupInfo.originTypeStr = 'IP源站';
-            if (this.config.backsourceAdvance.hostOriginType === 2 && domainConf.backsourceFlag === 1) 
-                this.originSetupInfo.originTypeStr = '域名源站';
             //"originAddress": 回源地址(多个IP 或者 单个域名 或者 单个金山云域名), 多个ip以分号分隔
             if (domainConf.backsourceFlag === 0) 
-                this.originSetupInfo.originAddress = domainConf.originAddress;
-            this.originSetupInfo.backsourcePolicy = ""
+                this.originSetupInfo.originAddress = domainConf.originAddress.split(",").join("<br>");
+
             if (domainConf.backsourceFlag === 1) {
+                //"advanceOriginType": 高级回源设置的源站类型 1:IP源站 2:域名源站
+                if (this.config.backsourceAdvance.hostOriginType === 1 && domainConf.backsourceFlag === 1) 
+                    this.originSetupInfo.originTypeStr = 'IP源站';
+                if (this.config.backsourceAdvance.hostOriginType === 2 && domainConf.backsourceFlag === 1) 
+                    this.originSetupInfo.originTypeStr = '域名源站';
+
                 var backupOriginTypeStr = "";
                 if (this.config.backsourceAdvance.backupOriginType === 1) 
                     backupOriginTypeStr = 'IP源站';
                 if (this.config.backsourceAdvance.backupOriginType === 2) 
                     backupOriginTypeStr = '域名源站';
-                if (this.config.backsourceAdvance.backupOriginType === 3) 
+                if (this.config.backsourceAdvance.backupOriginType === 3 &&
+                    this.config.backsourceAdvance.backsourceCustom) 
                     backupOriginTypeStr = '自定义';
+                else
+                    backupOriginTypeStr = '未设置';
                 this.originSetupInfo.backupOriginTypeStr = backupOriginTypeStr;
                 // "advanceConfigList": 高级回源设置
                 // "originLine": 源站线路，1:default默认源； 2:un联通源; 3:ct电信源; 4:cm移动源 
@@ -240,7 +244,7 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.originHostSetupInfo.hostFlayStr = '<span class="label label-success">开启</span>';
             }
 
-            if (this.config.backsourceAdvance.edgeOpenFlag === 1) 
+            if (this.config.backsourceAdvance&&this.config.backsourceAdvance.edgeOpenFlag === 1) 
                 this.originHostSetupInfo.edgeOpenFlagStr = '<span class="label label-success">开启</span>'
             else
                 this.originHostSetupInfo.edgeOpenFlagStr = '<span class="label label-danger">关闭</span>'

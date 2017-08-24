@@ -2,12 +2,19 @@
     <h4>HTTP协议优化<small>/Following 302</small></h4>
     <div class="well opt-ctn"></div>
     <div class="well">
-        <p>产品说先隐藏</p>
-        <div class="row" style="display:none">
+        <div class="row">
             <div class="col-sm-8">
                 <div class="form-horizontal">
                     <div class="form-group">
-                        <label for="modify-host" class="col-sm-3 control-label">Following 302</label>
+                        <div class="col-sm-offset-2 col-sm-8">
+                            <div class="alert alert-dismissable alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">×</button>
+                                <strong>Follow302域名配置为非标配置项，标准配置暂不支持，请勿使用</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="following302" class="col-sm-3 control-label">Following 302</label>
                         <div class="col-sm-4 following302">
                             <div class="togglebutton" style="padding-top:5px;margin-right:0;">
                                 <label>
@@ -16,12 +23,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-8">
-                            <div class="alert alert-dismissable alert-danger">
-                                <button type="button" class="close" data-dismiss="alert">×</button>
-                                <strong>注：重定向优化，拉取跳转后的文件包含状态码为301、302、307</strong>
-                            </div>
+                    <div class="form-group domain-ctn">
+                        <label for="domain" class="col-sm-3 control-label">location中的域名</label>
+                        <div class="col-sm-6">
+                            <textarea class="form-control" rows="6" id="domain" placeholder="支持输入多个域名，多个域名已回车进行分隔"></textarea>
                         </div>
                     </div>
                     <hr>

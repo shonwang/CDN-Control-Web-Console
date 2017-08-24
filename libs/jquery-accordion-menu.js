@@ -25,7 +25,7 @@
         },
         openSubmenu: function() {
             var me = this;
-            $(this.element).children("ul").find("li").bind("click touchstart",
+            $(this.element).children("ul").find("li").bind("click",
             function(e) {
                 e.stopPropagation();
                 e.preventDefault();
@@ -63,7 +63,7 @@
         },
         addClickEffect: function() {
             var ink, d, x, y;
-            $(this.element).find("a").bind("click touchstart",
+            $(this.element).find("a").bind("click",
             function(e) {
                 $(".ink").remove();
                 if ($(this).children(".ink").length === 0) {

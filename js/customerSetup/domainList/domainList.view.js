@@ -190,7 +190,7 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                     if ((this.curType === 1 && this.curProtocol === 0) ||
                         (this.curType === 1 && this.curProtocol === 4) ||
                         (this.curType === 2 && this.curProtocol === 2)) {
-                        window.location.hash = '#/domainList/' + this.args1 + "/basicInformation/" + this.args2
+                        window.location.hash = '#/domainList/' + this.args1 + "/luaBasicInformation/" + this.args2
                     } else if ((this.curType === 2 && this.curProtocol === 1) ||
                         (this.curType === 2 && this.curProtocol === 3)) {
                         window.location.hash = '#/domainList/' + this.args1 + "/liveBasicInformation/" + this.args2

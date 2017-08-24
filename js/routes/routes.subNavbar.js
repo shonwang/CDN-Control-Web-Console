@@ -100,7 +100,18 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                         hash: 'index.html#/domainList/' + query + '/luaBackOriginSetup/' + query2,
                         active: false,
                         children: []
+                    },{
+                        id: 'customerSetup-domainList-following302',
+                        name: 'Follow302域名配置',
+                        hash: 'index.html#/domainList/' + query + '/following302/' + query2,
+                        active: false,
+                        children: []
                     }]
+                },{
+                    id: 'customerSetup-domainList-edgeOptimize',
+                    name: '边缘择优配置',
+                    hash: 'index.html#/domainList/' + query + '/edgeOptimize/' + query2,
+                    children: []
                 }, {
                     id: '',
                     name: '缓存优化',

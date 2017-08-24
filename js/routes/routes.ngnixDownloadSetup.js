@@ -239,7 +239,7 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                 require(['following302.view', 'following302.model'], function(Following302View, Following302Model) {
                     this.navbarView.select('customerSetup');
                     this.curPage = 'customerSetup-domainList-following302';
-                    this.setupDomainManageNavbar(query, query2);
+                    this.setupLuaDomainManageNavbar(query, query2);
                     var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
 
                     if (!this.following302Model)
@@ -286,7 +286,7 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
             },
 
             backOriginSetup: function(query, query2) {
-                require(['notStandardBackOriginSetup.view', 'notStandardBackOriginSetup.model'], function(BackOriginSetupView, BackOriginSetupModel) {
+                require(['backOriginSetup.view', 'backOriginSetup.model'], function(BackOriginSetupView, BackOriginSetupModel) {
                     this.navbarView.select('customerSetup');
                     this.curPage = 'customerSetup-domainList-backOriginSetup';
                     this.setupDomainManageNavbar(query, query2);
@@ -415,7 +415,7 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                     this.navbarView.select('customerSetup');
                     this.curPage = 'customerSetup-domainList-edgeOptimize';
 
-                    this.setupDomainManageNavbar(query, query2);
+                    this.setupLuaDomainManageNavbar(query, query2);
                     var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
 
                     if (!this.edgeOptimizeModel)

@@ -1,9 +1,19 @@
 <table class="table table-striped table-hover">
     <tbody>
         <tr>
+          <td>边缘回源</td>
+          <td><%=data["edgeOpenFlagStr"]%></td>
+          <td></td>
+        </tr>
+        <tr>
           <td>回源host</td>
+          <td><%=data["hostFlayStr"]%></td>
           <td><%=data["hostTypeStr"]%><%=data["customHostHeader"]%></td>
-		  <td><%=data["hostFlayStr"]%></td>
+        </tr>
+        <tr>
+          <td>边缘择优上层择优IP数量</td>
+          <td><%=data["edgeIpCount"]%></td>
+          <td></td>
         </tr>
     </tbody>
 </table>

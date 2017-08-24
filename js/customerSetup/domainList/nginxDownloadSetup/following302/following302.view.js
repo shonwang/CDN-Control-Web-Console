@@ -30,18 +30,28 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onGetDomainInfo: function(data){
-            this.defaultParam = {following: 0}
+            this.defaultParam = {
+                following: 0,
+                locationDomain: ""
+            }
 
             if (data.domainConf && data.domainConf.following !== null && data.domainConf.following !== undefined)
                 this.defaultParam.following = data.domainConf.following //0:关闭 1:开启
+            if (data.domainConf && data.domainConf.locationDomain !== null && data.domainConf.locationDomain !== undefined)
+                this.defaultParam.locationDomain = data.domainConf.locationDomain
 
             this.initSetup();
 
             this.$el.find(".following302 .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
 
-            this.collection.on("set.following.success", $.proxy(this.launchSendPopup, this));
+            this.collection.on("set.following.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.following.error", $.proxy(this.onGetError, this));
+        },
+
+        onSaveSuccess: function(){
+            alert("保存成功！")
         },
 
         launchSendPopup: function(){
@@ -51,6 +61,7 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
                     domainInfo: this.domainInfo,
                     onSendSuccess: function() {
                         this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
                     }.bind(this)
                 });
                 var options = {
@@ -58,6 +69,7 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
                     body : mySaveThenSendView,
                     backdrop : 'static',
                     type     : 2,
+                    width: 1000,
                     onOKCallback:  function(){
                         mySaveThenSendView.sendConfig();
                     }.bind(this),
@@ -70,16 +82,37 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         initSetup: function(){
-            if (this.defaultParam.following === 0)
+            if (this.defaultParam.following === 0) {
                 this.$el.find(".following302 .togglebutton input").get(0).checked = false;
-            else
+                this.$el.find(".domain-ctn").hide();
+            } else {
                 this.$el.find(".following302 .togglebutton input").get(0).checked = true;
+                this.$el.find(".domain-ctn").show();
+            }
+            this.$el.find("#domain").val(this.defaultParam.locationDomain.split(",").join("\n"))
         },
 
         onClickSaveBtn: function(){
+            var domainArray = this.$el.find("#domain").val().split("\n"), domain, result;
+            if (this.defaultParam.following === 1) {
+                for (var i = 0; i < domainArray.length; i++) {
+                    domain = domainArray[i];
+                    if (domain === "") {
+                        alert("第" + (i+1) + "个域名为空！");
+                        return;
+                    }
+                    result = Utility.isDomain(domain)
+                    if (!result) {
+                        alert("第" + (i+1) + "个域名输错了！");
+                        return;
+                    }
+                }
+            }
+
             var postParam =  {
                 "originId": this.domainInfo.id,
-                "following": this.defaultParam.following
+                "following": this.defaultParam.following,
+                "locationDomain": domainArray.join(",")
             }
             this.collection.setFollowing(postParam)
         },
@@ -89,8 +122,10 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){
                 this.defaultParam.following = 1;
+                this.$el.find(".domain-ctn").show();
             } else {
                 this.defaultParam.following = 0;
+                this.$el.find(".domain-ctn").hide();
             }
         },
 

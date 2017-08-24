@@ -3,17 +3,21 @@
     <thead> 
       <tr>
         <th>是否使用高级回源</th>
-        <th>源站类型</th> 
+        <th>主源站类型</th>
+        <th>备源站类型</th> 
         <th>回源地址</th>
-        <th>回源策略</th>  
+        <th>回源策略</th>
+        <th>高级回源策略</th>   
       </tr>
     </thead>
     <tbody>
         <tr>
           <td><%=data["backsourceFlagStr"]%></td>
           <td><%=data["originTypeStr"]%></td>
+          <td><%=data["backupOriginTypeStr"]%></td>
           <td><%=data["originAddress"]%></td>
           <td><%=data["backsourcePolicy"]%></td>
+          <td><%=data["strategyAdvanceListStr"]%></td>
         </tr>
     </tbody>
 </table>

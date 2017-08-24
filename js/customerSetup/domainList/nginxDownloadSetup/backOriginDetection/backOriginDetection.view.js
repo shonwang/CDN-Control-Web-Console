@@ -48,7 +48,8 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
                expectedResponse:"2xx,3xx,4xx",
                detectUrl:"",
                host:"",
-               frequency:60
+               frequency:60,
+               detectPort: 80
 
             }
             if(data.flag !== null && data.flag !== undefined){
@@ -65,6 +66,9 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
             }
             if(data.frequency && data.frequency !== null && data.frequency !== undefined){
                 this.defaultParam.frequency = parseInt(data.frequency);
+            }
+            if(data.detectPort && data.detectPort !== null && data.detectPort !== undefined){
+                this.defaultParam.detectPort = parseInt(data.detectPort);
             }
             
             this.initOriginSetup();
@@ -90,12 +94,14 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
                 backOriginSetupType.bootstrapSwitch('state',false);
                 detectionFile.attr('readonly','readonly');
                 setupHost.attr('readonly','readonly');
+                this.$el.find(".port #port").attr('readonly','readonly');
             }
 
             detectionFile.val(this.defaultParam.detectUrl);
             setupHost.val(this.defaultParam.host);
             responseState.val(this.defaultParam.expectedResponse);
             detectionFrequency.val(this.defaultParam.frequency);
+            this.$el.find(".port #port").val(this.defaultParam.detectPort)
             
             //requestWay.attr('disabled','disabled');
             responseState.attr('readonly','readonly');
@@ -132,9 +138,11 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
             if(state == false){
                 this.$el.find(".way #detectionFile").attr('readonly','readonly');
                 this.$el.find(".host #setupHost").attr('readonly','readonly');
+                this.$el.find(".port #port").attr('readonly','readonly');
             }else{
                 this.$el.find(".way #detectionFile").removeAttr('readonly');
                 this.$el.find(".host #setupHost").removeAttr('readonly');
+                this.$el.find(".port #port").removeAttr('readonly');
             }
             this.defaultParam.flag = (state == true) ? 1:0;
             Utility.onContentChange();
@@ -161,6 +169,11 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
             this.defaultParam.detectUrl = detectionFile.val();
             this.defaultParam.expectedResponse = responseState.val();
             this.defaultParam.frequency = parseInt(detectionFrequency.val());
+            if (this.$el.find(".port").css("display") === "none" ) {
+                delete this.defaultParam.detectPort
+            } else {
+                this.defaultParam.detectPort = this.$el.find(".port #port").val()
+            }
             
             this.collection.addDetectInfo(this.defaultParam);
             Utility.onContentSave();

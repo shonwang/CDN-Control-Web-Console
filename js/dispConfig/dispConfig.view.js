@@ -56,7 +56,8 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                       "regionId" : el.get("region.id"),
                       "ttl"      : el.get("dispGroup.ttl"),
                       "ipNum"    : el1.get("dispConfIpInfo.currNum"),
-                      "nodeName" : el1.get("node.chName")
+                      "nodeName" : el1.get("node.chName"),
+                      "type"     : el1.get("type")
                     };
                     if (el1.get("type") === 1) {
                         type1Array.push(tempObj)
@@ -652,7 +653,6 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
         onSureSending: function(postParam){
             var args = this.getSendData(postParam);
-            console.log(args)
             this.collection.dispDns(args)
             this.showDisablePopup("下发中，请耐心等待...")
         },

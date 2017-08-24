@@ -169,7 +169,8 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                     else if (el.originLine === 4)
                         advanceConfigListStr.push("移动源：" + addressStr)
                 }.bind(this))
-                if (this.config.backsourceAdvance.backupOriginType === 3) {
+                if (this.config.backsourceAdvance.backupOriginType === 3 && 
+                    this.config.backsourceAdvance.backsourceCustom) {
                     this.originSetupInfo.originAddress =  advanceConfigListStr.join("<br>") + "<br>自定义: 备: <br>" + this.config.backsourceAdvance.backsourceCustom
                 } else {
                     this.originSetupInfo.originAddress =  advanceConfigListStr.join("<br>")
@@ -201,6 +202,10 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                 }.bind(this))
 
                 this.originSetupInfo.strategyAdvanceListStr =  strategyAdvanceListStr.join("<br>")
+
+                if (this.config.backsourceAdvance.strategyOpenFlag === 0) {
+                    this.originSetupInfo.strategyAdvanceListStr = '<span class="label label-danger">关闭</span>';
+                }
             }
 
             this.originSetupTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.originSetup.html'])({

@@ -238,7 +238,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
             _.each(this.defaultParam.backsourceAdvance.advanceConfigList, function(el){
                 this.$el.find("#secondary-" + el.originLine).val(el.addressBackup);
             }.bind(this))
-            this.$el.find(".custom").val(this.defaultParam.backsourceAdvance.backsourceCustom);
+            this.$el.find("#custom").val(this.defaultParam.backsourceAdvance.backsourceCustom);
 
             this.$el.find(".backup .edit").on("click", $.proxy(this.onClickAddBackupSource, this));
             this.$el.find(".backup .delete").on("click", $.proxy(this.onClickDeleteBackupSource, this));
@@ -246,7 +246,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
 
             this.displayCustom();
 
-            if (isHaveBackupAddress !== "")  {
+            if (isHaveBackupAddress !== "" || this.defaultParam.backsourceAdvance.backsourceCustom !== "")  {
                 this.$el.find(".backup .add").hide();
             } else {
                 this.$el.find(".backup table").hide();
@@ -584,6 +584,14 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
                     }
                 }.bind(this))
                 if (isError) return;
+            }
+
+            if (this.defaultParam.backsourceAdvance.backupOriginType === 3) {
+                _.each(this.defaultParam.backsourceAdvance.advanceConfigList, function(el){
+                    el.addressBackup = ""
+                }.bind(this))
+            } else {
+                this.defaultParam.backsourceAdvance.backsourceCustom = "";
             }
 
             var postParam = {

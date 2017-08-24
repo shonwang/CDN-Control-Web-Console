@@ -125,36 +125,82 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (originDomain.type === 2 && domainConf.originType === 3 && domainConf.backsourceFlag === 0) 
                 this.originSetupInfo.originTypeStr = 'KSVideo';
             //"advanceOriginType": 高级回源设置的源站类型 1:IP源站 2:域名源站
-            if (domainConf.originType === 1 && domainConf.backsourceFlag === 1) 
+            if (this.config.backsourceAdvance.hostOriginType === 1 && domainConf.backsourceFlag === 1) 
                 this.originSetupInfo.originTypeStr = 'IP源站';
-            if (domainConf.originType === 2 && domainConf.backsourceFlag === 1) 
+            if (this.config.backsourceAdvance.hostOriginType === 2 && domainConf.backsourceFlag === 1) 
                 this.originSetupInfo.originTypeStr = '域名源站';
             //"originAddress": 回源地址(多个IP 或者 单个域名 或者 单个金山云域名), 多个ip以分号分隔
             if (domainConf.backsourceFlag === 0) 
                 this.originSetupInfo.originAddress = domainConf.originAddress;
             this.originSetupInfo.backsourcePolicy = ""
             if (domainConf.backsourceFlag === 1) {
+                var backupOriginTypeStr = "";
+                if (this.config.backsourceAdvance.backupOriginType === 1) 
+                    backupOriginTypeStr = 'IP源站';
+                if (this.config.backsourceAdvance.backupOriginType === 2) 
+                    backupOriginTypeStr = '域名源站';
+                if (this.config.backsourceAdvance.backupOriginType === 3) 
+                    backupOriginTypeStr = '自定义';
+                this.originSetupInfo.backupOriginTypeStr = backupOriginTypeStr;
                 // "advanceConfigList": 高级回源设置
                 // "originLine": 源站线路，1:default默认源； 2:un联通源; 3:ct电信源; 4:cm移动源 
                 // "originAddress": 主，ip最多10个，以逗号分隔，域名一个
                 // "addressBackup": 备，ip最多10个，以逗号分隔，域名一个
-                var advanceConfigList = this.config.advanceConfigList, advanceConfigListStr = [];
+                var advanceConfigList = this.config.backsourceAdvance.advanceConfigList, advanceConfigListStr = [];
                 _.each(advanceConfigList, function(el, index, list) {
-                    var addressStr = el.originAddress + "<br>备: " + el.addressBackup;
+                    var addressStr = "";
+                    if (this.config.backsourceAdvance.backupOriginType !== 3) {
+                        if (el.addressBackup && el.originAddress) 
+                            addressStr = "主: <br>" + el.originAddress.split(",").join("<br>") + "<br>备: <br>" + el.addressBackup.split(",").join("<br>");
+                        else if (el.originAddress)
+                            addressStr = "主: <br>" + el.originAddress.split(",").join("<br>")
+                        else if (el.addressBackup)
+                            addressStr = "备: <br>" + el.addressBackup.split(",").join("<br>")
+                    } else if (el.originAddress){
+                        addressStr = "主: <br>" + el.originAddress.split(",").join("<br>")   
+                    }
+
                     if (el.originLine === 1)
-                        advanceConfigListStr.push("默认源：<br>主: " + addressStr)
+                        advanceConfigListStr.push("默认源：" + addressStr)
                     else if (el.originLine === 2)
-                        advanceConfigListStr.push("联通源：<br>主: " + addressStr)
+                        advanceConfigListStr.push("联通源：" + addressStr)
                     else if (el.originLine === 3)
-                        advanceConfigListStr.push("电信源：<br>主: " + addressStr)
+                        advanceConfigListStr.push("电信源：" + addressStr)
                     else if (el.originLine === 4)
-                        advanceConfigListStr.push("移动源：<br>主: " + addressStr)
+                        advanceConfigListStr.push("移动源：" + addressStr)
                 }.bind(this))
-                this.originSetupInfo.originAddress =  advanceConfigListStr.join("<br>")
+                if (this.config.backsourceAdvance.backupOriginType === 3) {
+                    this.originSetupInfo.originAddress =  advanceConfigListStr.join("<br>") + "<br>自定义: 备: <br>" + this.config.backsourceAdvance.backsourceCustom
+                } else {
+                    this.originSetupInfo.originAddress =  advanceConfigListStr.join("<br>")
+                }
                 //"backsourcePolicy": 1:轮训 2:quality按质量最优的topN来轮训回源 
-                if (domainConf.backsourcePolicy === 1) this.originSetupInfo.backsourcePolicy = "轮询";
-                if (domainConf.backsourcePolicy === 2) 
-                    this.originSetupInfo.backsourcePolicy = "质量最优: 最优IP数量: " + domainConf.backsourceBestcount;
+                if (this.config.backsourceAdvance.backsourcePolicy === 1) this.originSetupInfo.backsourcePolicy = "轮询";
+                if (this.config.backsourceAdvance.backsourcePolicy === 2) 
+                    this.originSetupInfo.backsourcePolicy = "质量最优: 最优IP数量: " + this.config.backsourceAdvance.backsourceBestcount;
+
+                var strategyAdvanceList = this.config.backsourceAdvance.strategyAdvanceList, strategyAdvanceListStr = [];
+                _.each(strategyAdvanceList, function(el, index, list) {
+                    var strategyStr = "";
+                    if (el.openFlag === 1) 
+                        strategyStr = '<span class="label label-success">开启</span><br>'
+                    else
+                        strategyStr = '<span class="label label-danger">关闭</span><br>'
+
+                    if (el.backsourcePolicy === 1)
+                        strategyStr += "轮询<br>"
+                    else if (el.backsourcePolicy === 2)
+                        strategyStr += "质量最优: 最优IP数量: " + el.backsourceBestcount + "<br>"
+
+                    if (el.originLine === 2)
+                        strategyAdvanceListStr.push("联通源：" + strategyStr)
+                    else if (el.originLine === 3)
+                        strategyAdvanceListStr.push("电信源：" + strategyStr)
+                    else if (el.originLine === 4)
+                        strategyAdvanceListStr.push("移动源：" + strategyStr)
+                }.bind(this))
+
+                this.originSetupInfo.strategyAdvanceListStr =  strategyAdvanceListStr.join("<br>")
             }
 
             this.originSetupTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.originSetup.html'])({
@@ -170,15 +216,15 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             var domainConf = this.config.domainConf, originDomain = this.config.originDomain;
             //"hostType": 回源host头类型,1加速域名,2回源域名,3自定义host头
             if (domainConf.hostType === 3) {
-                this.originHostSetupInfo.hostTypeStr = '自定义';
+                this.originHostSetupInfo.hostTypeStr = '自定义: ';
                 this.originHostSetupInfo.customHostHeader = domainConf.customHostHeader;
             }
             if (domainConf.hostType === 1) {
-                this.originHostSetupInfo.hostTypeStr = '加速域名';
+                this.originHostSetupInfo.hostTypeStr = '加速域名: ';
                 this.originHostSetupInfo.customHostHeader = originDomain.domain;
             }
             if (domainConf.hostType === 2) {
-                this.originHostSetupInfo.hostTypeStr = '回源域名';
+                this.originHostSetupInfo.hostTypeStr = '回源域名: ';
                 this.originHostSetupInfo.customHostHeader = domainConf.originAddress;
             }
             
@@ -188,6 +234,13 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             if(domainConf.hostFlag === 1){
                 this.originHostSetupInfo.hostFlayStr = '<span class="label label-success">开启</span>';
             }
+
+            if (this.config.backsourceAdvance.edgeOpenFlag === 1) 
+                this.originHostSetupInfo.edgeOpenFlagStr = '<span class="label label-success">开启</span>'
+            else
+                this.originHostSetupInfo.edgeOpenFlagStr = '<span class="label label-danger">关闭</span>'
+
+            this.originHostSetupInfo.edgeIpCount = domainConf.edgeIpCount; 
 
             this.originHostSetupTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.originHostSetup.html'])({
                 data: this.originHostSetupInfo
@@ -218,6 +271,11 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             //"following": following302 0:关  1：开
             if (domainConf.following === 0) this.followingInfo.followingStr = '<span class="label label-danger">关闭</span>';
             if (domainConf.following  === 1) this.followingInfo.followingStr = '<span class="label label-success">开启</span>';
+            if (!domainConf.locationDomain) 
+                this.followingInfo.locationDomainStr = ""
+            else if (domainConf.following  === 1)
+                this.followingInfo.locationDomainStr = domainConf.locationDomain.split(",").join("<br>")
+
             this.followingTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.following.html'])({
                 data: this.followingInfo
             }));

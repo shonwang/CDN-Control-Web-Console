@@ -463,6 +463,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             this.$el.appendTo(target);
         }
     });
+    
     var DispGroupInfoView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"

@@ -22,9 +22,28 @@ define("applicationChange.view", ['require','exports', 'template', 'modal.view',
             this.$el.find(".query").on("click",$.proxy(this.onClickQueryButton,this));
             this.initDropdownMenu();
             this.args = {};
-            
-            this.$el.find(".save").on("click",$.proxy(this.onClickSaveButton,this));;
+            this.isCanSearch = false;
+            this.$el.find(".save").on("click",$.proxy(this.onClickSaveButton,this));
+            this.$el.find("#input-domain").on("focus",$.proxy(this.onInputFocus,this));
+            this.$el.find("#input-domain").on("blur",$.proxy(this.onInputBlur,this));
+            this.enterKeyBindQuery();
             //this.collection.trigger("get.applicaction.success",{});
+        },
+
+        enterKeyBindQuery:function(){
+            $(document).on('keydown', function(e){
+                if(e.keyCode == 13 && this.isCanSearch){
+                    this.onClickQueryButton();
+                }
+            }.bind(this));
+        },
+
+        onInputFocus:function(){
+            this.isCanSearch = true;
+        },
+
+        onInputBlur:function(){
+            this.isCanSearch = false;
         },
 
         onClickSaveButton:function(){
@@ -156,10 +175,12 @@ define("applicationChange.view", ['require','exports', 'template', 'modal.view',
 
         hide: function(){
             this.$el.hide();
+            $(document).off('keydown');
         },
 
         update: function(){
             this.$el.show();
+            this.enterKeyBindQuery();
         },
 
         render: function(target) {

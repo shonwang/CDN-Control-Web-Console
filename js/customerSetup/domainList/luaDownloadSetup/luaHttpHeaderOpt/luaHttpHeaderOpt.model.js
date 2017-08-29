@@ -3,7 +3,7 @@ define("luaHttpHeaderOpt.model", ['require','exports', 'utility'], function(requ
         initialize: function(){
             var directionType = this.get("directionType"), directionTypeName;
             if (directionType === 1) this.set("directionTypeName","客户端到CDN");
-            if (directionType === 2) this.set("directionTypeName","客户端CDN到源站到CDN");
+            if (directionType === 2) this.set("directionTypeName","CDN到源站");
             if (directionType === 3) this.set("directionTypeName","源到CDN");
             if (directionType === 4) this.set("directionTypeName","CDN到客户端");
 

@@ -138,9 +138,9 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                 var backupOriginTypeStr = "";
                 if (this.config.backsourceAdvance.backupOriginType === 1) 
                     backupOriginTypeStr = 'IP源站';
-                if (this.config.backsourceAdvance.backupOriginType === 2) 
+                else if (this.config.backsourceAdvance.backupOriginType === 2) 
                     backupOriginTypeStr = '域名源站';
-                if (this.config.backsourceAdvance.backupOriginType === 3 &&
+                else if (this.config.backsourceAdvance.backupOriginType === 3 &&
                     this.config.backsourceAdvance.backsourceCustom) 
                     backupOriginTypeStr = '自定义';
                 else

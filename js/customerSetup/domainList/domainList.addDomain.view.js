@@ -10,7 +10,8 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     CdnProtocol: null, //访问协议
                     OriginProtocol: null, //回源方式
                     Origin: null, //源站类型选选择后输入的ipList或urlList
-                    OriginPort: 80
+                    OriginPort: 80,
+                    applicationType:202
                 };
                 this.collection = options.collection;
                 this.$el = $(_.template(template['tpl/customerSetup/domainList/domainList.addDomain.download.html'])({}));
@@ -259,7 +260,8 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     CdnProtocol: null, //访问协议
                     OriginProtocol: null, //回源方式
                     Origin: null, //源站类型选选择后输入的ipList或urlList
-                    OriginPort: "1935" //端口
+                    OriginPort: "1935", //端口
+                    applicationType: 203
                 };
                 this.collection = options.collection;
                 this.$el = $(_.template(template['tpl/customerSetup/domainList/domainList.addDomain.live.html'])({}));
@@ -299,7 +301,8 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
 
             onRadioProtocolChange: function(event) {
                 this.$el.find("#cdn-cdnProtocol-error").hide();
-
+                this.$el.find(".cdn-download-live-platform").hide();
+                this.args.applicationType = 203;
                 var target = event.srcElement || event.target;
                 var val = $(target).val();
                 //this.$el.find("input[name=radio-live-origin]").prop("checked",false);
@@ -330,6 +333,9 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     this.$el.find("#radio-port1935").hide();
                     this.$el.find("#radio-port80").show();
                     this.$el.find("#radio-port80 input").click();
+                    //新添显示平台功能
+                    this.setDropdownMenuForPlatform();
+
                 }
             },
 
@@ -474,6 +480,25 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 return true;
             },
 
+            setDropdownMenuForPlatform:function(){
+                /*
+                 **   applicationType 302 cache平台(默认) 303 live平台  
+                */
+                this.$el.find(".cdn-download-live-platform").show();
+                this.args.applicationType = 202;
+                var ctn = this.$el.find("#dropdown-menu-platform");
+                var dateArray = [ {
+                    name: "cache平台",
+                    value:202
+                }, {
+                    name: "live平台",
+                    value: 203
+                }];
+                this.initDropMenu(ctn, dateArray, function(obj) {
+                    this.args.applicationType = obj.value;
+                }.bind(this));
+            },
+
             setDropdownMenu: function() {
                 this.args.OriginType = 1;
                 this.setShowOriginList();
@@ -599,6 +624,7 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
 
                 this.$el.find(".non-rtmp").hide();
                 this.$el.find(".origin-protocol").hide();
+                this.args.applicationType = 203;
 
                 console.log(this.args)
             },
@@ -854,9 +880,9 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     "region": result.Regions,
                     "originType": originTypes[result.OriginType],
                     "originAddress": _.uniq(result.Origin.split(',')).join(','),
-                    "originPort": result.OriginPort
+                    "originPort": result.OriginPort,
+                    "applicationType":result.applicationType
                 }
-
                 this.collection.submitDomain(postParam);
                 this.$el.find("#add-domain-btnSubmit").attr("disabled", "disabled");
             },

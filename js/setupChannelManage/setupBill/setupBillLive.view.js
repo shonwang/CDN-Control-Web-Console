@@ -64,7 +64,7 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
                 this.liveUpFlowNameChangeTable.appendTo(this.$el.find(".bill-ctn"));
             }.bind(this))
         },
-
+        /*
         initOriginDetection: function(argument) {
             this.originDetectionInfo = this.config.detectOriginConfig || {};
 
@@ -91,6 +91,36 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
                 var message = 'type=1 protocol=0,4 下载<br>type=2 protocol=2 伪直播<br>type=2 protocol= 1,3真直播<br>' + 
                               '当前返回的type为' + type + "，protocol为" + protocol;
                 alert(message)
+            }
+        },
+        */
+
+        initOriginDetection: function(argument) {
+            this.originDetectionInfo = this.config.detectOriginConfig || {};
+
+            this.strArray = ['<span class="label label-danger">关闭</span>', '<span class="label label-success">开启</span>'];
+            var flag = this.config.detectOriginConfig.flag;
+            this.originDetectionInfo.flagStr = this.strArray[flag];
+
+            this.originHostSetupTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.backOriginDetection.html'])({
+                data: this.originDetectionInfo
+            }));
+            this.originHostSetupTable.appendTo(this.$el.find(".bill-ctn"));
+
+            var type = this.config.originDomain.type,
+                //protocol = this.config.domainConf.protocol,
+                applicationType = this.config.originDomain.applicationType;
+
+            if(applicationType == 202){
+                //下载
+                this.initFollowing();
+            }
+            else if(applicationType == 203){
+                //直播
+                this.initLiveRefererAntiLeech();
+            }
+            else{
+                alert("您的平台不是下载也不是直播，applicationType为"+applicationType);
             }
         },
 

@@ -2,7 +2,7 @@ define("routes.setupSend", ['require', 'exports'],
     function(require, exports) {
         var RouterSetupSend = {
             sharedSetup: function(query) {
-                //if (!AUTH_OBJ.OpenApiLogManager) return;
+                if (!AUTH_OBJ.ShareConfig) return;
                 require(['sharedSetup.view', 'sharedSetup.model'], function(SharedSetupView, SharedSetupModel) {
                     this.curPage = 'sharedSetup';
                     this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
@@ -25,6 +25,7 @@ define("routes.setupSend", ['require', 'exports'],
 
             isomorphismManage: function() {
                 //if (!AUTH_OBJ.OpenApiLogManager) return;
+                if (!AUTH_OBJ.IsomerismManage) return;
                 require(['isomorphismManage.view', 'isomorphismManage.model'], function(IsomorphismManageView, IsomorphismManageModel) {
                     this.curPage = 'isomorphismManage';
                     this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
@@ -165,8 +166,7 @@ define("routes.setupSend", ['require', 'exports'],
             },
 
             applicationChange:function(){
-                //this.curPage = 'applicationChange';
-                //this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                if (!AUTH_OBJ.PlatformChange) return;
                 require(['applicationChange.view', 'applicationChange.model'], function(ApplicationChangeView, ApplicationChangeModel) {
                     this.curPage = 'applicationChange';
                     this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));

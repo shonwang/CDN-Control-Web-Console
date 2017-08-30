@@ -163,6 +163,28 @@ define("routes.setupSend", ['require', 'exports'],
                     this.curView = this.setupSendWaitSendView;
                 }.bind(this));
             },
+
+            applicationChange:function(){
+                //this.curPage = 'applicationChange';
+                //this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                require(['applicationChange.view', 'applicationChange.model'], function(ApplicationChangeView, ApplicationChangeModel) {
+                    this.curPage = 'applicationChange';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    if (!this.applicationChangeModel)
+                        this.applicationChangeModel = new ApplicationChangeModel();
+                    if (!this.applicationChangeView) {
+                        var options = {
+                            collection: this.applicationChangeModel
+                        };
+                        this.applicationChangeView = new ApplicationChangeView(options);
+                        this.applicationChangeView.render($('.ksc-content'));
+                    } else {
+                        this.applicationChangeView.update();
+                    }
+                    this.curView = this.applicationChangeView;
+                }.bind(this));
+            },
+
         }
 
         return RouterSetupSend

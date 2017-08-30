@@ -282,6 +282,8 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
             this.$el.find(".base #textarea-origin-type").on("focus", Utility.onContentChange);
             this.$el.find(".advanced textarea").on("focus", Utility.onContentChange)
 
+            this.initPollInputStatus();
+
             if (this.defaultParam.backsourceAdvance.edgeOpenFlag === 1){
                 this.$el.find(".edge-open .togglebutton input").get(0).checked = true;
             } else {
@@ -467,6 +469,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
             var rootOtherNode = this.$el.find(".advanced .origin-type");
             Utility.initDropMenu(rootOtherNode, advancedArray, function(value){
                 this.defaultParam.backsourceAdvance.hostOriginType = parseInt(value)
+                this.initPollInputStatus();
                 Utility.onContentChange();
             }.bind(this));
 
@@ -478,6 +481,18 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
                 this.$el.find(".advanced #dropdown-origin-type .cur-value").html(defaultOtherValue.name);
             else
                 this.$el.find(".advanced #dropdown-origin-type .cur-value").html(advancedArray[0].name);
+        },
+
+        initPollInputStatus: function(){
+            if (this.defaultParam.backsourceAdvance.hostOriginType === 2) {
+                this.$el.find("#strategyRadios2").click();
+                this.$el.find("#strategyRadios1").attr("disabled", "disabled");
+                this.$el.find(".ipnum-input").click();
+                this.$el.find(".poll-input").attr("disabled", "disabled");
+            } else {
+                this.$el.find("#strategyRadios1").removeAttr("disabled");
+                this.$el.find(".poll-input").removeAttr("disabled");
+            }            
         },
 
         onClickStrategyRadio: function(event){

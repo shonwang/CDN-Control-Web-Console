@@ -291,6 +291,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
             }
             this.$el.find(".edge-open .togglebutton input").on("click", $.proxy(this.onClickAdvanceEdgeBtn, this));
             this.$el.find(".edge-save").on("click", $.proxy(this.onClickEdgeSaveBtn, this));
+            Utility.onContentSave();
         },
 
         onClickAdvanceEdgeBtn: function(event){

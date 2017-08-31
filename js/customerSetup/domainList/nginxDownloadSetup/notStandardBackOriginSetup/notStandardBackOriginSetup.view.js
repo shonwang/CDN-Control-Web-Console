@@ -569,7 +569,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
                     var result = this.checkBaseOrigin(value, this.defaultParam.backsourceAdvance.hostOriginType)
                     if (!result) return;
                 }
-                defaultPrimary = this.$el.find(".default #primary-1").val();
+                defaultPrimary = this.$el.find(".default #primary-1").val().trim();
                 if (defaultPrimary === ""){
                     alert("默认源主必填！")
                     return;

@@ -46,7 +46,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         getSendData: function(){
-            var type1Array = [], type2Array = [];
+            var type1Array = [], type2Array = [], type4Array = [];
 
             _.each(this.diffCollection.models, function(el, index, list){
                 _.each(el.get("listFormated"), function(el1, index1, list1){
@@ -56,13 +56,15 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                       "regionId" : el.get("region.id"),
                       "ttl"      : el.get("dispGroup.ttl"),
                       "ipNum"    : el1.get("dispConfIpInfo.currNum"),
-                      "nodeName" : el1.get("node.chName")
+                      "nodeName" : el1.get("node.chName"),
+                      "type"     : el1.get("type")
                     };
                     if (el1.get("type") === 1) {
                         type1Array.push(tempObj)
                     } else if (el1.get("type") === -1) {
                         type2Array.push(tempObj)
                     }
+                    type4Array.push(tempObj)
                 }.bind(this))
             }.bind(this))
 
@@ -79,13 +81,22 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
             type1Array = type1Array.concat(temp3Array)
 
-            return type1Array;
+            return {
+                calculate: type1Array,
+                origin: type4Array
+            };
         },
 
         onClickOK: function(){
+            var comment = this.$el.find("#textarea-comment").val().trim();
+            if (!comment) {
+                this.$el.find("#textarea-comment").focus();
+                return;
+            }
             var result = confirm("你确定要下发DNSPod吗？");
             if (!result) return
-            var postParam = this.getSendData()
+            var postParam = this.getSendData();
+            postParam.comment = comment
             this.options.okCallback&&this.options.okCallback(postParam);
         },
 
@@ -614,7 +625,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         getSendData: function(postParam){
-            var tempArray = [];
+            var tempArray = [], args = {};
 
             _.each(this.collection.models, function(el, index, list){
                 _.each(el.get("listFormated"), function(el1, index1, list1){
@@ -629,11 +640,20 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 }.bind(this))
             }.bind(this))
 
-            if (postParam) tempArray = postParam
-
-            var args = {
-                groupId : this.queryArgs.groupId,
-                list    : tempArray
+            if (postParam) {
+                args = {
+                    groupId : this.queryArgs.groupId,
+                    list: {
+                        calculate: postParam.calculate,
+                        origin  : postParam.origin,
+                        comment: postParam.comment
+                    }
+                }
+            } else {
+                args = {
+                    groupId : this.queryArgs.groupId,
+                    list    : tempArray
+                }
             }
             return args;
         },

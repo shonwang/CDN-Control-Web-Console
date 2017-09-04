@@ -246,7 +246,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
 
             this.displayCustom();
 
-            if (isHaveBackupAddress !== "" || this.defaultParam.backsourceAdvance.backsourceCustom !== "")  {
+            if (isHaveBackupAddress || this.defaultParam.backsourceAdvance.backsourceCustom)  {
                 this.$el.find(".backup .add").hide();
             } else {
                 this.$el.find(".backup table").hide();

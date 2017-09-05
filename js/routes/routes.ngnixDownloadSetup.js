@@ -286,7 +286,7 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
             },
 
             backOriginSetup: function(query, query2) {
-                require(['backOriginSetup.view', 'backOriginSetup.model'], function(BackOriginSetupView, BackOriginSetupModel) {
+                require(['notStandardBackOriginSetup.view', 'notStandardBackOriginSetup.model'], function(BackOriginSetupView, BackOriginSetupModel) {
                     this.navbarView.select('customerSetup');
                     this.curPage = 'customerSetup-domainList-backOriginSetup';
                     this.setupDomainManageNavbar(query, query2);
@@ -407,6 +407,32 @@ define("routes.ngnixDownloadSetup", ['require', 'exports'],
                     }
                     this.domainManageNavbar.select(this.curPage);
                     this.curView = this.cacheRuleView;
+                }.bind(this));
+            },
+
+            edgeOptimize: function(query, query2) {
+                require(['edgeOptimize.view', 'edgeOptimize.model'], function(EdgeOptimizeView, EdgeOptimizeModel) {
+                    this.navbarView.select('customerSetup');
+                    this.curPage = 'customerSetup-domainList-edgeOptimize';
+
+                    this.setupDomainManageNavbar(query, query2);
+                    var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                    if (!this.edgeOptimizeModel)
+                        this.edgeOptimizeModel = new EdgeOptimizeModel();
+                    if (!this.edgeOptimizeView) {
+                        var options = {
+                            collection: this.edgeOptimizeModel,
+                            query: query,
+                            query2: query2
+                        };
+                        this.edgeOptimizeView = new EdgeOptimizeView(options);
+                        this.edgeOptimizeView.render(renderTarget);
+                    } else {
+                        this.edgeOptimizeView.update(query, query2, renderTarget);
+                    }
+                    this.domainManageNavbar.select(this.curPage);
+                    this.curView = this.edgeOptimizeView;
                 }.bind(this));
             },
 

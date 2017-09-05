@@ -103,7 +103,9 @@ define("speedMeasure.view", ['require','exports', 'template', 'modal.view', 'uti
                     }
                 }));
             } else if (this.collection.models.length === 1 && 
-                this.collection.models[0].get("auditStatus") === 13){
+                this.collection.models[0].get("auditStatus") !== -1 &&
+                this.collection.models[0].get("auditStatus") !== 0 &&
+                this.collection.models[0].get("auditStatus") !== 2){
                 this.$el.find('.image-ctn').html("")
                 var url = "http://" + this.imageParam.typeDomain + '/' + 
                           this.imageParam.testDir + 

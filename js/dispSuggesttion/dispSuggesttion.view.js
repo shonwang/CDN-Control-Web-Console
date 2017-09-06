@@ -320,6 +320,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             var checkedNodes = _.filter(this.nodeList, function(object) {
                 return object["isChecked"] === true
             }), checkedNodeIds = [];
+
             if (checkedNodes.length === 0) {
                 alert("至少选择一个再点确定！")
                 return false;
@@ -343,6 +344,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                 var nodeString = nodeChName + "(" + nodeMaxBWLastNight + "/" + nodeCurrBW + "/" + nodeMaxBandwidth + ")L" + crossLevel;
                 aSelectedNode.nodeString = nodeString;
                 aSelectedNode.id = aSelectedNode["node.id"];
+                aSelectedNode.isDisplay = true;
                 selectedNodes.push(aSelectedNode)
             }
             return selectedNodes

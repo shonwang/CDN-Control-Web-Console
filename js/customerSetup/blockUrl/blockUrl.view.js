@@ -720,6 +720,16 @@ define('blockUrl.view', ['utility', 'template'], function(Utility, template) {
           });
           this.myTabHistoryView.render(this.$el.find('#history'));
           break;
+        case '#strategy':
+            if (this.myTabStrategyView) return;
+            require(['blockUrl.strategy.view', 'blockUrl.strategy.model'], function(TabStrategyView, TabStrategyModel){
+              this.myTabStrategyView = new TabStrategyView({
+                collection: new TabStrategyModel(),
+                userInfo: this.userInfo
+              });
+              this.myTabStrategyView.render(this.$el.find('#strategy'));
+            }.bind(this))
+          break;
       }
     },
     hide: function() {

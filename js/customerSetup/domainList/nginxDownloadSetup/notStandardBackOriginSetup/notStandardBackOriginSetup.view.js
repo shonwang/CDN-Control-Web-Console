@@ -76,7 +76,6 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
         }
     });
 
-
     var BackOriginSetupView = Backbone.View.extend({
         events: {},
 

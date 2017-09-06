@@ -1,0 +1,32 @@
+<div class="form-horizontal">
+    <div class="form-group">
+        <label for="input-name" class="col-sm-3 control-label">策略名称设置</label>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">选择域名</label>
+        <div class="col-sm-6 dropdown-domain">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-domain" data-toggle="dropdown">
+                <span class="cur-value">加载中...</span>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu"></ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">策略设置</label>
+        <div class="col-sm-6">
+            <label class="radio-inline">
+                <input type="radio" name="strategy-option" id="strategy-1" value="1">强制去问号
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="strategy-option" id="strategy-2" value="2">强制去@符
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="alert alert-dismissable alert-danger col-sm-offset-1 col-sm-10">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>说明 </strong>回源域名不能与加速域名相同，回源域名只能有一个，多个回源IP以英文半角逗号分隔，最多不超过10个。
+        </div>
+    </div>
+</div>

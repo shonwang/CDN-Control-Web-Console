@@ -10,14 +10,11 @@ define("speedMeasure.model", ['require','exports', 'utility'], function(require,
         initialize: function(){},
 
         queryChannel: function(args) {
-            var url = BASE_URL + "/channelManager/domain/getChannelManager",
+            var url = BASE_URL + "/channelManager/domain/getOriginDomain",
                 successCallback = function(res) {
                     this.reset();
                     if (res) {
-                        _.each(res.data, function(element, index, list) {
-                            this.push(new Model(element));
-                        }.bind(this))
-                        this.total = res.totalCount;
+                        this.push(new Model(res));
                         this.trigger("get.channel.success");
                     } else {
                         this.trigger("get.channel.error");
@@ -26,7 +23,7 @@ define("speedMeasure.model", ['require','exports', 'utility'], function(require,
                 errorCallback = function(response) {
                     this.trigger("get.channel.error", response);
                 }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         }
     });
 

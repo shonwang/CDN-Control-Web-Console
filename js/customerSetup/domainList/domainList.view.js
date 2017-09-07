@@ -169,6 +169,7 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                 this.curType = model.get("type");
                 this.curProtocol = model.get("protocol");
                 this.curSubType = model.get("subType");
+                this.applicationType = model.get("applicationType");
 
                 if (whereAreYouFrom === 2) {
                     this.alertChangeType(model.get("id"));
@@ -178,7 +179,7 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                 this.redirectToManage();
             },
 
-
+            /* 备份原始的
             redirectToManage: function() {
                 // type=1 protocol=0,4 下载
                 // type=2 protocol=2 伪直播
@@ -203,7 +204,39 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                         alert(message);
                     }
                 }
-            },
+            },*/
+
+            redirectToManage: function() {
+                // 202 下载
+                // 203 直播
+                var applicationType = this.applicationType;
+                if (this.curSubType === 3) {//直播上行
+                    window.location.hash = '#/domainList/' + this.args1 + "/liveUpBasicInformation/" + this.args2
+                }
+                else{
+                    if(applicationType == 202){//Cache_APP--下载
+                        window.location.hash = '#/domainList/' + this.args1 + "/basicInformation/" + this.args2
+                    }
+                    else if(applicationType == 203){//LIVE_APP-- 直播
+                        if(this.curType == 1){
+                            //下载
+                            window.location.hash = '#/domainList/' + this.args1 + "/basicInformation/" + this.args2
+                        }
+                        else if(this.curType == 2){
+                            //直播
+                            window.location.hash = '#/domainList/' + this.args1 + "/liveBasicInformation/" + this.args2
+                        }
+                        else{
+                            var message = "type=1 下载<br>" +
+                                "type=2 直播<br>" +
+                                "subType = 3, 直播上行<br>" +
+                                "当前返回的type=" + this.curType + "，subType=" + this.curSubType;
+                            alert(message);
+                        }
+                        
+                    }
+                }
+            },    
 
             onClickItemlogSetup: function(event) {
                 var eventTarget = event.srcElement || event.target,

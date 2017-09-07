@@ -90,7 +90,9 @@
             <% if (permission.ManageSendConfigs) { %>
             <li id="setupSendManage"><a href="javascript:void(0)" path="index.html#/setupSendWaitCustomize"><i class="glyphicon glyphicon-send"></i>下发管理</a></li>
             <% } %>
+			<% if (permission.IsomerismManage) { %>
             <li id="isomorphismManage"><a href="index.html#/isomorphismManage"><i class="glyphicon glyphicon-cutlery"></i>异构管理</a></li>
+			<% } %>
         </ul>
     </li>
     <% } %>
@@ -115,7 +117,9 @@
             <% if (permission.CustomerConfig) { %>
             <li id="customerSetup"><a href="javascript:void(0)" path="index.html#/customerSetup"><i class="glyphicon glyphicon-user"></i>客户配置</a></li>
             <% } %>
+			<% if (permission.ShareConfig) { %>
             <li id="sharedSetup"><a href="index.html#/sharedSetup/all"><i class="glyphicon glyphicon-share"></i>共享配置</a></li>
+			<% } %>
         </ul>
     </li>
     <% } %>
@@ -132,6 +136,13 @@
         <ul class="submenu">
             <li id="refreshManual"><a href="javascript:void(0)" path="index.html#/refreshManual"><i class="glyphicon glyphicon-hand-up"></i>手动刷新</a></li>
             <li id="customMaintenance"><a href="javascript:void(0)" path="index.html#/customMaintenance"><i class="glyphicon glyphicon-th"></i>自助运维</a></li>
+        </ul>
+    </li>
+	<li><a href="javascript:void(0)"><i class="glyphicon glyphicon-asterisk"></i>域名设置</a>
+        <ul class="submenu">
+			<% if (permission.PlatformChange) { %>
+            <li id="applicationChange"><a href="javascript:void(0)" path="index.html#/applicationChange"><i class="glyphicon glyphicon-cog"></i>平台切换</a></li>
+			<% } %>
         </ul>
     </li>
 </ul>

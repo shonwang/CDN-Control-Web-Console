@@ -1,5 +1,7 @@
 //PATH START=== 
  var REQ_PATH = {
+  "applicationChange.model": "applicationChange/applicationChange.model",
+  "applicationChange.view": "applicationChange/applicationChange.view",
   "businessManage.model": "businessManage/businessManage.model",
   "businessManage.view": "businessManage/businessManage.view",
   "channelManage.model": "channelManage/channelManage.model",
@@ -242,7 +244,6 @@
 };
 //PATH END===
 window.DEBUG = 1.1;
-
 if (window.DEBUG === 1)
     window.BASE_URL = "http://develop.gateway.center.cdn.ksyun.com";
 else if (window.DEBUG === 1.1)
@@ -276,7 +277,7 @@ requirejs(['routes', 'utility'], function(routes, Utility) {
     Backbone.history.start();
 });
 requirejs.onError = function () {
-    console.error(arguments)
+    console.log(arguments)
     var errorPopup = $('#big-main-error').get(0);
     if (errorPopup) return;
     var message = "";
@@ -300,7 +301,6 @@ requirejs.onError = function () {
         };
     $errorPopup.modal(options);
 };
-
 if (window.DEBUG === 1.1) {
     window.SOCKET = io.connect("ws://127.0.0.1:3000");
     window.SOCKET.on('debug', function(message){
@@ -309,4 +309,4 @@ if (window.DEBUG === 1.1) {
     window.SOCKET.on('connect_error', function(){
         window.SOCKET.close();
     });
-}
+}

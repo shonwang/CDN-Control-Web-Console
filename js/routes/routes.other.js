@@ -197,6 +197,7 @@ define("routes.other", ['require', 'exports', 'subNavbar.view'],
                     this.curView = this.channelManageView;
                 }.bind(this));
             },
+
         }
 
         return RouterOther

@@ -11,10 +11,27 @@ define("blockUrl.strategy.view", ['require', 'exports', 'template', 'modal.view'
                 this.userId = options.userId;
 
                 this.$el = $(_.template(template['tpl/customerSetup/blockUrl/tabStrategy.addEdit.html'])());
+
+                this.defaultParam = {
+                    domain: null,
+                    type: null
+                }
+
+                if (this.isEdit) {
+                    this.defaultParam.domain = this.model.get("domain");
+                    this.defaultParam.type = this.model.get("policy");
+                    this.$el.find("#strategy-" + this.defaultParam.type).get(0).checked = true;
+                }
+
                 this.collection.off('query.domain.success');
                 this.collection.off('query.domain.error');
                 this.collection.on('query.domain.success', $.proxy(this.getDomainSuccess, this));
                 this.collection.on('query.domain.error', $.proxy(this.onGetError, this));
+                this.collection.off('save.policy.success');
+                this.collection.off('save.policy.error');
+                this.collection.on('save.policy.success', $.proxy(this.onSaveSuccess, this));
+                this.collection.on('save.policy.error', $.proxy(this.onGetError, this));
+                this.$el.find("input[name='strategy-option']").on("click", $.proxy(this.onClickStrategySetup, this));
 
                 this.queryArgs = {
                     pageSize: 999999, //每页N条数据
@@ -25,34 +42,8 @@ define("blockUrl.strategy.view", ['require', 'exports', 'template', 'modal.view'
                 this.collection.getDomainList(this.queryArgs);
             },
 
-            initSetup: function(){
-                _.each(this.model, function(el){
-                    this.$el.find(".advanced #secondary-" + el.originLine).val(el.addressBackup);
-                }.bind(this))
-                this.$el.find(".advanced #custom").val(this.backsourceCustom);
-
-                var advancedArray = [
-                    {name: "域名回源", value: 2},
-                    {name: "IP回源", value: 1},
-                    {name: "自定义", value: 3},
-                ];
-
-                var rootOtherNode = this.$el.find(".advanced .origin-type");
-                Utility.initDropMenu(rootOtherNode, advancedArray, function(value){
-                    this.backupOriginType = parseInt(value);
-                    this.displayCustom();
-                }.bind(this));
-
-                var defaultOtherValue = _.find(advancedArray, function(object){
-                    return object.value === this.backupOriginType;
-                }.bind(this));
-
-                this.displayCustom();
-
-                if (defaultOtherValue)
-                    this.$el.find(".advanced #dropdown-origin-type .cur-value").html(defaultOtherValue.name);
-                else
-                    this.$el.find(".advanced #dropdown-origin-type .cur-value").html(advancedArray[0].name);
+            onSaveSuccess: function(){
+                alert("操作成功!")
             },
 
             getDomainSuccess: function(list) {
@@ -75,24 +66,47 @@ define("blockUrl.strategy.view", ['require', 'exports', 'template', 'modal.view'
                     data: nameList,
                     callback: function(data) {
                         this.$el.find('#dropdown-domain .cur-value').html(data.name);
+                        this.defaultParam.domain = data.name;
                     }.bind(this)
                 });
 
                 if (this.isEdit) {
-                    this.$el.find(".dropdown-domain .cur-value").html(nameList[0].name);
+                    this.$el.find("#dropdown-domain .cur-value").html(this.defaultParam.domain);
                 } else {
                     this.$el.find("#dropdown-domain .cur-value").html(nameList[0].name);
+                    this.defaultParam.domain = nameList[0].name;
                 }
             },
 
+            onClickStrategySetup: function(event){
+                var eventTarget = event.srcElement || event.target;
+                if (eventTarget.tagName !== "INPUT") return;
+                this.defaultParam.type = parseInt($(eventTarget).val())
+            },
+
             onSure: function(){
-                _.each(this.model, function(el){
-                    el.addressBackup = this.$el.find(".advanced #secondary-" + el.originLine).val();
-                }.bind(this))
-                this.backsourceCustom = this.$el.find(".advanced #custom").val();
-                return {
-                    "backupOriginType": this.backupOriginType,
-                    "backsourceCustom": this.backsourceCustom
+                if (!this.defaultParam.type) {
+                    alert("请设置策略！");
+                    return false;
+                }
+
+                var args = {
+                    domain: this.defaultParam.domain,
+                    type: this.defaultParam.type,
+                    userId: this.userId  
+                }
+
+                if (!this.isEdit)
+                    this.collection.savePolicyConfig(args)
+                else
+                    this.collection.updatePolicyConfig(args)
+            },
+
+            onGetError: function(error) {
+                if (error && error.msg) {
+                    alert(error.msg);
+                } else {
+                    alert('网络阻塞，请刷新重试！')
                 }
             },
 
@@ -114,6 +128,8 @@ define("blockUrl.strategy.view", ['require', 'exports', 'template', 'modal.view'
 
                 this.collection.on('get.domain.success', $.proxy(this.getStrategySuccess, this));
                 this.collection.on('get.domain.error', $.proxy(this.onGetError, this));
+                this.collection.on('delete.policy.success', $.proxy(this.onSaveSuccess, this));
+                this.collection.on('delete.policy.error', $.proxy(this.onGetError, this));
 
                 this.queryArgs = {
                     pageSize: 10, //每页N条数据
@@ -148,6 +164,47 @@ define("blockUrl.strategy.view", ['require', 'exports', 'template', 'modal.view'
                 this.addStrategy = new Modal(options);
             },
 
+            onClickEditStrategy: function(event){
+                var eventTarget = event.srcElement || event.target,
+                    id = $(eventTarget).attr("id");
+                var model = this.collection.get(id);
+
+                if (this.addStrategy) $("#" + this.addStrategy.modalId).remove();
+
+                var myAddEditStrategyView = new AddEditStrategyView({
+                    collection: this.collection,
+                    userId: this.userInfo.uid,
+                    model: model,
+                    isEdit: true,
+                });
+
+                var options = {
+                    title:"修改策略",
+                    body : myAddEditStrategyView,
+                    backdrop : 'static',
+                    type     : 2,
+                    onOKCallback: function(){
+                        var result = myAddEditStrategyView.onSure()
+                        this.addStrategy.$el.modal('hide');
+                    }.bind(this),
+                    onHiddenCallback: function(){}.bind(this)
+                }
+                this.addStrategy = new Modal(options);
+            },
+
+            onClickDeleteStrategy: function(event){
+                Utility.confirm("你确定要删除吗?", function(){
+                    var eventTarget = event.srcElement || event.target,
+                        id = $(eventTarget).attr("id");
+                    var model = this.collection.get(id);
+                    var args = {
+                        domain: model.get("domain"),
+                        userId: this.userInfo.id
+                    }
+                    this.collection.delPolicyConfig(args)
+                }.bind(this))
+            },
+
             onKeydownEnter: function(event) {
                 if (event.keyCode == 13) this.onClickQueryButton();
             },
@@ -157,7 +214,7 @@ define("blockUrl.strategy.view", ['require', 'exports', 'template', 'modal.view'
                 this.showLoading();
                 this.isInitPaginator = false;
                 this.queryArgs.domain = $.trim(this.$el.find('#input-url').val());
-                this.collection.getDomainInfoList(this.queryArgs);
+                this.collection.searchPolicyConfig(this.queryArgs);
             },
 
             getStrategySuccess: function() {
@@ -174,6 +231,8 @@ define("blockUrl.strategy.view", ['require', 'exports', 'template', 'modal.view'
                     this.setNoData("未查到符合条件的数据，请重新查询");
                 } else {
                     this.$el.find('.ks-table tbody').html(this.table);
+                    this.$el.find('.ks-table tbody').find(".edit").on("click", $.proxy(this.onClickEditStrategy, this));
+                    this.$el.find('.ks-table tbody').find(".delete").on("click", $.proxy(this.onClickDeleteStrategy, this));
                 }
             },
 
@@ -224,9 +283,13 @@ define("blockUrl.strategy.view", ['require', 'exports', 'template', 'modal.view'
                 this.isInitPaginator = true;
             },
 
+            onSaveSuccess: function(){
+                alert("操作成功!")
+            },
+
             onGetError: function(error) {
-                if (error && error.message) {
-                    alert(error.message);
+                if (error && error.msg) {
+                    alert(error.msg);
                 } else {
                     alert('网络阻塞，请刷新重试！')
                 }

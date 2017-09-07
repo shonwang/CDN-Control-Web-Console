@@ -256,6 +256,9 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             }));
             this.originHostSetupTable.appendTo(this.$el.find(".bill-ctn"));
 
+            if (originDomain.applicationType === 203)
+                this.originHostSetupTable.find(".edge").hide();
+
             this.initOriginDetection()
         },
 

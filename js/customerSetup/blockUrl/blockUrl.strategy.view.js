@@ -100,6 +100,8 @@ define("blockUrl.strategy.view", ['require', 'exports', 'template', 'modal.view'
                     this.collection.savePolicyConfig(args)
                 else
                     this.collection.updatePolicyConfig(args)
+
+                return true;
             },
 
             onGetError: function(error) {
@@ -157,7 +159,8 @@ define("blockUrl.strategy.view", ['require', 'exports', 'template', 'modal.view'
                     type     : 2,
                     onOKCallback: function(){
                         var result = myAddEditStrategyView.onSure()
-                        this.addStrategy.$el.modal('hide');
+                        if (result)
+                            this.addStrategy.$el.modal('hide');
                     }.bind(this),
                     onHiddenCallback: function(){}.bind(this)
                 }
@@ -185,7 +188,8 @@ define("blockUrl.strategy.view", ['require', 'exports', 'template', 'modal.view'
                     type     : 2,
                     onOKCallback: function(){
                         var result = myAddEditStrategyView.onSure()
-                        this.addStrategy.$el.modal('hide');
+                        if (result)
+                            this.addStrategy.$el.modal('hide');
                     }.bind(this),
                     onHiddenCallback: function(){}.bind(this)
                 }

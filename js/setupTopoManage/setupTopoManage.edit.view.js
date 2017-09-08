@@ -225,7 +225,8 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
                     var mySelectNodeView = new SelectNodeView({
                         collection: this.collection,
-                        selectedNodes: this.defaultParam.allNodes
+                        selectedNodes: this.defaultParam.allNodes,
+                        appType: this.defaultParam.type
                     });
                     var options = {
                         title: "选择节点",
@@ -294,7 +295,8 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     var mySelectNodeView = new SelectNodeView({
                         collection: this.collection,
                         selectedNodes: this.defaultParam.upperNodes,
-                        nodesList: this.defaultParam.allNodes
+                        nodesList: this.defaultParam.allNodes,
+                        appType: this.defaultParam.type
                     });
                     var options = {
                         title: "选择节点",
@@ -461,6 +463,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                             upperNodes: this.defaultParam.upperNodes,
                             rule: this.defaultParam.rule,
                             curEditRule: this.curEditRule,
+                            appType: this.defaultParam.type,
                             isEdit: true,
                             onSaveCallback: function() {
                                 myAddEditLayerStrategyView.$el.remove();
@@ -503,6 +506,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                             localNodes: this.defaultParam.allNodes,
                             upperNodes: this.defaultParam.upperNodes,
                             rule: this.defaultParam.rule,
+                            appType: this.defaultParam.type,
                             onSaveCallback: function() {
                                 myAddEditLayerStrategyView.$el.remove();
                                 this.$el.find(".add-topo").show();

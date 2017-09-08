@@ -11,6 +11,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.curEditRule = options.curEditRule
             this.isEdit = options.isEdit;
             this.notFilter = options.notFilter;
+            this.appType = options.appType
 
             this.topologyId = options.topologyId;
 
@@ -40,7 +41,8 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     "count": 99999,
                     "chname": null, //节点名称
                     "operator": null, //运营商id
-                    "status": null //节点状态
+                    "status": "1,3", //节点状态
+                    "appType": this.appType
                 });
             }.bind(this));
 
@@ -236,7 +238,8 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 var mySelectNodeView = new SelectNodeView({
                     collection: this.collection,
                     selectedNodes: this.defaultParam.local,
-                    nodesList: this.localNodeListForSelect
+                    nodesList: this.localNodeListForSelect,
+                    appType: this.appType
                 });
                 var options = {
                     title: "选择节点",
@@ -333,7 +336,8 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 var mySelectNodeView = new SelectNodeView({
                     collection: this.collection,
                     selectedNodes: this.defaultParam.upper,
-                    nodesList: this.topoAllNodes
+                    nodesList: this.topoAllNodes,
+                    appType: this.appType
                 });
                 var options = {
                     title: "选择节点",

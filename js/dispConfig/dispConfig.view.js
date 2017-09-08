@@ -64,7 +64,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                     } else if (el1.get("type") === -1) {
                         type2Array.push(tempObj)
                     }
-                    type4Array.push(tempObj)
+                    type4Array.push(_.extend({}, tempObj))
                 }.bind(this))
             }.bind(this))
 

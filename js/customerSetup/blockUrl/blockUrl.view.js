@@ -194,7 +194,7 @@ define('blockUrl.view', ['utility', 'template'], function(Utility, template) {
         }
         var args = {
           userId: this.userInfo.uid,
-          expireTimes: parseInt(duration) * 24 * 60 * 60,
+          expireTime: parseInt(duration) * 24 * 60 * 60,
           urls: urls
         }
         this.collection.blockUrls(args);

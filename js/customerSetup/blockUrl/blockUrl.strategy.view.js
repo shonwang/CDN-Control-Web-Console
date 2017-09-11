@@ -43,7 +43,7 @@ define("blockUrl.strategy.view", ['require', 'exports', 'template', 'modal.view'
             },
 
             onSaveSuccess: function(){
-                alert("操作成功!")
+                this.options.callback&&this.options.callback();
             },
 
             getDomainSuccess: function(list) {
@@ -105,8 +105,8 @@ define("blockUrl.strategy.view", ['require', 'exports', 'template', 'modal.view'
             },
 
             onGetError: function(error) {
-                if (error && error.msg) {
-                    alert(error.msg);
+                if (error && error.message) {
+                    alert(error.message);
                 } else {
                     alert('网络阻塞，请刷新重试！')
                 }
@@ -149,7 +149,8 @@ define("blockUrl.strategy.view", ['require', 'exports', 'template', 'modal.view'
 
                 var myAddEditStrategyView = new AddEditStrategyView({
                     collection: this.collection,
-                    userId: this.userInfo.uid
+                    userId: this.userInfo.uid,
+                    callback: $.proxy(this.onSaveSuccess, this)
                 });
 
                 var options = {
@@ -179,6 +180,7 @@ define("blockUrl.strategy.view", ['require', 'exports', 'template', 'modal.view'
                     userId: this.userInfo.uid,
                     model: model,
                     isEdit: true,
+                    callback: $.proxy(this.onSaveSuccess, this)
                 });
 
                 var options = {
@@ -203,7 +205,7 @@ define("blockUrl.strategy.view", ['require', 'exports', 'template', 'modal.view'
                     var model = this.collection.get(id);
                     var args = {
                         domain: model.get("domain"),
-                        userId: this.userInfo.id
+                        userId: this.userInfo.uid
                     }
                     this.collection.delPolicyConfig(args)
                 }.bind(this))
@@ -288,12 +290,13 @@ define("blockUrl.strategy.view", ['require', 'exports', 'template', 'modal.view'
             },
 
             onSaveSuccess: function(){
-                alert("操作成功!")
+                alert("操作成功!");
+                this.onClickQueryButton();
             },
 
             onGetError: function(error) {
-                if (error && error.msg) {
-                    alert(error.msg);
+                if (error && error.message) {
+                    alert(error.message);
                 } else {
                     alert('网络阻塞，请刷新重试！')
                 }

@@ -17,16 +17,17 @@ define("blockUrl.strategy.model", ['require','exports', 'utility'], function(req
         initialize: function(){},
 
         searchPolicyConfig: function(args){
-            var url = BASE_URL + "/channelManager/domain/getDomainInfoList";
+            var url = BASE_URL + "/blockurl/searchPolicyConfig";
 
             Utility.postAjax(url, args, function(res){
                 this.reset();
-                if (res){
-                    _.each(res.data, function(element, index, list){
-                        element.originDomain.policy = (index%2 === 0 ? 1 : 2)
-                        this.push(new Model(element.originDomain));
+                if (res) res = JSON.parse(res);
+                if (res.taskBlockResult){
+                    if (!res.taskBlockResult.resultList) res.taskBlockResult.resultList = [];
+                    _.each(res.taskBlockResult.resultList, function(element, index, list){
+                        this.push(new Model(element));
                     }.bind(this))
-                    this.total = res.totalCount;
+                    this.total = res.taskBlockResult.totalNumber;
                     this.trigger("get.domain.success");
                 } else {
                     this.trigger("get.domain.error"); 
@@ -52,7 +53,8 @@ define("blockUrl.strategy.model", ['require','exports', 'utility'], function(req
         savePolicyConfig: function(args){
             var url = BASE_URL + "/blockurl/savePolicyConfig";
             Utility.postAjax(url, args, function(res){
-                if (res&&res.code === 200){
+                if (res) res = JSON.parse(res);
+                if (res.status === 200){
                     this.trigger("save.policy.success", res);
                 } else {
                     this.trigger("save.policy.error", res); 
@@ -65,7 +67,8 @@ define("blockUrl.strategy.model", ['require','exports', 'utility'], function(req
         updatePolicyConfig: function(args){
             var url = BASE_URL + "/blockurl/updatePolicyConfig";
             Utility.postAjax(url, args, function(res){
-                if (res&&res.code === 200){
+                if (res) res = JSON.parse(res);
+                if (res.status === 200){
                     this.trigger("save.policy.success", res);
                 } else {
                     this.trigger("save.policy.error", res); 
@@ -78,7 +81,8 @@ define("blockUrl.strategy.model", ['require','exports', 'utility'], function(req
         delPolicyConfig: function(args){
             var url = BASE_URL + "/blockurl/delPolicyConfig";
             Utility.postAjax(url, args, function(res){
-                if (res&&res.code === 200){
+                if (res) res = JSON.parse(res);
+                if (res.status === 200){
                     this.trigger("delete.policy.success", res);
                 } else {
                     this.trigger("delete.policy.error", res); 

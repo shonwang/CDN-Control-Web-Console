@@ -536,6 +536,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.isEdit     = options.isEdit;
             this.model      = options.model;
             this.deviceTypeArray = options.deviceTypeArray;
+            this.isLoading = true;
 
             this.$el = $(_.template(template['tpl/deviceManage/deviceManage.add&edit.html'])({}));
 
@@ -695,7 +696,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.nodeId = nameList[0].value;
 
                 this.collection.ipTypeList();
-            } 
+            }
+            this.isLoading = false; 
         },
 
         onGetNodeSuccess: function(res){
@@ -805,6 +807,11 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         getArgs: function(){
+            if (this.isLoading) {
+                alert("请等待节点加载完毕再点确定！")
+                return;
+            }
+
             var options = {}, deviceName = this.$el.find("#input-name").val(), re = /^[a-zA-Z\d\.\-]+$/;
             if (!re.test(deviceName)){
                 alert("设备名称只能输入如下字符：英文 数字 - .");

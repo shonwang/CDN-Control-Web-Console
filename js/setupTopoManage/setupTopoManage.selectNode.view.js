@@ -27,7 +27,7 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                         "count": 99999,
                         "chname": null, //节点名称
                         "operator": null, //运营商id
-                        "status": "1,3", //节点状态
+                        "status": "1,4", //节点状态
                         "appType": this.appType
                     });
                 }.bind(this))

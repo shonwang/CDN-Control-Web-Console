@@ -8,6 +8,7 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                 this.collection = options.collection;
                 this.selectedNodes = options.selectedNodes;
                 this.nodesList = options.nodesList;
+                this.appType = options.appType;
 
                 this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.selectNode.html'])({}));
                 this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
@@ -26,7 +27,8 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                         "count": 99999,
                         "chname": null, //节点名称
                         "operator": null, //运营商id
-                        "status": null //节点状态
+                        "status": "1,3", //节点状态
+                        "appType": this.appType
                     });
                 }.bind(this))
 

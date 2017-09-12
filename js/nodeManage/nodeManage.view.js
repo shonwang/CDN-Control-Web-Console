@@ -422,47 +422,6 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             this.$el.appendTo(target);
         }
     });
-
-    var NodeTips = Backbone.View.extend({
-        initialize:function(options){
-            this.type = options.type;//type=1:暂停操作 type=2 查看详情,不可编辑
-            this.model = options.model;
-            this.args = {
-                opRemark:''
-            };
-            var obj={
-                type:options.type,
-                name:this.model.attributes.name || "---",
-                chName:this.model.attributes.chName || "---",
-                operator:this.model.attributes.operator || "---",
-                updateTime:this.model.attributes.updateTimeFormated || "---",
-                opRemark:this.model.attributes.opRemark || "---",
-                placeHolder:options.placeHolder || "请输入暂停原因"
-            };
-            this.$el = $(_.template(template['tpl/nodeManage/nodeManage.tips.html'])({data:obj}));
-            this.$el.find("#stop-reason").on("focus",$.proxy(this.onFocus,this));
-        },
-        
-        onFocus:function(){
-            this.$el.find("#stop-reason").css("-webkit-animation-name","");
-            this.$el.find("#stop-reason").removeClass("error-tip-input");
-        },
-
-        getArgs:function(){
-            var opRemark = this.$el.find("#stop-reason").val().trim();
-            if(!opRemark){
-                this.$el.find("#stop-reason").addClass("error-tip-input");
-                this.$el.find("#stop-reason").css("-webkit-animation-name","error-tip-input");
-                return false;
-            }
-            this.args.opRemark = opRemark;
-            return this.args;
-        },
-
-        render:function(target){
-            this.$el.appendTo(target);
-        }
-    });
     
     var DispGroupInfoView = Backbone.View.extend({
         events: {
@@ -1573,55 +1532,31 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             }
             var model = this.collection.get(id);
 
-
             if (this.deleteNodeTipsPopup) $("#" + this.deleteNodeTipsPopup.modalId).remove();
-            var deleteNodeTips = new NodeTips({
-                type:1,
-                model:model,
-                placeHolder:"请输入删除的原因,并请您谨慎操作，一旦删除，不可恢复"
-            });
-            var options = {
-                title: "你确定要删除节点<span class='text-danger'>" + model.attributes.name + "</span>吗？删除后将不可恢复, 请谨慎操作！",
-                body: deleteNodeTips,
-                backdrop: 'static',
-                type: 2,
-                onOKCallback: function() {
-                    var options = deleteNodeTips.getArgs();
-                    if (!options) return;
-                    this.collection.deleteNode({
-                        id: parseInt(id),
-                        opRemark:options.opRemark
-                    })
-                    this.deleteNodeTipsPopup.$el.modal("hide");                 
-                }.bind(this)
-            }
-            this.deleteNodeTipsPopup = new Modal(options);
-            /*
-            return false;
-            if (this.confirmDelete) $("#" + this.confirmDelete.modalId).remove();
-            var opt = {
-                message: "你确定要删除节点<span class='text-danger'>" + model.attributes.name + "</span>吗？删除后将不可恢复, 请谨慎操作！",
-                type: "alert-info"
-            }
-            var options = {
-                title: "提示",
-                body: _.template(template['tpl/alert.message.html'])({
-                    data: opt
-                }),
-                backdrop: 'static',
-                type: 2,
-                onOKCallback: function() {
-                    this.confirmDelete.$el.modal("hide");
-                    var result = confirm("你真的确定要删除节点" + model.attributes.name + "吗？");
-                    if (!result) return;
-                    this.collection.deleteNode({
-                        id: parseInt(id)
-                    })
-                }.bind(this),
-                onHiddenCallback: function() {}.bind(this)
-            }
-            this.confirmDelete = new Modal(options);
-            */
+
+            require(["nodeManage.operateDetail.view"], function(NodeTips) {
+                var deleteNodeTips = new NodeTips({
+                    type: 1,
+                    model: model,
+                    placeHolder: "请输入删除的原因,并请您谨慎操作，一旦删除，不可恢复"
+                });
+                var options = {
+                    title: "你确定要删除节点<span class='text-danger'>" + model.attributes.name + "</span>吗？删除后将不可恢复, 请谨慎操作！",
+                    body: deleteNodeTips,
+                    backdrop: 'static',
+                    type: 2,
+                    onOKCallback: function() {
+                        var options = deleteNodeTips.getArgs();
+                        if (!options) return;
+                        this.collection.deleteNode({
+                            id: parseInt(id),
+                            opRemark: options.opRemark
+                        })
+                        this.deleteNodeTipsPopup.$el.modal("hide");
+                    }.bind(this)
+                }
+                this.deleteNodeTipsPopup = new Modal(options);
+            }.bind(this));
         },
 
         onClickItemPlay: function(event) {
@@ -1675,7 +1610,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
         },
 
     
-        onClickDetail:function(event){
+        onClickDetail: function(event) {
             var eventTarget = event.srcElement || event.target,
                 id;
             if (eventTarget.tagName == "SPAN") {
@@ -1686,21 +1621,23 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             }
             var model = this.collection.get(id);
             if (this.detailTipsPopup) $("#" + this.detailTipsPopup.modalId).remove();
-            var detailTipsView = new NodeTips({
-                type:2,
-                model:model
-            });
-            var options = {
-                title: "操作说明",
-                body: detailTipsView,
-                backdrop: 'static',
-                type: 1,
-                onHiddenCallback: function() {
-                    
-                }.bind(this)
-            }
-            this.nodeTipsPopup = new Modal(options);
-            
+
+            require(["nodeManage.operateDetail.view"], function(NodeTips) {
+                var detailTipsView = new NodeTips({
+                    type: 2,
+                    model: model
+                });
+                var options = {
+                    title: "操作说明",
+                    body: detailTipsView,
+                    backdrop: 'static',
+                    type: 1,
+                    onHiddenCallback: function() {
+
+                    }.bind(this)
+                }
+                this.nodeTipsPopup = new Modal(options);
+            }.bind(this));
         },
 
         onClickItemStop: function(event) {
@@ -1715,52 +1652,38 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
 
             var model = this.collection.get(id);
             if (this.nodeTipsPopup) $("#" + this.nodeTipsPopup.modalId).remove();
-
-            var stopNodeView = new NodeTips({
-                type:1,
-                model:model
-            });
-            var options = {
-                title: "暂停节点操作",
-                body: stopNodeView,
-                backdrop: 'static',
-                type: 2,
-                onOKCallback: function() {
-                    var options = stopNodeView.getArgs();
-                    if (!options) return;
-                    this.currentPauseNodeId = id;
-                    this.collection.operateNode({
-                        opRemark:options.opRemark,
-                        nodeId: id,
-                        operator: -1,
-                        t: new Date().valueOf()
-                    })
-                    this.nodeTipsPopup.$el.modal("hide");
-                    this.showDisablePopup("服务端正在努力暂停中...")
-                }.bind(this),
-                onHiddenCallback: function() {
-                    
-                }.bind(this)
-            }
-            this.nodeTipsPopup = new Modal(options);
-            /*
-
             
+            require(["nodeManage.operateDetail.view"], function(NodeTips) {
+                var stopNodeView = new NodeTips({
+                    type: 1,
+                    model: model
+                });
+                var options = {
+                    title: "暂停节点操作",
+                    body: stopNodeView,
+                    backdrop: 'static',
+                    type: 2,
+                    onOKCallback: function() {
+                        var options = stopNodeView.getArgs();
+                        if (!options) return;
+                        this.currentPauseNodeId = id;
+                        this.collection.operateNode({
+                            opRemark: options.opRemark,
+                            nodeId: id,
+                            operator: -1,
+                            t: new Date().valueOf()
+                        })
+                        this.nodeTipsPopup.$el.modal("hide");
+                        this.showDisablePopup("服务端正在努力暂停中...")
+                    }.bind(this),
+                    onHiddenCallback: function() {
 
-            var result = confirm("你确定要暂停节点吗？")
-            if (!result) return
-
-            this.currentPauseNodeId = id;
-            this.collection.operateNode({
-                nodeId: id,
-                operator: -1,
-                t: new Date().valueOf()
-            })
-            this.showDisablePopup("服务端正在努力暂停中...")*/
-                // require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel){
-                //     this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, id)
-                // }.bind(this))        
+                    }.bind(this)
+                }
+                this.nodeTipsPopup = new Modal(options);
+            }.bind(this));
         },
+
 
         onOperateNodeSuccess: function(res) {
             this.disablePopup && this.disablePopup.$el.modal('hide');

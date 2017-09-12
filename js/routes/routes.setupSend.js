@@ -185,6 +185,24 @@ define("routes.setupSend", ['require', 'exports'],
                 }.bind(this));
             },
 
+            blockedDomain:function(){
+                require(['blockedDomain.view', 'blockedDomain.model'], function(BlockedDomainView, BlockedDomainModel) {
+                    this.curPage = 'blockedDomain';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    if (!this.blockedDomainModel)
+                        this.blockedDomainModel = new BlockedDomainModel();
+                    if (!this.blockedDomainView) {
+                        var options = {
+                            collection: this.blockedDomainModel
+                        };
+                        this.blockedDomainView = new BlockedDomainView(options);
+                        this.blockedDomainView.render($('.ksc-content'));
+                    } else {
+                        this.blockedDomainView.update();
+                    }
+                    this.curView = this.blockedDomainView;
+                }.bind(this));
+            }
         }
 
         return RouterSetupSend

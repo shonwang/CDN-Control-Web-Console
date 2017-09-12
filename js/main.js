@@ -15,6 +15,8 @@
   "customMaintenance.model": "customMaintenance/customMaintenance.model",
   "customMaintenance.view": "customMaintenance/customMaintenance.view",
   "blockUrl.model": "customerSetup/blockUrl/blockUrl.model",
+  "blockUrl.strategy.model": "customerSetup/blockUrl/blockUrl.strategy.model",
+  "blockUrl.strategy.view": "customerSetup/blockUrl/blockUrl.strategy.view",
   "blockUrl.view": "customerSetup/blockUrl/blockUrl.view",
   "customerSetup.model": "customerSetup/customerSetup.model",
   "customerSetup.view": "customerSetup/customerSetup.view",

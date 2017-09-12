@@ -1,0 +1,35 @@
+<div class="form-horizontal">
+    <div class="form-group">
+        <label for="input-name" class="col-sm-3 control-label">策略名称设置</label>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">选择域名</label>
+        <div class="col-sm-6 dropdown-domain">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-domain" data-toggle="dropdown">
+                <span class="cur-value">加载中...</span>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu"></ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">策略设置</label>
+        <div class="col-sm-6">
+            <label class="radio-inline">
+                <input type="radio" name="strategy-option" id="strategy-1" value="1">强制去问号
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="strategy-option" id="strategy-2" value="2">强制去@符
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="alert alert-dismissable alert-danger col-sm-offset-1 col-sm-10">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>说明 </strong><br>
+            1.屏蔽方式选择完全匹配；作用：屏蔽操作执行精确匹配，输入什么内容，屏蔽什么内容。<br>
+            2.屏蔽方式选择强制去问号；作用：屏蔽？前面的资源内容，不可输入带问号资源地址。<br>
+            3.屏蔽方式选择强制去@符；作用：屏蔽@符前面的资源内容，不可输入带@符资源地址。
+        </div>
+    </div>
+</div>

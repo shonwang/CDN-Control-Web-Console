@@ -174,6 +174,11 @@ define('blockUrl.view', ['utility', 'template'], function(Utility, template) {
       return true;
     },
     onClickSubmitBlockButton: function() {
+      var duration = this.$el.find("#input-duration").val().trim();
+      if (!duration || parseInt(duration) > 30 || parseInt(duration) < 1) {
+          alert("请填写屏蔽正确的周期!")
+          return;
+      }
       var quotaEffecitveCount = this.$el.find('.quotaEffecitveCount').text();
       if (quotaEffecitveCount == 0) {
         alert('已达到最大提交数量，暂时无法进行提交');
@@ -189,7 +194,7 @@ define('blockUrl.view', ['utility', 'template'], function(Utility, template) {
         }
         var args = {
           userId: this.userInfo.uid,
-          // userId:1,
+          expireTime: parseInt(duration) * 24 * 60 * 60,
           urls: urls
         }
         this.collection.blockUrls(args);
@@ -719,6 +724,16 @@ define('blockUrl.view', ['utility', 'template'], function(Utility, template) {
             userInfo: this.userInfo
           });
           this.myTabHistoryView.render(this.$el.find('#history'));
+          break;
+        case '#strategy':
+            if (this.myTabStrategyView) return;
+            require(['blockUrl.strategy.view', 'blockUrl.strategy.model'], function(TabStrategyView, TabStrategyModel){
+              this.myTabStrategyView = new TabStrategyView({
+                collection: new TabStrategyModel(),
+                userInfo: this.userInfo
+              });
+              this.myTabStrategyView.render(this.$el.find('#strategy'));
+            }.bind(this))
           break;
       }
     },

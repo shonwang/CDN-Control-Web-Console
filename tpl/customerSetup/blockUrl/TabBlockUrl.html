@@ -1,4 +1,11 @@
 <div class="container-fluid">
+    <div class="form-inline" style="margin-bottom:30px;">
+        <div class="form-group">
+            <label for="input-duration">屏蔽周期：</label>
+            <input type="number" class="form-control" id="input-duration" min="1" max="30" value="15">
+            <p class="form-control-static">天<span class="text-danger">（默认为15天，最大支持设置为30天,最小值为1天）</span></p>
+        </div>
+    </div>
 	<p>注意：请输入完整URL路径，URL需要区分大小写，客户可屏蔽<span class="quotaCount"></span>条，当前剩余<span class="quotaEffecitveCount"></span>条，一次提交不得超过<span class="quotaCount"></span>条</p>
 	<p>输入要屏蔽文件的URL:</p>
 	<textarea class="form-control" rows="10" style="width:60%;" id="urls"></textarea>
@@ -9,19 +16,8 @@
 	<div class="alert alert-dismissable alert-danger" style="margin-top:10px;">
 		<button type="button" class="close" data-dismiss="alert">×</button>
 		重要提示：<br>
-		1）只适用于支持“忽略问号缓存”的域名；<br>
-		2） “不忽略问号缓存”的域名，如果使用该功能将会忽略问号进行屏蔽，非常危险，请慎用；<br>
-		3）如果有“共享缓存”，那么需要输入可能访问的全部url；<br>
-		4） 如果有https访问，需要同时输入http的url和https的url；<br>
-		<br>
-		示例：<br>
-		end-user访问的URL：<br>
-		URL1：http://a.test.com/path1/path1/1beautiful.jpg?a=1&b=1<br>
-		URL2：http://a.test.com/path2/path2/2beautiful.jpg<br>
-		<br>
-		正确输入屏蔽方式：<br>
-		http://a.test.com/path1/path1/1beautiful.jpg<br>
-		http://a.test.com/path2/path2/2beautiful.jpg
+		1）如URL包含https和http的请求，只需输入一条即可屏蔽该资源的http或https请求。<br>
+		2）高级策略需要先进行配置，再进行屏蔽URL的提交方可生效。<br>
 	</div>
 
 </div>

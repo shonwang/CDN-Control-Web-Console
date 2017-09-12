@@ -1,5 +1,5 @@
 define("nodeManage.prompt.view", ['require', 'exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
-    
+
     var PromptView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
@@ -13,39 +13,54 @@ define("nodeManage.prompt.view", ['require', 'exports', 'template', 'modal.view'
             this.$el.html(_.template(template['tpl/loading.html'])({}));
             this.isLoading = true;
 
-            // this.collection.off("get.assocateDispGroups.success");
-            // this.collection.off("get.assocateDispGroups.error");
-            // this.collection.on("get.assocateDispGroups.success", $.proxy(this.onGetDispConfigSuccess, this));
-            // this.collection.on("get.assocateDispGroups.error", $.proxy(this.onGetError, this));
+            // this.collection.off("query.nodeStatus.success");
+            // this.collection.off("query.nodeStatus.error");
+            // this.collection.on("query.nodeStatus.success", $.proxy(this.onNodeStatusSuccess, this));
+            // this.collection.on("query.nodeStatus.error", $.proxy(this.onGetError, this));
         },
 
-        initOpenConfirm: function(){
+        onNodeStatusSuccess: function(res) {
+            var data = {
+                "name": 'asdasd', //节点名称
+                "flag": false, //节点下设备是否都在运行中
+                "detail": [{
+                    "type": "relay", //设备类型
+                    "totalNum": 10, //总数
+                    "pauseNum": 6 //暂停数量
+                }]
+            }
+
+            if (data.flag) {
+                this.initOpenConfirm();
+            } else {
+                this.initDeviceConfirm(data);
+            }
+            this.isLoading = false;
+        },
+
+        initOpenConfirm: function() {
             this.$el.html('');
             var tpl = '<div>确定要开启"' + this.model.get("chName") + '"吗？</div>';
             $(tpl).appendTo(this.$el)
         },
 
-        initAssocateConfirm: function(){
-            //this.$el.html('');
-            this.rootNode.find(".ok").remove();
-            var tpl = '<div>"' + this.model.get("chName") + '"下未关联设备，请处理后再开启节点！</div>';
-            $(tpl).appendTo(this.$el)
-        },
-
-        initDeviceConfirm: function(){
-            //this.$el.html('');
-            var tpl = '<div>' + 
-                        '<div>以下节点有暂停的设备，确定要开启吗？</div>' + 
-                        '<div class="table-ctn"></div>' + 
-                      '</div>';
-            $(tpl).appendTo(this.$el);
-            this.$el.find(".table-ctn").html(_.template(template['tpl/nodeManage/nodeManage.openNode.html'])({}));
-        },
-
-        initDeleteConfirm: function(){
+        initDeviceConfirm: function(nodeData) {
             this.$el.html('');
-            var tpl = "<div>你确定要删除节点<span class='text-danger'>" + this.model.get("chName")+ "</span>吗？删除后将不可恢复, 请谨慎操作！</div>";
-            $(tpl).appendTo(this.$el)
+            var tpl =   '<div>' +
+                            '<div>以下节点有暂停的设备，确定要开启吗？</div>' +
+                            '<div class="table-ctn"></div>' +
+                        '</div>';
+            $(tpl).appendTo(this.$el);
+            this.$el.find(".table-ctn").html(_.template(template['tpl/nodeManage/nodeManage.openNode.html'])({
+                data: nodeData
+            }));
+        },
+
+        onSure: function(){
+            if (this.isLoading) 
+                return false;
+            else
+                return true
         },
 
         onGetError: function(error) {
@@ -58,10 +73,7 @@ define("nodeManage.prompt.view", ['require', 'exports', 'template', 'modal.view'
         render: function(target, rootNode) {
             this.$el.appendTo(target);
             this.rootNode = rootNode;
-            this.initOpenConfirm();
-            this.initAssocateConfirm();
-            this.initDeviceConfirm();
-            this.initDeleteConfirm();
+            this.onNodeStatusSuccess();
         }
     });
 

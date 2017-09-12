@@ -1,46 +1,4 @@
 define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
-
-    var NodeTips = Backbone.View.extend({
-        initialize:function(options){
-            this.type = options.type;//type=1:暂停操作 type=2 查看详情,不可编辑
-            this.model = options.model;
-            this.args = {
-                opRemark:''
-            };
-            var obj={
-                type:options.type,
-                name:this.model.attributes.name || "---",
-                chName:this.model.attributes.chName || "---",
-                operator:this.model.attributes.operator || "---",
-                updateTime:this.model.attributes.updateTimeFormated || "---",
-                opRemark:this.model.attributes.opRemark || "---",
-                placeHolder:options.placeHolder || "请输入暂停原因"
-            };
-            this.$el = $(_.template(template['tpl/nodeManage/nodeManage.tips.html'])({data:obj}));
-            this.$el.find("#stop-reason").on("focus",$.proxy(this.onFocus,this));
-        },
-        
-        onFocus:function(){
-            this.$el.find("#stop-reason").css("-webkit-animation-name","");
-            this.$el.find("#stop-reason").removeClass("error-tip-input");
-        },
-
-        getArgs:function(){
-            var opRemark = this.$el.find("#stop-reason").val().trim();
-            if(!opRemark){
-                this.$el.find("#stop-reason").addClass("error-tip-input");
-                this.$el.find("#stop-reason").css("-webkit-animation-name","error-tip-input");
-                return false;
-            }
-            this.args.opRemark = opRemark;
-            return this.args;
-        },
-
-        render:function(target){
-            this.$el.appendTo(target);
-        }
-    });
-
     var NodeManageView = Backbone.View.extend({
         events: {},
 
@@ -148,22 +106,22 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
 
         onClickCreate: function() {
             this.hideList();
-            if(this.addNodeView){
+            if (this.addNodeView) {
                 this.addNodeView.destroy();
                 this.addNodeView = null;
             }
             require(["nodeManage.edit.view"], function(AddOrEditNodeView) {
                 this.addNodeView = new AddOrEditNodeView({
                     collection: this.collection,
-                    operatorList:this.operatorList,
-                    showList:function(){
+                    operatorList: this.operatorList,
+                    showList: function() {
                         this.showList();
                     }.bind(this),
-                    onHiddenCallback:function(){
+                    onHiddenCallback: function() {
                         this.showList();
                         if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
                     }.bind(this),
-                    onOKCallback:function(){
+                    onOKCallback: function() {
                         var options = this.addNodeView.getArgs();
                         if (!options) return;
                         this.collection.addNode(options);
@@ -175,16 +133,16 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 if (!AUTH_OBJ.ApplyCreateNode) addNodeView.$el.find(".btn-primary").remove();
             }.bind(this))
         },
-         
-        showList:function(){
+
+        showList: function() {
             this.$el.find(".node-manage-list-pannel").show();
         },
-        
-        hideList:function(){
+
+        hideList: function() {
             this.$el.find(".node-manage-list-pannel").hide();
         },
 
-        nameList : {
+        nameList: {
             1: "95峰值",
             2: "包端口",
             3: "峰值",
@@ -196,10 +154,10 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             this.$el.find(".opt-ctn .multi-delete").attr("disabled", "disabled");
             this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
             this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
-            _.each(this.collection.models,function(item){
+            _.each(this.collection.models, function(item) {
                 var _rsNodeCorpDtos = item.attributes.rsNodeCorpDtos && item.attributes.rsNodeCorpDtos.length > 0 && item.attributes.rsNodeCorpDtos || null;
-                if(_rsNodeCorpDtos){
-                    _.each(_rsNodeCorpDtos,function(i){
+                if (_rsNodeCorpDtos) {
+                    _.each(_rsNodeCorpDtos, function(i) {
                         i.chargingTypeName = nameList[i.chargingType];
                     })
                 }
@@ -224,6 +182,8 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
 
                 this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
                 this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+
+                this.table.find("[data-toggle='popover']").popover();
             } else {
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
             }
@@ -294,7 +254,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             var model = this.collection.get(id);
 
             this.hideList();
-            if(this.editNodeView){
+            if (this.editNodeView) {
                 this.editNodeView.destroy();
                 this.editNodeView = null;
             }
@@ -302,18 +262,18 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             require(["nodeManage.edit.view"], function(AddOrEditNodeView) {
                 this.editNodeView = new AddOrEditNodeView({
                     collection: this.collection,
-                    model:model,
-                    isEdit:true,
-                    operatorList:this.operatorList,
-                    showList:function(){
+                    model: model,
+                    isEdit: true,
+                    operatorList: this.operatorList,
+                    showList: function() {
                         //show当前列表
                         this.showList();
                     }.bind(this),
-                    onHiddenCallback:function(){
+                    onHiddenCallback: function() {
                         this.showList();
                         if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
                     }.bind(this),
-                    onOKCallback:function(){
+                    onOKCallback: function() {
                         var options = this.editNodeView.getArgs();
                         if (!options) return;
                         var args = _.extend(model.attributes, options)
@@ -338,52 +298,31 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             }
             var model = this.collection.get(id);
 
-            if (this.promptPopup) $("#" + this.promptPopup.modalId).remove();
+            if (this.deleteNodeTipsPopup) $("#" + this.deleteNodeTipsPopup.modalId).remove();
 
-            require(["nodeManage.prompt.view"], function(PromptView) {
-                var myPromptView = new PromptView({
-                    collection: this.collection,
-                    model: model
+            require(["nodeManage.operateDetail.view"], function(NodeTips) {
+                var deleteNodeTips = new NodeTips({
+                    type: 1,
+                    model: model,
+                    placeHolder: "请输入删除的原因,并请您谨慎操作，一旦删除，不可恢复"
                 });
                 var options = {
-                    title: "删除节点",
-                    body: myPromptView,
+                    title: "你确定要删除节点<span class='text-danger'>" + model.attributes.name + "</span>吗？删除后将不可恢复, 请谨慎操作！",
+                    body: deleteNodeTips,
                     backdrop: 'static',
                     type: 2,
                     onOKCallback: function() {
-                        var options = myPromptView.getArgs();
+                        var options = deleteNodeTips.getArgs();
                         if (!options) return;
-                        this.promptPopup.$el.modal("hide");
-                    }.bind(this),
-                    onHiddenCallback: function() {
-                        this.enterKeyBindQuery();
+                        this.collection.deleteNode({
+                            id: parseInt(id),
+                            opRemark: options.opRemark
+                        })
+                        this.deleteNodeTipsPopup.$el.modal("hide");
                     }.bind(this)
                 }
-                this.promptPopup = new Modal(options);
+                this.deleteNodeTipsPopup = new Modal(options);
             }.bind(this));
-
-            if (this.deleteNodeTipsPopup) $("#" + this.deleteNodeTipsPopup.modalId).remove();
-            var deleteNodeTips = new NodeTips({
-                type:1,
-                model:model,
-                placeHolder:"请输入删除的原因,并请您谨慎操作，一旦删除，不可恢复"
-            });
-            var options = {
-                title: "你确定要删除节点<span class='text-danger'>" + model.attributes.name + "</span>吗？删除后将不可恢复, 请谨慎操作！",
-                body: deleteNodeTips,
-                backdrop: 'static',
-                type: 2,
-                onOKCallback: function() {
-                    var options = deleteNodeTips.getArgs();
-                    if (!options) return;
-                    this.collection.deleteNode({
-                        id: parseInt(id),
-                        opRemark:options.opRemark
-                    })
-                    this.deleteNodeTipsPopup.$el.modal("hide");                 
-                }.bind(this)
-            }
-            this.deleteNodeTipsPopup = new Modal(options);
         },
 
         onClickItemPlay: function(event) {
@@ -411,8 +350,14 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     backdrop: 'static',
                     type: 2,
                     onOKCallback: function() {
-                        var options = myPromptView.getArgs();
+                        var options = myPromptView.onSure();
                         if (!options) return;
+                        this.collection.operateNode({
+                            opRemark:'',
+                            nodeId: id,
+                            operator: 1,
+                            t: new Date().valueOf()
+                        })
                         this.promptPopup.$el.modal("hide");
                     }.bind(this),
                     onHiddenCallback: function() {
@@ -421,13 +366,6 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 }
                 this.promptPopup = new Modal(options);
             }.bind(this));
-
-            // this.collection.operateNode({
-            //     opRemark:'',
-            //     nodeId: id,
-            //     operator: 1,
-            //     t: new Date().valueOf()
-            // })
         },
 
         onClickMultiPlay: function(event) {
@@ -462,7 +400,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             })
         },
 
-        onClickDetail:function(event){
+        onClickDetail: function(event) {
             var eventTarget = event.srcElement || event.target,
                 id;
             if (eventTarget.tagName == "SPAN") {
@@ -473,20 +411,23 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             }
             var model = this.collection.get(id);
             if (this.detailTipsPopup) $("#" + this.detailTipsPopup.modalId).remove();
-            var detailTipsView = new NodeTips({
-                type:2,
-                model:model
-            });
-            var options = {
-                title: "操作说明",
-                body: detailTipsView,
-                backdrop: 'static',
-                type: 1,
-                onHiddenCallback: function() {
-                    
-                }.bind(this)
-            }
-            this.nodeTipsPopup = new Modal(options);
+
+            require(["nodeManage.operateDetail.view"], function(NodeTips) {
+                var detailTipsView = new NodeTips({
+                    type: 2,
+                    model: model
+                });
+                var options = {
+                    title: "操作说明",
+                    body: detailTipsView,
+                    backdrop: 'static',
+                    type: 1,
+                    onHiddenCallback: function() {
+
+                    }.bind(this)
+                }
+                this.nodeTipsPopup = new Modal(options);
+            }.bind(this));
         },
 
         onClickItemStop: function(event) {
@@ -501,34 +442,36 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
 
             var model = this.collection.get(id);
             if (this.nodeTipsPopup) $("#" + this.nodeTipsPopup.modalId).remove();
+            
+            require(["nodeManage.operateDetail.view"], function(NodeTips) {
+                var stopNodeView = new NodeTips({
+                    type: 1,
+                    model: model
+                });
+                var options = {
+                    title: "暂停节点操作",
+                    body: stopNodeView,
+                    backdrop: 'static',
+                    type: 2,
+                    onOKCallback: function() {
+                        var options = stopNodeView.getArgs();
+                        if (!options) return;
+                        this.currentPauseNodeId = id;
+                        this.collection.operateNode({
+                            opRemark: options.opRemark,
+                            nodeId: id,
+                            operator: -1,
+                            t: new Date().valueOf()
+                        })
+                        this.nodeTipsPopup.$el.modal("hide");
+                        this.showDisablePopup("服务端正在努力暂停中...")
+                    }.bind(this),
+                    onHiddenCallback: function() {
 
-            var stopNodeView = new NodeTips({
-                type:1,
-                model:model
-            });
-            var options = {
-                title: "暂停节点操作",
-                body: stopNodeView,
-                backdrop: 'static',
-                type: 2,
-                onOKCallback: function() {
-                    var options = stopNodeView.getArgs();
-                    if (!options) return;
-                    this.currentPauseNodeId = id;
-                    this.collection.operateNode({
-                        opRemark:options.opRemark,
-                        nodeId: id,
-                        operator: -1,
-                        t: new Date().valueOf()
-                    })
-                    this.nodeTipsPopup.$el.modal("hide");
-                    this.showDisablePopup("服务端正在努力暂停中...")
-                }.bind(this),
-                onHiddenCallback: function() {
-                    
-                }.bind(this)
-            }
-            this.nodeTipsPopup = new Modal(options);      
+                    }.bind(this)
+                }
+                this.nodeTipsPopup = new Modal(options);
+            }.bind(this));
         },
 
         onOperateNodeSuccess: function(res) {
@@ -632,7 +575,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 }, {
                     name: "暂停",
                     value: 4
-                },{
+                }, {
                     name: "关闭",
                     value: 3
                 }],

@@ -9,7 +9,9 @@
     <th>类型</th>
     <th>状态</th>
     <th>创建时间</th>
-    <th>操作</th> 
+    <th>状态更新时间</th>
+    <th>操作</th>
+    <th>操作说明</th> 
   </tr>
 </thead>
 <tbody>
@@ -30,6 +32,7 @@
           <td><%=data[i].attributes["nodeName"]%></td>
           <td><%=data[i].attributes["typeName"]%></td>
           <td><%=data[i].attributes["statusName"]%></td>
+          <td><%=data[i].attributes["createTimeFormated"]%></td>
           <td><%=data[i].attributes["createTimeFormated"]%></td>
           <td>
               <% if (permission.EditHost) { %>
@@ -77,6 +80,13 @@
                 <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="pause" data-status="8" data-name="<%=data[i].attributes['name']%>" title="暂停">
                   <span class="glyphicon glyphicon-pause"></span>
                 </a>
+              <% } %>
+          </td>
+          <td>
+              <% if ((data[i].attributes.status == 2 || data[i].attributes.status == 6) && permission.EnableorPauseHost) { %>
+              <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="operateDetail">
+                操作详情
+              </a>
               <% } %>
           </td>
         </tr>

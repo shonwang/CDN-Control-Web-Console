@@ -6,10 +6,18 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
                 chargingType = this.get("chargingType"),
                 updateTime = this.get("updateTime"),
                 startChargingTime = this.get("startChargingTime");
-            if (status === 3) this.set("statusName", '<span class="label label-danger">已关闭</span>');
-            if (status === 4) this.set("statusName", '<span class="label label-danger">暂停</span>');
+
+            var tips = '<a href="javascript:void(0)" class="label label-danger"' + 
+                                'data-container="body"' + 
+                                'data-trigger="hover"' +
+                                'data-toggle="popover"' + 
+                                'data-placement="top"' + 
+                                'data-content="' + this.get("opRemark") + '">'
+
+            if (status === 3) this.set("statusName", tips + '关闭</a>');
+            if (status === 4) this.set("statusName", tips + '暂停</a>');
             if (status === 2) this.set("statusName",'<span class="label label-warning">挂起</span>');
-            if (status === 1) this.set("statusName", '<span class="label label-success">运行中</span>');
+            if (status === 1) this.set("statusName", '<span class="label label-success" >运行中</span>');
 
             if (chargingType === 1) this.set("chargingTypeName", '95峰值');
             if (chargingType === 0) this.set("chargingTypeName", '免费');

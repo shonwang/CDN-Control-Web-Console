@@ -1,5 +1,5 @@
 <table class="table table-striped">
-    <caption class="text-danger">石家庄电信12节点</caption>  
+    <caption class="text-danger"><%=data["name"]%></caption>  
     <thead> 
       <tr>
         <th>设备类型</th>
@@ -8,15 +8,12 @@
       </tr>
     </thead>
 		<tbody>
+      <% for(var i = 0; i < data["detail"].length; i++) { %>
       <tr>
-        <td>cache</td>
-        <td>10</td>
-        <td>3</td>
+        <td><%=data.detail[i]["type"]%></td>
+        <td><%=data.detail[i]["totalNum"]%></td>
+        <td><%=data.detail[i]["pauseNum"]%></td>
       </tr>
-      <tr>
-        <td>relay</td>
-        <td>5</td>
-        <td>1</td>
-      </tr> 		
+      <% } %> 		
 		</tbody>
 </table>

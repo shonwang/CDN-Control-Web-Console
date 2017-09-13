@@ -210,7 +210,7 @@ define("deviceManage.edit.view", ['require','exports', 'template', 'modal.view',
                 this.collection.ipTypeList();
                 this.setIspList();
             } 
-            
+            this.isLoading = false;
         },
         
         operatorList:{

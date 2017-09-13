@@ -468,7 +468,7 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     alert("既然开启了增加connect阶段参数, 就请输入正确的增加connect阶段参数！");
                     return false;
                 }
-                if (postParam.reconnectArgsFlag === 1 && (postParam.reconnectArgs === "" || !Utility.isKeyAndValue(postParam.reconnectArgs))) {
+                if (postParam.reconnectArgsFlag === 1 && postParam.reconnectArgs === "") {
                     alert("既然开启了转推重连参数, 就请输入正确的转推重连参数！");
                     return false;
                 }

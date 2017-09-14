@@ -13,23 +13,13 @@ define("nodeManage.prompt.view", ['require', 'exports', 'template', 'modal.view'
             this.$el.html(_.template(template['tpl/loading.html'])({}));
             this.isLoading = true;
 
-            // this.collection.off("query.nodeStatus.success");
-            // this.collection.off("query.nodeStatus.error");
-            // this.collection.on("query.nodeStatus.success", $.proxy(this.onNodeStatusSuccess, this));
-            // this.collection.on("query.nodeStatus.error", $.proxy(this.onGetError, this));
+            this.collection.off("get.nodeState.success");
+            this.collection.off("get.nodeState.error");
+            this.collection.on("get.nodeState.success", $.proxy(this.onNodeStatusSuccess, this));
+            this.collection.on("get.nodeState.error", $.proxy(this.onGetError, this));
         },
 
-        onNodeStatusSuccess: function(res) {
-            var data = {
-                "name": 'asdasd', //节点名称
-                "flag": false, //节点下设备是否都在运行中
-                "detail": [{
-                    "type": "relay", //设备类型
-                    "totalNum": 10, //总数
-                    "pauseNum": 6 //暂停数量
-                }]
-            }
-
+        onNodeStatusSuccess: function(data) {
             if (data.flag) {
                 this.initOpenConfirm();
             } else {
@@ -73,7 +63,7 @@ define("nodeManage.prompt.view", ['require', 'exports', 'template', 'modal.view'
         render: function(target, rootNode) {
             this.$el.appendTo(target);
             this.rootNode = rootNode;
-            this.onNodeStatusSuccess();
+            this.collection.getNodeState({"id": this.model.get("id")})
         }
     });
 

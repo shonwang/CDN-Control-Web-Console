@@ -33,7 +33,7 @@
           <td><%=data[i].attributes["typeName"]%></td>
           <td><%=data[i].attributes["statusName"]%></td>
           <td><%=data[i].attributes["createTimeFormated"]%></td>
-          <td><%=data[i].attributes["createTimeFormated"]%></td>
+          <td><%=data[i].attributes["updateTimeFormated"]%></td>
           <td>
               <% if (permission.EditHost) { %>
               <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="edit" title="编辑">
@@ -76,7 +76,7 @@
                   <span class="glyphicon glyphicon-play-circle css-gray"></span>
                 </a>
               <% } %>
-              <% if (data[i].attributes.status == 1 && permission.EnableorPauseHost) { %>
+              <% if ((data[i].attributes.status == 1 || data[i].attributes.status == 8) && permission.EnableorPauseHost) { %>
                 <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="pause" data-status="8" data-name="<%=data[i].attributes['name']%>" title="暂停">
                   <span class="glyphicon glyphicon-pause"></span>
                 </a>

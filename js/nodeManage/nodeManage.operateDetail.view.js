@@ -14,7 +14,7 @@ define("nodeManage.operateDetail.view", ['require', 'exports', 'template', 'moda
                 chName: this.model.attributes.chName || this.model.get("name"),
                 operator: this.model.attributes.operator || "---",
                 updateTime: this.model.attributes.updateTimeFormated || "---",
-                opRemark: this.model.attributes.opRemark || "---",
+                opRemark: this.model.attributes.opRemark || this.model.attributes.reason || "---",
                 placeHolder: options.placeHolder || "请输入暂停原因"
             };
 

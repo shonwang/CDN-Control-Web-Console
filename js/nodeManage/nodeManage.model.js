@@ -368,7 +368,21 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
                 this.trigger("get.cityByProvince.error", response);
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
-        }
+        },
+
+        getNodeState: function(args){
+            var url = BASE_URL + "/rs/node/nodeState",
+            successCallback = function(res){
+                if (res)
+                    this.trigger("get.nodeState.success", res);
+                else
+                    this.trigger("get.nodeState.error", res); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.nodeState.error", response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
     });
 
     return NodeManageCollection;

@@ -58,6 +58,9 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.onGetError(err);
             }.bind(this));
 
+            this.collection.on("set.status.success", $.proxy(this.onSetStatusSuccess, this));
+            this.collection.on("set.status.error", $.proxy(this.onGetError, this));
+
             if (AUTH_OBJ.CreateHost)
                 this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
             else 
@@ -269,11 +272,10 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 cancelButtonText : "关闭",
                 onOKCallback:  function(){
                     var options = {
-                        "deviceId" : this.clickDeviceId,
-                        "status" : this.clickStatus
-                    }
-                    if (!options) return;
-                    this.collection.getDeviceStatusSubmit(options);
+                        "ids":[this.clickDeviceId],
+                        "status": this.clickStatus,
+                     }
+                    this.collection.modifyStatus(options);
                     this.commonPopup.$el.modal('hide');
                 }.bind(this),
                 onCancelCallback: function(){
@@ -343,6 +345,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     onOKCallback: function() {
                         var options = stopNodeView.getArgs();
                         if (!options) return;
+                        this.reason = options || {};
                         this.collection.getDeviceStatusPause(deviceId);
                     }.bind(this),
                     onHiddenCallback: function() {
@@ -389,19 +392,39 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.table_modal.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:data}));
 
                 this.commonPopup.$el.find('.modal-body').html(this.table_modal);
-            }else{
+            } else {
                 // body = '确定要暂停服务吗？';
                 // this.commonPopup.$el.find('.close').show();
                 // this.commonPopup.$el.find('.commonPopup').show();
                 // this.commonPopup.$el.find('h4').html('暂停设备');
                 // this.commonPopup.$el.find('.modal-body strong').html(body);
                 var options = {
-                    "deviceId" : this.clickDeviceId,
-                    "status" : this.clickStatus
-                }
-                this.collection.getDeviceStatusSubmit(options);
+                    "ids":[this.clickDeviceId],
+                    "status": this.clickStatus,
+                    "reason": this.reason.opRemark  
+                 }
+                this.collection.modifyStatus(options);
                 this.nodeTipsPopup.$el.modal("hide");
             }
+        },
+
+        onSetStatusSuccess: function(data){
+            var successList = [], errorList = []
+            _.each(data, function(el){
+                if (el.result) {
+                    successList.push(el.name)
+                } else {
+                    errorList.push(el.name)
+                }
+            }.bind(this))
+
+            var message = '';
+            if (successList.length > 0)
+                message = "<span class='text-success'>以下设备操作成功：</span><br>" + successList.join("<br>") + "<br>";
+            if (errorList.length > 0)
+                message = message +  "<span class='text-danger'>以下设备为不可用状态暂时无法操作：</span><br>" + successList.join("<br>");
+            alert(message)
+            this.onClickQueryButton();
         },
 
         onClickItemEdit: function(event){
@@ -513,7 +536,13 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 ids.push(el.attributes.id);
             })
             if (ids.length === 0) return;
-            this.collection.updateDeviceStatus({ids:ids, status:1})
+
+            var args = {
+                "ids": ids,
+                "status": 1,
+                "reason": "" 
+             }
+            this.collection.modifyStatus(args);
         },
 
         onClickMultiStop : function(event){
@@ -544,7 +573,12 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     onOKCallback: function() {
                         var options = stopNodeView.getArgs();
                         if (!options) return;
-                        //this.collection.updateDeviceStatus({ids:ids, status:3})
+                        var args = {
+                            "ids": ids,
+                            "status": 2,
+                            "reason": options.opRemark  
+                         }
+                        this.collection.modifyStatus(args);
                         this.nodeTipsPopup.$el.modal("hide");
                     }.bind(this),
                     onHiddenCallback: function() {
@@ -553,7 +587,6 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 }
                 this.nodeTipsPopup = new Modal(options);
             }.bind(this));
-
         },
 
         onClickMultiDelete: function(event){

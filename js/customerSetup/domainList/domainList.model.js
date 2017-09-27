@@ -149,6 +149,17 @@ define("domainList.model", ['require','exports','utility'], function(require, ex
                 this.trigger("change.confCustomType.error", response);  
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        deletedOrigin: function(args){
+            var url = BASE_URL + "/channelManager/domain/deletedOrigin",
+            successCallback = function(res){
+                this.trigger("delete.domain.success", res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("delete.domain.error", response);  
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         }
 	});
 

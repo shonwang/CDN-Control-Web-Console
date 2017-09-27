@@ -24,6 +24,9 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                 this.collection.on("change.confCustomType.success", $.proxy(this.changeConfCustomTypeSuccess, this))
                 this.collection.on("change.confCustomType.error", $.proxy(this.changeConfCustomTypeError, this))
 
+                this.collection.on("delete.domain.success", $.proxy(this.onDeleteSuccess, this));
+                this.collection.on("delete.domain.error", $.proxy(this.queryDomainError, this));
+
                 this.$el.find("#cdn-search-btn").bind('click', $.proxy(this.onClickSearchBtn, this));
                 this.$el.find(".add-domain").bind('click', $.proxy(this.onClickAddDomain, this));
                 if (!AUTH_OBJ.CreateCustomerDomain) {
@@ -185,6 +188,16 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                     id = $(eventTarget).attr("id");
 
                 var model = this.collection.get(id);
+                Utility.confirm("你确定要删除域名吗?", function(){
+                    this.collection.deletedOrigin({
+                        originId: model.get("id"),
+                    })
+                }.bind(this))
+            },
+
+            onDeleteSuccess: function(){
+                Utility.alerts("操作成功！", "success", 2000);
+                this.toQueryDomain();
             },
 
             /* 备份原始的

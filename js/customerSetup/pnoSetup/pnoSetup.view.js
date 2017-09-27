@@ -30,8 +30,8 @@ define("pnoSetup.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 var name = this.$el.find("#param-label").val().trim(),
                     value = this.$el.find("#input-value").val().trim();
 
-                if (name === "" || value === "") {
-                    alert("不能为空！")
+                if (name === "") {
+                    alert("名称不能为空！")
                     return false;
                 }
 

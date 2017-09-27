@@ -7,8 +7,12 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/blockedDomain/blockedDomain.html'])());
 
-            this.collection.on("get.user.success", $.proxy(this.onChannelListSuccess, this));
-            this.collection.on("get.user.error", $.proxy(this.onGetError, this));
+            this.collection.on("query.domain.success", $.proxy(this.onChannelListSuccess, this));
+            this.collection.on("query.domain.error", $.proxy(this.onGetError, this));
+            this.collection.on("block.domain.success", $.proxy(this.onBlockSuccess, this));
+            this.collection.on("block.domain.error", $.proxy(this.onGetError, this));
+            this.collection.on("unblock.domain.success", $.proxy(this.onBlockSuccess, this));
+            this.collection.on("unblock.domain.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             
@@ -17,13 +21,15 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
             this.initChannelDropMenu();
 
             this.queryArgs = {
-                "domainName": null,
+                "domain": null,
                 "userId": null,
-                "email" : null,
+                "type" : null,
+                "status": null,
                 "companyName": null,
                 "currentPage": 1,
                 "pageSize": 10
-             }
+            }
+
             this.onClickQueryButton();
         },
 
@@ -76,13 +82,36 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
                 }, {
                     name: "配置失败",
                     value: 14
+                }, {
+                    name: "暂停中",
+                    value: 15
+                }
+                , {
+                    name: "开启中",
+                    value: 16
+                }
+                , {
+                    name: "删除中",
+                    value: 17
+                }
+                , {
+                    name: "已封禁",
+                    value: 18
+                }
+                , {
+                    name: "封禁中",
+                    value: 19
+                }
+                , {
+                    name: "解禁中",
+                    value: 20
                 }],
                 rootNode = this.$el.find(".dropdown-status");
             Utility.initDropMenu(rootNode, statusArray, function(value) {
                 if (value == "All")
-                    this.queryArgs.auditStatus = null;
+                    this.queryArgs.status = null;
                 else
-                    this.queryArgs.auditStatus = parseInt(value)
+                    this.queryArgs.status = parseInt(value)
             }.bind(this));
 
             var typeArray = [{
@@ -134,7 +163,7 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
 
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
-            this.collection.queryChannel(this.queryArgs);
+            this.collection.getDomainInfoList(this.queryArgs);
         },
 
         initTable: function(){
@@ -144,11 +173,12 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
             
-            this.table.find("tbody .block").on("click", $.proxy(this.onClickItemNodeName, this));
+            this.table.find("tbody .block").on("click", $.proxy(this.onClickItemBlock, this));
+            this.table.find("tbody .open").on("click", $.proxy(this.onClickItemUnblock, this));
             this.table.find("tbody .operateDetail").on("click", $.proxy(this.onClickDetail, this));
         },
 
-        onClickItemNodeName: function(event) {
+        onClickItemBlock: function(event) {
             var eventTarget = event.srcElement || event.target,
                 id = $(eventTarget).attr("id");
             var model = this.collection.get(id);
@@ -168,6 +198,10 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
                     onOKCallback: function() {
                         var options = stopNodeView.getArgs();
                         if (!options) return;
+                        this.collection.blockDomain({
+                            originId: model.get("id"),
+                            remark: options.opRemark
+                        })
                     }.bind(this),
                     onHiddenCallback: function() {}.bind(this)
                 }
@@ -175,31 +209,43 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
             }.bind(this));
         },
 
+        onClickItemUnblock: function(event){
+            var eventTarget = event.srcElement || event.target,
+                id = $(eventTarget).attr("id");
+            var model = this.collection.get(id);
+
+            Utility.confirm("你确定要解除域名封禁吗?", function(){
+                this.collection.unblockDomain({
+                    originId: model.get("id"),
+                })
+            }.bind(this))
+        },
+
+        onBlockSuccess: function(){
+            Utility.alerts("操作成功！", "success", 2000)
+            if (this.nodeTipsPopup) this.nodeTipsPopup.$el.modal("hide");
+            this.onClickQueryButton();
+        },
+
         onClickDetail: function(event) {
             var eventTarget = event.srcElement || event.target,
-                id;
-            if (eventTarget.tagName == "SPAN") {
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
                 id = $(eventTarget).attr("id");
-            }
+
             var model = this.collection.get(id);
             if (this.detailTipsPopup) $("#" + this.detailTipsPopup.modalId).remove();
 
             require(["nodeManage.operateDetail.view"], function(NodeTips) {
                 var detailTipsView = new NodeTips({
                     type: 2,
-                    model: model
+                    model: model,
+                    collection: this.collection
                 });
                 var options = {
                     title: "操作说明",
                     body: detailTipsView,
                     backdrop: 'static',
                     type: 1,
-                    onHiddenCallback: function() {
-
-                    }.bind(this)
+                    onHiddenCallback: function() {}.bind(this)
                 }
                 this.nodeTipsPopup = new Modal(options);
             }.bind(this));

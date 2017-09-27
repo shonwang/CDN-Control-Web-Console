@@ -106,6 +106,7 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                     this.$el.find(".ks-table tbody .manage").on("click", $.proxy(this.onClickItemManage, this));
                     this.$el.find(".ks-table tbody .log-setup").on("click", $.proxy(this.onClickItemlogSetup, this));
                     this.$el.find(".ks-table tbody .setup-bill").on("click", $.proxy(this.onClickViewSetupBillBtn, this));
+                    this.$el.find(".ks-table tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
 
                     _.each(this.$el.find(".ks-table tbody .manage"), function(el) {
                         var protocol = this.collection.get(el.id).get("protocol");
@@ -177,6 +178,13 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                 }
 
                 this.redirectToManage();
+            },
+
+            onClickItemDelete: function(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id = $(eventTarget).attr("id");
+
+                var model = this.collection.get(id);
             },
 
             /* 备份原始的

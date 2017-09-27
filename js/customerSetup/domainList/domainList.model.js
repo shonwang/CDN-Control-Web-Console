@@ -1,15 +1,7 @@
 define("domainList.model", ['require','exports','utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-            var auditStatus = this.get("auditStatus");
-            // /**审核状态，0审核中，1正常运行，2审核失败，3停止，-1删除，4配置中，5配置失败 */
-            // if (auditStatus === 0) this.set("statusName", '<span class="text-info">审核中</span>');
-            // if (auditStatus === 1) this.set("statusName", '<span class="text-success">正常</span>');
-            // if (auditStatus === 2) this.set("statusName", '<span class="text-warning">审核失败</span>');
-            // if (auditStatus === 3) this.set("statusName", '<span class="text-danger">停止</span>');
-            // if (auditStatus === 4) this.set("statusName", '<span class="text-default">配置中</span>');
-            // if (auditStatus === 5) this.set("statusName", '<span class="text-warning">配置失败</span>');
-            // if (auditStatus === -1) this.set("statusName", '<span class="text-danger">删除</span>');
+            var auditStatus = this.get("originStatus");
 
             if (auditStatus === 0) this.set("statusName", '<span class="text-primary">审核中</span>');
             if (auditStatus === 1) this.set("statusName", '<span class="text-success">审核通过</span>');
@@ -26,9 +18,14 @@ define("domainList.model", ['require','exports','utility'], function(require, ex
             if (auditStatus === 11) this.set("statusName", '<span class="text-danger">下发失败</span>');
             if (auditStatus === 12) this.set("statusName", '<span class="text-primary">下发成功</span>');
             if (auditStatus === 13) this.set("statusName", '<span class="text-success">运行中</span>');
+            if (auditStatus === 15) this.set("statusName", '<span class="text-warning">暂停中</span>');
+            if (auditStatus === 17) this.set("statusName", '<span class="text-danger">删除中</span>');
+            if (auditStatus === 18) this.set("statusName", '<span class="text-danger">已封禁</span>');
+            if (auditStatus === 19) this.set("statusName", '<span class="text-warning">封禁中</span>');
+            if (auditStatus === 16) this.set("statusName", '<span class="text-info">开启中</span>');
+            if (auditStatus === 20) this.set("statusName", '<span class="text-info">解禁中</span>');
 
             var type = this.get("subType");
-            /**2016/10/9 15:07:18 type    是   Integer     业务类型 1下载 2 直播 */
             if (type === 2) this.set("typeName", '直播');
             if (type === 1) this.set("typeName", '下载');
             if (type === 3) this.set("typeName", '直播推流加速');
@@ -36,7 +33,6 @@ define("domainList.model", ['require','exports','utility'], function(require, ex
             var cnameData = this.get("cnameData"), cnameDomainStr = [], cdnFoctoryStr = [];
             _.each(cnameData, function(el, index, ls){
                 cnameDomainStr.push(el.name);
-                //选择CDN厂商: 1自建，2网宿，3自建+网宿
                 if (el.cdnFactory === "1") el.cdnFactoryName = "自建";
                 if (el.cdnFactory === "2") el.cdnFactoryName = "网宿";
                 if (el.cdnFactory === "3") el.cdnFactoryName = "自建+网宿";

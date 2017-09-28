@@ -266,7 +266,7 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
                         var args = _.extend(this.queryArgs);
                         args.currentPage = num;
                         args.pageSize = this.queryArgs.pageSize;
-                        this.collection.queryChannel(args);
+                        this.collection.getDomainInfoList(args);
                     }
                 }.bind(this)
             });

@@ -37,10 +37,12 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
             var statusArray = [{
                     name: "全部",
                     value: "All"
-                }, {
-                    name: "删除",
-                    value: -1
-                }, {
+                }, 
+                // {
+                //     name: "删除",
+                //     value: -1
+                // }, 
+                {
                     name: "审核中",
                     value: 0
                 }, {
@@ -52,10 +54,12 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
                 }, {
                     name: "停止",
                     value: 3
-                }, {
-                    name: "配置中",
-                    value: 4
-                }, {
+                }, 
+                // {
+                //     name: "配置中",
+                //     value: 4
+                // },
+                 {
                     name: "编辑中",
                     value: 6
                 }, {
@@ -73,10 +77,12 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
                 }, {
                     name: "下发失败",
                     value: 11
-                }, {
-                    name: "下发成功",
-                    value: 12
-                }, {
+                },
+                //  {
+                //     name: "下发成功",
+                //     value: 12
+                // },
+                 {
                     name: "运行中",
                     value: 13
                 }, {
@@ -120,10 +126,12 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
                 }, {
                     name: "下载加速",
                     value: 1
-                }, {
-                    name: "直播加速",
-                    value: 2
-                }],
+                }, 
+                // {
+                //     name: "直播加速",
+                //     value: 2
+                // }
+                ],
                 rootNode = this.$el.find(".dropdown-type");
             Utility.initDropMenu(rootNode, typeArray, function(value) {
                 if (value == "All")

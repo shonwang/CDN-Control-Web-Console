@@ -138,11 +138,14 @@
             <li id="customMaintenance"><a href="javascript:void(0)" path="index.html#/customMaintenance"><i class="glyphicon glyphicon-th"></i>自助运维</a></li>
         </ul>
     </li>
-	<li><a href="javascript:void(0)"><i class="glyphicon glyphicon-asterisk"></i>域名设置</a>
+	<li><a href="javascript:void(0)"><i class="glyphicon glyphicon-cog"></i>域名设置</a>
         <ul class="submenu">
 			<% if (permission.PlatformChange) { %>
             <li id="applicationChange"><a href="javascript:void(0)" path="index.html#/applicationChange"><i class="glyphicon glyphicon-cog"></i>平台切换</a></li>
 			<% } %>
+            <li id="blockedDomain">
+                <a href="javascript:void(0)" path="index.html#/blockedDomain"><i class="glyphicon glyphicon-ban-circle"></i>域名封禁</a>
+            </li>
         </ul>
     </li>
 </ul>

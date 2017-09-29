@@ -24,6 +24,9 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                 this.collection.on("change.confCustomType.success", $.proxy(this.changeConfCustomTypeSuccess, this))
                 this.collection.on("change.confCustomType.error", $.proxy(this.changeConfCustomTypeError, this))
 
+                this.collection.on("delete.domain.success", $.proxy(this.onDeleteSuccess, this));
+                this.collection.on("delete.domain.error", $.proxy(this.queryDomainError, this));
+
                 this.$el.find("#cdn-search-btn").bind('click', $.proxy(this.onClickSearchBtn, this));
                 this.$el.find(".add-domain").bind('click', $.proxy(this.onClickAddDomain, this));
                 if (!AUTH_OBJ.CreateCustomerDomain) {
@@ -106,6 +109,7 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                     this.$el.find(".ks-table tbody .manage").on("click", $.proxy(this.onClickItemManage, this));
                     this.$el.find(".ks-table tbody .log-setup").on("click", $.proxy(this.onClickItemlogSetup, this));
                     this.$el.find(".ks-table tbody .setup-bill").on("click", $.proxy(this.onClickViewSetupBillBtn, this));
+                    this.$el.find(".ks-table tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
 
                     _.each(this.$el.find(".ks-table tbody .manage"), function(el) {
                         var protocol = this.collection.get(el.id).get("protocol");
@@ -177,6 +181,23 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                 }
 
                 this.redirectToManage();
+            },
+
+            onClickItemDelete: function(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id = $(eventTarget).attr("id");
+
+                var model = this.collection.get(id);
+                Utility.confirm("你确定要删除域名吗?", function(){
+                    this.collection.deletedOrigin({
+                        originId: model.get("id"),
+                    })
+                }.bind(this))
+            },
+
+            onDeleteSuccess: function(){
+                Utility.alerts("操作成功！", "success", 2000);
+                this.toQueryDomain();
             },
 
             /* 备份原始的

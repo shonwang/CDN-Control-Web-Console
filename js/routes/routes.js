@@ -148,7 +148,8 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "refreshManual": "refreshManual",
                 "customMaintenance": "customMaintenance",
                 //平台切换
-                "applicationChange":"applicationChange"
+                "applicationChange": "applicationChange",
+                "blockedDomain": "blockedDomain"
             },
 
             execute: function(callback, args) {

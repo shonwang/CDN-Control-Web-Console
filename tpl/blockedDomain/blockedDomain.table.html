@@ -33,11 +33,11 @@
               </td>
               <td>
                 <% if (data[i].get("originStatus") === 18 || data[i].get("originStatus") === 19) { %>
-                ----
+					<a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="operateDetail">
+					  操作详情
+					</a>
                 <% } else { %>
-                <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="operateDetail">
-                  操作详情
-                </a>
+				----
                 <% } %>
               </td>
             </tr>

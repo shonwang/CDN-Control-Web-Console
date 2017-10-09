@@ -27,7 +27,8 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
                 "status": null,
                 "companyName": null,
                 "currentPage": 1,
-                "pageSize": 10
+                "pageSize": 10,
+                "applicationType":202
             }
 
             this.onClickQueryButton();

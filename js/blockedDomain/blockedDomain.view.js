@@ -165,7 +165,8 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
             this.isInitPaginator = false;
 
             this.queryArgs.currentPage = 1;
-            this.queryArgs.domainName = this.$el.find("#input-domain").val().trim();
+            //this.queryArgs.domainName = this.$el.find("#input-domain").val().trim();
+            this.queryArgs.domain = this.$el.find("#input-domain").val().trim();
             this.queryArgs.userId = this.$el.find("#input-uid").val().trim();
             this.queryArgs.companyName = this.$el.find("#input-name").val().trim();
 

@@ -274,7 +274,9 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     var options = {
                         "ids":[this.clickDeviceId],
                         "status": this.clickStatus,
+                        "refreshFlag": this.commonPopup.$el.find("#refresh").get(0).checked
                      }
+
                     this.collection.modifyStatus(options);
                     this.commonPopup.$el.modal('hide');
                 }.bind(this),
@@ -367,7 +369,18 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
                 this.commonPopup.$el.find('.modal-body').html(this.table_modal);
             }else{
-                body = '确定要开启服务吗？';
+                body = '确定要开启服务吗？请选择是否同步刷新:<br>';
+                body = body + 
+                    '<div class="checkbox disabled">' +
+                      '<label>' +
+                        '<input type="checkbox" value="" disabled checked>同步配置' +
+                      '</label>' +
+                    '</div>' +
+                    '<div class="checkbox">' +
+                      '<label>' +
+                        '<input type="checkbox" value="" id="refresh">同步刷新' +
+                      '</label>' +
+                    '</div>'
                 this.commonPopup.$el.find('.close').show();
                 this.commonPopup.$el.find('.commonPopup').show();
                 this.commonPopup.$el.find('h4').html('恢复设备');

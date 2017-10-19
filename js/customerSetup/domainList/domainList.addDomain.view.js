@@ -854,7 +854,6 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
             },
 
             onDomainNameBlur:function(){
-                console.log('xxxx');
                 var domainName = this.$el.find("#text-domainName").val();
                 if(domainName.indexOf("*")==0){
                     //泛域名
@@ -941,7 +940,7 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 
                 var domainName = this.args.DomainName;
                 if(domainName.indexOf("*")==0){
-                    if(this.args.CdnType == "live"){
+                    if(this.args.CdnType == "liveUpward" || (this.args.CdnType == "live" && result.CdnProtocol !="HLS")){
                         alert("泛域名只支持使用点播平台的域名");
                         return false;
                     }

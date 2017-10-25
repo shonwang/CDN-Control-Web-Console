@@ -1,16 +1,16 @@
 <div>
     <div class="form-horizontal">
 		<div class="form-group">
-			<label for="input-name" class="col-sm-2 control-label">节点名称</label>
-			<div class="col-sm-4">
+			<label for="input-name" class="col-sm-2 control-label">名称</label>
+			<div class="col-sm-8">
 				<input type="text" class="form-control" value="<%=data.chName%>" readonly="readonly">
 			</div>
 		</div>
 		<%if(data.type==2){%>
 			<div class="form-group">
-				<label for="input-name" class="col-sm-2 control-label">操作人</label>
+				<label for="input-oper" class="col-sm-2 control-label">操作人</label>
 				<div class="col-sm-4">
-					<input type="text" class="form-control" value="<%=data.operator%>" readonly="readonly">
+					<input type="text" class="form-control" value="<%=data.operator%>" readonly="readonly" id="input-oper">
 				</div>
 			</div>
 		<%}%>

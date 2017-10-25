@@ -2,6 +2,8 @@
  var REQ_PATH = {
   "applicationChange.model": "applicationChange/applicationChange.model",
   "applicationChange.view": "applicationChange/applicationChange.view",
+  "blockedDomain.model": "blockedDomain/blockedDomain.model",
+  "blockedDomain.view": "blockedDomain/blockedDomain.view",
   "businessManage.model": "businessManage/businessManage.model",
   "businessManage.view": "businessManage/businessManage.view",
   "channelManage.model": "channelManage/channelManage.model",
@@ -176,6 +178,7 @@
   "liveCurentSetup.model": "liveCurentSetup/liveCurentSetup.model",
   "liveCurentSetup.view": "liveCurentSetup/liveCurentSetup.view",
   "nodeManage.model": "nodeManage/nodeManage.model",
+  "nodeManage.operateDetail.view": "nodeManage/nodeManage.operateDetail.view",
   "nodeManage.view": "nodeManage/nodeManage.view",
   "refreshManual.model": "refreshManual/refreshManual.model",
   "refreshManual.view": "refreshManual/refreshManual.view",

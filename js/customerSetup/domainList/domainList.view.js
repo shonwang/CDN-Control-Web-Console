@@ -103,7 +103,8 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                     this.setNoData("未查到符合条件的数据，请重新查询");
                 } else {
                     this.tbodyList = $(_.template(template['tpl/customerSetup/domainList/domainList.table.tbody.html'])({
-                        data: this.collection.models
+                        data: this.collection.models,
+                        AUTH_OBJ:AUTH_OBJ
                     }));
                     this.$el.find(".ks-table tbody").html(this.tbodyList);
                     this.$el.find(".ks-table tbody .manage").on("click", $.proxy(this.onClickItemManage, this));

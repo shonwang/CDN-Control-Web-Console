@@ -186,6 +186,7 @@ define("routes.setupSend", ['require', 'exports'],
             },
 
             blockedDomain:function(){
+                if (!AUTH_OBJ.DomainBlock) return;
                 require(['blockedDomain.view', 'blockedDomain.model'], function(BlockedDomainView, BlockedDomainModel) {
                     this.curPage = 'blockedDomain';
                     this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));

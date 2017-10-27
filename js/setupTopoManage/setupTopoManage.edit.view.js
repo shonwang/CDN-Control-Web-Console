@@ -95,6 +95,8 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
                 this.$el.find('.all .add-node').on("click", $.proxy(this.onClickAddAllNodeButton, this))
                 this.$el.find('.upper .add-node').on("click", $.proxy(this.onClickAddUpperNodeButton, this))
+                this.$el.find(".view-more").on("click", $.proxy(this.onClickViewMoreButton, this));
+                this.$el.find(".view-less").on("click", $.proxy(this.onClickViewLessButton, this));
 
                 this.collection.off("get.devicetype.success");
                 this.collection.off("get.devicetype.error");
@@ -111,6 +113,32 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     myNodeManageModel.on("get.operator.error", $.proxy(this.onGetError, this));
                     myNodeManageModel.getOperatorList();
                 }.bind(this))
+            },
+
+            onClickViewMoreButton: function(event) {
+                var eventTarget = event.srcElement || event.target;
+                if ($(eventTarget).parents(".all").get(0)) {
+                    this.$el.find(".all .table-ctn").show(200)
+                    this.$el.find('.all .view-less').show();
+                    this.$el.find(".all .view-more").hide();
+                } else {
+                    this.$el.find(".upper .table-ctn").show(200);
+                    this.$el.find('.upper .view-less').show();
+                    this.$el.find(".upper .view-more").hide();
+                }
+            },
+
+            onClickViewLessButton: function(event) {
+                var eventTarget = event.srcElement || event.target;
+                if ($(eventTarget).parents(".all").get(0)) {
+                    this.$el.find(".all .table-ctn").hide(200)
+                    this.$el.find('.all .view-less').hide();
+                    this.$el.find(".all .view-more").show();
+                } else {
+                    this.$el.find(".upper .table-ctn").hide(200);
+                    this.$el.find('.upper .view-less').hide();
+                    this.$el.find(".upper .view-more").show();
+                }
             },
 
             onGetOperatorSuccess: function(res) {
@@ -419,7 +447,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     this.ruleList.push(ruleStrObj)
                 }.bind(this))
 
-                this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.role.table.html'])({
+                this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.rule.table.html'])({
                     data: this.ruleList
                 }));
                 if (this.ruleList.length !== 0)

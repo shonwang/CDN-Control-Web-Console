@@ -25,7 +25,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             } else {
                 this.defaultParam = this.curEditRule
             }
-            console.log("规则初始化默认值: ", this.defaultParam)
+            console.log("新建规则初始化默认值: ", this.defaultParam)
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
@@ -57,18 +57,18 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         initDropMenu: function(data) {
-            this.statusArray = [];
+            this.operatorArray = [];
             var rootNode = this.$el.find(".operator");
 
             _.each(data.rows, function(el, key, list) {
-                this.statusArray.push({
+                this.operatorArray.push({
                     name: el.name,
                     value: el.id
                 })
             }.bind(this))
 
-            Utility.initDropMenu(rootNode, this.statusArray, function(value) {
-                var opObj = _.find(this.statusArray, function(object) {
+            Utility.initDropMenu(rootNode, this.operatorArray, function(value) {
+                var opObj = _.find(this.operatorArray, function(object) {
                     return object.value == parseInt(value);
                 }.bind(this));
                 this.defaultParam.local = [{
@@ -80,7 +80,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             var defaultValue = null;
 
             if (this.defaultParam.localType === 2 && this.defaultParam.local[0]) {
-                defaultValue = _.find(this.statusArray, function(object) {
+                defaultValue = _.find(this.operatorArray, function(object) {
                     return object.value == this.defaultParam.local[0].id;
                 }.bind(this));
             }
@@ -88,12 +88,12 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             if (defaultValue) {
                 this.$el.find("#dropdown-operator .cur-value").html(defaultValue.name);
             } else {
-                this.$el.find("#dropdown-operator .cur-value").html(this.statusArray[0].name);
+                this.$el.find("#dropdown-operator .cur-value").html(this.operatorArray[0].name);
                 if (this.defaultParam.localType === 2) {
                     this.defaultParam.local = []
                     this.defaultParam.local.push({
-                        id: parseInt(this.statusArray[0].value),
-                        name: this.statusArray[0].name,
+                        id: parseInt(this.operatorArray[0].value),
+                        name: this.operatorArray[0].name,
                     })
                 }
             }
@@ -302,18 +302,21 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         onClickLocalTypeRadio: function(event) {
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
+            this.prelocalType = this.defaultParam.localType;
             this.defaultParam.localType = parseInt($(eventTarget).val());
 
-            if (this.defaultParam.localType === 1) {
-                this.defaultParam.local = [];
+            if (this.defaultParam.localType === 1 && this.prelocalType === 2) {
+                this.curOperator = this.defaultParam.local;
+                this.defaultParam.local = this.curNodes || [];
                 this.$el.find(".operator-ctn").hide();
                 this.$el.find(".nodes-ctn").show();
-            } else if (this.defaultParam.localType === 2) {
-                this.defaultParam.local = [{
-                    id: this.statusArray[0].value,
-                    name: this.statusArray[0].name
+            } else if (this.defaultParam.localType === 2 && this.prelocalType === 1) {
+                this.curNodes = this.defaultParam.local;
+                this.defaultParam.local = this.curOperator || [{
+                    id: this.operatorArray[0].value,
+                    name: this.operatorArray[0].name
                 }];
-                this.$el.find("#dropdown-operator .cur-value").html(this.statusArray[0].name);
+                this.$el.find("#dropdown-operator .cur-value").html(this.defaultParam.local[0].name);
                 this.$el.find(".nodes-ctn").hide();
                 this.$el.find(".operator-ctn").show();
             }
@@ -417,9 +420,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         initOperatorUpperList: function(data) {
-            var statusArray = [];
+            var operatorArray = [];
             _.each(data, function(el, key, list) {
-                statusArray.push({
+                operatorArray.push({
                     name: el.name,
                     value: el.id
                 })
@@ -427,7 +430,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             rootNodes = this.upperTable.find(".ipOperator .dropdown");
 
             for (var i = 0; i < rootNodes.length; i++) {
-                this.initTableDropMenu($(rootNodes[i]), statusArray, function(value, nodeId) {
+                this.initTableDropMenu($(rootNodes[i]), operatorArray, function(value, nodeId) {
                     _.each(this.defaultParam.upper, function(el, key, list) {
                         if (el.rsNodeMsgVo.id == parseInt(nodeId)) {
                             el.ipCorporation = parseInt(value);
@@ -438,15 +441,15 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 _.each(this.defaultParam.upper, function(node) {
                     var curNodeId = parseInt(rootNodes[i].id);
                     if (node.rsNodeMsgVo.id === curNodeId) {
-                        var defaultValue = _.find(statusArray, function(obj) {
+                        var defaultValue = _.find(operatorArray, function(obj) {
                             return obj.value === node.ipCorporation
                         }.bind(this))
 
                         if (defaultValue) {
                             $(rootNodes[i]).find("#dropdown-ip-operator .cur-value").html(defaultValue.name)
                         } else {
-                            $(rootNodes[i]).find("#dropdown-ip-operator .cur-value").html(statusArray[0].name);
-                            node.ipCorporation = statusArray[0].value;
+                            $(rootNodes[i]).find("#dropdown-ip-operator .cur-value").html(operatorArray[0].name);
+                            node.ipCorporation = operatorArray[0].value;
                         }
                     }
                 }.bind(this))

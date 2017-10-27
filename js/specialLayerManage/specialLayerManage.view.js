@@ -304,7 +304,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     this.ruleList.push(ruleStrObj)
                 }.bind(this))
 
-                this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.role.table.html'])({
+                this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.rule.table.html'])({
                     data: this.ruleList
                 }));
                 if (this.ruleList.length !== 0)

@@ -205,7 +205,7 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                     this.ruleList.push(ruleStrObj)
                 }.bind(this))
 
-                this.ruleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.role.table.html'])({
+                this.ruleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.rule.table.html'])({
                     data: this.ruleList
                 }));
                 if (this.ruleList.length !== 0) {

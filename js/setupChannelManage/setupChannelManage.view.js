@@ -606,9 +606,9 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     rootNode = this.$el.find(".dropdown-status");
                 Utility.initDropMenu(rootNode, statusArray, function(value) {
                     if (value == "All")
-                        this.queryArgs.auditStatus = null;
+                        this.queryArgs.originStatus = null;
                     else
-                        this.queryArgs.auditStatus = parseInt(value)
+                        this.queryArgs.originStatus = parseInt(value)
                 }.bind(this));
 
                 var protocolArray = [{

@@ -435,9 +435,9 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
                     var upperLayer = primaryNameArray.join('<br>');
                     if (rule.upper.length > 1)
-                        upperLayer = '<strong>主：</strong>' + primaryNameArray.join('<br>');
+                        upperLayer = '<strong>主：</strong><br>' + primaryNameArray.join('<br>');
                     if (backupArray.length > 0)
-                        upperLayer += '<br><strong>备：</strong>' + backupNameArray.join('<br>');
+                        upperLayer += '<br><strong>备：</strong><br>' + backupNameArray.join('<br>');
 
                     var ruleStrObj = {
                         id: rule.id,

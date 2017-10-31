@@ -1069,3 +1069,8 @@ td .table {
 .padding-left27 {
   padding-left: 27px;
 }
+
+.modal-open .modal {
+    overflow-x: auto;
+    overflow-y: auto;
+}

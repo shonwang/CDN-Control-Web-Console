@@ -435,7 +435,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             if (successList.length > 0)
                 message = "<span class='text-success'>以下设备操作成功：</span><br>" + successList.join("<br>") + "<br>";
             if (errorList.length > 0)
-                message = message +  "<span class='text-danger'>以下设备为不可用状态暂时无法操作：</span><br>" + successList.join("<br>");
+                message = message +  "<span class='text-danger'>以下设备为不可用状态暂时无法操作：</span><br>" + errorList.join("<br>");
             alert(message)
             this.onClickQueryButton();
         },

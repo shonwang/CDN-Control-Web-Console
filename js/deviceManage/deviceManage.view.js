@@ -368,7 +368,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.table_modal.find('.table-place').html(_.template(template['tpl/ipManage/ipManage.start&pause.table.html'])({data:data}));
 
                 this.commonPopup.$el.find('.modal-body').html(this.table_modal);
-            }else{
+            } else {
                 body = '确定要开启服务吗？请选择是否同步刷新:<br>';
                 body = body + 
                     '<div class="checkbox disabled">' +
@@ -430,7 +430,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     errorList.push(el.name)
                 }
             }.bind(this))
-
+            console.log(successList)
             var message = '';
             if (successList.length > 0)
                 message = "<span class='text-success'>以下设备操作成功：</span><br>" + successList.join("<br>") + "<br>";
@@ -550,12 +550,42 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             })
             if (ids.length === 0) return;
 
-            var args = {
-                "ids": ids,
-                "status": 1,
-                "reason": "" 
-             }
-            this.collection.modifyStatus(args);
+            if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
+            var body = '确定要开启服务吗？请选择是否同步刷新:<br>';
+            body = body + 
+                '<div class="checkbox disabled">' +
+                  '<label>' +
+                    '<input type="checkbox" value="" disabled checked>同步配置' +
+                  '</label>' +
+                '</div>' +
+                '<div class="checkbox">' +
+                  '<label>' +
+                    '<input type="checkbox" value="" id="refresh">同步刷新' +
+                  '</label>' +
+                '</div>'
+
+
+            var options = {
+                title: "警告",
+                body : body,
+                backdrop : 'static',
+                type     : 2,
+                cancelButtonText : "关闭",
+                onOKCallback:  function(){
+                    var args = {
+                        "ids": ids,
+                        "status": 1,
+                        "refreshFlag": this.commonPopup.$el.find("#refresh").get(0).checked
+                     }
+                    this.collection.modifyStatus(args);
+                    this.commonPopup.$el.modal('hide');
+                }.bind(this),
+                onCancelCallback: function(){
+                    this.commonPopup.$el.modal('hide');
+                }.bind(this)
+            }
+
+            this.commonPopup = new Modal(options);
         },
 
         onClickMultiStop : function(event){

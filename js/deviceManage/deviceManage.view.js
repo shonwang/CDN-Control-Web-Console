@@ -430,7 +430,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     errorList.push(el.name)
                 }
             }.bind(this))
-            console.log(successList)
+
             var message = '';
             if (successList.length > 0)
                 message = "<span class='text-success'>以下设备操作成功：</span><br>" + successList.join("<br>") + "<br>";

@@ -1,0 +1,50 @@
+<div class="cdn-refresh-edit-modal">
+	<div class="baseinfo-https-edit download-baseinfo-manage clearfix">
+
+		<div class="col-xs-12 clearfix">
+			<div class="dt">CDN自动刷新：</div>
+			<div class="dd">
+				<div class="togglebutton togglebutton-IgnoreQueryStringConfig">
+					<label>
+						<input type="checkbox" name="cdnRefresh-checkbox" <%if(data.cdnRefreshStatus == "on"){%>checked<%}%> />
+						<span class="toggle">
+							<span class="togglebutton-tips unuseable">关闭</span>
+							<span class="togglebutton-tips useable">开启</span>
+						</span>
+					</label>
+				</div>
+			</div>
+		</div>	
+		
+		<div class="openAndCloseCtn" style="display:none;<%if(data.cdnRefreshStatus == "on"){%>display:block;<%}%>">
+			<div class="col-xs-12 clearfix margin-top10">
+				<div class="dt">已选bucket：</div>
+				<div class="dd">
+					<%=data.bucket||"---"%>
+				</div>
+			</div>
+			<div class="col-xs-12 clearfix margin-top10">
+				<div class="dt">bucket：</div>
+				<div class="dd">
+					<div class="ks-dropdown" id="dropdown-menu-bucket" style="position:relative;z-index:5;">
+						<div type="button" class="ks-btn ks-dropdown-text"  id="select-bucket-title">
+							<span class="ks-caret"></span>
+							<span class="cur-caret select-bucket-title">加载中...</span>
+						</div>
+					</div>
+				</div>
+				<div class="margin-left10 config-answer-ctn">
+					<span class="config-answer manage-param-tips" data-toggle="tooltip" title='请务必确认所选的bucket是作为源站的bucket。'></span>
+				</div>
+
+				<div class="margin-left10 ks-form-control add-domain-error-tips">
+					<div class="error dir-refresh-error cdn-error-tip" id="cdn-refresh-error">请选择bucket</div>
+				</div>
+
+			</div>	
+
+			
+		</div>
+
+	</div>
+</div>

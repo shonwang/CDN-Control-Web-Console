@@ -56,6 +56,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "blockUrl/:query": "blockUrl",
                 "interfaceQuota/:query": "interfaceQuota",
                 "pnoSetup/:query": "pnoSetup",
+                "checkUrl/:query": "checkUrl",
                 "domainList/:query": "domainList",
                 "domainList/:query/openAPILogSetup/:query2": "openAPILogSetup",
 

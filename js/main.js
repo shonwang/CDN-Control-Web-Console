@@ -18,6 +18,8 @@
   "customMaintenance.view": "customMaintenance/customMaintenance.view",
   "blockUrl.model": "customerSetup/blockUrl/blockUrl.model",
   "blockUrl.view": "customerSetup/blockUrl/blockUrl.view",
+  "checkUrl.model": "customerSetup/checkUrl/checkUrl.model",
+  "checkUrl.view": "customerSetup/checkUrl/checkUrl.view",
   "customerSetup.model": "customerSetup/customerSetup.model",
   "customerSetup.view": "customerSetup/customerSetup.view",
   "domainList.addDomain.view": "customerSetup/domainList/domainList.addDomain.view",

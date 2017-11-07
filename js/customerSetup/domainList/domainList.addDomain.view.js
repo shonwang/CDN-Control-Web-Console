@@ -951,6 +951,9 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     }
                     result.testUrl = test_url;
                 }
+                else if(domainName.indexOf("*")!=0){
+                    result.testUrl = "";
+                }
 
                 return result;
 

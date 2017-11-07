@@ -306,11 +306,12 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.clickStatus = status;
             this.name = name;
 
-            this.collection.getDeviceStatusOpen(deviceId);
+            //this.collection.getDeviceStatusOpen(deviceId);
 
             this.commonDialog();
             this.commonPopup.$el.find('.close').hide();
             this.commonPopup.$el.find('.commonPopup').hide();
+            this.onDeviceOpenSuccess()
         },
 
         onClickDevicePause: function(event){
@@ -348,7 +349,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                         var options = stopNodeView.getArgs();
                         if (!options) return;
                         this.reason = options || {};
-                        this.collection.getDeviceStatusPause(deviceId);
+                        //this.collection.getDeviceStatusPause(deviceId);
+                        this.onDevicePauseSuccess()
                     }.bind(this),
                     onHiddenCallback: function() {
 
@@ -361,7 +363,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
         onDeviceOpenSuccess: function(res){
             var data = res;
             var body = '';
-            if(data.length > 0){
+            if(data&&data.length > 0){
                 data[0].title = '设备 '+this.name+'暂停前在下列调度关系中服务，点击确定，下列调度关系将恢复，点击取消，设备状态不会变更，是否确定？';
 
                 this.table_modal = $(_.template(template['tpl/ipManage/ipManage.start&pause.html'])({data:data}));
@@ -391,7 +393,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
         onDevicePauseSuccess: function(res){
             var data = res;
             var body = '';
-            if(data.length > 0){
+            if(data&&data.length > 0){
                 this.nodeTipsPopup.$el.modal("hide");
                 setTimeout(function(){
                     this.commonDialog();

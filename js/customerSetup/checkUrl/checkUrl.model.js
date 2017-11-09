@@ -34,7 +34,37 @@ define("checkUrl.model", ['require','exports', "utility"], function(require, exp
             errorCallback = function(response){
                 this.trigger("get.verifyResult.error", response);
             }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);            
+            Utility.postAjax(url, args, successCallback, errorCallback);            
+        },
+
+        verify:function(args) {
+            var url = BASE_URL + "/verify/verify",
+            successCallback = function(res){
+                if(res){
+                    this.trigger('set.verify.success');
+                }else{
+                    this.trigger('set.verify.error');
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("set.verify.error", response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);             
+        },
+
+        verifyNodeResult:function(args){
+            var url = BASE_URL + "/verify/verifyNodeResult",
+            successCallback = function(res){
+                if(res){
+                    this.trigger('get.verifyNodeResult.success',res);
+                }else{
+                    this.trigger('get.verifyNodeResult.error',res);
+                }
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.verifyNodeResult.error", response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback); 
         }
 
 

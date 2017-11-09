@@ -4,10 +4,80 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
         var DetailView = Backbone.View.extend({
             initialize:function(options){
                 this.options = options;
+                this.model = options.model;
                 this.collection = options.collection;
                 var data={};
+                this.args = {
+                    taskId:this.model.get('taskId'),
+                    page:1,
+                    size:5
+                };
+                this.collection.off("get.verifyNodeResult.success");
+                this.collection.off("get.verifyNodeResult.error");
+                
+                this.collection.on("get.verifyNodeResult.success", $.proxy(this.bindDetailTable, this));
+                this.collection.on("get.verifyNodeResult.error", $.proxy(this.getListError, this));
+
                 this.$el = $(_.template(template['tpl/customerSetup/checkUrl/checkurl.edit.html'])({data:data}));
+                //this.bindDetailTable();
+                this.queryVerifyNodeResult();
             },
+
+            showLoading:function() {
+                this.$el.find(".pagination").html("");
+                var ctn=this.$el.find(".ks-table tbody");
+                var loadingCtn = $('<tr><td colspan="4" class="text-center">'+_.template(template['tpl/loading.html'])()+'</td></tr>');
+                $(ctn).html(loadingCtn);
+            },
+
+            queryVerifyNodeResult:function(){
+                this.showLoading();
+                this.collection.verifyNodeResult(this.args);
+            },
+
+            bindDetailTable:function(data){
+                var _rows = data.result.rows;
+                this.total = data.result.total;
+                this.tbodyList = $(_.template(template['tpl/customerSetup/checkUrl/checkUrl.detail.table.tbody.html'])({list:_rows}));
+                this.$el.find(".ks-table tbody").html(this.tbodyList); 
+                if(!this.isInitPaginator){
+                    this.$el.find(".pagination").html("");
+                    this.initPaginator();
+                }                   
+            },
+
+            showNullData:function(){
+                this.getListError("暂无数据");
+            },
+
+            getListError:function(res){
+                var msg = res.message;
+                var ctn=this.$el.find(".cdn-refresh-table tbody");
+                var loadingCtn = $('<tr><td colspan="4" class="text-center">'+msg+'</td></tr>');
+                $(ctn).html(loadingCtn);            
+            },
+
+            initPaginator: function(){
+                this.$el.find(".total-items span").html(this.total)
+                if (this.total <= this.args.size) return;
+                var total = Math.ceil(this.total/this.args.size);
+
+                this.$el.find(".pagination").jqPaginator({
+                    totalPages: total,
+                    visiblePages: 10,
+                    currentPage: 1,
+                    onPageChange: function (num, type) {
+                        if (type !== "init"){
+                            var args = _.extend(this.args);
+                            args.page = num;
+                            args.size = this.args.size;
+                            this.queryVerifyNodeResult(args);
+                        }
+                    }.bind(this)
+                });
+                this.isInitPaginator = true;
+            },
+
             render:function(target){
                 this.$el.appendTo(target);
             }            
@@ -24,6 +94,12 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
                     clientName: clientInfo.clientName,
                     uid: clientInfo.uid
                 }
+                this.checkArgs={
+                    userId:this.userInfo.uid,
+                    url:'',
+                    verifyType:'',
+                    originVerifyCode:''
+                };
                 this.args = {
                     page:1,
                     size:10,
@@ -34,15 +110,67 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 this.collection.on("get.verifyResult.success", $.proxy(this.onDataArrival, this));
                 this.collection.on("get.verifyResult.error", $.proxy(this.getListError, this));
 
+                this.collection.on("set.verify.success", $.proxy(this.setVerifySuccess, this));
+                this.collection.on("set.verify.error", $.proxy(this.setVerifyError, this));
+
                 this.showLoading();
                 this.onClickQueryButton();
                 //this.setPageSize();
                 /*域名查找按钮*/
                 this.$el.find(".domain-search").on("click",$.proxy(this.onClickQueryButton,this));
+                this.$el.find("#check-url-btnSubmit").on("click",$.proxy(this.onClickCheckBtn,this));
+                this.$el.find("#text-domainName").on("focus",$.proxy(this.focus,this));
+                this.$el.find("#text-origin-url-name").on("focus",$.proxy(this.focus,this));
                 this.$el.find("[data-toggle='tooltip']").tooltip();
                 this.setInitDropdownMenu();
                 this.initUsersDropMenu();
                 
+            },
+
+            setVerifyError:function(res){
+                alert(res.message || "出现错误了");
+            },
+
+            setVerifySuccess:function(){
+                alert("检验成功！");
+                this.args.page = 1;
+                this.isInitPaginator = false;
+                this.onClickQueryButton();
+            },
+
+            focus:function(){
+                this.$el.find("#url-name-error").hide();
+                this.$el.find("#cdn-type-error").hide();
+                this.$el.find("#origin-url-name-error").hide();
+            },
+
+            getCheckArgs:function(){
+                var url = this.$el.find("#text-domainName").val();
+                if(!url){
+                    this.$el.find("#url-name-error").html("请输入校验URL").show();
+                    return false;
+                }
+                this.checkArgs.url = url;
+
+                if(!this.checkArgs.verifyType){
+                    this.$el.find("#cdn-type-error").html('请选择校验方式').show();
+                    return false;
+                }
+                var originVerifyCode = this.$el.find("#text-origin-url-name").val();
+                if(!originVerifyCode){
+                    this.$el.find("#origin-url-name-error").show();
+                    return false;
+                }
+                this.checkArgs.originVerifyCode = originVerifyCode;
+                return this.checkArgs;
+            },
+
+            onClickCheckBtn:function(){
+                var result = this.getCheckArgs();
+                if(!result){
+                    return false;
+                }
+                this.collection.verify(result);
             },
 
             initUsersDropMenu: function(){
@@ -53,7 +181,7 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
                     {name: "100条", value: 100}
                 ]
                 Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
-                    this.args.size = value;
+                    this.args.size = parseInt(value);
                     this.args.page = 1;
                     this.onClickQueryButton();
                 }.bind(this));
@@ -66,7 +194,8 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 ];
                 var rootNode = this.$el.find('#dropdown-menu-check-type');
                     Utility.initDropMenu(rootNode, checkTypeArr, function(value) {
-                    //this.queryArgs.op = parseInt(value);
+                        this.focus();
+                        this.checkArgs.verifyType = value;
                 }.bind(this));
             },
 
@@ -80,9 +209,10 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
             showLoading:function(){
                 this.$el.find(".pagination").html("");
                 var ctn=this.$el.find(".cdn-refresh-table tbody");
-                var loadingCtn = $('<tr><td colspan="4" class="text-center">'+_.template(template['tpl/loading.html'])()+'</td></tr>');
+                var loadingCtn = $('<tr><td colspan="7" class="text-center">'+_.template(template['tpl/loading.html'])()+'</td></tr>');
                 $(ctn).html(loadingCtn);
             },
+
             toQueryMessage:function(){
                 this.args.pageNumber = 1;
                 this.isInitPaginator = false;
@@ -102,7 +232,6 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
 
             onDataArrival:function(){
                 var _data = this.collection.models;
-                console.log(_data);
                 if(_data.length==0){
                     this.showNullData();
                 }
@@ -129,14 +258,14 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
 
             getListError:function(msg){
                 var ctn=this.$el.find(".cdn-refresh-table tbody");
-                var loadingCtn = $('<tr><td colspan="4" class="text-center">'+msg+'</td></tr>');
+                var loadingCtn = $('<tr><td colspan="7" class="text-center">'+msg+'</td></tr>');
                 $(ctn).html(loadingCtn);            
             },
 
             onShowDetail:function(event){
                 var target = event.target || event.srcElement;
-                var domainId = $(target).attr("data-id");
-                var model = this.collection.get(domainId);
+                var id = $(target).attr("data-id");
+                var model = this.collection.get(id);
                 if (this.detailViewPopup){
                     $("#" + this.detailViewPopup.modalId).remove();
                 }
@@ -151,19 +280,6 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
                     backdrop :'statics',
                     type:2,
                     onOKCallback:function(){
-                        var result = detailView.getArgs();
-                        if(!result){
-                            return false;
-                        };
-                        console.log(result);
-                        result.success=function(){
-                            this.queryMessage();
-                        }.bind(this);
-                        result.error=function(res){
-                            var msg = res.message || "修改失败";
-                            this.showErrorMessage(msg);
-                        }.bind(this);
-                        this.collection.config(result);
                         this.detailViewPopup.$el.modal("hide");
                     }.bind(this),
                     onHideCallback:function(){
@@ -228,11 +344,10 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
                     currentPage: 1,
                     onPageChange: function (num, type) {
                         if (type !== "init"){
-                            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                            var args = _.extend(this.queryArgs);
+                            var args = _.extend(this.args);
                             args.page = num;
                             args.size = this.args.size;
-                            this.collection.onClickQueryButton(args);
+                            this.onClickQueryButton(args);
                         }
                     }.bind(this)
                 });

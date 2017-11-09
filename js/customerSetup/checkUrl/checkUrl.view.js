@@ -6,6 +6,7 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 this.options = options;
                 this.model = options.model;
                 this.collection = options.collection;
+                this.originVerifyCode = this.model.get("originVerifyCode");
                 var data={};
                 this.args = {
                     taskId:this.model.get('taskId'),
@@ -38,7 +39,7 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
             bindDetailTable:function(data){
                 var _rows = data.result.rows;
                 this.total = data.result.total;
-                this.tbodyList = $(_.template(template['tpl/customerSetup/checkUrl/checkUrl.detail.table.tbody.html'])({list:_rows}));
+                this.tbodyList = $(_.template(template['tpl/customerSetup/checkUrl/checkUrl.detail.table.tbody.html'])({list:_rows,originVerifyCode:this.originVerifyCode}));
                 this.$el.find(".ks-table tbody").html(this.tbodyList); 
                 if(!this.isInitPaginator){
                     this.$el.find(".pagination").html("");

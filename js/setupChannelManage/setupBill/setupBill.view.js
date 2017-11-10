@@ -347,7 +347,7 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         initCacheKey: function() {
             this.cacheKeyTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.cacheKey.html'])({
-                data: this.config.domainConf.cacheKey
+                data: this.config.domainConf.cacheKey && this.config.domainConf.cacheKeyFlag ? this.config.domainConf.cacheKey : null
             }));
             this.cacheKeyTable.appendTo(this.$el.find(".bill-ctn"));
             if (this.versionType === 2)

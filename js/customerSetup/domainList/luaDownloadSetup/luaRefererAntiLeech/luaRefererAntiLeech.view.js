@@ -124,9 +124,9 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
             var domains = '';
             
             if (this.defaultParam.refererType === 1) 
-                domains = _.uniq(this.$el.find("#white-domain").val().split(',')).join(',')
+                domains = _.uniq(this.$el.find("#white-domain").val().split('\n')).join(',')
             else
-                domains = _.uniq(this.$el.find("#black-domain").val().split(',')).join(',')
+                domains = _.uniq(this.$el.find("#black-domain").val().split('\n')).join(',')
 
             var postParam = {
                 "originId": this.domainInfo.id,
@@ -207,8 +207,8 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
                 value = eventTarget.value, domains = [], error;
 
             if (value === "") return false; 
-            if (value.indexOf(",") > -1){
-                domains = value.split(",");
+            if (value.indexOf("\n") > -1){
+                domains = value.split("\n");
                 if (domains.length > 100){
                     alert("超过100条")
                     return;
@@ -235,8 +235,8 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
                 value = eventTarget.value, domains = [], error;
 
             if (value === "") return false;    
-            if (value.indexOf(",") > -1){
-                domains = value.split(",");
+            if (value.indexOf("\n") > -1){
+                domains = value.split("\n");
                 for (var i = 0; i < domains.length; i++){
                     if (!Utility.isURL(domains[i])){
                         error = {message: "第" + (i + 1) + "个URL输错了！"};
@@ -268,15 +268,15 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
                 alert("请输入非法域名、URL！")
                 return false;
             }
-            if (this.defaultParam.refererType === 1 && whiteDomain.indexOf(",") > -1){
-                var domains = whiteDomain.split(",");
+            if (this.defaultParam.refererType === 1 && whiteDomain.indexOf("\n") > -1){
+                var domains = whiteDomain.split("\n");
                 if (domains.length > 100){
                     alert("超过100条")
                     return false;
                 }
             }
-            if (this.defaultParam.refererType === 2 && balckDomain.indexOf(",") > -1){
-                var domains = whiteDomain.split(",");
+            if (this.defaultParam.refererType === 2 && balckDomain.indexOf("\n") > -1){
+                var domains = whiteDomain.split("\n");
                 if (domains.length > 100){
                     alert("超过100条")
                     return false;

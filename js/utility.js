@@ -256,9 +256,12 @@ define("utility", ['require','exports'], function(require, exports) {
             return strRegex.test(str_url)
         },
 
-        isAntileechDomain: function(url) {
+        isAntileechDomain: function(str_url, isCommon) {
+            if(isCommon && str_url.indexOf("*.")==0){
+                str_url = str_url.substring(2);
+            }
             var reg = /^(([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)|\*{1}\.)+[a-zA-Z]{2,20}$/;
-            return reg.test(url);
+            return reg.test(str_url);
         },
 
         isHostHeader:function(str_url){

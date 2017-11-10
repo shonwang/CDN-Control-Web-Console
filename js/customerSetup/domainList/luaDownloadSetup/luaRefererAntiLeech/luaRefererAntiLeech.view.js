@@ -214,14 +214,14 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
                     return;
                 }
                 for (var i = 0; i < domains.length; i++){
-                    if (!Utility.isAntileechDomain(domains[i])){
-                        error = {message: "第" + (i + 1) + "个域名输错了！"};
+                    if (!Utility.isAntileechDomain(domains[i], true) && !Utility.isIP(domains[i])){
+                        error = {message: "第" + (i + 1) + "个既不是IP也不是域名！"};
                         alert(error.message)
                         return false;
                     }
                 }
-            } else if (!Utility.isAntileechDomain(value)){
-                error = {message: "请输入正确的域名！"};
+            } else if (!Utility.isAntileechDomain(value, true) && !Utility.isIP(domains[i])){
+                error = {message: "既不是IP也不是域名！"};
                 alert(error.message)
                 return false;
             } else {

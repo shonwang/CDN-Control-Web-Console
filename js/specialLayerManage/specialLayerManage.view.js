@@ -258,7 +258,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         }else if(rule.localType===4){
                             name = local.areaName+'/'+local.name;
                         }
-                        console.log("local.name"+local.name);
                         localLayerArray.push(name)
                     }.bind(this));
 
@@ -361,6 +360,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             curEditRule: this.curEditRule,
                             isEdit: true,
                             notFilter: true,
+                            appType: this.defaultParam.type,
                             onSaveCallback: function() {
                                 myAddEditLayerStrategyView.$el.remove();
                                 this.$el.find(".add-topo").show();
@@ -395,6 +395,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             collection: myAddEditLayerStrategyModel,
                             rule: this.defaultParam.rule,
                             notFilter: true,
+                            appType: this.defaultParam.type,
                             onSaveCallback: function() {
                                 myAddEditLayerStrategyView.$el.remove();
                                 this.$el.find(".add-topo").show();

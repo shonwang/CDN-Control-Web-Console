@@ -498,7 +498,7 @@ td .table {
   padding-left: 25px;
   padding-right: 25px;
   text-align: center;
-  font-size: 20px;
+  /*font-size: 20px;*/
 }
 .weige .manage-dialog-change-btnContainer {
   overflow: hidden;

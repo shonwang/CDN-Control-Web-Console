@@ -5,11 +5,22 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
                 type       = this.get("type"),
                 typeName   = this.get("typeName"),
                 createTime = this.get("createTime");
-            if (status === 2 || status === 4 || status === 6) this.set("statusName",'<span class="label label-warning">暂停中</span>');
-            if (status === 1) this.set("statusName", '<span class="label label-success">运行中</span>');
+                updateTime = this.get("updateTime");
+
+            var tips = '<a href="javascript:void(0)" class="label label-danger"' + 
+                                'data-container="body"' + 
+                                'data-trigger="hover"' +
+                                'data-toggle="popover"' + 
+                                'data-placement="top"' + 
+                                'data-content="' + this.get("reason") + '">'
+
+            if (status === 2 || status === 4 || status === 6) 
+                this.set("statusName", tips + '暂停</a>');
+            if (status === 1) 
+                this.set("statusName", '<span class="label label-success">运行中</span>');
             // if (status === 4) this.set("statusName", "<span class='label label-danger'>宕机</span>");
             // if (status === 6 || status === 12 || status === 14) this.set("statusName", "暂停且宕机");
-            // if (status === 8)this.set("statusName", "<span class='label label-warning'>暂停中</span>");
+            if (status === 8)this.set("statusName", "<span class='label label-info'>启动中</span>");
             // if (status === 10)this.set("statusName", "<span class='label label-warning'>暂停中</span>");
 
             if (!typeName && type == 12) this.set("typeName",'lvs');
@@ -18,6 +29,7 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
             if (!typeName && type == 15) this.set("typeName",'live');
 
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
+            if (updateTime) this.set("updateTimeFormated", new Date(updateTime).format("yyyy/MM/dd hh:mm"));
             this.set("isChecked", false);
         }
     });
@@ -611,7 +623,18 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
             }.bind(this);
 
             $.ajax(defaultParas);
-        }
+        },
+
+        modifyStatus: function(args){
+            var url = BASE_URL + "/rs/device/modifyStatus",
+            successCallback = function(res){
+                this.trigger("set.status.success", res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("set.status.error", response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
 
     });
 

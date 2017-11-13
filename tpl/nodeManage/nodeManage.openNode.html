@@ -1,0 +1,19 @@
+<table class="table table-striped">
+    <caption class="text-danger"><%=data["name"]%></caption>  
+    <thead> 
+      <tr>
+        <th>设备类型</th>
+        <th>设备数（台）</th>
+        <th>暂停状态设备（台）</th>
+      </tr>
+    </thead>
+		<tbody>
+      <% for(var i = 0; i < data["detail"].length; i++) { %>
+      <tr>
+        <td><%=data.detail[i]["type"]%></td>
+        <td><%=data.detail[i]["totalNum"]%></td>
+        <td><%=data.detail[i]["pauseNum"]%></td>
+      </tr>
+      <% } %> 		
+		</tbody>
+</table>

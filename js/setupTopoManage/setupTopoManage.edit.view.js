@@ -175,6 +175,11 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         upperObjArray = [],
                         tempRule = {};
                     _.each(rule.local, function(node) {
+                        if(rule.localType===3){
+                            localIdArray.push(node.provinceId);
+                        }else if(rule.localType===4){
+                            localIdArray.push(node.areaId);
+                        }
                         localIdArray.push(node.id)
                     }.bind(this))
                     _.each(rule.upper, function(node) {
@@ -391,7 +396,13 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         primaryNameArray = [],
                         backupNameArray = [];
                     _.each(rule.local, function(local, inx, list) {
-                        localLayerArray.push(local.name || "[后端没有返回名称]")
+                        var name = local.name;
+                        if(rule.localType===3) {
+                            name = local.provinceName + '/'+local.name;
+                        }else if(rule.localType===4){
+                            name = local.areaName+'/'+local.name;
+                        }
+                        localLayerArray.push(name || "[后端没有返回名称]")
                     }.bind(this));
 
                     primaryArray = _.filter(rule.upper, function(obj) {
@@ -477,7 +488,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.curEditRule = _.find(this.defaultParam.rule, function(obj) {
                     return obj.id === parseInt(id)
                 }.bind(this))
-
+             //  console.log("this.curEditRule"+this.curEditRule.local[1].name);
                 if (!this.curEditRule) {
                     alert("找不到此行的数据，无法编辑");
                     return;

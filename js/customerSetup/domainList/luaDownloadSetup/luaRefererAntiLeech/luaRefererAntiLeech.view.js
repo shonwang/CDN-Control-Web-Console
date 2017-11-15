@@ -61,10 +61,10 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
             }
             if (this.defaultParam.refererType === 1) {
                 this.$el.find(".black-list").hide();
-                this.$el.find("#white-domain").val(this.defaultParam.domains)
+                this.$el.find("#white-domain").val(this.defaultParam.domains.split(',').join('\n'))
             } else if (this.defaultParam.refererType === 2){
                 this.$el.find(".white-list").hide();
-                this.$el.find("#black-domain").val(this.defaultParam.domains)
+                this.$el.find("#black-domain").val(this.defaultParam.domains.split(',').join('\n'))
             }
 
             if (this.defaultParam.nullReferer === 1){

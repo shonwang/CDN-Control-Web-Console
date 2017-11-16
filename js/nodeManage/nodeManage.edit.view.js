@@ -237,6 +237,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     isMultiwire: true,
                     "rsNodeCorpDtos": args.rsNodeCorpDtos || [] //为了兼容老版库里没有数据的情况
                 }
+
             } else {
                 this.args = {
                     isMultiwire: true,
@@ -674,6 +675,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 this.setIspTemplate();
             }.bind(this));
             if (this.isEdit) {
+                this.$el.find("#dropdown-operator").attr("disabled","disabled");
                 var defaultValue = _.find(nameList, function(object) {
                     return object.value === this.model.attributes.operatorId
                 }.bind(this));
@@ -774,6 +776,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             }.bind(this));
 
             if (this.isEdit) {
+                this.$el.find("#dropdown-continent").attr("disabled","disabled");
                 this.$el.find(".dropdown-continent .cur-value").html(this.model.get("continentName"));
                 this.collection.getCountryByContinent({
                         id: this.model.get("continentId")
@@ -814,6 +817,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             });
 
             if (this.isEdit) {
+                this.$el.find("#dropdown-province").attr("disabled","disabled");
                 this.$el.find(".dropdown-province .cur-value").html(this.model.get("provName") || nameList[0].name);
                 this.collection.getAllCityAndBigArea({
                     provId: this.model.get("provId") || nameList[0].value
@@ -861,6 +865,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             this.$el.find('#input-longitude-latitude').val("查找中...");
             this.$el.find('#dropdown-region .cur-value').html(area);
             if (this.isEdit) {
+                this.$el.find("#dropdown-region").attr("disabled","disabled");
+                this.$el.find("#dropdown-city").attr("disabled","disabled");
                 this.cityId = this.model.get("cityId") || cityArray[0].value;
                 this.$el.find('#dropdown-city .cur-value').html(this.model.get("cityName") || cityArray[0].name);
                 if (!this.model.get("lon") || !this.model.get("lat"))
@@ -904,6 +910,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 }.bind(this)
             });
             if (this.isEdit) {
+                this.$el.find("#dropdown-country").attr("disabled","disabled");
                 this.$el.find(".dropdown-country .cur-value").html(this.model.get("countryName"));
                 this.collection.getOperationByCountry({
                         id: this.model.get("countryId")

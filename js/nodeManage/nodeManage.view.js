@@ -141,8 +141,18 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
 
         initTableHeader: function(){
             _.each(this.tableColumn, function(el){
-                var isCheckedStr = '<div class="checkbox"><label><input type="checkbox" name="' + el.name+ '"/>'+ el.name+ '</label></div>';
-                if (el.isChecked) isCheckedStr = '<div class="checkbox"><label><input type="checkbox" checked="true" name="' + el.name + '"/>'+ el.name +'</label></div>';
+                var isCheckedStr = '<div class="checkbox">' + 
+                                        '<label>' + 
+                                            '<input type="checkbox" name="' + el.name+ '"/>'+ el.name + 
+                                        '</label>' + 
+                                    '</div>';
+                if (el.isChecked) {
+                    isCheckedStr = '<div class="checkbox">' + 
+                                        '<label>' + 
+                                            '<input type="checkbox" checked="true" name="' + el.name + '"/>'+ el.name +
+                                        '</label>' + 
+                                    '</div>';
+                }
                 var tpl = '<li>' + isCheckedStr + '</li>'
                 $(tpl).appendTo(this.$el.find(".listShow"));
             }.bind(this))

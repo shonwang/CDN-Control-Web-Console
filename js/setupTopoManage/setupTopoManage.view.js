@@ -94,7 +94,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
 
                 this.table.find("tbody .send").on("click", $.proxy(this.onClickItemSend, this));
                 this.table.find("tbody .history").on("click", $.proxy(this.onClickItemHistory, this));
-
+                this.table.find("tbody .replaceOrDelete").on("click" ,$.proxy(this.onClickItemReplaceOrDelete, this));
                 this.table.find("[data-toggle='tooltip']").tooltip();
             },
 
@@ -118,6 +118,31 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
 
                     this.$el.find(".list-panel").hide();
                     myEditTopoView.render(this.$el.find(".edit-panel"))
+                }.bind(this));
+            },
+
+            onClickItemReplaceOrDelete:function(){
+              var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                var model = this.collection.get(id);
+                require(['setupTopoManage.replaceNode.view'], function(ReplaceNodeView) {
+                    var myReplaceNodeView = new ReplaceNodeView({
+                        collection: this.collection,
+                        model: model,
+                        onCancelCallback: function() {
+                            myReplaceNodeView.$el.remove();
+                            this.$el.find(".list-panel").show();
+                        }.bind(this)
+                    })
+
+                    this.$el.find(".list-panel").hide();
+                    myReplaceNodeView.render(this.$el.find(".replace-panel"));
                 }.bind(this));
             },
 
@@ -205,6 +230,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     myHistoryView.render(this.$el.find(".history-panel"))
                 }.bind(this));
             },
+
 
             onClickItemSend: function(event, model) {
                 this.off('enterKeyBindQuery');

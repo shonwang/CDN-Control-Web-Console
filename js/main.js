@@ -225,6 +225,7 @@
   "setupTopoManage.edit.view": "setupTopoManage/setupTopoManage.edit.view",
   "setupTopoManage.history.view": "setupTopoManage/setupTopoManage.history.view",
   "setupTopoManage.model": "setupTopoManage/setupTopoManage.model",
+  "setupTopoManage.replaceNode.view": "setupTopoManage/setupTopoManage.replaceNode.view",
   "setupTopoManage.selectNode.view": "setupTopoManage/setupTopoManage.selectNode.view",
   "setupTopoManage.view": "setupTopoManage/setupTopoManage.view",
   "setupTopoManageSendStrategy.model": "setupTopoManage/setupTopoManageSendStrategy.model",

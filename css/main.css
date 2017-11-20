@@ -1094,3 +1094,7 @@ td .table {
   font-size: 15px;
   margin-top: 5px;
 }
+.myRow {
+  clear:both;
+  margin:15px 0;
+}

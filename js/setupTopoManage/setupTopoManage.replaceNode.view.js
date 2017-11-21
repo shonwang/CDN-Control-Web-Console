@@ -15,7 +15,24 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
             this.onGetAllOriginNodes();
             this.onGetAllReplaceNodes();
-            this.$el.find(".select-value-layer").on("click", $.proxy(this.onClickSelectItem, this));
+            this.$el.find(".originBox .select-value-layer").find("li div").on("click", $.proxy(this.initItemRule, this));
+            this.$el.find(".originBox .select-value-layer").find("li div").on("click", $.proxy(this.initRuleTable, this));
+            this.allRule={
+                isChecked:false
+            };
+            this.itemRule=[];
+        },
+        
+        initItemRule:function(data){
+          var num=5;
+          this.allRule={
+                isChecked:false
+            }
+          for(var i=0;i<num;i++){
+              this.itemRule[i]={
+                isChecked:false
+              }
+          }
         },
 
         initRuleTable: function() {
@@ -87,10 +104,12 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
                     name: '北京多线02节点电信'
                 }]
             }];
-
+      
             this.table = $(_.template(template['tpl/setupTopoManage/setupTopoManage.replace.table.html'])({
-                data: this.ruleList
-            }));
+                data: this.ruleList,
+                allRule:this.allRule,
+                itemRule:this.itemRule
+            }));      
             if (this.ruleList.length !== 0) {
                 this.$el.find(".table-ctn").html(this.table[0]);
             } else {
@@ -100,6 +119,36 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
                     }
                 }));
             }
+            this.table.find("thead th").find("input").on("click", $.proxy(this.onClickSelectAllRule ,this));
+            this.table.find("tbody th").find("input").on("click", $.proxy(this.onClickSelectItemRule ,this));
+        },        
+
+        onClickSelectAllRule: function(event) {
+             var eventTarget = event.srcElement || event.target;
+             if(eventTarget.tagName!=="INPUT") return;
+             this.allRule.isChecked=eventTarget.checked;
+             _.each(this.itemRule ,function(el){
+                  el.isChecked=eventTarget.checked;
+             }.bind(this))
+             this.initRuleTable();
+        },
+        
+        onClickSelectItemRule:function() {
+           var eventTarget=event.srcElement || event.target;
+           if(eventTarget.tagName!=="INPUT") return;
+           var id=$(eventTarget).attr("id");
+           _.each(this.itemRule ,function(item,index,list){
+               if(index==id) item.isChecked=eventTarget.checked;
+           }.bind(this))
+           var i;
+           for(i=0;i<this.itemRule.length;i++){
+            if(!this.itemRule[i].isChecked) {
+                    this.allRule.isChecked=false;
+                    break;
+              }           
+           }
+           if(i==this.itemRule.length) this.allRule.isChecked=true;
+           this.initRuleTable();
         },
 
         onGetAllOriginNodes: function() {
@@ -171,6 +220,7 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
                 openSearch: true,
                 selectWidth: 200,
                 isDataVisible: false,
+                bottom:40,
                 onOk: function() {},
                 data: this.nameList,
                 callback: function(data) {
@@ -183,9 +233,29 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
             this.$el.find("#dropdown-replaceNode .cur-value").html(this.nameList[0].name);
         },
 
-        onClickSelectItem: function() {
-            this.initRuleTable();
-        },
+       
+      /* onClickSelectItemRule: function(event) {
+             var eventTarget = event.srcElement || event.target;
+             if(eventTarget.tagName!=="INPUT") return;
+             var inputCheck=$(eventTarget).attr("checked");
+             var chiefInput=this.$el.find("table thead").find("input");
+             var itemInput=this.$el.find("table tbody").find("input");
+             if(inputCheck){
+                $(eventTarget).removeAttr("checked");
+                chiefInput.removeAttr("checked");
+             }else{
+                $(eventTarget).attr("checked","true");
+                for(var i=0;i<itemInput.length;i++){
+                    if(!itemInput.eq(i).attr("checked")){
+                        return;
+                    }else{
+                       chiefInput.prop("checked","true");
+                       chiefInput.attr("checked","true");
+                    }
+                }
+             }
+
+       },*/
 
         onClickCancelButton: function() {
             this.options.onCancelCallback && this.options.onCancelCallback();

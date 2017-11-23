@@ -164,7 +164,12 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         upperObjArray = [],
                         tempRule = {};
                     _.each(rule.local, function(node) {
-                        localIdArray.push(node.id)
+                         if(rule.localType===3){
+                            localIdArray.push(node.provinceId);
+                        }else if(rule.localType===4){
+                            localIdArray.push(node.areaId);
+                        }
+                        localIdArray.push(node.id);
                     }.bind(this))
                     _.each(rule.upper, function(node) {
                         upperObjArray.push({
@@ -247,7 +252,13 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         primaryNameArray = [],
                         backupNameArray = [];
                     _.each(rule.local, function(local, inx, list) {
-                        localLayerArray.push(local.name)
+                         var name = local.name;
+                        if(rule.localType===3) {
+                            name = local.provinceName + '/'+local.name;
+                        }else if(rule.localType===4){
+                            name = local.areaName+'/'+local.name;
+                        }
+                        localLayerArray.push(name)
                     }.bind(this));
 
                     primaryArray = _.filter(rule.upper, function(obj) {
@@ -304,7 +315,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     this.ruleList.push(ruleStrObj)
                 }.bind(this))
 
-                this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.role.table.html'])({
+                this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.rule.table.html'])({
                     data: this.ruleList
                 }));
                 if (this.ruleList.length !== 0)
@@ -349,6 +360,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             curEditRule: this.curEditRule,
                             isEdit: true,
                             notFilter: true,
+                            appType: this.defaultParam.type,
                             onSaveCallback: function() {
                                 myAddEditLayerStrategyView.$el.remove();
                                 this.$el.find(".add-topo").show();
@@ -383,6 +395,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             collection: myAddEditLayerStrategyModel,
                             rule: this.defaultParam.rule,
                             notFilter: true,
+                            appType: this.defaultParam.type,
                             onSaveCallback: function() {
                                 myAddEditLayerStrategyView.$el.remove();
                                 this.$el.find(".add-topo").show();

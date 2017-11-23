@@ -98,6 +98,8 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
                 this.$el.find('.all .add-node').on("click", $.proxy(this.onClickAddAllNodeButton, this))
                 this.$el.find('.upper .add-node').on("click", $.proxy(this.onClickAddUpperNodeButton, this))
+                this.$el.find(".view-more").on("click", $.proxy(this.onClickViewMoreButton, this));
+                this.$el.find(".view-less").on("click", $.proxy(this.onClickViewLessButton, this));
 
                 this.collection.off("get.devicetype.success");
                 this.collection.off("get.devicetype.error");
@@ -114,6 +116,32 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     myNodeManageModel.on("get.operator.error", $.proxy(this.onGetError, this));
                     myNodeManageModel.getOperatorList();
                 }.bind(this))
+            },
+
+            onClickViewMoreButton: function(event) {
+                var eventTarget = event.srcElement || event.target;
+                if ($(eventTarget).parents(".all").get(0)) {
+                    this.$el.find(".all .table-ctn").show(200)
+                    this.$el.find('.all .view-less').show();
+                    this.$el.find(".all .view-more").hide();
+                } else {
+                    this.$el.find(".upper .table-ctn").show(200);
+                    this.$el.find('.upper .view-less').show();
+                    this.$el.find(".upper .view-more").hide();
+                }
+            },
+
+            onClickViewLessButton: function(event) {
+                var eventTarget = event.srcElement || event.target;
+                if ($(eventTarget).parents(".all").get(0)) {
+                    this.$el.find(".all .table-ctn").hide(200)
+                    this.$el.find('.all .view-less').hide();
+                    this.$el.find(".all .view-more").show();
+                } else {
+                    this.$el.find(".upper .table-ctn").hide(200);
+                    this.$el.find('.upper .view-less').hide();
+                    this.$el.find(".upper .view-more").show();
+                }
             },
 
             onGetOperatorSuccess: function(res) {
@@ -152,6 +180,11 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         upperObjArray = [],
                         tempRule = {};
                     _.each(rule.local, function(node) {
+                        if(rule.localType===3){
+                            localIdArray.push(node.provinceId);
+                        }else if(rule.localType===4){
+                            localIdArray.push(node.areaId);
+                        }
                         localIdArray.push(node.id)
                     }.bind(this))
                     _.each(rule.upper, function(node) {
@@ -370,7 +403,13 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         primaryNameArray = [],
                         backupNameArray = [];
                     _.each(rule.local, function(local, inx, list) {
-                        localLayerArray.push(local.name || "[后端没有返回名称]")
+                        var name = local.name;
+                        if(rule.localType===3) {
+                            name = local.provinceName + '/'+local.name;
+                        }else if(rule.localType===4){
+                            name = local.areaName+'/'+local.name;
+                        }
+                        localLayerArray.push(name || "[后端没有返回名称]")
                     }.bind(this));
 
                     primaryArray = _.filter(rule.upper, function(obj) {
@@ -414,9 +453,9 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
                     var upperLayer = primaryNameArray.join('<br>');
                     if (rule.upper.length > 1)
-                        upperLayer = '<strong>主：</strong>' + primaryNameArray.join('<br>');
+                        upperLayer = '<strong>主：</strong><br>' + primaryNameArray.join('<br>');
                     if (backupArray.length > 0)
-                        upperLayer += '<br><strong>备：</strong>' + backupNameArray.join('<br>');
+                        upperLayer += '<br><strong>备：</strong><br>' + backupNameArray.join('<br>');
 
                     var ruleStrObj = {
                         id: rule.id,
@@ -426,7 +465,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     this.ruleList.push(ruleStrObj)
                 }.bind(this))
 
-                this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.role.table.html'])({
+                this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.rule.table.html'])({
                     data: this.ruleList
                 }));
                 if (this.ruleList.length !== 0)
@@ -456,7 +495,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.curEditRule = _.find(this.defaultParam.rule, function(obj) {
                     return obj.id === parseInt(id)
                 }.bind(this))
-
+             //  console.log("this.curEditRule"+this.curEditRule.local[1].name);
                 if (!this.curEditRule) {
                     alert("找不到此行的数据，无法编辑");
                     return;

@@ -218,6 +218,7 @@ define("utility", ['require','exports'], function(require, exports) {
                             '</li>',
                 itemNode = $(itemTpl);
                 itemNode.on("click", function(event){
+                  //  alert(1);
                     var eventTarget = event.srcElement || event.target;
                         showNode.html($(eventTarget).html()),
                         value = $(eventTarget).attr("value");

@@ -808,6 +808,8 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 });
 
                 this.$el.find("#text-domainName").on("focus", $.proxy(this.onDomainNameFocus, this));
+                this.$el.find("#text-domainName").on("blur", $.proxy(this.onDomainNameBlur, this));
+                this.$el.find("#text-test-domainName").on("focus", $.proxy(this.onTestDomainNameFocus, this));
 
                 this.collection.off("submit.domain.success");
                 this.collection.off("submit.domain.error");
@@ -848,6 +850,22 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
 
             onDomainNameFocus: function() {
                 this.$el.find("#domain-name-error").hide();
+                this.$el.find("#test-url-container").hide();
+            },
+
+            onDomainNameBlur:function(){
+                var domainName = this.$el.find("#text-domainName").val();
+                if(domainName.indexOf("*")==0){
+                    //泛域名
+                    this.$el.find("#test-url-container").show();
+                }
+                else{
+                    this.$el.find("#test-url-container").hide();
+                }
+            },
+
+            onTestDomainNameFocus:function(){
+                this.$el.find("#domain-name-test-error").hide();
             },
 
             onSubmit: function() {
@@ -881,7 +899,8 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     "originType": originTypes[result.OriginType],
                     "originAddress": _.uniq(result.Origin.split(',')).join(','),
                     "originPort": result.OriginPort,
-                    "applicationType":result.applicationType
+                    "applicationType":result.applicationType,
+                    "testUrl":result.testUrl || null
                 }
                 this.collection.submitDomain(postParam);
                 this.$el.find("#add-domain-btnSubmit").attr("disabled", "disabled");
@@ -918,6 +937,24 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 if (!result) {
                     return false;
                 }
+                
+                var domainName = this.args.DomainName;
+                if(domainName.indexOf("*")==0){
+                    if(this.args.CdnType == "liveUpward" || (this.args.CdnType == "live" && result.CdnProtocol !="HLS")){
+                        alert("泛域名只支持使用点播平台的域名");
+                        return false;
+                    }
+                    var test_url = this.$el.find("#text-test-domainName").val();
+                    if(!test_url){
+                        this.$el.find("#domain-name-test-error").show();
+                        return false;
+                    }
+                    result.testUrl = test_url;
+                }
+                else if(domainName.indexOf("*")!=0){
+                    result.testUrl = "";
+                }
+
                 return result;
 
             },
@@ -1015,9 +1052,29 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     this.$el.find("#domain-name-error").html("加速域名不能为空").show();
                     return false;
                 }
+                
+                if(domainName.indexOf("*")==0){
+                    var result = this.checkCommDomain();
+                    if(!result){
+                        this.$el.find("#domain-name-error").html("泛域名填写错误").show();
+                        return false;
+                    }
+                    return true;
+                }
+                else{
+                    var result = Utility.isDomain(domainName);
+                    if (!result) {
+                        this.$el.find("#domain-name-error").html("域名填写错误").show();
+                        return false;
+                    }
+                }
+                return true;
+            },
+
+            checkCommDomain:function(){
+                var domainName = this.args.DomainName.substring(2);
                 var result = Utility.isDomain(domainName);
-                if (!result) {
-                    this.$el.find("#domain-name-error").html("域名填写错误").show();
+                if(!result){
                     return false;
                 }
                 return true;

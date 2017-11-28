@@ -3,7 +3,7 @@ define("setupChannelManage.model", ['require', 'exports', 'utility'], function(r
 
         initialize: function(){
             var businessType = this.get("subType"),
-                status       = this.get("auditStatus"),
+                status       = this.get("originStatus"),
                 protocol     = this.get("protocol"),
                 cdnFactory   = this.get("cdnFactory"),
                 confCustomType = this.get("confCustomType");
@@ -13,7 +13,7 @@ define("setupChannelManage.model", ['require', 'exports', 'utility'], function(r
             if (status === -1) this.set("statusName", '<span class="text-danger">删除</span>');
             if (status === 2) this.set("statusName", '<span class="text-danger">审核失败</span>');
             if (status === 3) this.set("statusName", '<span class="text-danger">停止</span>');
-            if (status === 4) this.set("statusName", '<span class="text-primary">配置中</span>');
+            //if (status === 4) this.set("statusName", '<span class="text-primary">配置中</span>');
             if (status === 6) this.set("statusName", '<span class="text-primary">编辑中</span>');
             if (status === 14) this.set("statusName", '<span class="text-danger">配置失败</span>');
             if (status === 7) this.set("statusName", '<span class="text-primary">待下发</span>');
@@ -21,8 +21,15 @@ define("setupChannelManage.model", ['require', 'exports', 'utility'], function(r
             if (status === 9) this.set("statusName", '<span class="text-danger">定制化配置错误</span>');
             if (status === 10) this.set("statusName", '<span class="text-primary">下发中</span>');
             if (status === 11) this.set("statusName", '<span class="text-danger">下发失败</span>');
-            if (status === 12) this.set("statusName", '<span class="text-primary">下发成功</span>');
+            //if (status === 12) this.set("statusName", '<span class="text-primary">下发成功</span>');
             if (status === 13) this.set("statusName", '<span class="text-success">运行中</span>');
+
+            if (status === 15) this.set("statusName", '<span class="text-danger">暂停中</span>');
+            if (status === 16) this.set("statusName", '<span class="text-success">开启中</span>');
+            if (status === 17) this.set("statusName", '<span class="text-danger">删除中</span>');
+            if (status === 18) this.set("statusName", '<span class="text-danger">已封禁</span>');
+            if (status === 19) this.set("statusName", '<span class="text-primary">封禁中</span>');
+            if (status === 20) this.set("statusName", '<span class="text-primary">解禁中</span>');
 
             if (businessType === 1) this.set("businessTypeName", '下载加速');
             if (businessType === 2) this.set("businessTypeName", '直播加速');

@@ -1098,3 +1098,17 @@ td .table {
   clear:both;
   margin:15px 0;
 }
+.mainOrBackupSpan {
+  font-weight: 800;
+  float: left;
+}
+.positionDiv{
+  position: fixed;
+  left:20%;
+  bottom:10%;
+  width: 100%;
+} 
+.myTable-ctn {
+  height: 350px;
+  overflow: auto;
+}

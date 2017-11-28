@@ -135,6 +135,9 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     var myReplaceNodeView = new ReplaceNodeView({
                         collection: this.collection,
                         model: model,
+                        onSaveCallback: function() {
+                            setTimeout($.proxy(this.alertChangeType, this, model), 500);
+                        }.bind(this),
                         onCancelCallback: function() {
                             myReplaceNodeView.$el.remove();
                             this.$el.find(".list-panel").show();

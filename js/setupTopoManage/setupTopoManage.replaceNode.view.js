@@ -3,113 +3,152 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
 
         var ReplaceNodeView = Backbone.View.extend({
 
-            events: {},
+        events: {},
 
         initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
+            this.model = options.model;
+
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.replace&deleteNode.html'])({
 
             }));
+            
+            this.collection.off('get.topo.OriginInfo.success');
+            this.collection.off('get.topo.OriginInfo.error');
+            this.collection.on('get.topo.OriginInfo.success', $.proxy(this.onOriginInfo, this));
+            this.collection.on('get.topo.OriginInfo.error', $.proxy(this.onGetError, this));
+            this.collection.getTopoOrigininfo(this.model.get('id'));
+
+            this.collection.off('get.ruleInfo.success');
+            this.collection.off('get.ruleInfo.error');
+            this.collection.on('get.ruleInfo.success', $.proxy(this.initItemRule, this));
+            this.collection.on('get.ruleInfo.error', $.proxy(this.onGetError, this));
+
+            this.collection.off('delete.topo.success');
+            this.collection.off('delete.topo.error');
+            this.collection.on('delete.topo.success', $.proxy(this.deleteTopoSuccess, this));
+            this.collection.on('delete.topo.error', $.proxy(this.onDeleteError, this));
+
+            this.collection.off('replace.topo.success');
+            this.collection.off('replace.topo.error');
+            this.collection.on('replace.topo.success', $.proxy(this.replaceTopoSuccess, this));
+            this.collection.on('replace.topo.error', $.proxy(this.onReplaceError, this));
+
+            require(['nodeManage.model'], function(NodeManageModel){
+                var myNodeManageModel = new NodeManageModel();
+                myNodeManageModel.on("get.operator.success", $.proxy(this.onGetAllOperator, this));
+                myNodeManageModel.on("get.operator.error", $.proxy(this.onGetError, this));
+                myNodeManageModel.getOperatorList();
+            }.bind(this));            
+
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-            this.onGetAllOriginNodes();
-            this.onGetAllReplaceNodes();
-            this.$el.find(".originBox .select-value-layer").find("li div").on("click", $.proxy(this.initItemRule, this));
-            this.$el.find(".originBox .select-value-layer").find("li div").on("click", $.proxy(this.initRuleTable, this));
-            this.allRule={
-                isChecked:false
-            };
-            this.itemRule=[];
-        },
-        
-        initItemRule:function(data){
-          var num=5;
-          this.allRule={
-                isChecked:false
+            this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this)); 
+            this.$el.find(".opt-ctn #delete").on("click", $.proxy(this.onClickDeleteButton, this));
+            this.$el.find(".opt-ctn #replace").on("click", $.proxy(this.onClickReplaceButton, this));        
+
+            this.queryArgs={
+                topoId:'',
+                nodeId:'',
             }
-          for(var i=0;i<num;i++){
-              this.itemRule[i]={
-                isChecked:false
-              }
-          }
+            this.operateRule={   //当前操作的规则
+               id:'',
+               type:'topo',
+               rules:'',
+               oldNodeId:'',
+               newNodeId:'',
+               ipCorporation:'',
+               operateType:''
+            }
+            this.ruleIdArr=[]; //用来存储选择的规则id        
         },
 
-        initRuleTable: function() {
-            this.ruleList = [{
-                id: 101,
-                local: [{
-                    id: 1,
-                    name: '联通'
-                }],
-                upper: [{
-                    chiefType: 1,
-                    id: 63,
-                    name: '北京教育网'
-                }]
-            }, {
-                id: 102,
-                local: [{
-                    id: 2,
-                    name: '电信'
-                }],
-                upper: [{
-                    chiefType: 1,
-                    id: 63,
-                    name: '北京教育网2'
-                }]
-            }, {
-                id: 104,
-                local: [{
-                    id: 5,
-                    name: '鹏博士'
-                }],
-                upper: [{
-                    chiefType: 1,
-                    id: 64,
-                    name: '北京多线02节点电信'
-                }, {
-                    chiefType: 1,
-                    id: 65,
-                    name: '北京多线02节点联通'
-                }, {
-                    chiefType: 0,
-                    id: 66,
-                    name: '北京多线02节点铁通'
-                }]
-            },{
-                id: 105,
-                local: [{
-                    id: 6,
-                    name: '上海鹏博士01点播中层节点'
-                }],
-                upper: [{
-                    chiefType: 1,
-                    id: 64,
-                    name: '北京多线02节点电信'
-                }, {
-                    chiefType: 1,
-                    id: 65,
-                    name: '北京多线02节点联通'
-                }]
-            },{
-                id: 106,
-                local: [{
-                    id: 7,
-                    name: '华数'
-                }],
-                upper: [{
-                    chiefType: 1,
-                    id: 64,
-                    name: '北京多线02节点电信'
-                }]
-            }];
-      
+         onOriginInfo: function(res) {
+                this.defaultParam = {
+                    "id": res.id,
+                    "name": res.name,
+                    "allNodes": res.allNodes,
+                    "upperNodes": res.upperNodes,
+                    "rule": res.rule,
+                    "type": res.type,
+                    "mark": res.mark
+                }
+
+                console.log("编辑的拓扑: ", this.defaultParam)
+                this.onGetAllOriginNodes();
+                this.onGetAllReplaceNodes();
+                
+                this.queryArgs={
+                    topoId:this.defaultParam.id,
+                    nodeId:this.defaultParam.allNodes[0].id
+                }
+             //   console.log("默认"+this.queryArgs.topoId+"  "+this.queryArgs.nodeId);
+                this.collection.getRuleInfo(this.queryArgs); 
+            },
+
+        onClickDeleteButton: function(){
+            if(this.ruleList.length==0){
+                alert("此节点没有匹配的规则");
+                return;
+            }
+            var i;
+            for(i=0;i<this.ruleList.length;i++){
+                if(this.ruleList[i].itemRuleIsChecked) break;
+            }
+            if(i==this.ruleList.length) {
+                alert("请先选择规则")
+                return;
+            }
+           this.operateRule.id=this.defaultParam.id;
+           this.operateRule.type="topo";
+           this.operateRule.operateType="delete";
+           console.log(this.operateRule);
+           this.collection.deleteOrReplaceTopoInfo(this.operateRule);
+        },
+
+        onClickReplaceButton: function(){
+            if(this.ruleList.length==0){
+                alert("此节点没有匹配的规则");
+                return;
+            }
+            var i;
+            for(i=0;i<this.ruleList.length;i++){
+                if(this.ruleList[i].itemRuleIsChecked) break;
+            }
+            if(i==this.ruleList.length) {
+                alert("请先选择规则")
+                return;
+            }
+           this.operateRule.id=this.defaultParam.id;
+           this.operateRule.type="topo";
+           this.operateRule.operateType="replace";
+          if(this.operateRule.oldNodeId==this.operateRule.newNodeId){
+            alert("替换节点与原节点不能相同");
+            return;
+         }
+           console.log(this.operateRule);
+           this.collection.deleteOrReplaceTopoInfo(this.operateRule);
+        },
+
+        initItemRule:function(res){
+          var ruleList=res;
+          ruleList.allRuleIsChecked=false;
+          _.each(ruleList, function(el){
+              el.itemRuleIsChecked=false;
+              _.each(el.upper,function(e){
+                if(e.chiefType==0) el.isBackup=true;  
+              }.bind(this))
+         }.bind(this))
+
+          this.initRuleTable(ruleList);
+        },
+
+        initRuleTable: function(res) {
+            this.ruleList=res;              
             this.table = $(_.template(template['tpl/setupTopoManage/setupTopoManage.replace.table.html'])({
-                data: this.ruleList,
-                allRule:this.allRule,
-                itemRule:this.itemRule
-            }));      
+                data: this.ruleList
+            }));  
+
             if (this.ruleList.length !== 0) {
                 this.$el.find(".table-ctn").html(this.table[0]);
             } else {
@@ -120,58 +159,75 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
                 }));
             }
             this.table.find("thead th").find("input").on("click", $.proxy(this.onClickSelectAllRule ,this));
-            this.table.find("tbody th").find("input").on("click", $.proxy(this.onClickSelectItemRule ,this));
+            this.table.find("tbody th").find("input").on("click", $.proxy(this.onClickSelectItemRule ,this));         
         },        
 
         onClickSelectAllRule: function(event) {
              var eventTarget = event.srcElement || event.target;
              if(eventTarget.tagName!=="INPUT") return;
-             this.allRule.isChecked=eventTarget.checked;
-             _.each(this.itemRule ,function(el){
-                  el.isChecked=eventTarget.checked;
+             this.ruleList.allRuleIsChecked=eventTarget.checked;
+             _.each(this.ruleList ,function(el){
+                  el.itemRuleIsChecked=eventTarget.checked;
              }.bind(this))
-             this.initRuleTable();
+             if(this.ruleList.allRuleIsChecked){
+                this.operateRule.rules="all";
+                this.ruleIdArr=[];
+                _.each(this.ruleList,function(el,index){
+                    this.ruleIdArr.push(this.ruleList[index].id);
+                }.bind(this));
+            }else {
+                this.operateRule.rules="";
+                this.ruleIdArr=[];
+            }
+            this.table.find("tbody tr").find("input").attr("checked", eventTarget.checked);
+            this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
         },
         
         onClickSelectItemRule:function() {
            var eventTarget=event.srcElement || event.target;
            if(eventTarget.tagName!=="INPUT") return;
            var id=$(eventTarget).attr("id");
-           _.each(this.itemRule ,function(item,index,list){
-               if(index==id) item.isChecked=eventTarget.checked;
+
+           _.each(this.ruleList, function(item,index,list){
+               if(index==id) {
+                  item.itemRuleIsChecked=eventTarget.checked;
+                  if(item.itemRuleIsChecked){
+                     this.ruleIdArr.push(this.ruleList[index].id);
+                  }else{
+                    _.each(this.ruleIdArr,function(el,i){
+                        if(el===this.ruleList[index].id){
+                            this.ruleIdArr.splice(i,1);
+                        }                      
+                    }.bind(this))
+                 }
+                }   
            }.bind(this))
+
+           this.operateRule.rules=this.ruleIdArr.join(",");
+
            var i;
-           for(i=0;i<this.itemRule.length;i++){
-            if(!this.itemRule[i].isChecked) {
-                    this.allRule.isChecked=false;
+           for(i=0;i<this.ruleList.length;i++){
+            if(!this.ruleList[i].itemRuleIsChecked) {
+                    this.ruleList.allRuleIsChecked=false;
                     break;
               }           
            }
-           if(i==this.itemRule.length) this.allRule.isChecked=true;
-           this.initRuleTable();
+           if(i==this.ruleList.length){
+                this.ruleList.allRuleIsChecked=true;
+                this.operateRule.rules="all";
+            }  
+            this.table.find("thead tr").find("input").prop("checked", this.ruleList.allRuleIsChecked); 
         },
 
         onGetAllOriginNodes: function() {
-            /*var nameList = [];
-            _.each(list, function(el, inx, list) {
-                nameList.push({
+             this.nameList=[];
+
+            _.each(this.defaultParam.allNodes, function(el, key, list) {
+                this.nameList.push({
                     name: el.name,
                     value: el.id
                 })
-            }.bind(this))*/
-            this.nameList = [{
-                name: '庆云移动11节点',
-                id: 101
-            }, {
-                name: '深圳鹏博士01节点',
-                id: 102
-            }, {
-                name: '盐城电信02节点',
-                id: 103
-            }, {
-                name: '盐城电信03节点',
-                id: 104
-            }]
+            }.bind(this))
 
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.dropdown-originNode').get(0),
@@ -184,34 +240,25 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
                 data: this.nameList,
                 callback: function(data) {
                     this.$el.find('#dropdown-originNode .cur-value').html(data.name);
-                    //  this.collection.getAllCityAndBigArea({
-                    //    provId: data.value
-                    //})
+                    this.operateRule.oldNodeId=parseInt(data.value);
+                    this.queryArgs.nodeId=parseInt(data.value);
+                    this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                    this.collection.getRuleInfo(this.queryArgs);
                 }.bind(this)
             });
             this.$el.find("#dropdown-originNode .cur-value").html(this.nameList[0].name);
+            this.operateRule.oldNodeId=this.nameList[0].value;            
         },
+
         onGetAllReplaceNodes: function() {
-            /*var nameList = [];
-            _.each(list, function(el, inx, list) {
-                nameList.push({
+           this.nameList = [];
+
+            _.each(this.defaultParam.allNodes, function(el, inx, list) {
+                this.nameList.push({
                     name: el.name,
                     value: el.id
                 })
-            }.bind(this))*/
-            this.nameList = [{
-                name: '庆云移动11节点',
-                id: 101
-            }, {
-                name: '深圳鹏博士01节点',
-                id: 102
-            }, {
-                name: '盐城电信02节点',
-                id: 103
-            }, {
-                name: '盐城电信03节点',
-                id: 103
-            }]
+            }.bind(this))
 
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.dropdown-replaceNode').get(0),
@@ -225,40 +272,78 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
                 data: this.nameList,
                 callback: function(data) {
                     this.$el.find('#dropdown-replaceNode .cur-value').html(data.name);
-                    //  this.collection.getAllCityAndBigArea({
-                    //    provId: data.value
-                    //})
+                    this.operateRule.newNodeId=parseInt(data.value);
                 }.bind(this)
             });
             this.$el.find("#dropdown-replaceNode .cur-value").html(this.nameList[0].name);
+            this.operateRule.newNodeId=this.nameList[0].value;
         },
 
-       
-      /* onClickSelectItemRule: function(event) {
-             var eventTarget = event.srcElement || event.target;
-             if(eventTarget.tagName!=="INPUT") return;
-             var inputCheck=$(eventTarget).attr("checked");
-             var chiefInput=this.$el.find("table thead").find("input");
-             var itemInput=this.$el.find("table tbody").find("input");
-             if(inputCheck){
-                $(eventTarget).removeAttr("checked");
-                chiefInput.removeAttr("checked");
-             }else{
-                $(eventTarget).attr("checked","true");
-                for(var i=0;i<itemInput.length;i++){
-                    if(!itemInput.eq(i).attr("checked")){
-                        return;
-                    }else{
-                       chiefInput.prop("checked","true");
-                       chiefInput.attr("checked","true");
-                    }
-                }
-             }
+        onGetAllOperator: function(data) {
+            this.operatorList=[];
 
-       },*/
+            _.each(data.rows, function(el, key, list) {
+                this.operatorList.push({
+                    name: el.name,
+                    value: el.id
+                })
+            }.bind(this))
+
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-operator').get(0),
+                panelID: this.$el.find('#dropdown-operator').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                bottom:40,
+                onOk: function() {},
+                data: this.operatorList,
+                callback: function(data) {
+                    this.$el.find('#dropdown-operator .cur-value').html(data.name);
+                    this.operateRule.ipCorporation=data.value;
+                }.bind(this)
+            });
+            this.$el.find("#dropdown-operator .cur-value").html(this.operatorList[0].name);
+           // this.operateRule.ipCorporation=this.operatorList[0].name;
+        },
+        
+       deleteTopoSuccess: function(){
+          this.collection.getRuleInfo(this.queryArgs);
+          this.ruleIdArr=[];
+          alert("删除成功！")
+       },
+
+        onDeleteError: function(error) {
+          if (error && error.message)
+            alert(error.message)
+          else
+            alert("网络阻塞，请刷新重试！")
+        },
+       
+        replaceTopoSuccess: function (){
+          //  console.log(this.queryArgs);
+            this.collection.getRuleInfo(this.queryArgs);
+            this.ruleIdArr=[];
+            alert("替换成功！")
+        },
+
+        onReplaceError: function(error){
+            if (error && error.message)
+                alert(error.message)
+            else
+                alert("网络阻塞，请刷新重试！")
+        },
 
         onClickCancelButton: function() {
             this.options.onCancelCallback && this.options.onCancelCallback();
+        },
+        
+        onGetError: function(error) {
+            if (error && error.message)
+                alert(error.message)
+            else
+                alert("网络阻塞，请刷新重试！")
         },
 
         render: function(target) {

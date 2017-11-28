@@ -9,6 +9,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.html'])());
 
             this.initNodeDropMenu();
+            this.initNodeTypeDropMenu();
 
             this.collection.on("get.node.success", $.proxy(this.onNodeListSuccess, this));
             this.collection.on("get.node.error", $.proxy(this.onGetError, this));
@@ -34,6 +35,12 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             this.collection.on("update.node.status.error", $.proxy(this.onGetError, this));
             this.collection.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
+
+            this.collection.on("get.area.success", $.proxy(this.onGetLargeAreaSuccess, this));
+            this.collection.on("get.area.error", $.proxy(this.onGetError, this));
+            
+            this.collection.on("get.province.success", $.proxy(this.onGetProvinceSuccess, this));
+            this.collection.on("get.province.error", $.proxy(this.onGetError, this));
 
             this.collection.on("operate.node.success", $.proxy(this.onOperateNodeSuccess, this));
             this.collection.on("operate.node.error", function(res) {
@@ -67,7 +74,10 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 "count": 10,
                 "chname": null, //节点名称
                 "operator": null, //运营商id
-                "status": null //节点状态
+                "status": null,//节点状态
+                "province":null,//省份名称
+                "largeArea":null,//大区名称
+                "nodeType":null //节点类型
             }
             this.tableColumn = [{
                 name: "运营商",
@@ -659,6 +669,25 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             });
             this.isInitPaginator = true;
         },
+         
+        initNodeTypeDropMenu:function() {
+            var typeArray=[{
+                name:"全部",
+                value:"All"
+            },{
+                name:"直播",
+                value:1
+            },{
+                name:"下载",
+                value:2
+            }]
+            Utility.initDropMenu(this.$el.find(".dropdown-nodeType"), typeArray, function(value) {
+                if (value !== "All")
+                    this.queryArgs.nodeType = parseInt(value)
+                else
+                    this.queryArgs.nodeType = null;
+            }.bind(this));
+        },
 
         initNodeDropMenu: function() {
             var statusArray = [{
@@ -705,6 +734,36 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             }.bind(this));
 
             this.collection.getOperatorList();
+            this.collection.getAllProvince();
+            this.collection.getAreaList();           
+        },
+        
+        onGetLargeAreaSuccess: function(res){
+           this.largeArea=res;
+           var nameList=[{
+              name:"全部",
+              value:"All"
+           }];
+           _.each(res, function(el, index, list){
+              nameList.push({
+                name:el.name,
+                value:el.id
+              })
+           });
+          var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-largeArea').get(0),
+                panelID: this.$el.find('#dropdown-largeArea').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function() {},
+                data: nameList,
+                callback: function(data) {
+                    this.$el.find('#dropdown-largeArea .cur-value').html(data.name);
+                }.bind(this)
+            });
+            this.$el.find("#dropdown-largeArea .cur-value").html(nameList[0].name);
         },
 
         onGetOperatorSuccess: function(res) {
@@ -725,6 +784,36 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 else
                     this.queryArgs.operator = null;
             }.bind(this));
+        },
+
+        onGetProvinceSuccess :function(res) {
+            this.provinceList=res;
+
+            var nameList=[{
+                name: "全部",
+                value:"All"
+            }];
+            _.each(res, function(el, key, list) {
+                nameList.push({
+                    name: el.name,
+                    value: el.id
+                })
+            }.bind(this))
+
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-province').get(0),
+                panelID: this.$el.find('#dropdown-province').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function() {},
+                data: nameList,
+                callback: function(data) {
+                    this.$el.find('#dropdown-province .cur-value').html(data.name);
+                }.bind(this)
+            });
+            this.$el.find("#dropdown-province .cur-value").html(nameList[0].name);
         },
 
         onItemCheckedUpdated: function(event) {

@@ -75,9 +75,10 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 "chname": null, //节点名称
                 "operator": null, //运营商id
                 "status": null,//节点状态
-                "province":null,//省份名称
-                "largeArea":null,//大区名称
-                "nodeType":null //节点类型
+                "appType":null, //节点类型
+                "provinceId":null,//省份名称
+                "areaId":null//大区名称
+               
             }
             this.tableColumn = [{
                 name: "运营商",
@@ -581,7 +582,6 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             }.bind(this));
         },
 
-
         onOperateNodeSuccess: function(res) {
             this.disablePopup && this.disablePopup.$el.modal('hide');
             if (res.msg == "1" && res.status === 200) {
@@ -676,16 +676,16 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 value:"All"
             },{
                 name:"直播",
-                value:1
+                value:203
             },{
                 name:"下载",
-                value:2
+                value:202
             }]
             Utility.initDropMenu(this.$el.find(".dropdown-nodeType"), typeArray, function(value) {
                 if (value !== "All")
-                    this.queryArgs.nodeType = parseInt(value)
+                    this.queryArgs.appType = parseInt(value)
                 else
-                    this.queryArgs.nodeType = null;
+                    this.queryArgs.appType = null;
             }.bind(this));
         },
 
@@ -761,6 +761,8 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 data: nameList,
                 callback: function(data) {
                     this.$el.find('#dropdown-largeArea .cur-value').html(data.name);
+                    if(data.name=="全部") this.queryArgs.areaId=null;
+                    else this.queryArgs.areaId=parseInt(data.value);
                 }.bind(this)
             });
             this.$el.find("#dropdown-largeArea .cur-value").html(nameList[0].name);
@@ -811,6 +813,8 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 data: nameList,
                 callback: function(data) {
                     this.$el.find('#dropdown-province .cur-value').html(data.name);
+                    if(data.name=="全部") this.queryArgs.provinceId=null;
+                    else  this.queryArgs.provinceId=parseInt(data.value);
                 }.bind(this)
             });
             this.$el.find("#dropdown-province .cur-value").html(nameList[0].name);

@@ -450,7 +450,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection.getDeviceTypeList();
                 this.onClickQueryButton();
             },
-
+             
             resetList: function() {
                 this.curPage = 1;
                 this.onClickQueryButton();
@@ -473,8 +473,8 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
 
             onGetStrategySuccess: function() {
                 this.initTable();
-                if (!this.isInitPaginator) this.initPaginator();
-            },
+               if (!this.isInitPaginator) this.initPaginator();
+           },
 
             onClickQueryButton: function() {
                 this.isInitPaginator = false;

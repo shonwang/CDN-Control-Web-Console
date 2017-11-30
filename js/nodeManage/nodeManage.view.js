@@ -33,6 +33,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("update.node.status.error", $.proxy(this.onGetError, this));
+            
             this.collection.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
 

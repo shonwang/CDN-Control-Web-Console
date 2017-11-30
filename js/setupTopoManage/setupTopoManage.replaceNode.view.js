@@ -103,9 +103,10 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
            this.operateRule.type="topo";
            this.operateRule.operateType="delete";
            console.log(this.operateRule);
-           this.collection.deleteOrReplaceTopoInfo(this.operateRule);
+          this.collection.deleteOrReplaceTopoInfo(this.operateRule);
+          this.$el.find(".opt-ctn #delete").attr("disabled","disabled");
         },
-
+        
         onClickReplaceButton: function(){
             if(this.ruleList.length==0){
                 alert("此节点没有匹配的规则");
@@ -128,6 +129,7 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
          }
            console.log(this.operateRule);
            this.collection.deleteOrReplaceTopoInfo(this.operateRule);
+           this.$el.find(".opt-ctn #replace").attr("disabled","disabled");
         },
 
         initItemRule:function(res){
@@ -312,6 +314,7 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
           this.collection.getRuleInfo(this.queryArgs);
           this.ruleIdArr=[];
           alert("删除成功！")
+          this.$el.find(".opt-ctn #delete").removeAttr("disabled");
        },
 
         onDeleteError: function(error) {
@@ -319,6 +322,7 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
             alert(error.message)
           else
             alert("网络阻塞，请刷新重试！")
+          this.$el.find(".opt-ctn #delete").removeAttr("disabled");
         },
        
         replaceTopoSuccess: function (){
@@ -326,6 +330,7 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
             this.collection.getRuleInfo(this.queryArgs);
             this.ruleIdArr=[];
             alert("替换成功！")
+            this.$el.find(".opt-ctn #replace").removeAttr("disabled");
         },
 
         onReplaceError: function(error){
@@ -333,6 +338,8 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
                 alert(error.message)
             else
                 alert("网络阻塞，请刷新重试！")
+            this.$el.find(".opt-ctn #replace").removeAttr("disabled");
+
         },
 
         onClickCancelButton: function() {

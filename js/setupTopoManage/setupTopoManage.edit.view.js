@@ -190,8 +190,9 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     this.collection.topoAdd(postTopo);
 
                 this.isSaving = true;
+                this.$el.find("opt-ctn .save").attr("disabled","disabled");
             },
-
+    
             onClickCancelButton: function() {
                 this.options.onCancelCallback && this.options.onCancelCallback();
             },
@@ -544,6 +545,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     alert(error.message)
                 else
                     alert("网络阻塞，请刷新重试！")
+             this.$el.find(".opt-ctn .save").removeAttr("disabled");
             },
 
             render: function(target) {

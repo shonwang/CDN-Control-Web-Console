@@ -60,7 +60,7 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
                 "list": [{
                     locationId: this.defaultParam.locationId,
                     type: this.defaultParam.refererType,
-                    ips: _.uniq(ips.split(',')).join(','),
+                    ips: _.uniq(ips.split('\n')).join(','),
                     openFlag: this.defaultParam.openFlag
                 }]
             }
@@ -184,9 +184,9 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
             if(type == 1){
                 data = data.split("\n")
                 if(data[data.length - 1] === "") data.splice(data.length - 1,1);
-                data = data.join(',')
+                data = data.join('\n')
                 var lengthcontrol = data;
-                if(lengthcontrol.split(',').length > 100) {alert('已超出最大限制100条');return false;}
+                if(lengthcontrol.split('\n').length > 100) {alert('已超出最大限制100条');return false;}
             }else if(type == 2){
                 data = data.split(',');
                 data = data.join('\n');
@@ -201,8 +201,8 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
             if (value === "") return false; 
             value = this.conversionFormat(value,1);
             if(value == false) return;
-            if (value.indexOf(",") > -1){
-                ips = value.split(",");
+            if (value.indexOf("\n") > -1){
+                ips = value.split("\n");
                 for (var i = 0; i < ips.length; i++){
                     if (!Utility.isIP(ips[i])){
                         error = {message: "第" + (i + 1) + "个IP输错了！"};

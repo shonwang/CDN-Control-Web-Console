@@ -86,10 +86,10 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
 
             if (this.defaultParam.refererType === 1) {
                 this.$el.find(".black-list").hide();
-                this.$el.find("#white-IP").val(this.defaultParam.ips)
+                this.$el.find("#white-IP").val(this.defaultParam.ips.split(',').join("\n"))
             } else if (this.defaultParam.refererType === 2){
                 this.$el.find(".white-list").hide();
-                this.$el.find("#black-IP").val(this.defaultParam.ips)
+                this.$el.find("#black-IP").val(this.defaultParam.ips.split(',').join("\n"))
             }
 
             this.initTypeDropdown();

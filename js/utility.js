@@ -193,16 +193,16 @@ define("utility", ['require','exports'], function(require, exports) {
             var num = parseFloat(input);
             if (input >= 1024 && input < 1024 * 1024) {
                 num = parseFloat(input / 1024).toFixed(2);
-                return num + 'Kb';
+                return num + 'KB';
             } else if (input >= 1024 * 1024 && input < 1024 * 1024 * 1024) {
                 num = parseFloat(input / 1024 / 1024).toFixed(2)
-                return num + 'Mb';
+                return num + 'MB';
             } else if (input >= 1024 * 1024 * 1024 && input < 1024 * 1024 * 1024 * 1024) {
                 num = parseFloat(input / 1024 / 1024 / 1024).toFixed(2);
-                return num + 'Gb';
+                return num + 'GB';
             } else if (input >= 1024 * 1024 * 1024 * 1024) {
                 num = parseFloat(input / 1024 / 1024 / 1024 / 1024).toFixed(2)
-                return num + 'Tb';
+                return num + 'TB';
             } else {
                 return num.toFixed(2) + "B";
             }

@@ -67,6 +67,8 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
                 }],
                 md5Truncate: "",
             };
+
+            this.$el.hide();
         },
 
         initSetup: function(data){

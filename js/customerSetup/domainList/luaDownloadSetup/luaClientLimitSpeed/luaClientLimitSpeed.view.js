@@ -97,6 +97,8 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
                 preUnlimit: 0,
                 timeLimitList: [],
             }
+
+            this.$el.hide();
         },
 
         onSaveSuccess: function(){

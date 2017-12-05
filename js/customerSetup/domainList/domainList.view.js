@@ -234,21 +234,17 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                 var applicationType = this.applicationType;
                 if (this.curSubType === 3) {//直播上行
                     window.location.hash = '#/domainList/' + this.args1 + "/liveUpBasicInformation/" + this.args2
-                }
-                else{
+                } else {
                     if(applicationType == 202){//Cache_APP--下载
-                        window.location.hash = '#/domainList/' + this.args1 + "/basicInformation/" + this.args2
-                    }
-                    else if(applicationType == 203){//LIVE_APP-- 直播
+                        window.location.hash = '#/domainList/' + this.args1 + "/luaBasicInformation/" + this.args2
+                    } else if (applicationType == 203){//LIVE_APP-- 直播
                         if(this.curType == 1){
                             //下载
                             window.location.hash = '#/domainList/' + this.args1 + "/basicInformation/" + this.args2
-                        }
-                        else if(this.curType == 2){
+                        } else if (this.curType == 2){
                             //直播
                             window.location.hash = '#/domainList/' + this.args1 + "/liveBasicInformation/" + this.args2
-                        }
-                        else{
+                        } else {
                             var message = "type=1 下载<br>" +
                                 "type=2 直播<br>" +
                                 "subType = 3, 直播上行<br>" +
@@ -258,7 +254,7 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                         
                     }
                 }
-            },    
+            },      
 
             onClickItemlogSetup: function(event) {
                 var eventTarget = event.srcElement || event.target,

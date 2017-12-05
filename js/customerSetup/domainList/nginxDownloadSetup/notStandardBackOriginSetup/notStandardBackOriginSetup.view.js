@@ -751,8 +751,8 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
             }
             if (this.defaultParamModifyHost.domainType === 3) {
                 var value = this.$el.find("#textarea-host-domain").val().trim();
-                var result = this.checkBaseOrigin(value, 2)
-                if (!result) return;
+                //var result = this.checkBaseOrigin(value, 2)
+                //if (!result) return;
             }
             var postParam = {
                 "originId": this.domainInfo.id,

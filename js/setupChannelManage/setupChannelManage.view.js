@@ -527,10 +527,12 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 var statusArray = [{
                         name: "全部",
                         value: "All"
-                    }, {
+                    }, 
+                    /*{
                         name: "删除",
                         value: -1
-                    }, {
+                    },*/ 
+                        {
                         name: "审核中",
                         value: 0
                     }, {
@@ -542,10 +544,12 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     }, {
                         name: "停止",
                         value: 3
-                    }, {
+                    }, 
+                    /*{
                         name: "配置中",
                         value: 4
-                    }, {
+                    },*/ 
+                    {
                         name: "编辑中",
                         value: 6
                     }, {
@@ -563,22 +567,48 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     }, {
                         name: "下发失败",
                         value: 11
-                    }, {
+                    }, 
+                    /*{
                         name: "下发成功",
                         value: 12
-                    }, {
+                    }, */
+                    {
                         name: "运行中",
                         value: 13
                     }, {
                         name: "配置失败",
                         value: 14
+                    },
+                    {
+                        name: "暂停中",
+                        value: 15
+                    },
+                    {
+                        name: "开启中",
+                        value: 16
+                    },
+                    {
+                        name: "删除中",
+                        value: 17
+                    },
+                    {
+                        name: "已封禁",
+                        value: 18
+                    },
+                    {
+                        name: "封禁中",
+                        value: 19
+                    },
+                    {
+                        name: "解禁中",
+                        value: 20
                     }],
                     rootNode = this.$el.find(".dropdown-status");
                 Utility.initDropMenu(rootNode, statusArray, function(value) {
                     if (value == "All")
-                        this.queryArgs.auditStatus = null;
+                        this.queryArgs.originStatus = null;
                     else
-                        this.queryArgs.auditStatus = parseInt(value)
+                        this.queryArgs.originStatus = parseInt(value)
                 }.bind(this));
 
                 var protocolArray = [{

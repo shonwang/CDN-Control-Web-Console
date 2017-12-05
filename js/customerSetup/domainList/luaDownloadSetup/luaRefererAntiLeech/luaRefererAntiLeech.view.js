@@ -61,10 +61,10 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
             }
             if (this.defaultParam.refererType === 1) {
                 this.$el.find(".black-list").hide();
-                this.$el.find("#white-domain").val(this.defaultParam.domains)
+                this.$el.find("#white-domain").val(this.defaultParam.domains.split(',').join('\n'))
             } else if (this.defaultParam.refererType === 2){
                 this.$el.find(".white-list").hide();
-                this.$el.find("#black-domain").val(this.defaultParam.domains)
+                this.$el.find("#black-domain").val(this.defaultParam.domains.split(',').join('\n'))
             }
 
             if (this.defaultParam.nullReferer === 1){
@@ -124,9 +124,9 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
             var domains = '';
             
             if (this.defaultParam.refererType === 1) 
-                domains = _.uniq(this.$el.find("#white-domain").val().split(',')).join(',')
+                domains = _.uniq(this.$el.find("#white-domain").val().split('\n')).join(',')
             else
-                domains = _.uniq(this.$el.find("#black-domain").val().split(',')).join(',')
+                domains = _.uniq(this.$el.find("#black-domain").val().split('\n')).join(',')
 
             var postParam = {
                 "originId": this.domainInfo.id,
@@ -207,21 +207,21 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
                 value = eventTarget.value, domains = [], error;
 
             if (value === "") return false; 
-            if (value.indexOf(",") > -1){
-                domains = value.split(",");
+            if (value.indexOf("\n") > -1){
+                domains = value.split("\n");
                 if (domains.length > 100){
                     alert("超过100条")
                     return;
                 }
                 for (var i = 0; i < domains.length; i++){
-                    if (!Utility.isAntileechDomain(domains[i])){
-                        error = {message: "第" + (i + 1) + "个域名输错了！"};
+                    if (!Utility.isAntileechDomain(domains[i], true) && !Utility.isIP(domains[i])){
+                        error = {message: "第" + (i + 1) + "个既不是IP也不是域名！"};
                         alert(error.message)
                         return false;
                     }
                 }
-            } else if (!Utility.isAntileechDomain(value)){
-                error = {message: "请输入正确的域名！"};
+            } else if (!Utility.isAntileechDomain(value, true) && !Utility.isIP(domains[i])){
+                error = {message: "既不是IP也不是域名！"};
                 alert(error.message)
                 return false;
             } else {
@@ -235,8 +235,8 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
                 value = eventTarget.value, domains = [], error;
 
             if (value === "") return false;    
-            if (value.indexOf(",") > -1){
-                domains = value.split(",");
+            if (value.indexOf("\n") > -1){
+                domains = value.split("\n");
                 for (var i = 0; i < domains.length; i++){
                     if (!Utility.isURL(domains[i])){
                         error = {message: "第" + (i + 1) + "个URL输错了！"};
@@ -268,28 +268,28 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
                 alert("请输入非法域名、URL！")
                 return false;
             }
-            if (this.defaultParam.refererType === 1 && whiteDomain.indexOf(",") > -1){
-                var domains = whiteDomain.split(",");
+            if (this.defaultParam.refererType === 1 && whiteDomain.indexOf("\n") > -1){
+                var domains = whiteDomain.split("\n");
                 if (domains.length > 100){
                     alert("超过100条")
                     return false;
                 }
             }
-            if (this.defaultParam.refererType === 2 && balckDomain.indexOf(",") > -1){
-                var domains = whiteDomain.split(",");
+            if (this.defaultParam.refererType === 2 && balckDomain.indexOf("\n") > -1){
+                var domains = whiteDomain.split("\n");
                 if (domains.length > 100){
                     alert("超过100条")
                     return false;
                 }
             }
             var result = true;
-            // if (this.defaultParam.refererType === 1){
-            //     result = this.onBlurDomainInput({target: this.$el.find("#white-domain").get(0)});
-            //     //result = this.onBlurUrlInput({target: this.$el.find("#white-url").get(0)});
-            // } else if (this.defaultParam.refererType === 2) {
-            //     result = this.onBlurDomainInput({target: this.$el.find("#black-domain").get(0)});
-            //     //result = this.onBlurUrlInput({target: this.$el.find("#black-url").get(0)})
-            // }
+            if (this.defaultParam.refererType === 1){
+                result = this.onBlurDomainInput({target: this.$el.find("#white-domain").get(0)});
+                //result = this.onBlurUrlInput({target: this.$el.find("#white-url").get(0)});
+            } else if (this.defaultParam.refererType === 2) {
+                result = this.onBlurDomainInput({target: this.$el.find("#black-domain").get(0)});
+                //result = this.onBlurUrlInput({target: this.$el.find("#black-url").get(0)})
+            }
             return result;
         },
 

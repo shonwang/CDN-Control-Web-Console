@@ -193,16 +193,16 @@ define("utility", ['require','exports'], function(require, exports) {
             var num = parseFloat(input);
             if (input >= 1024 && input < 1024 * 1024) {
                 num = parseFloat(input / 1024).toFixed(2);
-                return num + 'Kb';
+                return num + 'KB';
             } else if (input >= 1024 * 1024 && input < 1024 * 1024 * 1024) {
                 num = parseFloat(input / 1024 / 1024).toFixed(2)
-                return num + 'Mb';
+                return num + 'MB';
             } else if (input >= 1024 * 1024 * 1024 && input < 1024 * 1024 * 1024 * 1024) {
                 num = parseFloat(input / 1024 / 1024 / 1024).toFixed(2);
-                return num + 'Gb';
+                return num + 'GB';
             } else if (input >= 1024 * 1024 * 1024 * 1024) {
                 num = parseFloat(input / 1024 / 1024 / 1024 / 1024).toFixed(2)
-                return num + 'Tb';
+                return num + 'TB';
             } else {
                 return num.toFixed(2) + "B";
             }
@@ -257,9 +257,12 @@ define("utility", ['require','exports'], function(require, exports) {
             return strRegex.test(str_url)
         },
 
-        isAntileechDomain: function(url) {
+        isAntileechDomain: function(str_url, isCommon) {
+            if(isCommon && str_url.indexOf("*.")==0){
+                str_url = str_url.substring(2);
+            }
             var reg = /^(([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)|\*{1}\.)+[a-zA-Z]{2,20}$/;
-            return reg.test(url);
+            return reg.test(str_url);
         },
 
         isHostHeader:function(str_url){

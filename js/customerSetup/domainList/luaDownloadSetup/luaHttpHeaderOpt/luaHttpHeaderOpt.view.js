@@ -117,7 +117,7 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
                     headerValueName = "值: " + headerValue + "<br>";
             }
 
-            var reg = /^[a-zA-Z]+[a-zA-Z\d\_]+$/;
+            var reg = /^[a-zA-Z][a-zA-Z\d\-]{0,}$/;
             if(!reg.test(headerKey)){
                 alert("http头中只能输入字母、数字、”-“,必须以字母开头");
                 return false;

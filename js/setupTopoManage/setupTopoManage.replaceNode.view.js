@@ -258,10 +258,10 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
             _.each(this.defaultParam.allNodes, function(el, inx, list) {
                 this.nameList.push({
                     name: el.name,
-                    value: el.id
+                    value: el.id,
+                    operatorId:el.operatorId
                 })
             }.bind(this))
-
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.dropdown-replaceNode').get(0),
                 panelID: this.$el.find('#dropdown-replaceNode').get(0),
@@ -275,22 +275,37 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
                 callback: function(data) {
                     this.$el.find('#dropdown-replaceNode .cur-value').html(data.name);
                     this.operateRule.newNodeId=parseInt(data.value);
+                    _.each(this.nameList,function(el){
+                      if(el.value==data.value&&el.operatorId!==9){
+                         this.$el.find(".dropdown-operator").addClass("hideOperator");
+                         this.$el.find("#dropdown-operator .cur-value").html(this.operatorList[0].name);
+                         this.operateRule.ipCorporation="";
+                      }else if(el.value==data.value&&el.operatorId==9){
+                         this.$el.find(".dropdown-operator").removeClass("hideOperator")
+                      }
+                    }.bind(this))
                 }.bind(this)
             });
             this.$el.find("#dropdown-replaceNode .cur-value").html(this.nameList[0].name);
             this.operateRule.newNodeId=this.nameList[0].value;
+            if(this.nameList[0].operatorId==9){
+              this.$el.find(".dropdown-operator").removeClass("hideOperator")
+            }
         },
 
         onGetAllOperator: function(data) {
             this.operatorList=[];
-
+            this.operatorList.push({
+              name:"请选择",
+              value:0
+            })
             _.each(data.rows, function(el, key, list) {
                 this.operatorList.push({
                     name: el.name,
                     value: el.id
                 })
             }.bind(this))
-
+        
             var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.dropdown-operator').get(0),
                 panelID: this.$el.find('#dropdown-operator').get(0),
@@ -303,7 +318,8 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
                 data: this.operatorList,
                 callback: function(data) {
                     this.$el.find('#dropdown-operator .cur-value').html(data.name);
-                    this.operateRule.ipCorporation=data.value;
+                    this.operateRule.ipCorporation=data.name;
+                    if(data.value==0) this.operateRule.ipCorporation="";
                 }.bind(this)
             });
             this.$el.find("#dropdown-operator .cur-value").html(this.operatorList[0].name);

@@ -1102,13 +1102,10 @@ td .table {
   font-weight: 800;
   float: left;
 }
-.positionDiv{
-  position: fixed;
-  left:20%;
-  bottom:10%;
-  width: 100%;
-} 
 .myTable-ctn {
-  height: 350px;
+  height:300px;
   overflow: auto;
+}
+.hideOperator{
+  display: none;
 }

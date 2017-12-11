@@ -1103,7 +1103,7 @@ td .table {
   float: left;
 }
 .myTable-ctn {
-  height:300px;
+  min-height:300px;
   overflow: auto;
 }
 .hideOperator{

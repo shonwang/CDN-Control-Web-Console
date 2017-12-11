@@ -98,15 +98,25 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
             if(i==this.ruleList.length) {
                 alert("请先选择规则")
                 return;
+            } 
+
+            if(this.model)  $("#" + this.model.modalId).remove();
+            
+            var options={
+              body:"你确定从选中规则中删除该节点吗？",
+              onOKCallback:function(){
+                this.operateRule.id = this.defaultParam.id;
+                this.operateRule.type = "topo";
+                this.operateRule.operateType = "delete";
+                console.log(this.operateRule);
+                this.collection.deleteOrReplaceTopoInfo(this.operateRule);
+                this.$el.find(".opt-ctn #delete").attr("disabled", "disabled");
+                this.model.$el.modal("hide");
+              }.bind(this)
             }
-           this.operateRule.id=this.defaultParam.id;
-           this.operateRule.type="topo";
-           this.operateRule.operateType="delete";
-           console.log(this.operateRule);
-          this.collection.deleteOrReplaceTopoInfo(this.operateRule);
-          this.$el.find(".opt-ctn #delete").attr("disabled","disabled");
+           this.model=new Modal(options);
         },
-        
+
         onClickReplaceButton: function(){
             if(this.ruleList.length==0){
                 alert("此节点没有匹配的规则");
@@ -329,7 +339,7 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
        deleteTopoSuccess: function(){
           this.collection.getRuleInfo(this.queryArgs);
           this.ruleIdArr=[];
-          alert("删除成功！")
+          alert("选定的规则中的节点删除成功！")
           this.$el.find(".opt-ctn #delete").removeAttr("disabled");
        },
 
@@ -345,7 +355,7 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
           //  console.log(this.queryArgs);
             this.collection.getRuleInfo(this.queryArgs);
             this.ruleIdArr=[];
-            alert("替换成功！")
+            alert("选定的规则中的节点替换成功！")
             this.$el.find(".opt-ctn #replace").removeAttr("disabled");
         },
 

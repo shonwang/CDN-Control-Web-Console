@@ -118,7 +118,7 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 this.onClickQueryButton();
                 //this.setPageSize();
                 /*域名查找按钮*/
-                this.$el.find(".domain-search").on("click",$.proxy(this.onClickQueryButton,this));
+                this.$el.find(".domain-search").on("click",$.proxy(this.onSearch,this));
                 this.$el.find("#check-url-btnSubmit").on("click",$.proxy(this.onClickCheckBtn,this));
                 this.$el.find("#text-domainName").on("focus",$.proxy(this.focus,this));
                 this.$el.find("#text-origin-url-name").on("focus",$.proxy(this.focus,this));
@@ -127,8 +127,12 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 this.initUsersDropMenu();
                 
             },
-
+            onSearch:function(){
+                this.isInitPaginator = false;
+                this.onClickQueryButton();
+            },
             setVerifyError:function(res){
+                this.changeBtn();
                 alert(res.message || "出现错误了");
             },
 
@@ -136,6 +140,7 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 alert("检验成功！");
                 this.args.page = 1;
                 this.isInitPaginator = false;
+                this.changeBtn();
                 this.onClickQueryButton();
             },
 
@@ -171,7 +176,17 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 if(!result){
                     return false;
                 }
+                this.changeBtn(true);
                 this.collection.verify(result);
+            },
+
+            changeBtn:function(bool){
+                if(bool){
+                    this.$el.find("#check-url-btnSubmit").attr("disabled","disabled").html("正在检验...");
+                }
+                else{
+                    this.$el.find("#check-url-btnSubmit").removeAttr("disabled").html("点击检验");   
+                }
             },
 
             initUsersDropMenu: function(){
@@ -184,7 +199,7 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
                     this.args.size = parseInt(value);
                     this.args.page = 1;
-                    this.onClickQueryButton();
+                    this.onSearch();
                 }.bind(this));
             },
 
@@ -278,6 +293,7 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 var options = {
                     title:"<div><span></span>详情</div>",
                     body : detailView,
+                    width:800,
                     backdrop :'statics',
                     type:2,
                     onOKCallback:function(){

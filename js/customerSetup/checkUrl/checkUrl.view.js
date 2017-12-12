@@ -182,10 +182,10 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
 
             changeBtn:function(bool){
                 if(bool){
-                    this.$el.find("#check-url-btnSubmit").attr("disabled","disabled").html("正在检验...");
+                    this.$el.find("#check-url-btnSubmit").attr("disabled","disabled").html("正在校验...");
                 }
                 else{
-                    this.$el.find("#check-url-btnSubmit").removeAttr("disabled").html("点击检验");   
+                    this.$el.find("#check-url-btnSubmit").removeAttr("disabled").html("点击校验");   
                 }
             },
 

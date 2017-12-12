@@ -108,6 +108,11 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                         children: []
                     }]
                 }, {
+                    id: 'customerSetup-domainList-edgeOptimize',
+                    name: '边缘择优配置',
+                    hash: 'index.html#/domainList/' + query + '/edgeOptimize/' + query2,
+                    children: []
+                }, {
                     id: '',
                     name: '缓存优化',
                     hash: 'javascript:void(0)',

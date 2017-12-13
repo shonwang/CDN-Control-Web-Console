@@ -147,9 +147,14 @@ define("routes", ['require', 'exports', 'navbar.view',
                 //张振建提的半途而废的需求（废弃）
                 "refreshManual": "refreshManual",
                 "customMaintenance": "customMaintenance",
+
                 //平台切换
                 "applicationChange": "applicationChange",
-                "blockedDomain": "blockedDomain"
+                "blockedDomain": "blockedDomain",
+                
+                //配置模型
+                "setupTemplateManage": "setupTemplateManage",
+                "setupModuleManage": "setupModuleManage",
             },
 
             execute: function(callback, args) {

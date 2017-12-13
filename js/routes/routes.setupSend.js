@@ -165,6 +165,7 @@ define("routes.setupSend", ['require', 'exports'],
                 }.bind(this));
             },
 
+            //平台切换
             applicationChange:function(){
                 if (!AUTH_OBJ.PlatformChange) return;
                 require(['applicationChange.view', 'applicationChange.model'], function(ApplicationChangeView, ApplicationChangeModel) {
@@ -202,6 +203,45 @@ define("routes.setupSend", ['require', 'exports'],
                         this.blockedDomainView.update();
                     }
                     this.curView = this.blockedDomainView;
+                }.bind(this));
+            },
+
+            //配置模型
+            setupTemplateManage:function(){
+                require(['setupTemplateManage.view', 'setupTemplateManage.model'], function(SetupTemplateManageView, SetupTemplateManageModel) {
+                    this.curPage = 'setupTemplateManage';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    if (!this.setupTemplateManageModel)
+                        this.setupTemplateManageModel = new SetupTemplateManageModel();
+                    if (!this.setupTemplateManageView) {
+                        var options = {
+                            collection: this.setupTemplateManageModel
+                        };
+                        this.setupTemplateManageView = new SetupTemplateManageView(options);
+                        this.setupTemplateManageView.render($('.ksc-content'));
+                    } else {
+                        this.setupTemplateManageView.update();
+                    }
+                    this.curView = this.setupTemplateManageView;
+                }.bind(this));
+            },
+
+            setupModuleManage:function(){
+                require(['setupModuleManage.view', 'setupModuleManage.model'], function(SetupModuleManageView, SetupModuleManageModel) {
+                    this.curPage = 'setupModuleManage';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    if (!this.setupModuleManageModel)
+                        this.setupModuleManageModel = new SetupModuleManageModel();
+                    if (!this.setupModuleManageView) {
+                        var options = {
+                            collection: this.setupModuleManageModel
+                        };
+                        this.setupModuleManageView = new SetupModuleManageView(options);
+                        this.setupModuleManageView.render($('.ksc-content'));
+                    } else {
+                        this.setupModuleManageView.update();
+                    }
+                    this.curView = this.setupModuleManageView;
                 }.bind(this));
             }
         }

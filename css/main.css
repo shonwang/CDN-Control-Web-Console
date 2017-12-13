@@ -1074,3 +1074,7 @@ td .table {
     overflow-x: auto;
     overflow-y: auto;
 }
+.CodeEditBox{
+  min-height: 500px;
+  width:100%;
+}

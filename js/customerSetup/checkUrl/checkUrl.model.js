@@ -7,7 +7,7 @@ define("checkUrl.model", ['require','exports', "utility"], function(require, exp
             if(status == 1) this.set("statusName","完成");
             if(status == 2) this.set("statusName","进行中");
             var successRate = this.get("successRate");
-            this.set("successRateName",successRate*100+"%");
+            this.set("successRateName",(successRate*100).toFixed(0)+"%");
         }
     });
 

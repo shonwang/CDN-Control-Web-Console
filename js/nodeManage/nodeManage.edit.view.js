@@ -39,8 +39,6 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "unitPrice": '', //成本权值
                     "inZabName": '', //入口带宽zabbix名称
                     "outZabName": '', //出口带宽zabbix名称
-                    //"startChargingTime": '',//开始计费日期
-                    //"rsNodeCorpDtos":[]//单项添加不需要此项
                 };
             }
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.isp.html'])({
@@ -237,6 +235,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     isMultiwire: true,
                     "rsNodeCorpDtos": args.rsNodeCorpDtos || [] //为了兼容老版库里没有数据的情况
                 }
+
             } else {
                 this.args = {
                     isMultiwire: true,
@@ -547,14 +546,9 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
         getArgs: function() {
             var enName = this.$el.find("#input-english").val().replace(/\s+/g, ""),
                 chName = this.$el.find("#input-name").val().replace(/\s+/g, ""),
-                //maxBandwidthThreshold = this.$el.find("#input-threshold").val(),
-                //minBandwidthThreshold = this.$el.find("#input-minthreshold").val(),
-                //maxBandwidth = this.$el.find("#input-maxbandwidth").val(),
-                //minBandwidth = this.$el.find("#input-minbandwidth").val(),
-                //unitPrice = this.$el.find("#input-unitprice").val(),
+                
                 longitudeLatitude = this.$el.find('#input-longitude-latitude').val(),
-                //outzabname = this.$el.find('#input-outzabname').val().replace(/\s+/g, ""),
-                //inzabname = this.$el.find("#input-inzabname").val().replace(/\s+/g, ""),
+                
                 re = /^\d+$/,
                 outzabnameRe = /^[0-9A-Za-z\-\[\]\_]+$/,
                 letterRe = /[A-Za-z]+/,
@@ -567,51 +561,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 alert("节点名称和英文名称都要填写！");
                 return;
             }
-            /*
-            if (!re.test(maxBandwidth) || !re.test(minBandwidth)) {
-                alert("上联带宽和保底带宽只能填入数字！");
-                return;
-            }
-            if (parseInt(maxBandwidth) > 100000000 || parseInt(maxBandwidth) < 0) {
-                alert("上联带宽：0-100000000（0-100T，单位转换按1000算）");
-                return;
-            }
-            if (parseInt(minBandwidth) > 100000000 || parseInt(minBandwidth) < 0) {
-                alert("保底带宽：0-100000000（0-100T，单位转换按1000算）");
-                return;
-            }
-            if (parseInt(maxBandwidth) < parseInt(minBandwidth)) {
-                alert("上联带宽不能小于保底带宽！");
-                return;
-            }
-            if (!re.test(maxBandwidthThreshold) || !re.test(minBandwidthThreshold)) {
-                alert("上联带宽阈值和保底带宽阈值只能填入数字！");
-                return;
-            }
-            if (parseInt(maxBandwidthThreshold) < 0 || parseInt(maxBandwidthThreshold) > parseInt(maxBandwidth)) {
-                alert("上联带宽阈值：0-上联带宽");
-                return;
-            }
-            if (parseInt(minBandwidthThreshold) < 0 || parseInt(minBandwidthThreshold) > parseInt(maxBandwidth)) {
-                alert("保底带宽阈值：0-上联带宽");
-                return;
-            }
-            if (!re.test(unitPrice)) {
-                alert("成本权值只能填入数字！");
-                return;
-            }
-            if (parseInt(unitPrice) > 2147483647 || parseInt(unitPrice) < 0) {
-                alert("成本权值不能小于0且大于长整型的最大值");
-                return;
-            }
-            
-            if (!outzabnameRe.test(outzabname) || outzabname.indexOf("-") === -1 ||
-                outzabname.indexOf("_") === -1 || outzabname.indexOf("[") === -1 ||
-                outzabname.indexOf("]") === -1 || !letterRe.test(outzabname)) {
-                alert("zabbix出口带宽英文、“-”、“_”、“[”、“]”为必填项，数字为可填项，即组合可包含数字，也可不包含数字");
-                return;
-            }
-            */
+           
             var ispTempalteData = this.ispTemplate.getArgs();
             if (!ispTempalteData) {
                 return false;
@@ -632,13 +582,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 "chName": this.$el.find("#input-name").val().replace(/\s+/g, ""),
                 "operatorId": this.operatorId,
                 "operatorName": this.operatorName,
-                //"minBandwidth": this.$el.find("#input-minbandwidth").val(),
-                //"maxBandwidth": this.$el.find("#input-maxbandwidth").val(),
-                //"maxBandwidthThreshold": this.$el.find("#input-threshold").val(),
-                //"minBandwidthThreshold": this.$el.find("#input-minthreshold").val(),
-                // "unitPrice": this.$el.find("#input-unitprice").val(),
-                //"inZabName": this.$el.find("#input-inzabname").val().replace(/\s+/g, ""),
-                //"outZabName": this.$el.find("#input-outzabname").val().replace(/\s+/g, ""),
+               
                 "remark": this.$el.find("#textarea-comment").val(),
                 "startChargingTime": this.args.startChargingTime,
                 //"chargingType": this.args.chargingType,
@@ -674,6 +618,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 this.setIspTemplate();
             }.bind(this));
             if (this.isEdit) {
+                this.$el.find("#dropdown-operator").attr("disabled","disabled");
                 var defaultValue = _.find(nameList, function(object) {
                     return object.value === this.model.attributes.operatorId
                 }.bind(this));
@@ -725,35 +670,6 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
         },
 
         initDropList: function(list) {
-            /*
-            var nameList = [{
-                    name: "95峰值",
-                    value: 1
-                }, {
-                    name: "包端口",
-                    value: 2
-                }, {
-                    name: "峰值",
-                    value: 3
-                }, {
-                    name: "第三峰",
-                    value: 4
-                }
-                // {name: "免费", value: 0}
-            ];
-            Utility.initDropMenu(this.$el.find(".dropdown-charging"), nameList, function(value) {
-                this.args.chargingType = parseInt(value);
-            }.bind(this));
-
-            if (this.isEdit) {
-                var defaultValue = _.find(nameList, function(object) {
-                    return object.value === this.model.attributes.chargingType
-                }.bind(this));
-                this.$el.find(".dropdown-charging .cur-value").html(defaultValue.name)
-            } else {
-                this.$el.find(".dropdown-charging .cur-value").html(nameList[0].name)
-            }
-            */
             this.collection.getAllContinent();
             this.collection.getAllProvince();
             //this.collection.getAllCity();
@@ -774,6 +690,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             }.bind(this));
 
             if (this.isEdit) {
+                this.$el.find("#dropdown-continent").attr("disabled","disabled");
                 this.$el.find(".dropdown-continent .cur-value").html(this.model.get("continentName"));
                 this.collection.getCountryByContinent({
                         id: this.model.get("continentId")
@@ -814,6 +731,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             });
 
             if (this.isEdit) {
+                this.$el.find("#dropdown-province").attr("disabled","disabled");
                 this.$el.find(".dropdown-province .cur-value").html(this.model.get("provName") || nameList[0].name);
                 this.collection.getAllCityAndBigArea({
                     provId: this.model.get("provId") || nameList[0].value
@@ -861,6 +779,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             this.$el.find('#input-longitude-latitude').val("查找中...");
             this.$el.find('#dropdown-region .cur-value').html(area);
             if (this.isEdit) {
+                this.$el.find("#dropdown-region").attr("disabled","disabled");
+                this.$el.find("#dropdown-city").attr("disabled","disabled");
                 this.cityId = this.model.get("cityId") || cityArray[0].value;
                 this.$el.find('#dropdown-city .cur-value').html(this.model.get("cityName") || cityArray[0].name);
                 if (!this.model.get("lon") || !this.model.get("lat"))
@@ -904,6 +824,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 }.bind(this)
             });
             if (this.isEdit) {
+                this.$el.find("#dropdown-country").attr("disabled","disabled");
                 this.$el.find(".dropdown-country .cur-value").html(this.model.get("countryName"));
                 this.collection.getOperationByCountry({
                         id: this.model.get("countryId")

@@ -1074,3 +1074,38 @@ td .table {
     overflow-x: auto;
     overflow-y: auto;
 }
+.listBox {
+  overflow: hidden;
+}
+.listShow {
+  list-style: none;
+  float: left;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
+.listShow li{
+  padding: 0;
+  overflow: hidden;
+  float: left;
+  margin-left:20px;
+}
+.tipsP {
+  font-size: 15px;
+  margin-top: 5px;
+}
+.myRow {
+  clear:both;
+  margin:15px 0;
+}
+.mainOrBackupSpan {
+  font-weight: 800;
+  float: left;
+}
+.myTable-ctn {
+  min-height:300px;
+  overflow: auto;
+}
+.hideOperator{
+  display: none;
+}

@@ -9,6 +9,38 @@
 					<input type="text" class="form-control" id="input-name">
 				</div>
 				<div class="form-group">
+					<label for="dropdown-nodeType">类型</label>
+				</div>
+				<div class="form-group dropdown-nodeType">
+					<div class="dropdown">
+						<button class="btn btn-default dropdown-toggle" type="button" id="dropdown-nodeType" data-toggle="dropdown">
+							<span class="cur-value">全部</span>
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu"></ul>
+					</div>
+				</div>
+				<div class="form-group"> 
+                   <label for="dropdown-largeArea" style="float: left;margin-top:7px;">大区</label>
+                   <div class="dropdown dropdown-largeArea col-sm-2">
+                      <button class="btn btn-default " type="button" id="dropdown-largeArea">
+                           <span class="cur-value">加载中...</span>
+                           <span class="caret"></span>
+                       </button>
+                   </div>
+               </div>
+
+				<div class="form-group"> 
+                   <label for="dropdown-province" style="float: left;margin-top:7px;">省份</label>
+                   <div class="dropdown dropdown-province col-sm-2">
+                      <button class="btn btn-default " type="button" id="dropdown-province">
+                           <span class="cur-value">加载中...</span>
+                           <span class="caret"></span>
+                       </button>
+                   </div>
+               </div>
+
+				<div class="form-group">
 					<label for="dropdown-operator">运营商</label>
 				</div>
 				<div class="form-group dropdown-operator">
@@ -32,42 +64,49 @@
 						<ul class="dropdown-menu"></ul>
 					</div>
 				</div>
+			</form>
+			<hr>
+			<form class="form-inline">
 				<a href="javascript:void(0)" class="btn btn-primary query"><span class="glyphicon glyphicon-search"></span>查询</a>
 				<a href="javascript:void(0)" class="btn btn-success create"><span class="glyphicon glyphicon-plus"></span>新建</a>
 				<a href="javascript:void(0)" class="btn btn-info multi-play"><span class="glyphicon glyphicon-play-circle"></span>批量开启</a>
 				<a href="javascript:void(0)" class="btn btn-warning multi-stop" style="display: none"><span class="glyphicon glyphicon-off"></span>批量关闭</a>
 				<a href="javascript:void(0)" class="btn btn-danger multi-delete" style="display: none"><span class="glyphicon glyphicon-trash"></span>批量删除</a>
 			</form>
-		</div>
-		<div class="well">
-			<div class="table-ctn table-responsive"></div>
-			<div class="page-ctn row">
-				<div class="col-md-8" style="text-align:center">
-					<div class="pagination"></div>
-				</div>
-				<div class="col-md-4" style="text-align:center">
-					<form class="form-inline page-info">
-						<div class="form-group">
-							<div class="form-control-static">每页显示</div>
-						</div>
-						<div class="form-group page-num">
-							<div class="drop-ctn dropup">
-								<div class="btn-group">
-									<button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">
-									<span class="cur-value">10 条</span>
-									<span class="caret"></span>
-									</button>
-									<ul class="dropdown-menu"></ul>
-								</div>
+			<div class="listBox">
+				<label style="float: left;margin-top:10px;">列表展示</label>
+				<ul class="listShow col-md-10"></ul>
+            </div>
+	</div>
+	<div class="well">
+		<div class="table-ctn table-responsive"></div>
+		<div class="page-ctn row">
+			<div class="col-md-8" style="text-align:center">
+				<div class="pagination"></div>
+			</div>
+			<div class="col-md-4" style="text-align:center">
+				<form class="form-inline page-info">
+					<div class="form-group">
+						<div class="form-control-static">每页显示</div>
+					</div>
+					<div class="form-group page-num">
+						<div class="drop-ctn dropup">
+							<div class="btn-group">
+								<button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">
+								<span class="cur-value">10 条</span>
+								<span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu"></ul>
 							</div>
 						</div>
-						<div class="form-group">
-							<div class="form-control-static total-items">共<span class="text-primary">0</span>条记录</div>
-						</div>
-					</form>
-				</div>
+					</div>
+					<div class="form-group">
+						<div class="form-control-static total-items">共<span class="text-primary">0</span>条记录</div>
+					</div>
+				</form>
 			</div>
 		</div>
+	</div>
 	</div>
 	<div class="node-manage-add-edit-pannel"></div>
 

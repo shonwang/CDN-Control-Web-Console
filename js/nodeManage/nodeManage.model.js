@@ -182,6 +182,20 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             $.ajax(defaultParas);
         },
 
+        getAreaList: function(args) {
+            var url = BASE_URL + "/rs/provCity/selectAllArea",
+                successCallback = function(res) {
+                    if (res)
+                        this.trigger("get.area.success", res);
+                    else
+                        this.trigger("get.area.error", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("get.area.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
         getAllCity: function(args){
             var url = BASE_URL + "/rs/query/getAllAddr?" + new Date().valueOf(); 
             var defaultParas = {
@@ -353,6 +367,20 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             errorCallback = function(response){
                 this.trigger("get.province.error", response);
             }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        getAreaList: function(args) {
+            var url = BASE_URL + "/rs/provCity/selectAllArea",
+                successCallback = function(res) {
+                    if (res)
+                        this.trigger("get.area.success", res);
+                    else
+                        this.trigger("get.area.error", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("get.area.error", response);
+                }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 

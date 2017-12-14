@@ -6,10 +6,10 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
         initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
-
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.html'])());
 
             this.initNodeDropMenu();
+            this.initNodeTypeDropMenu();
 
             this.collection.on("get.node.success", $.proxy(this.onNodeListSuccess, this));
             this.collection.on("get.node.error", $.proxy(this.onGetError, this));
@@ -33,8 +33,15 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("update.node.status.error", $.proxy(this.onGetError, this));
+            
             this.collection.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
+
+            this.collection.on("get.area.success", $.proxy(this.onGetLargeAreaSuccess, this));
+            this.collection.on("get.area.error", $.proxy(this.onGetError, this));
+            
+            this.collection.on("get.province.success", $.proxy(this.onGetProvinceSuccess, this));
+            this.collection.on("get.province.error", $.proxy(this.onGetError, this));
 
             this.collection.on("operate.node.success", $.proxy(this.onOperateNodeSuccess, this));
             this.collection.on("operate.node.error", function(res) {
@@ -63,17 +70,117 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 this.$el.find(".opt-ctn .multi-play").remove();
             this.$el.find(".opt-ctn .multi-stop").on("click", $.proxy(this.onClickMultiStop, this));
             this.$el.find(".opt-ctn .multi-delete").on("click", $.proxy(this.onClickMultiDelete, this));
-
             this.queryArgs = {
                 "page": 1,
                 "count": 10,
                 "chname": null, //节点名称
                 "operator": null, //运营商id
-                "status": null //节点状态
+                "status": null,//节点状态
+                "appType":null, //节点类型
+                "provinceId":null,//省份名称
+                "areaId":null//大区名称
+               
             }
+            this.tableColumn = [{
+                name: "运营商",
+                isChecked: true,
+                isMultiRows: true,
+                key: "operatorName"
+            }, {
+                name: "上联带宽",
+                isChecked: false,
+                isMultiRows: true,
+                key: "maxBandwidth"
+            }, {
+                name: "保底带宽",
+                isChecked: false,
+                isMultiRows: true,
+                key: "minBandwidth"
+            }, {
+                name: "成本权值",
+                isChecked: false,
+                isMultiRows: true,
+                key: "unitPrice"
+            }, {
+                name: "上联带宽阈值",
+                isChecked: false,
+                isMultiRows: true,
+                key: "maxBandwidthThreshold"
+            }, {
+                name: "保底带宽阈值",
+                isChecked: false,
+                isMultiRows: true,
+                key: "minBandwidthThreshold"
+            }, {
+                name: "入口带宽zabbix名称",
+                isChecked: false,
+                isMultiRows: true,
+                key: "inZabName"
+            }, {
+                name: "出口带宽zabbix名称",
+                isChecked: false,
+                isMultiRows: true,
+                key: "outZabName"
+            }, {
+                name: "计费类型",
+                isChecked: true,
+                isMultiRows: true,
+                key: "chargingTypeName"
+            }, {
+                name: "状态",
+                isChecked: true,
+                key: "statusName"
+            }, {
+                name: "开始计费时间",
+                isChecked: true,
+                key: "startChargingTimeFormated"
+            }, {
+                name: "创建时间",
+                isChecked: true,
+                key: "createTimeFormated"
+            }, {
+                name: "省份",
+                isChecked: true,
+                key: "provName"
+            }, {
+                name: "大区",
+                isChecked: false,
+                key: "areaName"
+            }];
+            this.initTableHeader();
             this.onClickQueryButton();
         },
 
+        initTableHeader: function(){
+            _.each(this.tableColumn, function(el){
+                var isCheckedStr = '<div class="checkbox">' + 
+                                        '<label>' + 
+                                            '<input type="checkbox" name="' + el.name+ '"/>'+ el.name + 
+                                        '</label>' + 
+                                    '</div>';
+                if (el.isChecked) {
+                    isCheckedStr = '<div class="checkbox">' + 
+                                        '<label>' + 
+                                            '<input type="checkbox" checked="true" name="' + el.name + '"/>'+ el.name +
+                                        '</label>' + 
+                                    '</div>';
+                }
+                var tpl = '<li>' + isCheckedStr + '</li>'
+                $(tpl).appendTo(this.$el.find(".listShow"));
+            }.bind(this))
+            this.$el.find(".listShow li").find(".checkbox label").find("input").on("click", $.proxy(this.onClickSelectTableHeader, this));
+        },
+
+        onClickSelectTableHeader: function(){
+          var eventTarget = event.srcElement || event.target;
+          if (eventTarget.tagName !== "INPUT") return;
+          var inputChecked=$(eventTarget).attr("checked");
+          var inputName=$(eventTarget).attr("name");
+           _.each(this.tableColumn, function(el){
+                if (el.name === inputName) el.isChecked = eventTarget.checked;
+            })
+           this.initTable();
+        },
         enterKeyBindQuery: function() {
             $(document).on('keydown', function(e) {
                 if (e.keyCode == 13) {
@@ -165,6 +272,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             })
             this.table = $(_.template(template['tpl/nodeManage/nodeManage.table.html'])({
                 data: this.collection.models,
+                titleList: this.tableColumn,
                 permission: AUTH_OBJ
             }));
             if (this.collection.models.length !== 0) {
@@ -185,14 +293,14 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
 
                 this.table.find("[data-toggle='popover']").popover();
+                
             } else {
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-            }
+            }   
         },
-
         onClickDispGroupInfo: function(event) {
             var eventTarget = event.srcElement || event.target,
-                id;
+            id;
             if (eventTarget.tagName == "SPAN") {
                 eventTarget = $(eventTarget).parent();
                 id = eventTarget.attr("id");
@@ -242,7 +350,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 }
             window.location.hash = "#/deviceManage/" + JSON.stringify(args)
         },
-
+   
         onClickItemEdit: function(event) {
             var eventTarget = event.srcElement || event.target,
                 id;
@@ -475,7 +583,6 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             }.bind(this));
         },
 
-
         onOperateNodeSuccess: function(res) {
             this.disablePopup && this.disablePopup.$el.modal('hide');
             if (res.msg == "1" && res.status === 200) {
@@ -563,6 +670,25 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             });
             this.isInitPaginator = true;
         },
+         
+        initNodeTypeDropMenu:function() {
+            var typeArray=[{
+                name:"全部",
+                value:"All"
+            },{
+                name:"直播",
+                value:203
+            },{
+                name:"下载",
+                value:202
+            }]
+            Utility.initDropMenu(this.$el.find(".dropdown-nodeType"), typeArray, function(value) {
+                if (value !== "All")
+                    this.queryArgs.appType = parseInt(value)
+                else
+                    this.queryArgs.appType = null;
+            }.bind(this));
+        },
 
         initNodeDropMenu: function() {
             var statusArray = [{
@@ -609,6 +735,38 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             }.bind(this));
 
             this.collection.getOperatorList();
+            this.collection.getAllProvince();
+            this.collection.getAreaList();           
+        },
+        
+        onGetLargeAreaSuccess: function(res){
+           this.largeArea=res;
+           var nameList=[{
+              name:"全部",
+              value:"All"
+           }];
+           _.each(res, function(el, index, list){
+              nameList.push({
+                name:el.name,
+                value:el.id
+              })
+           });
+          var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-largeArea').get(0),
+                panelID: this.$el.find('#dropdown-largeArea').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function() {},
+                data: nameList,
+                callback: function(data) {
+                    this.$el.find('#dropdown-largeArea .cur-value').html(data.name);
+                    if(data.name=="全部") this.queryArgs.areaId=null;
+                    else this.queryArgs.areaId=parseInt(data.value);
+                }.bind(this)
+            });
+            this.$el.find("#dropdown-largeArea .cur-value").html(nameList[0].name);
         },
 
         onGetOperatorSuccess: function(res) {
@@ -629,6 +787,38 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 else
                     this.queryArgs.operator = null;
             }.bind(this));
+        },
+
+        onGetProvinceSuccess :function(res) {
+            this.provinceList=res;
+
+            var nameList=[{
+                name: "全部",
+                value:"All"
+            }];
+            _.each(res, function(el, key, list) {
+                nameList.push({
+                    name: el.name,
+                    value: el.id
+                })
+            }.bind(this))
+
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-province').get(0),
+                panelID: this.$el.find('#dropdown-province').get(0),
+                isSingle: true,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function() {},
+                data: nameList,
+                callback: function(data) {
+                    this.$el.find('#dropdown-province .cur-value').html(data.name);
+                    if(data.name=="全部") this.queryArgs.provinceId=null;
+                    else  this.queryArgs.provinceId=parseInt(data.value);
+                }.bind(this)
+            });
+            this.$el.find("#dropdown-province .cur-value").html(nameList[0].name);
         },
 
         onItemCheckedUpdated: function(event) {

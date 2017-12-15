@@ -213,7 +213,6 @@
   "setupChannelManage.view": "setupChannelManage/setupChannelManage.view",
   "setupModuleManage.addGroupList.view": "setupModuleManage/setupModuleManage.addGroupList.view",
   "setupModuleManage.addKey.view": "setupModuleManage/setupModuleManage.addKey.view",
-  "setupModuleManage.addKeyList.view": "setupModuleManage/setupModuleManage.addKeyList.view",
   "setupModuleManage.addModule.view": "setupModuleManage/setupModuleManage.addModule.view",
   "setupModuleManage.model": "setupModuleManage/setupModuleManage.model",
   "setupModuleManage.view": "setupModuleManage/setupModuleManage.view",

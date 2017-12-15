@@ -1078,3 +1078,17 @@ td .table {
   min-height: 500px;
   width:100%;
 }
+.editModule:hover{cursor: pointer}
+.saveModule{
+  position: absolute;
+  right: 40px;
+  top:20px;
+}
+.addGroup{
+  margin-left:30px;
+}
+.addKey{
+ position:absolute;
+ right:40px;
+ top:20px; 
+}

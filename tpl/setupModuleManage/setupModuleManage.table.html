@@ -1,0 +1,38 @@
+<table class="table table-striped table-hover">
+        <thead> 
+          <tr>
+            <th>模块名称</th>
+            <th>英文缩写</th>
+            <th>使用范围</th>
+            <th>模块类型</th>
+            <th>是否默认显示</th>
+            <th>描述说明</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <%for(var i=0;i< data.length;i++){%>
+          <tbody><tr>
+          <td><%=data[i].moduleName%></td>
+          <td><%=data[i].moduleKey%></td>
+          <%if(data[i].type==2){%>
+            <td>直播推流</td>
+          <%}else if(data[i].type==3){%>
+            <td>RTMP&FLV拉流</td>
+          <%}%>
+          <%if(data[i].valueType==1){%>
+           <td>Normal</td>
+          <%}else if(data[i].valueType==2){%>
+            <td>Array</td>
+          <%}else if(data[i].valueType==3){%>
+           <td>Table</td>
+          <%}%>
+          <%if(data[i].defaultDisplay){%>
+            <td><span style="margin-left:30px">Y</span></td>
+          <%}else{%>
+            <td><span style="margin-left:30px">N</span></td>
+          <%}%>
+          <td><%=data[i].moduleDescription%></td>
+          <td><a class="editModule">修改</a></td>
+          </tr></tbody>
+        <%}%>
+</table>

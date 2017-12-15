@@ -1,0 +1,37 @@
+<div>
+    <form class="form-horizontal">
+        <div class="form-group">
+              <label for="configKey" class="col-sm-3 control-label">*KEY</label>
+              <div class="col-sm-6"><input type="text" class="form-control" id="configKey" value=<%=data.configKey%>></div>
+        </div>
+        <div class="form-group">
+              <label for="itemName" class="col-sm-3 control-label">*显示</label>
+              <div class="col-sm-6"><input type="text" class="form-control" id="itemName" value=<%=data.itemName%>></div>
+        </div>
+        <div class="form-group">
+            <label for="valueType" class="col-sm-3 control-label">*类型</label>
+            <div class="form-group dropdown-valueType">
+                <div class="dropdown col-sm-6">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-valueType" data-toggle="dropdown">
+                    <span class="cur-value"></span>
+                   <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu"></ul>
+               </div>
+           </div>   
+        </div>
+        <div class="form-group">
+              <label for="defaultValue" class="col-sm-3 control-label">*默认值</label>
+              <div class="col-sm-6"><input type="text" class="form-control" id="defaultValue" value=<%=data.defaultValue%>></div>
+        </div>
+        <div class="form-group">
+              <label for="validateRule" class="col-sm-3 control-label">*正则校验</label>
+              <div class="col-sm-6"><input type="text" class="form-control" id="validateRule" value=<%=data.validateRule%>></div>
+        </div>
+        <div class="form-group">
+              <label for="itemDescription" class="col-sm-3 control-label">*描述说明</label>
+              <div class="col-sm-6"><input type="text" class="form-control" id="itemDescription" value=<%=data.itemDescription%>></div>
+        </div>
+    </form>
+</div>
+

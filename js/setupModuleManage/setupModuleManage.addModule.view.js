@@ -109,9 +109,13 @@ define("setupModuleManage.addModule.view", ['require','exports', 'template', 'mo
                 type:2,
                 width:600,
                 onOKCallback:function(){
-                    this.addGroupModel.$el.modal("hide");
                     var group=addGroup.getCurrentGroup();
-                    this.showGroupList(group);
+                    if(group.groupName=="") alert("分组名不能为空！");
+                    else if(group.groupDescription=="") alert("分组说明不能为空！");
+                    else{
+                        this.addGroupModel.$el.modal("hide");
+                        this.showGroupList(group);
+                   }
                 }.bind(this),
             }
 

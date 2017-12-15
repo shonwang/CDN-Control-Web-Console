@@ -46,17 +46,39 @@ define("setupModuleManage.addGroupList.view", ['require','exports', 'template', 
                 type:2,
                 width:600,
                 onOKCallback:function(){
-                    this.addKeyModel.$el.modal("hide");
                     addKey.getCurrentKey();
-                    this.currentGroup.configItemList.push(addKey.currentKey)
+                    var flag=this.checkArgs(addKey.currentKey);
+                    if(flag){
+                    this.currentGroup.configItemList.push(addKey.currentKey);
+                    this.addKeyModel.$el.modal("hide");
                     this.initKeyTable();
+                   }
                 }.bind(this),
             }
             this.addKeyModel=new Modal(options);
     
             }.bind(this)) 
         },
-
+        
+        checkArgs:function(data){
+            if(data.configKey==""){
+                alert("KEY不能为空！");
+                return false;
+            }else if(data.itemName==""){
+                alert("显示不能为空！");
+                return false;
+            }else if(data.defaultValue==""){
+                alert("默认值不能为空！");
+                return false;
+            }else if(data.validateRule==""){
+                alert("正则校验不能为空！");
+                return false;
+            }else if(data.itemDescription==""){
+                alert("描述说明不能为空！");
+                return false;
+            }
+            return true
+        },
         initKeyTable:function(){
          
          _.each(this.currentGroup.configItemList, function(el){
@@ -135,9 +157,12 @@ define("setupModuleManage.addGroupList.view", ['require','exports', 'template', 
                 type:2,
                 width:600,
                 onOKCallback:function(){
-                    this.addKeyModel.$el.modal("hide");
-                    addKey.getCurrentKey();
-                    this.initKeyTable();
+                    var flag=this.checkArgs(addKey.currentKey);
+                    if (flag) {
+                        addKey.getCurrentKey();
+                        this.addKeyModel.$el.modal("hide");
+                        this.initKeyTable();
+                    }
                 }.bind(this),
             }
             this.addKeyModel=new Modal(options);

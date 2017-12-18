@@ -71,8 +71,8 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                         defaultDisplay:false,
                         moduleDescription: "",
                         groupList: []
-                    }
                 }
+            }
 
                 this.$el = $(_.template(template['tpl/setupModuleManage/setupModuleManage.addModule.html'])({
                     data: this.currentModule
@@ -81,7 +81,6 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                 if(this.isEdit){
                     this.$el.find("#moduleName").attr("disabled","disabled");
                     this.$el.find("#moduleKey").attr("disabled","disabled");
-                    this.$el.find("#moduleDescription").attr("disabled","disabled");
                     this.$el.find("#dropdown-type").attr("disabled","disabled");
                     this.$el.find("#dropdown-defaultDisplay").attr("disabled","disabled");
                     this.$el.find("#dropdown-valueType").attr("disabled","disabled");
@@ -103,6 +102,15 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                 }else if(this.$el.find("#moduleDescription").val()==""){
                     alert("请输入描述说明！");
                     return false;
+                }else if(this.currentModule.groupList.length==0){
+                    alert("请先添加分组！");
+                    return false;
+                }else{
+                    _.each(this.currentModule.groupList,function(el){
+                        if(el.configItemList.length==0){
+                            alert("请先添加KEY！");
+                        }
+                    }.bind(this))
                 }
                 this.currentModule.moduleName=this.$el.find("#moduleName").val().trim();
                 this.currentModule.moduleKey=this.$el.find("#moduleKey").val().trim();

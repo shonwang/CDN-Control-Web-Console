@@ -21,8 +21,6 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                 this.$el = $(_.template(template['tpl/setupModuleManage/setupModuleManage.groupList.html'])({
                     data: this.currentGroup
                 }));
-                if (this.isEdit)
-                    this.$el.find("#groupDescription").attr("disabled", "disabled");
                 this.$el.find("#groupName").on("blur", $.proxy(this.onGroupNameBlur, this));
                 this.$el.find("#groupDescription").on("blur", $.proxy(this.onGroupDescriptionBlur, this));
                 this.$el.find(".addKey").on("click", $.proxy(this.onClickAddKey, this))
@@ -87,15 +85,18 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                             break;
                     }
                 }.bind(this))
-                if (this.currentGroup.configItemList.length != 0) {
-                    this.keyTable = $(_.template(template['tpl/setupModuleManage/setupModuleManage.keyTable.html'])({
-                        data: this.currentGroup.configItemList,
-                    }));
+                    if(this.currentGroup.configItemList.length!=0){
+                        this.keyTable = $(_.template(template['tpl/setupModuleManage/setupModuleManage.keyTable.html'])({
+                            data: this.currentGroup.configItemList,
+                        }));
                     this.$el.find(".keyList-pannel").html(this.keyTable[0]);
-
                     this.$el.find(".key-modify").on("click", $.proxy(this.onClickEditKey, this))
                     this.$el.find(".key-delete").on("click", $.proxy(this.onClickDeleteKey, this))
-                }
+ 
+                    }
+                    else
+                      this.$el.find(".keyList-pannel").html("");
+                    
             },
 
             onClickDeleteKey: function(event) {
@@ -106,11 +107,13 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                     this.currentGroup.configItemList = _.filter(this.currentGroup.configItemList, function(el) {
                         return el.id != id
                     }.bind(this))
+                    console.log(this.currentGroup.configItemList);
                     this.initKeyTable();
                 }.bind(this))
             },
 
             onClickEditKey: function(event) {
+
                 var eventTarget = event.srcElement || event.target,
                     id;
                 id = $(eventTarget).attr("id");
@@ -118,7 +121,6 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                     return el.id == id;
                 })
                 if (this.addKeyModel) $("#" + this.addKeyModel.modalId).remove();
-
                 require(["setupModuleManage.addKey.view"], function(AddKey) {
                     var addKey = new AddKey({
                         isEdit: true,

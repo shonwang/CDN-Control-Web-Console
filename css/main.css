@@ -1092,3 +1092,16 @@ td .table {
  right:40px;
  top:20px; 
 }
+.optionalValue{
+  display:none;
+}
+.splitSpan{
+  border:1px solid #ccc;
+  height:32px;
+  width:1px;
+  float: left;
+}
+.optionalTable{
+  width:400px;
+  margin:0 auto;
+}

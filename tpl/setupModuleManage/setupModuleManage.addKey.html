@@ -20,6 +20,13 @@
                </div>
            </div>   
         </div>
+        <div class="form-group optionalValue" id="optionalValueBox">
+              <label for="optional" class="col-sm-3 control-label">*可选值|显示</label>
+              <div class="col-sm-3"><input type="text" class="form-control" id="optional" value=""></div><span class="splitSpan"></span>
+              <div class="col-sm-3"><input type="text" class="form-control" id="optionalValue" value=""></div>
+               <a href="javascript:void(0)" class="btn btn-success addOptional"><span class="glyphicon glyphicon-plus">增加可选值</span></a>
+               <div class="table-ctn table-responsive optionalTable"></div>
+        </div>
         <div class="form-group">
               <label for="defaultValue" class="col-sm-3 control-label">*默认值</label>
               <div class="col-sm-6"><input type="text" class="form-control" id="defaultValue" value=<%=data.defaultValue%>></div>

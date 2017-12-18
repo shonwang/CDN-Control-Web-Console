@@ -21,45 +21,43 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                 this.$el = $(_.template(template['tpl/setupModuleManage/setupModuleManage.groupList.html'])({
                     data: this.currentGroup
                 }));
-                if(this.isEdit)
-                    this.$el.find("#groupDescription").attr("disabled","disabled");
+                if (this.isEdit)
+                    this.$el.find("#groupDescription").attr("disabled", "disabled");
                 this.$el.find("#groupName").on("blur", $.proxy(this.onGroupNameBlur, this));
                 this.$el.find("#groupDescription").on("blur", $.proxy(this.onGroupDescriptionBlur, this));
                 this.$el.find(".addKey").on("click", $.proxy(this.onClickAddKey, this))
                 this.initKeyTable();
             },
-        
-            onClickAddKey:function(){
-                if(this.addKeyModel) $("#" + this.addKeyModel.modalId).remove();
+
+            onClickAddKey: function() {
+                if (this.addKeyModel) $("#" + this.addKeyModel.modalId).remove();
 
                 require(["setupModuleManage.addKey.view"], function(AddKey) {
                     var addKey = new AddKey({
-                        isEdit:false
+                        isEdit: false
                     });
 
-                    var options={
-                    title:"新增KEY",
-                    body:addKey,
-                    backdrop : 'static',
-                    type:2,
-                    onOKCallback:function(){
-                        var flag=addKey.getCurrentKey();
-                        if(flag){
-                        this.currentGroup.configItemList.push(addKey.currentKey);
-                        this.addKeyModel.$el.modal("hide");
-                        this.initKeyTable();
-                       }
-                    }.bind(this),
-                }
-                this.addKeyModel=new Modal(options);
-        
-                }.bind(this)) 
+                    var options = {
+                        title: "新增KEY",
+                        body: addKey,
+                        backdrop: 'static',
+                        type: 2,
+                        onOKCallback: function() {
+                            var flag = addKey.getCurrentKey();
+                            if (flag) {
+                                this.currentGroup.configItemList.push(addKey.currentKey);
+                                this.addKeyModel.$el.modal("hide");
+                                this.initKeyTable();
+                            }
+                        }.bind(this),
+                    }
+                    this.addKeyModel = new Modal(options);
+                }.bind(this))
             },
-            
-            initKeyTable:function(){
-             
-             _.each(this.currentGroup.configItemList, function(el){
-                switch(el.valueType){
+
+            initKeyTable: function() {
+                _.each(this.currentGroup.configItemList, function(el) {
+                    switch (el.valueType) {
                         case 1:
                             el.valueTypeName = "数值型"
                             break;
@@ -82,14 +80,14 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                             el.valueTypeName = "数值型数组"
                             break;
                         case 8:
-                             el.valueTypeName="字符型数组"
+                            el.valueTypeName = "字符型数组"
                             break;
                         case 9:
-                             el.valueTypeName="json"
+                            el.valueTypeName = "json"
                             break;
-                }
-             }.bind(this))
-              if(this.currentGroup.configItemList.length!=0){
+                    }
+                }.bind(this))
+                if (this.currentGroup.configItemList.length != 0) {
                     this.keyTable = $(_.template(template['tpl/setupModuleManage/setupModuleManage.keyTable.html'])({
                         data: this.currentGroup.configItemList,
                     }));
@@ -97,19 +95,19 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
 
                     this.$el.find(".key-modify").on("click", $.proxy(this.onClickEditKey, this))
                     this.$el.find(".key-delete").on("click", $.proxy(this.onClickDeleteKey, this))
-                 }
+                }
             },
-            
-            onClickDeleteKey:function(event){
-                 var eventTarget = event.srcElement || event.target,
-                        id;
-                  id = $(eventTarget).attr("id");
-                  Utility.confirm("你确定要删除吗？",function(){
-                     this.currentGroup.configItemList=_.filter(this.currentGroup.configItemList,function(el){
-                        return el.id!=id
-                     }.bind(this))
-                     this.initKeyTable();
-                  }.bind(this)) 
+
+            onClickDeleteKey: function(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                id = $(eventTarget).attr("id");
+                Utility.confirm("你确定要删除吗？", function() {
+                    this.currentGroup.configItemList = _.filter(this.currentGroup.configItemList, function(el) {
+                        return el.id != id
+                    }.bind(this))
+                    this.initKeyTable();
+                }.bind(this))
             },
 
             onClickEditKey: function(event) {
@@ -133,8 +131,8 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                         backdrop: 'static',
                         type: 2,
                         onOKCallback: function() {
-                               var flag= addKey.getCurrentKey();
-                               if(flag){
+                            var flag = addKey.getCurrentKey();
+                            if (flag) {
                                 this.addKeyModel.$el.modal("hide");
                                 this.initKeyTable();
                             }

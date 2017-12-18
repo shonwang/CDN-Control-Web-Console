@@ -16,7 +16,8 @@ define("setupModuleManage.view", ['require','exports', 'template', 'modal.view',
                 type:2,
                 valueType:1,
                 defaultDisplay:true,
-                moduleDescription:"直播日志"   
+                moduleDescription:"直播日志",
+                groupList:[]   
             },{
                 id:2,
                 moduleName:"直播转推",
@@ -24,7 +25,8 @@ define("setupModuleManage.view", ['require','exports', 'template', 'modal.view',
                 type:3,
                 valueType:2,
                 defaultDisplay:true,
-                moduleDescription:"直播转推"   
+                moduleDescription:"直播转推",
+                groupList:[]  
             }]
             this.initTable();
         },
@@ -34,7 +36,11 @@ define("setupModuleManage.view", ['require','exports', 'template', 'modal.view',
              require(["setupModuleManage.addModule.view"], function(AddModule) {
                 this.addModule = new AddModule({
                     collection: this.collection,
-                    isEdit: false
+                    isEdit: false,
+                    onCancelCallback:function(){
+                        this.addModule.$el.remove();
+                        this.$el.find(".moduleManage").show();
+                    }.bind(this)
                 });
                 this.addModule.render(this.$el.find(".addModule"));
             }.bind(this))
@@ -64,6 +70,10 @@ define("setupModuleManage.view", ['require','exports', 'template', 'modal.view',
                 this.addModule = new AddModule({
                     collection: this.collection,
                     isEdit: true,
+                    onCancelCallback:function(){
+                        this.addModule.$el.remove();
+                        this.$el.find(".moduleManage").show();
+                    }.bind(this)
                 });
                 this.addModule.render(this.$el.find(".addModule"));
             }.bind(this))

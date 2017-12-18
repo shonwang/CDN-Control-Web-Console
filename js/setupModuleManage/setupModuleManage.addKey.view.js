@@ -28,11 +28,32 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
             },
 
             getCurrentKey: function() {
-                this.currentKey.configKey = this.$el.find("#configKey").val();
-                this.currentKey.itemName = this.$el.find("#itemName").val();
-                this.currentKey.defaultValue = this.$el.find("#defaultValue").val();
-                this.currentKey.validateRule = this.$el.find("#validateRule").val();
-                this.currentKey.itemDescription = this.$el.find("#itemDescription").val()
+                if(this.$el.find("#configKey").val().trim()==""){
+                    alert("KEY不能为空！");
+                    return false;
+                }else if(this.$el.find("#itemName").val().trim()==""){
+                    alert("显示不能为空！");
+                    return false;
+                }else if(this.$el.find("#defaultValue").val().trim()==""){
+                    alert("默认值不能为空！");
+                    return false;
+                }else if(this.$el.find("#validateRule").val().trim()==""){
+                    alert("正则校验不能为空！");
+                    return false;
+                }else if(this.$el.find("#itemDescription").val().trim()==""){
+                    alert("描述说明不能为空！");
+                    return false;
+                }else{
+                    this.currentKey.configKey = this.$el.find("#configKey").val().trim();
+                    this.currentKey.itemName = this.$el.find("#itemName").val().trim();
+                    this.currentKey.defaultValue = this.$el.find("#defaultValue").val().trim();
+                    this.currentKey.validateRule = this.$el.find("#validateRule").val().trim();
+                    this.currentKey.itemDescription = this.$el.find("#itemDescription").val().trim();
+                    return true
+                }
+               
+
+               
             },
 
             initvalueTypeDropMenu: function() {

@@ -10,8 +10,8 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
             },
 
             getCurrentGroup: function() {
-                var groupName = this.$el.find("#groupName").val()
-                var groupDescription = this.$el.find("#groupDescription").val()
+                var groupName = this.$el.find("#groupName").val().trim();
+                var groupDescription = this.$el.find("#groupDescription").val().trim();
                 var group = {
                     groupName: groupName,
                     groupDescription: groupDescription
@@ -68,7 +68,7 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                         moduleKey: "",
                         type: 2,
                         valueType: 1,
-                        defaultDisplay: false,
+                        defaultDisplay:false,
                         moduleDescription: "",
                         groupList: []
                     }
@@ -77,18 +77,47 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                 this.$el = $(_.template(template['tpl/setupModuleManage/setupModuleManage.addModule.html'])({
                     data: this.currentModule
                 }));
-
+                
+                if(this.isEdit){
+                    this.$el.find("#moduleName").attr("disabled","disabled");
+                    this.$el.find("#moduleKey").attr("disabled","disabled");
+                    this.$el.find("#moduleDescription").attr("disabled","disabled");
+                    this.$el.find("#dropdown-type").attr("disabled","disabled");
+                    this.$el.find("#dropdown-defaultDisplay").attr("disabled","disabled");
+                    this.$el.find("#dropdown-valueType").attr("disabled","disabled");
+                }
                 this.initDropMenu();
                 this.$el.find(".addGroup").on("click", $.proxy(this.onClickAddGroup, this));
-                this.initGroupList();
+                this.$el.find(".goBack").on("click", $.proxy(this.onClickGoBack, this));
+                this.initGroupList(); //编辑组信息时
                 this.$el.find(".saveModule").on("click", $.proxy(this.onClickSaveModule, this));
+            },
+            
+            getCurrentModule:function(){
+                 if(this.$el.find("#moduleName").val()==""){
+                    alert("请输入模块名称！");
+                    return false;
+                }else if(this.$el.find("#moduleKey").val()==""){
+                    alert("请输入英文缩写！");
+                    return false;
+                }else if(this.$el.find("#moduleDescription").val()==""){
+                    alert("请输入描述说明！");
+                    return false;
+                }
+                this.currentModule.moduleName=this.$el.find("#moduleName").val().trim();
+                this.currentModule.moduleKey=this.$el.find("#moduleKey").val().trim();
+                this.currentModule.moduleDescription=this.$el.find("#moduleDescription").val().trim();
+                return true;
             },
 
             onClickSaveModule: function(){
-                console.log(this.currentModule);
+                if(this.getCurrentModule()){
+                    console.log(this.currentModule);
+                }
+                
             },
-
-            initGroupList: function() {
+            //已有模块点击修改时有组的信息
+            initGroupList: function() { 
                 require(["setupModuleManage.addGroupList.view"], function(AddGroupList) {
                     _.each(this.currentModule.groupList, function(el) {
                         var addGroupList = new AddGroupList({
@@ -127,12 +156,13 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
 
                 this.addGroupModel=new Modal(options);
             },
-
+            //新建组时
             showGroupList: function(group) {
                 require(["setupModuleManage.addGroupList.view"], function(AddGroupList) {
                     var addGroupList = new AddGroupList({
                         groupName: group.groupName,
-                        groupDescription: group.groupDescription
+                        groupDescription: group.groupDescription,
+                        moduleId:this.currentModule.id
                     });
                     addGroupList.render(this.$el.find(".groupList-pannel"));
                     this.currentModule.groupList.push(addGroupList.currentGroup);
@@ -155,25 +185,23 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                     name: "Normal",
                     value: 1
                 }, {
-                    name: "Array",
-                    value: 2
-                }, {
                     name: "Table",
+                    value: 2
+                } ,{
+                    name: "Array",
                     value: 3
                 }]
 
                 this.defaultDisplay = [{
                     name: "Y",
-                    value: 1
+                    value: true,
                 }, {
                     name: "N",
-                    value: 2
+                    value: false
                 }]
 
                 Utility.initDropMenu(typeNode, this.type, function(value) {
-                    var typeObj = _.find(this.type, function(object) {
-                        return object.value == parseInt(value);
-                    }.bind(this));
+                    this.currentModule.type = parseInt(value);
 
                 }.bind(this));
                 if (!this.isEdit || this.currentModule.type == 2)
@@ -183,11 +211,9 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
 
 
                 Utility.initDropMenu(valueTypeNode, this.valueType, function(value) {
-                    var valueTypeObj = _.find(this.valueType, function(object) {
-                        return object.value == parseInt(value);
-                    }.bind(this));
-
+                     this.currentModule.valueType = parseInt(value);
                 }.bind(this));
+
                 if (!this.isEdit) {
                     this.$el.find("#dropdown-valueType .cur-value").html(this.valueType[0].name)
                 } else {
@@ -199,15 +225,17 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
 
 
                 Utility.initDropMenu(defaultDisplayNode, this.defaultDisplay, function(value) {
-                    var defaultDisplayObj = _.find(this.defaultDisplay, function(object) {
-                        return object.value == parseInt(value);
-                    }.bind(this));
-
+                     this.currentModule.defaultDisplay = Boolean(value);
                 }.bind(this));
+
                 if (!this.isEdit || !this.currentModule.defaultDisplay)
                     this.$el.find("#dropdown-defaultDisplay .cur-value").html(this.defaultDisplay[1].name)
                 else
                     this.$el.find("#dropdown-defaultDisplay .cur-value").html(this.defaultDisplay[0].name)
+            },
+            
+            onClickGoBack:function(){
+                this.options.onCancelCallback&&this.options.onCancelCallback();
             },
 
             onGetError: function(error) {

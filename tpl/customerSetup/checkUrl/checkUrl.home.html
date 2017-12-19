@@ -1,0 +1,123 @@
+<div class="logDownload">
+	<div class="text-alert main-tips-ctn"></div>
+<h4>客户配置管理<small>/PNO列表配置</small></h4>
+    <div class="bg-white margin-top10">
+    	<div class="padding10 clearfix">
+    		<div class="cdn-row clearfix">
+				<div class="label-text-show">校验URL:</div>
+				<div class="ks-form-control floatLeft">
+					<input type="text" class="ks-form-text margin-left10" id="text-domainName" placeholder="校验URL">
+					<div class="error margin-left10 cdn-error-tip" id="url-name-error">提示性信息</div>
+				</div>
+				<div class="margin-left10 config-answer-ctn">
+					<span class="config-answer margin-top10" data-toggle="tooltip" title='仅支持输入一条域名需要检验URL,支持全量校验,全网文件一致性校验大约需要30分钟。'></span>
+				</div>
+			</div>
+
+			<div class="cdn-row clearfix margin-top10">
+				<div class="label-text-show">校验方式：</div>
+				<div class="label-content-show">
+					<div class="ks-dropdown margin-left10 margin-right10" id="dropdown-menu-check-type">
+						<button type="button" id="url-dropdown" class="ks-btn ks-dropdown-text" data-toggle="dropdown"><span class="ks-caret"></span><span class="cur-value">请选择</span></button>
+						<ul class="ks-dropdown-menu dropdown-menu" role="menu" aria-labelledby="url-dropdown">
+						</ul>
+					</div>					
+				</div>
+				<div class="ks-form-control add-domain-error-tips margin-left10">
+					<div class="error dir-refresh-error cdn-error-tip" id="cdn-type-error">请选校验方式</div>
+				</div>
+			</div>
+
+			<div class="cdn-row clearfix margin-top10">
+				<div class="label-text-show">校验原值:</div>
+				<div class="ks-form-control floatLeft">
+					<input type="text" class="ks-form-text margin-left10" id="text-origin-url-name" placeholder="校验原值">
+					<div class="error margin-left10 cdn-error-tip" id="origin-url-name-error">请输入校验原值</div>
+				</div>
+			</div>
+
+			<div class="cdn-row margin-top10">
+				<div class="label-text-show">&nbsp;</div>
+				<div class="label-content-show margin-left10">
+					<button class="ks-btn ks-btn-primary" id="check-url-btnSubmit">点击校验</button>
+				</div>
+			</div>
+
+    	</div>
+    </div>
+
+    <div>
+    <div class="bg-white clearfix" style="padding:10px;margin-top:10px;">
+        <div class="pull-right">
+        	<div class="ks-form-search" style="vertical-align:top;margin-right:5px;">
+		        <input type="text" class="ks-form-text check-domain-input" placeholder="输入域名">
+		        <i class="icon icon-search-20 domain-search"></i>
+		    </div>
+        </div> 
+    </div>
+	<div class="ks-pannel-resize-inner cdn-refresh-table-ctn bg-white">
+		<table class="ks-table cdn-refresh-table">
+			<thead>
+				<tr>
+					<th>URL</th>
+					<th>校验时间</th>
+					<th>校验方式</th>
+					<th>校验原值</th>
+					<th>状态</th>
+					<th>一致性</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+
+			</tbody>
+		</table>
+
+	    <div class="well">
+	        <div class="table-ctn table-responsive"></div>
+	        <div class="page-ctn row">
+	            <div class="col-md-8 text-center">
+	                <div class="pagination"></div>
+	            </div>
+	            <div class="col-md-4 text-center">
+	                <form class="form-inline page-info">
+	                    <div class="form-group">
+	                        <div class="form-control-static">每页显示</div>
+	                    </div>
+	                    <div class="form-group page-num">
+	                        <div class="drop-ctn dropup">
+	                            <div class="btn-group">
+	                                <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">
+	                                <span class="cur-value">10 条</span>
+	                                <span class="caret"></span>
+	                                </button>
+	                                <ul class="dropdown-menu"></ul>
+	                            </div>
+	                        </div>
+	                    </div>
+	                    <div class="form-group">
+	                        <div class="form-control-static total-items">共<span class="text-primary">0</span>条记录</div>
+	                    </div>
+	                </form>
+	            </div>
+	        </div>
+	    </div>
+    
+		<!--div class="row">
+			<div class="col-sm-12 col-md-12 tc text-center">
+				<div class="pagination"></div>
+				<div class="pagination-sub-list">
+					<div class="page-dropdown-title">共<span class="pager-total-page">...</span>页 每页</div>
+					<div class="page-dropdown">
+						<div class="ks-dropdown" id="dropdown-pager-list" style="margin-left:10px;">
+							<button type="button" class="ks-btn ks-dropdown-text" data-toggle="dropdown"><span class="ks-caret"></span><span class="cur-caret">10行</span></button>
+							<ul class="ks-dropdown-menu" role="menu" aria-labelledby="url-dropdown" style="top:-118px;">
+							</ul>
+						</div>	
+					</div>
+				</div>
+			</div>
+		</div-->
+
+	</div>
+</div>

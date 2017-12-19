@@ -430,6 +430,12 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                             hash: 'index.html#/pnoSetup/' + query,
                             active: false,
                             children: []
+                        },{
+                            id:'customerSetup-checkUrl',
+                            name:'文件一致性校验',
+                            hash: 'index.html#/checkUrl/' + query,
+                            active: false,
+                            children: []
                         }]
                     }],
                     menuOptions = {

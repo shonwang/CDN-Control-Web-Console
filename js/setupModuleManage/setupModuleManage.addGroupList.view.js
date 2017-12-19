@@ -149,7 +149,6 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
             },
 
             onClickEditKey: function(event) {
-
                 var eventTarget = event.srcElement || event.target,
                     id;
                 id = $(eventTarget).attr("id");
@@ -177,7 +176,6 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                         }.bind(this),
                     }
                     this.addKeyModel = new Modal(options);
-
                 }.bind(this))
             },
 

@@ -278,6 +278,8 @@ else if(window.DEBUG === 9)
     window.BASE_URL = "http://wq.center.cdn.ksyun.com";
 else if(window.DEBUG === 10)
     window.BASE_URL = "http://preonline.center.cdn.ksyun.com";
+else if(window.DEBUG === 11)
+    window.BASE_URL = "http://cdn.center.wq01.k8s.op.ksyun.com";
 requirejs.config({
     paths:REQ_PATH,
     urlArgs: new Date().valueOf()

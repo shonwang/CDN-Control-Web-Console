@@ -1,4 +1,4 @@
-<div class="well">
+<div class="well" id=<%=data.id%>>
    <div class="showGroup" style="position: relative;">
     <form class="form-horizontal">
         <div class="form-group">
@@ -10,11 +10,12 @@
         <div class="form-group">
           <label for="groupDescription" class="col-sm-1 control-label">描述说明</label>
           <div class="col-sm-6">
-            <input type="text" class="form-control" id="groupDescription" value=<%=data.groupDescription%>>
+            <textarea class="form-control" id="groupDescription"><%=data.groupDescription%></textarea>
           </div>
         </div>
     </form>
     <a href="javascript:void(0)" class="btn btn-success addKey"><span class="glyphicon glyphicon-plus">新建KEY</span></a>
+    <a href="javascript:void(0)" class="btn btn-danger deleteGroup" id=<%=data.id%>><span class="glyphicon glyphicon-trash">删除分组</span></a>
   </div>
  <div class="keyList-pannel"></div>
 </div>

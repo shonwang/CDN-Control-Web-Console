@@ -58,6 +58,22 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                                 "configKey": "host", //配置生成key
                                 "itemDescription": "some描述" //描述
                             }]
+                        }, {
+                            "id": 3, //分组ID
+                            "moduleId": 3, //模块Id
+                            "groupName": "分组名22", //分组名称
+                            "groupDescription": "lalala222", //分组描述
+                            "configItemList": [{
+                                "id": 4, //配置项ID
+                                "groupId": 3, // 分组id
+                                "itemName": "域名2", //配置项名称
+                                "valueType": 4, //值类型
+                                "defaultValue": "默认值2", //默认值
+                                "valueList": [], //下拉取值列表
+                                "validateRule": "校验规则2", //校验规则
+                                "configKey": "host2", //配置生成key
+                                "itemDescription": "some描述2" //描述
+                            }]
                         }]
 
                     }
@@ -68,22 +84,21 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                         moduleKey: "",
                         type: 2,
                         valueType: 1,
-                        defaultDisplay:false,
+                        defaultDisplay: false,
                         moduleDescription: "",
                         groupList: []
+                    }
                 }
-            }
 
                 this.$el = $(_.template(template['tpl/setupModuleManage/setupModuleManage.addModule.html'])({
                     data: this.currentModule
                 }));
-                
-                if(this.isEdit){
-                    this.$el.find("#moduleName").attr("disabled","disabled");
-                    this.$el.find("#moduleKey").attr("disabled","disabled");
-                    this.$el.find("#dropdown-type").attr("disabled","disabled");
-                    this.$el.find("#dropdown-defaultDisplay").attr("disabled","disabled");
-                    this.$el.find("#dropdown-valueType").attr("disabled","disabled");
+                if (this.isEdit) {
+                    this.$el.find("#moduleName").attr("disabled", "disabled");
+                    this.$el.find("#moduleKey").attr("disabled", "disabled");
+                    this.$el.find("#dropdown-type").attr("disabled", "disabled");
+                    this.$el.find("#dropdown-defaultDisplay").attr("disabled", "disabled");
+                    this.$el.find("#dropdown-valueType").attr("disabled", "disabled");
                 }
                 this.initDropMenu();
                 this.$el.find(".addGroup").on("click", $.proxy(this.onClickAddGroup, this));
@@ -91,79 +106,101 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                 this.initGroupList(); //编辑组信息时
                 this.$el.find(".saveModule").on("click", $.proxy(this.onClickSaveModule, this));
             },
-            
-            getCurrentModule:function(){
-                 if(this.$el.find("#moduleName").val()==""){
+
+
+            getCurrentModule: function() {
+                if (this.$el.find("#moduleName").val() == "") {
                     alert("请输入模块名称！");
                     return false;
-                }else if(this.$el.find("#moduleKey").val()==""){
+                } else if (this.$el.find("#moduleKey").val() == "") {
                     alert("请输入英文缩写！");
                     return false;
-                }else if(this.$el.find("#moduleDescription").val()==""){
+                } else if (this.$el.find("#moduleDescription").val() == "") {
                     alert("请输入描述说明！");
                     return false;
-                }else if(this.currentModule.groupList.length==0){
+                } else if (this.currentModule.groupList.length == 0) {
                     alert("请先添加分组！");
                     return false;
-                }else{
-                    var obj=_.find(this.currentModule.groupList,function(el){
-                        return el.configItemList.length==0
+                } else {
+                    var obj = _.find(this.currentModule.groupList, function(el) {
+                        return el.configItemList.length == 0
                     }.bind(this))
-                    if(obj&&obj.length!=0){
+                    if (obj && obj.length != 0) {
                         alert("请先添加KEY！");
                         return false;
                     }
                 }
-                this.currentModule.moduleName=this.$el.find("#moduleName").val().trim();
-                this.currentModule.moduleKey=this.$el.find("#moduleKey").val().trim();
-                this.currentModule.moduleDescription=this.$el.find("#moduleDescription").val().trim();
+                this.currentModule.moduleName = this.$el.find("#moduleName").val().trim();
+                this.currentModule.moduleKey = this.$el.find("#moduleKey").val().trim();
+                this.currentModule.moduleDescription = this.$el.find("#moduleDescription").val().trim();
                 return true;
             },
 
-            onClickSaveModule: function(){
-                if(this.getCurrentModule()){
+            onClickSaveModule: function() {
+                if (this.getCurrentModule()) {
                     console.log(this.currentModule);
-                }            
+                }
             },
             //已有模块点击修改时有组的信息
-            initGroupList: function() { 
+            initGroupList: function() {
                 require(["setupModuleManage.addGroupList.view"], function(AddGroupList) {
                     _.each(this.currentModule.groupList, function(el) {
-                        var addGroupList = new AddGroupList({
-                            currentGroup: el,
-                            isEdit: this.isEdit
-                        });
-                        addGroupList.render(this.$el.find(".groupList-pannel"));
-                    }.bind(this))
+                            var addGroupList = new AddGroupList({
+                                currentGroup: el,
+                                isEdit: this.isEdit
+                            });
+                            addGroupList.render(this.$el.find(".groupList-pannel"));
+                        }.bind(this))
+                        //this.$el.find(".deleteGroup").on("click", $.proxy(this.onClickDeleteGroup, this))
                 }.bind(this))
             },
 
-            onClickAddGroup:function(){
-                if(this.addGroupModel) $("#" + this.addGroupModel.modalId).remove();
-                var addGroup=new AddGroup({
-                    options:this.options,
-                    collection:this.collection,
+            onClickDeleteGroup: function(event) {
+
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                Utility.confirm("你确定要删除吗？", function() {
+                    this.currentModule.groupList =
+                        _.filter(this.currentModule.groupList, function(el) {
+                            return el.id != id;
+                        }.bind(this))
+                    this.$el.find("#" + id).remove();
+                }.bind(this))
+
+            },
+
+            onClickAddGroup: function() {
+                if (this.addGroupModel) $("#" + this.addGroupModel.modalId).remove();
+                var addGroup = new AddGroup({
+                    options: this.options,
+                    collection: this.collection,
                 })
-                var options={
-                    title:"新增分组",
-                    body:addGroup,
-                    backdrop : 'static',
-                    type:2,
-                    width:600,
-                    onOKCallback:function(){
-                        var group=addGroup.getCurrentGroup();
-                        if(group.groupName=="") 
-                            alert("分组名不能为空！");
-                        else if(group.groupDescription=="") 
-                            alert("分组说明不能为空！");
-                        else{
+                var options = {
+                    title: "新增分组",
+                    body: addGroup,
+                    backdrop: 'static',
+                    type: 2,
+                    width: 600,
+                    onOKCallback: function() {
+                        var group = addGroup.getCurrentGroup();
+                        if (group.groupName == "")
+                            alert("分组名称不能为空！");
+                        else if (group.groupDescription == "")
+                            alert("描述说明不能为空！");
+                        else {
                             this.addGroupModel.$el.modal("hide");
                             this.showGroupList(group);
-                       }
+                        }
                     }.bind(this),
                 }
 
-                this.addGroupModel=new Modal(options);
+                this.addGroupModel = new Modal(options);
             },
             //新建组时
             showGroupList: function(group) {
@@ -171,9 +208,10 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                     var addGroupList = new AddGroupList({
                         groupName: group.groupName,
                         groupDescription: group.groupDescription,
-                        moduleId:this.currentModule.id
+                        moduleId: this.currentModule.id
                     });
                     addGroupList.render(this.$el.find(".groupList-pannel"));
+                    addGroupList.$el.find(".deleteGroup").on("click", $.proxy(this.onClickDeleteGroup, this))
                     this.currentModule.groupList.push(addGroupList.currentGroup);
                 }.bind(this))
             },
@@ -196,7 +234,7 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                 }, {
                     name: "Table",
                     value: 2
-                } ,{
+                }, {
                     name: "Array",
                     value: 3
                 }]
@@ -220,7 +258,7 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
 
 
                 Utility.initDropMenu(valueTypeNode, this.valueType, function(value) {
-                     this.currentModule.valueType = parseInt(value);
+                    this.currentModule.valueType = parseInt(value);
                 }.bind(this));
 
                 if (!this.isEdit) {
@@ -234,7 +272,7 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
 
 
                 Utility.initDropMenu(defaultDisplayNode, this.defaultDisplay, function(value) {
-                     this.currentModule.defaultDisplay = Boolean(value);
+                    this.currentModule.defaultDisplay = Boolean(value);
                 }.bind(this));
 
                 if (!this.isEdit || !this.currentModule.defaultDisplay)
@@ -242,9 +280,9 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                 else
                     this.$el.find("#dropdown-defaultDisplay .cur-value").html(this.defaultDisplay[0].name)
             },
-            
-            onClickGoBack:function(){
-                this.options.onCancelCallback&&this.options.onCancelCallback();
+
+            onClickGoBack: function() {
+                this.options.onCancelCallback && this.options.onCancelCallback();
             },
 
             onGetError: function(error) {

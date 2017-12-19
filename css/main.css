@@ -1089,7 +1089,7 @@ td .table {
 }
 .addKey{
  position:absolute;
- right:40px;
+ right:130px;
  top:20px; 
 }
 .optionalValue{
@@ -1104,4 +1104,9 @@ td .table {
 .optionalTable{
   width:400px;
   margin:0 auto;
+}
+.deleteGroup{
+  position: absolute;
+  right:20px;
+  top:20px;
 }

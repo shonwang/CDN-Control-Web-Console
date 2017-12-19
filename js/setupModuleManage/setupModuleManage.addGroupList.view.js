@@ -8,7 +8,7 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                 this.collection = options.collection;
                 this.isEdit = options.isEdit;
                 if (this.isEdit) {
-                    this.currentGroup = options.currentGroup
+                    this.currentGroup = options.currentGroup;
                 } else {
                     this.currentGroup = {
                         "id": Utility.randomStr(8), //分组ID
@@ -25,8 +25,10 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                 this.$el.find("#groupDescription").on("blur", $.proxy(this.onGroupDescriptionBlur, this));
                 this.$el.find(".addKey").on("click", $.proxy(this.onClickAddKey, this))
                 this.initKeyTable();
+                if (this.currentGroup.id.length != 8)
+                    this.$el.find(".deleteGroup").hide();
             },
-            
+
             onClickAddKey: function() {
                 if (this.addKeyModel) $("#" + this.addKeyModel.modalId).remove();
 
@@ -86,45 +88,42 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                     }
                 }.bind(this))
 
-                if(this.currentGroup.configItemList.length!=0){
+                if (this.currentGroup.configItemList.length != 0) {
                     this.keyTable = $(_.template(template['tpl/setupModuleManage/setupModuleManage.keyTable.html'])({
                         data: this.currentGroup.configItemList,
                     }));
-                this.$el.find(".keyList-pannel").html(this.keyTable[0]);
-                this.$el.find(".key-modify").on("click", $.proxy(this.onClickEditKey, this))
-                this.$el.find(".key-delete").on("click", $.proxy(this.onClickDeleteKey, this))
-                this.$el.find(".up").on("click",$.proxy(this.onClickUpButton,this))
-                this.$el.find(".down").on("click",$.proxy(this.onClickDownButton,this))
-                }
-                else
-                  this.$el.find(".keyList-pannel").html("");
-                
-            },
-            
-            onClickUpButton:function(event){          
-                var eventTarget = event.srcElement || event.target,
-                id;
-                if (eventTarget.tagName == "SPAN") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                }
-                else 
-                    id = $(eventTarget).attr("id");
+                    this.$el.find(".keyList-pannel").html(this.keyTable[0]);
+                    this.$el.find(".key-modify").on("click", $.proxy(this.onClickEditKey, this))
+                    this.$el.find(".key-delete").on("click", $.proxy(this.onClickDeleteKey, this))
+                    this.$el.find(".up").on("click", $.proxy(this.onClickUpButton, this))
+                    this.$el.find(".down").on("click", $.proxy(this.onClickDownButton, this))
+                } else
+                    this.$el.find(".keyList-pannel").html("");
 
-                var list=this.currentGroup.configItemList;
-                list=Utility.adjustElement(list,parseInt(id),true);
-                this.currentGroup.configItemList = list;
-                this.initKeyTable();
             },
 
-            onClickDownButton:function(event){
+            onClickUpButton: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id;
                 if (eventTarget.tagName == "SPAN") {
                     eventTarget = $(eventTarget).parent();
                     id = eventTarget.attr("id");
-                }
-                else 
+                } else
+                    id = $(eventTarget).attr("id");
+
+                var list = this.currentGroup.configItemList;
+                list = Utility.adjustElement(list, parseInt(id), true);
+                this.currentGroup.configItemList = list;
+                this.initKeyTable();
+            },
+
+            onClickDownButton: function(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else
                     id = $(eventTarget).attr("id");
 
                 var list = this.currentGroup.configItemList;
@@ -137,6 +136,10 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                 var eventTarget = event.srcElement || event.target,
                     id;
                 id = $(eventTarget).attr("id");
+                if (id.length != 8) {
+                    alert("这条KEY已经保存到服务器不能删除！");
+                    return;
+                }
                 Utility.confirm("你确定要删除吗？", function() {
                     this.currentGroup.configItemList = _.filter(this.currentGroup.configItemList, function(el) {
                         return el.id != id

@@ -156,7 +156,6 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
             },
 
             onClickDeleteGroup: function(event) {
-
                 var eventTarget = event.srcElement || event.target,
                     id;
                 if (eventTarget.tagName == "SPAN") {
@@ -172,7 +171,6 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                         }.bind(this))
                     this.$el.find("#" + id).remove();
                 }.bind(this))
-
             },
 
             onClickAddGroup: function() {
@@ -256,7 +254,6 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                 else
                     this.$el.find("#dropdown-type .cur-value").html(this.type[1].name)
 
-
                 Utility.initDropMenu(valueTypeNode, this.valueType, function(value) {
                     this.currentModule.valueType = parseInt(value);
                 }.bind(this));
@@ -269,7 +266,6 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                             this.$el.find("#dropdown-valueType .cur-value").html(el.name)
                     }.bind(this))
                 }
-
 
                 Utility.initDropMenu(defaultDisplayNode, this.defaultDisplay, function(value) {
                     this.currentModule.defaultDisplay = Boolean(value);

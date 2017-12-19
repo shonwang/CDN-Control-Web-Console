@@ -32,6 +32,7 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
                 this.initvalueTypeDropMenu();
                 this.$el.find(".addOptional").on("click", $.proxy(this.onClickAddOptional, this))
             },
+            
             getArgs: function() {
                 if (this.$el.find("#configKey").val().trim() == "") {
                     alert("KEY不能为空！");

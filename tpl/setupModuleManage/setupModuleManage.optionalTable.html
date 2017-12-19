@@ -2,11 +2,13 @@
 	<thead>
 		<th>可选值</th>
 		<th>显示</th>
+		<th>操作</th>
 	</thead>
 	 <%for(var i=0;i< data.valueList.length;i++){%>
        <tbody><tr>
            <td><%=data.valueList[i].name%></td>
            <td><%=data.valueList[i].value%></td>
+           <td><a href="javascript:void(0)" class="deleteOptional" id="<%=i%>">删除</a></td>
        </tr></tbody>
   <%}%>
 </table>

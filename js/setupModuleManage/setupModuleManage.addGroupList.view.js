@@ -26,7 +26,7 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                 this.$el.find(".addKey").on("click", $.proxy(this.onClickAddKey, this))
                 this.initKeyTable();
             },
-
+            
             onClickAddKey: function() {
                 if (this.addKeyModel) $("#" + this.addKeyModel.modalId).remove();
 
@@ -85,18 +85,52 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                             break;
                     }
                 }.bind(this))
-                    if(this.currentGroup.configItemList.length!=0){
-                        this.keyTable = $(_.template(template['tpl/setupModuleManage/setupModuleManage.keyTable.html'])({
-                            data: this.currentGroup.configItemList,
-                        }));
-                    this.$el.find(".keyList-pannel").html(this.keyTable[0]);
-                    this.$el.find(".key-modify").on("click", $.proxy(this.onClickEditKey, this))
-                    this.$el.find(".key-delete").on("click", $.proxy(this.onClickDeleteKey, this))
- 
-                    }
-                    else
-                      this.$el.find(".keyList-pannel").html("");
-                    
+
+                if(this.currentGroup.configItemList.length!=0){
+                    this.keyTable = $(_.template(template['tpl/setupModuleManage/setupModuleManage.keyTable.html'])({
+                        data: this.currentGroup.configItemList,
+                    }));
+                this.$el.find(".keyList-pannel").html(this.keyTable[0]);
+                this.$el.find(".key-modify").on("click", $.proxy(this.onClickEditKey, this))
+                this.$el.find(".key-delete").on("click", $.proxy(this.onClickDeleteKey, this))
+                this.$el.find(".up").on("click",$.proxy(this.onClickUpButton,this))
+                this.$el.find(".down").on("click",$.proxy(this.onClickDownButton,this))
+                }
+                else
+                  this.$el.find(".keyList-pannel").html("");
+                
+            },
+            
+            onClickUpButton:function(event){          
+                var eventTarget = event.srcElement || event.target,
+                id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                }
+                else 
+                    id = $(eventTarget).attr("id");
+
+                var list=this.currentGroup.configItemList;
+                list=Utility.adjustElement(list,parseInt(id),true);
+                this.currentGroup.configItemList = list;
+                this.initKeyTable();
+            },
+
+            onClickDownButton:function(event){
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                }
+                else 
+                    id = $(eventTarget).attr("id");
+
+                var list = this.currentGroup.configItemList;
+                list = Utility.adjustElement(list, parseInt(id), false);
+                this.currentGroup.configItemList = list;
+                this.initKeyTable();
             },
 
             onClickDeleteKey: function(event) {
@@ -107,7 +141,6 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                     this.currentGroup.configItemList = _.filter(this.currentGroup.configItemList, function(el) {
                         return el.id != id
                     }.bind(this))
-                    console.log(this.currentGroup.configItemList);
                     this.initKeyTable();
                 }.bind(this))
             },
@@ -124,7 +157,7 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                 require(["setupModuleManage.addKey.view"], function(AddKey) {
                     var addKey = new AddKey({
                         isEdit: true,
-                        currentKey: currentKey
+                        currentKey: currentKey,
                     });
 
                     var options = {

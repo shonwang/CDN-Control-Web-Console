@@ -81,10 +81,24 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
             },
 
             initOptionalTable:function(){
-                 var optionalTable=$(_.template(template['tpl/setupModuleManage/setupModuleManage.optionalTable.html'])({
-                    data: this.currentKey
-                }));
-                 this.$el.find(".table-ctn").html(optionalTable[0]);
+                if(this.currentKey.valueList.length!=0){
+                     var optionalTable=$(_.template(template['tpl/setupModuleManage/setupModuleManage.optionalTable.html'])({
+                        data: this.currentKey
+                    }));
+                     this.$el.find(".table-ctn").html(optionalTable[0]);
+                     this.$el.find(".deleteOptional").on("click",$.proxy(this.onClickDeleteOptional,this))
+                }else
+                   this.$el.find(".table-ctn").html("");
+            },
+
+            onClickDeleteOptional:function(event){
+                  var eventTarget = event.srcElement || event.target, id;
+                  id = $(eventTarget).attr("id");
+                  _.each(this.currentKey.valueList,function(el,index){
+                    if(index==id)
+                        this.currentKey.valueList.splice(index,1);
+                  }.bind(this))
+                  this.initOptionalTable();
             },
 
             initvalueTypeDropMenu: function() {

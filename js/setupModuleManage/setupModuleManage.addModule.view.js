@@ -53,7 +53,7 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                                 "itemName": "域名", //配置项名称
                                 "valueType": 4, //值类型
                                 "defaultValue": "默认值", //默认值
-                                "valueList": "", //下拉取值列表
+                                "valueList": [], //下拉取值列表
                                 "validateRule": "校验规则", //校验规则
                                 "configKey": "host", //配置生成key
                                 "itemDescription": "some描述" //描述
@@ -106,11 +106,13 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                     alert("请先添加分组！");
                     return false;
                 }else{
-                    _.each(this.currentModule.groupList,function(el){
-                        if(el.configItemList.length==0){
-                            alert("请先添加KEY！");
-                        }
+                    var obj=_.find(this.currentModule.groupList,function(el){
+                        return el.configItemList.length==0
                     }.bind(this))
+                    if(obj&&obj.length!=0){
+                        alert("请先添加KEY！");
+                        return false;
+                    }
                 }
                 this.currentModule.moduleName=this.$el.find("#moduleName").val().trim();
                 this.currentModule.moduleKey=this.$el.find("#moduleKey").val().trim();
@@ -121,8 +123,7 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
             onClickSaveModule: function(){
                 if(this.getCurrentModule()){
                     console.log(this.currentModule);
-                }
-                
+                }            
             },
             //已有模块点击修改时有组的信息
             initGroupList: function() { 

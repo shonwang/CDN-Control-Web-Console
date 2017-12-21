@@ -156,7 +156,6 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
             },
 
             onClickDeleteGroup: function(event) {
-
                 var eventTarget = event.srcElement || event.target,
                     id;
                 if (eventTarget.tagName == "SPAN") {
@@ -170,9 +169,11 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                         _.filter(this.currentModule.groupList, function(el) {
                             return el.id != id;
                         }.bind(this))
-                    this.$el.find("#" + id).remove();
+                    this.$el.find(".well#" + id).addClass("zoomOut animated");
+                    setTimeout(function(){
+                        this.$el.find(".well#" + id).remove();
+                    }.bind(this), 800)
                 }.bind(this))
-
             },
 
             onClickAddGroup: function() {
@@ -210,6 +211,7 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                         groupDescription: group.groupDescription,
                         moduleId: this.currentModule.id
                     });
+                    addGroupList.$el.addClass("fadeInDownBig animated")
                     addGroupList.render(this.$el.find(".groupList-pannel"));
                     addGroupList.$el.find(".deleteGroup").on("click", $.proxy(this.onClickDeleteGroup, this))
                     this.currentModule.groupList.push(addGroupList.currentGroup);
@@ -256,7 +258,6 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                 else
                     this.$el.find("#dropdown-type .cur-value").html(this.type[1].name)
 
-
                 Utility.initDropMenu(valueTypeNode, this.valueType, function(value) {
                     this.currentModule.valueType = parseInt(value);
                 }.bind(this));
@@ -269,7 +270,6 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                             this.$el.find("#dropdown-valueType .cur-value").html(el.name)
                     }.bind(this))
                 }
-
 
                 Utility.initDropMenu(defaultDisplayNode, this.defaultDisplay, function(value) {
                     this.currentModule.defaultDisplay = Boolean(value);

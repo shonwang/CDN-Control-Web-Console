@@ -169,7 +169,10 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                         _.filter(this.currentModule.groupList, function(el) {
                             return el.id != id;
                         }.bind(this))
-                    this.$el.find("#" + id).remove();
+                    this.$el.find(".well#" + id).addClass("zoomOut animated");
+                    setTimeout(function(){
+                        this.$el.find(".well#" + id).remove();
+                    }.bind(this), 800)
                 }.bind(this))
             },
 
@@ -208,6 +211,7 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                         groupDescription: group.groupDescription,
                         moduleId: this.currentModule.id
                     });
+                    addGroupList.$el.addClass("fadeInDownBig animated")
                     addGroupList.render(this.$el.find(".groupList-pannel"));
                     addGroupList.$el.find(".deleteGroup").on("click", $.proxy(this.onClickDeleteGroup, this))
                     this.currentModule.groupList.push(addGroupList.currentGroup);

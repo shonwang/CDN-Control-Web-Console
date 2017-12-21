@@ -1,0 +1,27 @@
+<div>
+   <%for(var i=0;i< data.length;i++){%>
+      <div class="panel-group" id="module-<%=data[i].id%>">
+      	    <div class="panel panel-info">
+				<div class="panel-heading" id="heading-<%=data[i].id%>">
+					<h4 class="panel-title">
+		                <a data-toggle="collapse" data-parent="#module-<%=data[i].id%>" href="#title-<%=data[i].id%>">
+		                 模块名称：<%=data[i].moduleName%>&nbsp;&nbsp;&nbsp;
+		                </a>
+			            <a class="glyphicon glyphicon-question-sign text-danger" href="javascript:void(0)"
+			                   data-container="body" 
+			                   data-toggle="popover"
+			                   data-trigger="hover" 
+			                   data-placement="top" 
+			                   data-content="描述说明：<%=data[i].moduleDescription%>">
+			            </a>        
+		            </h4>
+				</div>
+	           <div id="title-<%=data[i].id%>" class="panel-collapse collapse in">
+	              <div class="panel-body">
+	              	<%=data[i].groupTemplate%>
+	              </div>
+	           </div>
+         	</div>
+      </div>
+   <%}%>
+</div>

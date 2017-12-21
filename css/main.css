@@ -1110,3 +1110,13 @@ td .table {
   right:20px;
   top:20px;
 }
+ul,li{
+  list-style: none;
+}
+.moduleListUl{
+  overflow: hidden;
+}
+.moduleListUl li{
+  float: left;
+  margin-right:20px;
+}

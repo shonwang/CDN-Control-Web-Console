@@ -98,6 +98,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "domainList/:query/liveRtmpOptimize/:query2": "liveRtmpOptimize",
                 "domainList/:query/liveSLAStatistics/:query2": "liveSLAStatistics",
                 "domainList/:query/liveFrequencyLog/:query2": "liveFrequencyLog",
+                "domainList/:query/liveDynamicSetup/:query2": "liveDynamicSetup",
 
                 //直播上行域名配置
                 "domainList/:query/liveUpBasicInformation/:query2": "liveUpBasicInformation",

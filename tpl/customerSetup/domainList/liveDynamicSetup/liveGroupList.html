@@ -32,9 +32,10 @@
 					        <tr>
 					          <td><%=data.configItemList[i].itemName%></td>
 					          <td><%=data.configItemList[i].configKey%></td>
-					          <%if(data.configItemList[i].valueType==1||data.configItemList[i].valueType==2){%>
-					              <td><input type="text" class="form-control keyInput"
-					              	id="<%=data.moduleId%>-<%=data.id%>-<%=data.configItemList[i].id%>" style="width:200px;" value="<%=data.configItemList[i].value%>"></td>
+					          <%if(data.configItemList[i].valueType==1||data.configItemList[i].valueType==2){%>					            
+					                <td><input type="text" class="form-control keyInput"
+					              	 id="<%=data.moduleId%>-<%=data.id%>-<%=data.configItemList[i].id%>" style="width:200px;" value="<%=data.configItemList[i].value%>">
+					              	</td>          
 					          <%}else if(data.configItemList[i].valueType==9){%>
 					              <td><textarea id="<%=data.moduleId%>-<%=data.id%>-<%=data.configItemList[i].id%>" class="form-control" style="width:200px;"><%=data.configItemList[i].value%></textarea></td>
 					          <%}else if(data.configItemList[i].valueType==3||data.configItemList[i].valueType==4||data.configItemList[i].valueType==5||data.configItemList[i].valueType==6){%>

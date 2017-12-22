@@ -15,8 +15,23 @@
 			   	 	<%for(var k=0;k< header.length;k++){%>
 			   	 		<td><%=data[j].configValueMap[header[k].id]%></td>
 			   	 	<%}%>
-			   	 	<td><%=data[j].openFlag%></td>
-			   	 	<td><a href="javascript:void(0)" class="editModuleKey" id="<%=j%>">修改</a></td>
+			   	 	<td>
+			   	 		<div class="col-sm-4 switch">
+                            <div class="togglebutton <%=moduleId%>-switch" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                	<%if(data[j].openFlag){%>
+                                    <input type="checkbox" id="<%=moduleId%>-<%=j%>" checked="true"><span class="toggle"></span>
+                                    <%}else{%>
+                                     <input type="checkbox" id="<%=moduleId%>-<%=j%>"><span class="toggle"></span>
+                                    <%}%>
+                                </label>
+                            </div>
+                        </div>
+			   	 	</td>
+			   	 	<td>
+			   	 		<a href="javascript:void(0)" class="<%=moduleId%>-editModuleKey editModuleKey" id="<%=moduleId%>-<%=j%>">修改</a>
+			   	 	    <a href="javascript:void(0)" class="<%=moduleId%>-deleteModuleKey deleteModuleKey" id="<%=moduleId%>-<%=j%>">删除</a>
+			   	   </td>
 			   	 </tr>
 			   <%}%>
 			</tbody>

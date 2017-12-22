@@ -26,7 +26,8 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
 
             var clientInfo = JSON.parse(options.query),
                 domainInfo = JSON.parse(options.query2);
-                originId=domainInfo.id;
+            this.originId = domainInfo.id;
+
             this.userInfo = {
                 clientName: clientInfo.clientName,
                 domain: domainInfo.domain,
@@ -168,7 +169,6 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                         2: [1, 2, 3]
                     }
                 }]
-
             }, {
                 "id": 3,
                 "moduleName": "模块3", //模块名称
@@ -201,10 +201,8 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             }]
 
             this.initSetupModule(); //初始化模块管理
-
-
         },
-      
+
         initAllDropdownMenu: function() {
             _.each(this.moduleListDetail, function(module) {
                 if (module.valueType == 1 || module.valueType == 2) {
@@ -349,28 +347,28 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             var eventTarget = event.srcElement || event.target,
                 id;
             id = $(eventTarget).attr("id");
-            Utility.confirm("你确定要删除吗？",function(){
-                var currentModule=_.find(this.moduleListDetail,function(module){
-                     return id==module.id
+            Utility.confirm("你确定要删除吗？", function() {
+                var currentModule = _.find(this.moduleListDetail, function(module) {
+                    return id == module.id
                 }.bind(this))
-                 if(currentModule.valueType==1||currentModule.valueType==2){
-                    _.each(currentModule.groupList,function(group){
-                        _.each(group.configItemList,function(key){
-                            key.value=null;
+                if (currentModule.valueType == 1 || currentModule.valueType == 2) {
+                    _.each(currentModule.groupList, function(group) {
+                        _.each(group.configItemList, function(key) {
+                            key.value = null;
                         }.bind(this))
                     }.bind(this))
                     this.initModuleList(this.moduleListDetail);
-                 }else{
-                       currentModule.value=[];
-                       this.initModuleList(this.moduleListDetail)
-                 }
-                 var sendMessage={
-                    moduleId:id,
-                    originId:originId
-                 }
-                 console.log(sendMessage)
+                } else {
+                    currentModule.value = [];
+                    this.initModuleList(this.moduleListDetail)
+                }
+                var sendMessage = {
+                    moduleId: id,
+                    originId: originId
+                }
+                console.log(sendMessage)
             }.bind(this))
-           
+
         },
 
         onClickSaveItemModule: function(event) {
@@ -380,27 +378,27 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             var currentModule = _.find(this.moduleListDetail, function(module) {
                 return id == module.id
             }.bind(this))
-            var sendMessage={}
-            if(currentModule.valueType==1 ||currentModule.valueType==2){
-                var value=[{
-                    configValueMap:{}
+            var sendMessage = {}
+            if (currentModule.valueType == 1 || currentModule.valueType == 2) {
+                var value = [{
+                    configValueMap: {}
                 }]
-                 _.each(currentModule.groupList,function(group){
-                    _.each(group.configItemList,function(key){
-                            value[0].configValueMap[key.id]=key.value
-                    }.bind(this))      
+                _.each(currentModule.groupList, function(group) {
+                    _.each(group.configItemList, function(key) {
+                        value[0].configValueMap[key.id] = key.value
+                    }.bind(this))
                 }.bind(this))
 
-                sendMessage={
-                   originId:originId,
-                   moduleId:id,
-                   value:value
+                sendMessage = {
+                    originId: this.originId,
+                    moduleId: id,
+                    value: value
                 }
-            }else{
-                sendMessage={
-                    originId:originId,
-                    moduleId:id,
-                    value:currentModule.value
+            } else {
+                sendMessage = {
+                    originId: this.originId,
+                    moduleId: id,
+                    value: currentModule.value
                 }
             }
             console.log(sendMessage)
@@ -422,7 +420,6 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             } else {
                 currentModule.value[valueIndex].openFlag = 0;
             }
-            console.log(this.moduleListDetail);
         },
 
         onClickDeleteModuleKey: function(event) {
@@ -549,7 +546,6 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             id = $(eventTarget).attr("id");
             var currentKey = this.getCurrentKey(id);
             currentKey.value = $(eventTarget).val();
-            console.log(this.moduleListDetail)
         },
 
         initGroupList: function(groupData) {

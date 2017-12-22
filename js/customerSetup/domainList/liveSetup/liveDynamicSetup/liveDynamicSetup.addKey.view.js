@@ -8,7 +8,6 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
                 this.isEdit = options.isEdit;
                 if (this.isEdit) {
                     this.defaultValue = this.options.value
-                    console.log(this.defaultValue);
                 } else {
                     this.defaultValue = {
                         openFlag: 1,
@@ -18,39 +17,38 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
 
                 this.$el = $(this.options.groupTemplate);
                 this.initDropDownAndArrayTable();
-                if(this.isEdit)
+                if (this.isEdit)
                     this.initKeyValue();
             },
 
-            initDropDownAndArrayTable:function(){
+            initDropDownAndArrayTable: function() {
                 _.each(this.options.module.groupList, function(group) {
                     _.each(group.configItemList, function(key) {
-                         if (key.valueType == 3 || key.valueType == 4 || key.valueType == 5 || key.valueType == 6) {
+                        if (key.valueType == 3 || key.valueType == 4 || key.valueType == 5 || key.valueType == 6) {
                             var str = ".dropdown#" + this.options.module.id + "-" + group.id + "-" + key.id;
                             var rootNode = this.$el.find(str);
                             Utility.initDropMenu(rootNode, key.valueList, function(value) {
                                 this.defaultValue.configValueMap[key.id] = value;
                             }.bind(this))
-                            if(this.defaultValue.configValueMap[key.id] != undefined ||
-                               this.defaultValue.configValueMap[key.id] != null){
-                                var currentValue=_.find(key.valueList,function(el){
-                                    if(key.valueType==5||key.valueType==6){
-                                         return el.value==parseInt(this.defaultValue.configValueMap[key.id])
-                                    } else if (key.valueType==3||key.valueType==4){
-                                         return el.value + "" == this.defaultValue.configValueMap[key.id] + ""
-                                    }                                  
+                            if (this.defaultValue.configValueMap[key.id] != undefined ||
+                                this.defaultValue.configValueMap[key.id] != null) {
+                                var currentValue = _.find(key.valueList, function(el) {
+                                    if (key.valueType == 5 || key.valueType == 6) {
+                                        return el.value == parseInt(this.defaultValue.configValueMap[key.id])
+                                    } else if (key.valueType == 3 || key.valueType == 4) {
+                                        return el.value + "" == this.defaultValue.configValueMap[key.id] + ""
+                                    }
                                 }.bind(this))
                                 rootNode.find("#dropdown-valueType .cur-value").html(currentValue.name)
-                            }else{
+                            } else {
                                 rootNode.find("#dropdown-valueType .cur-value").html(key.valueList[0].name)
                                 this.defaultValue.configValueMap[key.id] = key.valueList[0].value
                             }
-                            
                         } else if (key.valueType == 7 || key.valueType == 8) {
                             var str = ".arrayContent#" + this.options.module.id + "-" + group.id + "-" + key.id;
                             var rootNode = this.$el.find(str)
                             rootNode.find(".addArray").on("click", $.proxy(this.onClickAddArray, this))
-                            if(!this.defaultValue.configValueMap[key.id]) this.defaultValue.configValueMap[key.id]=[]
+                            if (!this.defaultValue.configValueMap[key.id]) this.defaultValue.configValueMap[key.id] = []
                             this.initArrayTable(rootNode, this.defaultValue.configValueMap[key.id], this.options.module.id + "-" + group.id + "-" + key.id);
                         }
                     }.bind(this))
@@ -64,7 +62,7 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
                             if ((key.valueType == 1 || key.valueType == 2 || key.valueType == 9) && key.id == valueKey) {
                                 var str = ".keyInput#" + this.options.module.id + "-" + group.id + "-" + key.id
                                 this.$el.find(str).val(this.defaultValue.configValueMap[key.id])
-                            } 
+                            }
                         }.bind(this))
                     }.bind(this))
                 }.bind(this))
@@ -81,33 +79,33 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
                 rootNode.find(".deleteArray").on("click", $.proxy(this.onClickDeleteArray, this))
             },
 
-            onClickDeleteArray:function(event){
+            onClickDeleteArray: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id;
                 id = $(eventTarget).attr("id");
-                var keyId=id.split("-")[2]
-                var index=id.split("-")[3]
-                this.defaultValue.configValueMap[keyId].splice(index,1);
-                var newId=id.split("-");
-                newId.splice(3,1);
-                var str=this.$el.find(".arrayContent#"+newId.join("-"))
-               this.initArrayTable(str, this.defaultValue.configValueMap[keyId], newId.join("-"))
-           }, 
+                var keyId = id.split("-")[2]
+                var index = id.split("-")[3]
+                this.defaultValue.configValueMap[keyId].splice(index, 1);
+                var newId = id.split("-");
+                newId.splice(3, 1);
+                var str = this.$el.find(".arrayContent#" + newId.join("-"))
+                this.initArrayTable(str, this.defaultValue.configValueMap[keyId], newId.join("-"))
+            },
 
             onClickAddArray: function(evnet) {
                 var eventTarget = event.srcElement || event.target,
                     id;
                 id = $(eventTarget).attr("id");
-                var keyId=id.split("-")[2]
+                var keyId = id.split("-")[2]
                 var value = this.$el.find(".arrayContent#" + id + " input").val().trim();
-                if(this.defaultValue.configValueMap[keyId]==undefined) this.defaultValue.configValueMap[keyId]=[]
-                if(value==""){
+                if (this.defaultValue.configValueMap[keyId] == undefined) this.defaultValue.configValueMap[keyId] = []
+                if (value == "") {
                     alert("值不能为空！");
                     return;
                 }
                 this.defaultValue.configValueMap[keyId].push(value)
-                this.$el.find(".arrayContent#"+ id +" input").val("");
-                this.initArrayTable(this.$el.find(".arrayContent#"+ id), this.defaultValue.configValueMap[keyId], id)      
+                this.$el.find(".arrayContent#" + id + " input").val("");
+                this.initArrayTable(this.$el.find(".arrayContent#" + id), this.defaultValue.configValueMap[keyId], id)
             },
 
             getCurrentKey: function() {

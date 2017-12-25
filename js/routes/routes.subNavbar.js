@@ -131,12 +131,14 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     }, {
                         id: 'customerSetup-domainList-luaStatusCodeCache',
                         name: '状态码缓存',
+                        notShow:!AUTH_OBJ.StatusCodeCache,
                         hash: 'index.html#/domainList/' + query + '/luaStatusCodeCache/' + query2,
                         active: false,
                         children: []
                     }, {
                         id: 'customerSetup-domainList-luaCacheKeySetup',
                         name: '设置 Cache Key',
+                        notShow:!AUTH_OBJ.CacheKey,
                         hash: 'index.html#/domainList/' + query + '/luaCacheKeySetup/' + query2,
                         active: false,
                         children: []
@@ -149,6 +151,7 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     children: [{
                         id: 'customerSetup-domainList-luaDragPlay',
                         name: '拖拽播放',
+                        notShow: !AUTH_OBJ.DragPlay,
                         hash: 'index.html#/domainList/' + query + '/luaDragPlay/' + query2,
                         active: false,
                         children: []
@@ -161,6 +164,7 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     children: [{
                         id: 'customerSetup-domainList-luaClientLimitSpeed',
                         name: '客户端限速',
+                        notShow: !AUTH_OBJ.ClientSpeedLimit,
                         hash: 'index.html#/domainList/' + query + '/luaClientLimitSpeed/' + query2,
                         active: false,
                         children: []
@@ -173,12 +177,14 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     children: [{
                         id: 'customerSetup-domainList-luaHttpHeaderOpt',
                         name: 'HTTP头的增删改',
+                        notShow:!AUTH_OBJ.ModifyHttpHeader,
                         hash: 'index.html#/domainList/' + query + '/luaHttpHeaderOpt/' + query2,
                         active: false,
                         children: []
                     }, {
                         id: 'customerSetup-domainList-luaHttpHeaderCtr',
                         name: '常用HTTP头控制功能',
+                        notShow:!AUTH_OBJ.CommonHttpheadControl,
                         hash: 'index.html#/domainList/' + query + '/luaHttpHeaderCtr/' + query2,
                         active: false,
                         children: []
@@ -191,6 +197,7 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     children: [{
                         id: 'customerSetup-domainList-luaRequestArgsModify',
                         name: '请求参数的改写',
+                        notShow:!AUTH_OBJ.ModifyRequestParameters,
                         hash: 'index.html#/domainList/' + query + '/luaRequestArgsModify/' + query2,
                         active: false,
                         children: []
@@ -217,7 +224,7 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                         id: 'customerSetup-domainList-luaTimestamp',
                         name: '时间戳+共享秘钥防盗链',
                         hash: 'index.html#/domainList/' + query + '/luaTimestamp/' + query2,
-                        //notShow: !AUTH_OBJ.TimeSafetychain,
+                        notShow: !AUTH_OBJ.TimeSafetychain,
                         active: false,
                         children: []
                     }]

@@ -4,9 +4,9 @@
 	<div>
 		<ul class="nav nav-tabs">
 			<li class="active"><a href="#luaconfig-cache-set" data-toggle="tab" data-target="#luaconfig-cache-set">缓存设置</a></li>
-			<li><a href="#luaconfig-http-header-control" data-toggle="tab" data-target="#luaconfig-http-header-control" style="display:none">http头控制</a></li>
-			<li><a href="#luaconfig-refer-set" data-toggle="tab" data-target="#luaconfig-refer-set" style="display:none">防盗链</a></li>
-			<li><a href="#luaconfig-speed-set" data-toggle="tab" data-target="#luaconfig-speed-set" style="display:none">限速</a></li>
+			<li><a href="#luaconfig-http-header-control" data-toggle="tab" data-target="#luaconfig-http-header-control" style="display:none;<%if(data.AdvancedHttpheadControl){%>display:block;<%}%>">http头控制</a></li>
+			<li><a href="#luaconfig-refer-set" data-toggle="tab" data-target="#luaconfig-refer-set" style="display:none;<%if(data.AdvancedAccessControl){%>display:block;<%}%>>防盗链</a></li>
+			<li><a href="#luaconfig-speed-set" data-toggle="tab" data-target="#luaconfig-speed-set" style="display:none;<%if(data.AdvancedSpeedLimit){%>display:block;<%}%>">限速</a></li>
 		</ul>
 		<div class="tab-content">
 			<div class="tab-pane well fade in active" id="luaconfig-cache-set"></div>

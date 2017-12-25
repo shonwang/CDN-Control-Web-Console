@@ -107,7 +107,8 @@ define("luaDelMarkCache.view", ['require','exports', 'template', 'modal.view', '
                 this.defaultParam.markType = data.markType;
                 this.defaultParam.markValue = data.markValue || "";
             }
-            this.luaCacheRuleEl = $(_.template(template['tpl/customerSetup/domainList/luaDownloadSetup/luaDelMarkCache/delMarkCache.add.html'])());
+            var SpecifyCacheParameters = AUTH_OBJ.SpecifyCacheParameters;
+            this.luaCacheRuleEl = $(_.template(template['tpl/customerSetup/domainList/luaDownloadSetup/luaDelMarkCache/delMarkCache.add.html'])({SpecifyCacheParameters:SpecifyCacheParameters}));
             this.$el.find(".main-ctn").html(this.luaCacheRuleEl.get(0))
 
             if (this.defaultParam.markType === 1){

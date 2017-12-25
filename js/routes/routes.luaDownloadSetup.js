@@ -3,7 +3,7 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
         var RouterLuaDownloadSetup = {
 
             luaTimestamp: function(query, query2) {
-                //if (!AUTH_OBJ.TimeSafetychain) return;
+                if (!AUTH_OBJ.TimeSafetychain) return;
                 require(['luaTimestamp.view', 'luaTimestamp.model'], function(TimestampView, TimestampModel) {
                     this.navbarView.select('customerSetup');
                     this.curPage = 'customerSetup-domainList-luaTimestamp';
@@ -81,6 +81,7 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
             },
 
             luaRequestArgsModify: function(query, query2) {
+                if(!AUTH_OBJ.ModifyRequestParameters) return;
                 require(['requestArgsModify.view', 'requestArgsModify.model'], function(RequestArgsModifyView, RequestArgsModifyModel) {
                     this.navbarView.select('customerSetup');
                     this.curPage = 'customerSetup-domainList-luaRequestArgsModify';
@@ -106,7 +107,7 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
             },
 
             luaHttpHeaderCtr: function(query, query2) {
-                //if (!AUTH_OBJ.HttpheadControl) return;
+                if (!AUTH_OBJ.CommonHttpheadControl) return;
                 require(['httpHeaderCtr.view', 'httpHeaderCtr.model'], function(HttpHeaderCtrView, HttpHeaderCtrModel) {
                     this.navbarView.select('customerSetup');
                     this.curPage = 'customerSetup-domainList-luaHttpHeaderCtr';
@@ -132,7 +133,7 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
             },
 
             luaHttpHeaderOpt: function(query, query2) {
-                //if (!AUTH_OBJ.HttpheadControl) return;
+                if (!AUTH_OBJ.ModifyHttpHeader) return;
                 require(['luaHttpHeaderOpt.view', 'luaHttpHeaderOpt.model'], function(HttpHeaderOptView, HttpHeaderOptModel) {
                     this.navbarView.select('customerSetup');
                     this.curPage = 'customerSetup-domainList-luaHttpHeaderOpt';
@@ -184,7 +185,7 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
             },
 
             luaDragPlay: function(query, query2) {
-                //if (!AUTH_OBJ.OndemandOptimization) return;
+                if (!AUTH_OBJ.DragPlay) return;
                 require(['dragPlay.view', 'dragPlay.model'], function(DragPlayView, DragPlayModel) {
                     this.navbarView.select('customerSetup');
                     this.curPage = 'customerSetup-domainList-luaDragPlay';
@@ -210,6 +211,7 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
             },
 
             luaCacheKeySetup: function(query, query2) {
+                if (!AUTH_OBJ.CacheKey) return;
                 require(['cacheKeySetup.view', 'cacheKeySetup.model'], function(CacheKeySetupView, CacheKeySetupModel) {
                     this.navbarView.select('customerSetup');
                     this.curPage = 'customerSetup-domainList-luaCacheKeySetup';
@@ -466,6 +468,7 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
             },
 
             luaStatusCodeCache: function(query, query2){
+                if (!AUTH_OBJ.StatusCodeCache) return;
                 require(['luaStatusCodeCache.view', 'luaStatusCodeCache.model'], function(LuaStatusCodeCacheView, LuaStatusCodeCacheModel) {
                     this.navbarView.select('customerSetup');
                     this.curPage = 'customerSetup-domainList-luaStatusCodeCache';

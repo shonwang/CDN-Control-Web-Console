@@ -119,9 +119,6 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
                                 window.AUTH_OBJ[el.value] === true;
                         })
                         console.log(AUTH_OBJ)
-                        AUTH_OBJ.AdvancedHttpheadControl = true;
-                        AUTH_OBJ.AdvancedAccessControl = true;
-                        AUTH_OBJ.AdvancedSpeedLimit = true;
                         callback&&callback();
                         if (!this.isRender) this.render();
                     } else {

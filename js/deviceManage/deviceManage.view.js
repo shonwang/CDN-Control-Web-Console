@@ -718,7 +718,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             var statusArray = [
                 {name: "全部", value: "All"},
                 {name: "运行中", value: 1},
-                {name: "暂停中", value: 2}
+                {name: "暂停中", value: 2},
+                {name: "启动中", value:8}
             ],
             rootNode = this.$el.find(".dropdown-status");
             Utility.initDropMenu(rootNode, statusArray, function(value){

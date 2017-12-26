@@ -104,6 +104,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "domainList/:query/liveUpBasicInformation/:query2": "liveUpBasicInformation",
                 "domainList/:query/liveUpBackOriginSetup/:query2": "liveUpBackOriginSetup",
                 "domainList/:query/liveUpFlowNameChange/:query2": "liveUpFlowNameChange",
+                "domainList/:query/liveUpDynamicSetup/:query2": "liveUpDynamicSetup",
 
                 //配置下发2.0
                 "setupChannelManage": "setupChannelManage",

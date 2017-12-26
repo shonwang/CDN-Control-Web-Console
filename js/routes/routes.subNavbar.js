@@ -391,6 +391,11 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     name: '流名变换',
                     hash: 'index.html#/domainList/' + query + '/liveUpFlowNameChange/' + query2,
                     children: []
+                },{
+                    id: 'customerSetup-domainList-liveUpDynamicSetup',
+                    name: '动态配置',
+                    hash: 'index.html#/domainList/' + query + '/liveUpDynamicSetup/' + query2,
+                    children: []
                 }];
 
                 if (!this.domainManageNavbar) {

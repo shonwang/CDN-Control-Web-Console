@@ -208,6 +208,7 @@
   "setupBill.model": "setupChannelManage/setupBill/setupBill.model",
   "setupBill.view": "setupChannelManage/setupBill/setupBill.view",
   "setupBillLive.view": "setupChannelManage/setupBill/setupBillLive.view",
+  "setupBillLiveDynamic.view": "setupChannelManage/setupBill/setupBillLiveDynamic.view",
   "setupChannelManage.edit.view": "setupChannelManage/setupChannelManage.edit.view",
   "setupChannelManage.history.view": "setupChannelManage/setupChannelManage.history.view",
   "setupChannelManage.model": "setupChannelManage/setupChannelManage.model",

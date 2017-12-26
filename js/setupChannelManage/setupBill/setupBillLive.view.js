@@ -63,6 +63,8 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
                 }));
                 this.liveUpFlowNameChangeTable.appendTo(this.$el.find(".bill-ctn"));
             }.bind(this))
+
+            this.initLiveDynamicSetup();
         },
         /*
         initOriginDetection: function(argument) {
@@ -426,7 +428,19 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
 
                 this.livePKOptimizeTable.appendTo(this.$el.find(".bill-ctn"));
             }.bind(this))
+
+            this.initLiveDynamicSetup();
         },
+
+        initLiveDynamicSetup:function(){
+            var pannel=this.$el.find(".bill-ctn")
+            require(["setupBillLiveDynamic.view"], function(SetupBillLiveDynamic){
+                    var setupBillLiveDynamic=new SetupBillLiveDynamic({
+                       pannel:pannel
+                    })
+            }.bind(this));            
+        },
+
     });
 
     return SetupLiveBillView;

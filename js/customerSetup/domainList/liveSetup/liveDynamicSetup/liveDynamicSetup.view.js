@@ -127,17 +127,17 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                         "id": 1,
                         "groupId": 1,
                         "itemName": "配置项名称1", //配置项名称
-                        "valueType": 3, //值类型
+                        "valueType": 5, //值类型
                         "defaultValue": "", //默认值
                         "valueList": [{
                             name: "请选择",
                             value: null
                         }, {
-                            name: "开",
-                            value: true
+                            name: "开11",
+                            value: 12
                         }, {
-                            name: "关",
-                            value: false
+                            name: "关22",
+                            value: 34
                         }], //下拉取值列表
                         "validateRule": "\\d", //校验规则
                         "configKey": "wwww", //配置生成key
@@ -159,13 +159,13 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                 value: [{
                     openFlag: 1,
                     configValueMap: {
-                        1: true,
+                        1: 34,
                         2: ["lalalala", "lueluelue", "kukukujku"]
                     }
                 }, {
                     openFlag: 0,
                     configValueMap: {
-                        1: false,
+                        1:12,
                         2: [1, 2, 3]
                     }
                 }]
@@ -201,6 +201,37 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             }]
 
             this.initSetupModule(); //初始化模块管理
+            this.$el.find(".publish").on("click",$.proxy(this.launchSendPopup,this))
+        },
+        
+        launchSendPopup: function(){
+            require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
+                var mySaveThenSendView = new SaveThenSendView({
+                    collection: new SaveThenSendModel(),
+                    domainInfo: this.domainInfo,
+                    isRealLive: true,
+                    description: this.$el.find("#Remarks").val(),
+                    onSendSuccess: function() {
+                        this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
+                    }.bind(this)
+                });
+                var options = {
+                    title: "发布",
+                    body : mySaveThenSendView,
+                    backdrop : 'static',
+                    type     : 2,
+                    width: 1000,
+                    onOKCallback:  function(){
+                        mySaveThenSendView.sendConfig();
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();
+                        this.update(this.options.query, this.options.query2, this.target);
+                    }.bind(this)
+                }
+                this.sendPopup = new Modal(options);
+            }.bind(this))
         },
 
         initAllDropdownMenu: function() {
@@ -297,14 +328,45 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             }.bind(this))
             return currentKey;
         },
-
+        
         initModuleArrayTypeTable: function(headerArray, moduleData, moduleId) {
+            var data=[]
+          _.each(moduleData,function(moduledata){
+            var obj={}
+            obj.openFlag=moduledata.openFlag
+             _.each(moduledata.configValueMap,function(el,key){  
+                    obj[key]=this.toChange(headerArray,el,key)
+             }.bind(this))
+             data.push(obj); 
+           }.bind(this))
             var tpl = _.template(template['tpl/customerSetup/domainList/liveDynamicSetup/liveArrayModule.table.html'])({
                 header: headerArray,
-                data: moduleData,
+                data: data,
                 moduleId: moduleId
             });
             return tpl
+        },
+        
+        toChange:function(headerArray, el, key){
+            var obj={}
+             _.each(headerArray,function(header){
+                if(header.id==key&&header.valueType==5||header.valueType==6){
+                    _.each(header.valueList,function(valuelist){
+                        if(el==valuelist.value)
+                            obj[key]=valuelist.name
+                    }.bind(this))
+                }else if(header.id==key&&header.valueType==3||header.valueType==4){
+                    if(el==0||el+""==false+"") 
+                        obj[key]="关"
+                    else if(el==1||el+""==true+"")
+                        obj[key]="开"
+                    else if(el+""==null+"")
+                        obj[key]="请选择"
+                }else if(header.id==key){
+                        obj[key]=el
+                }
+            }.bind(this))
+            return obj[key]
         },
 
         initModuleList: function() {
@@ -322,6 +384,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                             module.configKeyList.push(key)
                         }.bind(this))
                     }.bind(this))
+
                     module.groupTemplate = this.initModuleArrayTypeTable(module.configKeyList, module.value, module.id)
                 }
 

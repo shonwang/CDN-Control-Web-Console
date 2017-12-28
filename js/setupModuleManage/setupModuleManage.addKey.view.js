@@ -8,6 +8,8 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
                 this.isEdit = options.isEdit;
                 if (this.isEdit) {
                     this.currentKey = options.currentKey
+                    if (this.currentKey.valueList == null || this.currentKey.valueList=="")
+                        this.currentKey.valueList = [{"name": "请选择", "value": null}]
                 } else {
                     this.currentKey = {
                         "id": Utility.randomStr(8), //配置项ID
@@ -15,12 +17,13 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
                         "itemName": "", //配置项名称
                         "valueType": 1, //值类型
                         "defaultValue": "", //默认值
-                        "valueList": [], //下拉取值列表
+                        "valueList": [{"name": "请选择", "value": null}], //下拉取值列表
                         "validateRule": "", //校验规则
                         "configKey": "", //配置生成key
                         "itemDescription": "" //描述
                     }
                 }
+
                 this.$el = $(_.template(template['tpl/setupModuleManage/setupModuleManage.addKey.html'])({
                     data: this.currentKey
                 }));
@@ -61,6 +64,25 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
             getCurrentKey: function() {
                 var flag = this.getArgs();
                 if (flag) {
+                    if(this.currentKey.valueType==3){
+                        this.currentKey.valueList.push({
+                            name:"开",
+                            value:1
+                        })
+                        this.currentKey.valueList.push({
+                            name:"关",
+                            value:0
+                        })
+                    }else if(this.currentKey.valueType==4){
+                       this.currentKey.valueList.push({
+                            name:"开",
+                            value:true
+                        })
+                        this.currentKey.valueList.push({
+                            name:"关",
+                            value:false
+                        })
+                    }
                     this.currentKey.configKey = this.$el.find("#configKey").val().trim();
                     this.currentKey.itemName = this.$el.find("#itemName").val().trim();
                     this.currentKey.defaultValue = this.$el.find("#defaultValue").val().trim();
@@ -72,8 +94,8 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
 
             onClickAddOptional: function() {
                 this.currentKey.valueList.push({
-                    name: this.$el.find("#optional").val().trim(),
-                    value: this.$el.find("#optionalValue").val().trim()
+                    name:this.$el.find("#optionalValue").val().trim(),
+                    value: this.$el.find("#optional").val().trim()
                 })
 
                 this.$el.find("#optional").val("");
@@ -132,6 +154,9 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
                 }, {
                     name: "json",
                     value: 9
+                },{
+                    name:"时间数值型",
+                    value:10
                 }]
 
                 Utility.initDropMenu(valueTypeNode, this.valueType, function(value) {
@@ -140,6 +165,7 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
                         this.$el.find("#optionalValueBox").removeClass("optionalValue");
                     else
                         this.$el.find("#optionalValueBox").addClass("optionalValue");
+
                 }.bind(this));
 
                 if (!this.isEdit)

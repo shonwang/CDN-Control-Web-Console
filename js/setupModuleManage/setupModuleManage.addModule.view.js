@@ -32,51 +32,16 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
             initialize: function(options) {
                 this.options = options;
                 this.collection = options.collection;
-                this.isEdit = options.isEdit
+                this.isEdit = options.isEdit;
+                this.moduleId = options.moduleId
                 if (this.isEdit) {
-                    this.currentModule = {
-                        id: 2,
-                        moduleName: "直播转推",
-                        moduleKey: "aaaa",
-                        type: 3,
-                        valueType: 2,
-                        defaultDisplay: true,
-                        moduleDescription: "直播转推",
-                        groupList: [{
-                            "id": 2, //分组ID
-                            "moduleId": 1, //模块Id
-                            "groupName": "分组名称11", //分组名称
-                            "groupDescription": "lalala", //分组描述
-                            "configItemList": [{
-                                "id": 3, //配置项ID
-                                "groupId": 2, // 分组id
-                                "itemName": "域名", //配置项名称
-                                "valueType": 4, //值类型
-                                "defaultValue": "默认值", //默认值
-                                "valueList": [], //下拉取值列表
-                                "validateRule": "校验规则", //校验规则
-                                "configKey": "host", //配置生成key
-                                "itemDescription": "some描述" //描述
-                            }]
-                        }, {
-                            "id": 3, //分组ID
-                            "moduleId": 3, //模块Id
-                            "groupName": "分组名22", //分组名称
-                            "groupDescription": "lalala222", //分组描述
-                            "configItemList": [{
-                                "id": 4, //配置项ID
-                                "groupId": 3, // 分组id
-                                "itemName": "域名2", //配置项名称
-                                "valueType": 4, //值类型
-                                "defaultValue": "默认值2", //默认值
-                                "valueList": [], //下拉取值列表
-                                "validateRule": "校验规则2", //校验规则
-                                "configKey": "host2", //配置生成key
-                                "itemDescription": "some描述2" //描述
-                            }]
-                        }]
-
-                    }
+                    this.collection.off("get.moduleInfo.success");
+                    this.collection.off("get.moduleInfo.error");
+                    this.collection.on("get.moduleInfo.success", $.proxy(this.onGetModuleSuccess, this));
+                    this.collection.on("get.moduleInfo.error", $.proxy(this.onGetError, this));
+                    this.collection.getModuleInfo({
+                        moduleId: this.moduleId
+                    });
                 } else {
                     this.currentModule = {
                         id: Utility.randomStr(8),
@@ -88,8 +53,12 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                         moduleDescription: "",
                         groupList: []
                     }
-                }
 
+                    this.initSetup();
+                }
+            },
+
+            initSetup: function() {
                 this.$el = $(_.template(template['tpl/setupModuleManage/setupModuleManage.addModule.html'])({
                     data: this.currentModule
                 }));
@@ -100,13 +69,18 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                     this.$el.find("#dropdown-defaultDisplay").attr("disabled", "disabled");
                     this.$el.find("#dropdown-valueType").attr("disabled", "disabled");
                 }
-                this.initDropMenu();
+
                 this.$el.find(".addGroup").on("click", $.proxy(this.onClickAddGroup, this));
                 this.$el.find(".goBack").on("click", $.proxy(this.onClickGoBack, this));
-                this.initGroupList(); //编辑组信息时
-                this.$el.find(".saveModule").on("click", $.proxy(this.onClickSaveModule, this));
-            },
 
+                this.$el.find(".saveModule").on("click", $.proxy(this.onClickSaveModule, this));
+                this.collection.off("save.moduleInfo.success");
+                this.collection.off("save.moduleInfo.error");
+                this.collection.on("save.moduleInfo.success", $.proxy(this.onSaveModuleSuccess, this));
+                this.collection.on("save.moduleInfo.error", $.proxy(this.onGetError, this));
+                this.initDropMenu();
+                this.initGroupList(); //编辑组信息时  
+            },
 
             getCurrentModule: function() {
                 if (this.$el.find("#moduleName").val() == "") {
@@ -137,8 +111,30 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
             },
 
             onClickSaveModule: function() {
-                if (this.getCurrentModule()) {
-                    console.log(this.currentModule);
+                var flag = this.getCurrentModule()
+                var module = $.extend(true, {}, this.currentModule);
+                if (flag) {
+                    if (!this.isEdit) delete module.id
+                    _.each(module.groupList, function(group) {
+                        if (group.id.length == 8 && typeof group.id == "string") {
+                            delete group.id;
+                            delete group.moduleId;
+                        }
+                        _.each(group.configItemList, function(key) {
+                            if (key.id.length == 8 && typeof key.id == "string") {
+                                delete key.id;
+                                delete key.groupId;
+                            }
+                            if (key.valueList.length == 0) {
+                                key.valueList = "";
+                            } else {
+                                console.log(key.valueList)
+                                key.valueList = JSON.stringify(key.valueList)
+                            }
+                        }.bind(this))
+                    }.bind(this))
+                    console.log(module);
+                    this.collection.saveModuleInfo(module);
                 }
             },
             //已有模块点击修改时有组的信息
@@ -170,7 +166,7 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                             return el.id != id;
                         }.bind(this))
                     this.$el.find(".well#" + id).addClass("zoomOut animated");
-                    setTimeout(function(){
+                    setTimeout(function() {
                         this.$el.find(".well#" + id).remove();
                     }.bind(this), 800)
                 }.bind(this))
@@ -282,6 +278,27 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
             },
 
             onClickGoBack: function() {
+                this.options.onCancelCallback && this.options.onCancelCallback();
+            },
+
+            onGetModuleSuccess: function(res) {
+                _.each(res.groupList, function(group) {
+                    _.each(group.configItemList, function(key) {
+                        if (key.valueList == null) {
+                            key.valueList = [];
+                        } else if (key.valueList != "") {
+                            console.log(key.valueList);
+                            key.valueList = JSON.parse(key.valueList);
+                        }
+                    }.bind(this))
+                }.bind(this))
+                this.currentModule = res;
+                this.initSetup();
+                this.$el.appendTo(this.target)
+            },
+
+            onSaveModuleSuccess: function() {
+                alert("保存成功！");
                 this.options.onCancelCallback && this.options.onCancelCallback();
             },
 

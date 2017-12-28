@@ -125,8 +125,10 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (originDomain.type === 2 && domainConf.originType === 3 && domainConf.backsourceFlag === 0) 
                 this.originSetupInfo.originTypeStr = 'KSVideo';
             //"originAddress": 回源地址(多个IP 或者 单个域名 或者 单个金山云域名), 多个ip以分号分隔
-            if (domainConf.backsourceFlag === 0) 
-                this.originSetupInfo.originAddress = domainConf.originAddress.split(",").join("<br>");
+            if (domainConf.backsourceFlag === 0) {
+                if (domainConf.originAddress)
+                    this.originSetupInfo.originAddress = domainConf.originAddress.split(",").join("<br>");
+            }
 
             if (domainConf.backsourceFlag === 1) {
                 //"advanceOriginType": 高级回源设置的源站类型 1:IP源站 2:域名源站

@@ -4,7 +4,7 @@
             <th>KEY</th>
             <th>显示</th>
             <th>类型</th>
-            <th>可选值|显示</th>
+            <th style="width:150px;text-align: center">可选值|显示</th>
             <th>默认值</th>
             <th>正则校验</th>
             <th>描述说明</th>
@@ -18,13 +18,21 @@
             <td><%=data[i].itemName%></td>
             <td><%=data[i].valueTypeName%></td>
             <td>
-                <%for(var j=0;j< data[i].valueList.length;j++){%>
-                 <table><tr>
-                   <td><%=data[i].valueList[j].name%>&nbsp;|&nbsp;<%=data[i].valueList[j].value%></td>
-                 </tr></table>
-                <%}%>      
+                <%if(data[i].valueList.length!=0){%>
+                    <table class="table">
+                        
+                        <tbody>
+                            <%for(var j=0;j< data[i].valueList.length;j++){%>
+                            <tr>
+                                <td><%=data[i].valueList[j].value%></td>
+                                <td><%=data[i].valueList[j].name%></td>
+                            </tr>
+                            <%}%>    
+                        </tbody>
+                    </table>
+                <%}%> 
              </td>
-            <td><%=data[i].defaultValue%></td>
+            <td style="text-align: center;"><%=data[i].defaultValue%></td>
             <td><%=data[i].validateRule%></td>
             <td><%=data[i].itemDescription%></td>
             <td>

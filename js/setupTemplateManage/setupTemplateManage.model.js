@@ -9,22 +9,21 @@ define("setupTemplateManage.model", ['require','exports', 'utility'], function(r
 
         initialize: function(){},
 
-        queryChannel: function(args) {
-            var url = BASE_URL + "/channelManager/domain/getOriginDomain",
-                successCallback = function(res) {
-                    this.reset();
-                    if (res) {
-                        this.push(new Model(res));
-                        this.trigger("get.channel.success");
-                    } else {
-                        this.trigger("get.channel.error");
-                    }
-                }.bind(this),
-                errorCallback = function(response) {
-                    this.trigger("get.channel.error", response);
-                }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
-        }
+        saveFrameTemplate:function(args){
+            var url=BASE_URL+"/cg/live/frame/saveFrameTemplate",
+            successCallback = function(res){
+                if (res){
+                    this.trigger("save.frameTemplate.success", res);
+                } else {
+                    this.trigger("save.frameTemplate.error"); 
+                } 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("save.frameTemplate.error", response);  
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
     });
 
     return SetupTemplateManageCollection;

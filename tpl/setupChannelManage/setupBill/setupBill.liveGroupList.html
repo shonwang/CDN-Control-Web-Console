@@ -36,6 +36,7 @@
 					                <td>
 					                	<div class="arrayContent" id="publish<%=data.moduleId%>-<%=data.id%>-<%=data.configItemList[i].id%>" style="width:250px;">		   
 					                     <div class="table-ctn table-responsive optionalTable" style="width:300px;">
+					                     <%if(data.configItemList[i].value!=null){%>
 					                     	<table class="table">
 					                     		<thead>
 					                     			<tr>
@@ -44,6 +45,7 @@
 					                     			</tr>	
 					                     		</thead>
 					                     		<tbody>
+
 					                     			<%for(var j=0;j< data.configItemList[i].value.length;j++){%>
 					                     			<tr>
 					                     		           <td><%=j%></td>
@@ -52,7 +54,8 @@
 					                     			<%}%> 
 					                     	    </tbody>
 					                     	</table>
-					                     </div>
+					                     	<%}%>
+						                    </div>
 					                    </div>
 					                </td>
 					           <%}else{%>

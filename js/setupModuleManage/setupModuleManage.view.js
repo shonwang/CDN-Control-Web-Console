@@ -9,26 +9,17 @@ define("setupModuleManage.view", ['require', 'exports', 'template', 'modal.view'
                 this.collection = options.collection;
                 this.$el = $(_.template(template['tpl/setupModuleManage/setupModuleManage.html'])());
                 this.$el.find(".createModule").on("click", $.proxy(this.onClickAddModule, this));
-                this.moduleList = [{
-                    id: 1,
-                    moduleName: "直播日志",
-                    moduleKey: "ssss", //模块key
-                    type: 2,
-                    valueType: 1,
-                    defaultDisplay: true,
-                    moduleDescription: "直播日志",
-                    groupList: []
-                }, {
-                    id: 2,
-                    moduleName: "直播转推",
-                    moduleKey: "aaaa", //模块key
-                    type: 3,
-                    valueType: 2,
-                    defaultDisplay: true,
-                    moduleDescription: "直播转推",
-                    groupList: []
-                }]
-                this.initTable();
+
+                this.collection.on("get.moduleList.success", $.proxy(this.onGetModuleListSuccess, this));
+                this.collection.on("get.moduleList.error", $.proxy(this.onGetError, this));
+                this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                this.collection.getListModule();
+  
+            },
+            
+            onGetModuleListSuccess:function(res){
+                  this.moduleList=res;
+                  this.initTable();
             },
 
             onClickAddModule: function() {
@@ -38,6 +29,8 @@ define("setupModuleManage.view", ['require', 'exports', 'template', 'modal.view'
                         collection: this.collection,
                         isEdit: false,
                         onCancelCallback: function() {
+                            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                            this.collection.getListModule()
                             this.addModule.$el.remove();
                             this.$el.find(".moduleManage").show();
                         }.bind(this)
@@ -55,13 +48,19 @@ define("setupModuleManage.view", ['require', 'exports', 'template', 'modal.view'
                 this.table.find(".editModule").on("click", $.proxy(this.onClickEditModule, this));
             },
 
-            onClickEditModule: function() {
+            onClickEditModule: function(event) {
                 this.hideList();
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                 id = $(eventTarget).attr("id");
                 require(["setupModuleManage.addModule.view"], function(AddModule) {
                     this.addModule = new AddModule({
                         collection: this.collection,
+                        moduleId:id,
                         isEdit: true,
                         onCancelCallback: function() {
+                            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                            this.collection.getListModule()
                             this.addModule.$el.remove();
                             this.$el.find(".moduleManage").show();
                         }.bind(this)

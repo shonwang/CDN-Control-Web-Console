@@ -32,7 +32,7 @@
 					        <tr>
 					          <td><%=data.configItemList[i].itemName%></td>
 					          <td><%=data.configItemList[i].configKey%></td>
-					          <%if(data.configItemList[i].valueType==1||data.configItemList[i].valueType==2){%>					            
+					          <%if(data.configItemList[i].valueType==1||data.configItemList[i].valueType==2||data.configItemList[i].valueType==10){%>					            
 					                <td><input type="text" class="form-control keyInput"
 					              	 id="<%=data.moduleId%>-<%=data.id%>-<%=data.configItemList[i].id%>" style="width:200px;" value="<%=data.configItemList[i].value%>">
 					              	</td>          

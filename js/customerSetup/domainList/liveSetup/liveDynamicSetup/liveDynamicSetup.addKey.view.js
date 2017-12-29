@@ -33,7 +33,7 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
                                 if (value + "" == null + "")
                                     this.defaultValue.configValueMap[key.id] = null;
                                 else if (key.valueType == 3 || key.valueType == 5)
-                                    this.defaultValue.configValueMap[key.id] = parseFloat(value)
+                                    this.defaultValue.configValueMap[key.id] = parseInt(value)
                                 else if (key.valueType == 4)
                                     this.defaultValue, configValueMap[key.id] = Boolean(value)
                             }.bind(this))
@@ -108,7 +108,7 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
                 _.each(this.options.module.configItemList.groupList, function(group) {
                     _.each(group.configItemList, function(key) {
                         if (keyId == key.id && key.valueType == 7)
-                            value = parseFloat(value)
+                            value = parseInt(value)
                     }.bind(this))
                 }.bind(this))
                 if (this.defaultValue.configValueMap[keyId] == undefined) this.defaultValue.configValueMap[keyId] = []

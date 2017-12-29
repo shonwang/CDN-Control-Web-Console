@@ -112,18 +112,19 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                 if (module.valueType == 1 || module.valueType == 2) {
                     _.each(module.groupList, function(group) {
                         _.each(group.configItemList, function(key) {
-                            if (key.valueList)
+                            if (key.valueList) {
                                 key.valueList = JSON.parse(key.valueList)
-                            else
+                            } else {
                                 key.valueList = [{
                                     "name": "请选择",
                                     "value": null
                                 }];
-                            if (key.value == null && key.defaultValue && key.valueType != 7 && key.valueType != 8) {
-                                key.value = key.defaultValue;
-                            } else if (key.value == null && key.defaultValue) {
-                                key.value = [key.defaultValue]
                             }
+                            // if (key.value == null && key.defaultValue && key.valueType != 7 && key.valueType != 8) {
+                            //     key.value = key.defaultValue;
+                            // } else if (key.value == null && key.defaultValue) {
+                            //     key.value = [key.defaultValue]
+                            // }
                             if (key.valueType == 3 || key.valueType == 4 || key.valueType == 5 || key.valueType == 6) {
                                 var valueList = key.valueList;
                                 var str = ".dropdown#" + module.id + "-" + group.id + "-" + key.id
@@ -153,7 +154,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                                 var str = ".arrayContent#" + module.id + "-" + group.id + "-" + key.id;
                                 var rootNode = this.$el.find(str)
                                 rootNode.find(".addArray").on("click", $.proxy(this.onClickAddArray, this));
-                                if (!key.value) currentKey.value = [];
+                                if (!key.value) key.value = [];
                                 if (typeof key.value != "object") {
                                     var tempArray = [];
                                     tempArray.push(key.value)
@@ -305,7 +306,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             var eventTarget = event.srcElement || event.target,
                 id;
             id = $(eventTarget).attr("id");
-            Utility.confirm("你确定要删除吗？", function() {
+            Utility.confirm("你确定要清空配置吗？", function() {
                 // var currentModule = _.find(this.moduleListDetail, function(module) {
                 //     return id == module.id
                 // }.bind(this))

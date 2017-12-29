@@ -448,9 +448,7 @@ define("setupBillLive.view", ['require', 'exports', 'template', 'modal.view', 'u
 
             initLiveDynamicSetup: function() {
                 var pannel = this.$el.find(".bill-ctn")
-                    //   var moduleList="";
                 _.each(this.appLives, function(el, index, ls) {
-                    moduleList = el.moduleInfoDtoList
                     require(["setupBillLiveDynamic.view"], function(SetupBillLiveDynamic) {
                         var setupBillLiveDynamic = new SetupBillLiveDynamic({
                             pannel: pannel,

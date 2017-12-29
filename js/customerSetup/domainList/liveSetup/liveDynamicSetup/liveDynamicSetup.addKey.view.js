@@ -27,6 +27,8 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
                         if (key.valueType == 3 || key.valueType == 4 || key.valueType == 5 || key.valueType == 6) {
                             var str = ".dropdown#" + this.options.module.id + "-" + group.id + "-" + key.id;
                             var rootNode = this.$el.find(str);
+                            if (key.valueList&& !(key.valueList instanceof Array)) 
+                                key.valueList = JSON.parse(key.valueList)
                             Utility.initDropMenu(rootNode, key.valueList, function(value) {
                                 this.defaultValue.configValueMap[key.id] = value;
                             }.bind(this))

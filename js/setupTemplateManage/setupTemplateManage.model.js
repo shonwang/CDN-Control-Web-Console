@@ -8,15 +8,26 @@ define("setupTemplateManage.model", ['require','exports', 'utility'], function(r
         model: Model,
 
         initialize: function(){},
+        
+        getFrameTemplate:function(args){
+            var url=BASE_URL+"/cg/live/frame/getFrameTemplate",
+            successCallback = function(res){
+                if (res){
+                    this.trigger("get.frameTemplate.success", res);
+                } else {
+                    this.trigger("get.frameTemplate.error"); 
+                } 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.frameTemplate.error", response);  
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
 
         saveFrameTemplate:function(args){
             var url=BASE_URL+"/cg/live/frame/saveFrameTemplate",
             successCallback = function(res){
-                if (res){
-                    this.trigger("save.frameTemplate.success", res);
-                } else {
-                    this.trigger("save.frameTemplate.error"); 
-                } 
+                this.trigger("save.frameTemplate.success", res);    
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("save.frameTemplate.error", response);  

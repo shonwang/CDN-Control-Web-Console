@@ -416,6 +416,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                     title: "修改配置",
                     body: addKey,
                     backdrop: 'static',
+                    width:1000,
                     type: 2,
                     onOKCallback: function() {
                         var result = addKey.getCurrentKey();
@@ -463,6 +464,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                     title: "添加配置",
                     body: addKey,
                     backdrop: 'static',
+                    width:1000,
                     type: 2,
                     onOKCallback: function() {
                         var result = addKey.getCurrentKey();

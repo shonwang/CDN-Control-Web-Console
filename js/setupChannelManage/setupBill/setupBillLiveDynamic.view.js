@@ -7,7 +7,7 @@ define("setupBillLiveDynamic.view", ['require', 'exports', 'template', 'modal.vi
                 this.pannel = options.pannel;
                 this.moduleListDetail = options.moduleList;
                 console.log(this.moduleListDetail)
-
+ 
                 this.initModuleList();
 
             },

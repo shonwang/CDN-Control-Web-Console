@@ -27,11 +27,11 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
                 this.$el = $(_.template(template['tpl/setupModuleManage/setupModuleManage.addKey.html'])({
                     data: this.currentKey
                 }));
-                if (this.isEdit) {
-                    this.$el.find("#configKey").attr("disabled", "disabled");
-                    this.initOptionalTable();
-                }
 
+                if (this.isEdit) 
+                    this.$el.find("#configKey").attr("disabled", "disabled");
+
+                this.initOptionalTable();
                 this.initvalueTypeDropMenu();
                 this.$el.find(".addOptional").on("click", $.proxy(this.onClickAddOptional, this))
             },
@@ -46,15 +46,13 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
                 } else if (this.$el.find("#defaultValue").val().trim() == "") {
                     alert("默认值不能为空！");
                     return false;
-                } else if (this.$el.find("#validateRule").val().trim() == "") {
-                    alert("正则校验不能为空！");
-                    return false;
                 } else if (this.$el.find("#itemDescription").val().trim() == "") {
                     alert("描述说明不能为空！");
                     return false;
                 } else if (this.currentKey.valueType == 5 || this.currentKey.valueType == 6) {
                     if (this.currentKey.valueList.length == 0) {
                         alert("可选值|显示不能为空！");
+                        this.currentKey.valueList = [{"name": "请选择", "value": null}];
                         return false;
                     }
                 }
@@ -64,32 +62,47 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
             getCurrentKey: function() {
                 var flag = this.getArgs();
                 if (flag) {
-                    if(this.currentKey.valueType==3){
-                        this.currentKey.valueList.push({
-                            name:"开",
-                            value:1
-                        })
-                        this.currentKey.valueList.push({
-                            name:"关",
-                            value:0
-                        })
-                    }else if(this.currentKey.valueType==4){
-                       this.currentKey.valueList.push({
-                            name:"开",
-                            value:true
-                        })
-                        this.currentKey.valueList.push({
-                            name:"关",
-                            value:false
-                        })
-                    }
                     this.currentKey.configKey = this.$el.find("#configKey").val().trim();
                     this.currentKey.itemName = this.$el.find("#itemName").val().trim();
                     this.currentKey.defaultValue = this.$el.find("#defaultValue").val().trim();
                     this.currentKey.validateRule = this.$el.find("#validateRule").val().trim();
                     this.currentKey.itemDescription = this.$el.find("#itemDescription").val().trim();
-                    return true
+                    if(this.currentKey.valueType == 3){
+                        this.currentKey.valueList = [{
+                            name: "请选择",
+                            value: null
+                        }, {
+                            name: "开",
+                            value: 1
+                        }, {
+                            name: "关",
+                            value: 0
+                        }]
+                    }else if(this.currentKey.valueType == 4){
+                        this.currentKey.valueList = [{
+                            name: "请选择",
+                            value: null
+                        }, {
+                            name: "开",
+                            value: true
+                        }, {
+                            name: "关",
+                            value: false
+                        }]
+                    } else if (this.currentKey.valueType == 1 || this.currentKey.valueType == 2 ||
+                               this.currentKey.valueType == 7 || this.currentKey.valueType == 8 ||
+                               this.currentKey.valueType == 9 || this.currentKey.valueType == 10){
+                        this.currentKey.valueList = [];
+                        if (this.currentKey.validateRule == "") {
+                            alert("正则校验不能为空！");
+                            flag = false;
+                        }
+                    } else if (this.currentKey.valueType == 5 || this.currentKey.valueType == 6 ||
+                               this.currentKey.valueType == 3 || this.currentKey.valueType == 4){
+                        this.currentKey.validateRule = "";
+                    }
                 }
+                return flag;
             },
 
             onClickAddOptional: function() {
@@ -165,7 +178,6 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
                         this.$el.find("#optionalValueBox").removeClass("optionalValue");
                     else
                         this.$el.find("#optionalValueBox").addClass("optionalValue");
-
                 }.bind(this));
 
                 if (!this.isEdit)

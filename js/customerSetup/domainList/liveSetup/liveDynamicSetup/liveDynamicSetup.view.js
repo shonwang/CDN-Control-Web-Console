@@ -145,7 +145,13 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                             } else if (key.valueType == 7 || key.valueType == 8) {
                                 var str = ".arrayContent#" + module.id + "-" + group.id + "-" + key.id;
                                 var rootNode = this.$el.find(str)
-                                rootNode.find(".addArray").on("click", $.proxy(this.onClickAddArray, this))
+                                rootNode.find(".addArray").on("click", $.proxy(this.onClickAddArray, this));
+                                if (!key.value) currentKey.value = [];
+                                if (typeof key.value != "object") {
+                                    var tempArray = [];
+                                    tempArray.push(key.value)
+                                    key.value = tempArray
+                                }
                                 this.initArrayTable(rootNode, key.value, module.id + "-" + group.id + "-" + key.id);
                             }
                         }.bind(this))
@@ -170,9 +176,11 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                 id;
             id = $(eventTarget).attr("id");
             var currentKey = this.getCurrentKey(id);
-
             var value = this.$el.find(".arrayContent#" + id + " input").val().trim();
-            if (!currentKey.value) currentKey.value = [];
+            if (!value) {
+                alert("你什么都没有输入！");
+                return;
+            }
             currentKey.value.push(value)
             this.$el.find(".arrayContent#" + id + " input").val("");
             this.initArrayTable(this.$el.find(".arrayContent#" + id), currentKey.value, id)

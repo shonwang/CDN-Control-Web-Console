@@ -42,17 +42,34 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
                 this.$el.find(".addOptional").on("click", $.proxy(this.onClickAddOptional, this))
             },
 
-            getArgs: function() {
+            getArgs: function(currentKey) {
+                var defaultValue=this.$el.find("#defaultValue").val().trim();
+                console.log(defaultValue)
                 if (this.$el.find("#configKey").val().trim() == "") {
                     alert("KEY不能为空！");
                     return false;
                 } else if (this.$el.find("#itemName").val().trim() == "") {
                     alert("显示不能为空！");
                     return false;
-                } else if (this.$el.find("#defaultValue").val().trim() == "") {
+                } else if (defaultValue=="") {
                     alert("默认值不能为空！");
                     return false;
-                } else if (this.$el.find("#itemDescription").val().trim() == "") {
+                }else if(currentKey.valueType==1||currentKey.valueType==7||currentKey.valueType==10){
+                    if(!Number(defaultValue)&&defaultValue!=0){
+                        alert("默认值请输入数值型！");
+                        return;
+                    }
+                }else if(currentKey.valueType==3){
+                     if(defaultValue!="0" && defaultValue!="1"){
+                        alert("默认值请输入0或者1！");
+                        return ;
+                     }
+                }else if(currentKey.valueType==4){
+                    if(defaultValue!=true+"" && defaultValue!=false+""){
+                        alert("默认值请输入true或者false！");
+                        return ;
+                     }
+                }else if (this.$el.find("#itemDescription").val().trim() == "") {
                     alert("描述说明不能为空！");
                     return false;
                 } else if (this.currentKey.valueType == 5 || this.currentKey.valueType == 6) {
@@ -69,7 +86,7 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
             },
 
             getCurrentKey: function() {
-                var flag = this.getArgs();
+                var flag = this.getArgs(this.currentKey);
                 if (flag) {
                     this.currentKey.configKey = this.$el.find("#configKey").val().trim();
                     this.currentKey.itemName = this.$el.find("#itemName").val().trim();
@@ -115,9 +132,21 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
             },
 
             onClickAddOptional: function() {
+                var name=this.$el.find("#optionalValue").val().trim();
+                var value=this.$el.find("#optional").val().trim();
+                if(value==""){
+                    alert("请输入可选值！");
+                    return;
+                }else if(name==""){
+                    alert("请输入显示！");
+                    return;
+                }else if(!Number(value)&&value!=0){
+                    alert("可选值请输入数值型的值！");
+                    return;
+                }
                 this.currentKey.valueList.push({
-                    name: this.$el.find("#optionalValue").val().trim(),
-                    value: this.$el.find("#optional").val().trim()
+                    name: name,
+                    value: value
                 })
 
                 this.$el.find("#optional").val("");

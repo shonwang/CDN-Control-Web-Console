@@ -187,6 +187,11 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             if (!value) {
                 alert("你什么都没有输入！");
                 return;
+            }else if(currentKey.valueType==7){
+                if(!Number(value)&&value!=0){
+                   alert("请输入数值型的值！");
+                   return; 
+                }
             }
             currentKey.value.push(value)
             this.$el.find(".arrayContent#" + id + " input").val("");
@@ -342,14 +347,17 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                 var value = [{
                     configValueMap: {}
                 }]
-  
+                var errorMessage = "";
                 _.each(currentModule.groupList, function(group) {
                     _.each(group.configItemList, function(key) {
-                        if (key.valueType == 1 || key.valueType == 3 || key.valueType == 5) {
+                        if (key.valueType == 1 || key.valueType == 3 || key.valueType == 5 || key.valueType == 10) {
                             if (key.value + "" == null + "") {
                                 value[0].configValueMap[key.id] = null;
-                            } else
-                                value[0].configValueMap[key.id] = parseFloat(key.value)
+                            } else if ((key.value === "" && key.valueType == 1) || (key.value === "" && key.valueType == 10)){
+                                errorMessage = errorMessage + key.itemName + "不能为空字符串！<br>"
+                            } else {
+                                value[0].configValueMap[key.id] = parseInt(key.value)
+                            }
                         } else if (key.valueType == 4) {
                             if (key.value + "" == null + "")
                                 value[0].configValueMap[key.id] = null
@@ -358,7 +366,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                         } else if (key.valueType == 7) {
                             var temp = [];
                             _.each(key.value, function(el) {
-                                temp.push(parseFloat(el))
+                                temp.push(parseInt(el))
                             }.bind(this))
                             value[0].configValueMap[key.id] = temp
                         } else {
@@ -367,6 +375,11 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
 
                     }.bind(this))
                 }.bind(this))
+
+                if (errorMessage) {
+                    alert(errorMessage);
+                    return false
+                }
 
                 sendMessage = {
                     originId: this.originId,

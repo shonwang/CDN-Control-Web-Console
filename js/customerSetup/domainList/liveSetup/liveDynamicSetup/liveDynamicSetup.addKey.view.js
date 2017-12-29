@@ -125,13 +125,13 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
                 var errorMessage = "";
                 _.each(this.options.module.groupList, function(group) {
                     _.each(group.configItemList, function(key) {
-                        if (key.valueType == 1 || key.valueType == 2 || key.valueType == 9) {
+                        if (key.valueType == 1 || key.valueType == 2 || key.valueType == 9 || key.valueType == 10) {
                             var str = "#" + group.moduleId + "-" + group.id + "-" + key.id
                             var value = this.$el.find(str).val().trim();
-                            if (key.valueType == 1) value = parseFloat(value)
                             try {
                                 var reg = new RegExp(key.validateRule, "g");
                                 if (reg.test(value)) {
+                                    if (key.valueType == 1 || key.valueType == 10) value = parseInt(value);
                                     this.defaultValue.configValueMap[key.id] = value
                                 } else {
                                     errorMessage += key.itemName + "输入有错误!<br>"

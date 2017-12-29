@@ -287,7 +287,6 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                         if (key.valueList == null) {
                             key.valueList = [];
                         } else if (key.valueList != "") {
-                            console.log(key.valueList);
                             key.valueList = JSON.parse(key.valueList);
                         }
                     }.bind(this))

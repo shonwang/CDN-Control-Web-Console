@@ -116,15 +116,19 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                                 key.valueList = JSON.parse(key.valueList)
                             else
                                 key.valueList = [{"name": "请选择", "value": null}];
-                            if(key.value==null&&key.defaultValue){
+                            if(key.value==null&&key.defaultValue&&key.valueType!=7&&key.valueType!=8){
                                 key.value=key.defaultValue;
+                            }else if(key.value==null&&key.defaultValue){
+                                key.value=[key.defaultValue]
                             }
                             if (key.valueType == 3 || key.valueType == 4 || key.valueType == 5 || key.valueType == 6) {
                                 var valueList = key.valueList;
                                 var str = ".dropdown#" + module.id + "-" + group.id + "-" + key.id
                                 var rootNode = this.$el.find(str);
                                 Utility.initDropMenu(rootNode, valueList, function(value) {
-                                    key.value = value;
+                                    if(key.valueType==3 || key.valueType==5) key.value=parseInt(value)
+                                    else if(key.valueType==4) key.value=Boolean(value)
+                                    else key.value = value;
                                 }.bind(this))
 
                                 var defaultValue = null
@@ -327,9 +331,31 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                 var value = [{
                     configValueMap: {}
                 }]
+
                 _.each(currentModule.groupList, function(group) {
                     _.each(group.configItemList, function(key) {
-                        value[0].configValueMap[key.id] = key.value
+                        if(key.valueType==1||key.valueType==3||key.valueType==5){
+                            if(key.value+""==null+"")
+                            {
+                                value[0].configValueMap[key.id]=null;
+                            }
+                            else
+                                value[0].configValueMap[key.id]=parseFloat(key.value)
+                        }else if(key.valueType==4){
+                            if(key.value+""==null+"")
+                                value[0].configValueMap[key.id]=null
+                            else
+                            value[0].configValueMap[key.id]=Boolean(key.value)
+                        }else if(key.valueType==7){
+                             var temp=[];
+                             _.each(key.value,function(el){
+                                temp.push(parseFloat(el))
+                             }.bind(this))
+                            value[0].configValueMap[key.id]=temp 
+                        }else{
+                            value[0].configValueMap[key.id] = key.value
+                        }
+                        
                     }.bind(this))
                 }.bind(this))
 
@@ -469,6 +495,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                     onOKCallback: function() {
                         var result = addKey.getCurrentKey();
                         if (result) {
+                            if(!currentModule.value) currentModule.value=[]
                             currentModule.value.push(result);
                             var tpl = this.initModuleArrayTypeTable(currentModule.configKeyList, currentModule.value, currentModule.id)
                             this.$el.find("#module-" + id + " .group-ctn").html(tpl)

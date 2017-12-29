@@ -27,51 +27,51 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             require(["setupModuleManage.model"], function(SetupModuleManageModel) {
                 var setupModuleManage = new SetupModuleManageModel();
-                setupModuleManage.on("get.moduleList.success",$.proxy(this.onGetModuleListSuccess,this))
-                setupModuleManage.on("get.moduleList.error",$.proxy(this.onGetError,this))
+                setupModuleManage.on("get.moduleList.success", $.proxy(this.onGetModuleListSuccess, this))
+                setupModuleManage.on("get.moduleList.error", $.proxy(this.onGetError, this))
                 setupModuleManage.getListModule({
                     originId: this.originId
                 });
             }.bind(this));
-            this.collection.on("get.moduleDyConfig.success",$.proxy(this.onGetModuleDyConfigSuccess,this))
-            this.collection.on("get.moduleDyConfig.error",$.proxy(this.onGetError,this))
+            this.collection.on("get.moduleDyConfig.success", $.proxy(this.onGetModuleDyConfigSuccess, this))
+            this.collection.on("get.moduleDyConfig.error", $.proxy(this.onGetError, this))
 
-            this.collection.on("save.moduleDyConfig.success",$.proxy(this.onSaveModuleDyConfigSuccess,this))
-            this.collection.on("save.moduleDyConfig.error",$.proxy(this.onGetError,this))
+            this.collection.on("save.moduleDyConfig.success", $.proxy(this.onSaveModuleDyConfigSuccess, this))
+            this.collection.on("save.moduleDyConfig.error", $.proxy(this.onGetError, this))
 
-            this.collection.on("delete.moduleDyConfig.success",$.proxy(this.onDeleteModuleDyConfigSuccess,this))
-            this.collection.on("delete.moduleDyConfig.error",$.proxy(this.onGetError,this))
+            this.collection.on("delete.moduleDyConfig.success", $.proxy(this.onDeleteModuleDyConfigSuccess, this))
+            this.collection.on("delete.moduleDyConfig.error", $.proxy(this.onGetError, this))
 
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this))
         },
-        
-        onDeleteModuleDyConfigSuccess:function(){
+
+        onDeleteModuleDyConfigSuccess: function() {
             alert("清除成功！");
             this.collection.getListModule({
                 originId: this.originId
             })
         },
 
-        onSaveModuleDyConfigSuccess:function(){
+        onSaveModuleDyConfigSuccess: function() {
             alert("保存成功！");
             this.collection.getListModule({
                 originId: this.originId
             })
         },
-        onGetModuleListSuccess:function(res){
-            this.moduleList=res;
+        onGetModuleListSuccess: function(res) {
+            this.moduleList = res;
             this.initSetupModule(); //初始化模块管理
             this.collection.getModuleDynamicConfig({
-                originId:this.originId
+                originId: this.originId
             })
         },
 
-        onGetModuleDyConfigSuccess:function(res){
-            this.moduleListDetail=res;
+        onGetModuleDyConfigSuccess: function(res) {
+            this.moduleListDetail = res;
             this.initModuleList();
             _.each(this.moduleList, function(el) {
                 var str = "#module-" + el.id
-                if (!el.defaultDisplay){
+                if (!el.defaultDisplay) {
                     this.$el.find(str).hide();
                 }
             }.bind(this))
@@ -112,22 +112,25 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                 if (module.valueType == 1 || module.valueType == 2) {
                     _.each(module.groupList, function(group) {
                         _.each(group.configItemList, function(key) {
-                            if (key.valueList) 
+                            if (key.valueList)
                                 key.valueList = JSON.parse(key.valueList)
                             else
-                                key.valueList = [{"name": "请选择", "value": null}];
-                            if(key.value==null&&key.defaultValue&&key.valueType!=7&&key.valueType!=8){
-                                key.value=key.defaultValue;
-                            }else if(key.value==null&&key.defaultValue){
-                                key.value=[key.defaultValue]
+                                key.valueList = [{
+                                    "name": "请选择",
+                                    "value": null
+                                }];
+                            if (key.value == null && key.defaultValue && key.valueType != 7 && key.valueType != 8) {
+                                key.value = key.defaultValue;
+                            } else if (key.value == null && key.defaultValue) {
+                                key.value = [key.defaultValue]
                             }
                             if (key.valueType == 3 || key.valueType == 4 || key.valueType == 5 || key.valueType == 6) {
                                 var valueList = key.valueList;
                                 var str = ".dropdown#" + module.id + "-" + group.id + "-" + key.id
                                 var rootNode = this.$el.find(str);
                                 Utility.initDropMenu(rootNode, valueList, function(value) {
-                                    if(key.valueType==3 || key.valueType==5) key.value=parseInt(value)
-                                    else if(key.valueType==4) key.value=Boolean(value)
+                                    if (key.valueType == 3 || key.valueType == 5) key.value = parseInt(value)
+                                    else if (key.valueType == 4) key.value = Boolean(value)
                                     else key.value = value;
                                 }.bind(this))
 
@@ -342,28 +345,26 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
 
                 _.each(currentModule.groupList, function(group) {
                     _.each(group.configItemList, function(key) {
-                        if(key.valueType==1||key.valueType==3||key.valueType==5){
-                            if(key.value+""==null+"")
-                            {
-                                value[0].configValueMap[key.id]=null;
-                            }
+                        if (key.valueType == 1 || key.valueType == 3 || key.valueType == 5) {
+                            if (key.value + "" == null + "") {
+                                value[0].configValueMap[key.id] = null;
+                            } else
+                                value[0].configValueMap[key.id] = parseFloat(key.value)
+                        } else if (key.valueType == 4) {
+                            if (key.value + "" == null + "")
+                                value[0].configValueMap[key.id] = null
                             else
-                                value[0].configValueMap[key.id]=parseFloat(key.value)
-                        }else if(key.valueType==4){
-                            if(key.value+""==null+"")
-                                value[0].configValueMap[key.id]=null
-                            else
-                            value[0].configValueMap[key.id]=Boolean(key.value)
-                        }else if(key.valueType==7){
-                             var temp=[];
-                             _.each(key.value,function(el){
+                                value[0].configValueMap[key.id] = Boolean(key.value)
+                        } else if (key.valueType == 7) {
+                            var temp = [];
+                            _.each(key.value, function(el) {
                                 temp.push(parseFloat(el))
-                             }.bind(this))
-                            value[0].configValueMap[key.id]=temp 
-                        }else{
+                            }.bind(this))
+                            value[0].configValueMap[key.id] = temp
+                        } else {
                             value[0].configValueMap[key.id] = key.value
                         }
-                        
+
                     }.bind(this))
                 }.bind(this))
 
@@ -450,7 +451,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                     title: "修改配置",
                     body: addKey,
                     backdrop: 'static',
-                    width:1000,
+                    width: 1000,
                     type: 2,
                     onOKCallback: function() {
                         var result = addKey.getCurrentKey();
@@ -498,12 +499,12 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                     title: "添加配置",
                     body: addKey,
                     backdrop: 'static',
-                    width:1000,
+                    width: 1000,
                     type: 2,
                     onOKCallback: function() {
                         var result = addKey.getCurrentKey();
                         if (result) {
-                            if(!currentModule.value) currentModule.value=[]
+                            if (!currentModule.value) currentModule.value = []
                             currentModule.value.push(result);
                             var tpl = this.initModuleArrayTypeTable(currentModule.configKeyList, currentModule.value, currentModule.id)
                             this.$el.find("#module-" + id + " .group-ctn").html(tpl)

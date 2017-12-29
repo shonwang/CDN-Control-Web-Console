@@ -86,7 +86,7 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                             el.valueTypeName = "json"
                             break;
                         case 10:
-                            el.valueTypeName="时间型数值"
+                            el.valueTypeName = "时间型数值"
                     }
                 }.bind(this))
 

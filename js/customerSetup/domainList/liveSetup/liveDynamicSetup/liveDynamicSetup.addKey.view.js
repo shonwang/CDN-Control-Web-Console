@@ -27,15 +27,15 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
                         if (key.valueType == 3 || key.valueType == 4 || key.valueType == 5 || key.valueType == 6) {
                             var str = ".dropdown#" + this.options.module.id + "-" + group.id + "-" + key.id;
                             var rootNode = this.$el.find(str);
-                            if (key.valueList&& !(key.valueList instanceof Array)) 
+                            if (key.valueList && !(key.valueList instanceof Array))
                                 key.valueList = JSON.parse(key.valueList)
                             Utility.initDropMenu(rootNode, key.valueList, function(value) {
-                                if(value+""==null+"")
-                                  this.defaultValue.configValueMap[key.id] = null;
-                                else if(key.valueType==3||key.valueType==5)
-                                    this.defaultValue.configValueMap[key.id]=parseFloat(value)
-                                else if(key.valueType==4)
-                                    this.defaultValue,configValueMap[key.id]=Boolean(value) 
+                                if (value + "" == null + "")
+                                    this.defaultValue.configValueMap[key.id] = null;
+                                else if (key.valueType == 3 || key.valueType == 5)
+                                    this.defaultValue.configValueMap[key.id] = parseFloat(value)
+                                else if (key.valueType == 4)
+                                    this.defaultValue, configValueMap[key.id] = Boolean(value)
                             }.bind(this))
                             if (this.defaultValue.configValueMap[key.id] != undefined ||
                                 this.defaultValue.configValueMap[key.id] != null) {
@@ -105,10 +105,10 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
                 id = $(eventTarget).attr("id");
                 var keyId = id.split("-")[2]
                 var value = this.$el.find(".arrayContent#" + id + " input").val().trim();
-                _.each(this.options.module.configItemList.groupList,function(group){
-                    _.each(group.configItemList,function(key){
-                        if(keyId==key.id&&key.valueType==7)
-                          value=parseFloat(value)
+                _.each(this.options.module.configItemList.groupList, function(group) {
+                    _.each(group.configItemList, function(key) {
+                        if (keyId == key.id && key.valueType == 7)
+                            value = parseFloat(value)
                     }.bind(this))
                 }.bind(this))
                 if (this.defaultValue.configValueMap[keyId] == undefined) this.defaultValue.configValueMap[keyId] = []
@@ -128,7 +128,7 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
                         if (key.valueType == 1 || key.valueType == 2 || key.valueType == 9) {
                             var str = "#" + group.moduleId + "-" + group.id + "-" + key.id
                             var value = this.$el.find(str).val().trim();
-                            if(key.valueType==1) value=parseFloat(value)
+                            if (key.valueType == 1) value = parseFloat(value)
                             try {
                                 var reg = new RegExp(key.validateRule, "g");
                                 if (reg.test(value)) {

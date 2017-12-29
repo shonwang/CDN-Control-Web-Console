@@ -140,13 +140,13 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
             initGroupList: function() {
                 require(["setupModuleManage.addGroupList.view"], function(AddGroupList) {
                     _.each(this.currentModule.groupList, function(el) {
-                            var addGroupList = new AddGroupList({
-                                currentGroup: el,
-                                isEdit: this.isEdit
-                            });
-                            addGroupList.render(this.$el.find(".groupList-pannel"));
-                        }.bind(this))
-                        //this.$el.find(".deleteGroup").on("click", $.proxy(this.onClickDeleteGroup, this))
+                        var addGroupList = new AddGroupList({
+                            currentGroup: el,
+                            isEdit: this.isEdit
+                        });
+                        addGroupList.render(this.$el.find(".groupList-pannel"));
+                    }.bind(this))
+                    //this.$el.find(".deleteGroup").on("click", $.proxy(this.onClickDeleteGroup, this))
                 }.bind(this))
             },
 

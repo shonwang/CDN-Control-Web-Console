@@ -14,12 +14,12 @@ define("setupModuleManage.view", ['require', 'exports', 'template', 'modal.view'
                 this.collection.on("get.moduleList.error", $.proxy(this.onGetError, this));
                 this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                 this.collection.getListModule();
-  
+
             },
-            
-            onGetModuleListSuccess:function(res){
-                  this.moduleList=res;
-                  this.initTable();
+
+            onGetModuleListSuccess: function(res) {
+                this.moduleList = res;
+                this.initTable();
             },
 
             onClickAddModule: function() {
@@ -52,11 +52,11 @@ define("setupModuleManage.view", ['require', 'exports', 'template', 'modal.view'
                 this.hideList();
                 var eventTarget = event.srcElement || event.target,
                     id;
-                 id = $(eventTarget).attr("id");
+                id = $(eventTarget).attr("id");
                 require(["setupModuleManage.addModule.view"], function(AddModule) {
                     this.addModule = new AddModule({
                         collection: this.collection,
-                        moduleId:id,
+                        moduleId: id,
                         isEdit: true,
                         onCancelCallback: function() {
                             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
@@ -68,7 +68,7 @@ define("setupModuleManage.view", ['require', 'exports', 'template', 'modal.view'
                     this.addModule.render(this.$el.find(".addModule"));
                 }.bind(this))
             },
-            
+
             showList: function() {
                 this.$el.find(".moduleManage").show();
             },

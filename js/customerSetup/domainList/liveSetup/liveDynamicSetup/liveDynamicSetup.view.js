@@ -342,7 +342,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                 var value = [{
                     configValueMap: {}
                 }]
-
+  
                 _.each(currentModule.groupList, function(group) {
                     _.each(group.configItemList, function(key) {
                         if (key.valueType == 1 || key.valueType == 3 || key.valueType == 5) {

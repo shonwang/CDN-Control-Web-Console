@@ -219,10 +219,10 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                 var defaultDisplayNode = this.$el.find(".dropdown-defaultDisplay");
                 this.type = [{
                     name: "直播推流",
-                    value: 2
+                    value: 3
                 }, {
                     name: "RTMP&FLV拉流",
-                    value: 3
+                    value: 2
                 }]
 
                 this.valueType = [{
@@ -248,7 +248,7 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                     this.currentModule.type = parseInt(value);
 
                 }.bind(this));
-                if (!this.isEdit || this.currentModule.type == 2)
+                if (!this.isEdit || this.currentModule.type == 3)
                     this.$el.find("#dropdown-type .cur-value").html(this.type[0].name)
                 else
                     this.$el.find("#dropdown-type .cur-value").html(this.type[1].name)

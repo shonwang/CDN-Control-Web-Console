@@ -38,8 +38,7 @@ define("liveDynamicSetup.model", ['require', 'exports', 'utility'], function(req
         deleteModuleDynamicConfig: function(args) {
             var url = BASE_URL + "/channelManager/live/domain/deleteModuleDynamicConfig",
                 successCallback = function(res) {
-                    if (res)
-                        this.trigger("delete.moduleDyConfig.success", res);
+                    this.trigger("delete.moduleDyConfig.success", res);
                 }.bind(this),
                 errorCallback = function(response) {
                     this.trigger("delete.moduleDyConfig.error", response);

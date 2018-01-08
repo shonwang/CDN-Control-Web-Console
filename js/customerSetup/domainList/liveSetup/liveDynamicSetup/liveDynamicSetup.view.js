@@ -26,10 +26,10 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
 
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             require(["setupModuleManage.model"], function(SetupModuleManageModel) {
-                var setupModuleManage = new SetupModuleManageModel();
-                setupModuleManage.on("get.moduleList.success", $.proxy(this.onGetModuleListSuccess, this))
-                setupModuleManage.on("get.moduleList.error", $.proxy(this.onGetError, this))
-                setupModuleManage.getListModule({
+                this.setupModuleManage = new SetupModuleManageModel();
+                this.setupModuleManage.on("get.moduleList.success", $.proxy(this.onGetModuleListSuccess, this))
+                this.setupModuleManage.on("get.moduleList.error", $.proxy(this.onGetError, this))
+                this.setupModuleManage.getListModule({
                     originId: this.originId
                 });
             }.bind(this));
@@ -47,14 +47,15 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
 
         onDeleteModuleDyConfigSuccess: function() {
             alert("清除成功！");
-            this.collection.getListModule({
+            this.setupModuleManage.getListModule({
                 originId: this.originId
             })
         },
 
         onSaveModuleDyConfigSuccess: function() {
             alert("保存成功！");
-            this.collection.getListModule({
+            
+            this.setupModuleManage.getListModule({
                 originId: this.originId
             })
         },
@@ -112,14 +113,13 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                 if (module.valueType == 1 || module.valueType == 2) {
                     _.each(module.groupList, function(group) {
                         _.each(group.configItemList, function(key) {
-                            if (key.valueList) {
+                            if (key.valueList)
                                 key.valueList = JSON.parse(key.valueList)
-                            } else {
+                            else
                                 key.valueList = [{
                                     "name": "请选择",
                                     "value": null
                                 }];
-                            }
                             // if (key.value == null && key.defaultValue && key.valueType != 7 && key.valueType != 8) {
                             //     key.value = key.defaultValue;
                             // } else if (key.value == null && key.defaultValue) {
@@ -311,7 +311,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             var eventTarget = event.srcElement || event.target,
                 id;
             id = $(eventTarget).attr("id");
-            Utility.confirm("你确定要清空配置吗？", function() {
+            Utility.confirm("你确定要删除吗？", function() {
                 // var currentModule = _.find(this.moduleListDetail, function(module) {
                 //     return id == module.id
                 // }.bind(this))
@@ -554,6 +554,8 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
 
         initSetupModule: function() {
             var ul = this.$el.find(".moduleListUl");
+            if(ul.find("li").size()>0)
+            ul.html("");
             _.each(this.moduleList, function(el) {
                 var str = '<li><div class="checkbox"><label><input type="checkbox" id="' + el.id + '">' + el.moduleName + '</label></div></li>';
                 if (el.defaultDisplay) {

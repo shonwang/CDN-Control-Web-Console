@@ -135,6 +135,33 @@ define("routes.dispSetup", ['require', 'exports'],
                 }.bind(this));
             },
 
+            dispConfigNew:function(){
+                if (!AUTH_OBJ.GslbConfig) return;
+                require(['newDispConfig.view', 'newDispConfig.model', 'dispGroup.model'], function(DispConfigView, DispConfigModel, DispGroupModel) {
+                    this.curPage = 'dispConfig';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    if (!this.dispConfigModel)
+                        this.dispConfigModel = new DispConfigModel();
+                    if (!this.diffConfigModel)
+                        this.diffConfigModel = new DispConfigModel();
+                    if (!this.dispGroupModel)
+                        this.dispGroupModel = new DispGroupModel();
+                    if (!this.dispConfigView) {
+                        var options = {
+                            collection: this.dispConfigModel,
+                            diffCollection: this.diffConfigModel,
+                            dispGroupCollection: this.dispGroupModel
+                        };
+                        this.dispConfigView = new DispConfigView(options);
+                        this.dispConfigView.render($('.ksc-content'));
+                    } else {
+                        this.dispConfigView.update($('.ksc-content'));
+                    }
+                    this.curView = this.dispConfigView;
+                }.bind(this));
+            },
+
+
             dispGroup: function() {
                 if (!AUTH_OBJ.ManageGslbGroups) return;
                 require(['dispGroup.view', 'dispGroup.model'], function(DispGroupView, DispGroupModel) {

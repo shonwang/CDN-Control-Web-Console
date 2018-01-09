@@ -1,0 +1,71 @@
+<table class="table table-hover disp-table">
+    <thead> 
+      <tr>
+        <!-- <th><input type="checkbox" id="inlineCheckbox7"></th> -->
+        <th>调度组名称</th>
+        <th>区域</th>
+        <th>节点</th>
+        <th>操作</th>   
+      </tr>
+    </thead>
+    <tbody>
+        <% for(var i = 0; i < data.length; i++) { %>
+            <tr data-id="<%=data[i].attributes.id%>">
+              <td><%=data[i].get("dispGroupDomain")%></td>
+              <td><%=data[i].get("region").name%></td>
+              <td class="nodes">
+                  <table class="table table-condensed table-striped">
+                      <tbody>
+                          <%for(var j=0,_list=data[i].get('list'),_len=_list.length;j<_len;j++){%>
+                              <tr>
+                                <td style="width:400px">
+                                    <span class="node-string text-primary" >
+                                      <%=_list[j].nodeName%>/<%=_list[j].bandwidth%>
+                                    </span>
+                                </td>
+                                <td>
+                                    <input type="number" class="weight" 
+                                    id='<%=_list[j].id%>' 
+                                    region-id='<%=data[i].get("region").id%>' 
+                                    max='<%=_list[j].maxIpNum%>' 
+                                    min="1" value='<%=_list[j].currNum%>'>
+                                    <%if(_list[j].pasuseIpNum){%>
+                                    <span class="label label-danger">
+                                        <%=_list[j].pasuseIpNum%>
+                                    </span>
+                                    <%}%>
+                                    <% if (permission.EditNodeList) { %>
+                                    <a href="javascript:void(0)" class="edit" 
+                                    id='<%=_list[j].id%>' 
+                                    region-id='<%=data[i].get("region").id%>' title="编辑节点">
+                                        <span class="glyphicon glyphicon-edit"></span>
+                                    </a>
+                                    <% } %>
+                                    <% if (permission.DeleteNodeList) { %>
+                                    <a href="javascript:void(0)" class="delete" 
+                                    id='1' 
+                                    region-id='1'  title="删除">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
+                                    <% } %>
+                                </td>
+                              </tr>
+                          <%}%>
+                      </tbody>
+                  </table>
+              </td>
+              <td>
+                  <% if (permission.AddNodeList) { %>
+                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="add">
+                      <span class="glyphicon glyphicon-plus"></span>添加节点
+                  </a>
+       
+                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="adjust">
+                      <span class="glyphicon glyphicon-cog"></span>调整
+                  </a>
+              </td>
+              <% } %>
+            </tr>
+        <% } %>
+    </tbody>
+</table>

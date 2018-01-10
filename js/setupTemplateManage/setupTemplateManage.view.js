@@ -10,7 +10,7 @@ define("setupTemplateManage.view", ['require', 'exports', 'template', 'modal.vie
                 this.collection.on("get.frameTemplate.success", $.proxy(this.onGetFrameSuccess, this))
                 this.collection.on("get.frameTemplate.error", $.proxy(this.onGetError, this))
                 this.collection.getFrameTemplate({
-                    type: 2
+                    type: 3
                 })
                 this.initFrameTemplate();
                 this.$el.find("#live-push textarea").on("blur", $.proxy(this.onLivePushFrameBlur, this));
@@ -30,8 +30,7 @@ define("setupTemplateManage.view", ['require', 'exports', 'template', 'modal.vie
 
             onGetFrameSuccess: function(res) {
                 this.frameMessage = res;
-                console.log(this.frameMessage)
-                if (this.frameMessage.type == 2)
+                if (this.frameMessage.type == 3)
                     this.$el.find("#live-push textarea").val(this.frameMessage.frameTemplate);
                 else
                     this.$el.find("#rtmp-flv-pull textarea").val(this.frameMessage.frameTemplate);
@@ -65,13 +64,13 @@ define("setupTemplateManage.view", ['require', 'exports', 'template', 'modal.vie
                     case "#live-push":
                         this.currentTab = "#live-push";
                         this.collection.getFrameTemplate({
-                            type: 2
+                            type: 3
                         })
                         break;
                     case "#rtmp-flv-pull":
                         this.currentTab = "#rtmp-flv-pull";
                         this.collection.getFrameTemplate({
-                            type: 3
+                            type: 2
                         })
                         break;
                 }

@@ -44,7 +44,6 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
 
             getArgs: function(currentKey) {
                 var defaultValue=this.$el.find("#defaultValue").val().trim();
-                console.log(defaultValue)
                 if (this.$el.find("#configKey").val().trim() == "") {
                     alert("KEY不能为空！");
                     return false;

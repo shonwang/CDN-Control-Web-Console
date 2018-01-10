@@ -42,7 +42,7 @@ define("setupBillLiveDynamic.view", ['require', 'exports', 'template', 'modal.vi
 
             initGroupList: function(groupData) {
                 _.each(groupData.configItemList, function(list) {
-                    if (list.valueType == 1 || list.valueType == 2 || list.valueType == 9) {
+                    if (list.valueType == 1 || list.valueType == 2 || list.valueType ==9 || list.valueType==10) {
                         list.valueName = list.value
                     } else if (list.valueType == 3 || list.valueType == 4) {
                         if (list.value == 1 || list.value + "" == true + "")
@@ -52,10 +52,13 @@ define("setupBillLiveDynamic.view", ['require', 'exports', 'template', 'modal.vi
                         else if (list.value + "" == null + "")
                             list.valueName = "null"
                     } else if (list.valueType == 5 || list.valueType == 6) {
-                        _.each(list.valueList, function(valuelist) {
-                            if (list.value == valuelist.value)
-                                list.valueName = valuelist.name
+                        if (list.valueList && !(list.valueList instanceof Array))
+                               list.valueList = JSON.parse(list.valueList)
+                        var obj=_.find(list.valueList,function(valuelist){
+    
+                            return valuelist.value==list.value
                         }.bind(this))
+                        list.valueName=obj.name
                     }
                 }.bind(this))
 

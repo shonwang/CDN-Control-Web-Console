@@ -193,6 +193,11 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
                 id = $(eventTarget).attr("id");
             var model = this.collection.get(id);
 
+            if (model.get("subType") === 3) {
+                Utility.alerts("请前往直播运维平台封禁推流域名!")
+                return false;
+            }
+
             if (this.nodeTipsPopup) $("#" + this.nodeTipsPopup.modalId).remove();
             
             require(["nodeManage.operateDetail.view"], function(NodeTips) {

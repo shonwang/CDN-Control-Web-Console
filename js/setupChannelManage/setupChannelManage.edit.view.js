@@ -301,9 +301,9 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
             }
         },
 
-        onSaveComment: function(){
+        onSaveComment: function(res){
             if (this.isFromSend) {
-                this.onSaveConfigSuccess();
+                this.onSaveConfigSuccess(res);
                 return;
 
                 // this.collection.off("modify.domainDescription.success");
@@ -329,8 +329,11 @@ define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.
             }.bind(this));
         },
 
-        onSaveConfigSuccess: function(){
-            Utility.alerts("操作成功！", "success", 3000)
+        onSaveConfigSuccess: function(res){
+            if (res&&res.message)
+                Utility.alerts(res.message, "success", 3000)
+            else
+                Utility.alerts("操作成功！", "success", 3000)
             this.onClickCancelButton();
         },
 

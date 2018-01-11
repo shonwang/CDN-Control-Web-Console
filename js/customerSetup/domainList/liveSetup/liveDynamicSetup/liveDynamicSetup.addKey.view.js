@@ -34,17 +34,24 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
                                     this.defaultValue.configValueMap[key.id] = null;
                                 else if (key.valueType == 3 || key.valueType == 5)
                                     this.defaultValue.configValueMap[key.id] = parseInt(value)
-                                else if (key.valueType == 4)
-                                    this.defaultValue, configValueMap[key.id] = Boolean(value)
+                                else if (key.valueType == 4){
+                                    this.defaultValue.configValueMap[key.id] = value
+                                }
+                                else if(key.valueType==6){
+                                    this.defaultValue.configValueMap[key.id]=value
+                                }
                             }.bind(this))
                             if (this.defaultValue.configValueMap[key.id] != undefined ||
                                 this.defaultValue.configValueMap[key.id] != null) {
                                 var currentValue = _.find(key.valueList, function(el) {
-                                    if (key.valueType == 5 || key.valueType == 6) {
-                                        return el.value == parseInt(this.defaultValue.configValueMap[key.id])
-                                    } else if (key.valueType == 3 || key.valueType == 4) {
-                                        return el.value + "" == this.defaultValue.configValueMap[key.id] + ""
-                                    }
+                                    // if (key.valueType == 5  || key.valueType == 6) {
+                                    //     return el.value == parseInt(this.defaultValue.configValueMap[key.id])
+                                    // } else if (key.valueType == 3 || key.valueType == 4) {
+                                    //     return el.value + "" == this.defaultValue.configValueMap[key.id] + ""
+                                    // }
+                                //    console.log("el.value:"+el.value)
+                                  //  console.log("this.configValueMap:"+this.defaultValue.configValueMap[key.id])
+                                    return el.value + "" == this.defaultValue.configValueMap[key.id] + ""
                                 }.bind(this))
                                 rootNode.find("#dropdown-valueType .cur-value").html(currentValue.name)
                             } else {

@@ -139,7 +139,7 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
                 }else if(name==""){
                     alert("请输入显示！");
                     return;
-                }else if(!Number(value)&&value!=0){
+                }else if(this.currentKey.valueType==5&&!Number(value)&&value!=0){
                     alert("可选值请输入数值型的值！");
                     return;
                 }

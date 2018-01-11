@@ -251,26 +251,32 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
         toChange: function(headerArray, el, key) {
             var obj = {}
             _.each(headerArray, function(header) {
-                if (header.id == key && header.valueType == 5 || header.valueType == 6) {
-                    _.each(header.valueList, function(valuelist) {
-                        if (el == valuelist.value)
+                if(header.id==key&&header.valueList){
+                    if (!(header.valueList instanceof Array))
+                        header.valueList = JSON.parse(header.valueList)
+                    _.each(header.valueList, function(valuelist) {  
+                        if (el+"" == valuelist.value+""){
                             obj[key] = valuelist.name
+                        }
                     }.bind(this))
-                } else if (header.id == key && header.valueType == 3 || header.valueType == 4) {
-                    if (el == 0 || el + "" == false + "")
-                        obj[key] = "关"
-                    else if (el == 1 || el + "" == true + "")
-                        obj[key] = "开"
-                    else if (el + "" == null + "")
-                        obj[key] = "请选择"
-                } else if (header.id == key) {
-                    obj[key] = el
-                }
+                }else if(header.id==key&&!header.valueList){
+                    if(header.valueType == 3 || header.valueType==4){
+                        if(el==0||el+""==false+"")
+                            obj[key]="关"
+                        else if(el==1||el+""==true+"")
+                            obj[key]=="开"
+                        else if(el+""==null+"")
+                            obj[key]="请选择"
+                    }else{
+                        obj[key] = el
+                    }
+                } 
             }.bind(this))
             return obj[key]
         },
 
         initModuleList: function() {
+            console.log(this.moduleListDetail)
             _.each(this.moduleListDetail, function(module) {
                 module.groupTemplate = "";
                 if (module.valueType == 1 || module.valueType == 2) {
@@ -388,6 +394,14 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                     value: value
                 }
             } else {
+               _.each(currentModule.value,function(el,index){
+                 _.each(el.configValueMap,function(e,key){
+                     if(e=="true")
+                        el.configValueMap[key]=true
+                     else if(e=="false") 
+                        el.configValueMap[key]=false
+                 }.bind(this))
+               }.bind(this))
                 sendMessage = {
                     originId: this.originId,
                     moduleId: id,

@@ -1,0 +1,63 @@
+<div class="setup-topo-manage-edit">
+    <%if(pageType==1){%>
+       <h4>拓扑管理<small>/拓扑配置更新</small></h4>
+       <div class="well">
+            <form class="form-horizontal">
+                  <div class="form-group">
+                    <label for="topoName" class="col-sm-2 control-label">拓扑：</label>
+                    <div class="col-md-4">
+                      <input type="text" class="form-control" id="topoName" readonly="readonly">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="applyType" class="col-sm-2 control-label">应用：</label>
+                    <div class="col-md-2">
+                      <input type="text" class="form-control" id="applyType" readonly="readonly">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="version" class="col-sm-2 control-label">版本号：</label>
+                    <div class="col-md-2">
+                      <input type="text" class="form-control" id="version" readonly="readonly">
+                    </div>
+                  </div>
+                 <div class="form-group">
+                    <label for="version" class=" col-sm-2 control-label">操作步骤：</label>
+                </div>
+                 <div class="form-group">
+                    <label for="stopSetupSend" class="col-sm-3 control-label">暂停配置下发</label>
+                     <div class="col-sm-4 stopSetupSend-open">
+                        <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                            <label><input type="checkbox"><span class="toggle"></span></label>
+                       </div>
+                    </div>
+                 </div>
+                 <br>
+                 <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-offset-2 col-sm-2">
+                            <a href="javascript:void(0)" class="btn btn-primary createSetup">执行配置生成</a>
+                        </div>
+                    </div>
+                 </div>
+                 <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-offset-2 col-sm-2">
+                            <a href="javascript:void(0)" class="btn btn-primary sendSetup">执行配置下发</a>
+                        </div>
+                    </div>
+                 </div>
+            </form>
+       </div>
+    <%}else if(pageType==2){%>
+       <h4>分层策略管理<small>/拓扑配置更新</small></h4>
+       <div class="well">
+       </div>
+    <%}else if(pageType==3){%>
+       <h4>节点管理<small>/节点初始化</small></h4>
+       <div class="well">
+       </div>
+    <%}%>
+   
+</div>
+

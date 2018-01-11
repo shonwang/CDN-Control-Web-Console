@@ -91,8 +91,10 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
             initSetup: function() {
                 if (!this.isEdit && AUTH_OBJ.ApplyCreateTopos) {
                     this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
+                    this.$el.find(".opt-ctn .saveAndSend").on("click", $.proxy(this.onClickSaveAndSendButton, this));
                 } else if (AUTH_OBJ.ApplyEditTopos) {
                     this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
+                    this.$el.find(".opt-ctn .saveAndSend").on("click", $.proxy(this.onClickSaveAndSendButton, this));
                 }
 
                 this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
@@ -147,6 +149,10 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
             onGetOperatorSuccess: function(res) {
                 this.operatorList = res.rows;
                 this.initRuleTable();
+            },
+            
+            onClickSaveAndSendButton:function(){
+                this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback();
             },
 
             onClickSaveButton: function() {

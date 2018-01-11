@@ -94,7 +94,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
 
                 this.table.find("tbody .send").on("click", $.proxy(this.onClickItemSend, this));
                 this.table.find("tbody .history").on("click", $.proxy(this.onClickItemHistory, this));
-
+                this.table.find("tbody .updateTopo").on("click", $.proxy(this.onClickItemUpdate, this));
                 this.table.find("[data-toggle='tooltip']").tooltip();
             },
 
@@ -109,6 +109,21 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                             this.$el.find(".list-panel").show();
                             this.onClickQueryButton();
                         }.bind(this),
+                        onSaveAndSendCallback:function(){
+                            require(['setupTopoManage.update.view'], function(UpdateTopoView) {
+                                var myUpdateTopoView = new UpdateTopoView({
+                                     collection: this.collection,
+                                     isEdit: true,
+                                     pageType:2,
+                                    onSaveCallback: function() {
+                                    }.bind(this),
+                                    onCancelCallback: function() {
+                                    }.bind(this)
+                                })
+                               myEditTopoView.$el.remove();
+                               myUpdateTopoView.render(this.$el.find(".update-panel"));
+                           }.bind(this))         
+                        }.bind(this),
                         onCancelCallback: function() {
                             this.on('enterKeyBindQuery', $.proxy(this.onClickQueryButton, this));
                             myEditTopoView.$el.remove();
@@ -118,6 +133,35 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
 
                     this.$el.find(".list-panel").hide();
                     myEditTopoView.render(this.$el.find(".edit-panel"))
+                }.bind(this));
+            },
+
+            onClickItemUpdate:function(event){
+                 var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                 var model = this.collection.get(id);
+                require(['setupTopoManage.update.view'], function(UpdateTopoView) {
+                    var myUpdateTopoView = new UpdateTopoView({
+                        collection: this.collection,
+                        model: model,
+                        isEdit: false,
+                        pageType:1,
+                        onSaveCallback: function() {
+                        }.bind(this),
+                        onCancelCallback: function() {
+                            myUpdateTopoView.$el.remove();
+                            this.$el.find(".list-panel").show();
+                        }.bind(this)
+                    })
+
+                    this.$el.find(".list-panel").hide();
+                    myUpdateTopoView.render(this.$el.find(".update-panel"));
                 }.bind(this));
             },
 
@@ -142,6 +186,21 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                             this.onClickQueryButton();
                             setTimeout($.proxy(this.alertChangeType, this, model), 500);
                         }.bind(this),
+                        onSaveAndSendCallback:function(){
+                            require(['setupTopoManage.update.view'], function(UpdateTopoView) {
+                                var myUpdateTopoView = new UpdateTopoView({
+                                     collection: this.collection,
+                                     isEdit: true,
+                                     pageType:2,
+                                    onSaveCallback: function() {
+                                    }.bind(this),
+                                    onCancelCallback: function() {
+                                    }.bind(this)
+                                })
+                               myEditTopoView.$el.remove();
+                               myUpdateTopoView.render(this.$el.find(".update-panel"));
+                           }.bind(this))         
+                        }.bind(this),
                         onCancelCallback: function() {
                             myEditTopoView.$el.remove();
                             this.$el.find(".list-panel").show();
@@ -152,6 +211,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     myEditTopoView.render(this.$el.find(".edit-panel"));
                 }.bind(this));
             },
+    
 
             alertChangeType: function(model) {
                 if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();

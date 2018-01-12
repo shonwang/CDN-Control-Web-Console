@@ -32,6 +32,10 @@ define("newDispConfig.model", ['require','exports', 'utility'], function(require
                 if (res){
                     callback && callback(res);
                      _.each(res,function(element,index,list){
+                        element.isDisplay = true;
+                        _.each(element.list,function(el){
+                            el.isDisplay = true;
+                        });
                         this.push(new Model(element));
                     }.bind(this));
                     this.total = res.length;
@@ -39,7 +43,6 @@ define("newDispConfig.model", ['require','exports', 'utility'], function(require
                 } else {
                     this.trigger("get.dispConfig.error"); 
                 }
-                console.log(this.models);
             }.bind(this);
 
             defaultParas.error = function(response, msg){
@@ -215,51 +218,22 @@ define("newDispConfig.model", ['require','exports', 'utility'], function(require
         },
 
         diffBeforeSend: function(args){
-            var url = BASE_URL + "/rs/dispConf/pre/seeding/diff?groupId=" + args.groupId,
+            var url = BASE_URL + "/rs/dispConf/new/pre/seeding/diff";
+            var args = {
+                oldList:args.oldData,
+                newList:args.newData
+            };
             successCallback = function(res){
-                this.reset();
                 if (res){
-                    _.each(res.rows, function(element, index, list){
-                        var temp = {}, tempList = [];
-                        _.each(element, function(el, key, ls){
-                            if (key === "region"){
-                                _.each(el, function(el1, key1, ls1){
-                                    temp[key + "." + key1] = el1
-                                }.bind(this))
-                            }
-                            if (key === "list"){
-                                var tempObj = {}
-                                _.each(el, function(el2, key2, ls2){
-                                    _.each(el2, function(el3, key3, ls3){
-                                        if (key3 === "type") tempObj.type = el3;
-                                        _.each(el3, function(el4, key4, ls4){
-                                            var tempKey = key3 + "." + key4
-                                            tempObj[tempKey] = el4
-                                            if (tempKey === "dispGroup.dispDomain" && !temp['dispGroup.dispDomain'])
-                                                temp['dispGroup.dispDomain'] = el4
-                                            if (tempKey === "dispGroup.ttl" && !temp['dispGroup.ttl'])
-                                                temp['dispGroup.ttl'] = el4
-                                        }.bind(this))
-                                    }.bind(this))
-                                    tempObj.isDisplay = true;
-                                    tempList.push(new Model(tempObj))
-                                }.bind(this))
-                                temp.listFormated = tempList;
-                            }
-                        }.bind(this))
-                        temp.isDisplay = true;
-                        this.push(new Model(temp));
-                    }.bind(this))
-                    this.total = res.total;
-                    this.trigger("send.diff.success");
+                    this.trigger("send.diff.success",res);
                 } else {
-                    this.trigger("send.diff.error"); 
+                    this.trigger("send.diff.error",res); 
                 }
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("send.diff.error", response);
-            }.bind(this);
-            Utility.postAjax(url, args.list, successCallback, errorCallback);
+            }.bind(this)
+            Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
         dispDns: function(args){

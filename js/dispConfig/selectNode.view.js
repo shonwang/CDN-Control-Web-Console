@@ -210,7 +210,34 @@ define("selectNode.view", ['require','exports', 'template', 'modal.view', 'utili
                 aSelectedNode.isDisplay = true;
                 selectedNodes.push(aSelectedNode)
             }
-            return selectedNodes
+            // console.log(selectedNodes);
+            // console.log(this.model);
+            // return false;
+
+            var selectedList = [];
+            for(var i=0;i<selectedNodes.length;i++){
+                var obj = {};
+                obj["bandwidth"] = selectedNodes[i]["node.maxBandwidth"];
+                obj["currNum"] = selectedNodes[i]["dispConfIpInfo.currNum"];
+                obj["dispDomain"] = this.model.dispDomain;
+                obj["dispGroupId"] = this.model.dispGroupId;
+                obj["id"] = this.model.id;
+                obj["maxIpNum"] = selectedNodes[i]["dispConfIpInfo.maxNum"];
+                obj["nodeId"] = selectedNodes[i]["node.id"];
+                obj["nodeName"] = selectedNodes[i]["node.chName"];
+                obj["pasuseIpNum"] = selectedNodes[i]["dispConfIpInfo.pauseNum"];
+                obj["regionLineId"] = this.model.regionLineId;
+                obj["regionName"] = this.model.regionName;
+                obj["isDisplay"] = true;
+                //obj["type"] = this.model.type;//此值不需要
+                selectedList.push(obj);
+            }
+            var resultNode = {
+                isEdit:this.isEdit,
+                selectedList:selectedList
+            };
+            return resultNode;
+            //return selectedNodes
         },
 
         onGetError: function(error){

@@ -31,7 +31,7 @@ define("newDispConfig.model", ['require','exports', 'utility'], function(require
                 this.reset();
                 if (res){
                     callback && callback(res);
-                     _.each(res,function(element,index,list){
+                    _.each(res,function(element,index,list){
                         element.isDisplay = true;
                         _.each(element.list,function(el){
                             el.isDisplay = true;

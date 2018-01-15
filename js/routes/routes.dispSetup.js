@@ -110,6 +110,7 @@ define("routes.dispSetup", ['require', 'exports'],
             },
 
             dispConfig: function() {
+                return;
                 if (!AUTH_OBJ.GslbConfig) return;
                 require(['dispConfig.view', 'dispConfig.model', 'dispGroup.model'], function(DispConfigView, DispConfigModel, DispGroupModel) {
                     this.curPage = 'dispConfig';

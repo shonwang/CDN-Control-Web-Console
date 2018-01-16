@@ -47,6 +47,8 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
             var diffData = this.diffData;
             var calculate = [];
             var origin = [];
+            var typeArray1 =[];//增加的
+            var typeArray2 =[];//删除的
 
             _.each(diffData,function(el){
                 _.each(el.list,function(listEl){
@@ -61,10 +63,27 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                     };
                     origin.push(obj);                  
                     if(obj.type == 1){
-                        calculate.push(obj);
+                        typeArray1.push(obj);
+                    }
+                    else if(obj.type == -1){
+                        typeArray2.push(obj);
                     }
                 });
             });
+
+            var temp3Array = [];
+            _.each(typeArray2,function(el2){
+
+                var tempObj = _.find(typeArray1, function(el1){
+                    return el2.nodeId === el1.nodeId && el2.regionId === el1.regionId
+                }.bind(this));
+                if (!tempObj) {
+                    el2.ipNum = 0
+                    temp3Array.push(el2);
+                }
+
+            });
+            calculate = typeArray1.concat(temp3Array);
             return {
                 calculate: calculate,
                 origin: origin

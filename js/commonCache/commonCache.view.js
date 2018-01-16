@@ -3,7 +3,12 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
         initialize:function(options){
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/commonCache/commonCache.cacheRule.html'])());
-            
+            this.setCacheRule();
+        },
+
+        setCacheRule:function(){
+            this.table = $(_.template(template['tpl/commonCache/commonCache.cacheRule.table.html'])());
+            this.$el.find(".table-ctn").html(this.table);
         },
 
         updateView:function(){

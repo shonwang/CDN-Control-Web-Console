@@ -10,6 +10,8 @@
   "channelManage.view": "channelManage/channelManage.view",
   "clientStatistics.model": "clientStatistics/clientStatistics.model",
   "clientStatistics.view": "clientStatistics/clientStatistics.view",
+  "commonCache.model": "commonCache/commonCache.model",
+  "commonCache.view": "commonCache/commonCache.view",
   "coverManage.model": "coverManage/coverManage.model",
   "coverManage.view": "coverManage/coverManage.view",
   "coverRegion.model": "coverRegion/coverRegion.model",

@@ -461,15 +461,15 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onBlurSecretKeyInput: function(event){
-            var eventTarget = event.srcElement || event.target,
-                value = $(eventTarget).val(),
-                re = /^[a-zA-Z0-9]+$/
-            if (value === "") return false;
-            if (!re.test(value) || value.length < 6 || value.length > 32){
-                alert("KEY只能由大小写字母，数字组成，长度6到32位")
-                return false
-            }
-            Utility.onContentChange();
+            // var eventTarget = event.srcElement || event.target,
+            //     value = $(eventTarget).val(),
+            //     re = /^[a-zA-Z0-9]+$/
+            // if (value === "") return false;
+            // if (!re.test(value) || value.length < 6 || value.length > 32){
+            //     alert("KEY只能由大小写字母，数字组成，长度6到32位")
+            //     return false
+            // }
+            // Utility.onContentChange();
             return true;
         },
 

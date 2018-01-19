@@ -292,7 +292,7 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
             });
 
             var options = {
-                title:"添加白名单",
+                title:"清除缓存规则-添加条件",
                 body : myAddClearCacheView,
                 backdrop : 'static',
                 type     : 2,

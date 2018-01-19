@@ -355,13 +355,14 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
         onBlurItemWeightInput: function(event){
             var eventTarget = event.srcElement || event.target, id, regionId, value;
             value    = $(eventTarget).val();
-            id       = $(eventTarget).attr("id");
+            id       = $(eventTarget).attr("node-Id");
             regionId = $(eventTarget).attr("region-id");
             var model = this.collection.get(regionId),
                 list = model.get("list");
             var selectedNode = _.filter(list ,function(obj) {
-                return obj["id"] === parseInt(id);
+                return obj["nodeId"] === parseInt(id);
             })
+            console.log(selectedNode);
             selectedNode[0].currNum = parseInt(value);
         },
 

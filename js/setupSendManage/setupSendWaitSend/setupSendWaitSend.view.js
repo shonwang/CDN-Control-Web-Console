@@ -21,6 +21,7 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".mulit-send").on("click", $.proxy(this.onClickMultiSend, this))
+            this.$el.find(".mulit-reject").on("click", $.proxy(this.onClickMultiReject, this))
 
             this.enterKeyBindQuery();
 
@@ -60,6 +61,22 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
         onRollBackSuccess: function() {
             Utility.alerts("操作成功！", "success", 3000);
             this.update(this.target)
+        },
+        
+        onClickMultiReject:function(){
+          var checkedList = this.collection.filter(function(model) {
+                return model.get("isChecked") === true;
+            });
+
+            this.domainArray = [];
+            _.each(checkedList, function(el, index, ls) {
+                this.domainArray.push({
+                    predeliveryId: el.get("id")
+                });
+            }.bind(this))
+
+            //this.collection.rollBack(this.domainArray)
+            this.showDisablePopup("服务器正在努力处理中...")
         },
 
         onClickMultiSend: function() {
@@ -174,6 +191,7 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
 
         initTable: function() {
             this.$el.find(".mulit-send").attr("disabled", "disabled");
+            this.$el.find(".mulit-reject").attr("disabled", "disabled");
             this.table = $(_.template(template['tpl/setupSendManage/setupSendWaitSend/setupSendWaitSend.table.html'])({
                 data: this.collection.models,
                 permission: AUTH_OBJ
@@ -210,7 +228,6 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
                 }
 
                 var model = this.collection.get(id);
-
                 this.domainArray = [{
                     domain: model.get("domain"),
                     id: model.get("id"),
@@ -288,8 +305,10 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
                 this.table.find("thead input").get(0).checked = false;
             if (checkedList.length === 0) {
                 this.$el.find(".mulit-send").attr("disabled", "disabled");
+                this.$el.find(".mulit-reject").attr("disabled", "disabled");
             } else {
                 this.$el.find(".mulit-send").removeAttr("disabled", "disabled");
+                this.$el.find(".mulit-reject").removeAttr("disabled", "disabled");
             }
         },
 
@@ -303,8 +322,10 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
             this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
             if (eventTarget.checked) {
                 this.$el.find(".mulit-send").removeAttr("disabled", "disabled");
+                this.$el.find(".mulit-reject").removeAttr("disabled", "disabled");
             } else {
                 this.$el.find(".mulit-send").attr("disabled", "disabled");
+                this.$el.find(".mulit-reject").attr("disabled", "disabled");
             }
         },
 

@@ -8,7 +8,6 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             this.collection = options.collection;
 
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.html'])());
-
             this.initNodeDropMenu();
 
             this.collection.on("get.node.success", $.proxy(this.onNodeListSuccess, this));
@@ -180,6 +179,8 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 this.table.find("tbody .operateDetail").on("click", $.proxy(this.onClickDetail, this));
                 this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));
                 this.table.find("tbody .disp-info").on("click", $.proxy(this.onClickDispGroupInfo, this));
+                this.table.find("tbody .start").on("click", $.proxy(this.onClickItemStart, this));
+                this.table.find("tbody .init").on("click", $.proxy(this.onClickItemInit, this));
 
                 this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
                 this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
@@ -383,6 +384,81 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 status: 1
             })
         },
+        
+        onClickItemStart:function(event){
+          //  this.onClickItemPlay()
+          var eventTarget = event.srcElement || event.target,
+                id;
+            if (eventTarget.tagName == "SPAN") {
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+
+            var model = this.collection.get(id);
+
+            if (this.promptPopup) $("#" + this.promptPopup.modalId).remove();
+
+            require(["nodeManage.prompt.view"], function(PromptView) {
+                var myPromptView = new PromptView({
+                    collection: this.collection,
+                    model: model
+                });
+                var options = {
+                    title: "开启节点",
+                    body: myPromptView,
+                    backdrop: 'static',
+                    type: 2,
+                    onOKCallback: function() {
+                        var options = myPromptView.onSure();
+                        if (!options) return;
+                        this.collection.operateNode({
+                            opRemark:'',
+                            nodeId: id,
+                            operator:-1,
+                            t: new Date().valueOf()
+                        })
+                        this.promptPopup.$el.modal("hide");
+                    }.bind(this),
+                    onHiddenCallback: function() {
+                        this.enterKeyBindQuery();
+                    }.bind(this)
+                }
+                this.promptPopup = new Modal(options);
+            }.bind(this));
+
+        },
+
+       onClickItemInit:function(evnet){
+          var eventTarget = event.srcElement || event.target,
+                id;
+            if (eventTarget.tagName == "SPAN") {
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+            var model = this.collection.get(id);
+            console.log(model)
+            require(['setupTopoManage.update.view'], function(UpdateTopoView) {
+                    var myUpdateTopoView = new UpdateTopoView({
+                        collection: this.collection,
+                        model: model,
+                        isEdit: false,
+                        pageType:3,
+                        onSaveCallback: function() {
+                        }.bind(this),
+                        onCancelCallback: function() {
+                            myUpdateTopoView.$el.remove();
+                            this.$el.find(".node-manage-list-pannel").show();
+                            this.enterKeyBindQuery();
+                        }.bind(this)
+                    })
+                    this.$el.find(".node-manage-list-pannel").hide();
+                    myUpdateTopoView.render(this.$el.find(".update-panel"));
+                }.bind(this));
+       },
 
         onClickItemHangup: function(event) {
             var eventTarget = event.srcElement || event.target,

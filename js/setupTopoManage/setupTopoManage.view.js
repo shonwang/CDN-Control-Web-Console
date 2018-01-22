@@ -109,15 +109,19 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                             this.$el.find(".list-panel").show();
                             this.onClickQueryButton();
                         }.bind(this),
-                        onSaveAndSendCallback:function(){
+                        onSaveAndSendCallback:function(res){
+                            var model = new this.collection.model(res);
                             require(['setupTopoManage.update.view'], function(UpdateTopoView) {
                                 var myUpdateTopoView = new UpdateTopoView({
                                      collection: this.collection,
-                                     isEdit: true,
-                                     pageType:2,
+                                     isEdit:false,
+                                     pageType:1,
+                                     model:model,
                                     onSaveCallback: function() {
                                     }.bind(this),
                                     onCancelCallback: function() {
+                                        myUpdateTopoView.$el.remove();
+                                        this.$el.find(".list-panel").show();
                                     }.bind(this)
                                 })
                                myEditTopoView.$el.remove();
@@ -191,10 +195,14 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                                 var myUpdateTopoView = new UpdateTopoView({
                                      collection: this.collection,
                                      isEdit: true,
-                                     pageType:2,
+                                     pageType:1,
+                                     model:model,
                                     onSaveCallback: function() {
                                     }.bind(this),
                                     onCancelCallback: function() {
+                                        myUpdateTopoView.$el.remove();
+                                        this.$el.find(".list-panel").show();
+                                        this.onClickQueryButton();
                                     }.bind(this)
                                 })
                                myEditTopoView.$el.remove();

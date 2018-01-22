@@ -112,6 +112,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "setupSendWaitSend": "setupSendWaitSend",
                 "isomorphismManage": "isomorphismManage",
                 "sharedSetup/:query": "sharedSetup",
+                "setupSendingSwitch":"setupSendingSwitch",
 
                 //Ngnix 下载域名配置(部分废弃)
                 "domainList/:query/basicInformation/:query2": "basicInformation",

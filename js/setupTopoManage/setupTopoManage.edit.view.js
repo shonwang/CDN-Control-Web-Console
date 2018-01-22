@@ -11,7 +11,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.isEdit = options.isEdit;
                 this.isView = options.isView;
                 this.isSaving = false;
-
                 this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.edit.html'])({
                     data: {}
                 }));
@@ -56,15 +55,25 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 }
             },
 
-            addTopoSuccess: function() {
+            addTopoSuccess: function(res) {
                 this.isSaving = false;
-                alert('保存成功');
-                this.options.onSaveCallback && this.options.onSaveCallback();
+                console.log(res)
+                if(this.btnFlag==2){
+                    alert('保存成功');
+                   this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback(res);   
+                }else{
+                    this.options.onSaveCallback && this.options.onSaveCallback();
+                }
             },
 
             modifyTopoSuccess: function() {
                 this.isSaving = false;
-                this.options.onSaveCallback && this.options.onSaveCallback();
+                alert("保存成功！")
+                if(this.btnFlag==2){
+                   this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback();   
+                }else{
+                    this.options.onSaveCallback && this.options.onSaveCallback();
+                }
             },
 
             onOriginInfo: function(res) {
@@ -152,7 +161,9 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
             },
             
             onClickSaveAndSendButton:function(){
-                this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback();
+                this.btnFlag=2;
+                this.onClickSaveButton();
+         //       this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback();
             },
 
             onClickSaveButton: function() {
@@ -228,6 +239,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     this.collection.topoAdd(postTopo);
 
                 this.isSaving = true;
+
             },
 
             onClickCancelButton: function() {

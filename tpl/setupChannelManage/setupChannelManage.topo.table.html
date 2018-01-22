@@ -11,7 +11,7 @@
               <td>
                   <div class="radio">
                       <label>
-                        <input type="radio" name="options-topo" id=<%=data[i].get('id')%>>
+                        <input type="radio" name="options-topo" id=<%=data[i].get('id') || 'myid'%>>
                         <%=data[i].get("name")%>
                       </label>
                   </div>

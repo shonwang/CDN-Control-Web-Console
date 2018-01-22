@@ -1074,3 +1074,20 @@ td .table {
     overflow-x: auto;
     overflow-y: auto;
 }
+.statusBox{
+  clear: both;
+  margin-top:20px;
+  margin-bottom: 20px;
+}
+.topoNode-item{
+  margin-top: 10px;
+  cursor: pointer;
+}
+.table-a{
+  color:#333;
+  text-decoration:none;
+}
+.table-a:hover{
+  color:#333;
+  text-decoration:none;
+}

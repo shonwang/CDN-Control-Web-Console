@@ -3,6 +3,12 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
         var RouterSubNavbar = {
             initSetupSendNavbar: function() {
                 var menu = [{
+                        id: 'setupSendingSwitch',
+                        name: '下发设置',
+                        hash: 'index.html#/setupSendingSwitch',
+                        active: true,
+                        children: []
+                    }, {
                         id: 'setupSendWaitCustomize',
                         name: '待定制',
                         hash: 'index.html#/setupSendWaitCustomize',

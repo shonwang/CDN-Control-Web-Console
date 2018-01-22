@@ -528,7 +528,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.find(".checkAll").on("click", $.proxy(this.onClickCheckAll, this));
             this.$el.find(".cancelAll").on("click", $.proxy(this.onClickCancelCheckAll, this));
             this.$el.find("#node-list-filter").on("keyup", $.proxy(this.onKeyupSearch, this));
-
+         
             this.initTree(this.nodeTreeLists);
 
             // this.collection.off("get.allDevice.success");

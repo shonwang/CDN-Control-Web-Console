@@ -203,7 +203,33 @@ define("routes.setupSend", ['require', 'exports'],
                     }
                     this.curView = this.blockedDomainView;
                 }.bind(this));
-            }
+            },
+
+            setupSendingSwitch: function() {
+               // if (!AUTH_OBJ.WaitCustomize) return;
+                require(['setupSendingSwitch.view', 'setupSendingSwitch.model'], function(SetupSendingSwitchView, SetupSendingSwitchModel) {
+                    this.curPage = 'setupSendingSwitch';
+                    this.navbarView.select('setupSendManage', $.proxy(this.removeSubSideBar, this));
+                    this.initSetupSendNavbar()
+                    var renderTarget = this.setupSendNavbar.$el.find('.sub-content');
+
+                    if (!this.setupSendingSwitchModel)
+                        this.setupSendingSwitchModel = new SetupSendingSwitchModel();
+
+                    if (!this.setupSendingSwitchView) {
+                        var options = {
+                            collection: this.setupSendingSwitchModel
+                        };
+                        this.setupSendingSwitchView = new SetupSendingSwitchView(options);
+                        this.setupSendingSwitchView.render(renderTarget);
+                    } else {
+                        this.setupSendingSwitchView.update(renderTarget);
+                    }
+                    this.setupSendNavbar.select(this.curPage);
+                    this.curView = this.setupSendingSwitchView;
+                }.bind(this));
+            },
+
         }
 
         return RouterSetupSend

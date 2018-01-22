@@ -10,7 +10,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.model = options.model;
                 this.isEdit = options.isEdit;
                 this.isView = options.isView;
-
                 this.$el = $(_.template(template['tpl/specialLayerManage/specialLayerManage.edit.html'])({
                     data: {}
                 }));
@@ -51,14 +50,23 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 }
             },
 
-            addStrategySuccess: function() {
+            addStrategySuccess: function(res) {
                 alert('保存成功');
-                this.options.onSaveCallback && this.options.onSaveCallback();
+                console.log(res)
+                if(this.btnFlag==2){
+                   this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback(res);   
+                }else{
+                    this.options.onSaveCallback && this.options.onSaveCallback();
+                }
             },
 
             modifyStrategySuccess: function() {
-                this.options.onSaveCallback && this.options.onSaveCallback();
                 alert('修改成功');
+                if(this.btnFlag==2){
+                   this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback();   
+                }else{
+                    this.options.onSaveCallback && this.options.onSaveCallback();
+                }
             },
 
             onStrategyInfo: function(res) {
@@ -85,6 +93,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
                 if (!this.isEdit) {
                     this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
+                    this.$el.find(".opt-ctn .saveAndSend").on("click", $.proxy(this.onClickSaveAndSendButton, this));
                     this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
                     this.$el.find(".domain-list").hide();
                     this.$el.find(".add-rule").show();
@@ -92,6 +101,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 } else if (!this.isView && this.isEdit) {
                     // if (AUTH_OBJ.ApplyEditTopos)
                     this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
+                    this.$el.find(".opt-ctn .saveAndSend").on("click", $.proxy(this.onClickSaveAndSendButton, this));
                     this.$el.find(".view-more").on("click", $.proxy(this.onClickViewMoreButton, this));
                     this.$el.find(".view-less").on("click", $.proxy(this.onClickViewLessButton, this));
                     this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
@@ -139,6 +149,11 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.$el.find('.view-less').hide();
                 this.$el.find(".view-more").show();
                 this.$el.find('.domain-ctn').css('max-height', '200px');
+            },
+
+            onClickSaveAndSendButton:function(){
+                this.btnFlag=2;
+                this.onClickSaveButton();
             },
 
             onClickSaveButton: function() {
@@ -326,16 +341,17 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             message: "还没有添加规则"
                         }
                     }));
-
                 this.roleTable.find("[data-toggle='popover']").popover();
 
                 if (!this.isView) {
                     this.roleTable.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
                     this.roleTable.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+                    this.roleTable.find("tbody .update").on("click", $.proxy(this.onClickItemUpdate, this));
                 } else {
                     this.roleTable.find("tbody .edit").hide();
                     this.roleTable.find("tbody .delete").hide();
                 }
+
             },
 
             onClickItemEdit: function(event) {
@@ -513,6 +529,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
 
                 this.table.find("tbody .view").on("click", $.proxy(this.onClickItemView, this));
                 this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+                this.table.find("tbody .update").on("click", $.proxy(this.onClickItemUpdate, this));
 
                 this.table.find("[data-toggle='popover']").popover();
             },
@@ -527,6 +544,25 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         this.$el.find(".list-panel").show();
                         this.onClickQueryButton();
                     }.bind(this),
+                    onSaveAndSendCallback:function(res){
+                        var model = new this.collection.model(res);
+                        require(['setupTopoManage.update.view'], function(UpdateTopoView) {
+                                var myUpdateTopoView = new UpdateTopoView({
+                                     collection: this.collection,
+                                     isEdit: false,
+                                     pageType:2,
+                                     model:model,
+                                    onSaveCallback: function() {
+                                    }.bind(this),
+                                    onCancelCallback: function() {
+                                        myUpdateTopoView.$el.remove();
+                                        this.$el.find(".list-panel").show();
+                                    }.bind(this)
+                                })
+                               myAddEditLayerView.$el.remove();
+                               myUpdateTopoView.render(this.$el.find(".update-panel"));
+                           }.bind(this)) 
+                    }.bind(this),
                     onCancelCallback: function() {
                         this.on('enterKeyBindQuery', $.proxy(this.resetList, this));
                         myAddEditLayerView.$el.remove();
@@ -536,6 +572,35 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
 
                 this.$el.find(".list-panel").hide();
                 myAddEditLayerView.render(this.$el.find(".edit-panel"))
+            },
+
+            onClickItemUpdate:function(event){
+                 var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                var model = this.collection.get(id);
+                require(['setupTopoManage.update.view'], function(UpdateTopoView) {
+                    var myUpdateTopoView = new UpdateTopoView({
+                        collection: this.collection,
+                        model: model,
+                        isEdit: false,
+                        pageType:2,
+                        onSaveCallback: function() {
+                        }.bind(this),
+                        onCancelCallback: function() {
+                            myUpdateTopoView.$el.remove();
+                            this.$el.find(".list-panel").show();
+                        }.bind(this)
+                    })
+
+                    this.$el.find(".list-panel").hide();
+                    myUpdateTopoView.render(this.$el.find(".update-panel"));
+                }.bind(this));
             },
 
             onClickItemDelete: function(event) {
@@ -577,6 +642,25 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         this.$el.find(".list-panel").show();
                         this.onClickQueryButton();
                         this.on('enterKeyBindQuery', $.proxy(this.resetList, this));
+                    }.bind(this),
+                    onSaveAndSendCallback:function(){
+                        require(['setupTopoManage.update.view'], function(UpdateTopoView) {
+                                var myUpdateTopoView = new UpdateTopoView({
+                                     collection: this.collection,
+                                     isEdit: true,
+                                     pageType:2,
+                                     model:model,
+                                    onSaveCallback: function() {
+                                    }.bind(this),
+                                    onCancelCallback: function() {
+                                        myUpdateTopoView.$el.remove();
+                                        this.$el.find(".list-panel").show();
+                                        this.onClickQueryButton();
+                                    }.bind(this)
+                                })
+                               myAddEditLayerView.$el.remove();
+                               myUpdateTopoView.render(this.$el.find(".update-panel"));
+                           }.bind(this)) 
                     }.bind(this),
                     onCancelCallback: function() {
                         myAddEditLayerView.$el.remove();

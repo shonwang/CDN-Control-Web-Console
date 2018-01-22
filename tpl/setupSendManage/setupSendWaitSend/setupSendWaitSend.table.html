@@ -20,15 +20,15 @@
             <% if (data[i].get("isDisplay")) { %>
             <tr data-id="<%=data[i].attributes.id%>">
               <td><input type="checkbox" id="<%=data[i].id%>"></td>
-              <td><%=data[i].get("creatorName") || "神秘人"%></td>
-              <td><%=data[i].get("domain")%></td>
-              <td><%=data[i].get("configReasonName")%></td>
-              <td><%=data[i].get("isCustomName")%></td>
-              <td><%=data[i].get("platformName")%></td>
-              <td><%=data[i].get("topologyName")%></td>
-              <td><%=data[i].get("specialruleName")%></td>
-              <td><%=data[i].get("domainVersion")%></td>
-              <td><%=data[i].get("createTimeFormated")%></td>
+              <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("creatorName") || "神秘人"%></a></td>
+              <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("domain")%></a></td>
+              <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("configReasonName")%></a></td>
+              <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("isCustomName")%></a></td>
+              <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("platformName")%></a></td>
+              <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("topologyName")%></a></td>
+              <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("specialruleName")%></a></td>
+              <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("domainVersion")%></a></td>
+              <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("createTimeFormated")%></a></td>
               <td>
                 <a href="javascript:void(0)" class="remark" id="<%=data[i].attributes['id']%>"
                    data-container="body" 
@@ -40,19 +40,19 @@
               <td>
                   <% if(permission.ViewConfigDetails) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit"
-                     title="查看详情" data-toggle="tooltip" data-placement="bottom">
+                     title="<%=data[i].get('domain')%>&nbsp;查看详情" data-toggle="tooltip" data-placement="bottom">
                       <span class="glyphicon glyphicon-eye-open"></span>
                   </a>
                   <% } %>
                   <% if(permission.SendToSending) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="send"
-                     title="下发" data-toggle="tooltip" data-placement="bottom">
+                     title="<%=data[i].get('domain')%>&nbsp;下发" data-toggle="tooltip" data-placement="bottom">
                       <span class="glyphicon glyphicon-send"></span>
                   </a>
                   <% } %>
                   <% if(permission.SendBackInWS) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="reject"
-                     title="打回" data-toggle="tooltip" data-placement="bottom">
+                     title="<%=data[i].get('domain')%>&nbsp;打回" data-toggle="tooltip" data-placement="bottom">
                       <span class="glyphicon glyphicon-remove-circle"></span>
                   </a>
                   <% } %>

@@ -59,7 +59,7 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
             addStrategy: function(args) {
                 var url = BASE_URL + "/resource/special/addStrategy",
                     successCallback = function(res) {
-                        this.trigger("add.strategy.success", res);
+                        this.trigger("add.strategy.success",res);
                     }.bind(this),
                     errorCallback = function(response) {
                         this.trigger('add.strategy.error', response);

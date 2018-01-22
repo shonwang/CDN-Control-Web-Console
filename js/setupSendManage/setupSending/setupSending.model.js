@@ -29,7 +29,7 @@ define("setupSending.model", ['require','exports', 'utility'], function(require,
                         this.push(new Model(element));
                     }.bind(this))
                     this.total = res.total;
-                    this.trigger("get.sending.channel.success");
+                    this.trigger("get.sending.channel.success",res);
                 } else {
                     this.trigger("get.sending.channel.error"); 
                 } 

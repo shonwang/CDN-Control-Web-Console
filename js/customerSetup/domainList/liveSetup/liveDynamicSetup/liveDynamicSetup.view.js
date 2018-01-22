@@ -130,6 +130,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                                 var str = ".dropdown#" + module.id + "-" + group.id + "-" + key.id
                                 var rootNode = this.$el.find(str);
                                 Utility.initDropMenu(rootNode, valueList, function(value) {
+                                    console.log(key.valueType + "/" + key.value)
                                     if (key.valueType == 3 || key.valueType == 5) 
                                         key.value = parseInt(value)
                                     else if (key.valueType == 4 && key.value == "true") 
@@ -371,6 +372,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                                 value[0].configValueMap[key.id] = parseInt(key.value)
                             }
                         } else if (key.valueType == 4) {
+                            console.log("save: " + key.value)
                             if (key.value + "" == null + "")
                                 value[0].configValueMap[key.id] = null
                             else

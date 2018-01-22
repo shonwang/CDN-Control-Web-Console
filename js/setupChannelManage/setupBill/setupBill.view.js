@@ -36,6 +36,7 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.urlParameterVo = data.urlParameterVo;
                     this.config = JSON.parse(data.originVersion.config);
                     this.versionType = data.originVersion.versionType || 1;
+                    this.liveOriginData=data.backSourceDto;
                 }
             } catch(e){
                 alert("返回的JSON数据有问题！")

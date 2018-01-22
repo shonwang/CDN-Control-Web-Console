@@ -17,6 +17,16 @@ define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'ut
             else
                 this.initLiveUpBackOriginSetup();
         },
+        initOriginSetup:function(){
+            this.liveOriginData.originType==2?this.liveOriginData.originTypeShow="域名回源":
+                                              this.liveOriginData.originTypeShow="视频云回源"
+            this.liveOriginData.originProtocol==3?this.liveOriginData.originProtocolShow="rtmp":
+                                                  this.liveOriginData.originProtocolShow="http+flv"
+            this.originSetupTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveOriginSetup.html'])({
+                data: this.liveOriginData
+            }));
+            this.originSetupTable.appendTo(this.$el.find(".bill-ctn"));
+        },
 
         initLiveUpBackOriginSetup: function(){
             this.appLives = this.config.appLives || [];

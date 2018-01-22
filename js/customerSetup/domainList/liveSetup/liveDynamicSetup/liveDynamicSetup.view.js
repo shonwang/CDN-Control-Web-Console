@@ -138,7 +138,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                                 var defaultValue = null
                                 if (key.valueType == 5 || key.valueType == 6) {
                                     defaultValue = _.find(valueList, function(el) {
-                                        return el.value == parseInt(key.value)
+                                        return el.value == key.value
                                     }.bind(this))
                                 } else if (key.valueType == 3 || key.valueType == 4) {
                                     defaultValue = _.find(valueList, function(el) {

@@ -374,7 +374,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                             if (key.value + "" == null + "")
                                 value[0].configValueMap[key.id] = null
                             else
-                                value[0].configValueMap[key.id] = Boolean(key.value)
+                                value[0].configValueMap[key.id] = key.value;
                         } else if (key.valueType == 7) {
                             var temp = [];
                             _.each(key.value, function(el) {

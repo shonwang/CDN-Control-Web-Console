@@ -1,443 +1,458 @@
-define("setupBillLive.view", ['require','exports', 'template', 'modal.view', 'utility', 'setupBill.view'], 
+define("setupBillLive.view", ['require', 'exports', 'template', 'modal.view', 'utility', 'setupBill.view'],
     function(require, exports, template, Modal, Utility, SetupBillView) {
 
-    var SetupLiveBillView = SetupBillView.extend({
-        events: {},
+        var SetupLiveBillView = SetupBillView.extend({
+            events: {},
 
-        initCname: function() {
-            this.cnameTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.cname.html'])({
-                data: this.config.originDomain.cnameData
-            }));
-            this.cnameTable.appendTo(this.$el.find(".bill-ctn"));
-
-            var subType = this.config.originDomain.subType;
-
-            if (subType !== 3) 
-                this.initOriginSetup();
-            else
-                this.initLiveUpBackOriginSetup();
-        },
-        initOriginSetup:function(){
-            this.liveOriginData.originType==2?this.liveOriginData.originTypeShow="域名回源":
-                                              this.liveOriginData.originTypeShow="视频云回源"
-            this.liveOriginData.originProtocol==3?this.liveOriginData.originProtocolShow="rtmp":
-                                                  this.liveOriginData.originProtocolShow="http+flv"
-            this.originSetupTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveOriginSetup.html'])({
-                data: this.liveOriginData
-            }));
-            this.originSetupTable.appendTo(this.$el.find(".bill-ctn"));
-        },
-
-        initLiveUpBackOriginSetup: function(){
-            this.appLives = this.config.appLives || [];
-            require(['liveUpBackOriginSetup.model'], function(LiveUpBackOriginSetupModel){
-                _.each(this.appLives, function(el, index, ls){                  
-                    var pushConf = el.pushConf || {};
-
-                    var myLiveUpBackOriginSetupModel = new LiveUpBackOriginSetupModel();
-                    _.each(pushConf.pushList, function(element, inx, list){
-                        myLiveUpBackOriginSetupModel.push(new myLiveUpBackOriginSetupModel.model(element));
-                    }.bind(this))
-
-                    this.liveUpBackOriginSetupTable = $(_.template(template['tpl/customerSetup/domainList/liveUpBackOriginSetup/liveUpBackOriginSetup.table.html'])({
-                        data: myLiveUpBackOriginSetupModel.models
-                    }));
-
-                    this.liveUpBackOriginSetupTable.appendTo(this.$el.find(".bill-ctn"));
-
-                    inputEl = this.liveUpBackOriginSetupTable.find("input");
-                    _.each(inputEl, function(el){
-                        if (el.checked)
-                            $(el).parents(".togglebutton").html('<span class="label label-success">开启</span>')
-                        else
-                            $(el).parents(".togglebutton").html('<span class="label label-danger">关闭</span>')
-                    }.bind(this))
-                    this.liveUpBackOriginSetupTable.find(".edit").remove();
-                    this.liveUpBackOriginSetupTable.find(".delete").remove();
-
-                    this.liveUpFlowNameChange()
-                }.bind(this))
-            }.bind(this));
-        },
-
-        liveUpFlowNameChange:function(){
-            _.each(this.appLives, function(el, index, ls){                  
-                var pushConf = el.pushConf || {};
-                if (pushConf.aliasFlag === 0)
-                    pushConf.aliasFlagStr = '<span class="label label-danger">关闭</span>';
-                else
-                    pushConf.aliasFlagStr = '<span class="label label-success">开启</span>';
-
-                this.liveUpFlowNameChangeTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveUpFlowNameChange.html'])({
-                    data: pushConf
+            initCname: function() {
+                this.cnameTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.cname.html'])({
+                    data: this.config.originDomain.cnameData
                 }));
-                this.liveUpFlowNameChangeTable.appendTo(this.$el.find(".bill-ctn"));
-            }.bind(this))
-        },
-        /*
-        initOriginDetection: function(argument) {
-            this.originDetectionInfo = this.config.detectOriginConfig || {};
+                this.cnameTable.appendTo(this.$el.find(".bill-ctn"));
 
-            this.strArray = ['<span class="label label-danger">关闭</span>', '<span class="label label-success">开启</span>'];
-            var flag = this.config.detectOriginConfig.flag;
-            this.originDetectionInfo.flagStr = this.strArray[flag];
+                var subType = this.config.originDomain.subType;
 
-            this.originHostSetupTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.backOriginDetection.html'])({
-                data: this.originDetectionInfo
-            }));
-            this.originHostSetupTable.appendTo(this.$el.find(".bill-ctn"));
+                if (subType !== 3)
+                    this.initOriginSetup();
+                else
+                    this.initLiveUpBackOriginSetup();
+            },
+            initOriginSetup: function() {
+                this.liveOriginData.originType == 2 ? this.liveOriginData.originTypeShow = "域名回源" :
+                    this.liveOriginData.originTypeShow = "视频云回源"
+                this.liveOriginData.originProtocol == 3 ? this.liveOriginData.originProtocolShow = "rtmp" :
+                    this.liveOriginData.originProtocolShow = "http+flv"
+                this.originSetupTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveOriginSetup.html'])({
+                    data: this.liveOriginData
+                }));
+                this.originSetupTable.appendTo(this.$el.find(".bill-ctn"));
+                this.initOriginHostSetup();
+            },
 
-            var type = this.config.originDomain.type,
-                protocol = this.config.domainConf.protocol;
+            initLiveUpBackOriginSetup: function() {
+                this.appLives = this.config.appLives || [];
+                require(['liveUpBackOriginSetup.model'], function(LiveUpBackOriginSetupModel) {
+                    _.each(this.appLives, function(el, index, ls) {
+                        var pushConf = el.pushConf || {};
 
-            if ((type === 1 && protocol === 0) ||
-                (type === 1 && protocol === 4) ||
-                (type === 2 && protocol === 2)) {
-                this.initFollowing()
-            } else if ((type === 2 && protocol === 1) ||
-                       (type === 2 && protocol === 3)) {
-                this.initLiveRefererAntiLeech()
-            } else {
-                var message = 'type=1 protocol=0,4 下载<br>type=2 protocol=2 伪直播<br>type=2 protocol= 1,3真直播<br>' + 
-                              '当前返回的type为' + type + "，protocol为" + protocol;
-                alert(message)
-            }
-        },
-        */
+                        var myLiveUpBackOriginSetupModel = new LiveUpBackOriginSetupModel();
+                        _.each(pushConf.pushList, function(element, inx, list) {
+                            myLiveUpBackOriginSetupModel.push(new myLiveUpBackOriginSetupModel.model(element));
+                        }.bind(this))
 
-        initOriginDetection: function(argument) {
-            this.originDetectionInfo = this.config.detectOriginConfig || {};
+                        this.liveUpBackOriginSetupTable = $(_.template(template['tpl/customerSetup/domainList/liveUpBackOriginSetup/liveUpBackOriginSetup.table.html'])({
+                            data: myLiveUpBackOriginSetupModel.models
+                        }));
 
-            this.strArray = ['<span class="label label-danger">关闭</span>', '<span class="label label-success">开启</span>'];
-            var flag = this.config.detectOriginConfig.flag;
-            this.originDetectionInfo.flagStr = this.strArray[flag];
+                        this.liveUpBackOriginSetupTable.appendTo(this.$el.find(".bill-ctn"));
 
-            this.originHostSetupTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.backOriginDetection.html'])({
-                data: this.originDetectionInfo
-            }));
-            this.originHostSetupTable.appendTo(this.$el.find(".bill-ctn"));
+                        inputEl = this.liveUpBackOriginSetupTable.find("input");
+                        _.each(inputEl, function(el) {
+                            if (el.checked)
+                                $(el).parents(".togglebutton").html('<span class="label label-success">开启</span>')
+                            else
+                                $(el).parents(".togglebutton").html('<span class="label label-danger">关闭</span>')
+                        }.bind(this))
+                        this.liveUpBackOriginSetupTable.find(".edit").remove();
+                        this.liveUpBackOriginSetupTable.find(".delete").remove();
 
-            var type = this.config.originDomain.type,
-                //protocol = this.config.domainConf.protocol,
-                applicationType = this.config.originDomain.applicationType;
+                        this.liveUpFlowNameChange()
+                    }.bind(this))
+                }.bind(this));
+            },
 
-            if(applicationType == 202){
-                //下载
-                this.initFollowing();
-            }
-            else if(applicationType == 203){
-                //直播
-                this.initLiveRefererAntiLeech();
-            }
-            else{
-                alert("您的平台不是下载也不是直播，applicationType为"+applicationType);
-            }
-        },
+            liveUpFlowNameChange: function() {
+                _.each(this.appLives, function(el, index, ls) {
+                    var pushConf = el.pushConf || {};
+                    if (pushConf.aliasFlag === 0)
+                        pushConf.aliasFlagStr = '<span class="label label-danger">关闭</span>';
+                    else
+                        pushConf.aliasFlagStr = '<span class="label label-success">开启</span>';
 
-        initLiveRefererAntiLeech: function(){
-            this.refererAntiLeechInfo = this.config.referSafetyChainList || [];
-            // this.refererAntiLeechInfo = [
-            //     {
-            //         "type": 2,   //防盗链类型 1:白名单 2:黑名单
-            //         "domains": "",   //域名,英文逗号分隔
-            //         "nullReferer": 1,   //允许空referer 0:关 1:开
-            //         "openFlag": 1,   //直播开启refer防盗链 0:关 1:开
-            //         "regexps": "123",   //正则表达式，英文逗号分隔
-            //         "forgeReferer": 1,   //是否允许伪造的refer 0:否 1:是
-            //     }
-            // ];
-
-            _.each(this.refererAntiLeechInfo, function(el, index, ls){
-                var tempTpl = '';
-                if (!el.openFlag){
-                    tempTpl = '<table class="table table-striped table-hover">' + 
-                                        '<caption>访问控制</caption>' +
-                                        '<tbody>' +
-                                            '<tr>' +
-                                              '<td>referer防盗链</td>' +
-                                              '<td><span class="label label-danger">关闭</span></td>' +
-                                            '</tr>' +
-                                        '</tbody>' +
-                                    '</table>'
-                    this.refererAntiLeechTable = $(tempTpl)
-                } else {
-                    el.openFlagStr = '<span class="label label-success">开启</span>';
-                    if (el.type === 1) el.typeStr = '白名单';
-                    if (el.type === 2) el.typeStr = '黑名单';
-
-                    el.nullRefererStr = this.strArray[el.nullReferer];
-                    el.forgeRefererStr = this.strArray[el.forgeReferer];
-
-                    this.refererAntiLeechTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveRefererAntiLeech.html'])({
-                        data: el
+                    this.liveUpFlowNameChangeTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveUpFlowNameChange.html'])({
+                        data: pushConf
                     }));
-                }
-                this.refererAntiLeechTable.appendTo(this.$el.find(".bill-ctn"));
-            }.bind(this))
+                    this.liveUpFlowNameChangeTable.appendTo(this.$el.find(".bill-ctn"));
+                }.bind(this))
+            },
+            /*
+            initOriginDetection: function(argument) {
+                this.originDetectionInfo = this.config.detectOriginConfig || {};
 
-            this.initLiveTimestamp();
-        },
+                this.strArray = ['<span class="label label-danger">关闭</span>', '<span class="label label-success">开启</span>'];
+                var flag = this.config.detectOriginConfig.flag;
+                this.originDetectionInfo.flagStr = this.strArray[flag];
 
-        initLiveTimestamp: function(){
-            this.timestampInfo = this.config.standardProtectionList || [];
+                this.originHostSetupTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.backOriginDetection.html'])({
+                    data: this.originDetectionInfo
+                }));
+                this.originHostSetupTable.appendTo(this.$el.find(".bill-ctn"));
 
-            // this.timestampInfo = [
-            //     {
-            //         "openFlag": 1,
-            //         "confType": 1,
-            //         "protectionType": 1,
-            //         "timeParam": "null",
-            //         "hashParam": "null",
-            //         "timeType": 2,
-            //         "timeValue": "null",
-            //         "expirationTime": 3600,
-            //         "md5Truncate": '123,123',
-            //         "authKeyList": [
-            //             {
-            //                 "id": 4,
-            //                 "authKey": "xxx",
-            //             }
-            //         ],
-            //         "authDivisorList": [
-            //             {
-            //                 "id": 4,
-            //                 "divisor": 1,
-            //                 "divisorParam":"",
-            //             }
-            //         ]
-            //     }
-            // ];
+                var type = this.config.originDomain.type,
+                    protocol = this.config.domainConf.protocol;
 
-            _.each(this.timestampInfo, function(el, index, ls){
-                var tempTpl = '';
-                if (!el.openFlag){
-                        tempTpl = '<table class="table table-striped table-hover">' + 
-                                        '<tbody>' +
-                                            '<tr>' +
-                                              '<td>时间戳+共享秘钥防盗链</td>' +
-                                              '<td><span class="label label-danger">关闭</span></td>' +
-                                            '</tr>' +
-                                        '</tbody>' +
-                                    '</table>'
-                    this.timestampTable = $(tempTpl)
+                if ((type === 1 && protocol === 0) ||
+                    (type === 1 && protocol === 4) ||
+                    (type === 2 && protocol === 2)) {
+                    this.initFollowing()
+                } else if ((type === 2 && protocol === 1) ||
+                           (type === 2 && protocol === 3)) {
+                    this.initLiveRefererAntiLeech()
                 } else {
-                    el.openFlagStr = '<span class="label label-success">开启</span>';
-
-                    if (el.protectionType === 1)  el.protectionTypeStr = "typeA: " + "$key_time=" + el.timeParam + ", $key_hash=" + el.hashParam;
-                    if (el.protectionType === 2)  el.protectionTypeStr = "typeB";
-                    if (el.protectionType === 3)  el.protectionTypeStr = "typeC";
-
-                    var expirationTime = el.expirationTime, expirationTimeStr;
-                    if (expirationTime === 0) expirationTimeStr = "时间戳时间<br>";
-                    if (expirationTime !== 0) expirationTimeStr = "时间戳时间+过期时间：" + expirationTime + "秒<br>";
-                    el.expirationTimeStr = expirationTimeStr
-
-                    if (!el.confType){
-                        el.confTypeStr = "标准配置";
-                        this.timestampTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveTimestamp.html'])({
-                            data: el
-                        }));
-                    } else {
-                        el.confTypeStr = "高级配置";
-                        if (el.md5Truncate == "") 
-                            el.md5TruncateStr = "全部（默认）";
-                        else 
-                            el.md5TruncateStr = '自定义: ' + el.md5Truncate;
-                        var timeTypeArray = ['', 'UNIX时间（十六进制）', 'UNIX时间（十进制）'];
-                        el.timeTypeStr = timeTypeArray[el.timeType]
-                        this.timestampTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveTimestamp.advanced.html'])({
-                            data: el
-                        }));
-                        this.updateAuthDivisorTable(el.authDivisorList, this.timestampTable.find(".authdivisor"));
-                    }
-                    this.updateBaseKeyTable(el.authKeyList, this.timestampTable.find(".authkey"));
+                    var message = 'type=1 protocol=0,4 下载<br>type=2 protocol=2 伪直播<br>type=2 protocol= 1,3真直播<br>' + 
+                                  '当前返回的type为' + type + "，protocol为" + protocol;
+                    alert(message)
                 }
-                this.timestampTable.appendTo(this.$el.find(".bill-ctn"));
-            }.bind(this))
+            },
+            */
 
-            this.initLiveBusOptimize();
-        },
+            initOriginDetection: function(argument) {
+                this.originDetectionInfo = this.config.detectOriginConfig || {};
 
-        updateBaseKeyTable: function(data, root){
-            var temp = []
-            _.each(data, function(el, index, ls){
+                this.strArray = ['<span class="label label-danger">关闭</span>', '<span class="label label-success">开启</span>'];
+                var flag = this.config.detectOriginConfig.flag;
+                this.originDetectionInfo.flagStr = this.strArray[flag];
+
+                this.originHostSetupTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.backOriginDetection.html'])({
+                    data: this.originDetectionInfo
+                }));
+                this.originHostSetupTable.appendTo(this.$el.find(".bill-ctn"));
+
+                var type = this.config.originDomain.type,
+                    //protocol = this.config.domainConf.protocol,
+                    applicationType = this.config.originDomain.applicationType;
+
+                if (applicationType == 202) {
+                    //下载
+                    this.initFollowing();
+                } else if (applicationType == 203) {
+                    //直播
+                    this.initLiveRefererAntiLeech();
+                } else {
+                    alert("您的平台不是下载也不是直播，applicationType为" + applicationType);
+                }
+            },
+
+            initLiveRefererAntiLeech: function() {
+                this.refererAntiLeechInfo = this.config.referSafetyChainList || [];
+                // this.refererAntiLeechInfo = [
+                //     {
+                //         "type": 2,   //防盗链类型 1:白名单 2:黑名单
+                //         "domains": "",   //域名,英文逗号分隔
+                //         "nullReferer": 1,   //允许空referer 0:关 1:开
+                //         "openFlag": 1,   //直播开启refer防盗链 0:关 1:开
+                //         "regexps": "123",   //正则表达式，英文逗号分隔
+                //         "forgeReferer": 1,   //是否允许伪造的refer 0:否 1:是
+                //     }
+                // ];
+
+                _.each(this.refererAntiLeechInfo, function(el, index, ls) {
+                    var tempTpl = '';
+                    if (!el.openFlag) {
+                        tempTpl = '<table class="table table-striped table-hover">' +
+                            '<caption>访问控制</caption>' +
+                            '<tbody>' +
+                            '<tr>' +
+                            '<td>referer防盗链</td>' +
+                            '<td><span class="label label-danger">关闭</span></td>' +
+                            '</tr>' +
+                            '</tbody>' +
+                            '</table>'
+                        this.refererAntiLeechTable = $(tempTpl)
+                    } else {
+                        el.openFlagStr = '<span class="label label-success">开启</span>';
+                        if (el.type === 1) el.typeStr = '白名单';
+                        if (el.type === 2) el.typeStr = '黑名单';
+
+                        el.nullRefererStr = this.strArray[el.nullReferer];
+                        el.forgeRefererStr = this.strArray[el.forgeReferer];
+
+                        this.refererAntiLeechTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveRefererAntiLeech.html'])({
+                            data: el
+                        }));
+                    }
+                    this.refererAntiLeechTable.appendTo(this.$el.find(".bill-ctn"));
+                }.bind(this))
+
+                this.initLiveTimestamp();
+            },
+
+            initLiveTimestamp: function() {
+                this.timestampInfo = this.config.standardProtectionList || [];
+
+                // this.timestampInfo = [
+                //     {
+                //         "openFlag": 1,
+                //         "confType": 1,
+                //         "protectionType": 1,
+                //         "timeParam": "null",
+                //         "hashParam": "null",
+                //         "timeType": 2,
+                //         "timeValue": "null",
+                //         "expirationTime": 3600,
+                //         "md5Truncate": '123,123',
+                //         "authKeyList": [
+                //             {
+                //                 "id": 4,
+                //                 "authKey": "xxx",
+                //             }
+                //         ],
+                //         "authDivisorList": [
+                //             {
+                //                 "id": 4,
+                //                 "divisor": 1,
+                //                 "divisorParam":"",
+                //             }
+                //         ]
+                //     }
+                // ];
+
+                _.each(this.timestampInfo, function(el, index, ls) {
+                    var tempTpl = '';
+                    if (!el.openFlag) {
+                        tempTpl = '<table class="table table-striped table-hover">' +
+                            '<tbody>' +
+                            '<tr>' +
+                            '<td>时间戳+共享秘钥防盗链</td>' +
+                            '<td><span class="label label-danger">关闭</span></td>' +
+                            '</tr>' +
+                            '</tbody>' +
+                            '</table>'
+                        this.timestampTable = $(tempTpl)
+                    } else {
+                        el.openFlagStr = '<span class="label label-success">开启</span>';
+
+                        if (el.protectionType === 1) el.protectionTypeStr = "typeA: " + "$key_time=" + el.timeParam + ", $key_hash=" + el.hashParam;
+                        if (el.protectionType === 2) el.protectionTypeStr = "typeB";
+                        if (el.protectionType === 3) el.protectionTypeStr = "typeC";
+
+                        var expirationTime = el.expirationTime,
+                            expirationTimeStr;
+                        if (expirationTime === 0) expirationTimeStr = "时间戳时间<br>";
+                        if (expirationTime !== 0) expirationTimeStr = "时间戳时间+过期时间：" + expirationTime + "秒<br>";
+                        el.expirationTimeStr = expirationTimeStr
+
+                        if (!el.confType) {
+                            el.confTypeStr = "标准配置";
+                            this.timestampTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveTimestamp.html'])({
+                                data: el
+                            }));
+                        } else {
+                            el.confTypeStr = "高级配置";
+                            if (el.md5Truncate == "")
+                                el.md5TruncateStr = "全部（默认）";
+                            else
+                                el.md5TruncateStr = '自定义: ' + el.md5Truncate;
+                            var timeTypeArray = ['', 'UNIX时间（十六进制）', 'UNIX时间（十进制）'];
+                            el.timeTypeStr = timeTypeArray[el.timeType]
+                            this.timestampTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveTimestamp.advanced.html'])({
+                                data: el
+                            }));
+                            this.updateAuthDivisorTable(el.authDivisorList, this.timestampTable.find(".authdivisor"));
+                        }
+                        this.updateBaseKeyTable(el.authKeyList, this.timestampTable.find(".authkey"));
+                    }
+                    this.timestampTable.appendTo(this.$el.find(".bill-ctn"));
+                }.bind(this))
+
+                this.initLiveBusOptimize();
+            },
+
+            updateBaseKeyTable: function(data, root) {
+                var temp = []
+                _.each(data, function(el, index, ls) {
                     temp.push({
                         id: el.id,
                         backupKey: el.authKey
                     })
-            }.bind(this))
-            this.baseBackupKeyTable = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.backupKeyTable.html'])({
-                data: temp
-            }))
-
-            this.baseBackupKeyTable.find(".delete").remove();
-            root.html(this.baseBackupKeyTable.get(0));
-        },
-
-        updateAuthDivisorTable: function(data, root){
-            var  authDivisorArray = [
-                {value: 1, name: "host:用户请求域名"},
-                {value: 2, name: "uri：用户请求的uri"},
-                {value: 3, name: "url：不带参数"},
-                {value: 4, name: "arg&name:请求url中的参数名称"},
-                {value: 5, name: "time：请求url中是时间戳"},
-                {value: 6, name: "key：秘钥"},
-                {value: 7, name: "filename：文件名称，带后缀"},
-                {value: 8, name: "filenameno：文件名称，不带后缀"}
-            ];
-            _.each(data, function(el, index, ls){
-                var nameObj = _.find(authDivisorArray, function(obj){
-                    return obj.value === el.divisor
                 }.bind(this))
-                if (nameObj) el.divisorName = nameObj.name
-            }.bind(this))
+                this.baseBackupKeyTable = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.backupKeyTable.html'])({
+                    data: temp
+                }))
 
-            this.authDivisorTable = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.atuthDivisor.table.html'])({
-                data: data
-            }))
+                this.baseBackupKeyTable.find(".delete").remove();
+                root.html(this.baseBackupKeyTable.get(0));
+            },
 
-            this.authDivisorTable.find(".delete").remove();
-            root.html(this.authDivisorTable.get(0));
-        },
+            updateAuthDivisorTable: function(data, root) {
+                var authDivisorArray = [{
+                    value: 1,
+                    name: "host:用户请求域名"
+                }, {
+                    value: 2,
+                    name: "uri：用户请求的uri"
+                }, {
+                    value: 3,
+                    name: "url：不带参数"
+                }, {
+                    value: 4,
+                    name: "arg&name:请求url中的参数名称"
+                }, {
+                    value: 5,
+                    name: "time：请求url中是时间戳"
+                }, {
+                    value: 6,
+                    name: "key：秘钥"
+                }, {
+                    value: 7,
+                    name: "filename：文件名称，带后缀"
+                }, {
+                    value: 8,
+                    name: "filenameno：文件名称，不带后缀"
+                }];
+                _.each(data, function(el, index, ls) {
+                    var nameObj = _.find(authDivisorArray, function(obj) {
+                        return obj.value === el.divisor
+                    }.bind(this))
+                    if (nameObj) el.divisorName = nameObj.name
+                }.bind(this))
 
-        initLiveBusOptimize: function(){
-            this.appLives = this.config.appLives || [];
-            // this.appLives = [{
-            //             "optimizeConf":{
-            //                 "gopType": 2, //1:按时长 2:按个数
-            //                 "gopNum": 3,
-            //                 "gopMaxDuration": 15,
-            //                 "aliasFlag": 1,
-            //                 "gopMinSend": 2,
-            //                 "noFlowTimeout": 21,
-            //                 "delayClose": 6,
-            //                 "metaType": 2, //1:append 2:on 3:copy 4:off
-            //                 "h265Flag": 1,
-            //                 "hdlAudioOnlyFlag": 1,
-            //                 "hdlAudioOnlyParam": "audio-only1",
-            //                 "rtmpAudioOnlyFlag": 1,
-            //                 "rtmpAudioOnlyParam": "audio-only1",
-            //                 "edge302Flag": 1
-            //             },
-            //             "pkConf":{
-            //                 "hdlAvhZeroTimestamp": 1,
-            //                 "hdlTimestampZeroStart": 1,
-            //                 "hdlGopZeroTimestamp": 1,
-            //                 "hdlGopSendAudio": 0,
-            //                 "rtmpAvhZeroTimestamp": 1,
-            //                 "rtmpTimestampZeroStart": 1,
-            //                 "rtmpGopZeroTimestamp": 1,
-            //                 "rtmpGopSendAudio": 0,
-            //                 "avHeaderFlag": 1,
-            //                 "avHeaderWaitTime": 1,
-            //                 "keepAliveFlag": 1,
-            //                 "keepAliveTime": 1,
-            //             },
-            //             "logConf":{
-            //                 "slaAccessFlag": 1,
-            //                 "slaFirstCache": 20,
-            //                 "slaSecondCache":15,
-            //                 "frequencyFlag":1,
-            //                 "frequencyInterval":600,
-            //             }
-            //         }];
+                this.authDivisorTable = $(_.template(template['tpl/customerSetup/domainList/timestamp/timestamp.atuthDivisor.table.html'])({
+                    data: data
+                }))
 
-            _.each(this.appLives, function(el, index, ls){
-                var optimizeConf = el.optimizeConf;
-                if (!optimizeConf) return;
-                if (optimizeConf.gopType === 1) {
-                    optimizeConf.gopTypeStr = "按时长";
-                    optimizeConf.gopNumStr = "gop缓存时长：" + optimizeConf.gopNum + "秒";
-                } else {
-                    optimizeConf.gopTypeStr = "按个数";
-                    optimizeConf.gopNumStr = "gop缓存个数：" + optimizeConf.gopNum + "个";
-                }
-                optimizeConf.gopMaxDurationStr = optimizeConf.gopMaxDuration + "秒";
-                if (optimizeConf.gopMinSendFlag === 0)
-                    optimizeConf.gopMinSendStr = '<span class="label label-danger">关闭</span>';
-                else
-                    optimizeConf.gopMinSendStr = '<span class="label label-success">开启</span>' + optimizeConf.gopMinSend + "秒";
-                optimizeConf.noFlowTimeoutStr = optimizeConf.noFlowTimeout + "秒";
-                optimizeConf.delayCloseStr = optimizeConf.delayClose + "秒后关闭客户端连接";
-                var metaTypeNameArray = ["", "append", "on", "copy", "off"]
-                optimizeConf.metaTypeStr = metaTypeNameArray[optimizeConf.metaType];
+                this.authDivisorTable.find(".delete").remove();
+                root.html(this.authDivisorTable.get(0));
+            },
 
-                optimizeConf.h265FlagStr = this.strArray[optimizeConf.h265Flag];
-                optimizeConf.hdlAudioOnlyFlagStr = this.strArray[optimizeConf.hdlAudioOnlyFlag];
-                optimizeConf.rtmpAudioOnlyFlagStr = this.strArray[optimizeConf.rtmpAudioOnlyFlag];
-                optimizeConf.edge302FlagStr = this.strArray[optimizeConf.edge302Flag];
+            initLiveBusOptimize: function() {
+                this.appLives = this.config.appLives || [];
+                // this.appLives = [{
+                //             "optimizeConf":{
+                //                 "gopType": 2, //1:按时长 2:按个数
+                //                 "gopNum": 3,
+                //                 "gopMaxDuration": 15,
+                //                 "aliasFlag": 1,
+                //                 "gopMinSend": 2,
+                //                 "noFlowTimeout": 21,
+                //                 "delayClose": 6,
+                //                 "metaType": 2, //1:append 2:on 3:copy 4:off
+                //                 "h265Flag": 1,
+                //                 "hdlAudioOnlyFlag": 1,
+                //                 "hdlAudioOnlyParam": "audio-only1",
+                //                 "rtmpAudioOnlyFlag": 1,
+                //                 "rtmpAudioOnlyParam": "audio-only1",
+                //                 "edge302Flag": 1
+                //             },
+                //             "pkConf":{
+                //                 "hdlAvhZeroTimestamp": 1,
+                //                 "hdlTimestampZeroStart": 1,
+                //                 "hdlGopZeroTimestamp": 1,
+                //                 "hdlGopSendAudio": 0,
+                //                 "rtmpAvhZeroTimestamp": 1,
+                //                 "rtmpTimestampZeroStart": 1,
+                //                 "rtmpGopZeroTimestamp": 1,
+                //                 "rtmpGopSendAudio": 0,
+                //                 "avHeaderFlag": 1,
+                //                 "avHeaderWaitTime": 1,
+                //                 "keepAliveFlag": 1,
+                //                 "keepAliveTime": 1,
+                //             },
+                //             "logConf":{
+                //                 "slaAccessFlag": 1,
+                //                 "slaFirstCache": 20,
+                //                 "slaSecondCache":15,
+                //                 "frequencyFlag":1,
+                //                 "frequencyInterval":600,
+                //             }
+                //         }];
 
-                this.liveBusOptimizeTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveBusOptimize.html'])({
-                    data: optimizeConf
-                }));
+                _.each(this.appLives, function(el, index, ls) {
+                    var optimizeConf = el.optimizeConf;
+                    if (!optimizeConf) return;
+                    if (optimizeConf.gopType === 1) {
+                        optimizeConf.gopTypeStr = "按时长";
+                        optimizeConf.gopNumStr = "gop缓存时长：" + optimizeConf.gopNum + "秒";
+                    } else {
+                        optimizeConf.gopTypeStr = "按个数";
+                        optimizeConf.gopNumStr = "gop缓存个数：" + optimizeConf.gopNum + "个";
+                    }
+                    optimizeConf.gopMaxDurationStr = optimizeConf.gopMaxDuration + "秒";
+                    if (optimizeConf.gopMinSendFlag === 0)
+                        optimizeConf.gopMinSendStr = '<span class="label label-danger">关闭</span>';
+                    else
+                        optimizeConf.gopMinSendStr = '<span class="label label-success">开启</span>' + optimizeConf.gopMinSend + "秒";
+                    optimizeConf.noFlowTimeoutStr = optimizeConf.noFlowTimeout + "秒";
+                    optimizeConf.delayCloseStr = optimizeConf.delayClose + "秒后关闭客户端连接";
+                    var metaTypeNameArray = ["", "append", "on", "copy", "off"]
+                    optimizeConf.metaTypeStr = metaTypeNameArray[optimizeConf.metaType];
 
-                this.liveBusOptimizeTable.appendTo(this.$el.find(".bill-ctn"));
-            }.bind(this))
+                    optimizeConf.h265FlagStr = this.strArray[optimizeConf.h265Flag];
+                    optimizeConf.hdlAudioOnlyFlagStr = this.strArray[optimizeConf.hdlAudioOnlyFlag];
+                    optimizeConf.rtmpAudioOnlyFlagStr = this.strArray[optimizeConf.rtmpAudioOnlyFlag];
+                    optimizeConf.edge302FlagStr = this.strArray[optimizeConf.edge302Flag];
 
-            this.initPKBusOptimize();
-        },
+                    this.liveBusOptimizeTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveBusOptimize.html'])({
+                        data: optimizeConf
+                    }));
 
-        initPKBusOptimize: function(){
-            _.each(this.appLives, function(el, index, ls){
-                var pkConf = el.pkConf;
-                if (!pkConf) return;
-                if (pkConf.keepAliveFlag === 0)
-                    pkConf.keepAliveFlagStr = '<span class="label label-danger">关闭</span>';
-                else
-                    pkConf.keepAliveFlagStr = '<span class="label label-success">开启</span> 时长: ' + (pkConf.keepAliveTime === 0 ? '0秒' : Utility.timeFormat2(pkConf.keepAliveTime));
+                    this.liveBusOptimizeTable.appendTo(this.$el.find(".bill-ctn"));
+                }.bind(this))
 
-                if (pkConf.avHeaderFlag === 0)
-                    pkConf.avHeaderFlagStr = '<span class="label label-danger">关闭</span>';
-                else
-                    pkConf.avHeaderFlagStr = '<span class="label label-success">开启</span> 等待音视频合并头持续的时间: ' + Utility.timeFormat2(pkConf.avHeaderWaitTime);
+                this.initPKBusOptimize();
+            },
 
-                pkConf.hdlAvhZeroTimestampStr = this.strArray[pkConf.hdlAvhZeroTimestamp];
-                pkConf.hdlTimestampZeroStartStr = this.strArray[pkConf.hdlTimestampZeroStart];
-                pkConf.hdlGopZeroTimestampStr = this.strArray[pkConf.hdlGopZeroTimestamp];
-                pkConf.hdlGopSendAudioStr = this.strArray[pkConf.hdlGopSendAudio];
+            initPKBusOptimize: function() {
+                _.each(this.appLives, function(el, index, ls) {
+                    var pkConf = el.pkConf;
+                    if (!pkConf) return;
+                    if (pkConf.keepAliveFlag === 0)
+                        pkConf.keepAliveFlagStr = '<span class="label label-danger">关闭</span>';
+                    else
+                        pkConf.keepAliveFlagStr = '<span class="label label-success">开启</span> 时长: ' + (pkConf.keepAliveTime === 0 ? '0秒' : Utility.timeFormat2(pkConf.keepAliveTime));
 
-                pkConf.rtmpAvhZeroTimestampStr = this.strArray[pkConf.rtmpAvhZeroTimestamp];
-                pkConf.rtmpTimestampZeroStartStr = this.strArray[pkConf.rtmpTimestampZeroStart];
-                pkConf.rtmpGopZeroTimestampStr = this.strArray[pkConf.rtmpGopZeroTimestamp];
-                pkConf.rtmpGopSendAudioStr = this.strArray[pkConf.rtmpGopSendAudio];
+                    if (pkConf.avHeaderFlag === 0)
+                        pkConf.avHeaderFlagStr = '<span class="label label-danger">关闭</span>';
+                    else
+                        pkConf.avHeaderFlagStr = '<span class="label label-success">开启</span> 等待音视频合并头持续的时间: ' + Utility.timeFormat2(pkConf.avHeaderWaitTime);
 
-                this.livePKOptimizeTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.livePKOptimize.html'])({
-                    data: pkConf
-                }));
+                    pkConf.hdlAvhZeroTimestampStr = this.strArray[pkConf.hdlAvhZeroTimestamp];
+                    pkConf.hdlTimestampZeroStartStr = this.strArray[pkConf.hdlTimestampZeroStart];
+                    pkConf.hdlGopZeroTimestampStr = this.strArray[pkConf.hdlGopZeroTimestamp];
+                    pkConf.hdlGopSendAudioStr = this.strArray[pkConf.hdlGopSendAudio];
 
-                this.livePKOptimizeTable.appendTo(this.$el.find(".bill-ctn"));
-            }.bind(this))
+                    pkConf.rtmpAvhZeroTimestampStr = this.strArray[pkConf.rtmpAvhZeroTimestamp];
+                    pkConf.rtmpTimestampZeroStartStr = this.strArray[pkConf.rtmpTimestampZeroStart];
+                    pkConf.rtmpGopZeroTimestampStr = this.strArray[pkConf.rtmpGopZeroTimestamp];
+                    pkConf.rtmpGopSendAudioStr = this.strArray[pkConf.rtmpGopSendAudio];
 
-            this.initLogConf();
-        },
+                    this.livePKOptimizeTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.livePKOptimize.html'])({
+                        data: pkConf
+                    }));
 
-        initLogConf: function(){
-            _.each(this.appLives, function(el, index, ls){
-                var logConf = el.logConf;
-                if (!logConf) return;
-                if (logConf.slaAccessFlag === 0){
-                    logConf.slaAccessFlagStr = '<span class="label label-danger">关闭</span>';
-                } else {
-                    logConf.slaAccessFlagStr = '<span class="label label-success">开启</span><br><hr>' + 
-                    '计算access日志中的卡顿时，客户端的假设首次缓冲大小: ' + logConf.slaFirstCache + "秒<br>" + 
-                    '计算access日志中的卡顿时，客户端的假设再次缓冲大小: ' + logConf.slaSecondCache + "秒<br>" ;
-                }
+                    this.livePKOptimizeTable.appendTo(this.$el.find(".bill-ctn"));
+                }.bind(this))
 
-                if (logConf.frequencyFlag === 0){
-                    logConf.frequencyFlagStr = '<span class="label label-danger">关闭</span>';
-                } else {
-                    logConf.frequencyFlagStr = '<span class="label label-success">开启</span>间隔: ' + 
-                    Utility.timeFormat2(logConf.frequencyInterval);
-                }
+                this.initLogConf();
+            },
 
-                this.livePKOptimizeTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.livelogConf.html'])({
-                    data: logConf
-                }));
+            initLogConf: function() {
+                _.each(this.appLives, function(el, index, ls) {
+                    var logConf = el.logConf;
+                    if (!logConf) return;
+                    if (logConf.slaAccessFlag === 0) {
+                        logConf.slaAccessFlagStr = '<span class="label label-danger">关闭</span>';
+                    } else {
+                        logConf.slaAccessFlagStr = '<span class="label label-success">开启</span><br><hr>' +
+                            '计算access日志中的卡顿时，客户端的假设首次缓冲大小: ' + logConf.slaFirstCache + "秒<br>" +
+                            '计算access日志中的卡顿时，客户端的假设再次缓冲大小: ' + logConf.slaSecondCache + "秒<br>";
+                    }
 
-                this.livePKOptimizeTable.appendTo(this.$el.find(".bill-ctn"));
-            }.bind(this))
-        },
+                    if (logConf.frequencyFlag === 0) {
+                        logConf.frequencyFlagStr = '<span class="label label-danger">关闭</span>';
+                    } else {
+                        logConf.frequencyFlagStr = '<span class="label label-success">开启</span>间隔: ' +
+                            Utility.timeFormat2(logConf.frequencyInterval);
+                    }
+
+                    this.livePKOptimizeTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.livelogConf.html'])({
+                        data: logConf
+                    }));
+
+                    this.livePKOptimizeTable.appendTo(this.$el.find(".bill-ctn"));
+                }.bind(this))
+            },
+        });
+
+        return SetupLiveBillView;
     });
-
-    return SetupLiveBillView;
-});

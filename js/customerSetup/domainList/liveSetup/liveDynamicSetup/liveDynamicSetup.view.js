@@ -367,7 +367,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                             if (key.value + "" == null + "") {
                                 value[0].configValueMap[key.id] = null;
                             } else if ((key.value === "" && key.valueType == 1) || (key.value === "" && key.valueType == 10)){
-                                errorMessage = errorMessage + key.itemName + "不能为空字符串！<br>"
+                                //errorMessage = errorMessage + key.itemName + "不能为空字符串！<br>"
                             } else {
                                 value[0].configValueMap[key.id] = parseInt(key.value)
                             }

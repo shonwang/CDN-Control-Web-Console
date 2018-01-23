@@ -70,6 +70,13 @@
                   <% if (data[i].attributes.status === 1 && permission.EnableorPauseNode) { %>
                   <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="stop" title="暂停">
                       <span class="glyphicon glyphicon-pause"></span>
+                  </a>else if(data[i].attributes.status === 4 && permission.EnableorPauseNode){%>
+                   <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="init" title="配置初始化">
+                      <span class="glyphicon glyphicon-repeat"></span>
+                  </a>
+                  <%}else if(data[i].attributes.status === 2 && permission.EnableorPauseNode){%>
+                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="start" title="启用">
+                      <span class="glyphicon glyphicon-off"></span>
                   </a>
                   <%}%>
                   <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="delete" title="删除">

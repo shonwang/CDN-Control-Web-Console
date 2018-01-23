@@ -75,7 +75,7 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
                 });
             }.bind(this))
 
-            //this.collection.rollBack(this.domainArray)
+            this.collection.rollBack(this.domainArray)
             this.showDisablePopup("服务器正在努力处理中...")
         },
 

@@ -98,7 +98,7 @@ define("setupSendWaitCustomize.view", ['require', 'exports', 'template', 'modal.
                 });
             }.bind(this))
 
-            //this.collection.rollBack(this.domainArray)
+            this.collection.rollBack(this.domainArray)
             this.showDisablePopup("服务器正在努力处理中...")
         },
 
@@ -142,7 +142,9 @@ define("setupSendWaitCustomize.view", ['require', 'exports', 'template', 'modal.
             this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
 
-            this.table.find(".remark").popover();
+            this.table.find(".remark").popover(); 
+            this.table.find("[data-toggle='tooltip']").tooltip();
+
         },
 
         onClickItemSend: function(event) {

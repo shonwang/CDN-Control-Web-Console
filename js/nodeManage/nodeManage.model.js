@@ -383,6 +383,21 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
+
+        getNodeProgress:function(args){
+            var url = BASE_URL + "/cd/node/initcfg/getprogress",
+                successCallback = function(res) {
+                    if(res){
+                      this.trigger("get.nodeInitSetup.success", res);
+                   }else{
+                      this.trigger("get.nodeInitSetup.error", res);
+                   }
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("get.nodeInitSetup.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
     });
 
     return NodeManageCollection;

@@ -204,25 +204,10 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        getNodeProgress:function(args){
-           var url = BASE_URL + "/cd/node/initcfg/getprogres",
-                successCallback = function(res) {
-                    if(res){
-                      this.trigger("get.nodeInitSetup.success", res);
-                   }else{
-                      this.trigger("get.nodeInitSetup.error", res);
-                   }
-                }.bind(this),
-                errorCallback = function(response) {
-                    this.trigger("get.nodeInitSetup.error", response);
-                }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
-        },
-
         setdeliveryswitch:function(args){
            var url = BASE_URL + "cd/system/config/setdeliveryswitch",
                 successCallback = function(res) {
-                    this.trigger("set.deliveryswitch.success", res);
+                    this.trigger("set.deliveryswitch.success");
                 }.bind(this),
                 errorCallback = function(response) {
                     this.trigger("set.deliveryswitch.error", response);
@@ -241,7 +226,7 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        startSpecialLayerCreateSetup:function(){
+        startSpecialLayerCreateSetup:function(args){
             var url = BASE_URL + "/cd/node/updatecfg/sls/start",
                 successCallback = function(res) {
                     this.trigger("start.createSetup.success");

@@ -55,7 +55,6 @@ define("setupBillLiveDynamic.view", ['require', 'exports', 'template', 'modal.vi
                         if (list.valueList && !(list.valueList instanceof Array))
                                list.valueList = JSON.parse(list.valueList)
                         var obj=_.find(list.valueList,function(valuelist){
-    
                             return valuelist.value==list.value
                         }.bind(this))
                         list.valueName=obj.name
@@ -89,21 +88,26 @@ define("setupBillLiveDynamic.view", ['require', 'exports', 'template', 'modal.vi
             toChange: function(headerArray, el, key) {
                 var obj = {}
                 _.each(headerArray, function(header) {
-                    if (header.id == key && header.valueType == 5 || header.valueType == 6) {
-                        _.each(header.valueList, function(valuelist) {
-                            if (el == valuelist.value)
+                    if(header.id==key&&header.valueList){
+                        if (!(header.valueList instanceof Array))
+                            header.valueList = JSON.parse(header.valueList)
+                        _.each(header.valueList, function(valuelist) {  
+                            if (el+"" == valuelist.value+""){
                                 obj[key] = valuelist.name
+                            }
                         }.bind(this))
-                    } else if (header.id == key && header.valueType == 3 || header.valueType == 4) {
-                        if (el == 0 || el + "" == false + "")
-                            obj[key] = "关"
-                        else if (el == 1 || el + "" == true + "")
-                            obj[key] = "开"
-                        else if (el + "" == null + "")
-                            obj[key] = "请选择"
-                    } else if (header.id == key) {
-                        obj[key] = el
-                    }
+                    }else if(header.id==key&&!header.valueList){
+                        if(header.valueType == 3 || header.valueType==4){
+                            if(el==0||el+""==false+"")
+                                obj[key]="关"
+                            else if(el==1||el+""==true+"")
+                                obj[key]=="开"
+                            else if(el+""==null+"")
+                                obj[key]="请选择"
+                        }else{
+                            obj[key] = el
+                        }
+                    } 
                 }.bind(this))
                 return obj[key]
             },

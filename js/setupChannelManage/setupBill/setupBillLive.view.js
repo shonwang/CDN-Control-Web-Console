@@ -6,7 +6,7 @@ define("setupBillLive.view", ['require', 'exports', 'template', 'modal.view', 'u
 
             initCname: function() {
                 this.cnameTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.cname.html'])({
-                    data: this.config.originDomain.cnameData
+                    data: this.config.originDomain.cnameData || []
                 }));
                 this.cnameTable.appendTo(this.$el.find(".bill-ctn"));
 

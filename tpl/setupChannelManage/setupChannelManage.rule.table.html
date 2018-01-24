@@ -8,14 +8,26 @@
     </thead>
     <tbody>
         <% for(var i = 0; i < data.length; i++) { %>
-            <tr data-id="<%=data[i].id%>">
-              <td><%=data[i]["localLayer"]%></td>
-              <td><%=data[i]["upperLayer"]%></td>
-              <td>
-                <a href="javascript:void(0)" class="edit" id="<%=data[i].id%>">编辑</a>
-                <a href="javascript:void(0)" class="delete" id="<%=data[i].id%>">删除</a>
-              </td>
-            </tr>
+           <%if(data[i].localType==1){%>
+              <tr data-id="<%=data[i].id%>">
+                <td><%=data[i]["localLayer"]%></td>
+                <td><%=data[i]["upperLayer"]%></td>
+                <td>
+                  <a href="javascript:void(0)" class="edit" id="<%=data[i].id%>">编辑</a>
+                  <a href="javascript:void(0)" class="delete" id="<%=data[i].id%>">删除</a>
+                </td>
+              </tr>
+           <%}else{%>
+            <%for(var j=0;j< data[i].localLayer.length; j++){%>
+              <tr data-id="<%=data[i].id%>">
+                    <td><%=data[i].localLayer[j]%></td>
+                    <td><%=data[i]["upperLayer"]%></td>
+                    <td>
+                      <a href="javascript:void(0)" class="edit" id="<%=data[i].id%>" value="<%=data[i].localLayer[j]%>">编辑</a>
+                      <a href="javascript:void(0)" class="delete" id="<%=data[i].id%>" value="<%=data[i].localLayer[j]%>">删除</a>
+                    </td>          
+              </tr>
+            <%}}%> 
         <% } %>  
     </tbody>
 </table>

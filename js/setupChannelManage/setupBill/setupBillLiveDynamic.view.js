@@ -6,10 +6,8 @@ define("setupBillLiveDynamic.view", ['require', 'exports', 'template', 'modal.vi
             initialize: function(options) {
                 this.pannel = options.pannel;
                 this.moduleListDetail = options.moduleList;
-                console.log(this.moduleListDetail)
- 
-                this.initModuleList();
-
+                if (this.moduleListDetail)
+                    this.initModuleList();
             },
 
             initModuleList: function() {

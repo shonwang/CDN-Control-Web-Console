@@ -130,15 +130,21 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                                 var str = ".dropdown#" + module.id + "-" + group.id + "-" + key.id
                                 var rootNode = this.$el.find(str);
                                 Utility.initDropMenu(rootNode, valueList, function(value) {
-                                    if (key.valueType == 3 || key.valueType == 5) key.value = parseInt(value)
-                                    else if (key.valueType == 4) key.value = Boolean(value)
-                                    else key.value = value;
+                                    console.log(key.valueType + "/" + key.value)
+                                    if (key.valueType == 3 || key.valueType == 5) 
+                                        key.value = parseInt(value)
+                                    else if (key.valueType == 4 && value == "true") 
+                                        key.value = true
+                                    else if (key.valueType == 4 && value == "false") 
+                                        key.value = false
+                                    else 
+                                        key.value = value;
                                 }.bind(this))
 
                                 var defaultValue = null
                                 if (key.valueType == 5 || key.valueType == 6) {
                                     defaultValue = _.find(valueList, function(el) {
-                                        return el.value == parseInt(key.value)
+                                        return el.value == key.value
                                     }.bind(this))
                                 } else if (key.valueType == 3 || key.valueType == 4) {
                                     defaultValue = _.find(valueList, function(el) {
@@ -361,15 +367,16 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                             if (key.value + "" == null + "") {
                                 value[0].configValueMap[key.id] = null;
                             } else if ((key.value === "" && key.valueType == 1) || (key.value === "" && key.valueType == 10)){
-                                errorMessage = errorMessage + key.itemName + "不能为空字符串！<br>"
+                                //errorMessage = errorMessage + key.itemName + "不能为空字符串！<br>"
                             } else {
                                 value[0].configValueMap[key.id] = parseInt(key.value)
                             }
                         } else if (key.valueType == 4) {
+                            console.log("save: " + key.value)
                             if (key.value + "" == null + "")
                                 value[0].configValueMap[key.id] = null
                             else
-                                value[0].configValueMap[key.id] = Boolean(key.value)
+                                value[0].configValueMap[key.id] = key.value;
                         } else if (key.valueType == 7) {
                             var temp = [];
                             _.each(key.value, function(el) {

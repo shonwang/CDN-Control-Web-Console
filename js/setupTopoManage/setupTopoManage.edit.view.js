@@ -195,7 +195,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                             chiefType: node.chiefType === undefined ? 1 : node.chiefType
                         })
                     }.bind(this))
-
                     tempRule.id = rule.id;
                     tempRule.localType = rule.localType
                     tempRule.local = localIdArray;
@@ -212,11 +211,11 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 postTopo.type = this.defaultParam.type;
                 postTopo.upperNodes = [];
                 _.each(this.defaultParam.upperNodes, function(el){
-                    postTopo.upperNodes.push(el.id)
+                       postTopo.upperNodes.push(el.id)
                 }.bind(this));
                 postTopo.rule = postRules
                 postTopo.mark = this.$el.find("#comment").val();
-
+                console.log(postTopo)
                 if (this.isEdit)
                     this.collection.topoModify(postTopo);
                 else
@@ -495,7 +494,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id"),
                     value=$(eventTarget).attr("value")
-                    console.log(value)
 
                 this.curEditRule = _.find(this.defaultParam.rule, function(obj) {
                     return obj.id === parseInt(id)
@@ -533,17 +531,15 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     }.bind(this))
             },
 
-            onClickItemDelete: function() {
+            onClickItemDelete: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id"),
                     value=$(eventTarget).attr("value")
                 _.each(this.defaultParam.rule,function(el,index){
-                    if(parseInt(id)===el.id && el.localType===1){
-                        this.defaultParam.rule.splice(1,index);
-                    }else if(parseInt(id)===el.id){
+                    if(parseInt(id)===el.id){
                         this.defaultParam.rule[index].local=_.filter(el.local,function(del){
-                            if(el.localType==2){
-                                return del.name!=value
+                            if(el.localType==1||el.localType==2){
+                                 return del.name!=value
                             }else if(el.localType==3){
                                 var pro=value.split("/")[0]
                                 var op=value.split("/")[1]
@@ -556,7 +552,9 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         }.bind(this));
                     }
                 }.bind(this))
-
+                this.defaultParam.rule=_.filter(this.defaultParam.rule,function(el){
+                    return el.local.length!=0
+                }.bind(this))
                 this.initRuleTable();
             },
 

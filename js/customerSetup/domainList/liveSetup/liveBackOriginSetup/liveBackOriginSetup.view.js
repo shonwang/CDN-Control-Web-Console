@@ -21,13 +21,6 @@ define("liveBackOriginSetup.view", ['require','exports', 'template', 'modal.view
                 notShowBtn: true
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"));
-
-            require(["domainSetup.model"], function(DomainSetupModel){
-                var myDomainSetupModel = new DomainSetupModel();
-                    myDomainSetupModel.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
-                    myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
-                    myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
-            }.bind(this))
             
             this.collection.on("get.backSource.success", $.proxy(this.onGetBackSourceSuccess,this))
             this.collection.on("get.backSource.error", $.proxy(this.onGetError, this));
@@ -42,8 +35,14 @@ define("liveBackOriginSetup.view", ['require','exports', 'template', 'modal.view
         },
 
         onGetBackSourceSuccess:function(res){
-          //  console.log(res)
-            this.backOiginParam=res
+            this.backOiginParam = res;
+            
+            require(["domainSetup.model"], function(DomainSetupModel){
+                var myDomainSetupModel = new DomainSetupModel();
+                    myDomainSetupModel.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
+                    myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
+                    myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
+            }.bind(this))
         },
 
         onGetDomainInfo: function(data){

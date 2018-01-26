@@ -412,7 +412,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         }
                         localLayerArray.push(name || "[后端没有返回名称]")
                     }.bind(this));
-                    if(rule.localType===1) localLayerArray=localLayerArray.join('<br>')
+                   // if(rule.localType===1) localLayerArray=localLayerArray.join('<br>')
                     primaryArray = _.filter(rule.upper, function(obj) {
                         return obj.chiefType !== 0;
                     }.bind(this))
@@ -460,7 +460,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
                     var ruleStrObj = {
                         id: rule.id,
-                        localLayer: localLayerArray,
+                        localLayer: localLayerArray.join("<br>"),
                         upperLayer: upperLayer,
                         localType:rule.localType
                     }
@@ -492,9 +492,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
             onClickItemEdit: function(event) {
                 var eventTarget = event.srcElement || event.target,
-                    id = $(eventTarget).attr("id"),
-                    value=$(eventTarget).attr("value")
-
+                    id = $(eventTarget).attr("id");
                 this.curEditRule = _.find(this.defaultParam.rule, function(obj) {
                     return obj.id === parseInt(id)
                 }.bind(this))
@@ -513,7 +511,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                             rule: this.defaultParam.rule,
                             curEditRule: this.curEditRule,
                             appType: this.defaultParam.type,
-                            curEditLocal:value,
                             isEdit: true,
                             onSaveCallback: function() {
                                 myAddEditLayerStrategyView.$el.remove();
@@ -533,28 +530,11 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
             onClickItemDelete: function(event) {
                 var eventTarget = event.srcElement || event.target,
-                    id = $(eventTarget).attr("id"),
-                    value=$(eventTarget).attr("value")
-                _.each(this.defaultParam.rule,function(el,index){
-                    if(parseInt(id)===el.id){
-                        this.defaultParam.rule[index].local=_.filter(el.local,function(del){
-                            if(el.localType==1||el.localType==2){
-                                 return del.name!=value
-                            }else if(el.localType==3){
-                                var pro=value.split("/")[0]
-                                var op=value.split("/")[1]
-                                return del.provinceName!=pro || del.name!=op
-                            }else if(el.localType==4){
-                                var area=value.split("/")[0]
-                                var op=value.split("/")[1]
-                                return del.provinceName!=area || del.name!=op
-                            }       
-                        }.bind(this));
-                    }
-                }.bind(this))
-                this.defaultParam.rule=_.filter(this.defaultParam.rule,function(el){
-                    return el.local.length!=0
-                }.bind(this))
+                    id = $(eventTarget).attr("id");
+                    this.defaultParam.rule=_.filter(this.defaultParam.rule,function(el){
+                         return parseInt(id)!=el.id
+                    }.bind(this))
+                
                 this.initRuleTable();
             },
 

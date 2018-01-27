@@ -209,6 +209,31 @@ define("routes.customerSetup", ['require', 'exports'],
                 }.bind(this));
             },
 
+            codeRate: function(query) {
+                //if (!AUTH_OBJ.DomainLists || !AUTH_OBJ.ManageCustomer) return;
+                require(['codeRate.view', 'codeRate.model'], function(CodeRateView, CodeRateModel) {
+                    this.curPage = 'customerSetup-codeRate';
+                    this.navbarView.select('customerSetup', $.proxy(this.removeSubSideBar, this));
+                    this.setupCustomerSetupNavbar(query)
+                    var renderTarget = this.customerSetupNavbar.$el.find('.sub-content');
+
+                    if (!this.codeRateModel)
+                        this.codeRateModel = new CodeRateModel();
+                    if (!this.codeRateView) {
+                        var options = {
+                            collection: this.codeRateModel,
+                            query: query
+                        };
+                        this.codeRateView = new CodeRateView(options);
+                        this.codeRateView.render(renderTarget);
+                    } else {
+                        this.codeRateView.update(query, renderTarget);
+                    }
+                    this.customerSetupNavbar.select(this.curPage);
+                    this.curView = this.codeRateView;
+                }.bind(this));
+            },            
+
         }
 
         return RouterCustomerSetup

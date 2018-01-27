@@ -1,0 +1,31 @@
+<div>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label for="input-name" class="col-sm-4 control-label">流名:</label>
+            <div class="col-sm-6">
+               <input type="text" class="form-control" id="stream-label">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="input-name" class="col-sm-4 control-label">全局码率配置:</label>
+            <div class="col-sm-6" id="param-value">
+                <input type="text" class="form-control" id="input-value">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="modify-host" class="col-sm-4 control-label">所属域名:</label>
+            <div class="col-sm-6 disp-domain">
+                <a href="javascript:void(0)" class="btn btn-default hide-disp-domain" style="display: none">
+                    <span class="glyphicon glyphicon-chevron-up"></span>
+                    <span class="disp-domain-html">请选择域名</span>
+                </a>
+                <a href="javascript:void(0)" class="btn btn-default show-disp-domain">
+                    <span class="glyphicon glyphicon-chevron-down"></span>
+                    <span class="disp-domain-html">请选择域名</span>
+                </a>
+            </div>
+        </div>        
+    </form>
+    <div class="disp-list-ctn" style="display: none;"></div>
+</div>

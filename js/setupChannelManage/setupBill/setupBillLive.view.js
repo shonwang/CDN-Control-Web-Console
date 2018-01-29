@@ -18,7 +18,7 @@ define("setupBillLive.view", ['require', 'exports', 'template', 'modal.view', 'u
                     this.initLiveUpBackOriginSetup();
             },
 
-            initOriginSetup: function() {
+            initLiveOriginSetup: function() {
                 if (this.liveOriginData) {
                     this.liveOriginData.originType == 2 ? this.liveOriginData.originTypeShow = "域名回源" :
                         this.liveOriginData.originTypeShow = "视频云回源"

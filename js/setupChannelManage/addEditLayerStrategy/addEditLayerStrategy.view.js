@@ -71,7 +71,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
 
         onGetProvinceSuccess: function(data) {
             var nameList = [];
-            if(this.isEdit) var provinceId = this.defaultParam.local[0].provinceId;
+            if(this.isEdit){
+              var provinceId = this.defaultParam.local[0].provinceId;
+            }
             _.each(data, function(el, inx, list) {
                 var checked;
                 if(this.isEdit)  checked = el.id == provinceId;
@@ -122,7 +124,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
 
         onGetAreaSuccess: function(data) {
             var nameList = [];
-            if(this.isEdit) var areaId=this.defaultParam.local[0].areaId;
+            if(this.isEdit){
+                var areaId=this.defaultParam.local[0].areaId;
+            }
             _.each(data, function(el, inx, list) {
                 var checked;
                 if(this.isEdit) checked= el.id==areaId;
@@ -173,7 +177,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
          
         initOperatorOfpro:function(res){
             var nameList = [];
-           if(this.isEdit && this.defaultParam.localType==3) var operatorId=this.defaultParam.local[0].id
+            if(this.isEdit && this.defaultParam.localType==3){
+              var operatorId=this.defaultParam.local[0].id
+            }
             _.each(res.rows, function(el, inx, list) {
                 var checked;
                 if(this.isEdit) checked= el.id==operatorId;
@@ -225,7 +231,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
 
         initOperatorOfArea:function(res){
             var nameList = [];
-            if(this.isEdit && this.defaultParam.localType==4) var operatorId=this.defaultParam.local[0].id
+            if(this.isEdit && this.defaultParam.localType==4){ 
+                var operatorId=this.defaultParam.local[0].id
+            }
             _.each(res.rows, function(el, inx, list) {
                 var checked;
                 if(this.isEdit) checked= el.id==operatorId;
@@ -276,7 +284,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
 
         initDropMenu: function(res) {
             var nameList = [];
-           if(this.isEdit && this.defaultParam.localType==2) var operatorId=this.defaultParam.local[0].id
+            if(this.isEdit && this.defaultParam.localType==2){
+               var operatorId=this.defaultParam.local[0].id
+            }
             _.each(res.rows, function(el, inx, list) {
                 var checked;
                 if(this.isEdit) checked= el.id==operatorId;
@@ -393,11 +403,11 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         onClickSaveBtn: function() {
-            //console.log(this.province)      
-            // console.log(this.proAndoperator)
-            // console.log(this.onlyOperator)
-            //console.log(this.area)
-            //console.log(this.areaAndoperator)
+            if(!this.province) this.province=[];
+            if(!this.area) this.area=[];
+            if(!this.onlyOperator) this.onlyOperator=[];
+            if(!this.proAndoperator) this.proAndoperator=[];
+            if(!this.areaAndoperator) this.areaAndoperator=[];
             if(this.defaultParam.localType==1 && this.defaultParam.local.length==0){
                    alert('请选择本层节点');
                    return;
@@ -438,8 +448,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                                   if(rule.id==el.id)
                                     nodesError.push(el)
                             }.bind(this))
-                        }.bind(this))
-                        
+                        }.bind(this))      
                     }else if (this.defaultParam.localType===3) {
                         _.each(this.rule[i].local,function(e){
                             _.each(this.province,function(pro){
@@ -448,8 +457,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                                        nodesError.push(e) 
                                 }.bind(this))
                             }.bind(this))    
-                        }.bind(this))
-                         
+                        }.bind(this))                  
                     }else if(this.defaultParam.localType===4){
                         _.each(this.rule[i].local,function(e){
                             _.each(this.area,function(area){
@@ -589,7 +597,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             else
                 alert("网络阻塞，请刷新重试！")
         },
-//
+
         onGetLocalNodeFromArgs: function() {
             this.$el.find('.local .add-node').show();
 

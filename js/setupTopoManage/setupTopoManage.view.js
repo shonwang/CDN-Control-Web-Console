@@ -77,7 +77,6 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                     data: this.collection.models,
                     permission: AUTH_OBJ
                 }));
-                console.log(this.collection.models);
                 if (this.collection.models.length !== 0) {
                     this.$el.find(".table-ctn").html(this.table[0]);
                 } else {

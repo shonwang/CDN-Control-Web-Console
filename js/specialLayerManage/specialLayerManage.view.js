@@ -268,7 +268,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         return obj.chiefType === 0;
                     }.bind(this))
 
-                    console.log(backupArray)
+                   // console.log(backupArray)
 
                     _.each(primaryArray, function(upper, inx, list) {
                         upper.ipCorporationName = "";

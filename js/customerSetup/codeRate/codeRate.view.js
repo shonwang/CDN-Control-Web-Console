@@ -308,10 +308,16 @@ define("codeRate.view", ['require', 'exports', 'template', 'utility', "modal.vie
 
                 this.$el.find(".add").on("click", $.proxy(this.onClickAdd, this));
                 this.$el.find(".modify").on("click", $.proxy(this.onClickModify, this));
+                this.$el.find("#cdn-search-btn").on("click", $.proxy(this.onClickSearchButton, this));
 
 
                 //this.collection.rateQuery();
 
+                this.onClickQueryButton();
+            },
+
+            onClickSearchButton:function(){
+                this.queryArgs.streamName = this.$el.find("#cdn-search-text").val().trim();
                 this.onClickQueryButton();
             },
 

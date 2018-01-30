@@ -31,15 +31,11 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
                                 key.valueList = JSON.parse(key.valueList)
                             Utility.initDropMenu(rootNode, key.valueList, function(value) {
                                 if (value + "" == null + "")
-                                    this.defaultValue.configValueMap[key.id] = null;
+                                    this.defaultValue.configValueMap[key.id] = null
                                 else if (key.valueType == 3 || key.valueType == 5)
                                     this.defaultValue.configValueMap[key.id] = parseInt(value)
-                                else if (key.valueType == 4){
-                                    this.defaultValue.configValueMap[key.id] = value
-                                }
-                                else if(key.valueType==6){
-                                    this.defaultValue.configValueMap[key.id]=value
-                                }
+                                else if (key.valueType == 4 || key.valueType == 6)
+                                    this.defaultValue.configValueMap[key.id] = value      
                             }.bind(this))
                             if (this.defaultValue.configValueMap[key.id] != undefined ||
                                 this.defaultValue.configValueMap[key.id] != null) {
@@ -110,26 +106,35 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
                 var eventTarget = event.srcElement || event.target,
                     id;
                 id = $(eventTarget).attr("id");
+                var flag=true;
                 var keyId = id.split("-")[2]
                 var value = this.$el.find(".arrayContent#" + id + " input").val().trim();
-                _.each(this.options.module.configItemList.groupList, function(group) {
+                _.each(this.options.module.groupList, function(group) {
                     _.each(group.configItemList, function(key) {
-                        if (keyId == key.id && key.valueType == 7)
-                            value = parseInt(value)
+                        if (keyId == key.id && key.valueType == 7){
+                            if(value){
+                                if(isNaN(value)){
+                                    flag=false;
+                                }
+                                value=parseInt(value);
+                            }else{
+                                flag=false;
+                            }
+                        }
                     }.bind(this))
                 }.bind(this))
-                if (this.defaultValue.configValueMap[keyId] == undefined) this.defaultValue.configValueMap[keyId] = []
-                if (!value) {
-                    alert("值不能为空！");
+                if(!flag){
+                    alert("请输入数值类型的值！");
                     return;
                 }
+                if (this.defaultValue.configValueMap[keyId] == undefined) this.defaultValue.configValueMap[keyId] = []
                 this.defaultValue.configValueMap[keyId].push(value)
                 this.$el.find(".arrayContent#" + id + " input").val("");
                 this.initArrayTable(this.$el.find(".arrayContent#" + id), this.defaultValue.configValueMap[keyId], id)
             },
 
             getCurrentKey: function() {
-                var errorMessage = "";
+                var flag=true;
                 _.each(this.options.module.groupList, function(group) {
                     _.each(group.configItemList, function(key) {
                         if (key.valueType == 1 || key.valueType == 2 || key.valueType == 9 || key.valueType == 10) {
@@ -138,7 +143,16 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
                             // try {
                             //     var reg = new RegExp(key.validateRule, "g");
                             //     if (reg.test(value)) {
-                            //         if (key.valueType == 1 || key.valueType == 10) value = parseInt(value);
+                                    if (key.valueType == 1 || key.valueType == 10){
+                                        if(value){
+                                            if(isNaN(value)){
+                                                flag=false;
+                                            }
+                                            value=parseInt(value)
+                                        }else{
+                                            flag=false;
+                                        }
+                                    }        
                                     this.defaultValue.configValueMap[key.id] = value
                             //     } else {
                             //         errorMessage += key.itemName + "输入有错误!<br>"
@@ -149,8 +163,8 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
                         }
                     }.bind(this))
                 }.bind(this))
-                if (errorMessage) {
-                    alert(errorMessage);
+                if (!flag) {
+                    alert("数值型的配置项请输入数值型的值！");
                     return false;
                 } else {
                     return this.defaultValue;

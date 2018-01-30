@@ -131,7 +131,9 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                                 var rootNode = this.$el.find(str);
                                 Utility.initDropMenu(rootNode, valueList, function(value) {
                                     console.log(key.valueType + "/" + key.value)
-                                    if (key.valueType == 3 || key.valueType == 5) 
+                                    if(value+""==null+"")
+                                        key.value=null
+                                    else if (key.valueType == 3 || key.valueType == 5) 
                                         key.value = parseInt(value)
                                     else if (key.valueType == 4 && value == "true") 
                                         key.value = true

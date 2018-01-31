@@ -22,8 +22,7 @@ define("liveUpConnection.view", ['require','exports', 'template', 'modal.view', 
             this.optHeader.appendTo(this.$el.find(".opt-ctn"))
 
             this.defaultParam = {
-                frequencyFlag: 0 //0:关闭 1:开启
-
+                upCascade: 0 //0:关闭 1:开启
             }
 
             this.$el.find(".frequency-log-open .togglebutton input").on("click", $.proxy(this.onClickToggle, this));
@@ -55,18 +54,16 @@ define("liveUpConnection.view", ['require','exports', 'template', 'modal.view', 
             //     ]
             // };
 
-            data = data.appLives[0]
+            var upCascade = data.upCascade || 0;
 
-            if (data.logConf && data.logConf.frequencyFlag !== null && data.logConf.frequencyFlag !== undefined)
-                this.defaultParam.frequencyFlag = data.logConf.frequencyFlag //0:关闭 1:开启    
-            if (data.logConf && data.logConf.frequencyInterval !== null && data.logConf.frequencyInterval !== undefined)
-                this.defaultParam.frequencyInterval = data.logConf.frequencyInterval        
-
+            this.defaultParam.upCascade = upCascade; //0:关闭 1:开启    
+            
             this.initSetup();
         },
 
         initSetup: function(){
-            if (this.defaultParam.frequencyFlag === 0){
+            console.log(this.defaultParam.upCascade);
+            if (this.defaultParam.upCascade === 0){
                 this.$el.find(".frequency-log-open .togglebutton input").get(0).checked = false;
             } else {
                 this.$el.find(".frequency-log-open .togglebutton input").get(0).checked = true;
@@ -109,19 +106,18 @@ define("liveUpConnection.view", ['require','exports', 'template', 'modal.view', 
         onClickSaveBtn: function(){
             var postParam =  {
                     "originId": this.domainInfo.id,
-                    "frequencyFlag": this.defaultParam.frequencyFlag,
-                    "frequencyInterval":this.defaultParam.frequencyInterval
+                    "upCascade": this.defaultParam.upCascade
                 }
-            this.collection.setLogConf(postParam)
+            this.collection.setLiveBaseConf(postParam)
         },
 
         onClickToggle: function(){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){
-                this.defaultParam.frequencyFlag = 1;
+                this.defaultParam.upCascade = 1;
             } else {
-                this.defaultParam.frequencyFlag = 0;
+                this.defaultParam.upCascade = 0;
             }
         },
 

@@ -9,7 +9,7 @@ define("liveUpConnection.model", ['require','exports', 'utility'], function(requ
 
         initialize: function(){},
 
-        setLogConf: function(args){
+        setLiveBaseConf: function(args){
             var url = BASE_URL + "/channelManager/live/setLiveBaseConf";
             Utility.postAjax(url, args, function(res){
                 this.trigger("set.liveBaseConf.success");

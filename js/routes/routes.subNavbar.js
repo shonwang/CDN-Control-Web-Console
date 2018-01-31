@@ -363,6 +363,11 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                         active: false,
                         children: []
                     }]
+                }, {
+                    id: 'customerSetup-domainList-liveUpConnection',
+                    name: '上层级联',
+                    hash: 'index.html#/domainList/' + query + '/liveUpConnection/' + query2,
+                    children: []
                 }];
 
                 if (!this.domainManageNavbar) {

@@ -398,6 +398,17 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
                 }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
+
+        setdeliveryswitch:function(args){
+           var url = BASE_URL + "cd/system/config/setdeliveryswitch",
+                successCallback = function(res) {
+                    this.trigger("set.deliveryswitch.success");
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("set.deliveryswitch.error", response);
+                }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
     });
 
     return NodeManageCollection;

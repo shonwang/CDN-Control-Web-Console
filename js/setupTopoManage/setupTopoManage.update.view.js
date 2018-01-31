@@ -245,7 +245,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                   switch:eventTarget.checked
                }
                //pageType=1||pageType==2
-               //this.collection.setdeliveryswitch(setArgs)
+               this.collection.setdeliveryswitch(setArgs)
                this.setSwitchSuccess();
             },
 

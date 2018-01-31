@@ -10,6 +10,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.model = options.model;
                 this.isEdit = options.isEdit;
                 this.isView = options.isView;
+                this.isCopy=options.isCopy;
 
                 this.$el = $(_.template(template['tpl/specialLayerManage/specialLayerManage.edit.html'])({
                     data: {}
@@ -29,6 +30,11 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection.off('modify.strategy.error');
                 this.collection.on('modify.strategy.success', $.proxy(this.modifyStrategySuccess, this));
                 this.collection.on('modify.strategy.error', $.proxy(this.onGetError, this));
+
+                this.collection.off('copy.strategy.success');
+                this.collection.off('copy.strategy.error');
+                this.collection.on('copy.strategy.success', $.proxy(this.copyStrategySuccess, this));
+                this.collection.on('copy.strategy.error', $.proxy(this.onGetError, this));
 
                 this.$el.find(".add-rule").hide();
                 this.$el.find(".opt-ctn .save").hide();
@@ -61,6 +67,11 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 alert('修改成功');
             },
 
+            copyStrategySuccess: function(){
+                this.options.onSaveCallback && this.options.onSaveCallback();
+                alert('复制成功');
+            }, 
+
             onStrategyInfo: function(res) {
                 this.defaultParam = {
                     "id": res.id || this.model.get('id'),
@@ -71,17 +82,24 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 }
 
                 this.domainList = res.domainList || ['没有关联的域名'];
-
                 this.$el.find("#input-name").val(res.name);
                 this.$el.find("#input-name").attr("readonly", "true");
                 this.$el.find("#secondary").val(res.remark);
-
+                if(this.isCopy){
+                    this.$el.find("#input-name").val(res.name+"-副本");
+                    this.$el.find("#input-name").removeAttr("readonly");
+                }
                 console.log("编辑的分层策略: ", this.defaultParam)
                 this.initSetup();
             },
 
             initSetup: function() {
-                this.initDomainList();
+                if(this.$el.find(".domain-list .node-ctn").children().size()==0)
+                   this.initDomainList();
+                if(this.isCopy){
+                   this.$el.find(".domain-list").hide();
+                   this.$el.find(".saveAndSend").hide();
+                }
                 this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
                 if (!this.isEdit) {
                     this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
@@ -192,9 +210,12 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 postTopo.rule = postRules;
                 postTopo.remark = this.$el.find("#secondary").val();
 
-                if (this.isEdit)
+                if (this.isEdit && !this.isCopy)
                     this.collection.modifyStrategy(postTopo);
-                else
+                else if(this.isEdit && this.isCopy)
+                   // this.collection.copyStrategy(postTopo)
+                   console.log(postTopo)
+                else    
                     this.collection.addStrategy(postTopo);
             },
 
@@ -513,6 +534,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
 
                 this.table.find("tbody .view").on("click", $.proxy(this.onClickItemView, this));
                 this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+                this.table.find("tbody .copy").on("click", $.proxy(this.onClickItemCopy, this));
 
                 this.table.find("[data-toggle='popover']").popover();
             },
@@ -555,6 +577,40 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection.deleteStrategy({
                     id: id
                 })
+            },
+            
+            onClickItemCopy:function(event){
+                 this.off('enterKeyBindQuery');
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                var model = this.collection.get(id);
+                var myAddEditLayerView = new AddEditLayerView({
+                    collection: this.collection,
+                    model: model,
+                    isEdit: true,
+                    isCopy:true,
+                    onSaveCallback: function() {
+                        myAddEditLayerView.$el.remove();
+                        this.$el.find(".list-panel").show();
+                        this.onClickQueryButton();
+                        this.on('enterKeyBindQuery', $.proxy(this.resetList, this));
+                    }.bind(this),
+                    onCancelCallback: function() {
+                        myAddEditLayerView.$el.remove();
+                        this.$el.find(".list-panel").show();
+                        this.on('enterKeyBindQuery', $.proxy(this.resetList, this));
+                    }.bind(this)
+                })
+
+                this.$el.find(".list-panel").hide();
+                myAddEditLayerView.render(this.$el.find(".edit-panel"))
+
             },
 
             onClickItemEdit: function(event) {

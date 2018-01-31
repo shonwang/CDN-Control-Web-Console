@@ -88,6 +88,17 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
                     }.bind(this);
                 Utility.getAjax(url, args, successCallback, errorCallback);
             },
+
+            copyStrategy: function(args) {
+               // var url = BASE_URL + "/resource/special/modifyStrategy",
+                    successCallback = function(res) {
+                        this.trigger("copy.strategy.success", res);
+                    }.bind(this),
+                    errorCallback = function(response) {
+                        this.trigger('copy.strategy.error', response);
+                    }.bind(this);
+                Utility.postAjax(url, args, successCallback, errorCallback);
+            },
         });
 
         return SpecialLayerManageCollection;

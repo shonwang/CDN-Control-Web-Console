@@ -83,6 +83,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                  
 
                 //直播域名配置
+                "domainList/:query/liveConnection/:query2": "liveConnection",
                 "domainList/:query/liveUpConnection/:query2": "liveUpConnection",
                 "domainList/:query/liveBasicInformation/:query2": "liveBasicInformation",
                 "domainList/:query/liveDomainSetup/:query2": "liveDomainSetup",

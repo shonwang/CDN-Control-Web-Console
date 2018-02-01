@@ -364,9 +364,9 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                         children: []
                     }]
                 }, {
-                    id: 'customerSetup-domainList-liveUpConnection',
+                    id: 'customerSetup-domainList-liveConnection',
                     name: '上层级联',
-                    hash: 'index.html#/domainList/' + query + '/liveUpConnection/' + query2,
+                    hash: 'index.html#/domainList/' + query + '/liveConnection/' + query2,
                     children: []
                 }];
 
@@ -397,6 +397,11 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     id: 'customerSetup-domainList-liveUpFlowNameChange',
                     name: '流名变换',
                     hash: 'index.html#/domainList/' + query + '/liveUpFlowNameChange/' + query2,
+                    children: []
+                }, {
+                    id: 'customerSetup-domainList-liveUpConnection',
+                    name: '上层级联',
+                    hash: 'index.html#/domainList/' + query + '/liveUpConnection/' + query2,
                     children: []
                 }];
 

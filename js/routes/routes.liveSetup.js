@@ -27,6 +27,31 @@ define("routes.liveSetup", ['require', 'exports'],
                 }.bind(this));
             },
 
+            liveConnection: function(query, query2) {
+                require(['liveUpConnection.view', 'liveUpConnection.model'], function(LiveUpConnectionView, LiveUpConnectionModel) {
+                    this.navbarView.select('customerSetup');
+                    this.curPage = 'customerSetup-domainList-liveUpConnection';
+                    this.setupLiveDomainManageNavbar(query, query2);
+                    var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                    if (!this.liveUpConnectionModel)
+                        this.liveUpConnectionModel = new LiveUpConnectionModel();
+                    if (!this.liveUpConnectionView) {
+                        var options = {
+                            collection: this.liveUpConnectionModel,
+                            query: query,
+                            query2: query2
+                        };
+                        this.liveUpConnectionView = new LiveUpConnectionView(options);
+                        this.liveUpConnectionView.render(renderTarget);
+                    } else {
+                        this.liveUpConnectionView.update(query, query2, renderTarget);
+                    }
+                    this.domainManageNavbar.select(this.curPage);
+                    this.curView = this.liveUpConnectionView;
+                }.bind(this));
+            },
+
             liveUpFlowNameChange: function(query, query2) {
                 require(['liveUpFlowNameChange.view', 'liveUpFlowNameChange.model'], function (LiveUpFlowNameChangeView, LiveUpFlowNameChangeModel) {
                     this.navbarView.select('customerSetup');

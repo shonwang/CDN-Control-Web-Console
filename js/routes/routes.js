@@ -83,6 +83,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                  
 
                 //直播域名配置
+                "domainList/:query/liveUpConnection/:query2": "liveUpConnection",
                 "domainList/:query/liveBasicInformation/:query2": "liveBasicInformation",
                 "domainList/:query/liveDomainSetup/:query2": "liveDomainSetup",
                 "domainList/:query/liveCnameSetup/:query2": "liveCnameSetup",
@@ -99,7 +100,6 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "domainList/:query/liveRtmpOptimize/:query2": "liveRtmpOptimize",
                 "domainList/:query/liveSLAStatistics/:query2": "liveSLAStatistics",
                 "domainList/:query/liveFrequencyLog/:query2": "liveFrequencyLog",
-                "domainList/:query/liveUpConnection/:query2": "liveUpConnection",
 
                 //直播上行域名配置
                 "domainList/:query/liveUpBasicInformation/:query2": "liveUpBasicInformation",

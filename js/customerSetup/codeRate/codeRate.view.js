@@ -85,7 +85,7 @@ define("codeRate.view", ['require', 'exports', 'template', 'utility', "modal.vie
             refreshList: function(){
                 this.isInitPaginator = false;
                 this.queryArgs.page = this.curPage;
-                this.queryArgs.name = this.$el.find("#input-name").val().trim();
+                this.queryArgs.domain = this.$el.find("#input-name").val().trim();
                 if (this.queryArgs.name == "") this.queryArgs.name = null; 
 
                 this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));

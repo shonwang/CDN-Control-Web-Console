@@ -90,7 +90,7 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
             },
 
             copyStrategy: function(args) {
-               // var url = BASE_URL + "/resource/special/modifyStrategy",
+                var url = BASE_URL + "/resource/special/copyStrategy",
                     successCallback = function(res) {
                         this.trigger("copy.strategy.success", res);
                     }.bind(this),

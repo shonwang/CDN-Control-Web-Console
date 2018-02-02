@@ -83,19 +83,16 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
 
                 this.domainList = res.domainList || ['没有关联的域名'];
                 this.$el.find("#input-name").val(res.name);
-                this.$el.find("#input-name").attr("readonly", "true");
                 this.$el.find("#secondary").val(res.remark);
                 if(this.isCopy){
                     this.$el.find("#input-name").val(res.name+"-副本");
-                    this.$el.find("#input-name").removeAttr("readonly");
                 }
                 console.log("编辑的分层策略: ", this.defaultParam)
                 this.initSetup();
             },
 
             initSetup: function() {
-                if(this.$el.find(".domain-list .node-ctn").children().size()==0)
-                   this.initDomainList();
+                this.initDomainList();
                 if(this.isCopy){
                    this.$el.find(".domain-list").hide();
                    this.$el.find(".saveAndSend").hide();
@@ -213,8 +210,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 if (this.isEdit && !this.isCopy)
                     this.collection.modifyStrategy(postTopo);
                 else if(this.isEdit && this.isCopy)
-                   // this.collection.copyStrategy(postTopo)
-                   console.log(postTopo)
+                    this.collection.copyStrategy(postTopo)
                 else    
                     this.collection.addStrategy(postTopo);
             },

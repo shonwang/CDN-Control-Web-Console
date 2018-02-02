@@ -26,7 +26,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.defaultParam = this.curEditRule
                 this.onCancelParam= $.extend(true,{},this.curEditRule)     
             }
-            console.log(this.onCancelParam)
             console.log("新建规则初始化默认值: ", this.defaultParam)
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
@@ -404,7 +403,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             _.each(this.onCancelParam,function(value,key){
                 this.curEditRule[key]=value
             }.bind(this))
-            console.log(this.curEditRule)
+          //  console.log(this.curEditRule)
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
 

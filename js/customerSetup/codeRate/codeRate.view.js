@@ -223,10 +223,10 @@ define("codeRate.view", ['require', 'exports', 'template', 'utility', "modal.vie
                     return model.get("stream") === stream
                 }.bind(this))
 
-                if (repeatList.length > 0) {
-                    alert(stream + " 控制台显示值已经添加过了!")
-                    return false
-                }
+                // if (repeatList.length > 0) {
+                //     alert(stream + " 控制台显示值已经添加过了!")
+                //     return false
+                // }
                 var domain = this.domainSelect;
                 if(!domain){
                     alert("请选择域名");

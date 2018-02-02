@@ -195,7 +195,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                             chiefType: node.chiefType === undefined ? 1 : node.chiefType
                         })
                     }.bind(this))
-
                     tempRule.id = rule.id;
                     tempRule.localType = rule.localType
                     tempRule.local = localIdArray;
@@ -212,11 +211,11 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 postTopo.type = this.defaultParam.type;
                 postTopo.upperNodes = [];
                 _.each(this.defaultParam.upperNodes, function(el){
-                    postTopo.upperNodes.push(el.id)
+                       postTopo.upperNodes.push(el.id)
                 }.bind(this));
                 postTopo.rule = postRules
                 postTopo.mark = this.$el.find("#comment").val();
-
+                console.log(postTopo)
                 if (this.isEdit)
                     this.collection.topoModify(postTopo);
                 else
@@ -413,7 +412,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         }
                         localLayerArray.push(name || "[后端没有返回名称]")
                     }.bind(this));
-
+                   // if(rule.localType===1) localLayerArray=localLayerArray.join('<br>')
                     primaryArray = _.filter(rule.upper, function(obj) {
                         return obj.chiefType !== 0;
                     }.bind(this))
@@ -461,8 +460,9 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
                     var ruleStrObj = {
                         id: rule.id,
-                        localLayer: localLayerArray.join('<br>'),
-                        upperLayer: upperLayer
+                        localLayer: localLayerArray.join("<br>"),
+                        upperLayer: upperLayer,
+                        localType:rule.localType
                     }
                     this.ruleList.push(ruleStrObj)
                 }.bind(this))
@@ -493,7 +493,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
             onClickItemEdit: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
-
                 this.curEditRule = _.find(this.defaultParam.rule, function(obj) {
                     return obj.id === parseInt(id)
                 }.bind(this))
@@ -529,13 +528,13 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     }.bind(this))
             },
 
-            onClickItemDelete: function() {
+            onClickItemDelete: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
-                this.defaultParam.rule = _.filter(this.defaultParam.rule, function(obj) {
-                    return obj.id !== parseInt(id)
-                }.bind(this))
-
+                    this.defaultParam.rule=_.filter(this.defaultParam.rule,function(el){
+                         return parseInt(id)!=el.id
+                    }.bind(this))
+                
                 this.initRuleTable();
             },
 

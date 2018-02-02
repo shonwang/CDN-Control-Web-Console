@@ -24,6 +24,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 }
             } else {
                 this.defaultParam = this.curEditRule
+                this.onCancelParam= $.extend(true,{},this.curEditRule)     
             }
             console.log("新建规则初始化默认值: ", this.defaultParam)
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
@@ -70,193 +71,276 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         onGetProvinceSuccess: function(data) {
-            this.provinceArray = [];
-            var proRootNode = this.$el.find(".province");
-            _.each(data, function(el, key, list) {
-                this.provinceArray.push({
+            var nameList = [];
+            if(this.isEdit && this.defaultParam.localType==3){
+              var provinceId = this.defaultParam.local[0].provinceId;
+            }
+            _.each(data, function(el, inx, list) {
+                var checked;
+                if(this.isEdit)  checked = el.id == provinceId;
+                else  checked=false;
+                nameList.push({
+                    checked:checked,
                     name: el.name,
                     value: el.id
                 })
             }.bind(this))
-            Utility.initDropMenu(proRootNode, this.provinceArray, function(value) {
-                var proObj = _.find(this.provinceArray, function(object) {
-                    return object.value == parseInt(value);
-                }.bind(this));
-                if (this.defaultParam.localType === 3) {
-                    this.defaultParam.local[0].provinceId = parseInt(value);
-                    this.defaultParam.local[0].provinceName = proObj.name;
-                }
-
-            }.bind(this));
-
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.province').get(0),
+                panelID: this.$el.find('#dropdown-province').get(0),
+                isSingle: false,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function() {},
+                data: nameList,
+                callback: function(data) {
+                        this.$el.find("#dropdown-province .cur-value").html("选中省份个数："+data.length)
+                        this.province=[];
+                        _.each(nameList,function(el){
+                             _.each(data,function(e){
+                                if(el.value==e) this.province.push(el)
+                             }.bind(this))
+                        }.bind(this))
+                }.bind(this)
+            });
+           
             var proDefalutValue = null;
             if (this.defaultParam.localType === 3 && this.defaultParam.local[0]) {
-                proDefalutValue = _.find(this.provinceArray, function(object) {
+                proDefalutValue = _.find(nameList, function(object) {
                     return object.value == this.defaultParam.local[0].provinceId;
                 }.bind(this));
             }
             if (proDefalutValue) {
-                this.$el.find("#dropdown-province .cur-value").html(proDefalutValue.name);
+                this.$el.find("#dropdown-province .cur-value").html("选中省份个数:1");
+                this.province=[];
+                this.province.push({
+                    name:proDefalutValue.name,
+                    value:proDefalutValue.value
+                })
             } else {
-                this.$el.find("#dropdown-province .cur-value").html(this.provinceArray[0].name);
-                if (this.defaultParam.localType === 3) {
-                    if (!this.defaultParam.local[0]) this.defaultParam.local = [{}];
-                    this.defaultParam.local[0].provinceId = this.provinceArray[0].id;
-                    this.defaultParam.local[0].provinceName = this.provinceArray[0].name;
-                }
+                this.$el.find("#dropdown-province .cur-value").html("还未选择省份");
             }
         },
 
         onGetAreaSuccess: function(data) {
-            this.largeAreaArray = [];
-            var areaRootNode = this.$el.find(".largeArea");
-            _.each(data, function(el, key, list) {
-                this.largeAreaArray.push({
+            var nameList = [];
+            if(this.isEdit && this.defaultParam.localType==4){
+                var areaId=this.defaultParam.local[0].areaId;
+            }
+            _.each(data, function(el, inx, list) {
+                var checked;
+                if(this.isEdit) checked= el.id==areaId;
+                else checked=false;
+                nameList.push({
+                    checked:checked,
                     name: el.name,
                     value: el.id
                 })
             }.bind(this))
-            Utility.initDropMenu(areaRootNode, this.largeAreaArray, function(value) {
-                var areaObj = _.find(this.largeAreaArray, function(object) {
-                    return object.value == parseInt(value);
-                }.bind(this));
-                if (this.defaultParam.localType === 4) {
-                    this.defaultParam.local[0].areaId = parseInt(value);
-                    this.defaultParam.local[0].areaName = areaObj.name;
-                }
-
-            }.bind(this));
-
-            var areaDefalutValue = null;
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.largeArea').get(0),
+                panelID: this.$el.find('#dropdown-largeArea').get(0),
+                isSingle: false,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function() {},
+                data: nameList,
+                callback: function(data) {
+                        this.$el.find("#dropdown-largeArea .cur-value").html("选中大区个数："+data.length)
+                        this.area=[];
+                        _.each(nameList,function(el){
+                             _.each(data,function(e){
+                                if(el.value==e) this.area.push(el)
+                             }.bind(this))
+                        }.bind(this))
+                }.bind(this)
+            });
+           
+            var defalutValue = null;
             if (this.defaultParam.localType === 4 && this.defaultParam.local[0]) {
-                areaDefalutValue = _.find(this.largeAreaArray, function(object) {
+                defalutValue = _.find(nameList, function(object) {
                     return object.value == this.defaultParam.local[0].areaId;
                 }.bind(this));
             }
-            if (areaDefalutValue) {
-                this.$el.find("#dropdown-largeArea .cur-value").html(areaDefalutValue.name);
+            if (defalutValue) {
+                this.$el.find("#dropdown-largeArea .cur-value").html("选中大区个数:1");
+                this.area=[]
+                this.area.push({
+                    name:defalutValue.name,
+                    value:defalutValue.value
+                })
             } else {
-                this.$el.find("#dropdown-largeArea .cur-value").html(this.largeAreaArray[0].name);
-                if (this.defaultParam.localType === 4) {
-                    if (!this.defaultParam.local[0]) this.defaultParam.local = [{}];
-                    this.defaultParam.local[0].areaId = parseInt(this.largeAreaArray[0].value);
-                    this.defaultParam.local[0].areaName = this.largeAreaArray[0].name;
-                }
+                this.$el.find("#dropdown-largeArea .cur-value").html("还未选择大区");
             }
         },
-
-        initDropMenu: function(data) {
-            this.operatorArray = [];
-            var rootNode = [];
-            rootNode[0] = this.$el.find(".onlyOperator");
-            rootNode[1] = this.$el.find(".proAndOperator");
-            rootNode[2] = this.$el.find(".areaAndOperator");
-
-            _.each(data.rows, function(el, key, list) {
-                this.operatorArray.push({
+         
+        initOperatorOfpro:function(res){
+            var nameList = [];
+            if(this.isEdit && this.defaultParam.localType==3){
+              var operatorId=this.defaultParam.local[0].id
+            }
+            _.each(res.rows, function(el, inx, list) {
+                var checked;
+                if(this.isEdit) checked= el.id==operatorId;
+                else checked=false;
+                nameList.push({
+                    checked:checked,
                     name: el.name,
                     value: el.id
                 })
             }.bind(this))
 
-            Utility.initDropMenu(rootNode[0], this.operatorArray, function(value) {
-                var opObj = _.find(this.operatorArray, function(object) {
-                    return object.value == parseInt(value);
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.proAndOperator').get(0),
+                panelID: this.$el.find('#dropdown-operator2').get(0),
+                isSingle: false,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function() {},
+                data: nameList,
+                callback: function(data) {
+                          this.$el.find("#dropdown-operator2 .cur-value").html("选中运营商个数:"+data.length);
+                          this.proAndoperator=[];
+                          _.each(nameList,function(el){
+                             _.each(data,function(e){
+                                if(el.value==e) this.proAndoperator.push(el)
+                             }.bind(this))
+                          }.bind(this)) 
+                }.bind(this)
+            });
+
+            var defaultValue2 = null;
+            if (this.defaultParam.localType === 3 && this.defaultParam.local[0]) {
+                defaultValue2 = _.find(nameList, function(object) {
+                    return object.value == this.defaultParam.local[0].id;
                 }.bind(this));
-                if (this.defaultParam.localType === 2) {
-                    this.defaultParam.local = [{
-                        id: parseInt(value),
-                        name: opObj.name,
-                    }];
-                }
-            }.bind(this));
+            }
+            if (defaultValue2) {
+                this.$el.find("#dropdown-operator2 .cur-value").html("选中运营商个数:1");
+                this.proAndoperator=[]
+                this.proAndoperator.push({
+                    name:defaultValue2.name,
+                    value:defaultValue2.value
+                })
+            } else {
+                this.$el.find("#dropdown-operator2 .cur-value").html("还未选择运营商");
+            }
+        },
+
+        initOperatorOfArea:function(res){
+            var nameList = [];
+            if(this.isEdit && this.defaultParam.localType==4){ 
+                var operatorId=this.defaultParam.local[0].id
+            }
+            _.each(res.rows, function(el, inx, list) {
+                var checked;
+                if(this.isEdit) checked= el.id==operatorId;
+                else checked=false;
+                nameList.push({
+                    checked:checked,
+                    name: el.name,
+                    value: el.id
+                })
+            }.bind(this))
+              var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.areaAndOperator').get(0),
+                panelID: this.$el.find('#dropdown-operator3').get(0),
+                isSingle: false,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function() {},
+                data: nameList,
+                callback: function(data) {
+                          this.$el.find("#dropdown-operator3 .cur-value").html("选中运营商个数:"+data.length);
+                          this.areaAndoperator=[];
+                          _.each(nameList,function(el){
+                             _.each(data,function(e){
+                                if(el.value==e) this.areaAndoperator.push(el)
+                             }.bind(this))
+                          }.bind(this))  
+                }.bind(this)
+            });
+
+            var defaultValue3 = null;
+            if (this.defaultParam.localType === 4 && this.defaultParam.local[0]) {
+                defaultValue3 = _.find(nameList, function(object) {
+                    return object.value == this.defaultParam.local[0].id;
+                }.bind(this));
+            }
+            if (defaultValue3) {
+                this.$el.find("#dropdown-operator3 .cur-value").html("选中运营商个数:1");
+                this.areaAndoperator=[]
+                this.areaAndoperator.push({
+                    name:defaultValue3.name,
+                    value:defaultValue3.value
+                })
+            } else {
+                this.$el.find("#dropdown-operator3 .cur-value").html("还未选择运营商");
+            }
+        },
+
+        initDropMenu: function(res) {
+            var nameList = [];
+            if(this.isEdit && this.defaultParam.localType==2){
+               var operatorId=this.defaultParam.local[0].id
+            }
+            _.each(res.rows, function(el, inx, list) {
+                var checked;
+                if(this.isEdit) checked= el.id==operatorId;
+                else checked=false;
+                nameList.push({
+                    checked:checked,
+                    name: el.name,
+                    value: el.id
+                })
+            }.bind(this))
+            //运营商
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.onlyOperator').get(0),
+                panelID: this.$el.find('#dropdown-operator1').get(0),
+                isSingle: false,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function() {},
+                data: nameList,
+                callback: function(data) {
+                        this.$el.find("#dropdown-operator1 .cur-value").html("选中运营商个数:"+data.length);
+                        this.onlyOperator=[];
+                        _.each(nameList,function(el){
+                             _.each(data,function(e){
+                                if(el.value==e) this.onlyOperator.push(el)
+                             }.bind(this))
+                      }.bind(this))        
+                }.bind(this)
+            });
 
             var defaultValue1 = null;
-
-            if (this.defaultParam.localType === 2 && this.defaultParam.local[0]) {
-                defaultValue1 = _.find(this.operatorArray, function(object) {
+            if (this.defaultParam.localType ===2 && this.defaultParam.local[0]) {
+                defaultValue1 = _.find(nameList, function(object) {
                     return object.value == this.defaultParam.local[0].id;
                 }.bind(this));
             }
             if (defaultValue1) {
-                this.$el.find("#dropdown-operator1 .cur-value").html(defaultValue1.name);
+                this.$el.find("#dropdown-operator1 .cur-value").html("选中运营商个数:1");
+                this.onlyOperator=[]
+                this.onlyOperator.push({
+                    name:defaultValue1.name,
+                    value:defaultValue1.value
+                })
             } else {
-                this.$el.find("#dropdown-operator1 .cur-value").html(this.operatorArray[0].name);
-                if (this.defaultParam.localType === 2) {
-                    this.defaultParam.local = []
-                    this.defaultParam.local.push({
-                        id: parseInt(this.operatorArray[0].value),
-                        name: this.operatorArray[0].name,
-                    })
-                }
+                this.$el.find("#dropdown-operator1 .cur-value").html("还未选择运营商");
             }
 
-            Utility.initDropMenu(rootNode[1], this.operatorArray, function(value) {
-                var opObj = _.find(this.operatorArray, function(object) {
-                    return object.value == parseInt(value);
-                }.bind(this));
-                if (this.defaultParam.localType === 3) {
-                    this.defaultParam.local[0].operatorId = parseInt(value);
-                    this.defaultParam.local[0].operatorName = opObj.name;
-                    this.defaultParam.local[0].id = parseInt(value);
-                    this.defaultParam.local[0].name = opObj.name;
-                }
-            }.bind(this));
+            this.initOperatorOfpro(res)
+            this.initOperatorOfArea(res)
            
-            var defaultValue2 = null;
-
-            if (this.defaultParam.localType === 3 && this.defaultParam.local[0]) {
-                defaultValue2 = _.find(this.operatorArray, function(object) {
-                    return object.value == this.defaultParam.local[0].operatorId;
-                }.bind(this));
-            }
-            if (defaultValue2) {
-                this.$el.find("#dropdown-operator2 .cur-value").html(defaultValue2.name);
-            } else {
-                this.$el.find("#dropdown-operator2 .cur-value").html(this.operatorArray[0].name);
-                if (this.defaultParam.localType === 3) {
-                    if (!this.defaultParam.local[0]) this.defaultParam.local = [{}];
-                    this.defaultParam.local[0].operatorId = this.operatorArray[0].value;
-                    this.defaultParam.local[0].operatorName = this.operatorArray[0].name;
-                    this.defaultParam.local[0].id = this.operatorArray[0].value;
-                    this.defaultParam.local[0].name = this.operatorArray[0].name;
-                }
-            }
-
-
-            Utility.initDropMenu(rootNode[2], this.operatorArray, function(value) {
-                var opObj = _.find(this.operatorArray, function(object) {
-                    return object.value == parseInt(value);
-                }.bind(this));
-                if (this.defaultParam.localType === 4) {
-                    this.defaultParam.local[0].operatorId = parseInt(value);
-                    this.defaultParam.local[0].operatorName = opObj.name;
-                    this.defaultParam.local[0].id = parseInt(value);
-                    this.defaultParam.local[0].name = opObj.name;
-                }
-            }.bind(this));
-
-            var defaultValue3 = null;
-
-            if (this.defaultParam.localType === 4 && this.defaultParam.local[0]) {
-                defaultValue3 = _.find(this.operatorArray, function(object) {
-                    return object.value == this.defaultParam.local[0].operatorId;
-                }.bind(this));
-            }
-            if (defaultValue3) {
-                this.$el.find("#dropdown-operator3 .cur-value").html(defaultValue3.name);
-            } else {
-                this.$el.find("#dropdown-operator3 .cur-value").html(this.operatorArray[0].name);
-                if (this.defaultParam.localType === 4) {
-                    if (!this.defaultParam.local[0]) this.defaultParam.local = [{}];
-                    this.defaultParam.local[0].operatorId = this.operatorArray[0].value;
-                    this.defaultParam.local[0].operatorName = this.operatorArray[0].name;
-                    this.defaultParam.local[0].id = this.operatorArray[0].value;
-                    this.defaultParam.local[0].name = this.operatorArray[0].name;
-                }
-            }
-        },
-       
+        },        
+           
         initSetup: function(data) {
             this.allNodesArray = [];
             _.each(data, function(el, index, list) {
@@ -316,18 +400,42 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         onClickCancelBtn: function() {
+            _.each(this.onCancelParam,function(value,key){
+                this.curEditRule[key]=value
+            }.bind(this))
+          //  console.log(this.curEditRule)
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
 
         onClickSaveBtn: function() {
-            if (this.defaultParam.local.length == 0) {
-                alert('请选择本层节点');
-                return;
-            } else if (this.defaultParam.upper.length == 0) {
-                alert('请选择上层节点');
-                return;
+            if(!this.province) this.province=[];
+            if(!this.area) this.area=[];
+            if(!this.onlyOperator) this.onlyOperator=[];
+            if(!this.proAndoperator) this.proAndoperator=[];
+            if(!this.areaAndoperator) this.areaAndoperator=[];
+            if(this.defaultParam.localType==1 && this.defaultParam.local.length==0){
+                   alert('请选择本层节点');
+                   return;
+            }else if(this.defaultParam.localType==2){
+                if (this.onlyOperator.length==0) {
+                   alert('请选择本层节点');
+                   return;
+                }
+            }else if(this.defaultParam.localType==3){
+                if (this.province.length==0|| this.proAndoperator.length==0) {
+                   alert('请选择本层节点');
+                   return;
+                }
+            }else if(this.defaultParam.localType==4){
+                if (this.area.length==0 || this.areaAndoperator.length==0) {
+                   alert('请选择本层节点');
+                   return;
+                }
             }
-
+            if (this.defaultParam.upper.length == 0) {
+                   alert('请选择上层节点');
+                   return;
+            }
             var chiefTypeArray = [];
             chiefTypeArray = _.filter(this.defaultParam.upper, function(obj) {
                 return obj.chiefType === 0
@@ -336,57 +444,158 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 alert("不能都设置为备用")
                 return;
             }
-            var nodesError = "";
-            var flag=false;
+            var nodesError =[];
             for (var i = 0; i < this.rule.length; i++) {
                 if (this.defaultParam.localType === this.rule[i].localType && this.rule[i].id !== this.defaultParam.id) {
                     if (this.defaultParam.localType===1){
-                        for(var j=0;j<this.defaultParam.local.length;j++){
-                            for(var k=0;k<this.rule[i].local.length;k++){
-                                if(this.defaultParam.local[j].id===this.rule[i].local[k].id){
-                                     flag=true;
-                                     nodesError+=this.defaultParam.local[j].name+ "  ";
-                                }
-                            }
-                        }
+                         _.each(this.rule[i].local,function(rule){
+                            _.each(this.defaultParam.local,function(el){
+                                  if(rule.id==el.id)
+                                    nodesError.push(el)
+                            }.bind(this))
+                        }.bind(this))      
                     }else if (this.defaultParam.localType===3) {
-                        if (this.rule[i].local[0].provinceId === this.defaultParam.local[0].provinceId &&
-                            this.rule[i].local[0].id === this.defaultParam.local[0].id) {
-                            nodesError = this.defaultParam.local[0];
-                            break;
-                        }
+                        _.each(this.rule[i].local,function(e){
+                            _.each(this.province,function(pro){
+                                _.each(this.proAndoperator,function(operator){
+                                    if(e.provinceId==pro.value && e.id==operator.value)
+                                       nodesError.push(e) 
+                                }.bind(this))
+                            }.bind(this))    
+                        }.bind(this))                  
                     }else if(this.defaultParam.localType===4){
-                        if (this.rule[i].local[0].areaId === this.defaultParam.local[0].areaId &&
-                            this.rule[i].local[0].id === this.defaultParam.local[0].id) {
-                            nodesError = this.defaultParam.local[0];
-                            break;
-                        }
-                    }else if (this.rule[i].local[0].id === this.defaultParam.local[0].id) {
-                        nodesError = this.defaultParam.local[0];
-                        break;
+                        _.each(this.rule[i].local,function(e){
+                            _.each(this.area,function(area){
+                                _.each(this.areaAndoperator,function(operator){
+                                    if(e.areaId==area.value && e.id==operator.value)
+                                       nodesError.push(e) 
+                                }.bind(this))
+                            }.bind(this))    
+                        }.bind(this))
+                    }else if (this.defaultParam.localType===2) {
+                        _.each(this.rule[i].local,function(e){
+                            _.each(this.onlyOperator,function(el){
+                                if(e.id===el.value){
+                                    nodesError.push(e)
+                                }
+                            }.bind(this))       
+                        }.bind(this))
                     }
                 }
             }
-            if (nodesError) {
-                 if(flag){
-                    alert(nodesError+'不能同时存在于两条规则的“本层”中');
+            if(nodesError.length!=0){
+                var errorMessage="";
+                if(this.defaultParam.localType==1 || this.defaultParam.localType==2){
+                    _.each(nodesError,function(el){
+                       errorMessage+=el.name+"不能同时存在于两条规则的“本层”中"+"<br>"
+                    }.bind(this))
+                    alert(errorMessage)
                     return;
-                 } else if(nodesError.provinceName){
-                    alert(nodesError.provinceName +'/'+ nodesError.name + '不能同时存在于两条规则的“本层”中');
+                }else if(this.defaultParam.localType==3){
+                    _.each(nodesError,function(el){
+                       errorMessage+=el.provinceName+"/"+el.name+"不能同时存在于两条规则的“本层”中<br>"
+                    }.bind(this))
+                    alert(errorMessage)
                     return;
-                 }else if(nodesError.areaName){
-                    alert(nodesError.areaName +'/'+ nodesError.name + '不能同时存在于两条规则的“本层”中');
+                }else if(this.defaultParam.localType==4){
+                    _.each(nodesError,function(el){
+                       errorMessage+=el.areaName +'/'+ el.name + '不能同时存在于两条规则的“本层”中<br>'
+                    }.bind(this))
+                    alert(errorMessage);
                     return;
-                 }else{
-                    alert(nodesError.name + '不能同时存在于两条规则的“本层”中');
-                    return;
-                 }     
+                }
             }
- 
-            if (!this.isEdit) this.rule.push(this.defaultParam)
 
-            console.log("当前保存的规则：this.rule: ", this.rule);
+            if(this.defaultParam.localType==2){
+                _.each(this.onlyOperator,function(el,i){
+                    if(i==0){
+                        this.defaultParam.local=[];
+                        this.defaultParam.local[0]={
+                            id:el.value,
+                            name:el.name
+                        }
+                    }else{
+                        var obj={
+                            "id": parseInt(Math.random()*999999999),
+                            "local": [], 
+                            "localType":2,
+                            "upper": this.defaultParam.upper,
+                        }
+                        obj.local.push({
+                            id:el.value,
+                            name:el.name
+                        })
+                        this.rule.push(obj)
+                    }      
+                }.bind(this))
+            }else if(this.defaultParam.localType==3){
+                _.each(this.province,function(pro,i){
+                    _.each(this.proAndoperator,function(operator,j){
+                        if(i==0 && j==0){
+                            this.defaultParam.local=[];
+                            this.defaultParam.local[0]={
+                                provinceId: pro.value,
+                                provinceName: pro.name,
+                                id:operator.value,
+                                name: operator.name,
+                                operatorId:operator.value,
+                                operatorName:operator.name
+                             }
+                        }else{
+                            var obj={
+                                "id": parseInt(Math.random()*999999999),
+                                "local": [], 
+                                "localType":3,
+                                "upper": this.defaultParam.upper,
+                            }
+                            obj.local.push({
+                                provinceId: pro.value,
+                                provinceName: pro.name,
+                                id:operator.value,
+                                name: operator.name,
+                                operatorId:operator.value,
+                                operatorName:operator.name
+                            })
+                            this.rule.push(obj)
+                        }                      
+                    }.bind(this))
+                }.bind(this))
+            }else if(this.defaultParam.localType==4){
+                _.each(this.area,function(area,i){
+                    _.each(this.areaAndoperator,function(operator,j){
+                        if(i==0 && j==0){
+                            this.defaultParam.local=[];
+                            this.defaultParam.local[0]={
+                                areaId: area.value,
+                                areaName: area.name,
+                                id:operator.value,
+                                name: operator.name,
+                                operatorId:operator.value,
+                                operatorName:operator.name
+                             }
+                        }else{
+                            var obj={
+                                "id": parseInt(Math.random()*999999999),
+                                "local": [], 
+                                "localType":4,
+                                "upper": this.defaultParam.upper,
+                            }
+                            obj.local.push({
+                                areaId: area.value,
+                                areaName: area.name,
+                                id:operator.value,
+                                name: operator.name,
+                                operatorId:operator.value,
+                                operatorName:operator.name
+                            })
+                            this.rule.push(obj)
+                        }                      
+                    }.bind(this))
+                }.bind(this))
+            }
 
+            if(!this.isEdit) this.rule.push(this.defaultParam)   
+            console.log("当前保存的规则：this.rule: ", this.rule);      
             this.options.onSaveCallback && this.options.onSaveCallback();
         },
 
@@ -408,7 +617,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 if (tempNode) this.topoAllNodes.push(tempNode)
             }.bind(this))
 
-            console.log("拓扑所有节点: ", this.topoAllNodes);
+          //  console.log("拓扑所有节点: ", this.topoAllNodes);
 
             this.topoUpperNodes = [];
             _.each(this.options.upperNodes, function(node) {
@@ -418,7 +627,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 if (tempNode) this.topoUpperNodes.push(tempNode)
             }.bind(this));
 
-            console.log("拓扑上层节点: ", this.topoUpperNodes);
+//            console.log("拓扑上层节点: ", this.topoUpperNodes);
 
             this.localNodeListForSelect = this.topoAllNodes;
             if (!this.notFilter) {
@@ -429,7 +638,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 }.bind(this))
             }
 
-            console.log("拓扑本层节点: ", this.localNodeListForSelect);
+       //     console.log("拓扑本层节点: ", this.localNodeListForSelect);
             this.$el.find('.local .add-node').on('click', $.proxy(this.onClickAddLocalNodeButton, this))
             this.initLocalTable();
         },
@@ -509,123 +718,51 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             if (eventTarget.tagName !== "INPUT") return;
             this.prelocalType = this.defaultParam.localType;
             this.defaultParam.localType = parseInt($(eventTarget).val());
-
             if (this.defaultParam.localType === 1 && this.prelocalType === 2) {
-                this.curOperator = this.defaultParam.local;
-                this.defaultParam.local = this.curNodes || [];
+                this.defaultParam.local=this.curNodes || [];
                 this.$el.find(".operator-ctn").hide();
                 this.$el.find(".nodes-ctn").show();
             } else if (this.defaultParam.localType === 1 && this.prelocalType === 3) {
-                this.curPorvinceAndOpertaor = this.defaultParam.local;
-                this.defaultParam.local = this.curNodes || [];
+                this.defaultParam.local=this.curNodes || [];
                 this.$el.find(".provinceOperator-ctn").hide();
                 this.$el.find(".nodes-ctn").show();
             } else if (this.defaultParam.localType === 1 && this.prelocalType === 4) {
-                this.curAreaAndOperator = this.defaultParam.local;
-                this.defaultParam.local = this.curNodes || [];
+                this.defaultParam.local=this.curNodes || [];
                 this.$el.find(".largeAreaOperator-ctn").hide();
                 this.$el.find(".nodes-ctn").show();
             } else if (this.defaultParam.localType === 2 && this.prelocalType === 1) {
-                this.curNodes = this.defaultParam.local;
-                this.defaultParam.local = this.curOperator || [{
-                    id: this.operatorArray[0].value,
-                    name: this.operatorArray[0].name
-                }];
+                this.curNodes=this.defaultParam.local;
                 this.$el.find(".nodes-ctn").hide();
                 this.$el.find(".operator-ctn").show();
             } else if (this.defaultParam.localType === 2 && this.prelocalType === 3) {
-                this.curPorvinceAndOpertaor = this.defaultParam.local;
-                this.defaultParam.local = this.curOperator || [{
-                    id: this.operatorArray[0].value,
-                    name: this.operatorArray[0].name
-                }]
                 this.$el.find(".provinceOperator-ctn").hide();
                 this.$el.find(".operator-ctn").show();
             } else if (this.defaultParam.localType === 2 && this.prelocalType === 4) {
-                this.curAreaAndOperator = this.defaultParam.local;
-                this.defaultParam.local = this.curOperator || [{
-                    id: this.operatorArray[0].value,
-                    name: this.operatorArray[0].name
-                }]
                 this.$el.find(".largeAreaOperator-ctn").hide();
                 this.$el.find(".operator-ctn").show();
             } else if (this.defaultParam.localType === 3 && this.prelocalType === 1) {
-                this.curNodes = this.defaultParam.local;
-                this.defaultParam.local = this.curPorvinceAndOpertaor || [{
-                    provinceId: this.provinceArray[0].value,
-                    provinceName: this.provinceArray[0].name,
-                    id: this.operatorArray[0].value,
-                    name: this.operatorArray[0].name,
-                    operatorId: this.operatorArray[0].value,
-                    operatorName:this.operatorArray[0].name
-                }];
+                this.curNodes=this.defaultParam.local;
                 this.$el.find(".nodes-ctn").hide();
                 this.$el.find(".provinceOperator-ctn").show();
             } else if (this.defaultParam.localType === 3 && this.prelocalType === 2) {
-                this.curOperator = this.defaultParam.local;
-                this.defaultParam.local = this.curPorvinceAndOpertaor || [{
-                    provinceId: this.provinceArray[0].value,
-                    provinceName: this.provinceArray[0].name,
-                    id: this.operatorArray[0].value,
-                    name: this.operatorArray[0].name,
-                    operatorId: this.operatorArray[0].value,
-                    operatorName:this.operatorArray[0].name
-                }];
                 this.$el.find(".operator-ctn").hide();
                 this.$el.find(".provinceOperator-ctn").show();
             } else if (this.defaultParam.localType === 3 && this.prelocalType === 4) {
-                this.curAreaAndOperator = this.defaultParam.local;
-                this.defaultParam.local = this.curPorvinceAndOpertaor || [{
-                    provinceId: this.provinceArray[0].value,
-                    provinceName: this.provinceArray[0].name,
-                    id: this.operatorArray[0].value,
-                    name: this.operatorArray[0].name,
-                    operatorId: this.operatorArray[0].value,
-                    operatorName:this.operatorArray[0].name
-                }];
                 this.$el.find(".largeAreaOperator-ctn").hide();
                 this.$el.find(".provinceOperator-ctn").show();
             } else if (this.defaultParam.localType === 4 && this.prelocalType === 1) {
-                this.curNodes = this.defaultParam.local;
-                this.defaultParam.local = this.curAreaAndOperator || [{
-                    areaId: this.largeAreaArray[0].value,
-                    areaName: this.largeAreaArray[0].name,
-                    id: this.operatorArray[0].value,
-                    name: this.operatorArray[0].name,
-                    operatorId: this.operatorArray[0].value,
-                    operatorName:this.operatorArray[0].name
-                }];
+                this.curNodes=this.defaultParam.local;
                 this.$el.find(".nodes-ctn").hide();
                 this.$el.find(".largeAreaOperator-ctn").show();
             } else if (this.defaultParam.localType === 4 && this.prelocalType === 2) {
-                this.curOperator = this.defaultParam.local;
-                this.defaultParam.local = this.curAreaAndOperator || [{
-                    areaId: this.largeAreaArray[0].value,
-                    areaName: this.largeAreaArray[0].name,
-                    id: this.operatorArray[0].value,
-                    name: this.operatorArray[0].name,
-                    operatorId: this.operatorArray[0].value,
-                    operatorName:this.operatorArray[0].name
-                }]
                 this.$el.find(".operator-ctn").hide();
                 this.$el.find(".largeAreaOperator-ctn").show();
             } else if (this.defaultParam.localType === 4 && this.prelocalType === 3) {
-                this.curPorvinceAndOpertaor = this.defaultParam.local;
-                this.defaultParam.local = this.curAreaAndOperator ||[{
-                    areaId: this.largeAreaArray[0].value,
-                    areaName: this.largeAreaArray[0].name,
-                    id: this.operatorArray[0].value,
-                    name: this.operatorArray[0].name,
-                    operatorId: this.operatorArray[0].value,
-                    operatorName:this.operatorArray[0].name
-                }]
                 this.$el.find(".provinceOperator-ctn").hide();
                 this.$el.find(".largeAreaOperator-ctn").show();
             }
             this.initLocalTable();
         },
-
-
 
         onGetUpperNodeFromArgs: function() {
             this.$el.find('.upper .add-node').show();
@@ -735,7 +872,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
 
             for (var i = 0; i < rootNodes.length; i++) {
                 this.initTableDropMenu($(rootNodes[i]), operatorArray, function(value, nodeId) {
-                    console.log(value);
                     _.each(this.defaultParam.upper, function(el, key, list) {
                         if (el.rsNodeMsgVo.id == parseInt(nodeId)) {
                             el.ipCorporation = parseInt(value);

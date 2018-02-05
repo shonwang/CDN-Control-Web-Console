@@ -42,6 +42,9 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             this.collection.on("delete.moduleDyConfig.success", $.proxy(this.onDeleteModuleDyConfigSuccess, this))
             this.collection.on("delete.moduleDyConfig.error", $.proxy(this.onGetError, this))
 
+            this.collection.on("get.moduleDyConfigById.success", $.proxy(this.onGetModuleDyConfigByIdSuccess, this))
+            this.collection.on("get.moduleDyConfigById.error", $.proxy(this.onGetError, this))
+
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this))
         },
 
@@ -53,12 +56,49 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
         },
 
         onSaveModuleDyConfigSuccess: function() {
-            alert("保存成功！");
-            
-            this.setupModuleManage.getListModule({
-                originId: this.originId
+            this.collection.getModuleDynamicConfigByModuleId({
+                originId: this.originId,
+                moduleId: this.saveModuleId
             })
         },
+
+        onGetModuleDyConfigByIdSuccess:function(res){
+            console.log(res)
+            if (res && res[0]) {
+                var moduleNodeRoot = this.$el.find("#title-"+this.saveModuleId);
+                moduleNodeRoot.find(".group-ctn").html(_.template(template['tpl/loading.html'])({}));
+                var module = res[0];
+                module.groupTemplate = "";
+                if (module.valueType == 1 || module.valueType == 2) {
+                    _.each(module.groupList, function(group) {
+                        var tpl = this.initGroupList(group);
+                        module.groupTemplate = module.groupTemplate + tpl;
+                    }.bind(this))
+                } else {
+                    module.configKeyList = [];
+                    _.each(module.groupList, function(group) {
+                        _.each(group.configItemList, function(key) {
+                            module.configKeyList.push(key)
+                        }.bind(this))
+                    }.bind(this))
+
+                    module.groupTemplate = this.initModuleArrayTypeTable(module.configKeyList, module.value, module.id)
+                }
+                moduleNodeRoot.find(".group-ctn").html(module.groupTemplate);
+
+                moduleNodeRoot.find(".glyphicon-question-sign").popover();
+                moduleNodeRoot.find(".moduleList-pannel .keyInput").on("blur", $.proxy(this.onValueInputBlur, this))
+                moduleNodeRoot.find("textarea").on("blur", $.proxy(this.onValueInputBlur, this))
+                this.initAllDropdownMenu(res);
+                moduleNodeRoot.find(".addModuleKey").on("click", $.proxy(this.onClickAddModuleKey, this))
+                moduleNodeRoot.find(".editModuleKey").on("click", $.proxy(this.onClickEditModuleKey, this))
+                moduleNodeRoot.find(".deleteModuleKey").on("click", $.proxy(this.onClickDeleteModuleKey, this))
+                moduleNodeRoot.find(".switch .togglebutton input").on("click", $.proxy(this.onClickSwitchButton, this));
+            } else {
+                alert("保存刷新失败！");
+            }
+        },
+
         onGetModuleListSuccess: function(res) {
             this.moduleList = res;
             this.initSetupModule(); //初始化模块管理
@@ -108,8 +148,8 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             }.bind(this))
         },
 
-        initAllDropdownMenu: function() {
-            _.each(this.moduleListDetail, function(module) {
+        initAllDropdownMenu: function(list) {
+            _.each(list, function(module) {
                 if (module.valueType == 1 || module.valueType == 2) {
                     _.each(module.groupList, function(group) {
                         _.each(group.configItemList, function(key) {
@@ -311,7 +351,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             this.$el.find(".glyphicon-question-sign").popover();
             this.$el.find(".moduleList-pannel .keyInput").on("blur", $.proxy(this.onValueInputBlur, this))
             this.$el.find("textarea").on("blur", $.proxy(this.onValueInputBlur, this))
-            this.initAllDropdownMenu();
+            this.initAllDropdownMenu(this.moduleListDetail);
             this.$el.find(".addModuleKey").on("click", $.proxy(this.onClickAddModuleKey, this))
             this.$el.find(".editModuleKey").on("click", $.proxy(this.onClickEditModuleKey, this))
             this.$el.find(".deleteModuleKey").on("click", $.proxy(this.onClickDeleteModuleKey, this))
@@ -354,6 +394,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             var eventTarget = event.srcElement || event.target,
                 id;
             id = $(eventTarget).attr("id");
+            this.saveModuleId=id;
             var currentModule = _.find(this.moduleListDetail, function(module) {
                 return id == module.id
             }.bind(this))

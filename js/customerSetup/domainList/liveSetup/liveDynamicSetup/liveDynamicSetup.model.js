@@ -45,6 +45,21 @@ define("liveDynamicSetup.model", ['require', 'exports', 'utility'], function(req
                 }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+
+        getModuleDynamicConfigByModuleId: function(args) {
+            var url = BASE_URL + "/channelManager/live/domain/getModuleDynamicConfig",
+                successCallback = function(res) {
+                    if (res) {
+                        this.trigger("get.moduleDyConfigById.success", res);
+                    } else {
+                        this.trigger("get.moduleDyConfigById.error");
+                    }
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("get.moduleDyConfigById.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
     });
 
     return liveDynamicSetupCollection;

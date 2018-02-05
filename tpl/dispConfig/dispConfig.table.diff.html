@@ -1,0 +1,38 @@
+<table class="table table-hover disp-table">
+    <thead> 
+      <tr>
+        <th>调度组名称</th>
+        <th>区域</th>
+        <th>节点</th>  
+      </tr>
+    </thead>
+    <tbody>
+        <% for(var i = 0; i < data.length; i++) { %>
+            <tr>
+              <td><%=data[i].dispGroupDomain%></td>
+              <td><%=data[i].region.name%></td>
+              <td class="nodes">
+                  <table class="table table-condensed table-striped">
+
+                      <tbody>
+                          <%for(var j=0,_list=data[i].list,_len=_list.length;j<_len;j++){%>
+                              <tr class="<%if(_list[j].type==1){%>success<%}else{%>danger<%}%>">
+                                <td style="width:400px">
+                                    <span class="node-string text-primary" >
+                                      <%=_list[j].nodeName%>/<%=_list[j].bandwidth%>
+                                    </span>
+                                    
+                                </td>
+                                <td>
+                                  <span class="label label-primary"><%=_list[j].currNum%></span>
+                                </td>
+                              </tr>
+                          <%}%>
+                      </tbody>
+
+                  </table>
+              </td>
+            </tr>
+        <% } %>
+    </tbody>
+</table>

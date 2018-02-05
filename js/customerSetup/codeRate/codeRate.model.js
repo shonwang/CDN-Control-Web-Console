@@ -5,7 +5,7 @@ define("codeRate.model", ['require', 'exports', 'utility'], function(require, ex
             var updateTime = this.get("updateTime");
 
             this.set("createTimeName",new Date(createTime).format("yyyy/MM/dd hh:mm:ss"));
-            this.set("updateTimeName",new Date(createTime).format("yyyy/MM/dd hh:mm:ss"));
+            this.set("updateTimeName",new Date(updateTime).format("yyyy/MM/dd hh:mm:ss"));
         }
     });
 

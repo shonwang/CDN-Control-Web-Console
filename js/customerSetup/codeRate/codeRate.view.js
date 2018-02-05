@@ -391,7 +391,7 @@ define("codeRate.view", ['require', 'exports', 'template', 'utility', "modal.vie
                     model:[selectedObj]
                 });
                 var options = {
-                    title: "批量修改",
+                    title: "修改",
                     body: rateConfig,
                     backdrop: 'static',
                     type: 2,

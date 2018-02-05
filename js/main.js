@@ -180,6 +180,7 @@
   "liveAllSetup.view": "liveAllSetup/liveAllSetup.view",
   "liveCurentSetup.model": "liveCurentSetup/liveCurentSetup.model",
   "liveCurentSetup.view": "liveCurentSetup/liveCurentSetup.view",
+  "nodeManage.chosePlatform.view": "nodeManage/nodeManage.chosePlatform.view",
   "nodeManage.dispInfo.view": "nodeManage/nodeManage.dispInfo.view",
   "nodeManage.edit.view": "nodeManage/nodeManage.edit.view",
   "nodeManage.model": "nodeManage/nodeManage.model",

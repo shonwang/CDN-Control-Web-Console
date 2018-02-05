@@ -60,8 +60,8 @@ define("setupSendDone.view", ['require','exports', 'template', 'modal.view', 'ut
             this.isInitPaginator = false;
             this.queryArgs.page = this.curPage;
             this.queryArgs.name = this.$el.find("#input-task-name").val().trim();
-            if (this.queryArgs.name == "") this.queryArgs.domain = null;
-           // this.queryArgs.domain=this.$el.find("#input-domain-name").val().trim();
+            if (this.queryArgs.domain == "") this.queryArgs.domain = null;
+            this.queryArgs.domain=this.$el.find("#input-domain-name").val().trim();
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
             console.log(this.queryArgs)

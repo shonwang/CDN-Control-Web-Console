@@ -1091,3 +1091,7 @@ td .table {
   color:#333;
   text-decoration:none;
 }
+.statusBox code{
+  height: 300px;
+  overflow: auto;
+}

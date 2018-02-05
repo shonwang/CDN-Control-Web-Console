@@ -237,17 +237,6 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        startNodeInitSetup:function(){
-            var url = BASE_URL + "/cd/node/initcfg/start",
-                successCallback = function(res) {
-                    this.trigger("start.nodeInitSetup.success");
-                }.bind(this),
-                errorCallback = function(response) {
-                    this.trigger("start.nodeInitSetup.error", response);
-                }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
-        },
-
         createSendTask:function(args){
            var url = BASE_URL + "/cd/node/updatecfg/delivery",
                 successCallback = function(res) {

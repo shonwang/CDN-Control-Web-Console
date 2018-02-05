@@ -1,4 +1,5 @@
-define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'utility'], 
+    function(require, exports, template, Modal, Utility) {
 
     var NodeManageView = Backbone.View.extend({
         events: {},
@@ -431,8 +432,8 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
         },
 
        onClickItemInit:function(evnet){
-          var eventTarget = event.srcElement || event.target,
-                id;
+            var eventTarget = event.srcElement || event.target,
+                    id;
             if (eventTarget.tagName == "SPAN") {
                 eventTarget = $(eventTarget).parent();
                 id = eventTarget.attr("id");
@@ -440,25 +441,44 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 id = $(eventTarget).attr("id");
             }
             var model = this.collection.get(id);
-            console.log(model)
-            require(['setupTopoManage.update.view'], function(UpdateTopoView) {
-                    var myUpdateTopoView = new UpdateTopoView({
-                        collection: this.collection,
-                        model: model,
-                        isEdit: false,
-                        pageType:3,
-                        onSaveCallback: function() {
-                        }.bind(this),
-                        onCancelCallback: function() {
-                            myUpdateTopoView.$el.remove();
-                            this.$el.find(".node-manage-list-pannel").show();
-                            this.enterKeyBindQuery();
-                        }.bind(this)
-                    })
-                    this.$el.find(".node-manage-list-pannel").hide();
-                    myUpdateTopoView.render(this.$el.find(".update-panel"));
-                }.bind(this));
-       },
+            if (this.chosePlatPopup) $("#" + this.chosePlatPopup.modalId).remove();
+
+            require(["nodeManage.chosePlatform.view"], function(ChosePlatformView) {
+               var myChosePlatformView=new ChosePlatformView({})
+               var options = {
+                    title: "选择平台",
+                    body: myChosePlatformView,
+                    backdrop: 'static',
+                    type: 2,
+                    width:300,
+                    onOKCallback: function() {
+                        require(['setupTopoManage.update.view'], function(UpdateTopoView) {
+                            var myUpdateTopoView = new UpdateTopoView({
+                                collection: this.collection,
+                                model: model,
+                                isEdit: false,
+                                pageType:3,
+                                platformId:myChosePlatformView.platformId,
+                                onSaveCallback: function() {
+                                }.bind(this),
+                                onCancelCallback: function() {
+                                    myUpdateTopoView.$el.remove();
+                                    this.$el.find(".node-manage-list-pannel").show();
+                                    this.enterKeyBindQuery();
+                                }.bind(this)
+                            })
+                            this.$el.find(".node-manage-list-pannel").hide();
+                            myUpdateTopoView.render(this.$el.find(".update-panel"));
+                           }.bind(this));
+                        this.chosePlatPopup.$el.modal("hide");
+                       }.bind(this),
+                    onHiddenCallback: function() {
+                        this.enterKeyBindQuery();
+                    }.bind(this)
+               }
+               this.chosePlatPopup = new Modal(options);
+            }.bind(this));       
+        },
 
         onClickItemHangup: function(event) {
             var eventTarget = event.srcElement || event.target,

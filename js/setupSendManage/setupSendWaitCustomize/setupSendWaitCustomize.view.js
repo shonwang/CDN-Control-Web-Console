@@ -99,7 +99,6 @@ define("setupSendWaitCustomize.view", ['require', 'exports', 'template', 'modal.
             }.bind(this))
 
             this.collection.rollBack(this.domainArray)
-            this.showDisablePopup("服务器正在努力处理中...")
         },
 
         onPublishSuccess: function() {
@@ -165,9 +164,9 @@ define("setupSendWaitCustomize.view", ['require', 'exports', 'template', 'modal.
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
 
-                this.collection.rollBack({
+                this.collection.rollBack([{
                     predeliveryId: id
-                })
+                }])
             }.bind(this));
         },
 

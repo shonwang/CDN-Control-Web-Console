@@ -409,6 +409,17 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
                 }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+
+        startNodeInitSetup:function(args){
+            var url = BASE_URL + "/cd/node/initcfg/start",
+                successCallback = function(res) {
+                    this.trigger("start.nodeInitSetup.success");
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("start.nodeInitSetup.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
     });
 
     return NodeManageCollection;

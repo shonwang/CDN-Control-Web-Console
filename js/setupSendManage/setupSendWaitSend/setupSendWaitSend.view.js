@@ -64,19 +64,19 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
         },
         
         onClickMultiReject:function(){
-          var checkedList = this.collection.filter(function(model) {
-                return model.get("isChecked") === true;
-            });
-
-            this.domainArray = [];
-            _.each(checkedList, function(el, index, ls) {
-                this.domainArray.push({
-                    predeliveryId: el.get("id")
+            Utility.confirm("你确定要打回吗？", function(){
+                var checkedList = this.collection.filter(function(model) {
+                    return model.get("isChecked") === true;
                 });
-            }.bind(this))
 
-            this.collection.rollBack(this.domainArray)
-            this.showDisablePopup("服务器正在努力处理中...")
+                this.domainArray = [];
+                _.each(checkedList, function(el, index, ls) {
+                    this.domainArray.push({
+                        predeliveryId: el.get("id")
+                    });
+                }.bind(this))
+                this.collection.rollBack(this.domainArray)
+            }.bind(this))      
         },
 
         onClickMultiSend: function() {
@@ -103,7 +103,6 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
             } else {
                 this.currentModel = checkedList[0];
             }
-
             this.showSelectStrategyPopup();
         },
 
@@ -252,10 +251,9 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
                 } else {
                     id = $(eventTarget).attr("id");
                 }
-
-                this.collection.rollBack({
+                this.collection.rollBack([{
                     predeliveryId: id
-                })
+                }])
             }.bind(this))
         },
 

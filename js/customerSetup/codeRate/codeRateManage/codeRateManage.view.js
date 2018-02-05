@@ -42,10 +42,17 @@ define("codeRateManage.view", ['require', 'exports', 'template', 'utility', "mod
                     alert("名称不能为空！")
                     return false;
                 }
+                
                 if(!value){
                     alert("码率不能为空");
                     return false;
                 }
+
+                var re = /\uff0c/g;
+                if(re.test(value)){
+                    alert("不能中文逗号");
+                    return false;
+                }                
 
                 var nodeIds = this.nodeIds;
                 if(nodeIds.length == 0){

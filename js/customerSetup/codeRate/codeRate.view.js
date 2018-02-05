@@ -25,6 +25,11 @@ define("codeRate.view", ['require', 'exports', 'template', 'utility', "modal.vie
                     alert("请填全局码率配置");
                     return false;
                 }
+                var re = /\uff0c/g;
+                if(re.test(value)){
+                    alert("不能中文逗号");
+                    return false;
+                }
                 return {
                     domains:domains,
                     rateIds:rateIds,
@@ -48,6 +53,8 @@ define("codeRate.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickSearchButton, this));
                 this.$el.find(".opt-ctn .cancel-select").on("click", $.proxy(this.onClickCancelSelectButton, this));
 
+                this.$el.find('#input-name').on('keydown', $.proxy(this.enterKeyBindQuery, this)); 
+
                 this.curPage = 1;
                 this.initDispListDropMenu();
 
@@ -69,12 +76,8 @@ define("codeRate.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 }.bind(this))
             },
 
-            enterKeyBindQuery: function(){
-                $(document).on('keydown', function(e){
-                    if(e.keyCode == 13){
-                        this.onClickSearchButton();
-                    }
-                }.bind(this));
+            enterKeyBindQuery: function(e){
+                if (e.keyCode == 13) this.onClickSearchButton();
             },
 
             onClickSearchButton: function(){
@@ -178,7 +181,6 @@ define("codeRate.view", ['require', 'exports', 'template', 'utility', "modal.vie
 
             render: function(target) {
                 this.$el.appendTo(target);
-                this.enterKeyBindQuery();
             }
         }); 
 
@@ -216,6 +218,16 @@ define("codeRate.view", ['require', 'exports', 'template', 'utility', "modal.vie
 
                 if (stream === "") {
                     alert("流名不能为空！")
+                    return false;
+                }
+
+                if(!rate){
+                    alert("请填全局码率配置");
+                    return false;
+                }
+                var re = /\uff0c/g;
+                if(re.test(rate)){
+                    alert("不能中文逗号");
                     return false;
                 }
 

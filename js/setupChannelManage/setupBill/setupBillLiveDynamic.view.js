@@ -40,7 +40,7 @@ define("setupBillLiveDynamic.view", ['require', 'exports', 'template', 'modal.vi
 
             initGroupList: function(groupData) {
                 _.each(groupData.configItemList, function(list) {
-                    if (list.valueType == 1 || list.valueType == 2 || list.valueType ==9 || list.valueType==10) {
+                    if (list.valueType == 1 || list.valueType == 2 || list.valueType == 9 || list.valueType == 10) {
                         list.valueName = list.value
                     } else if (list.valueType == 3 || list.valueType == 4) {
                         if (list.value == 1 || list.value + "" == true + "")
@@ -51,11 +51,12 @@ define("setupBillLiveDynamic.view", ['require', 'exports', 'template', 'modal.vi
                             list.valueName = "null"
                     } else if (list.valueType == 5 || list.valueType == 6) {
                         if (list.valueList && !(list.valueList instanceof Array))
-                               list.valueList = JSON.parse(list.valueList)
-                        var obj=_.find(list.valueList,function(valuelist){
-                            return valuelist.value==list.value
+                            list.valueList = JSON.parse(list.valueList)
+                        var obj = _.find(list.valueList, function(valuelist) {
+                            return valuelist.value == list.value
                         }.bind(this))
-                        list.valueName=obj.name
+                        if (obj)
+                            list.valueName = obj.name
                     }
                 }.bind(this))
 
@@ -86,26 +87,26 @@ define("setupBillLiveDynamic.view", ['require', 'exports', 'template', 'modal.vi
             toChange: function(headerArray, el, key) {
                 var obj = {}
                 _.each(headerArray, function(header) {
-                    if(header.id==key&&header.valueList){
+                    if (header.id == key && header.valueList) {
                         if (!(header.valueList instanceof Array))
                             header.valueList = JSON.parse(header.valueList)
-                        _.each(header.valueList, function(valuelist) {  
-                            if (el+"" == valuelist.value+""){
+                        _.each(header.valueList, function(valuelist) {
+                            if (el + "" == valuelist.value + "") {
                                 obj[key] = valuelist.name
                             }
                         }.bind(this))
-                    }else if(header.id==key&&!header.valueList){
-                        if(header.valueType == 3 || header.valueType==4){
-                            if(el==0||el+""==false+"")
-                                obj[key]="关"
-                            else if(el==1||el+""==true+"")
-                                obj[key]=="开"
-                            else if(el+""==null+"")
-                                obj[key]="请选择"
-                        }else{
+                    } else if (header.id == key && !header.valueList) {
+                        if (header.valueType == 3 || header.valueType == 4) {
+                            if (el == 0 || el + "" == false + "")
+                                obj[key] = "关"
+                            else if (el == 1 || el + "" == true + "")
+                                obj[key] == "开"
+                            else if (el + "" == null + "")
+                                obj[key] = "请选择"
+                        } else {
                             obj[key] = el
                         }
-                    } 
+                    }
                 }.bind(this))
                 return obj[key]
             },

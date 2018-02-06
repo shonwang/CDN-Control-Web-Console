@@ -443,6 +443,12 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                             hash: 'index.html#/checkUrl/' + query,
                             active: false,
                             children: []
+                        },{
+                            id:'customerSetup-codeRate',
+                            name:'区域码率自定义配置',
+                            hash: 'index.html#/codeRate/' + query,
+                            active: false,
+                            children: []
                         }]
                     }],
                     menuOptions = {
@@ -476,6 +482,26 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                 }
             },
 
+            setUpCodeRateManageNavbar:function(query,query2){
+                var menu = [{
+                    id: 'customerSetup-codeRate-codeRateManage',
+                    name: '码率配置',
+                    hash: 'index.html#/codeRate/' + query + '/manage/' + query2,
+                    children: []
+                }];
+
+                if (!this.codeRateManageNavbar) {
+                    var menuOptions = {
+                        query: query,
+                        query2: query2,
+                        menuList: menu,
+                        backHash: 'index.html#/codeRate/' + query
+                    }
+                    this.codeRateManageNavbar = new SubNavbar(menuOptions);
+                    this.codeRateManageNavbar.select(this.curPage);
+                }                
+            },
+
             removeSubSideBar: function() {
                 //从域名列表页面、新域名管理页面进入到其他一级导航页面移除域名列表的二级导航、新域名管理的二级导航
                 if (this.curPage.indexOf("customerSetup-") == -1 &&
@@ -500,6 +526,12 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                 if (this.curPage.indexOf("setupSend") === -1 && this.setupSendNavbar) {
                     this.setupSendNavbar.$el.remove();
                     this.setupSendNavbar = null;
+                }
+
+                //从码率进入到管理页面
+                if(this.curPage.indexOf("customerSetup-codeRate") > -1 && this.codeRateManageNavbar){
+                    this.codeRateManageNavbar.$el.remove();
+                    this.codeRateManageNavbar = null;
                 }
             }
         }

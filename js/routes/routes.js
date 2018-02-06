@@ -7,6 +7,7 @@ define("routes", ['require', 'exports', 'navbar.view',
         'routes.dispSetup',
         'routes.customerSetup',
         'routes.setupSend',
+        'routes.codeRateSetup',
         'routes.other'
     ],
     function(require, exports, NavbarView,
@@ -18,6 +19,7 @@ define("routes", ['require', 'exports', 'navbar.view',
         RouterDispSetup,
         RouterCustomerSetup,
         RouterSetupSend,
+        RouterCodeRateSetup,
         RouterOther) {
 
         var Workspace = Backbone.Router.extend({
@@ -60,6 +62,8 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "checkUrl/:query": "checkUrl",
                 "domainList/:query": "domainList",
                 "domainList/:query/openAPILogSetup/:query2": "openAPILogSetup",
+                "codeRate/:query": "codeRate",
+                "codeRate/:query/manage/:query2": "codeRateManage",
 
                 //Lua 下载域名配置
                 "domainList/:query/luaBasicInformation/:query2": "luaBasicInformation",
@@ -174,6 +178,7 @@ define("routes", ['require', 'exports', 'navbar.view',
         Workspace = Workspace.extend(RouterDispSetup);
         Workspace = Workspace.extend(RouterCustomerSetup);
         Workspace = Workspace.extend(RouterSetupSend);
+        Workspace = Workspace.extend(RouterCodeRateSetup);
         Workspace = Workspace.extend(RouterOther);
 
         exports.Workspace = new Workspace();

@@ -1,0 +1,36 @@
+<table class="table table-striped table-hover">
+    <thead> 
+      <tr>
+        <th><input type="checkbox"></th>
+        <th>流名</th>
+        <th>所属域名</th>
+        <th>全局码率配置</th>
+        <th>创建时间</th>
+        <th>最后修改时间</th>
+        <th>操作</th>    
+      </tr>
+    </thead>
+    <tbody>
+        <% for(var i = 0; i < data.length; i++) { %>
+            <tr data-id="<%=data[i].get('id')%>">
+              <td><input type="checkbox" id="<%=data[i].get('id')%>"></td>
+              <td><%=data[i].get("stream")%></td>
+              <td><%=data[i].get("domain")%></td>
+              <td><%=data[i].get("rate")%></td>
+              <td><%=data[i].get("createTimeName")%></td>
+              <td><%=data[i].get("updateTimeName")%></td>
+              <td>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="manage" title="配置">
+                      <span class="glyphicon glyphicon-cog"></span>
+                  </a>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="modify" title="修改码率">
+                      <span class="glyphicon glyphicon-edit"></span>
+                  </a>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="delete" title="删除">
+                      <span class="glyphicon glyphicon-trash"></span>
+                  </a>
+              </td>
+            </tr>
+        <% } %>  
+    </tbody>
+</table>

@@ -194,12 +194,12 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 alert("成本权值不能小于0且大于长整型的最大值");
                 return false;
             }
-            if (!outzabnameRe.test(outzabname) || outzabname.indexOf("-") === -1 ||
-                outzabname.indexOf("_") === -1 || outzabname.indexOf("[") === -1 ||
-                outzabname.indexOf("]") === -1 || !letterRe.test(outzabname)) {
-                alert("zabbix出口带宽英文、“-”、“_”、“[”、“]”为必填项，数字为可填项，即组合可包含数字，也可不包含数字");
-                return false;
-            }
+            // if (!outzabnameRe.test(outzabname) || outzabname.indexOf("-") === -1 ||
+            //     outzabname.indexOf("_") === -1 || outzabname.indexOf("[") === -1 ||
+            //     outzabname.indexOf("]") === -1 || !letterRe.test(outzabname)) {
+            //     alert("zabbix出口带宽英文、“-”、“_”、“[”、“]”为必填项，数字为可填项，即组合可包含数字，也可不包含数字");
+            //     return false;
+            // }
 
             this.args.minBandwidth = minBandwidth;
             this.args.maxBandwidth = maxBandwidth;

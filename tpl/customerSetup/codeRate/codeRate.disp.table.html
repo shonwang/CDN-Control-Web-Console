@@ -1,0 +1,21 @@
+<table class="table table-striped table-hover">  
+<thead> 
+  <tr>
+    <th>名称</th>
+  </tr>
+</thead>
+<tbody>
+    <% for(var i = 0; i < data.length; i++) { %>
+        <tr data-id="<%=data[i].attributes.id%>">
+          <td>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="optionsRadios" id="<%=data[i].attributes.id%>">
+                  <span><%=data[i].attributes["domain"]%></span> 
+                </label>
+              </div>
+          </td>
+        </tr>
+    <% } %>  
+</tbody>
+</table>

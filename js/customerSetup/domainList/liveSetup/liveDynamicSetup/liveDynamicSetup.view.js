@@ -62,10 +62,9 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             })
         },
 
-        onGetModuleDyConfigByIdSuccess:function(res){
-            console.log(res)
+        onGetModuleDyConfigByIdSuccess: function(res) {
             if (res && res[0]) {
-                var moduleNodeRoot = this.$el.find("#title-"+this.saveModuleId);
+                var moduleNodeRoot = this.$el.find("#title-" + this.saveModuleId);
                 moduleNodeRoot.find(".group-ctn").html(_.template(template['tpl/loading.html'])({}));
                 var module = res[0];
                 module.groupTemplate = "";
@@ -94,6 +93,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                 moduleNodeRoot.find(".editModuleKey").on("click", $.proxy(this.onClickEditModuleKey, this))
                 moduleNodeRoot.find(".deleteModuleKey").on("click", $.proxy(this.onClickDeleteModuleKey, this))
                 moduleNodeRoot.find(".switch .togglebutton input").on("click", $.proxy(this.onClickSwitchButton, this));
+                alert("保存成功！");
             } else {
                 alert("保存刷新失败！");
             }
@@ -170,16 +170,15 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                                 var str = ".dropdown#" + module.id + "-" + group.id + "-" + key.id
                                 var rootNode = this.$el.find(str);
                                 Utility.initDropMenu(rootNode, valueList, function(value) {
-                                    console.log(key.valueType + "/" + key.value)
-                                    if(value+""==null+"")
-                                        key.value=null
-                                    else if (key.valueType == 3 || key.valueType == 5) 
+                                    if (value + "" == null + "")
+                                        key.value = null
+                                    else if (key.valueType == 3 || key.valueType == 5)
                                         key.value = parseInt(value)
-                                    else if (key.valueType == 4 && value == "true") 
+                                    else if (key.valueType == 4 && value == "true")
                                         key.value = true
-                                    else if (key.valueType == 4 && value == "false") 
+                                    else if (key.valueType == 4 && value == "false")
                                         key.value = false
-                                    else 
+                                    else
                                         key.value = value;
                                 }.bind(this))
 
@@ -236,10 +235,10 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             if (!value) {
                 alert("你什么都没有输入！");
                 return;
-            }else if(currentKey.valueType==7){
-                if(!Number(value)&&value!=0){
-                   alert("请输入数值型的值！");
-                   return; 
+            } else if (currentKey.valueType == 7) {
+                if (!Number(value) && value != 0) {
+                    alert("请输入数值型的值！");
+                    return;
                 }
             }
             currentKey.value.push(value)
@@ -299,32 +298,31 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
         toChange: function(headerArray, el, key) {
             var obj = {}
             _.each(headerArray, function(header) {
-                if(header.id==key&&header.valueList){
+                if (header.id == key && header.valueList) {
                     if (!(header.valueList instanceof Array))
                         header.valueList = JSON.parse(header.valueList)
-                    _.each(header.valueList, function(valuelist) {  
-                        if (el+"" == valuelist.value+""){
+                    _.each(header.valueList, function(valuelist) {
+                        if (el + "" == valuelist.value + "") {
                             obj[key] = valuelist.name
                         }
                     }.bind(this))
-                }else if(header.id==key&&!header.valueList){
-                    if(header.valueType == 3 || header.valueType==4){
-                        if(el==0||el+""==false+"")
-                            obj[key]="关"
-                        else if(el==1||el+""==true+"")
-                            obj[key]=="开"
-                        else if(el+""==null+"")
-                            obj[key]="请选择"
-                    }else{
+                } else if (header.id == key && !header.valueList) {
+                    if (header.valueType == 3 || header.valueType == 4) {
+                        if (el == 0 || el + "" == false + "")
+                            obj[key] = "关"
+                        else if (el == 1 || el + "" == true + "")
+                            obj[key] == "开"
+                        else if (el + "" == null + "")
+                            obj[key] = "请选择"
+                    } else {
                         obj[key] = el
                     }
-                } 
+                }
             }.bind(this))
             return obj[key]
         },
 
         initModuleList: function() {
-            console.log(this.moduleListDetail)
             _.each(this.moduleListDetail, function(module) {
                 module.groupTemplate = "";
                 if (module.valueType == 1 || module.valueType == 2) {
@@ -384,7 +382,6 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                     moduleId: id,
                     originId: this.originId
                 }
-                console.log(sendMessage)
                 this.collection.deleteModuleDynamicConfig(sendMessage);
             }.bind(this))
 
@@ -394,7 +391,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             var eventTarget = event.srcElement || event.target,
                 id;
             id = $(eventTarget).attr("id");
-            this.saveModuleId=id;
+            this.saveModuleId = id;
             var currentModule = _.find(this.moduleListDetail, function(module) {
                 return id == module.id
             }.bind(this))
@@ -409,13 +406,12 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                         if (key.valueType == 1 || key.valueType == 3 || key.valueType == 5 || key.valueType == 10) {
                             if (key.value + "" == null + "") {
                                 value[0].configValueMap[key.id] = null;
-                            } else if ((key.value === "" && key.valueType == 1) || (key.value === "" && key.valueType == 10)){
+                            } else if ((key.value === "" && key.valueType == 1) || (key.value === "" && key.valueType == 10)) {
                                 //errorMessage = errorMessage + key.itemName + "不能为空字符串！<br>"
                             } else {
                                 value[0].configValueMap[key.id] = parseInt(key.value)
                             }
                         } else if (key.valueType == 4) {
-                            console.log("save: " + key.value)
                             if (key.value + "" == null + "")
                                 value[0].configValueMap[key.id] = null
                             else
@@ -444,21 +440,20 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                     value: value
                 }
             } else {
-               _.each(currentModule.value,function(el,index){
-                 _.each(el.configValueMap,function(e,key){
-                     if(e=="true")
-                        el.configValueMap[key]=true
-                     else if(e=="false") 
-                        el.configValueMap[key]=false
-                 }.bind(this))
-               }.bind(this))
+                _.each(currentModule.value, function(el, index) {
+                    _.each(el.configValueMap, function(e, key) {
+                        if (e == "true")
+                            el.configValueMap[key] = true
+                        else if (e == "false")
+                            el.configValueMap[key] = false
+                    }.bind(this))
+                }.bind(this))
                 sendMessage = {
                     originId: this.originId,
                     moduleId: id,
                     value: currentModule.value
                 }
             }
-            console.log(sendMessage)
             this.collection.saveModuleDynamicConfig(sendMessage);
         },
 
@@ -618,8 +613,8 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
 
         initSetupModule: function() {
             var ul = this.$el.find(".moduleListUl");
-            if(ul.find("li").size()>0)
-            ul.html("");
+            if (ul.find("li").size() > 0)
+                ul.html("");
             _.each(this.moduleList, function(el) {
                 var str = '<li><div class="checkbox"><label><input type="checkbox" id="' + el.id + '">' + el.moduleName + '</label></div></li>';
                 if (el.defaultDisplay) {

@@ -1,0 +1,36 @@
+<div class="client-limit-speed-panel fadeInLeft animated">
+    <h4>客户配置管理<small>/区域码率自定义设置/配置</small></h4>
+        <div class="well opt-ctn"></div>
+        <div class="well" style="display: none;">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="input-name" class="col-sm-4 control-label">流名:</label>
+                    <div class="col-sm-6" style="padding-top:8px;">
+                        <%=data.stream%>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="input-name" class="col-sm-4 control-label">全局码率配置:</label>
+                    <div class="col-sm-6" id="param-value">
+                        <input type="text" class="form-control" id="input-value-manage" value="<%=data.rate%>">
+                    </div>
+                </div>
+                <a href="javascript:void(0)" class="btn btn-primary save"><span class="glyphicon glyphicon-save"></span>保存</a>
+            </form>   
+
+        </div>
+        <div class="well" id="addRateNodeListCtn">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <!-- <label for="input-name" class="col-sm-2 control-label">PNO参数设置</label> -->
+                    <div class="col-sm-6">
+                        <a href="javascript:void(0)" class="btn btn-success add" style="margin-right: 10px">
+                            <span class="glyphicon glyphicon-plus"></span>添加
+                        </a>
+                    </div>
+                </div>
+            </form>
+            <hr>
+            <div class="table-ctn table-responsive"></div>
+        </div>
+</div>

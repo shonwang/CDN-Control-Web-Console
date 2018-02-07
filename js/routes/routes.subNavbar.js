@@ -137,12 +137,14 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     }, {
                         id: 'customerSetup-domainList-luaStatusCodeCache',
                         name: '状态码缓存',
+                        notShow:!AUTH_OBJ.StatusCodeCache,
                         hash: 'index.html#/domainList/' + query + '/luaStatusCodeCache/' + query2,
                         active: false,
                         children: []
                     }, {
                         id: 'customerSetup-domainList-luaCacheKeySetup',
                         name: '设置 Cache Key',
+                        notShow:!AUTH_OBJ.CacheKey,
                         hash: 'index.html#/domainList/' + query + '/luaCacheKeySetup/' + query2,
                         active: false,
                         children: []
@@ -155,6 +157,7 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     children: [{
                         id: 'customerSetup-domainList-luaDragPlay',
                         name: '拖拽播放',
+                        notShow: !AUTH_OBJ.DragPlay,
                         hash: 'index.html#/domainList/' + query + '/luaDragPlay/' + query2,
                         active: false,
                         children: []
@@ -167,6 +170,7 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     children: [{
                         id: 'customerSetup-domainList-luaClientLimitSpeed',
                         name: '客户端限速',
+                        notShow: !AUTH_OBJ.ClientSpeedLimit,
                         hash: 'index.html#/domainList/' + query + '/luaClientLimitSpeed/' + query2,
                         active: false,
                         children: []
@@ -179,12 +183,14 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     children: [{
                         id: 'customerSetup-domainList-luaHttpHeaderOpt',
                         name: 'HTTP头的增删改',
+                        notShow:!AUTH_OBJ.ModifyHttpHeader,
                         hash: 'index.html#/domainList/' + query + '/luaHttpHeaderOpt/' + query2,
                         active: false,
                         children: []
                     }, {
                         id: 'customerSetup-domainList-luaHttpHeaderCtr',
                         name: '常用HTTP头控制功能',
+                        notShow:!AUTH_OBJ.CommonHttpheadControl,
                         hash: 'index.html#/domainList/' + query + '/luaHttpHeaderCtr/' + query2,
                         active: false,
                         children: []
@@ -197,6 +203,7 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     children: [{
                         id: 'customerSetup-domainList-luaRequestArgsModify',
                         name: '请求参数的改写',
+                        notShow:!AUTH_OBJ.ModifyRequestParameters,
                         hash: 'index.html#/domainList/' + query + '/luaRequestArgsModify/' + query2,
                         active: false,
                         children: []
@@ -223,7 +230,7 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                         id: 'customerSetup-domainList-luaTimestamp',
                         name: '时间戳+共享秘钥防盗链',
                         hash: 'index.html#/domainList/' + query + '/luaTimestamp/' + query2,
-                        //notShow: !AUTH_OBJ.TimeSafetychain,
+                        notShow: !AUTH_OBJ.TimeSafetychain,
                         active: false,
                         children: []
                     }]
@@ -436,6 +443,18 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                             hash: 'index.html#/pnoSetup/' + query,
                             active: false,
                             children: []
+                        },{
+                            id:'customerSetup-checkUrl',
+                            name:'文件一致性校验',
+                            hash: 'index.html#/checkUrl/' + query,
+                            active: false,
+                            children: []
+                        },{
+                            id:'customerSetup-codeRate',
+                            name:'区域码率自定义配置',
+                            hash: 'index.html#/codeRate/' + query,
+                            active: false,
+                            children: []
                         }]
                     }],
                     menuOptions = {
@@ -469,6 +488,26 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                 }
             },
 
+            setUpCodeRateManageNavbar:function(query,query2){
+                var menu = [{
+                    id: 'customerSetup-codeRate-codeRateManage',
+                    name: '码率配置',
+                    hash: 'index.html#/codeRate/' + query + '/manage/' + query2,
+                    children: []
+                }];
+
+                if (!this.codeRateManageNavbar) {
+                    var menuOptions = {
+                        query: query,
+                        query2: query2,
+                        menuList: menu,
+                        backHash: 'index.html#/codeRate/' + query
+                    }
+                    this.codeRateManageNavbar = new SubNavbar(menuOptions);
+                    this.codeRateManageNavbar.select(this.curPage);
+                }                
+            },
+
             removeSubSideBar: function() {
                 //从域名列表页面、新域名管理页面进入到其他一级导航页面移除域名列表的二级导航、新域名管理的二级导航
                 if (this.curPage.indexOf("customerSetup-") == -1 &&
@@ -493,6 +532,12 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                 if (this.curPage.indexOf("setupSend") === -1 && this.setupSendNavbar) {
                     this.setupSendNavbar.$el.remove();
                     this.setupSendNavbar = null;
+                }
+
+                //从码率进入到管理页面
+                if(this.curPage.indexOf("customerSetup-codeRate") > -1 && this.codeRateManageNavbar){
+                    this.codeRateManageNavbar.$el.remove();
+                    this.codeRateManageNavbar = null;
                 }
             }
         }

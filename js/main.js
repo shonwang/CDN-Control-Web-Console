@@ -18,6 +18,13 @@
   "customMaintenance.view": "customMaintenance/customMaintenance.view",
   "blockUrl.model": "customerSetup/blockUrl/blockUrl.model",
   "blockUrl.view": "customerSetup/blockUrl/blockUrl.view",
+  "checkUrl.model": "customerSetup/checkUrl/checkUrl.model",
+  "checkUrl.view": "customerSetup/checkUrl/checkUrl.view",
+  "codeRate.model": "customerSetup/codeRate/codeRate.model",
+  "codeRate.view": "customerSetup/codeRate/codeRate.view",
+  "codeRateManage.model": "customerSetup/codeRate/codeRateManage/codeRateManage.model",
+  "codeRateManage.selectNode.view": "customerSetup/codeRate/codeRateManage/codeRateManage.selectNode.view",
+  "codeRateManage.view": "customerSetup/codeRate/codeRateManage/codeRateManage.view",
   "customerSetup.model": "customerSetup/customerSetup.model",
   "customerSetup.view": "customerSetup/customerSetup.view",
   "domainList.addDomain.view": "customerSetup/domainList/domainList.addDomain.view",
@@ -155,6 +162,9 @@
   "deviceManage.view": "deviceManage/deviceManage.view",
   "dispConfig.model": "dispConfig/dispConfig.model",
   "dispConfig.view": "dispConfig/dispConfig.view",
+  "newDispConfig.model": "dispConfig/newDispConfig.model",
+  "newDispConfig.view": "dispConfig/newDispConfig.view",
+  "selectNode.view": "dispConfig/selectNode.view",
   "dispGroup.model": "dispGroup/dispGroup.model",
   "dispGroup.view": "dispGroup/dispGroup.view",
   "dispSuggesttion.model": "dispSuggesttion/dispSuggesttion.model",
@@ -189,6 +199,7 @@
   "nodeManage.view": "nodeManage/nodeManage.view",
   "refreshManual.model": "refreshManual/refreshManual.model",
   "refreshManual.view": "refreshManual/refreshManual.view",
+  "routes.codeRateSetup": "routes/routes.codeRateSetup",
   "routes.customerSetup": "routes/routes.customerSetup",
   "routes.dispSetup": "routes/routes.dispSetup",
   "routes": "routes/routes",
@@ -228,6 +239,7 @@
   "setupTopoManage.edit.view": "setupTopoManage/setupTopoManage.edit.view",
   "setupTopoManage.history.view": "setupTopoManage/setupTopoManage.history.view",
   "setupTopoManage.model": "setupTopoManage/setupTopoManage.model",
+  "setupTopoManage.replaceNode.view": "setupTopoManage/setupTopoManage.replaceNode.view",
   "setupTopoManage.selectNode.view": "setupTopoManage/setupTopoManage.selectNode.view",
   "setupTopoManage.update.view": "setupTopoManage/setupTopoManage.update.view",
   "setupTopoManage.view": "setupTopoManage/setupTopoManage.view",
@@ -281,6 +293,8 @@ else if(window.DEBUG === 9)
     window.BASE_URL = "http://wq.center.cdn.ksyun.com";
 else if(window.DEBUG === 10)
     window.BASE_URL = "http://preonline.center.cdn.ksyun.com";
+else if(window.DEBUG === 11)
+    window.BASE_URL = "http://cdn.center.wq01.k8s.op.ksyun.com";
 requirejs.config({
     paths:REQ_PATH,
     urlArgs: new Date().valueOf()

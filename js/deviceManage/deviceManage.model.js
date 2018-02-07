@@ -14,14 +14,13 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
                                 'data-placement="top"' + 
                                 'data-content="' + this.get("reason") + '">'
 
-            if (status === 2 || status === 4 || status === 6) 
-                this.set("statusName", tips + '暂停</a>');
-            if (status === 1) 
-                this.set("statusName", '<span class="label label-success">运行中</span>');
-            // if (status === 4) this.set("statusName", "<span class='label label-danger'>宕机</span>");
-            // if (status === 6 || status === 12 || status === 14) this.set("statusName", "暂停且宕机");
-            if (status === 8)this.set("statusName", "<span class='label label-info'>启动中</span>");
-            // if (status === 10)this.set("statusName", "<span class='label label-warning'>暂停中</span>");
+            if (status === "1") this.set("statusName", "<span class='label label-success'>运行中</span>");
+            if (status === "4" || status === "20" || status === "28") 
+                this.set("statusName", "<span class='label label-danger'>宕机</span>");
+            if (status === "6" || status === "12" || status === "14" || status === "22" || status === "30") 
+                this.set("statusName", "暂停且宕机");
+            if (status === "2" || status === "8" || status === "10" || status === "16" || status === "18" || status === "24" || status === "26") 
+                this.set("statusName", "<span class='label label-warning'>暂停中</span>");
 
             if (!typeName && type == 12) this.set("typeName",'lvs');
             if (!typeName && type == 14) this.set("typeName",'cache');

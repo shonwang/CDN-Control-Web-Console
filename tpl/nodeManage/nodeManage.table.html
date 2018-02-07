@@ -6,24 +6,16 @@
         </th>
         <th>名称</th>
         <th>英文缩写</th>
-        <th>运营商</th>
-        <th>上联带宽</th>
-        <th>保底带宽</th>
-        <th>成本权值</th>
-        <th>上联带宽阈值</th>
-        <th>保底带宽阈值</th>  
-        <th>入口带宽zabbix名称</th> 
-        <th>出口带宽zabbix名称</th> 
-		    <th>计费类型</th>
-        <th>状态</th>
-        <th>开始计费时间</th> 
-        <th>创建时间</th>
+        <% for(var i = 0; i < titleList.length; i++) { %>
+          <% if (titleList[i].isChecked) { %>
+            <th><%=titleList[i].name%></th>
+          <% } %>
+        <% } %>
         <th>操作</th>   
-		    <th>操作说明</th> 
+        <th>操作说明</th> 
       </tr>
     </thead>
     <% for(var i = 0; i < data.length; i++) { %>
-		<%if(data[i].attributes.operatorId != 9){%>
 		<tbody>		
             <tr data-id="<%=data[i].attributes.id%>" style="background-color:<%if(i%2==0){%>#fff;<%}else{%>#f9f9f9;<%}%>">
               <th scope="row">
@@ -35,18 +27,33 @@
                   </a>
               </td>
               <td><%=data[i].attributes["name"]%></td>
-              <td><%=data[i].attributes["operatorName"]%></td>
-              <td><%=data[i].attributes["maxBandwidth"]%></td>
-              <td><%=data[i].attributes["minBandwidth"]%></td>
-              <td><%=data[i].attributes["unitPrice"]%></td>
-              <td><%=data[i].attributes["maxBandwidthThreshold"]%></td>
-              <td><%=data[i].attributes["minBandwidthThreshold"]%></td>
-              <td><%=data[i].attributes["inZabName"]%></td>
-              <td><%=data[i].attributes["outZabName"]%></td>
-			        <td><%=data[i].attributes["chargingTypeName"]%></td>
-              <td><%=data[i].attributes["statusName"]%></td>
-              <td><%=data[i].attributes["startChargingTimeFormated"]%></td>
-              <td><%=data[i].attributes["createTimeFormated"]%></td>
+              <%if(data[i].attributes.operatorId != 9){%>
+                <% for(var j = 0; j < titleList.length; j++) { %>
+                   <% if (titleList[j].isChecked) { %>
+                      <td><%=data[i].attributes[titleList[j].key]%></td>
+                   <% } %>
+                <% } %>
+              <%}else{%>
+                <% for(var j = 0; j < titleList.length; j++) { %>
+                   <% if (titleList[j].isChecked && titleList[j].isMultiRows) { %>
+                      <td>
+                        <%if(data[i].attributes['rsNodeCorpDtos'].length !== 0){%>
+                        <table class="table">
+                          <%for(k = 0;k < data[i].attributes['rsNodeCorpDtos'].length;k++){%>
+                          <tr>
+                            <td><%=data[i].attributes["rsNodeCorpDtos"][k][titleList[j].key] || "---"%></td>
+                          </tr>
+                          <%}%>
+                        </table>
+                        <%}else{%>
+                          ---
+                        <%}%>
+                      </td>
+                   <% } else if (titleList[j].isChecked){ %>
+                      <td><%=data[i].attributes[titleList[j].key]%></td>
+                   <% } %>
+                <% } %>
+              <%}%>
               <td>
 				         <%if(data[i].attributes['status']!=3){%>
                   <% if (permission.EditNode) { %>
@@ -96,97 +103,5 @@
       			  </td>
             </tr>
 		</tbody>
-		<%}else{%>
-		<tbody>	
-        <tr data-id="<%=data[i].attributes.id%>" style="background-color:<%if(i%2==0){%>#fff;<%}else{%>#f9f9f9;<%}%>">
-              <th scope="row" rowspan="<%=data[i].attributes['rsNodeCorpDtos'].length%>">
-                  <input type="checkbox" id="<%=data[i].attributes['id']%>" <% if (data[i].attributes["isChecked"]) { %>checked="true"<% } %>>
-              </th>
-              <td rowspan="<%=data[i].attributes['rsNodeCorpDtos'].length%>">
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="node-name">
-                    <%=data[i].attributes["chName"]%>
-                  </a>
-              </td>
-              <td rowspan="<%=data[i].attributes['rsNodeCorpDtos'].length%>"><%=data[i].attributes["name"]%></td>
-    			  <%if(data[i].attributes["rsNodeCorpDtos"] && data[i].attributes["rsNodeCorpDtos"].length>0){%>
-    				  <td><%=data[i].attributes["rsNodeCorpDtos"][0]["operatorName"] || "---"%></td>
-    				  <td><%=data[i].attributes["rsNodeCorpDtos"][0]["maxBandwidth"]%></td>
-    				  <td><%=data[i].attributes["rsNodeCorpDtos"][0]["minBandwidth"]%></td>
-    				  <td><%=data[i].attributes["rsNodeCorpDtos"][0]["unitPrice"]%></td>
-    				  <td><%=data[i].attributes["rsNodeCorpDtos"][0]["maxBandwidthThreshold"]%></td>
-    				  <td><%=data[i].attributes["rsNodeCorpDtos"][0]["minBandwidthThreshold"]%></td>
-    				  <td><%=data[i].attributes["rsNodeCorpDtos"][0]["inZabName"]%></td>
-    				  <td><%=data[i].attributes["rsNodeCorpDtos"][0]["outZabName"]%></td>
-    				  <td><%=data[i].attributes["rsNodeCorpDtos"][0]["chargingTypeName"]%></td>
-    			  <%}else{%>
-				      <td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td>
-			      <%}%>
-			  <!--td rowspan="<%=data[i].attributes['rsNodeCorpDtos'].length%>"><%=data[i].attributes["chargingTypeName"]%></td-->
-              <td rowspan="<%=data[i].attributes['rsNodeCorpDtos'].length%>"><%=data[i].attributes["statusName"]%></td>
-              <td rowspan="<%=data[i].attributes['rsNodeCorpDtos'].length%>"><%=data[i].attributes["startChargingTimeFormated"]%></td>
-              <td rowspan="<%=data[i].attributes['rsNodeCorpDtos'].length%>"><%=data[i].attributes["createTimeFormated"]%></td>
-              <td rowspan="<%=data[i].attributes['rsNodeCorpDtos'].length%>">
-				    <%if(data[i].attributes['status']!=3){%>
-                  <% if (permission.EditNode) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="edit" title="编辑">
-                      <span class="glyphicon glyphicon-edit"></span>
-                  </a>
-                  <% } %>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="disp-info" title="调度组信息">
-                      <span class="glyphicon glyphicon-list-alt"></span>
-                  </a>
-                  <% if (data[i].attributes.status !== 1 && permission.EnableorPauseNode) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="play" title="开启">
-                      <span class="glyphicon glyphicon-play-circle"></span>
-                  </a>
-                  <% } %>
-<!--                   <% if (data[i].attributes.status === 1) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="hangup" title="挂起">
-                      <span class="glyphicon glyphicon-time"></span>
-                  </a>
-                  <% } %> -->
-                  <% if (data[i].attributes.status === 1 && permission.EnableorPauseNode) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="stop" title="暂停">
-                      <span class="glyphicon glyphicon-pause"></span>
-                  </a>
-                  <%}else if(data[i].attributes.status === 4 && permission.EnableorPauseNode){%>
-                   <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="init" title="配置初始化">
-                      <span class="glyphicon glyphicon-repeat"></span>
-                  </a>
-                  <%}else if(data[i].attributes.status === 2 && permission.EnableorPauseNode){%>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="start" title="启用">
-                      <span class="glyphicon glyphicon-off"></span>
-                  </a>
-                  <%}%>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="delete" title="删除">
-                      <span class="glyphicon glyphicon-trash"></span>
-                  </a>
-				    <%}%>
-              </td>
-			         <td rowspan="<%=data[i].attributes['rsNodeCorpDtos'].length%>">
-				        <% if (data[i].attributes.status !== 1 && permission.EnableorPauseNode) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="operateDetail">
-                      操作详情
-                  </a>
-				        <% }else{ %>
-				          ---
-				        <%}%>
-			        </td>
-        </tr>
-  			<%for(j=1;j<data[i].attributes['rsNodeCorpDtos'].length;j++){%>
-  			<tr style="background-color:<%if(i%2==0){%>#fff;<%}else{%>#f9f9f9;<%}%>">
-  				<td><%=data[i].attributes["rsNodeCorpDtos"][j].operatorName || "---"%></td>
-  				<td><%=data[i].attributes["rsNodeCorpDtos"][j].maxBandwidth%></td>
-  				<td><%=data[i].attributes["rsNodeCorpDtos"][j].minBandwidth%></td>
-  				<td><%=data[i].attributes["rsNodeCorpDtos"][j].unitPrice%></td>
-  				<td><%=data[i].attributes["rsNodeCorpDtos"][j].maxBandwidthThreshold%></td>
-  				<td><%=data[i].attributes["rsNodeCorpDtos"][j].minBandwidthThreshold%></td>
-  				<td><%=data[i].attributes["rsNodeCorpDtos"][j].inZabName%></td>
-  				<td><%=data[i].attributes["rsNodeCorpDtos"][j].outZabName%></td>
-  				<td><%=data[i].attributes["rsNodeCorpDtos"][j].chargingTypeName%></td>
-  			</tr>
-  			<%}%>
-		</tbody>
-		<%}%>
     <% } %>  
 </table>

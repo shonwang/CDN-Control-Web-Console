@@ -7,11 +7,6 @@ define("setupSendingSwitch.view", ['require', 'exports', 'template', 'modal.view
             this.options = options
             this.collection = options.collection;
 
-            this.collection.off("set.deliveryswitch.success");
-            this.collection.off("set.deliveryswitch.error");
-            this.collection.on("set.deliveryswitch.success", $.proxy(this.setSwitchSuccess, this));
-            this.collection.on("set.deliveryswitch.error", $.proxy(this.onGetError, this));
-
             this.collection.off("check.haveTask.success")
             this.collection.off("check.haveTask.error")
             this.collection.on("check.haveTask.success", $.proxy(this.onCheckTaskSuccess,this))
@@ -33,6 +28,10 @@ define("setupSendingSwitch.view", ['require', 'exports', 'template', 'modal.view
                     Utility.confirm("关闭下发开关，将无法进行配置下发操作，请确认是否执行该操作",function(){
                         require(['setupTopoManage.model'], function(SetupTopoManageModel) {
                             var mySetupTopoManageModel = new SetupTopoManageModel();
+                            mySetupTopoManageModel.off("set.deliveryswitch.success");
+                            mySetupTopoManageModel.off("set.deliveryswitch.error");
+                            mySetupTopoManageModel.on("set.deliveryswitch.success", $.proxy(this.setSwitchSuccess, this));
+                            mySetupTopoManageModel.on("set.deliveryswitch.error", $.proxy(this.onGetError, this));
                             if(this.eventTarget.id=="openapiSwitch" || this.eventTarget.id=="centralControlSwitch"){
                                 var querys={
                                      "platformId":"202",
@@ -58,16 +57,18 @@ define("setupSendingSwitch.view", ['require', 'exports', 'template', 'modal.view
                     }else if(this.eventTarget.id=="live-openapiSwitch" || this.eventTarget.id=="live-centralControlSwitch"){
                       this.collection.checkIsHaveInitTask({"platformId":"203"})
                     }
-                    this.onCheckTaskSuccess();
+                    this.eventTarget.checked=false
                 }
         },
 
         onCheckTaskSuccess:function(res){
-              //res=[]
-              res=[1,2]
               Utility.confirm(res.length==0?"是否确定开启下发开关？":"正在进行配置初始化操作，是否开启下发开关？",function(){
                  require(['setupTopoManage.model'], function(SetupTopoManageModel) {
                     var mySetupTopoManageModel = new SetupTopoManageModel();
+                    mySetupTopoManageModel.off("set.deliveryswitch.success");
+                    mySetupTopoManageModel.off("set.deliveryswitch.error");
+                    mySetupTopoManageModel.on("set.deliveryswitch.success", $.proxy(this.setSwitchSuccess, this));
+                    mySetupTopoManageModel.on("set.deliveryswitch.error", $.proxy(this.onGetError, this));
                     if(this.eventTarget.id=="openapiSwitch" || this.eventTarget.id=="centralControlSwitch"){
                         var querys={
                              "platformId":"202",
@@ -86,7 +87,7 @@ define("setupSendingSwitch.view", ['require', 'exports', 'template', 'modal.view
                   }.bind(this))
               this.eventTarget.checked=true
               }.bind(this))
-              this.eventTarget.checked=!this.eventTarget.checked
+              this.eventTarget.checked=false
         },
 
         setSwitchSuccess:function(){

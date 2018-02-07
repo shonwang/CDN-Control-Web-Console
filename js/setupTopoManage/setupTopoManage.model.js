@@ -205,7 +205,7 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
         },
 
         setdeliveryswitch:function(args){
-           var url = BASE_URL + "cd/system/config/setdeliveryswitch",
+           var url = BASE_URL + "/cd/system/config/setdeliveryswitch",
                 successCallback = function(res) {
                     this.trigger("set.deliveryswitch.success");
                 }.bind(this),
@@ -218,7 +218,7 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
         startCreateSetup:function(args){
             var url = BASE_URL + "/cd/node/updatecfg/topology/start",
                 successCallback = function(res) {
-                    this.trigger("start.createSetup.success");
+                    this.trigger("start.createSetup.success",res);
                 }.bind(this),
                 errorCallback = function(response) {
                     this.trigger("start.createSetup.error", response);

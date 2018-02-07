@@ -57,13 +57,12 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                 this.collection.on("create.sendTask.error", $.proxy(this.onGetError, this));
                 this.box = $('<div></div>')
                 this.isFirst = false
-                console.log(this.nodePlatformId)
             },
 
             onGetUpdateSetupSuccess: function(res) {
                 console.log(res)
                 this.topoData = res;
-                this.topoData.configUpdateProgress.job_status = 1
+               // this.topoData.configUpdateProgress.job_status = 1
                // this.topoData.initProgress.job_status=1
                 var statusArray=["","更新中","更新完成","系统或数据异常，导致更新失败"];
                 if (!this.isFirst) {
@@ -89,7 +88,6 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                         _.each(diffDomainArray,function(el){
                             str += "<span>" + el + "</span><br>";
                         }.bind(this))
-                      //  str += "<span>" + this.topoData.initProgress.diffDomains + "</span><br>";
                         $(str).appendTo(this.$el.find(".statusBox pre").find("code"));
                         var scrollHeight =this.$el.find(".statusBox code").prop("scrollHeight");
                         this.$el.find(".statusBox code").scrollTop(scrollHeight)
@@ -120,9 +118,9 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
 
                 if (this.topoData.configDeliverySwitch) {
                     this.$el.find(".createSetup").attr("disabled", "disabled")
-                   // this.$el.find(".sendSetup").attr("disabled", "disabled")
+                    this.$el.find(".sendSetup").attr("disabled", "disabled")
                 } else {
-                    //this.$el.find(".sendSetup").attr("disabled", "disabled")
+                    this.$el.find(".sendSetup").attr("disabled", "disabled")
                 }
             },
 
@@ -140,7 +138,11 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                 }.bind(this), 2000)
             },
 
-            startCreateSetupSuccess: function() {
+            startCreateSetupSuccess: function(res) {
+                if(res && res.message){
+                    alert(res.message);
+                    return;
+                }
                 var showStatus = "";           
                 var showStatus = setInterval(function() {
                     if (this.topoData.configUpdateProgress.job_status == 1) {
@@ -155,7 +157,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                     }
                     if (this.topoData.configUpdateProgress.job_status != 1) {
                         clearInterval(showStatus)
-                        if(this.topoData.initProgress.job_status==2)
+                        if(this.topoData.configUpdateProgress.job_status==2)
                             this.$el.find(".sendSetup").removeAttr("disabled")
                     }
                 }.bind(this), 2000)
@@ -164,10 +166,10 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
             onClickSendSetupBtn: function() {
                 if (!this.topoData.basicinfo.needToUpdateCfg) {
                     Utility.confirm("本次拓扑配置修改后无需对节点进行配置下发", function() {
-                        /* this.collection.setdeliveryswitch({
+                         this.collection.setdeliveryswitch({
                            "platformId":this.topoData.basicinfo.platformId,
                            "switch":true
-                         })*/
+                         })
                         this.options.onCancelCallback && this.options.onCancelCallback();
                     }.bind(this))
                 } else {
@@ -254,7 +256,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                     this.$el.find(".createSetup").removeAttr("disabled")
                 else {
                     this.$el.find(".createSetup").attr("disabled", "disabled")
-                   // this.$el.find(".sendSetup").attr("disabled", "disabled")
+                    this.$el.find(".sendSetup").attr("disabled", "disabled")
                 }
             },
 

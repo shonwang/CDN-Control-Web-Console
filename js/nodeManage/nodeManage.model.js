@@ -400,7 +400,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
         },
 
         setdeliveryswitch:function(args){
-           var url = BASE_URL + "cd/system/config/setdeliveryswitch",
+           var url = BASE_URL + "/cd/system/config/setdeliveryswitch",
                 successCallback = function(res) {
                     this.trigger("set.deliveryswitch.success");
                 }.bind(this),

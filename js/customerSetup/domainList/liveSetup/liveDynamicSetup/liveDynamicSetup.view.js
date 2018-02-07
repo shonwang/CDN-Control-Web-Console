@@ -87,7 +87,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                 moduleNodeRoot.find(".group-ctn").html(module.groupTemplate);
 
                 moduleNodeRoot.find(".glyphicon-question-sign").popover();
-                moduleNodeRoot.find(".moduleList-pannel .keyInput").on("blur", $.proxy(this.onValueInputBlur, this))
+                moduleNodeRoot.find(".group-ctn .keyInput").on("blur", $.proxy(this.onValueInputBlur, this))
                 moduleNodeRoot.find("textarea").on("blur", $.proxy(this.onValueInputBlur, this))
                 this.initAllDropdownMenu(res);
                 moduleNodeRoot.find(".addModuleKey").on("click", $.proxy(this.onClickAddModuleKey, this))
@@ -407,7 +407,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                 _.each(currentModule.groupList, function(group) {
                     _.each(group.configItemList, function(key) {
                         if (key.valueType == 1 || key.valueType == 3 || key.valueType == 5 || key.valueType == 10) {
-                            if (key.value + "" == null + "") {
+                            if (key.value + "" == null + "" || key.value=="") {
                                 value[0].configValueMap[key.id] = null;
                             } else if ((key.value === "" && key.valueType == 1) || (key.value === "" && key.valueType == 10)){
                                 //errorMessage = errorMessage + key.itemName + "不能为空字符串！<br>"
@@ -607,6 +607,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             id = $(eventTarget).attr("id");
             var currentKey = this.getCurrentKey(id);
             currentKey.value = $(eventTarget).val();
+            console.log(currentKey.value)
         },
 
         initGroupList: function(groupData) {

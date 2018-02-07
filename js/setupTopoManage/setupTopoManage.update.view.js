@@ -248,15 +248,18 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                     switch: eventTarget.checked
                 }
                 this.collection.setdeliveryswitch(setArgs)
-                this.setSwitchSuccess();
+                eventTarget.checked=!eventTarget.checked
             },
 
             setSwitchSuccess: function() {
-                if (!this.switchFlag)
+                if (!this.switchFlag){
                     this.$el.find(".createSetup").removeAttr("disabled")
+                    this.$el.find("#stopSetupSend").removeAttr("checked")
+                }
                 else {
                     this.$el.find(".createSetup").attr("disabled", "disabled")
                     this.$el.find(".sendSetup").attr("disabled", "disabled")
+                    this.$el.find("#stopSetupSend").attr("checked","true")
                 }
             },
 

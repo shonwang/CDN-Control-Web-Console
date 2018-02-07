@@ -271,7 +271,7 @@ define("utility", ['require','exports'], function(require, exports) {
         },
 
         isURL: function(str_url){
-            var strRegex = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/
+            var strRegex = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w\(\)]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w\(\)]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_\(\)]*)?\??(?:[-\+=&;%@.\w_\(\)]*)#?(?:[\w]*))?)$/
             return strRegex.test(str_url)
         },
 

@@ -26,12 +26,9 @@ define("setupTopoManage.history.view", ['require', 'exports', 'template', 'modal
                 this.collection.getTopoVersion({
                     innerId: this.model.get('id')
                 });
-                this.collection.off('set.version.success');
-                this.collection.off('set.version.error');
-                this.collection.on('set.version.success', $.proxy(this.onSetVersionSuccess, this));
-                this.collection.on('set.version.error', $.proxy(this.onGetError, this));
+                
             },
-
+            
             onSetVersionSuccess: function() {
                 // this.collection.getTopoVersion({
                 //     innerId: this.curVersion

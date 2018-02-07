@@ -2,6 +2,30 @@ define("routes.customerSetup", ['require', 'exports'],
     function(require, exports) {
         var RouterCustomerSetup = {
 
+            checkUrl:function(query){
+                require(['checkUrl.view', 'checkUrl.model'], function(CheckUrlView, CheckUrlModel) {
+                    this.curPage = 'customerSetup-checkUrl';
+                    this.navbarView.select('customerSetup', $.proxy(this.removeSubSideBar, this));
+                    this.setupCustomerSetupNavbar(query)
+                    var renderTarget = this.customerSetupNavbar.$el.find('.sub-content');
+
+                    if (!this.checkUrlModel)
+                        this.checkUrlModel = new CheckUrlModel();
+                    if (!this.checkUrlView) {
+                        var options = {
+                            collection: this.checkUrlModel,
+                            query: query
+                        };
+                        this.checkUrlView = new CheckUrlView(options);
+                        this.checkUrlView.render(renderTarget);
+                    } else {
+                        this.checkUrlView.update(query, renderTarget);
+                    }
+                    this.customerSetupNavbar.select(this.curPage);
+                    this.curView = this.checkUrlView;
+                }.bind(this));                
+            },
+
             pnoSetup: function(query) {
                 if (!AUTH_OBJ.DomainLists || !AUTH_OBJ.ManageCustomer ) return;
                 require(['pnoSetup.view', 'pnoSetup.model'], function(PNOSetupView, PNOSetupModel) {
@@ -184,6 +208,31 @@ define("routes.customerSetup", ['require', 'exports'],
                     this.curView = this.customerSetupView;
                 }.bind(this));
             },
+
+            codeRate: function(query) {
+                //if (!AUTH_OBJ.DomainLists || !AUTH_OBJ.ManageCustomer) return;
+                require(['codeRate.view', 'codeRate.model'], function(CodeRateView, CodeRateModel) {
+                    this.curPage = 'customerSetup-codeRate';
+                    this.navbarView.select('customerSetup', $.proxy(this.removeSubSideBar, this));
+                    this.setupCustomerSetupNavbar(query)
+                    var renderTarget = this.customerSetupNavbar.$el.find('.sub-content');
+
+                    if (!this.codeRateModel)
+                        this.codeRateModel = new CodeRateModel();
+                    if (!this.codeRateView) {
+                        var options = {
+                            collection: this.codeRateModel,
+                            query: query
+                        };
+                        this.codeRateView = new CodeRateView(options);
+                        this.codeRateView.render(renderTarget);
+                    } else {
+                        this.codeRateView.update(query, renderTarget);
+                    }
+                    this.customerSetupNavbar.select(this.curPage);
+                    this.curView = this.codeRateView;
+                }.bind(this));
+            },            
 
         }
 

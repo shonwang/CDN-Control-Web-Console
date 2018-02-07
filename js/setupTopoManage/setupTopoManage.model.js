@@ -66,6 +66,7 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
+
         getDeviceTypeList: function(args) {
             var url = BASE_URL + "/resource/rs/metaData/deviceType/list",
                 successCallback = function(res) {
@@ -79,6 +80,41 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
                     this.trigger('get.devicetype.error');
                 }.bind(this);
             Utility.getAjax(url, '', successCallback, errorCallback);
+        },
+         
+
+        getRuleInfo: function(args){
+            var url=BASE_URL+"/resource/topo/batch/getTopoRulesByNodeId",
+                successCallback=function(res){
+                    if(res){
+                        this.trigger("get.ruleInfo.success",res);
+                    }else{
+                        this.trigger("get.ruleInfo.error");
+                    }
+                }.bind(this),
+                errorCallback=function(response){
+                    this.trigger("get.ruleInfo.error");
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+        
+        deleteOrReplaceTopoInfo:function(args) {
+            var url=BASE_URL+"/resource/topo/batch/updateTopoOrStrategy",
+            successCallback=function(){
+                   if(args.operateType=='delete'){
+                     this.trigger("delete.topo.success");
+                   }else{
+                     this.trigger("replace.topo.success");
+                   }
+            }.bind(this),
+            errorCallback=function(response){
+                if(args.operateType=='delete'){
+                    this.trigger("delete.topo.error", response);
+                }else{
+                     this.trigger("replace.topo.error", response);
+                }
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
         topoAdd: function(args) {
@@ -100,7 +136,7 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
                 }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
-
+         
         topoModify: function(args) {
             var url = BASE_URL + "/resource/topo/modify",
                 successCallback = function(res) {

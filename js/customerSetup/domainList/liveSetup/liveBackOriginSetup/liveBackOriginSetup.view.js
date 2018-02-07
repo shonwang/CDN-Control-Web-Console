@@ -21,15 +21,28 @@ define("liveBackOriginSetup.view", ['require','exports', 'template', 'modal.view
                 notShowBtn: true
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"));
+            
+            this.collection.on("get.backSource.success", $.proxy(this.onGetBackSourceSuccess,this))
+            this.collection.on("get.backSource.error", $.proxy(this.onGetError, this));
+            this.collection.getBackSourceConfig({
+                originId:this.domainInfo.id
+            })
 
+            this.collection.on("save.backSource.success", $.proxy(this.onSaveBackSourceSuccess,this))
+            this.collection.on("save.backSource.error", $.proxy(this.onGetError, this));
+
+            this.$el.find(".advanced").hide();
+        },
+
+        onGetBackSourceSuccess:function(res){
+            this.backOiginParam = res;
+            
             require(["domainSetup.model"], function(DomainSetupModel){
                 var myDomainSetupModel = new DomainSetupModel();
                     myDomainSetupModel.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
                     myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
                     myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
             }.bind(this))
-
-            this.$el.find(".advanced").hide();
         },
 
         onGetDomainInfo: function(data){
@@ -64,8 +77,8 @@ define("liveBackOriginSetup.view", ['require','exports', 'template', 'modal.view
             // if (data.domainConf && data.domainConf.advanceOriginType !== null && data.domainConf.advanceOriginType !== undefined)
             //     this.defaultParam.originAdvanceType = data.domainConf.advanceOriginType;
 
-            if (data.domainConf && data.domainConf.originAddress !== null && data.domainConf.originAddress !== undefined)
-                this.defaultParam.originBaseDomain = data.domainConf.originAddress;
+            // if (data.domainConf && data.domainConf.originAddress !== null && data.domainConf.originAddress !== undefined)
+            //     this.defaultParam.originBaseDomain = data.domainConf.originAddress;
 
             // if (data.domainConf && data.domainConf.backsourcePolicy !== null && data.domainConf.backsourcePolicy !== undefined)
             //     this.defaultParam.originStrategy = data.domainConf.backsourcePolicy;
@@ -147,7 +160,8 @@ define("liveBackOriginSetup.view", ['require','exports', 'template', 'modal.view
             //     this.$el.find(".advanced").show();
             //     this.$el.find(".base").hide();
             // }
-            this.$el.find(".base #textarea-origin-type").val(this.defaultParam.originBaseDomain);
+            this.$el.find(".base #textarea-origin-type").val(this.backOiginParam.originAddress);
+            this.$el.find(".base #backup-origin-address").val(this.backOiginParam.backupOriginAddress);
             // this.$el.find(".default #primary").val(this.defaultParam.defaultPrimary);
             // this.$el.find(".default #secondary").val(this.defaultParam.defaultBackup);
             // this.$el.find(".unicom #primary").val(this.defaultParam.unicomPrimary);
@@ -168,27 +182,77 @@ define("liveBackOriginSetup.view", ['require','exports', 'template', 'modal.view
             if (this.protocol === 3)
                 this.$el.find("#origin-protocol-hdl").parent('label').hide();
 
-            if (this.defaultParam.originProtocol === 3){
+            if (this.backOiginParam.originProtocol === 3){
                 this.$el.find("#origin-protocol-rtmp").get(0).checked = true;
                 this.$el.find("#origin-protocol-hdl").get(0).checked = false;
-            } else if (this.defaultParam.originProtocol === 1){
+            } else if (this.backOiginParam.originProtocol === 1){
                 this.$el.find("#origin-protocol-rtmp").get(0).checked = false;
                 this.$el.find("#origin-protocol-hdl").get(0).checked = true;
             }
 
             this.initOriginTypeDropdown();
             this.$el.find(".base #textarea-origin-type").on("blur", $.proxy(this.onBlurTextarea, this))
+            this.$el.find(".base #backup-origin-address").on("blur", $.proxy(this.onBlurbackupOriginTextarea, this))
             //this.$el.find(".advanced textarea").on("blur", $.proxy(this.onBlurAdvancedTextarea, this))
             //this.$el.find(".strategy input[name='strategyRadios']").on("click", $.proxy(this.onClickStrategyRadio, this))
             this.$el.find("input[name='origin-protocol-options']").on("click", $.proxy(this.onClickOriginProtocolRadio, this))
+        },
+        
+        onBlurbackupOriginTextarea:function(event){
+            var eventTarget = event.srcElement || event.target,
+                value = eventTarget.value.trim();
+            if (value === "") return;
+            this.checkBackupOrigin();
+        },
+
+        checkBackupOrigin:function(){
+            var backupOriginAddress = this.$el.find(".base #backup-origin-address").val().trim();
+            var originType = this.backOiginParam.originType;
+            var domainName = this.userInfo.domain;
+            if(originType == 2){
+                //验证域名
+                if(domainName == backupOriginAddress){
+                    //域名不能与填写的域名相同
+                    alert("源站地址不能与加速域名相同");
+                    return false;
+                }
+                //域名校验
+                var result = Utility.isDomain(backupOriginAddress);
+                var isIPStr = Utility.isIP(backupOriginAddress);
+                if (result && !isIPStr && backupOriginAddress !== domainName && backupOriginAddress.substr(0, 1) !== "-" && backupOriginAddress.substr(-1, 1) !== "-"){
+                    return true;
+                } else {
+                    alert("域名填写错误");
+                    return false;
+                }
+            } else if(originType == 3){
+                //验证KS3域名，此情况只能填一个
+                //验证IP
+                if(domainName == backupOriginAddress){
+                    //域名不能与填写的域名相同
+                    alert("源站地址不能与加速域名相同");
+                    return false;
+                }
+                //域名校验
+                var result = Utility.isDomain(backupOriginAddress);
+                var isIPStr = Utility.isIP(backupOriginAddress);
+                if (result && !isIPStr && backupOriginAddress !== domainName && backupOriginAddress.substr(0, 1) !== "-" && backupOriginAddress.substr(-1, 1) !== "-"){
+                    return true;
+                }
+                else{
+                    alert("域名填写错误");
+                    return false;
+                }          
+            }
+            return true;
         },
 
         onClickOriginProtocolRadio: function(event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
-            this.defaultParam.originProtocol = parseInt($(eventTarget).val())
+            this.backOiginParam.originProtocol = parseInt($(eventTarget).val())
         },
-
+      
         initOriginTypeDropdown: function(){
             var  baseArray = [
                 {name: "域名回源", value: 2},
@@ -197,18 +261,18 @@ define("liveBackOriginSetup.view", ['require','exports', 'template', 'modal.view
             rootNode = this.$el.find(".base .origin-type");
 
             Utility.initDropMenu(rootNode, baseArray, function(value){
-                this.defaultParam.originBaseType = parseInt(value)
+                this.backOiginParam.originType = parseInt(value)
             }.bind(this));
 
             var defaultValue = _.find(baseArray, function(object){
-                return object.value === this.defaultParam.originBaseType;
+                return object.value === this.backOiginParam.originType;
             }.bind(this));
 
             if (defaultValue){
                 this.$el.find(".base #dropdown-origin-type .cur-value").html(defaultValue.name);
             } else {
                 this.$el.find(".base #dropdown-origin-type .cur-value").html(baseArray[0].name);
-                this.defaultParam.originBaseType = baseArray[0].value
+                this.backOiginParam.originType = baseArray[0].value
             }
 
             // var advancedArray = [
@@ -244,7 +308,7 @@ define("liveBackOriginSetup.view", ['require','exports', 'template', 'modal.view
         },
 
         onClickSaveBtn: function(){
-            if ((this.hostType === 2 && this.defaultParam.originBaseType === 1 && this.defaultParam.isUseAdvance === 1) || 
+            if ((this.hostType === 2 && this.backOiginParam.originBaseType === 1 && this.defaultParam.isUseAdvance === 1) || 
                 (this.hostType === 2 && this.defaultParam.isUseAdvance === 2)){
                 alert("修改回源Host设置为源站域名，不能使用IP回源");
                 return;
@@ -271,14 +335,16 @@ define("liveBackOriginSetup.view", ['require','exports', 'template', 'modal.view
             //         return;
             //     }
             // }
-
+           
+            var backupOriginAddress=this.$el.find(".base #backup-origin-address").val().trim();
             var postParam = {
                 "originId": this.domainInfo.id,
-                "domain" : this.domainInfo.domain,
-                "backsourceFlag": this.defaultParam.isUseAdvance === 1 ? 0 : 1, //配置高级回源策略的开启或关闭,0:关闭 1:开启
-                "originType": this.defaultParam.isUseAdvance === 1 ? this.defaultParam.originBaseType : this.defaultParam.originAdvanceType,
+              //  "domain" : this.domainInfo.domain,
+               // "backsourceFlag": this.defaultParam.isUseAdvance === 1 ? 0 : 1, //配置高级回源策略的开启或关闭,0:关闭 1:开启
+                "originType": this.defaultParam.isUseAdvance === 1 ? this.backOiginParam.originType : this.defaultParam.originAdvanceType,
                 "originAddress": _.uniq(this.$el.find(".base #textarea-origin-type").val().split(',')).join(','),
-                "originProtocol": this.defaultParam.originProtocol,
+                "originProtocol": this.backOiginParam.originProtocol,
+                "backupOriginAddress":backupOriginAddress===""?null: _.uniq(backupOriginAddress.split(',')).join(','),
                 // "backsourcePolicy": this.defaultParam.originStrategy,
                 // "backsourceBestcount": parseInt(this.$el.find("#ip-num").val()),
                 // "advanceConfigList":[{
@@ -299,7 +365,23 @@ define("liveBackOriginSetup.view", ['require','exports', 'template', 'modal.view
                 //     "addressBackup": _.uniq(this.$el.find(".mobile #secondary").val().split(',')).join(',') 
                 // }]
             }
-            this.collection.setBackSourceConfig(postParam)
+         //   console.log(postParam)
+            this.collection.saveBackSourceConfig(postParam)
+        },
+
+        onSaveBackSourceSuccess:function(){
+            alert("保存成功！");
+            this.update(this.options.query, this.options.query2, this.target);
+        },
+
+        update: function(query, query2, target){
+            this.options.query = query;
+            this.options.query2 = query2;
+            this.collection.off();
+            this.collection.reset();
+            this.$el.remove();
+            this.initialize(this.options);
+            this.render(target);
         },
     });
 

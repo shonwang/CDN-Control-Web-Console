@@ -14,7 +14,13 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
                     domain: domainInfo.domain,
                     uid: clientInfo.uid
                 }
-            this.$el = $(_.template(template['tpl/customerSetup/domainList/luaConfigListEdit/luaConfigListEdit.html'])());
+
+            var controlString = {
+                AdvancedHttpheadControl:AUTH_OBJ.AdvancedHttpheadControl,
+                AdvancedAccessControl:AUTH_OBJ.AdvancedAccessControl,
+                AdvancedSpeedLimit:AUTH_OBJ.AdvancedSpeedLimit
+            };
+            this.$el = $(_.template(template['tpl/customerSetup/domainList/luaConfigListEdit/luaConfigListEdit.html'])({data:controlString}));
             this.domainInfo = domainInfo;
             this.clientInfo = clientInfo;
             this.locationId = JSON.parse(options.query3),

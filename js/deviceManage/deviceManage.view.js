@@ -271,10 +271,14 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 type     : 2,
                 cancelButtonText : "关闭",
                 onOKCallback:  function(){
+                    var refreshFlag = false
+                    if (this.curDevice.get("type") != 203) {
+                        this.commonPopup.$el.find("#refresh").get(0).checked
+                    }
                     var options = {
                         "ids":[this.clickDeviceId],
                         "status": this.clickStatus,
-                        "refreshFlag": this.commonPopup.$el.find("#refresh").get(0).checked
+                        "refreshFlag": refreshFlag
                      }
 
                     this.collection.modifyStatus(options);
@@ -377,12 +381,16 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                       '<label>' +
                         '<input type="checkbox" value="" disabled checked>同步配置' +
                       '</label>' +
-                    '</div>' +
-                    '<div class="checkbox">' +
-                      '<label>' +
-                        '<input type="checkbox" value="" id="refresh">同步刷新' +
-                      '</label>' +
                     '</div>'
+                this.curDevice = this.collection.get(this.clickDeviceId);
+                if (this.curDevice.get("type") != 203) {
+                    body = body + 
+                        '<div class="checkbox">' +
+                          '<label>' +
+                            '<input type="checkbox" value="" id="refresh">同步刷新' +
+                          '</label>' +
+                        '</div>'
+                }
                 this.commonPopup.$el.find('.close').show();
                 this.commonPopup.$el.find('.commonPopup').show();
                 this.commonPopup.$el.find('h4').html('恢复设备');
@@ -718,7 +726,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             var statusArray = [
                 {name: "全部", value: "All"},
                 {name: "运行中", value: 1},
-                {name: "暂停中", value: 2}
+                {name: "暂停中", value: 2},
+                {name: "启动中", value:8}
             ],
             rootNode = this.$el.find(".dropdown-status");
             Utility.initDropMenu(rootNode, statusArray, function(value){

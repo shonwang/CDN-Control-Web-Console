@@ -18,6 +18,7 @@
         this.scrollBarHeight=options.scrollBarHeight || null;
         this.isDisabled = options.isDisabled || false;
         this.disabledNode = options.disabledNode || null;
+        this.bottom = options.bottom || null ;
         this.init();
 
     };
@@ -244,6 +245,10 @@
             //设置select的宽
             if (selectWidth) {
                 selectContainer.style.width = selectWidth + "px";
+            }
+            if(this.bottom){
+                selectContainer.style.top = 'auto';
+                selectContainer.style.bottom = this.bottom + "px";
             }
 
             var selectObject = this.selectObject;

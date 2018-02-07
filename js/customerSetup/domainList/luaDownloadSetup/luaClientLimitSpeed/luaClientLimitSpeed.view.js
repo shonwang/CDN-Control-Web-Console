@@ -98,7 +98,6 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
                 timeLimitList: [],
             }
 
-            this.$el.hide();
         },
 
         onSaveSuccess: function(){
@@ -292,7 +291,7 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
                 this.$el.find("#dropdown-byte-limit-unit .cur-value").html(unitArray[0].name);
         },
 
-        onClickByteLimitToggle: function(){
+        onClickByteLimitToggle: function(event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){
@@ -305,7 +304,7 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
             Utility.onContentChange();
         },
 
-        onClickSetLimitToggle: function(){
+        onClickSetLimitToggle: function(event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){

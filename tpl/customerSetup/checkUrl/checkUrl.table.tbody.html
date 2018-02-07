@@ -1,0 +1,15 @@
+<% for(var i=0;i<list.length;i++){ %>
+<tr>
+	<td><%=list[i].get("url")%></td>
+	<td><%=list[i].get("opTimeName")%></td>
+	<td><%=list[i].get("verifyType")%></td>
+	<td><%=list[i].get("originVerifyCode")%></td>
+	<td><%=list[i].get("statusName")%></td>
+	<td><%=list[i].get("successRateName")%></td>
+	<td>
+		<%if(list[i].get("successRate")!=1){%>
+		<a href="javascript:void(0)" class="cdn-checkurl-detail" data-id="<%=list[i].get('id')%>">详情</a>
+		<%}%>
+	</td>
+</tr>
+<% } %>

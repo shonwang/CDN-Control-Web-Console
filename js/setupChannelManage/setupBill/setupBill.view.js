@@ -36,6 +36,7 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.urlParameterVo = data.urlParameterVo;
                     this.config = JSON.parse(data.originVersion.config);
                     this.versionType = data.originVersion.versionType || 1;
+                    this.liveOriginData=data.backSourceDto;
                 }
             } catch(e){
                 alert("返回的JSON数据有问题！")
@@ -106,7 +107,18 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             }));
             this.cnameTable.appendTo(this.$el.find(".bill-ctn"));
 
-            this.initOriginSetup();
+            var type = this.config.originDomain.type,
+                applicationType = this.config.originDomain.applicationType;
+
+            if (applicationType == 202) {
+                //下载
+                this.initOriginSetup();
+            } else if (applicationType == 203) {
+                //直播
+                this.initLiveOriginSetup();
+            } else {
+                alert("您的平台不是下载也不是直播，applicationType为" + applicationType);
+            }
         },
 
         initOriginSetup: function() {

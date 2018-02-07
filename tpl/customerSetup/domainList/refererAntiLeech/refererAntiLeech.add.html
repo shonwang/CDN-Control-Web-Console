@@ -28,7 +28,15 @@
                 <div class="alert alert-dismissable alert-info col-sm-offset-3">
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     提示：<br>
-                    1.不需要输入网址符http://，输入域名即可，如www.test.com；或者IP，110.123.123.123；支持输入通配符，如*.test.com。<br>
+                    1.不需要输入网址符http://，输入域名即可，如www.test.com；支持输入通配符，如*.test.com。<br>
+                     配置效果说明：<br>
+                     （1） *.baidu.com 匹配包含 xxx.baidu.com 的字符串<br>
+                     （2） www.baidu.* 匹配包含或只有www.baiduxxx的字符串<br>
+                     （3） *.baidu.* 匹配包含baidu的字符串，且匹配xxxbaiduxxx<br>
+                     （4） baidu.* 匹配包含baiduxxx的字符串<br>
+                     （5） www.baidu.com 精确匹配 www.baidu.com 的字符串<br>
+                     （6） baidu.com:90 精确匹配 baidu.com:90 的字符串<br>
+                     （7） *.baidu.com:90 匹配包含 xxxbaidu.com:90 的字符串<br>
                     2.多个域名使用回车进行分隔,最多可以设置100条。<br>
                 </div>
             </div>

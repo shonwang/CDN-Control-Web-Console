@@ -167,7 +167,7 @@ define("codeRate.view", ['require', 'exports', 'template', 'utility', "modal.vie
                     {name: "100条", value: 100}
                 ]
                 Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value){
-                    this.queryArgs.count = value;
+                    this.queryArgs.pageSize = value;
                     this.refreshList();
                 }.bind(this));
             },

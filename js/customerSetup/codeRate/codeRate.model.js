@@ -11,7 +11,7 @@ define("codeRate.model", ['require', 'exports', 'utility'], function(require, ex
             if(areaConfNum == 0) {
                 this.set("areaConfNumName","否");
             }
-            if(areaConfNum == 1){
+            else if(areaConfNum > 0){
                 this.set("areaConfNumName","<span class='text-danger'>是</span>");
             }
         }

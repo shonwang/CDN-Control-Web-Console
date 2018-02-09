@@ -1109,3 +1109,7 @@ td .table {
 .hideOperator{
   display: none;
 }
+
+.codeRate-add-tableList .table-responsive {
+  height:420px;overflow-y: auto;
+}

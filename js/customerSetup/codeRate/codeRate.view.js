@@ -322,10 +322,15 @@ define("codeRate.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 this.$el.find(".modify").on("click", $.proxy(this.onClickModify, this));
                 this.$el.find("#cdn-search-btn").on("click", $.proxy(this.onClickSearchButton, this));
 
+                this.$el.find('#cdn-search-text').on('keydown', $.proxy(this.enterKeyBindQuery, this)); 
 
                 //this.collection.rateQuery();
 
                 this.onClickQueryButton();
+            },
+
+            enterKeyBindQuery: function(e){
+                if (e.keyCode == 13) this.onClickSearchButton();
             },
 
             onClickSearchButton:function(){

@@ -84,10 +84,13 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                     module.groupTemplate = this.initModuleArrayTypeTable(module.configKeyList, module.value, module.id)
                 }
                 moduleNodeRoot.find(".group-ctn").html(module.groupTemplate);
-
                 moduleNodeRoot.find(".glyphicon-question-sign").popover();
-                moduleNodeRoot.find(".moduleList-pannel .keyInput").on("blur", $.proxy(this.onValueInputBlur, this))
+                moduleNodeRoot.find(".group-ctn .keyInput").on("blur", $.proxy(this.onValueInputBlur, this))
                 moduleNodeRoot.find("textarea").on("blur", $.proxy(this.onValueInputBlur, this))
+                _.each(this.moduleListDetail, function(module,index) {
+                    if(module.id == this.saveModuleId)
+                        this.moduleListDetail[index]=res[0]
+               }.bind(this))
                 this.initAllDropdownMenu(res);
                 moduleNodeRoot.find(".addModuleKey").on("click", $.proxy(this.onClickAddModuleKey, this))
                 moduleNodeRoot.find(".editModuleKey").on("click", $.proxy(this.onClickEditModuleKey, this))
@@ -180,8 +183,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                                         key.value = false
                                     else
                                         key.value = value;
-                                }.bind(this))
-
+                                }.bind(this))                     
                                 var defaultValue = null
                                 if (key.valueType == 5 || key.valueType == 6) {
                                     defaultValue = _.find(valueList, function(el) {
@@ -406,7 +408,9 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                         if (key.valueType == 1 || key.valueType == 3 || key.valueType == 5 || key.valueType == 10) {
                             if (key.value + "" == null + "") {
                                 value[0].configValueMap[key.id] = null;
-                            } else if ((key.value === "" && key.valueType == 1) || (key.value === "" && key.valueType == 10)) {
+                            } else if((key.valueType==1 &&key.value=="") || (key.valueType==10 && key.value=="")){
+                                value[0].configValueMap[key.id] = null;
+                            }else if ((key.value === "" && key.valueType == 1) || (key.value === "" && key.valueType == 10)) {
                                 //errorMessage = errorMessage + key.itemName + "不能为空字符串！<br>"
                             } else {
                                 value[0].configValueMap[key.id] = parseInt(key.value)
@@ -602,6 +606,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
             id = $(eventTarget).attr("id");
             var currentKey = this.getCurrentKey(id);
             currentKey.value = $(eventTarget).val();
+            console.log(currentKey.value)
         },
 
         initGroupList: function(groupData) {

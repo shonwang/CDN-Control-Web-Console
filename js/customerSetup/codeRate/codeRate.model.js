@@ -6,6 +6,14 @@ define("codeRate.model", ['require', 'exports', 'utility'], function(require, ex
 
             this.set("createTimeName",new Date(createTime).format("yyyy/MM/dd hh:mm:ss"));
             this.set("updateTimeName",new Date(updateTime).format("yyyy/MM/dd hh:mm:ss"));
+
+            var areaConfNum = this.get("areaConfNum");
+            if(areaConfNum == 0) {
+                this.set("areaConfNumName","否");
+            }
+            else if(areaConfNum > 0){
+                this.set("areaConfNumName","<span class='text-danger'>是</span>");
+            }
         }
     });
 

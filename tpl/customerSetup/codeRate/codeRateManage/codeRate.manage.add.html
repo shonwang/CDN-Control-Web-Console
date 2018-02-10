@@ -1,37 +1,37 @@
 <div>
     <form class="form-horizontal">
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom:5px;">
             <label for="input-name" class="col-sm-4 control-label">名称:</label>
             <div class="col-sm-6">
                <input type="text" class="form-control" id="area-label-name" value="<%=data.name%>">
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom:5px;">
             <label for="input-name" class="col-sm-4 control-label">码率:</label>
             <div class="col-sm-6" id="param-value">
-                <input type="text" class="form-control" id="rate-value" value="<%=data.rate%>">
+                <input type="text" class="form-control" id="rate-value" value="<%=data.rate%>" placeholder="码率多个时以英文逗号分隔">
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" style="display: none;">
             <label for="input-name" class="col-sm-4 control-label">&nbsp;</label>
             <div class="col-sm-6" id="param-value">
                 码率多个时以英文逗号分隔
             </div>
         </div>         
 
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom:5px;">
             <label for="modify-host" class="col-sm-4 control-label">节点:</label>
             <div class="col-sm-6 disp-domain">
-                <a href="javascript:void(0)" class="btn btn-default hide-disp-domain" style="display: none">
+                <a href="javascript:void(0)" class="btn btn-default hide-disp-domain">
                     <span class="glyphicon glyphicon-chevron-up"></span>
                     <span class="disp-domain-html">正在加载...</span>
                 </a>
-                <a href="javascript:void(0)" class="btn btn-default show-disp-domain">
+                <a href="javascript:void(0)" class="btn btn-default show-disp-domain" style="display: none">
                     <span class="glyphicon glyphicon-chevron-down"></span>
                     <span class="disp-domain-html">正在加载...</span>
                 </a>
             </div>
         </div>        
     </form>
-    <div class="disp-list-ctn" style="display: none;"></div>
+    <div class="disp-list-ctn codeRate-add-tableList"></div>
 </div>

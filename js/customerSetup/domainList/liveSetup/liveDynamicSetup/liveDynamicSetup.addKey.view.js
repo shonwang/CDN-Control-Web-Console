@@ -134,7 +134,6 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
             },
 
             getCurrentKey: function() {
-                var flag=true;
                 _.each(this.options.module.groupList, function(group) {
                     _.each(group.configItemList, function(key) {
                         if (key.valueType == 1 || key.valueType == 2 || key.valueType == 9 || key.valueType == 10) {
@@ -144,14 +143,7 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
                             //     var reg = new RegExp(key.validateRule, "g");
                             //     if (reg.test(value)) {
                                     if (key.valueType == 1 || key.valueType == 10){
-                                        if(value){
-                                            if(isNaN(value)){
-                                                flag=false;
-                                            }
-                                            value=parseInt(value)
-                                        }else{
-                                            flag=false;
-                                        }
+                                        if(value === "") value = null;
                                     }        
                                     this.defaultValue.configValueMap[key.id] = value
                             //     } else {
@@ -163,12 +155,7 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
                         }
                     }.bind(this))
                 }.bind(this))
-                if (!flag) {
-                    alert("数值型的配置项请输入数值型的值！");
-                    return false;
-                } else {
-                    return this.defaultValue;
-                }
+                return this.defaultValue;
             },
 
             render: function(target) {

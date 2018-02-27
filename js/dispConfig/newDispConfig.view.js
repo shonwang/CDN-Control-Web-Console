@@ -378,7 +378,8 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
             obj["dispGroupId"] = model.get("dispGroupId");
             obj["id"] = model.get("id");
             obj["regionLineId"] = model.get("region").id;
-            obj["regionName"] = model.get("region").name;               
+            obj["regionName"] = model.get("region").name;   
+            obj["ttl"] = model.get("ttl");            
             return obj;
         },
 

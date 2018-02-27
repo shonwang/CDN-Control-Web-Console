@@ -32,9 +32,9 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                     this.collection.on("get.nodeInitSetup.error", $.proxy(this.onGetError, this));
                     this.collection.getNodeProgress({
                         nodeId: this.model.get('id'),
-                        platformId:options.platformId
+                        platformId: options.platformId
                     });
-                    this.nodePlatformId=options.platformId
+                    this.nodePlatformId = options.platformId
                 }
 
                 this.collection.off("set.deliveryswitch.success");
@@ -59,52 +59,52 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                 this.box = $('<div></div>')
                 this.isFirst = false
             },
-            
-            showUpdateMsg:function(){
-                var statusArray=["","更新中","更新完成","系统或数据异常，导致更新失败"];
-                if(this.options.pageType==1 || this.pageType==2){
+
+            showUpdateMsg: function() {
+                var statusArray = ["", "更新中", "更新完成", "系统或数据异常，导致更新失败"];
+                if (this.options.pageType == 1 || this.pageType == 2) {
                     var str = "<span>更新状态：" + statusArray[this.topoData.configUpdateProgress.job_status] + "</span><br>";
                     str += "<span>更新进度：" + this.topoData.configUpdateProgress.progressPercentage + "</span><br>";
                     str += "<span>更新信息：" + this.topoData.configUpdateProgress.message + "</span><br>";
                     str += "<span>耗时：" + this.topoData.configUpdateProgress.expendTime + "</span><br>";
                     $(str).appendTo(this.$el.find(".statusBox pre").find("code"));
-                    var scrollHeight =this.$el.find(".statusBox code").prop("scrollHeight");
+                    var scrollHeight = this.$el.find(".statusBox code").prop("scrollHeight");
                     this.$el.find(".statusBox code").scrollTop(scrollHeight)
-                }else{
-                        var str = "<span>更新状态：" + statusArray[this.topoData.initProgress.job_status] + "</span><br>";
-                        str += "<span>更新进度：" + this.topoData.initProgress.progressPercentage + "</span><br>";
-                        str+="<span>有异构的域名：</span><br>"
-                        var diffDomainArray=this.topoData.initProgress.diffDomains;
-                        _.each(diffDomainArray,function(el){
-                            str += "<span>" + el + "</span><br>";
-                        }.bind(this))
-                        $(str).appendTo(this.$el.find(".statusBox pre").find("code"));
-                        var scrollHeight =this.$el.find(".statusBox code").prop("scrollHeight");
-                        this.$el.find(".statusBox code").scrollTop(scrollHeight)
+                } else {
+                    var str = "<span>更新状态：" + statusArray[this.topoData.initProgress.job_status] + "</span><br>";
+                    str += "<span>更新进度：" + this.topoData.initProgress.progressPercentage + "</span><br>";
+                    str += "<span>有异构的域名：</span><br>"
+                    var diffDomainArray = this.topoData.initProgress.diffDomains;
+                    _.each(diffDomainArray, function(el) {
+                        str += "<span>" + el + "</span><br>";
+                    }.bind(this))
+                    $(str).appendTo(this.$el.find(".statusBox pre").find("code"));
+                    var scrollHeight = this.$el.find(".statusBox code").prop("scrollHeight");
+                    this.$el.find(".statusBox code").scrollTop(scrollHeight)
                 }
             },
 
             onGetUpdateSetupSuccess: function(res) {
                 console.log(res)
                 this.topoData = res;
-               // this.topoData.configUpdateProgress.job_status=1
+                // this.topoData.configUpdateProgress.job_status=1
                 if (!this.isFirst) {
                     if (this.options.pageType == 2)
                         this.domainList = this.topoData.basicinfo.domains || ['没有关联的域名'];
                     else if (this.options.pageType == 3)
                         this.topoList = this.topoData.basicinfo.topology;
                     this.initSetup();
-                    if(this.options.pageType==1||this.options.pageType==2){
-                        if(this.topoData.configUpdateProgress.job_status==2)
+                    if (this.options.pageType == 1 || this.options.pageType == 2) {
+                        if (this.topoData.configUpdateProgress.job_status == 2)
                             this.showUpdateMsg();
-                    }else{
-                        if(this.topoData.initProgress.job_status==2)
+                    } else {
+                        if (this.topoData.initProgress.job_status == 2)
                             this.showUpdateMsg();
                     }
-                    this.isFirst = true;    
-                }else{
+                    this.isFirst = true;
+                } else {
                     this.showUpdateMsg();
-                }      
+                }
             },
 
             initSetup: function() {
@@ -131,14 +131,14 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                 if (this.topoData.configDeliverySwitch) {
                     this.$el.find(".createSetup").attr("disabled", "disabled")
                     this.$el.find(".sendSetup").attr("disabled", "disabled")
-                } else if((this.options.pageType==1&& !this.topoData.configDeliverySwitch)||
-                    (this.options.pageType==2 && !this.topoData.configDeliverySwitch)){
-                    if(this.topoData.configUpdateProgress.job_status==2)
+                } else if ((this.options.pageType == 1 && !this.topoData.configDeliverySwitch) ||
+                    (this.options.pageType == 2 && !this.topoData.configDeliverySwitch)) {
+                    if (this.topoData.configUpdateProgress.job_status == 2)
                         this.$el.find(".sendSetup").removeAttr("disabled")
                     else
                         this.$el.find(".sendSetup").attr("disabled", "disabled")
-                }else if(this.options.pageType==3 && !this.topoData.configDeliverySwitch){
-                    if(this.topoData.initProgress.job_status==2)
+                } else if (this.options.pageType == 3 && !this.topoData.configDeliverySwitch) {
+                    if (this.topoData.initProgress.job_status == 2)
                         this.$el.find(".sendSetup").removeAttr("disabled")
                     else
                         this.$el.find(".sendSetup").attr("disabled", "disabled")
@@ -149,22 +149,24 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                 var showStatus = "";
                 var showStatus = setInterval(function() {
                     if (this.topoData.initProgress.job_status == 1) {
-                        this.collection.getNodeProgress({nodeId:this.model.get('id')})
+                        this.collection.getNodeProgress({
+                            nodeId: this.model.get('id')
+                        })
                     }
-                    if (this.topoData.initProgress.job_status!=1) {
+                    if (this.topoData.initProgress.job_status != 1) {
                         clearInterval(showStatus)
-                        if(this.topoData.initProgress.job_status==2)
+                        if (this.topoData.initProgress.job_status == 2)
                             this.$el.find(".sendSetup").removeAttr("disabled")
                     }
                 }.bind(this), 2000)
             },
 
             startCreateSetupSuccess: function(res) {
-                if(res && res.message){
+                if (res && res.message) {
                     alert(res.message);
                     return;
                 }
-                var showStatus = "";           
+                var showStatus = "";
                 var showStatus = setInterval(function() {
                     if (this.topoData.configUpdateProgress.job_status == 1) {
                         if (this.options.pageType == 1)
@@ -178,7 +180,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                     }
                     if (this.topoData.configUpdateProgress.job_status != 1) {
                         clearInterval(showStatus)
-                        if(this.topoData.configUpdateProgress.job_status==2){
+                        if (this.topoData.configUpdateProgress.job_status == 2) {
                             this.$el.find(".sendSetup").removeAttr("disabled")
                         }
                     }
@@ -188,10 +190,10 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
             onClickSendSetupBtn: function() {
                 if (!this.topoData.basicinfo.needToUpdateCfg) {
                     Utility.confirm("本次拓扑配置修改后无需对节点进行配置下发", function() {
-                         this.collection.setdeliveryswitch({
-                           "platformId":this.topoData.basicinfo.platformId,
-                           "switch":true
-                         })
+                        this.collection.setdeliveryswitch({
+                            "platformId": this.topoData.basicinfo.platformId,
+                            "switch": true
+                        })
                         this.options.onCancelCallback && this.options.onCancelCallback();
                     }.bind(this))
                 } else {
@@ -270,56 +272,55 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                     switch: eventTarget.checked
                 }
                 this.collection.setdeliveryswitch(setArgs)
-                eventTarget.checked=!eventTarget.checked
+                eventTarget.checked = !eventTarget.checked
             },
 
             setSwitchSuccess: function() {
-                if (!this.switchFlag){
+                if (!this.switchFlag) {
                     this.$el.find(".createSetup").removeAttr("disabled")
                     this.$el.find("#stopSetupSend").removeAttr("checked")
-                    if(this.options.pageType==1 || this.options.pageType==2){
-                        if(this.topoData.configUpdateProgress.job_status==2)
+                    if (this.options.pageType == 1 || this.options.pageType == 2) {
+                        if (this.topoData.configUpdateProgress.job_status == 2)
                             this.$el.find('.sendSetup').removeAttr("disabled")
-                    }else{
-                        if(this.topoData.initProgress.job_status==2)
+                    } else {
+                        if (this.topoData.initProgress.job_status == 2)
                             this.$el.find('.sendSetup').removeAttr("disabled")
                     }
-                }
-                else {
+                } else {
                     this.$el.find(".createSetup").attr("disabled", "disabled")
                     this.$el.find(".sendSetup").attr("disabled", "disabled")
-                    this.$el.find("#stopSetupSend").attr("checked","true")
-                    this.$el.find('#stopSetupSend').prop('checked','true')
+                    this.$el.find("#stopSetupSend").attr("checked", "true")
+                    this.$el.find('#stopSetupSend').prop('checked', 'true')
                 }
             },
 
             onClickCreateSetupBtn: function() {
-                if (this.options.pageType == 1){
-                    if(this.topoData.configUpdateProgress.job_status==2){
+                if (this.options.pageType == 1) {
+                    if (this.topoData.configUpdateProgress.job_status == 2) {
                         alert('已完成配置生成操作');
                         return;
                     }
                     this.collection.startCreateSetup({
                         topologyId: this.model.get("id")
                     })
-                }else if (this.options.pageType == 2){
-                    if(this.topoData.configUpdateProgress.job_status==2){
+                } else if (this.options.pageType == 2) {
+                    if (this.topoData.configUpdateProgress.job_status == 2) {
                         alert('已完成配置生成操作');
                         return;
                     }
                     this.collection.startSpecialLayerCreateSetup({
                         specialLayerStrategyId: this.model.get("id")
                     })
-                }else if (this.options.pageType == 3){
-                    if(this.topoData.initProgress.job_status==2){
+                } else if (this.options.pageType == 3) {
+                    if (this.topoData.initProgress.job_status == 2) {
                         alert('已完成配置操作')
                         return;
                     }
                     this.collection.startNodeInitSetup({
                         nodeId: this.model.get("id"),
-                        platformId:this.nodePlatformId
+                        platformId: this.nodePlatformId
                     })
-                }           
+                }
             },
 
             onClickCancelBtn: function() {

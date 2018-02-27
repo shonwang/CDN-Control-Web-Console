@@ -48,16 +48,15 @@ define("setupSendingSwitch.view", ['require', 'exports', 'template', 'modal.view
                                 console.log(querys)
                             }
                       }.bind(this))
-                    this.eventTarget.checked=false
                   }.bind(this))
-                  this.eventTarget.checked=!this.eventTarget.checked
+                  this.eventTarget.checked=true
                 }else{
                    if(this.eventTarget.id=="openapiSwitch" || this.eventTarget.id=="centralControlSwitch"){
                       this.collection.checkIsHaveInitTask({"platformId":"202"})
                     }else if(this.eventTarget.id=="live-openapiSwitch" || this.eventTarget.id=="live-centralControlSwitch"){
                       this.collection.checkIsHaveInitTask({"platformId":"203"})
                     }
-                    this.eventTarget.checked=false
+                  this.eventTarget.checked=false
                 }
         },
 
@@ -85,12 +84,12 @@ define("setupSendingSwitch.view", ['require', 'exports', 'template', 'modal.view
                         console.log(querys)
                     }
                   }.bind(this))
-              this.eventTarget.checked=true
               }.bind(this))
-              this.eventTarget.checked=false
+             // this.eventTarget.checked=false
         },
 
         setSwitchSuccess:function(){
+           this.eventTarget.checked=!this.eventTarget.checked
            setTimeout(function(){
                 Utility.alerts("操作成功！", "success", 5000);
             }.bind(this), 500)

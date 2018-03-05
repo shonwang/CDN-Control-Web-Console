@@ -356,7 +356,7 @@ define("liveTimestamp.view", ['require','exports', 'template', 'modal.view', 'ut
             }
         },
 
-        onClickSetupToggle : function(){
+        onClickSetupToggle : function(event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){

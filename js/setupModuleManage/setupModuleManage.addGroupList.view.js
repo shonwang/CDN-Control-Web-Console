@@ -138,10 +138,10 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                 var eventTarget = event.srcElement || event.target,
                     id;
                 id = $(eventTarget).attr("id");
-                if (id.length != 8) {
-                    alert("这条KEY已经保存到服务器不能删除！");
-                    return;
-                }
+                // if (id.length != 8) {
+                //     alert("这条KEY已经保存到服务器不能删除！");
+                //     return;
+                // }
                 Utility.confirm("你确定要删除吗？", function() {
                     this.currentGroup.configItemList = _.filter(this.currentGroup.configItemList, function(el) {
                         return el.id != id

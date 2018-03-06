@@ -37,7 +37,7 @@
 					              	 id="<%=data.moduleId%>-<%=data.id%>-<%=data.configItemList[i].id%>" style="width:200px;" value="<%=data.configItemList[i].value%>">
 					              	</td>          
 					          <%}else if(data.configItemList[i].valueType==9){%>
-					              <td><textarea id="<%=data.moduleId%>-<%=data.id%>-<%=data.configItemList[i].id%>" class="form-control" style="width:200px;"><%=data.configItemList[i].value%></textarea></td>
+					              <td><textarea id="<%=data.moduleId%>-<%=data.id%>-<%=data.configItemList[i].id%>" class="form-control keyInput" style="width:200px;"><%=data.configItemList[i].value%></textarea></td>
 					          <%}else if(data.configItemList[i].valueType==3||data.configItemList[i].valueType==4||data.configItemList[i].valueType==5||data.configItemList[i].valueType==6){%>
 					              <td>
 					                   <div class="dropdown" id="<%=data.moduleId%>-<%=data.id%>-<%=data.configItemList[i].id%>">

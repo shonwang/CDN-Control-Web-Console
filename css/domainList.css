@@ -449,3 +449,9 @@
 .cdn-originKS3 {
     display: none;
 }
+
+.word-wrap-break {
+  word-wrap: break-word; 
+  word-break: break-all;
+  white-space: pre-wrap; 
+}

@@ -545,7 +545,49 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     id = $(eventTarget).attr("id");
                 }
                 
-                alert(id);
+                var model = this.collection.get(id);
+
+                this.domainArray = [{
+                    domain: model.get("name"),
+                    id: model.get("id"),
+                    platformId: model.get("type")                    
+                }];
+                this.showSelectStrategyPopup(model);
+
+            },
+
+            showSelectStrategyPopup: function(model) {
+                if (this.selectStrategyPopup) $("#" + this.selectStrategyPopup.modalId).remove();
+
+                require(["setupSendWaitCustomize.stratety.view"], function(SelectStrategyView) {
+                    var mySelectStrategyView = new SelectStrategyView({
+                        collection: this.collection,
+                        domainArray: this.domainArray,
+                        model: model,
+                        source:"specialLayerManage"
+                    });
+                    //var type = AUTH_OBJ.ApplySendMission ? 2 : 1;
+                    var options = {
+                        title: "生成下发任务",
+                        body: mySelectStrategyView,
+                        backdrop: 'static',
+                        type: 2,
+                        onOKCallback: function() {
+                            this.createTaskParam = mySelectStrategyView.onSure();
+                            if (!this.createTaskParam) return;
+                            console.log(this.createTaskParam);
+                            // this.collection.off("check.diff.success");
+                            // this.collection.off("check.diff.error");
+                            // this.collection.on("check.diff.success", $.proxy(this.onCheckDiffSuccess, this));
+                            // this.collection.on("check.diff.error", $.proxy(this.onGetError, this));
+                            // this.collection.checkdiff(this.domainArray);
+                        }.bind(this),
+                        onHiddenCallback: function() {
+                            this.enterKeyBindQuery();
+                        }.bind(this)
+                    }
+                    this.selectStrategyPopup = new Modal(options);
+                }.bind(this))
             },
 
             onClickAddRuleTopoBtn: function() {

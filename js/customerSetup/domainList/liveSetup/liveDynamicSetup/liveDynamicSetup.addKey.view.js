@@ -69,7 +69,7 @@ define("liveDynamicSetup.addKey.view", ['require', 'exports', 'template', 'modal
                 _.each(this.options.module.groupList, function(group) {
                     _.each(group.configItemList, function(key) {
                         _.each(this.defaultValue.configValueMap, function(el, valueKey) {
-                            if ((key.valueType == 1 || key.valueType == 2 || key.valueType == 9) && key.id == valueKey) {
+                            if ((key.valueType == 1 || key.valueType == 2 || key.valueType == 9 || key.valueType == 10) && key.id == valueKey) {
                                 var str = ".keyInput#" + this.options.module.id + "-" + group.id + "-" + key.id
                                 this.$el.find(str).val(this.defaultValue.configValueMap[key.id])
                             }

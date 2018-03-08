@@ -531,8 +531,21 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.table.find("tbody .view").on("click", $.proxy(this.onClickItemView, this));
                 this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
                 this.table.find("tbody .copy").on("click", $.proxy(this.onClickItemCopy, this));
+                this.table.find("tbody .send").on("click", $.proxy(this.onClickItemSend, this));
 
                 this.table.find("[data-toggle='popover']").popover();
+            },
+
+            onClickItemSend:function(event){
+                var eventTarget = event.srcElement || event.target,id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                
+                alert(id);
             },
 
             onClickAddRuleTopoBtn: function() {

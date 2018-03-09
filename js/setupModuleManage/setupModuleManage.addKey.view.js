@@ -29,10 +29,16 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
                         "itemDescription": "" //描述
                     }
                 }
-
+                
+                if(this.isEdit && this.currentKey.defaultValue){
+                    this.currentKey.defaultValue = this.formatSpecialWord(this.currentKey.defaultValue);
+                }
                 this.$el = $(_.template(template['tpl/setupModuleManage/setupModuleManage.addKey.html'])({
                     data: this.currentKey
                 }));
+                if(this.isEdit && this.currentKey.defaultValue){
+                    this.currentKey.defaultValue = this.backSpecialWord(this.currentKey.defaultValue);
+                }
 
                 if (this.isEdit)
                     this.$el.find("#configKey").attr("disabled", "disabled");
@@ -40,6 +46,16 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
                 this.initOptionalTable();
                 this.initvalueTypeDropMenu();
                 this.$el.find(".addOptional").on("click", $.proxy(this.onClickAddOptional, this))
+            },
+
+            formatSpecialWord:function(val){
+                var _val = val.replace(/\"/g,"&quot;").replace(/\'/g,"&apos;");
+                return _val;
+            },
+
+            backSpecialWord:function(val){
+                var _val = val.replace(/\&quot\;/g,"\"").replace(/\&apos\;/g,"\'");
+                return _val;
             },
 
             getArgs: function(currentKey) {

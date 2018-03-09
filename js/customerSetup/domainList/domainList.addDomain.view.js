@@ -626,7 +626,7 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 this.$el.find(".origin-protocol").hide();
                 this.args.applicationType = 203;
 
-                console.log(this.args)
+                $("#text-domainName").on("keyup", $.proxy(this.onDomainKsVideoNameBlur, this));
             },
 
             checkOrigin: function() {
@@ -758,6 +758,7 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     this.$el.find(".cdn-originIP").hide();
                     this.$el.find(".cdn-originAddress").hide();
                     this.$el.find(".cdn-originKsVideo").show();
+
                     if (this.$el.find(".cdn-originKsVideo input").val() === "")
                         this.$el.find(".cdn-originKsVideo input").val(this.args.DomainName + ".uplive-orig.ks-cdn.com")
                 }
@@ -768,6 +769,19 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     this.$el.find(".cdn-download-live-port").hide();
                 }
             },
+
+            onDomainKsVideoNameBlur: function(){
+                var originType = this.args.OriginType,
+                    originKsVideoValue;
+
+                if (originType == "ksvideo") {
+                    originKsVideoValue = this.$el.find(".cdn-originKsVideo input").val();
+                    if (originKsVideoValue === "" || originKsVideoValue === this.args.DomainName + ".uplive-orig.ks-cdn.com"){
+                        this.$el.find(".cdn-originKsVideo input").val($("#text-domainName").val() + ".uplive-orig.ks-cdn.com");
+                    }
+                    this.args.DomainName = $("#text-domainName").val();
+                }
+            }
         });
 
         var AddDomainView = Backbone.View.extend({

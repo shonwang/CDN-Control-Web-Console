@@ -130,6 +130,14 @@ define("setupModuleManage.addKey.view", ['require', 'exports', 'template', 'moda
                 return flag;
             },
 
+            clearValueList:function(){
+                if (this.currentKey.valueType == 1 || this.currentKey.valueType == 2 ||
+                    this.currentKey.valueType == 7 || this.currentKey.valueType == 8 ||
+                    this.currentKey.valueType == 9 || this.currentKey.valueType == 10) {
+                    this.currentKey.valueList = [];
+                }
+            },
+
             onClickAddOptional: function() {
                 var name=this.$el.find("#optionalValue").val().trim();
                 var value=this.$el.find("#optional").val().trim();

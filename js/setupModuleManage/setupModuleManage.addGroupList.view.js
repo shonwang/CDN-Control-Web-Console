@@ -176,6 +176,9 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                                 this.initKeyTable();
                             }
                         }.bind(this),
+                        onCancelCallback:function(){
+                            addKey.clearValueList();
+                        }
                     }
                     this.addKeyModel = new Modal(options);
                 }.bind(this))

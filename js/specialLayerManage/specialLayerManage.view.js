@@ -576,6 +576,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             this.createTaskParam = mySelectStrategyView.onSure();
                             if (!this.createTaskParam) return;
                             console.log(this.createTaskParam);
+                            
                             // this.collection.off("check.diff.success");
                             // this.collection.off("check.diff.error");
                             // this.collection.on("check.diff.success", $.proxy(this.onCheckDiffSuccess, this));

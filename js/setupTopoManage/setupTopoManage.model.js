@@ -50,6 +50,22 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
+        getLatestVersion: function(args) {
+            var url = BASE_URL + "/resource/topo/getLatestVersion?id=" + args,
+                successCallback = function(res) {
+                    if (res) {
+                        this.total = res.total;
+                        this.trigger("get.topo.OriginInfo.success", res);
+                    } else {
+                        this.trigger("get.topo.OriginInfo.error");
+                    }
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger('get.topo.OriginInfo.error', response)
+                }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
         getTopoInfo: function(args) {
             var url = BASE_URL + "/resource/topo/getTopoVerionDetail?innerId=" + args,
                 successCallback = function(res) {

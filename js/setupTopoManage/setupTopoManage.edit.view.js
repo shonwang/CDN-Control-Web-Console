@@ -33,7 +33,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
                 if (this.isEdit && !this.isView) {
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                    this.collection.getTopoOrigininfo(this.model.get('id'));
+                    this.collection.getLatestVersion(this.model.get('id'));
                 } else if (!this.isEdit && this.isView) {
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                     this.collection.getTopoInfo(this.model.get('id'));
@@ -92,6 +92,11 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.$el.find("#input-name").attr("readonly", "true");
                 if (this.isView)
                     this.$el.find("#comment").attr("readonly", "true");
+                if(this.isView || this.isEdit) {
+                    this.$el.find(".edit-show").show();
+                    this.$el.find("#input-version").val(res.id);
+                    this.$el.find("#input-isused").val(res.flag?"是":"否");
+                }
 
                 console.log("编辑的拓扑: ", this.defaultParam)
                 this.initSetup();

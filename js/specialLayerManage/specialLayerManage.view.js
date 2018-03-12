@@ -57,9 +57,18 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 }
             },
 
+            openSendBtn:function(){
+                this.$el.find(".send").removeAttr("disabled");
+            },
+
+            closeSendBtn:function(){
+                this.$el.find(".send").attr("disabled",'disabled');
+            },
+
             addStrategySuccess: function() {
                 alert('保存成功');
-                this.options.onSaveCallback && this.options.onSaveCallback();
+                this.openSendBtn();
+                //this.options.onSaveCallback && this.options.onSaveCallback();
             },
 
             modifyStrategySuccess: function() {
@@ -356,6 +365,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             onClickItemEdit: function(event) {
+                this.closeSendBtn();
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
 
@@ -395,6 +405,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             onClickItemDelete: function(event) {
+                this.closeSendBtn();
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
                 this.defaultParam.rule = _.filter(this.defaultParam.rule, function(obj) {
@@ -405,6 +416,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             onClickAddRuleButton: function() {
+                this.closeSendBtn();
                 require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
                     function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                         var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
@@ -576,12 +588,18 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             this.createTaskParam = mySelectStrategyView.onSure();
                             if (!this.createTaskParam) return;
                             console.log(this.createTaskParam);
-                            
-                            // this.collection.off("check.diff.success");
-                            // this.collection.off("check.diff.error");
-                            // this.collection.on("check.diff.success", $.proxy(this.onCheckDiffSuccess, this));
-                            // this.collection.on("check.diff.error", $.proxy(this.onGetError, this));
-                            // this.collection.checkdiff(this.domainArray);
+                            var args = {
+                                taskName:this.domainArray[0].platformId,
+                                ruleId:this.domainArray[0].id,
+                                strategyId:this.createTaskParam.strategyId
+                            };
+                            console.log(args);
+                            this.collection.off("send.success");
+                            this.collection.off("send.error");
+                            this.collection.on("send.success", $.proxy(this.onSendSuccess, this));
+                            this.collection.on("send.error", $.proxy(this.onSendError, this));
+                            this.collection.strategyUpdate(args);
+                            this.selectStrategyPopup.$el.modal('hide')
                         }.bind(this),
                         onHiddenCallback: function() {
                             this.enterKeyBindQuery();
@@ -589,6 +607,15 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     }
                     this.selectStrategyPopup = new Modal(options);
                 }.bind(this))
+            },
+
+            onSendSuccess:function(){
+                alert("成功");
+                window.location.href="#/setupSending";
+            },
+
+            onSendError:function(data){
+                alert(data.message);
             },
 
             onClickAddRuleTopoBtn: function() {

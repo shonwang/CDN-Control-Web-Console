@@ -413,7 +413,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                             } else if ((key.value === "" && key.valueType == 1) || (key.value === "" && key.valueType == 10)) {
                                 //errorMessage = errorMessage + key.itemName + "不能为空字符串！<br>"
                             } else {
-                                value[0].configValueMap[key.id] = parseInt(key.value)
+                                value[0].configValueMap[key.id] = key.value
                             }
                         } else if (key.valueType == 4) {
                             if (key.value + "" == null + "")

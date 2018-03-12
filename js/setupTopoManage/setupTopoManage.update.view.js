@@ -168,7 +168,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                 }
                 var showStatus = "";
                 var showStatus = setInterval(function() {
-                    if (this.topoData.configUpdateProgress.job_status == 1) {
+                    if (this.topoData.configUpdateProgress.job_status == 1 || !this.topoData.configUpdateProgress.job_status) {
                         if (this.options.pageType == 1)
                             this.collection.getProgress({
                                 topologyId: this.model.get('id')

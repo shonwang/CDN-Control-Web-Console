@@ -276,7 +276,9 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 this.$el.find("input[name=radio-port]").on("click", $.proxy(this.onRadioPortChange, this))
 
                 this.setDropdownMenu();
-                console.log(this.args)
+
+                $("#text-domainName").off("keyup");
+                $("#text-domainName").on("keyup", $.proxy(this.onDomainKsVideoNameBlur, this));
             },
 
             onRadioPortChange: function(event) {
@@ -610,7 +612,19 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 } else {
                     this.$el.find(".cdn-download-live-port").hide();
                 }
+            },
 
+            onDomainKsVideoNameBlur: function(){
+                var originType = this.args.OriginType,
+                    originKsVideoValue;
+
+                if (originType == "ksvideo") {
+                    originKsVideoValue = this.$el.find(".cdn-originKsVideo input").val();
+                    if (originKsVideoValue === "" || originKsVideoValue === this.args.DomainName + ".live-orig.ks-cdn.com"){
+                        this.$el.find(".cdn-originKsVideo input").val($("#text-domainName").val() + ".live-orig.ks-cdn.com");
+                    }
+                    this.args.DomainName = $("#text-domainName").val();
+                }
             },
 
             render: function(target) {
@@ -625,8 +639,6 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 this.$el.find(".non-rtmp").hide();
                 this.$el.find(".origin-protocol").hide();
                 this.args.applicationType = 203;
-
-                $("#text-domainName").on("keyup", $.proxy(this.onDomainKsVideoNameBlur, this));
             },
 
             checkOrigin: function() {

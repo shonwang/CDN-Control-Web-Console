@@ -604,7 +604,7 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     this.$el.find(".cdn-originAddress").hide();
                     this.$el.find(".cdn-originKsVideo").show();
                     if (this.$el.find(".cdn-originKsVideo input").val() === "")
-                        this.$el.find(".cdn-originKsVideo input").val(this.args.DomainName + ".live-orig.ks-cdn.com")
+                        this.$el.find(".cdn-originKsVideo input").val($("#text-domainName").val() + ".live-orig.ks-cdn.com")
                 }
 
                 if (originType == "ipaddr" || originType == "domain") {
@@ -772,7 +772,7 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     this.$el.find(".cdn-originKsVideo").show();
 
                     if (this.$el.find(".cdn-originKsVideo input").val() === "")
-                        this.$el.find(".cdn-originKsVideo input").val(this.args.DomainName + ".uplive-orig.ks-cdn.com")
+                        this.$el.find(".cdn-originKsVideo input").val($("#text-domainName").val() + ".uplive-orig.ks-cdn.com")
                 }
 
                 if (originType == "ipaddr" || originType == "domain") {

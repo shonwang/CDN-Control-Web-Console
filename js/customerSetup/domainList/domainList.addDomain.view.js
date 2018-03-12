@@ -615,15 +615,9 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
             },
 
             onDomainKsVideoNameBlur: function(){
-                var originType = this.args.OriginType,
-                    originKsVideoValue;
-
+                var originType = this.args.OriginType;
                 if (originType == "ksvideo") {
-                    originKsVideoValue = this.$el.find(".cdn-originKsVideo input").val();
-                    if (originKsVideoValue === "" || originKsVideoValue === this.args.DomainName + ".live-orig.ks-cdn.com"){
-                        this.$el.find(".cdn-originKsVideo input").val($("#text-domainName").val() + ".live-orig.ks-cdn.com");
-                    }
-                    this.args.DomainName = $("#text-domainName").val();
+                    this.$el.find(".cdn-originKsVideo input").val($("#text-domainName").val() + ".live-orig.ks-cdn.com");
                 }
             },
 
@@ -783,15 +777,9 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
             },
 
             onDomainKsVideoNameBlur: function(){
-                var originType = this.args.OriginType,
-                    originKsVideoValue;
-
+                var originType = this.args.OriginType
                 if (originType == "ksvideo") {
-                    originKsVideoValue = this.$el.find(".cdn-originKsVideo input").val();
-                    if (originKsVideoValue === "" || originKsVideoValue === this.args.DomainName + ".uplive-orig.ks-cdn.com"){
-                        this.$el.find(".cdn-originKsVideo input").val($("#text-domainName").val() + ".uplive-orig.ks-cdn.com");
-                    }
-                    this.args.DomainName = $("#text-domainName").val();
+                    this.$el.find(".cdn-originKsVideo input").val($("#text-domainName").val() + ".uplive-orig.ks-cdn.com");
                 }
             }
         });

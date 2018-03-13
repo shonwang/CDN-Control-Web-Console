@@ -9,7 +9,6 @@ define("selectNode.view", ['require','exports', 'template', 'modal.view', 'utili
             this.regionId   = options.regionId;
             this.groupId = options.groupId || null;//添加时传的groupId,编辑时，带的是当前的id
             this.isEdit     = options.isEdit;
-
             this.$el = $(_.template(template['tpl/dispConfig/dispConfig.selectNode.html'])({}));
             this.$el.find(".node-list").html(_.template(template['tpl/loading.html'])({}));
             this.nodeList = [];
@@ -222,6 +221,7 @@ define("selectNode.view", ['require','exports', 'template', 'modal.view', 'utili
                 obj["dispDomain"] = this.model.dispDomain;
                 obj["dispGroupId"] = this.model.dispGroupId;
                 obj["id"] = this.model.id;
+                obj["ttl"] = this.model.ttl;
                 obj["maxIpNum"] = selectedNodes[i]["dispConfIpInfo.maxNum"];
                 obj["nodeId"] = selectedNodes[i]["node.id"];
                 obj["nodeName"] = selectedNodes[i]["node.chName"];

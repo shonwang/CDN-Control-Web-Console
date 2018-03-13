@@ -165,7 +165,7 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
                 alert("网络阻塞，请刷新重试！")
         },
 
-        onClickSetupToggle : function(){
+        onClickSetupToggle : function(event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){

@@ -1,0 +1,44 @@
+<div>
+    <form class="form-horizontal">
+        <div class="form-group">
+              <label for="configKey" class="col-sm-3 control-label">*KEY</label>
+              <div class="col-sm-6"><input type="text" class="form-control" id="configKey" value=<%=data.configKey%>></div>
+        </div>
+        <div class="form-group">
+              <label for="itemName" class="col-sm-3 control-label">*显示</label>
+              <div class="col-sm-6"><input type="text" class="form-control" id="itemName" value=<%=data.itemName%>></div>
+        </div>
+        <div class="form-group">
+            <label for="valueType" class="col-sm-3 control-label">*类型</label>
+            <div class="form-group dropdown-valueType">
+                <div class="dropdown col-sm-6">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-valueType" data-toggle="dropdown">
+                    <span class="cur-value"></span>
+                   <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu"></ul>
+               </div>
+           </div>   
+        </div>
+        <div class="form-group optionalValue" id="optionalValueBox">
+              <label for="optional" class="col-sm-3 control-label">*可选值|显示</label>
+              <div class="col-sm-3"><input type="text" class="form-control" id="optional" value=""></div><span class="splitSpan"></span>
+              <div class="col-sm-3"><input type="text" class="form-control" id="optionalValue" value=""></div>
+               <a href="javascript:void(0)" class="btn btn-success addOptional"><span class="glyphicon glyphicon-plus">增加可选值</span></a>
+               <div class="table-ctn table-responsive optionalTable"></div>
+        </div>
+        <div class="form-group">
+              <label for="defaultValue" class="col-sm-3 control-label">*默认值</label>
+              <div class="col-sm-6"><input type="text" class="form-control" id="defaultValue" value=<%=data.defaultValue%>></div>
+        </div>
+        <div class="form-group">
+              <label for="validateRule" class="col-sm-3 control-label">*正则校验</label>
+              <div class="col-sm-6"><input type="text" class="form-control" id="validateRule" value=<%=data.validateRule%>></div>
+        </div>
+        <div class="form-group">
+              <label for="itemDescription" class="col-sm-3 control-label">*描述说明</label>
+              <div class="col-sm-6"><textarea class="form-control" id="itemDescription"><%=data.itemDescription%></textarea></div>
+        </div>
+    </form>
+</div>
+

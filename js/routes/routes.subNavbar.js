@@ -363,6 +363,11 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                         active: false,
                         children: []
                     }]
+                },{
+                    id: 'customerSetup-domainList-liveDynamicSetup',
+                    name: '动态配置',
+                    hash: 'index.html#/domainList/' + query + '/liveDynamicSetup/' + query2,
+                    children: []
                 }];
 
                 if (!this.domainManageNavbar) {
@@ -392,6 +397,11 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     id: 'customerSetup-domainList-liveUpFlowNameChange',
                     name: '流名变换',
                     hash: 'index.html#/domainList/' + query + '/liveUpFlowNameChange/' + query2,
+                    children: []
+                },{
+                    id: 'customerSetup-domainList-liveUpDynamicSetup',
+                    name: '动态配置',
+                    hash: 'index.html#/domainList/' + query + '/liveUpDynamicSetup/' + query2,
                     children: []
                 }];
 

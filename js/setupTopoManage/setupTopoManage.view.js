@@ -16,7 +16,8 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 //获取应用类型
                 this.collection.off("get.devicetype.success");
                 this.collection.off("get.devicetype.error");
-                this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
+                this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu
+                    , this));
                 this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
 
                 if (AUTH_OBJ.QueryTopos) {

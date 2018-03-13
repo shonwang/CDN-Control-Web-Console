@@ -1,0 +1,34 @@
+<div>
+	<div class="table-ctn table-responsive">
+		<table class="table table-striped table-hover">
+			<thead>
+			   <%for(var i=0;i< header.length;i++){%>
+			     <th><%=header[i].itemName%></th>
+			   <%}%>
+			   <th>开关</th>
+			</thead>
+			<tbody>
+			   <%for(var j=0;j< data.length;j++){%>
+			   	 <tr>
+			   	 	<%for(var k=0;k< header.length;k++){%>
+			   	 		  <td><%=data[j][header[k].id]%></td> 
+			   	 	<%}%>
+			   	 	<td>
+			   	 		<div class="col-sm-4 switch">
+                            <div class="togglebutton <%=moduleId%>-switch" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                	<%if(!data[j].openFlag){%>
+                                      <span class="label label-danger">关闭</span>
+                                    <%}else{%>
+                                      <span class="label label-success">开启</span>
+                                    <%}%>
+                                </label>
+                            </div>
+                        </div>
+			   	 	</td>
+			   	 </tr>
+			   <%}%>
+			</tbody>
+		</table>
+	</div>
+</div>

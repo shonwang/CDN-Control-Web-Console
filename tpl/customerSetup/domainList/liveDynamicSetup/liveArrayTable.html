@@ -1,0 +1,16 @@
+<table class="table table-striped table-hover">
+	<thead>
+		<th>index</th>
+		<th>value</th>
+		<th>操作</th>
+	</thead>
+	<tbody>
+	 <%for(var i=0;i< data.list.length;i++){%>
+       <tr>
+           <td><%=i%></td>
+           <td><%=data.list[i]%></td>
+           <td><a href="javascript:void(0)" class="deleteArray" id="<%=data.id%>-<%=i%>">删除</a></td>
+       </tr>
+     <%}%>
+    </tbody>
+</table>

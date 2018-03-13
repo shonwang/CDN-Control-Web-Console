@@ -1,0 +1,40 @@
+<div>
+	<a href="javascript:void(0)" class="btn btn-success addModuleKey" id="<%=moduleId%>">添加</a>
+	<div class="table-ctn table-responsive">
+		<table class="table table-striped table-hover">
+			<thead>
+			   <%for(var i=0;i< header.length;i++){%>
+			     <th><%=header[i].itemName%></th>
+			   <%}%>
+			   <th>开关</th>
+			   <th>操作</th>
+			</thead>
+			<tbody>
+			   <%for(var j=0;j< data.length;j++){%>
+			   	 <tr>
+			   	 	<%for(var k=0;k< header.length;k++){%>
+			   	 		  <td><%=data[j][header[k].id]%></td> 
+			   	 	<%}%>
+			   	 	<td>
+			   	 		<div class="col-sm-4 switch">
+                            <div class="togglebutton <%=moduleId%>-switch" style="padding-top:5px;margin-right:0;">
+                                <label>
+                                	<%if(data[j].openFlag){%>
+                                    <input type="checkbox" id="<%=moduleId%>-<%=j%>" checked="true"><span class="toggle"></span>
+                                    <%}else{%>
+                                     <input type="checkbox" id="<%=moduleId%>-<%=j%>"><span class="toggle"></span>
+                                    <%}%>
+                                </label>
+                            </div>
+                        </div>
+			   	 	</td>
+			   	 	<td>
+			   	 		<a href="javascript:void(0)" class="<%=moduleId%>-editModuleKey editModuleKey" id="<%=moduleId%>-<%=j%>">修改</a>
+			   	 	    <a href="javascript:void(0)" class="<%=moduleId%>-deleteModuleKey deleteModuleKey" id="<%=moduleId%>-<%=j%>">删除</a>
+			   	   </td>
+			   	 </tr>
+			   <%}%>
+			</tbody>
+		</table>
+	</div>
+</div>

@@ -104,11 +104,13 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "domainList/:query/liveRtmpOptimize/:query2": "liveRtmpOptimize",
                 "domainList/:query/liveSLAStatistics/:query2": "liveSLAStatistics",
                 "domainList/:query/liveFrequencyLog/:query2": "liveFrequencyLog",
+                "domainList/:query/liveDynamicSetup/:query2": "liveDynamicSetup",
 
                 //直播上行域名配置
                 "domainList/:query/liveUpBasicInformation/:query2": "liveUpBasicInformation",
                 "domainList/:query/liveUpBackOriginSetup/:query2": "liveUpBackOriginSetup",
                 "domainList/:query/liveUpFlowNameChange/:query2": "liveUpFlowNameChange",
+                "domainList/:query/liveUpDynamicSetup/:query2": "liveUpDynamicSetup",
 
                 //配置下发2.0
                 "setupChannelManage": "setupChannelManage",
@@ -153,9 +155,14 @@ define("routes", ['require', 'exports', 'navbar.view',
                 //张振建提的半途而废的需求（废弃）
                 "refreshManual": "refreshManual",
                 "customMaintenance": "customMaintenance",
+
                 //平台切换
                 "applicationChange": "applicationChange",
-                "blockedDomain": "blockedDomain"
+                "blockedDomain": "blockedDomain",
+                
+                //配置模型
+                "setupTemplateManage": "setupTemplateManage",
+                "setupModuleManage": "setupModuleManage",
             },
 
             execute: function(callback, args) {

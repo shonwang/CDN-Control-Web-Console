@@ -494,6 +494,56 @@ define("routes.liveSetup", ['require', 'exports'],
                     this.curView = this.liveFrequencyLogView;
                 }.bind(this));
             },
+
+            liveDynamicSetup: function(query, query2) {
+                require(['liveDynamicSetup.view', 'liveDynamicSetup.model'], function(LiveDynamicSetupView, LiveDynamicSetupModel) {
+                    this.navbarView.select('customerSetup');
+                    this.curPage = 'customerSetup-domainList-liveDynamicSetup';
+                    this.setupLiveDomainManageNavbar(query, query2);
+                    var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                    if (!this.liveDynamicSetupModel)
+                        this.liveDynamicSetupModel = new LiveDynamicSetupModel();
+                    if (!this.liveDynamicSetupView) {
+                        var options = {
+                            collection: this.liveDynamicSetupModel,
+                            query: query,
+                            query2: query2
+                        };
+                        this.liveDynamicSetupView = new LiveDynamicSetupView(options);
+                        this.liveDynamicSetupView.render(renderTarget);
+                    } else {
+                        this.liveDynamicSetupView.update(query, query2, renderTarget);
+                    }
+                    this.domainManageNavbar.select(this.curPage);
+                    this.curView = this.liveDynamicSetupView;
+                }.bind(this));
+            },
+
+            liveUpDynamicSetup: function(query, query2) {
+                 require(['liveDynamicSetup.view', 'liveDynamicSetup.model'], function(LiveDynamicSetupView, LiveDynamicSetupModel) {
+                    this.navbarView.select('customerSetup');
+                    this.curPage = 'customerSetup-domainList-liveUpDynamicSetup';
+                    this.setupLiveUpDomainManageNavbar(query, query2);
+                    var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                    if (!this.liveDynamicSetupModel)
+                        this.liveDynamicSetupModel = new LiveDynamicSetupModel();
+                    if (!this.liveDynamicSetupView) {
+                        var options = {
+                            collection: this.liveDynamicSetupModel,
+                            query: query,
+                            query2: query2
+                        };
+                        this.liveDynamicSetupView = new LiveDynamicSetupView(options);
+                        this.liveDynamicSetupView.render(renderTarget);
+                    } else {
+                        this.liveDynamicSetupView.update(query, query2, renderTarget);
+                    }
+                    this.domainManageNavbar.select(this.curPage);
+                    this.curView = this.liveDynamicSetupView;
+                }.bind(this));
+            }
         }
 
         return RouterLiveSetup

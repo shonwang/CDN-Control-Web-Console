@@ -1074,6 +1074,7 @@ td .table {
     overflow-x: auto;
     overflow-y: auto;
 }
+<<<<<<< HEAD
 .listBox {
   overflow: hidden;
 }
@@ -1109,3 +1110,51 @@ td .table {
 .hideOperator{
   display: none;
 }
+=======
+.CodeEditBox{
+  min-height: 500px;
+  width:100%;
+}
+.editModule:hover{cursor: pointer}
+.saveModule{
+  position: absolute;
+  right: 40px;
+  top:20px;
+}
+.addGroup{
+  margin-left:30px;
+}
+.addKey{
+ position:absolute;
+ right:130px;
+ top:20px; 
+}
+.optionalValue{
+  display:none;
+}
+.splitSpan{
+  border:1px solid #ccc;
+  height:32px;
+  width:1px;
+  float: left;
+}
+.optionalTable{
+  width:400px;
+  margin:0 auto;
+}
+.deleteGroup{
+  position: absolute;
+  right:20px;
+  top:20px;
+}
+ul,li{
+  list-style: none;
+}
+.moduleListUl{
+  overflow: hidden;
+}
+.moduleListUl li{
+  float: left;
+  margin-right:20px;
+}
+>>>>>>> liveDynamicSetup

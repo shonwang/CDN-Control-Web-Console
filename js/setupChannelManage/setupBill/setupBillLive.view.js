@@ -6,7 +6,7 @@ define("setupBillLive.view", ['require', 'exports', 'template', 'modal.view', 'u
 
             initCname: function() {
                 this.cnameTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.cname.html'])({
-                    data: this.config.originDomain.cnameData
+                    data: this.config.originDomain.cnameData || []
                 }));
                 this.cnameTable.appendTo(this.$el.find(".bill-ctn"));
 
@@ -77,11 +77,13 @@ define("setupBillLive.view", ['require', 'exports', 'template', 'modal.view', 'u
                     }));
                     this.liveUpFlowNameChangeTable.appendTo(this.$el.find(".bill-ctn"));
                 }.bind(this))
+
+                this.initLiveDynamicSetup();
             },
+
             /*
             initOriginDetection: function(argument) {
                 this.originDetectionInfo = this.config.detectOriginConfig || {};
-
                 this.strArray = ['<span class="label label-danger">关闭</span>', '<span class="label label-success">开启</span>'];
                 var flag = this.config.detectOriginConfig.flag;
                 this.originDetectionInfo.flagStr = this.strArray[flag];
@@ -454,7 +456,21 @@ define("setupBillLive.view", ['require', 'exports', 'template', 'modal.view', 'u
 
                     this.livePKOptimizeTable.appendTo(this.$el.find(".bill-ctn"));
                 }.bind(this))
+
+                this.initLiveDynamicSetup();
             },
+
+            initLiveDynamicSetup: function() {
+                var pannel = this.$el.find(".bill-ctn")
+                _.each(this.appLives, function(el, index, ls) {
+                    require(["setupBillLiveDynamic.view"], function(SetupBillLiveDynamic) {
+                        var setupBillLiveDynamic = new SetupBillLiveDynamic({
+                            pannel: pannel,
+                            moduleList: el.moduleInfoDtoList
+                        })
+                    }.bind(this));
+                }.bind(this))
+            }
         });
 
         return SetupLiveBillView;

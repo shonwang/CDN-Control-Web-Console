@@ -50,7 +50,10 @@ define("setupTemplateManage.view", ['require', 'exports', 'template', 'modal.vie
             initFrameTemplate: function() {
                 this.$el = $(_.template(template['tpl/setupTemplateManage/setupLiveDynamicManage.html'])({}));
                 this.$el.find('a[data-toggle="tab"]').on('shown.bs.tab', $.proxy(this.onShownTab, this));
-                this.$el.find(".saveframe").on("click", $.proxy(this.onClickSaveFrameBtn, this))
+                if (AUTH_OBJ.SaveButton)
+                    this.$el.find(".saveframe").on("click", $.proxy(this.onClickSaveFrameBtn, this));
+                else
+                    this.$el.find(".saveframe").hide();
             },
 
             onClickSaveFrameBtn: function() {

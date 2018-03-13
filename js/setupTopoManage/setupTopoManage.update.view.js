@@ -168,6 +168,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                 }
                 var showStatus = "";
                 var showStatus = setInterval(function() {
+                    console.log(this.topoData.configUpdateProgress.job_status)
                     if (this.topoData.configUpdateProgress.job_status == 1 || !this.topoData.configUpdateProgress.job_status) {
                         if (this.options.pageType == 1)
                             this.collection.getProgress({
@@ -184,7 +185,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                             this.$el.find(".sendSetup").removeAttr("disabled")
                         }
                     }
-                }.bind(this), 2000)
+                }.bind(this), 500)
             },
 
             onClickSendSetupBtn: function() {

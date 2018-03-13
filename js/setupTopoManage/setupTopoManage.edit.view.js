@@ -111,6 +111,10 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     this.$el.find(".opt-ctn .saveAndSend").on("click", $.proxy(this.onClickSaveAndSendButton, this));
                 }
 
+                if (this.isView) {
+                    this.$el.find(".opt-ctn .saveAndSend").hide();
+                }
+
                 this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
                 this.$el.find('.all .add-node').on("click", $.proxy(this.onClickAddAllNodeButton, this))
                 this.$el.find('.upper .add-node').on("click", $.proxy(this.onClickAddUpperNodeButton, this))

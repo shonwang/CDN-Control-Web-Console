@@ -179,7 +179,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                                 topologyId: this.model.get('id')
                             });
                     }
-                    if (this.topoData.configUpdateProgress.job_status != 1) {
+                    if (this.topoData.configUpdateProgress.job_status == 2 || this.topoData.configUpdateProgress.job_status == 3) {
                         clearInterval(showStatus)
                         if (this.topoData.configUpdateProgress.job_status == 2) {
                             this.$el.find(".sendSetup").removeAttr("disabled")

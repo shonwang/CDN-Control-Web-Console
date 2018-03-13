@@ -166,7 +166,8 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                     alert(res.message);
                     return;
                 }
-                var showStatus = "";
+
+                this.topoData.configUpdateProgress.job_status = null;
                 var showStatus = setInterval(function() {
                     console.log(this.topoData.configUpdateProgress.job_status)
                     if (this.topoData.configUpdateProgress.job_status == 1 || !this.topoData.configUpdateProgress.job_status) {

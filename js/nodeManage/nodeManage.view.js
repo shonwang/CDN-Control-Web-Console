@@ -33,13 +33,13 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("update.node.status.error", $.proxy(this.onGetError, this));
-            
+
             this.collection.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
 
             this.collection.on("get.area.success", $.proxy(this.onGetLargeAreaSuccess, this));
             this.collection.on("get.area.error", $.proxy(this.onGetError, this));
-            
+
             this.collection.on("get.province.success", $.proxy(this.onGetProvinceSuccess, this));
             this.collection.on("get.province.error", $.proxy(this.onGetError, this));
 
@@ -75,11 +75,11 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 "count": 10,
                 "chname": null, //节点名称
                 "operator": null, //运营商id
-                "status": null,//节点状态
-                "appType":null, //节点类型
-                "provinceId":null,//省份名称
-                "areaId":null//大区名称
-               
+                "status": null, //节点状态
+                "appType": null, //节点类型
+                "provinceId": null, //省份名称
+                "areaId": null //大区名称
+
             }
             this.tableColumn = [{
                 name: "运营商",
@@ -151,36 +151,66 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             this.onClickQueryButton();
         },
 
-        initTableHeader: function(){
-            _.each(this.tableColumn, function(el){
-                var isCheckedStr = '<div class="checkbox">' + 
-                                        '<label>' + 
-                                            '<input type="checkbox" name="' + el.name+ '"/>'+ el.name + 
-                                        '</label>' + 
-                                    '</div>';
+        initTableHeader: function() {
+            var isCheckedStr = '<div class="checkbox">' +
+                                    '<label>' +
+                                        '<input type="checkbox" name="All"/>All' + 
+                                    '</label>' +
+                                '</div>';
+            var tpl = '<li>' + isCheckedStr + '</li>'
+            $(tpl).appendTo(this.$el.find(".listShow"));
+
+            _.each(this.tableColumn, function(el) {
+                var isCheckedStr = '<div class="checkbox">' +
+                    '<label>' +
+                    '<input type="checkbox" name="' + el.name + '"/>' + el.name +
+                    '</label>' +
+                    '</div>';
                 if (el.isChecked) {
-                    isCheckedStr = '<div class="checkbox">' + 
-                                        '<label>' + 
-                                            '<input type="checkbox" checked="true" name="' + el.name + '"/>'+ el.name +
-                                        '</label>' + 
-                                    '</div>';
+                    isCheckedStr = '<div class="checkbox">' +
+                        '<label>' +
+                        '<input type="checkbox" checked="true" name="' + el.name + '"/>' + el.name +
+                        '</label>' +
+                        '</div>';
                 }
                 var tpl = '<li>' + isCheckedStr + '</li>'
                 $(tpl).appendTo(this.$el.find(".listShow"));
             }.bind(this))
-            this.$el.find(".listShow li").find(".checkbox label").find("input").on("click", $.proxy(this.onClickSelectTableHeader, this));
+            this.$el.find(".listShow li input").on("click", $.proxy(this.onClickSelectTableHeader, this));
+            this.$el.find(".listShow li input[name='All']").on("click", $.proxy(this.onClickSelectTableHeaderAll, this));
         },
 
-        onClickSelectTableHeader: function(){
-          var eventTarget = event.srcElement || event.target;
-          if (eventTarget.tagName !== "INPUT") return;
-          var inputChecked=$(eventTarget).attr("checked");
-          var inputName=$(eventTarget).attr("name");
-           _.each(this.tableColumn, function(el){
-                if (el.name === inputName) el.isChecked = eventTarget.checked;
-            })
-           this.initTable();
+        onClickSelectTableHeader: function(event) {
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            var inputChecked = $(eventTarget).attr("checked");
+            var inputName = $(eventTarget).attr("name");
+            if (inputName != "All") {
+                _.each(this.tableColumn, function(el) {
+                    if (el.name === inputName) el.isChecked = eventTarget.checked;
+                })
+                this.initTable();
+                var selectedNodes = this.$el.find(".listShow li input:checked").length;
+                if (this.$el.find(".listShow li input[name='All']").get(0).checked)
+                    selectedNodes--;
+                if (selectedNodes == this.tableColumn.length) {
+                    this.$el.find(".listShow li input[name='All']").prop("checked", true);
+                } else {
+                    this.$el.find(".listShow li input[name='All']").prop("checked", false);
+                }
+            }
         },
+
+        onClickSelectTableHeaderAll: function(event) {
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            this.$el.find(".listShow li input[name!='All']").prop("checked", eventTarget.checked);
+            _.each(this.tableColumn, function(el) {
+                el.isChecked = eventTarget.checked;
+            })
+            this.initTable();
+        },
+
         enterKeyBindQuery: function() {
             $(document).on('keydown', function(e) {
                 if (e.keyCode == 13) {
@@ -293,14 +323,14 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
 
                 this.table.find("[data-toggle='popover']").popover();
-                
+
             } else {
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-            }   
+            }
         },
         onClickDispGroupInfo: function(event) {
             var eventTarget = event.srcElement || event.target,
-            id;
+                id;
             if (eventTarget.tagName == "SPAN") {
                 eventTarget = $(eventTarget).parent();
                 id = eventTarget.attr("id");
@@ -350,7 +380,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 }
             window.location.hash = "#/deviceManage/" + JSON.stringify(args)
         },
-   
+
         onClickItemEdit: function(event) {
             var eventTarget = event.srcElement || event.target,
                 id;
@@ -413,6 +443,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 var deleteNodeTips = new NodeTips({
                     type: 1,
                     model: model,
+                    whoCallMe: 'node',
                     placeHolder: "请输入删除的原因,并请您谨慎操作，一旦删除，不可恢复"
                 });
                 var options = {
@@ -462,7 +493,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                         var options = myPromptView.onSure();
                         if (!options) return;
                         this.collection.operateNode({
-                            opRemark:'',
+                            opRemark: '',
                             nodeId: id,
                             operator: 1,
                             t: new Date().valueOf()
@@ -524,7 +555,8 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             require(["nodeManage.operateDetail.view"], function(NodeTips) {
                 var detailTipsView = new NodeTips({
                     type: 2,
-                    model: model
+                    model: model,
+                    whoCallMe: 'node'
                 });
                 var options = {
                     title: "操作说明",
@@ -551,11 +583,12 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
 
             var model = this.collection.get(id);
             if (this.nodeTipsPopup) $("#" + this.nodeTipsPopup.modalId).remove();
-            
+
             require(["nodeManage.operateDetail.view"], function(NodeTips) {
                 var stopNodeView = new NodeTips({
                     type: 1,
-                    model: model
+                    model: model,
+                    whoCallMe: 'node'
                 });
                 var options = {
                     title: "暂停节点操作",
@@ -670,17 +703,17 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             });
             this.isInitPaginator = true;
         },
-         
-        initNodeTypeDropMenu:function() {
-            var typeArray=[{
-                name:"全部",
-                value:"All"
-            },{
-                name:"直播",
-                value:203
-            },{
-                name:"下载",
-                value:202
+
+        initNodeTypeDropMenu: function() {
+            var typeArray = [{
+                name: "全部",
+                value: "All"
+            }, {
+                name: "直播",
+                value: 203
+            }, {
+                name: "下载",
+                value: 202
             }]
             Utility.initDropMenu(this.$el.find(".dropdown-nodeType"), typeArray, function(value) {
                 if (value !== "All")
@@ -734,24 +767,53 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 this.onClickQueryButton();
             }.bind(this));
 
+            var typeArray = [{
+                name: "全部",
+                value: "All"
+            },{
+                name: "网络故障",
+                value: "All"
+            }, {
+                name: "系统故障",
+                value: 203
+            }, {
+                name: "软件升级",
+                value: 202
+            },{
+                name: "配置下发",
+                value: 202
+            },{
+                name: "网络改造",
+                value: 202
+            },{
+                name: "其他",
+                value: 202
+            }]
+            Utility.initDropMenu(this.$el.find(".dropdown-reason"), typeArray, function(value) {
+                // if (value !== "All")
+                //     this.queryArgs.appType = parseInt(value)
+                // else
+                //     this.queryArgs.appType = null;
+            }.bind(this));
+
             this.collection.getOperatorList();
             this.collection.getAllProvince();
-            this.collection.getAreaList();           
+            this.collection.getAreaList();
         },
-        
-        onGetLargeAreaSuccess: function(res){
-           this.largeArea=res;
-           var nameList=[{
-              name:"全部",
-              value:"All"
-           }];
-           _.each(res, function(el, index, list){
-              nameList.push({
-                name:el.name,
-                value:el.id
-              })
-           });
-          var searchSelect = new SearchSelect({
+
+        onGetLargeAreaSuccess: function(res) {
+            this.largeArea = res;
+            var nameList = [{
+                name: "全部",
+                value: "All"
+            }];
+            _.each(res, function(el, index, list) {
+                nameList.push({
+                    name: el.name,
+                    value: el.id
+                })
+            });
+            var searchSelect = new SearchSelect({
                 containerID: this.$el.find('.dropdown-largeArea').get(0),
                 panelID: this.$el.find('#dropdown-largeArea').get(0),
                 isSingle: true,
@@ -762,8 +824,8 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 data: nameList,
                 callback: function(data) {
                     this.$el.find('#dropdown-largeArea .cur-value').html(data.name);
-                    if(data.name=="全部") this.queryArgs.areaId=null;
-                    else this.queryArgs.areaId=parseInt(data.value);
+                    if (data.name == "全部") this.queryArgs.areaId = null;
+                    else this.queryArgs.areaId = parseInt(data.value);
                 }.bind(this)
             });
             this.$el.find("#dropdown-largeArea .cur-value").html(nameList[0].name);
@@ -789,12 +851,12 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             }.bind(this));
         },
 
-        onGetProvinceSuccess :function(res) {
-            this.provinceList=res;
+        onGetProvinceSuccess: function(res) {
+            this.provinceList = res;
 
-            var nameList=[{
+            var nameList = [{
                 name: "全部",
-                value:"All"
+                value: "All"
             }];
             _.each(res, function(el, key, list) {
                 nameList.push({
@@ -814,8 +876,8 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 data: nameList,
                 callback: function(data) {
                     this.$el.find('#dropdown-province .cur-value').html(data.name);
-                    if(data.name=="全部") this.queryArgs.provinceId=null;
-                    else  this.queryArgs.provinceId=parseInt(data.value);
+                    if (data.name == "全部") this.queryArgs.provinceId = null;
+                    else this.queryArgs.provinceId = parseInt(data.value);
                 }.bind(this)
             });
             this.$el.find("#dropdown-province .cur-value").html(nameList[0].name);

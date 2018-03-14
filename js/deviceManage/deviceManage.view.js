@@ -247,7 +247,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             require(["nodeManage.operateDetail.view"], function(NodeTips) {
                 var detailTipsView = new NodeTips({
                     type: 2,
-                    model: model
+                    model: model,
+                    whoCallMe: 'device'
                 });
                 var options = {
                     title: "操作说明",
@@ -342,7 +343,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             require(["nodeManage.operateDetail.view"], function(NodeTips) {
                 var stopNodeView = new NodeTips({
                     type: 1,
-                    model: model
+                    model: model,
+                    whoCallMe: 'device'
                 });
                 var options = {
                     title: "暂停设备",
@@ -616,7 +618,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 var stopNodeView = new NodeTips({
                     type: 1,
                     model: model,
-                    isMulti: true
+                    isMulti: true,
+                    whoCallMe: 'device'
                 });
                 var options = {
                     title: "暂停设备",

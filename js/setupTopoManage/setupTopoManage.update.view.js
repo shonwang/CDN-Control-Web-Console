@@ -207,6 +207,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                 if (this.selectStrategyPopup) $("#" + this.selectStrategyPopup.modalId).remove();
 
                 require(["setupSendWaitCustomize.stratety.view"], function(SelectStrategyView) {
+                    this.model.set("topologyId", this.model.get("id"))
                     var mySelectStrategyView = new SelectStrategyView({
                         collection: this.collection,
                         model: this.model,

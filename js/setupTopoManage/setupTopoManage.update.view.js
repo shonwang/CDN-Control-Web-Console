@@ -298,26 +298,26 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
 
             onClickCreateSetupBtn: function() {
                 if (this.options.pageType == 1) {
-                    if (this.topoData.configUpdateProgress.job_status == 2) {
-                        alert('已完成配置生成操作');
-                        return;
-                    }
+                    // if (this.topoData.configUpdateProgress.job_status == 2) {
+                    //     alert('已完成配置生成操作');
+                    //     return;
+                    // }
                     this.collection.startCreateSetup({
                         topologyId: this.model.get("id")
                     })
                 } else if (this.options.pageType == 2) {
-                    if (this.topoData.configUpdateProgress.job_status == 2) {
-                        alert('已完成配置生成操作');
-                        return;
-                    }
+                    // if (this.topoData.configUpdateProgress.job_status == 2) {
+                    //     alert('已完成配置生成操作');
+                    //     return;
+                    // }
                     this.collection.startSpecialLayerCreateSetup({
                         specialLayerStrategyId: this.model.get("id")
                     })
                 } else if (this.options.pageType == 3) {
-                    if (this.topoData.initProgress.job_status == 2) {
-                        alert('已完成配置操作')
-                        return;
-                    }
+                    // if (this.topoData.initProgress.job_status == 2) {
+                    //     alert('已完成配置操作')
+                    //     return;
+                    // }
                     this.collection.startNodeInitSetup({
                         nodeId: this.model.get("id"),
                         platformId: this.nodePlatformId

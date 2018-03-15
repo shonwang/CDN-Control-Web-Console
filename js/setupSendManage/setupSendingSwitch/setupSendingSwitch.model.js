@@ -22,6 +22,21 @@ define("setupSendingSwitch.model", ['require','exports', 'utility'], function(re
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
+        getTriggerStatus: function(args) {
+            var url = BASE_URL + "/cd/system/config/deliveryfunc/status",
+                successCallback = function(res) {
+                    if (res) {
+                        this.trigger("get.trigger.success", res);
+                    } else {
+                        this.trigger("get.trigger.error");
+                    }
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger('get.trigger.error', response)
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
     });
 
     return SetupSendingSwitchCollection;

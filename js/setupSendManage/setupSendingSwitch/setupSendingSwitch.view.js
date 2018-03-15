@@ -40,23 +40,37 @@ define("setupSendingSwitch.view", ['require', 'exports', 'template', 'modal.view
       if (!this.eventTarget.checked) {
         Utility.confirm("关闭下发开关，将无法进行配置下发操作，请确认是否执行该操作", function() {
           require(['setupTopoManage.model'], function(SetupTopoManageModel) {
-            var mySetupTopoManageModel = new SetupTopoManageModel();
+            var mySetupTopoManageModel = new SetupTopoManageModel(), querys;
             mySetupTopoManageModel.on("set.deliveryswitch.success", $.proxy(this.setSwitchSuccess, this));
             mySetupTopoManageModel.on("set.deliveryswitch.error", $.proxy(this.onGetError, this));
-            if (this.eventTarget.id == "openapiSwitch" || this.eventTarget.id == "centralControlSwitch") {
-              var querys = {
+            if (this.eventTarget.id == "openapiSwitch") {
+              querys = {
                 "platformId": "202",
-                "switch": false
+                "switch": false,
+                "type": "auto"
               }
               mySetupTopoManageModel.setdeliveryswitch(querys)
-              console.log(querys)
-            } else if (this.eventTarget.id == "live-openapiSwitch" || this.eventTarget.id == "live-centralControlSwitch") {
-              var querys = {
+            } else if (this.eventTarget.id == "centralControlSwitch") {
+              querys = {
+                "platformId": "202",
+                "switch": false,
+                "type": "manual"
+              }
+              mySetupTopoManageModel.setdeliveryswitch(querys)
+            } else if (this.eventTarget.id == "live-openapiSwitch") {
+              querys = {
                 "platformId": "203",
-                "switch": false
+                "switch": false,
+                "type": "auto"
               }
               mySetupTopoManageModel.setdeliveryswitch(querys)
-              console.log(querys)
+            } else if (this.eventTarget.id == "live-centralControlSwitch") {
+              querys = {
+                "platformId": "203",
+                "switch": false,
+                "type": "manual"
+              }
+              mySetupTopoManageModel.setdeliveryswitch(querys)
             }
           }.bind(this))
         }.bind(this))
@@ -78,23 +92,37 @@ define("setupSendingSwitch.view", ['require', 'exports', 'template', 'modal.view
     onCheckTaskSuccess: function(res) {
       Utility.confirm(res.length == 0 ? "是否确定开启下发开关？" : "正在进行配置初始化操作，是否开启下发开关？", function() {
         require(['setupTopoManage.model'], function(SetupTopoManageModel) {
-          var mySetupTopoManageModel = new SetupTopoManageModel();
+          var mySetupTopoManageModel = new SetupTopoManageModel(), querys;
           mySetupTopoManageModel.on("set.deliveryswitch.success", $.proxy(this.setSwitchSuccess, this));
           mySetupTopoManageModel.on("set.deliveryswitch.error", $.proxy(this.onGetError, this));
-          if (this.eventTarget.id == "openapiSwitch" || this.eventTarget.id == "centralControlSwitch") {
-            var querys = {
+          if (this.eventTarget.id == "openapiSwitch") {
+            querys = {
               "platformId": "202",
-              "switch": true
+              "switch": true,
+              "type": "auto"
             }
             mySetupTopoManageModel.setdeliveryswitch(querys)
-            console.log(querys)
-          } else if (this.eventTarget.id == "live-openapiSwitch" || this.eventTarget.id == "live-centralControlSwitch") {
-            var querys = {
+          } else if (this.eventTarget.id == "centralControlSwitch") {
+            querys = {
+              "platformId": "202",
+              "switch": true,
+              "type": "manual"
+            }
+            mySetupTopoManageModel.setdeliveryswitch(querys)
+          } else if (this.eventTarget.id == "live-openapiSwitch") {
+            querys = {
               "platformId": "203",
-              "switch": true
+              "switch": true,
+              "type": "auto"
             }
             mySetupTopoManageModel.setdeliveryswitch(querys)
-            console.log(querys)
+          } else if (this.eventTarget.id == "live-centralControlSwitch") {
+            querys = {
+              "platformId": "203",
+              "switch": true,
+              "type": "manual"
+            }
+            mySetupTopoManageModel.setdeliveryswitch(querys)
           }
         }.bind(this))
       }.bind(this))

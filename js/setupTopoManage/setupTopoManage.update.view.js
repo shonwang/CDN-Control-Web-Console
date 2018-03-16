@@ -145,20 +145,25 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                 }
             },
 
-            startNodeInitSetupSuccess: function() {
-                var showStatus = "";
+            startNodeInitSetupSuccess: function(res) {
+                if (res && res.message) {
+                    alert(res.message);
+                    return;
+                }
+                this.topoData.initProgress.job_status = null;
                 var showStatus = setInterval(function() {
-                    if (this.topoData.initProgress.job_status == 1) {
+                    if (this.topoData.initProgress.job_status == 1 || !this.topoData.initProgress.job_status) {
                         this.collection.getNodeProgress({
-                            nodeId: this.model.get('id')
+                            nodeId: this.model.get('id'),
+                            platformId: this.nodePlatformId
                         })
                     }
-                    if (this.topoData.initProgress.job_status != 1) {
+                    if (this.topoData.initProgress.job_status == 2 || this.topoData.initProgress.job_status == 3) {
                         clearInterval(showStatus)
                         if (this.topoData.initProgress.job_status == 2)
                             this.$el.find(".sendSetup").removeAttr("disabled")
                     }
-                }.bind(this), 2000)
+                }.bind(this), 500)
             },
 
             startCreateSetupSuccess: function(res) {

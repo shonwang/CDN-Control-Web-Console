@@ -441,7 +441,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
         startNodeInitSetup:function(args){
             var url = BASE_URL + "/cd/node/initcfg/start",
                 successCallback = function(res) {
-                    this.trigger("start.nodeInitSetup.success");
+                    this.trigger("start.nodeInitSetup.success", res);
                 }.bind(this),
                 errorCallback = function(response) {
                     this.trigger("start.nodeInitSetup.error", response);

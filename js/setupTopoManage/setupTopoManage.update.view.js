@@ -271,7 +271,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                 var eventTarget = event.srcElement || event.target
                 this.switchFlag = eventTarget.checked;
                 var setArgs = {
-                    platformId: this.topoData.basicinfo.platformId,
+                    platformId: this.topoData.basicinfo.platformId || this.nodePlatformId,
                     switch: eventTarget.checked
                 }
                 this.collection.setdeliveryswitch(setArgs)

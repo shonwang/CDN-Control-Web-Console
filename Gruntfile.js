@@ -38,6 +38,7 @@ module.exports = function(grunt) {
                         "css/zTreeStyle.css",
                         "css/domainList.css",
                         "css/bootstrap-switch.css",
+                        "css/toastr.css",
                         "css/main.css"
                     ]
                 }
@@ -100,7 +101,8 @@ module.exports = function(grunt) {
                         "libs/plupload.full.min.js",
                         "libs/async.min.js",
                         "libs/bootstrap-switch.js",
-                        "libs/socket.io-1.4.5.js"
+                        "libs/socket.io-1.4.5.js",
+                        "libs/toastr.js"
                     ]
                 }
             },

@@ -486,19 +486,43 @@ define("utility", ['require','exports'], function(require, exports) {
             return true;
         },
 
+        // alerts: function(message, type, timeout){
+        //     require(['react.modal.alert'], function(ReactModalAlertComponent){
+        //         var ReactModalAlertView = React.createFactory(ReactModalAlertComponent);
+        //         var reactModalAlertView = ReactModalAlertView({
+        //             showModal: true,
+        //             backdrop: false,
+        //             message: message || "Hello world!",
+        //             type: type || 'danger',
+        //             timeout: timeout || -1
+        //         });
+        //         ReactDOM.unmountComponentAtNode($("#react-modal").get(0))
+        //         ReactDOM.render(reactModalAlertView, $("#react-modal").get(0));
+        //     })
+        // },
+
         alerts: function(message, type, timeout){
-            require(['react.modal.alert'], function(ReactModalAlertComponent){
-                var ReactModalAlertView = React.createFactory(ReactModalAlertComponent);
-                var reactModalAlertView = ReactModalAlertView({
-                    showModal: true,
-                    backdrop: false,
-                    message: message || "Hello world!",
-                    type: type || 'danger',
-                    timeout: timeout || -1
-                });
-                ReactDOM.unmountComponentAtNode($("#react-modal").get(0))
-                ReactDOM.render(reactModalAlertView, $("#react-modal").get(0));
-            })
+            toastr.options = {
+              "closeButton": true,
+              "debug": false,
+              "newestOnTop": false,
+              "progressBar": true,
+              "rtl": false,
+              "positionClass": "toast-top-center",
+              "preventDuplicates": false,
+              "onclick": null,
+              "showDuration": 300,
+              "hideDuration": 1000,
+              "timeOut": timeout || -1,
+              "extendedTimeOut": 1000,
+              "showEasing": "swing",
+              "hideEasing": "linear",
+              "showMethod": "fadeIn",
+              "hideMethod": "fadeOut"
+            }
+            if (!type || type == "danger") type = "error"
+            var $toast = toastr[type](message);
+            return $toast;
         },
 
         confirm: function(message, callback){

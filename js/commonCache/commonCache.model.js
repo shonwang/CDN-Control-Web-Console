@@ -9,6 +9,21 @@ define("commonCache.model", ['require','exports', 'utility'], function(require, 
 
         initialize: function(){},
 
+        getCacheRulesList:function(args){
+            var url = BASE_URL + "/rs/common/cache/getCacheRulesList",
+                successCallback = function(res) {
+                    if (res) {
+                        args.success && args.success(res);
+                    } else {
+                        args.error && args.error(res);
+                    }
+                }.bind(this),
+                errorCallback = function(res) {
+                    args.error && args.error(res);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
         queryChannel: function(args) {
             var url = BASE_URL + "/channelManager/domain/getOriginDomain",
                 successCallback = function(res) {

@@ -61,10 +61,9 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
         initialize:function(options){
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/commonCache/commonCache.cacheRule.html'])());
-            this.setCacheRule();
+            this.getCacheRule();
             this.$el.find(".create").on("click", $.proxy(this.onClickAddCacheRule, this));
         },
-
 
         onClickAddCacheRule: function(event){
             if (this.addCacheRulePopup) $("#" + this.addCacheRulePopup.modalId).remove();
@@ -94,9 +93,37 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
             this.addCacheRulePopup = new Modal(options);
         },
 
-        setCacheRule:function(){
+        getCacheRule:function(){
+            var args = {
+                start:1,
+                total:10,
+                success:function(data){
+                    this.onGetCacheRuleSuccess(data);
+                }.bind(this),
+                error:function(data){
+                    this.onGetCacheRuleError(data);
+                }.bind(this),
+            };
+            this.collection.getCacheRulesList(args);
+
+
+            
+        },
+
+        onGetCacheRuleSuccess:function(data){
+            this.cacheData = data;
+            _.each(this.cacheData,function(el){
+                console.log(el);
+
+            });
             this.table = $(_.template(template['tpl/commonCache/commonCache.cacheRule.table.html'])());
             this.$el.find(".table-ctn").html(this.table);
+        },
+
+        onGetCacheRuleError:function(){},
+
+        onDataArrival:function(data){
+            
         },
 
         updateView:function(){

@@ -96,31 +96,28 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
         getCacheRule:function(){
             var args = {
                 start:1,
-                total:10,
+                total:1000,
                 success:function(data){
                     this.onGetCacheRuleSuccess(data);
                 }.bind(this),
                 error:function(data){
                     this.onGetCacheRuleError(data);
-                }.bind(this),
+                }.bind(this)
             };
+
             this.collection.getCacheRulesList(args);
-
-
-            
         },
 
         onGetCacheRuleSuccess:function(data){
             this.cacheData = data;
-            _.each(this.cacheData,function(el){
-                console.log(el);
-
-            });
-            this.table = $(_.template(template['tpl/commonCache/commonCache.cacheRule.table.html'])());
+            this.table = $(_.template(template['tpl/commonCache/commonCache.cacheRule.table.html'])({data:this.cacheData}));
             this.$el.find(".table-ctn").html(this.table);
         },
 
-        onGetCacheRuleError:function(){},
+        onGetCacheRuleError:function(data){
+            var msg =  data.message && data.message || "出现未知错误";
+            alert(msg);
+        },
 
         onDataArrival:function(data){
             
@@ -197,7 +194,7 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
         initialize:function(options){
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/commonCache/commonCache.ipBlackWhite.html'])());
-            this.setCacheRule();
+            this.getIpList();
             this.$el.find(".create").on("click", $.proxy(this.onClickAddCacheRule, this));
         },
 
@@ -230,9 +227,34 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
             this.addAddWhitePopup = new Modal(options);
         },
 
-        setCacheRule:function(){
-            this.table = $(_.template(template['tpl/commonCache/commonCache.ipBlackWhite.table.html'])());
+        getIpList:function(){
+            var args = {
+                start:1,
+                total:1000,
+                success:function(data){
+                    this.onGetIpListSuccess(data);
+                }.bind(this),
+                error:function(data){
+                    this.onGetIpListError(data);
+                }.bind(this)
+            };
+            this.collection.getIpWhiteList(args);
+        },
+
+        onGetIpListSuccess:function(data){
+            this.ipData = data;
+            if(data.length>0){
+                this.table = $(_.template(template['tpl/commonCache/commonCache.ipBlackWhite.table.html'])({data:this.ipData}));
+            }
+            else{
+                this.table = $("<tr><td colspan='5'>暂无数据</td><tr>");
+            }
             this.$el.find(".table-ctn").html(this.table);
+        },
+
+        onGetIpListError:function(data){
+            var msg =  data.message && data.message || "出现未知错误";
+            alert(msg);
         },
 
         updateView:function(){
@@ -306,7 +328,7 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
         initialize:function(options){
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/commonCache/commonCache.clearCache.html'])());
-            this.setCacheRule();
+            this.getClearRulesList();
             this.$el.find(".create").on("click", $.proxy(this.onClickAddCacheRule, this));
         },
 
@@ -342,6 +364,36 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
         setCacheRule:function(){
             this.table = $(_.template(template['tpl/commonCache/commonCache.clearCache.table.html'])());
             this.$el.find(".table-ctn").html(this.table);
+        },
+
+        getClearRulesList:function(){
+            var args = {
+                start:1,
+                total:1000,
+                success:function(data){
+                    this.onGetSuccess(data);
+                }.bind(this),
+                error:function(data){
+                    this.onGetError(data);
+                }.bind(this)
+            };
+            this.collection.getClearRulesList(args);
+        },
+
+        onGetSuccess:function(data){
+            this.clearRulesListData = data;
+            if(data.length>0){
+                this.table = $(_.template(template['tpl/commonCache/commonCache.clearCache.table.html'])({data:this.clearRulesListData}));
+            }
+            else{
+                this.table = $("<tr><td colspan='7'>暂无数据</td><tr>");
+            }
+            this.$el.find(".table-ctn").html(this.table);
+        },
+
+        onGetError:function(data){
+            var msg =  data.message && data.message || "出现未知错误";
+            alert(msg);
         },
 
         updateView:function(){
@@ -396,7 +448,7 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
                         return;
                     }
                     this.ipBlackWhiteView = new IpBlackWhiteView({
-                        collection: this.liveCollection
+                        collection: this.collection
                     })
                     this.ipBlackWhiteView.render(this.$el.find("#valuable-cache-ipBlackAndWhite"))
                 break;
@@ -406,7 +458,7 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
                         return;
                     }
                     this.clearCacheView = new ClearCacheView({
-                        collection: this.liveCollection
+                        collection: this.collection
                     })
                     this.clearCacheView.render(this.$el.find("#valuable-cache-clearRule"))
                 break;

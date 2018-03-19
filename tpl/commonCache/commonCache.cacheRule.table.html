@@ -11,13 +11,15 @@
     </tr>
   </thead>
   <tbody>
+      <%for(var i=0;i<data.length;i++){%>
       <tr>
-        <td>aaaaa</td>
-        <td>aaaaa</td>
-        <td>aaaaa</td>
-        <td>aaaaa</td>
-        <td>aaaaa</td>
-        <td>aaaaa</td>
+        <td><%=data[i].host%></td>
+        <td><%=data[i].uri%></td>
+        <td><%=data[i].args%></td>
+        <td><%=data[i].method%></td>
+        <td><%=data[i].body%></td>
+        <td><%=data[i].createTimeName%></td>
+        <td><%=data[i].offline%></td>
         <td>
           <a href="javascript:void(0)" class="edit" id='' title="编辑节点">
               <span class="glyphicon glyphicon-edit"></span>
@@ -27,5 +29,6 @@
           </a>
         </td>
       </tr>
+      <%}%>
   </tbody>
 </table>

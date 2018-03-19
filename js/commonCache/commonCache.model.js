@@ -10,18 +10,50 @@ define("commonCache.model", ['require','exports', 'utility'], function(require, 
         initialize: function(){},
 
         getCacheRulesList:function(args){
+            var _data = {
+                start:args.start,
+                total:args.total
+            };
             var url = BASE_URL + "/rs/common/cache/getCacheRulesList",
                 successCallback = function(res) {
-                    if (res) {
-                        args.success && args.success(res);
-                    } else {
-                        args.error && args.error(res);
-                    }
+                    console.log(res);
+                    console.log(args.success);
+                    args.success && args.success(res);
                 }.bind(this),
                 errorCallback = function(res) {
                     args.error && args.error(res);
                 }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
+            Utility.getAjax(url, _data, successCallback, errorCallback);
+        },
+
+        getIpWhiteList:function(args){
+            var _data = {
+                start:args.start,
+                total:args.total
+            };
+            var url = BASE_URL + "/rs/common/cache/getIpWhiteList",
+                successCallback = function(res) {
+                    args.success && args.success(res);
+                }.bind(this),
+                errorCallback = function(res) {
+                    args.error && args.error(res);
+                }.bind(this);
+            Utility.getAjax(url, _data, successCallback, errorCallback);
+        },
+
+        getClearRulesList:function(args){
+            var _data = {
+                start:args.start,
+                total:args.total
+            };
+            var url = BASE_URL + "/rs/common/cache/getClearRulesList",
+                successCallback = function(res) {
+                    args.success && args.success(res);
+                }.bind(this),
+                errorCallback = function(res) {
+                    args.error && args.error(res);
+                }.bind(this);
+            Utility.getAjax(url, _data, successCallback, errorCallback);
         },
 
         queryChannel: function(args) {

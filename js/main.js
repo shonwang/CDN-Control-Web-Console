@@ -70,6 +70,8 @@
   "liveUpBackOriginSetup.view": "customerSetup/domainList/liveSetup/liveUpBackOriginSetup/liveUpBackOriginSetup.view",
   "liveUpBasicInformation.model": "customerSetup/domainList/liveSetup/liveUpBasicInformation/liveUpBasicInformation.model",
   "liveUpBasicInformation.view": "customerSetup/domainList/liveSetup/liveUpBasicInformation/liveUpBasicInformation.view",
+  "liveUpConnection.model": "customerSetup/domainList/liveSetup/liveUpConnection/liveUpConnection.model",
+  "liveUpConnection.view": "customerSetup/domainList/liveSetup/liveUpConnection/liveUpConnection.view",
   "liveUpFlowNameChange.model": "customerSetup/domainList/liveSetup/liveUpFlowNameChange/liveUpFlowNameChange.model",
   "liveUpFlowNameChange.view": "customerSetup/domainList/liveSetup/liveUpFlowNameChange/liveUpFlowNameChange.view",
   "luaAdvanceClientLimitSpeed.model": "customerSetup/domainList/luaDownloadSetup/luaAdvanceClientLimitSpeed/luaAdvanceClientLimitSpeed.model",

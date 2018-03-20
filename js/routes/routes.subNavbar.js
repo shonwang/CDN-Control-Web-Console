@@ -368,6 +368,11 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     name: '动态配置',
                     hash: 'index.html#/domainList/' + query + '/liveDynamicSetup/' + query2,
                     children: []
+                }, {
+                    id: 'customerSetup-domainList-liveConnection',
+                    name: '上层级联',
+                    hash: 'index.html#/domainList/' + query + '/liveConnection/' + query2,
+                    children: []
                 }];
 
                 if (!this.domainManageNavbar) {
@@ -402,6 +407,11 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     id: 'customerSetup-domainList-liveUpDynamicSetup',
                     name: '动态配置',
                     hash: 'index.html#/domainList/' + query + '/liveUpDynamicSetup/' + query2,
+                    children: []
+                }, {
+                    id: 'customerSetup-domainList-liveUpConnection',
+                    name: '上层级联',
+                    hash: 'index.html#/domainList/' + query + '/liveUpConnection/' + query2,
                     children: []
                 }];
 

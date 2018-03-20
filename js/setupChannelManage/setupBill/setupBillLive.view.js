@@ -11,7 +11,6 @@ define("setupBillLive.view", ['require', 'exports', 'template', 'modal.view', 'u
                 this.cnameTable.appendTo(this.$el.find(".bill-ctn"));
 
                 var subType = this.config.originDomain.subType;
-
                 if (subType !== 3)
                     this.initOriginSetup();
                 else
@@ -78,38 +77,9 @@ define("setupBillLive.view", ['require', 'exports', 'template', 'modal.view', 'u
                     this.liveUpFlowNameChangeTable.appendTo(this.$el.find(".bill-ctn"));
                 }.bind(this))
 
-                this.initLiveDynamicSetup();
+                //this.initLiveDynamicSetup();
+                this.initLiveUpConnection();
             },
-
-            /*
-            initOriginDetection: function(argument) {
-                this.originDetectionInfo = this.config.detectOriginConfig || {};
-                this.strArray = ['<span class="label label-danger">关闭</span>', '<span class="label label-success">开启</span>'];
-                var flag = this.config.detectOriginConfig.flag;
-                this.originDetectionInfo.flagStr = this.strArray[flag];
-
-                this.originHostSetupTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.backOriginDetection.html'])({
-                    data: this.originDetectionInfo
-                }));
-                this.originHostSetupTable.appendTo(this.$el.find(".bill-ctn"));
-
-                var type = this.config.originDomain.type,
-                    protocol = this.config.domainConf.protocol;
-
-                if ((type === 1 && protocol === 0) ||
-                    (type === 1 && protocol === 4) ||
-                    (type === 2 && protocol === 2)) {
-                    this.initFollowing()
-                } else if ((type === 2 && protocol === 1) ||
-                           (type === 2 && protocol === 3)) {
-                    this.initLiveRefererAntiLeech()
-                } else {
-                    var message = 'type=1 protocol=0,4 下载<br>type=2 protocol=2 伪直播<br>type=2 protocol= 1,3真直播<br>' + 
-                                  '当前返回的type为' + type + "，protocol为" + protocol;
-                    alert(message)
-                }
-            },
-            */
 
             initOriginDetection: function(argument) {
                 this.originDetectionInfo = this.config.detectOriginConfig || {};
@@ -456,8 +426,8 @@ define("setupBillLive.view", ['require', 'exports', 'template', 'modal.view', 'u
 
                     this.livePKOptimizeTable.appendTo(this.$el.find(".bill-ctn"));
                 }.bind(this))
-
-                this.initLiveDynamicSetup();
+                this.initLiveUpConnection();
+                //this.initLiveDynamicSetup();
             },
 
             initLiveDynamicSetup: function() {
@@ -470,6 +440,26 @@ define("setupBillLive.view", ['require', 'exports', 'template', 'modal.view', 'u
                         })
                     }.bind(this));
                 }.bind(this))
+                //this.initLiveUpConnection();
+            },
+
+            initLiveUpConnection:function(){
+                this.liveConfDto = this.config.liveConfDto || null;
+                if(this.liveConfDto){
+                    var upCascade = this.liveConfDto.upCascade;
+                    var upCascadeStr = "";
+                    if(upCascade === 0){
+                        upCascadeStr ='<span class="label label-danger">关闭</span>';
+                    }
+                    else{
+                        upCascadeStr ='<span class="label label-success">开启</span>';
+                    }
+                    this.liveUpConnection = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.liveUpConnection.html'])({
+                        data: upCascadeStr
+                    }));
+                    this.liveUpConnection.appendTo(this.$el.find(".bill-ctn"));
+                }
+                this.initLiveDynamicSetup();
             }
         });
 

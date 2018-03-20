@@ -5,57 +5,49 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
             this.options = options;
             this.collection = options.collection;
             this.isEdit = options.isEdit;
-            this.model = options.model;
-            this.$el = $(_.template(template['tpl/commonCache/commonCache.cacheRule.add.html'])());
-
+            this.model = options.model && options.model[0];
+            
             this.defaultParam = {
-                id:"",
-                codes: "",
-                expireTime: "",
-                locationId:''//编辑时的id
+                host:"",
+                uri: "",
+                args: "",
+                method:'',//编辑时的id
+                body:'',
+                expire:'',
+                offline:1
             }; 
-
             if (this.isEdit){
-                this.defaultParam.codes = this.model.get("codes") || "";
-                this.defaultParam.expireTime = this.model.get("expireTime") || "";
-                this.defaultParam.id = this.model.get("id");
+                this.defaultParam.host = this.model.host;
+                this.defaultParam.uri = this.model.uri;
+                this.defaultParam.args = this.model.args;
+                this.defaultParam.method = this.model.method;
+                this.defaultParam.body = this.model.body;
+                this.defaultParam.expire = this.model.expire;
+                this.defaultParam.id = this.model.id;
+                this.defaultParam.offline = this.model.offline;
             }
-
-            this.initEditTemplate();
-
+            this.$el = $(_.template(template['tpl/commonCache/commonCache.cacheRule.add.html'])({data:this.defaultParam}));
         },
-        initEditTemplate:function(){
-            if(this.isEdit){
-                this.$el.find("#args").val(this.defaultParam.codes);
-                this.$el.find("#values").val(this.defaultParam.expireTime);
-            }
-        },
+
         onSure: function(){
-
             var host = this.$el.find("#host").val();
             var uri = this.$el.find("#uri").val();
             var args = this.$el.find("#args").val();
             var method = this.$el.find("#method").val();
             var body = this.$el.find("#body").val();
             var expire = this.$el.find("#expire").val();
-
-            if (codes === "" || expireTime === ""){
-                alert("状态码和缓存时间不能为空");
-                return false
-            } 
-            if(!Utility.isNumber(expireTime)){
-                alert("缓存时间只能填数字");
-                return false;
-            }
-
-
+            var offline = this.$el.find("input[name=cache-rule-onlineStatus]:checked").val();
             var postParam = {
-                "id": this.isEdit ? this.model.get("id") : new Date().valueOf(),
-                "locationId": this.defaultParam.locationId,
-                "codes": codes,
-                "expireTime": parseInt(expireTime)
+                "id": this.isEdit ? this.defaultParam.id : null,
+                host:host,
+                uri:uri,
+                args:args,
+                method:method,
+                body:body,
+                expire:expire,
+                offline:parseInt(offline)
             }
-            return postParam
+            return postParam;
         },
 
         render: function(target) {
@@ -86,12 +78,14 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
                 onOKCallback: function(){
                     var postParam = myAddEditCacheRuleView.onSure();
                     if (!postParam) return;
-                    var args = {
-                        "originId":this.domainInfo.id,
-                        "codes":  postParam.codes,
-                        "expireTime": postParam.expireTime
-                    };
-                    //this.collection.addStatusCode(args);
+                    postParam.success = function(){
+                        alert("添加成功");
+                        this.getCacheRule();
+                    }.bind(this);
+                    postParam.error = function(){
+                        this.setCacheRuleError();
+                    }.bind(this);
+                    this.collection.addCacheRule(postParam);
                     this.addCacheRulePopup.$el.modal('hide');
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
@@ -115,12 +109,66 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
         },
 
         onGetCacheRuleSuccess:function(data){
-            this.cacheData = data;
-            _.each(this.cacheData,function(el){
+            this.DATA = data;
+            _.each(this.DATA,function(el){
                 el.createTimeName = new Date(el.createTime).format("yyyy/MM/dd hh:mm");
+                el.offlineName = el.offline === 0 ? "不在线" : "在线";
             });
-            this.table = $(_.template(template['tpl/commonCache/commonCache.cacheRule.table.html'])({data:this.cacheData}));
+            this.table = $(_.template(template['tpl/commonCache/commonCache.cacheRule.table.html'])({data:this.DATA}));
             this.$el.find(".table-ctn").html(this.table);
+            this.table.find(".edit").on("click",$.proxy(this.onEditClick,this));
+        },
+
+        setCacheRuleError:function(){
+            alert("添加失败");
+        },
+
+        onEditClick:function(event){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+            var model = this.getCurrentObj(id);
+
+            if (this.addCacheRulePopup) $("#" + this.addCacheRulePopup.modalId).remove();
+            var myAddEditCacheRuleView = new AddCacheRule({
+                collection: this.collection,
+                isEdit:true,
+                model:model
+            });
+
+            var options = {
+                title:"添加缓存规则",
+                body : myAddEditCacheRuleView,
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback: function(){
+                    var postParam = myAddEditCacheRuleView.onSure();
+                    if (!postParam) return;
+                    postParam.success = function(){
+                        alert("修改成功");
+                        this.getCacheRule();
+                    }.bind(this);
+                    postParam.error = function(){
+                        this.setCacheRuleError();
+                    }.bind(this);
+                    this.collection.modifyCacheRule(postParam);
+                    this.addCacheRulePopup.$el.modal('hide');
+                }.bind(this),
+                onHiddenCallback: function(){}.bind(this)
+            }
+            this.addCacheRulePopup = new Modal(options);
+        },
+
+        getCurrentObj:function(id){
+            var data = this.DATA;
+            var model = _.filter(data,function(el){
+                return el.id == id;
+            });
+            return model;
         },
 
         onGetCacheRuleError:function(data){
@@ -139,55 +187,44 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
 
     var AddWhiteView = Backbone.View.extend({
         events: {},
+
         initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
             this.isEdit = options.isEdit;
-            this.model = options.model;
-            this.$el = $(_.template(template['tpl/commonCache/commonCache.white.add.html'])());
-
+            this.model = options.model && options.model[0];
+            
             this.defaultParam = {
-                id:"",
-                codes: "",
-                expireTime: "",
-                locationId:''//编辑时的id
+                host:"",
+                uri: "",
+                containCdnDevice: "",
+                ipList:""
             }; 
-
             if (this.isEdit){
-                this.defaultParam.codes = this.model.get("codes") || "";
-                this.defaultParam.expireTime = this.model.get("expireTime") || "";
-                this.defaultParam.id = this.model.get("id");
+                this.defaultParam.host = this.model.host;
+                this.defaultParam.uri = this.model.uri;
+                this.defaultParam.containCdnDevice = this.model.containCdnDevice;
+                this.defaultParam.ipList = this.model.ipList;
+                this.defaultParam.id = this.model.id;
             }
-
-            this.initEditTemplate();
-
+            this.$el = $(_.template(template['tpl/commonCache/commonCache.white.add.html'])({data:this.defaultParam}));
         },
-        initEditTemplate:function(){
-            if(this.isEdit){
-                this.$el.find("#args").val(this.defaultParam.codes);
-                this.$el.find("#values").val(this.defaultParam.expireTime);
-            }
-        },
+
         onSure: function(){
+            var host = this.$el.find("#host").val();
+            var uri = this.$el.find("#uri").val();
+            var ipList = this.$el.find("#ipList").val();
 
-            var codes = this.$el.find("#args").val(), expireTime = this.$el.find("#values").val();
-            if (codes === "" || expireTime === ""){
-                alert("状态码和缓存时间不能为空");
-                return false
-            } 
-            if(!Utility.isNumber(expireTime)){
-                alert("缓存时间只能填数字");
-                return false;
-            }
-
-
+            var containCdnDevice = this.$el.find("input[name=cache-containDevice]:checked").val();
+            console.log(containCdnDevice);
             var postParam = {
-                "id": this.isEdit ? this.model.get("id") : new Date().valueOf(),
-                "locationId": this.defaultParam.locationId,
-                "codes": codes,
-                "expireTime": parseInt(expireTime)
+                "id": this.isEdit ? this.defaultParam.id : null,
+                host:host,
+                uri:uri,
+                containCdnDevice:parseInt(containCdnDevice),
+                ipList:ipList
             }
-            return postParam
+            return postParam;
         },
 
         render: function(target) {
@@ -219,12 +256,14 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
                 onOKCallback: function(){
                     var postParam = myAddWhiteView.onSure();
                     if (!postParam) return;
-                    var args = {
-                        "originId":this.domainInfo.id,
-                        "codes":  postParam.codes,
-                        "expireTime": postParam.expireTime
-                    };
-                    //this.collection.addStatusCode(args);
+                    postParam.success = function(){
+                        alert("添加成功");
+                        this.getIpList();
+                    }.bind(this);
+                    postParam.error = function(){
+                        this.setIpListError();
+                    }.bind(this);
+                    this.collection.addIpWhiteRule(postParam);
                     this.addAddWhitePopup.$el.modal('hide');
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
@@ -247,16 +286,67 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
         },
 
         onGetIpListSuccess:function(data){
-            this.ipData = data;
-            if(data.length>0){
-                this.table = $(_.template(template['tpl/commonCache/commonCache.ipBlackWhite.table.html'])({data:this.ipData}));
-            }
-            else{
-                this.table = $("<tr><td colspan='5'>暂无数据</td><tr>");
-            }
+            this.DATA = data;
+            _.each(this.DATA,function(el){
+                el.containCdnDeviceName = el.containCdnDevice == 0 ? "不包含" : "包含";
+            });
+            this.table = $(_.template(template['tpl/commonCache/commonCache.ipBlackWhite.table.html'])({data:this.DATA}));
             this.$el.find(".table-ctn").html(this.table);
+            this.table.find(".edit").on("click",$.proxy(this.onEditClick,this));
         },
 
+        onEditClick:function(event){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+            var model = this.getCurrentObj(id);
+
+            if (this.addAddWhitePopup) $("#" + this.addAddWhitePopup.modalId).remove();
+            var myAddWhiteView = new AddWhiteView({
+                collection: this.collection,
+                isEdit:true,
+                model:model
+            });
+
+            var options = {
+                title:"修改白名单",
+                body : myAddWhiteView,
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback: function(){
+                    var postParam = myAddWhiteView.onSure();
+                    if (!postParam) return;
+                    postParam.success = function(){
+                        alert("修改成功");
+                        this.getIpList();
+                    }.bind(this);
+                    postParam.error = function(){
+                        this.setIpListError();
+                    }.bind(this);
+                    this.collection.modifyIpWhiteRule(postParam);
+                    this.addAddWhitePopup.$el.modal('hide');
+                }.bind(this),
+                onHiddenCallback: function(){}.bind(this)
+            }
+            this.addAddWhitePopup = new Modal(options);
+        },
+
+        getCurrentObj:function(id){
+            var data = this.DATA;
+            var model = _.filter(data,function(el){
+                return el.id == id;
+            });
+            return model;
+        },        
+
+        setIpListError:function(res){
+            var msg = res.message || "失败";
+            alert(msg);
+        },
         onGetIpListError:function(data){
             var msg =  data.message && data.message || "出现未知错误";
             alert(msg);
@@ -273,55 +363,43 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
 
     var AddClearCacheView = Backbone.View.extend({
         events: {},
+
         initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
             this.isEdit = options.isEdit;
-            this.model = options.model;
-            this.$el = $(_.template(template['tpl/commonCache/commonCache.clearCache.add.html'])());
-
+            this.model = options.model && options.model[0];
+            
             this.defaultParam = {
-                id:"",
-                codes: "",
-                expireTime: "",
-                locationId:''//编辑时的id
+                host:"",
+                uri: "",
+                method: "",
+                rel_key:""
             }; 
-
             if (this.isEdit){
-                this.defaultParam.codes = this.model.get("codes") || "";
-                this.defaultParam.expireTime = this.model.get("expireTime") || "";
-                this.defaultParam.id = this.model.get("id");
+                this.defaultParam.host = this.model.host;
+                this.defaultParam.uri = this.model.uri;
+                this.defaultParam.method = this.model.method;
+                this.defaultParam.rel_key = this.model.rel_key;
+                this.defaultParam.id = this.model.id;
             }
-
-            this.initEditTemplate();
-
+            this.$el = $(_.template(template['tpl/commonCache/commonCache.clearCache.add.html'])({data:this.defaultParam}));
         },
-        initEditTemplate:function(){
-            if(this.isEdit){
-                this.$el.find("#args").val(this.defaultParam.codes);
-                this.$el.find("#values").val(this.defaultParam.expireTime);
-            }
-        },
+
         onSure: function(){
-
-            var codes = this.$el.find("#args").val(), expireTime = this.$el.find("#values").val();
-            if (codes === "" || expireTime === ""){
-                alert("状态码和缓存时间不能为空");
-                return false
-            } 
-            if(!Utility.isNumber(expireTime)){
-                alert("缓存时间只能填数字");
-                return false;
-            }
-
+            var host = this.$el.find("#host").val();
+            var uri = this.$el.find("#uri").val();
+            var method = this.$el.find("#method").val();
+            var rel_key = this.$el.find("#rel_key").val();
 
             var postParam = {
-                "id": this.isEdit ? this.model.get("id") : new Date().valueOf(),
-                "locationId": this.defaultParam.locationId,
-                "codes": codes,
-                "expireTime": parseInt(expireTime)
+                "id": this.isEdit ? this.defaultParam.id : null,
+                host:host,
+                uri:uri,
+                rel_key:rel_key,
+                method:method
             }
-            return postParam
+            return postParam;
         },
 
         render: function(target) {
@@ -351,24 +429,21 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
                 backdrop : 'static',
                 type     : 2,
                 onOKCallback: function(){
-                    var postParam = myAddWhiteView.onSure();
+                    var postParam = myAddClearCacheView.onSure();
                     if (!postParam) return;
-                    var args = {
-                        "originId":this.domainInfo.id,
-                        "codes":  postParam.codes,
-                        "expireTime": postParam.expireTime
-                    };
-                    //this.collection.addStatusCode(args);
+                    postParam.success = function(){
+                        alert("添加成功");
+                        this.getClearRulesList();
+                    }.bind(this);
+                    postParam.error = function(){
+                        this.setIpListError();
+                    }.bind(this);
+                    this.collection.addClearRule(postParam);
                     this.addClearCachePopup.$el.modal('hide');
                 }.bind(this),
                 onHiddenCallback: function(){}.bind(this)
             }
             this.addClearCachePopup = new Modal(options);
-        },
-
-        setCacheRule:function(){
-            this.table = $(_.template(template['tpl/commonCache/commonCache.clearCache.table.html'])());
-            this.$el.find(".table-ctn").html(this.table);
         },
 
         getClearRulesList:function(){
@@ -386,18 +461,72 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
         },
 
         onGetSuccess:function(data){
-            this.clearRulesListData = data;
+            this.DATA = data;
             if(data.length>0){
-                this.table = $(_.template(template['tpl/commonCache/commonCache.clearCache.table.html'])({data:this.clearRulesListData}));
+                this.table = $(_.template(template['tpl/commonCache/commonCache.clearCache.table.html'])({data:this.DATA}));
             }
             else{
-                this.table = $("<tr><td colspan='7'>暂无数据</td><tr>");
+                this.table = $("<tr><td colspan='5'>暂无数据</td><tr>");
             }
             this.$el.find(".table-ctn").html(this.table);
+            this.table.find(".edit").on("click",$.proxy(this.onEditClick,this));
+        },
+
+        onEditClick:function(event){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+            var model = this.getCurrentObj(id);
+            console.log(model);
+            if (this.addClearCachePopup) $("#" + this.addClearCachePopup.modalId).remove();
+            var myAddClearCacheView = new AddClearCacheView({
+                collection: this.collection,
+                isEdit:true,
+                model:model
+            });
+
+            var options = {
+                title:"修改清除缓存规则-添加条件",
+                body : myAddClearCacheView,
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback: function(){
+                    var postParam = myAddClearCacheView.onSure();
+                    if (!postParam) return;
+                    postParam.success = function(){
+                        alert("修改成功");
+                        this.getClearRulesList();
+                    }.bind(this);
+                    postParam.error = function(res){
+                        this.setClearRuleError(res);
+                    }.bind(this);
+                    this.collection.modifyClearRule(postParam);
+                    this.addClearCachePopup.$el.modal('hide');
+                }.bind(this),
+                onHiddenCallback: function(){}.bind(this)
+            }
+            this.addClearCachePopup = new Modal(options);
+        },
+
+        getCurrentObj:function(id){
+            var data = this.DATA;
+            var model = _.filter(data,function(el){
+                return el.id == id;
+            });
+            return model;
         },
 
         onGetError:function(data){
             var msg =  data.message && data.message || "出现未知错误";
+            alert(msg);
+        },
+
+        setClearRuleError:function(res){
+            var msg = res.message || "修改失败";
             alert(msg);
         },
 

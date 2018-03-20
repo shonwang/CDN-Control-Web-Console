@@ -11,15 +11,15 @@
   <tbody>
     <%for(var i=0;i<data.length;i++){%>
       <tr>
-        <td>aaaaa</td>
-        <td>aaaaa</td>
-        <td>aaaaa</td>
-        <td>aaaaa</td>
+        <td><%=data[i].host%></td>
+        <td><%=data[i].uri%></td>
+        <td><%=data[i].containCdnDeviceName%></td>
+        <td><%=data[i].ipList%></td>
         <td>
-          <a href="javascript:void(0)" class="edit" id='' title="编辑节点">
+          <a href="javascript:void(0)" class="edit" id='<%=data[i].id%>' title="编辑节点">
               <span class="glyphicon glyphicon-edit"></span>
           </a>
-          <a href="javascript:void(0)" class="delete" id='' title="删除">
+          <a href="javascript:void(0)" class="delete" id='<%=data[i].id%>' title="删除">
               <span class="glyphicon glyphicon-trash"></span>
           </a>
         </td>

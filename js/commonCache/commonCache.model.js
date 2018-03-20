@@ -56,22 +56,121 @@ define("commonCache.model", ['require','exports', 'utility'], function(require, 
             Utility.getAjax(url, _data, successCallback, errorCallback);
         },
 
-        queryChannel: function(args) {
-            var url = BASE_URL + "/channelManager/domain/getOriginDomain",
+        addCacheRule:function(args){
+            var _data = {
+                host:args.host,
+                uri:args.uri,
+                args:args.args,
+                method:args.method,
+                body:args.body,
+                expire:args.expire,
+                offline:args.offline
+            };
+            var url = BASE_URL + "/rs/common/cache/addCacheRule",
                 successCallback = function(res) {
-                    this.reset();
-                    if (res) {
-                        this.push(new Model(res));
-                        this.trigger("get.channel.success");
-                    } else {
-                        this.trigger("get.channel.error");
-                    }
+                    args.success && args.success(res);
                 }.bind(this),
-                errorCallback = function(response) {
-                    this.trigger("get.channel.error", response);
+                errorCallback = function(res) {
+                    args.error && args.error(res);
                 }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
-        }
+            Utility.postAjax(url, _data, successCallback, errorCallback);            
+        },
+
+        modifyCacheRule:function(args){
+            var _data = {
+                id:args.id,
+                host:args.host,
+                uri:args.uri,
+                args:args.args,
+                method:args.method,
+                body:args.body,
+                expire:args.expire,
+                offline:args.offline
+            };
+            var url = BASE_URL + "/rs/common/cache/modifyCacheRule",
+                successCallback = function(res) {
+                    args.success && args.success(res);
+                }.bind(this),
+                errorCallback = function(res) {
+                    args.error && args.error(res);
+                }.bind(this);
+            Utility.postAjax(url, _data, successCallback, errorCallback);            
+        },
+
+        addIpWhiteRule:function(args){
+            var _data = {
+                host:args.host,
+                uri:args.uri,
+                containCdnDevice:args.containCdnDevice,
+                ipList:args.ipList                
+            };
+            var url = BASE_URL + "/rs/common/cache/addIpWhiteRule",
+                successCallback = function(res) {
+                    args.success && args.success(res);
+                }.bind(this),
+                errorCallback = function(res) {
+                    args.error && args.error(res);
+                }.bind(this);
+            Utility.postAjax(url, _data, successCallback, errorCallback);  
+        },
+
+        modifyIpWhiteRule:function(args){
+            var _data = {
+                id:args.id,
+                host:args.host,
+                uri:args.uri,
+                args:args.containCdnDevice,
+                ipList:args.ipList
+            };
+            var url = BASE_URL + "/rs/common/cache/modifyIpWhiteRule",
+                successCallback = function(res) {
+                    args.success && args.success(res);
+                }.bind(this),
+                errorCallback = function(res) {
+                    args.error && args.error(res);
+                }.bind(this);
+            Utility.postAjax(url, _data, successCallback, errorCallback);            
+        },
+
+        addClearRule:function(args){
+            var _data = {
+                host:args.host,
+                uri:args.uri,
+                method:args.method,
+                rel_key:args.rel_key                
+            };
+            var url = BASE_URL + "/rs/common/cache/addClearRule",
+                successCallback = function(res) {
+                    args.success && args.success(res);
+                }.bind(this),
+                errorCallback = function(res) {
+                    args.error && args.error(res);
+                }.bind(this);
+            Utility.postAjax(url, _data, successCallback, errorCallback);  
+        },
+
+        modifyClearRule:function(args){
+            var _data = {
+                id:args.id,
+                host:args.host,
+                uri:args.uri,
+                method:args.method,
+                rel_key:args.rel_key
+            };
+            var url = BASE_URL + "/rs/common/cache/modifyClearRule",
+                successCallback = function(res) {
+                    args.success && args.success(res);
+                }.bind(this),
+                errorCallback = function(res) {
+                    args.error && args.error(res);
+                }.bind(this);
+            Utility.postAjax(url, _data, successCallback, errorCallback);            
+        },
+
+        removeCacheRule:function(args){
+
+        },    
+
     });
 
     return CommonCacheCollection;

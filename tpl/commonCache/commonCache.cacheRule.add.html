@@ -4,45 +4,45 @@
         <div class="form-group args">
             <label for="args" class="col-sm-2 control-label">host</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control" id="host">
+                <input type="text" class="form-control" id="host" value="<%=data.host%>" />
             </div>
         </div>
         <div class="form-group values">
             <label for="values" class="col-sm-2 control-label">uri</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control" id="uri">
+                <input type="text" class="form-control" id="uri" value="<%=data.uri%>" />
             </div>
         </div>
         <div class="form-group values">
             <label for="values" class="col-sm-2 control-label">参数</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control" id="args">
+                <input type="text" class="form-control" id="args" value="<%=data.args%>" />
             </div>
         </div>
         <div class="form-group values">
             <label for="values" class="col-sm-2 control-label">方式</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control" id="method">
+                <input type="text" class="form-control" id="method" value="<%=data.method%>" />
             </div>
         </div>
         <div class="form-group values">
             <label for="values" class="col-sm-2 control-label">body</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control" id="body">
+                <input type="text" class="form-control" id="body" value="<%=data.body%>" />
             </div>
         </div>
         <div class="form-group values">
             <label for="values" class="col-sm-2 control-label">过期时间(秒)</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control" id="expire">
+                <input type="text" class="form-control" id="expire" value="<%=data.expire%>" />
             </div>
         </div>
         <div class="form-group values">
             <label for="values" class="col-sm-2 control-label">在线状态</label>
             <div class="col-sm-8">
                 <div class="cache-rule-type col-sm-12">
-                    <label class="radio-inline"><input type="radio" name="cache-rule-onlineStatus" id="cache-rule-lineStatus-on" value="1" checked=""> 在线</label>
-                    <label class="radio-inline"><input type="radio" name="cache-rule-onlineStatus" id="cache-rule-lineStatus-off" value="3"> 不在线</label>
+                    <label class="radio-inline"><input type="radio" name="cache-rule-onlineStatus" id="cache-rule-lineStatus-on" value="1" <%if(data.offline == 1){%>checked<%}%>> 在线</label>
+                    <label class="radio-inline"><input type="radio" name="cache-rule-onlineStatus" id="cache-rule-lineStatus-off" value="0"<%if(data.offline == 0){%>checked<%}%>> 不在线</label>
                 </div>                
             </div>
         </div>

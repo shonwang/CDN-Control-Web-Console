@@ -83,11 +83,11 @@ define("liveSLAStatistics.view", ['require','exports', 'template', 'modal.view',
             var eventTarget = event.srcElement || event.target;
             var value = parseInt($(eventTarget).val());
             if (!Utility.isNumber(value) || value < 0 || value > 10)
-                alert("最小可设置为0秒，最大可设置为10秒")
+                Utility.warning("最小可设置为0秒，最大可设置为10秒")
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            Utility.alerts("保存成功！", "success", 5000)
         },
 
         launchSendPopup: function(){
@@ -121,13 +121,13 @@ define("liveSLAStatistics.view", ['require','exports', 'template', 'modal.view',
         onClickSaveBtn: function(){
             var value1 = parseInt(this.$el.find("#first-buffer").val());
             if (!Utility.isNumber(value1) || value1 < 0 || value1 > 10){
-                alert("最小可设置为0秒，最大可设置为10秒")
+                Utility.warning("最小可设置为0秒，最大可设置为10秒")
                 return
             }
 
             var value2 = parseInt(this.$el.find("#second-buffer").val());
             if (!Utility.isNumber(value2) || value2 < 0 || value2 > 10){
-                alert("最小可设置为0秒，最大可设置为10秒")
+                Utility.warning("最小可设置为0秒，最大可设置为10秒")
                 return
             }
 
@@ -154,9 +154,9 @@ define("liveSLAStatistics.view", ['require','exports', 'template', 'modal.view',
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         hide: function(){

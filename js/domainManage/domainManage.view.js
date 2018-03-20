@@ -160,9 +160,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
 
         onGetError: function(error) {
             if (error && error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         initDropMenu: function(){
@@ -520,17 +520,17 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 this.args.policys.push(json);
             }
             if(!this.args.domain || this.args.domain == ""){
-                alert("请填写加速域名");
+                Utility.warning("请填写加速域名");
                 return false;
             }
 
             if(!this.args.userId || this.args.userId == ""){
-                alert("请填写用户ID");
+                Utility.warning("请填写用户ID");
                 return false;
             }
 
             if(!this.args.cname || this.args.cname == ""){
-                alert("请填写cname");
+                Utility.warning("请填写cname");
                 return false;
             }
             return this.args;
@@ -708,30 +708,30 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
         },
 
         onSendAllOriginSuccess:function(res){
-            alert("所有域名下发成功");
+            Utility.alerts("所有域名下发成功！", "success", 5000);
             this.onClickQueryButton();
         },
 
         onDeleteDomainSuccess:function(res){
-            alert("域名删除成功");
+            Utility.alerts("删除成功！", "success", 5000)
             this.onClickQueryButton();
         },
         onDeleteConfigurationSuccess:function(res){
-            alert("一键删除域名的所有配置成功");
+            Utility.alerts("一键删除域名的所有配置成功！", "success", 5000);
             this.onClickQueryButton();
         },
         onSendDomainSuccess:function(res){
-            alert("域名下发成功");
+            Utility.alerts("下发成功！", "success", 5000);
             this.onClickQueryButton();
         },
 
         onAddDomainSuccess:function(res){
-            alert("域名添加成功");
+            Utility.alerts("添加成功！", "success", 5000);
             this.onClickQueryButton();
         },
 
         oneditDomainSuccess:function(res){
-            alert("域名修改成功");
+            Utility.alerts("修改成功！", "success", 5000);
             this.onClickQueryButton();
         },
 
@@ -914,9 +914,9 @@ define("domainManage.view", ['require', 'exports', 'template', 'modal.view', 'ut
 
         onGetError: function(error) {
             if (error && error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         hide: function() {

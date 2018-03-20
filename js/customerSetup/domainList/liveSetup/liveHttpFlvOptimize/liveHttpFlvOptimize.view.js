@@ -170,7 +170,7 @@ define("liveHttpFlvOptimize.view", ['require','exports', 'template', 'modal.view
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            Utility.alerts("保存成功！", "success", 5000)
         },
 
         launchSendPopup: function(){
@@ -203,12 +203,12 @@ define("liveHttpFlvOptimize.view", ['require','exports', 'template', 'modal.view
 
         onClickSaveCommon: function(){
             if (this.defaultParam.keepAliveTime < 0 || this.defaultParam.keepAliveTime > 1440 * 60){
-                alert("保持连接时长最小值为0秒，最大值为1440分钟");
+                Utility.warning("保持连接时长最小值为0秒，最大值为1440分钟");
                 return;
             }
             this.defaultParam.avHeaderWaitTime = parseInt(this.$el.find("#waitduration").val());
             if (this.defaultParam.avHeaderWaitTime < 1 || this.defaultParam.avHeaderWaitTime > 30){
-                alert("等待音视频合并头持续的时间最小值为1秒，最大值为30秒");
+                Utility.warning("等待音视频合并头持续的时间最小值为1秒，最大值为30秒");
                 return;
             }
 
@@ -270,9 +270,9 @@ define("liveHttpFlvOptimize.view", ['require','exports', 'template', 'modal.view
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         hide: function(){

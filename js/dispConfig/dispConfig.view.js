@@ -103,9 +103,9 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
         onGetError: function(error){
             this.$el.find(".ok-again").hide();
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         render: function(target) {
@@ -241,9 +241,9 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         render: function(target, rootNode) {
@@ -319,7 +319,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
         getArgs: function(){
             if (!this.selectedHistory["oneHistory"] || !this.selectedHistory["anotherHistory"]){
-                alert("你还没有选择历史记录！");
+                Utility.warning("你还没有选择历史记录！");
                 return false;
             }
             return this.selectedHistory;
@@ -327,9 +327,9 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         render: function(target, rootNode) {
@@ -376,7 +376,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.disablePopup.$el.modal('hide');
                 this.$el.find(".opt-panel").slideDown(200);
                 Utility.showMainList(this.$el, ".main-list", ".diff-send-panel", ".diff-send-ctn");
-                alert("下发成功！")
+                Utility.alerts("下发成功！", "success", 5000)
             }.bind(this));
             this.collection.on("dispDns.error", function(res){
                 this.disablePopup.$el.modal('hide');
@@ -517,9 +517,9 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onDispConfigListSuccess: function(){
@@ -841,7 +841,7 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                             for (var i = 0; i < list.length; i++){
                                 if (list[i].get("id") === parseInt(options[k]["node.id"])) options.splice(k, 1);
                                 if (options.length === 0) {
-                                    alert("你选择的节点已经添加过了！")
+                                    Utility.warning("你选择的节点已经添加过了！")
                                     this.selectNodePopup.$el.modal("hide");
                                     return;
                                 }

@@ -103,13 +103,13 @@ define('blockUrl.view', ['utility', 'template'], function(Utility, template) {
     },
     blockUrlsSuccess: function() {
       $('a[data-target="#blockUrlList"]').click();
-      alert('操作成功');
+      Utility.alerts("操作成功！", "success", 5000);
     },
     onGetError: function(error) {
       if (error && error.message) {
-        alert(error.message);
+        Utility.alerts(error.message);
       } else {
-        alert('网络阻塞，请刷新重试！')
+        Utility.alerts("网络阻塞，请刷新重试！")
       }
     },
     urlsvalidation: function(urls) {
@@ -120,11 +120,11 @@ define('blockUrl.view', ['utility', 'template'], function(Utility, template) {
         urls = urls.substr(0, urls.length - 1);
 
       if (urls === "") {
-        alert('URL不能为空');
+        Utility.alerts("URL不能为空！", "warning", 5000);
         return false;
       } else {
         if (urls.indexOf(',') > -1 || urls.indexOf('；') > -1 || urls.indexOf('，') > -1 || urls.indexOf(' ') > -1) {
-          alert('请以英文半角分号对URL进行分隔');
+          Utility.alerts("请以英文半角分号对URL进行分隔！", "warning", 5000);
           return false;
         }
         if (urls.indexOf(';') > -1) {
@@ -136,17 +136,17 @@ define('blockUrl.view', ['utility', 'template'], function(Utility, template) {
           }
           //数量验证
           if (url.length > parseInt(quotaEffecitveCount)) {
-            alert('已超过最大提交数量');
+            Utility.alerts("已超过最大提交数量！", "warning", 5000);
             return false;
           }
           //格式正则表达式验证
           for (var i = 0; i < url.length; i++) {
             if (!Utility.isURL(url[i])) {
-              alert('第' + (i + 1) + '个URL输入有误');
+              Utility.alerts('第' + (i + 1) + '个URL输入有误', "warning", 5000);
               return false;
             }
             if (!protocolRegex.test(url[i].substr(0, 4))) {
-              alert('第' + (i + 1) + '个URL请以协议开头');
+              Utility.alerts('第' + (i + 1) + '个URL请以协议开头', "warning", 5000);
               return false;
             }
           }
@@ -155,7 +155,7 @@ define('blockUrl.view', ['utility', 'template'], function(Utility, template) {
             if (url[i].substr(0, 1) == '\n') url[i] = url[i].substr(1);
 
             if (urlrepeat.indexOf(url[i]) >= 0) {
-              alert(url[i] + '重复,请重新填写');
+              Utility.alerts(url[i] + '重复,请重新填写', "warning", 5000)
               return false;
             } else {
               urlrepeat.push(url[i]);
@@ -164,10 +164,10 @@ define('blockUrl.view', ['utility', 'template'], function(Utility, template) {
         }
         //单条URL的情况
         else if (!Utility.isURL(urls)) {
-          alert('URL输入有误');
+          Utility.warning('URL输入有误');
           return false;
         } else if (!protocolRegex.test(urls)) {
-          alert('请以协议开头');
+          Utility.warning('请以协议开头');
           return false;
         }
       }
@@ -176,7 +176,7 @@ define('blockUrl.view', ['utility', 'template'], function(Utility, template) {
     onClickSubmitBlockButton: function() {
       var quotaEffecitveCount = this.$el.find('.quotaEffecitveCount').text();
       if (quotaEffecitveCount == 0) {
-        alert('已达到最大提交数量，暂时无法进行提交');
+        Utility.warning('已达到最大提交数量，暂时无法进行提交');
         return false;
       }
       var urls = this.$el.find('#urls').val();
@@ -314,20 +314,20 @@ define('blockUrl.view', ['utility', 'template'], function(Utility, template) {
         }
       })
       if (idsArray.length > this.numberControl) {
-        alert('已超出可提交的最大条数限制');
+        Utility.warning('已超出可提交的最大条数限制');
         return false;
       }
       this.blockUrlParam.ids = idsArray;
       this.collection.removeBlockUrl(this.blockUrlParam);
     },
     removeblockUrlSuccess: function() {
-      alert('操作成功');
+      Utility.alerts("操作成功！", "success", 5000);
       this.UnblockButton.attr('disabled', 'disabled');
       this.UnblockButton.off('click');
       this.onClickQueryButton();
     },
     retryblockTasSuccess: function() {
-      alert('操作成功');
+      Utility.alerts("操作成功！", "success", 5000);
       this.onClickQueryButton();
     },
     initblockListDropmenu: function() {
@@ -516,9 +516,9 @@ define('blockUrl.view', ['utility', 'template'], function(Utility, template) {
     },
     onGetError: function(error) {
       if (error && error.message) {
-        alert(error.message);
+        Utility.alerts(error.message);
       } else {
-        alert('网络阻塞，请刷新重试!');
+        Utility.warning('网络阻塞，请刷新重试!');
       }
     },
     render: function(target) {
@@ -652,9 +652,9 @@ define('blockUrl.view', ['utility', 'template'], function(Utility, template) {
     },
     onGetError: function(error) {
       if (error && error.message) {
-        alert(error.message);
+        Utility.alerts(error.message);
       } else {
-        alert('网络阻塞，请刷新重试！')
+        Utility.alerts("网络阻塞，请刷新重试！")
       }
     },
     showloading: function() {

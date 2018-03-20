@@ -104,7 +104,7 @@ define("setupBillLive.view", ['require', 'exports', 'template', 'modal.view', 'u
                 } else {
                     var message = 'type=1 protocol=0,4 下载<br>type=2 protocol=2 伪直播<br>type=2 protocol= 1,3真直播<br>' + 
                                   '当前返回的type为' + type + "，protocol为" + protocol;
-                    alert(message)
+                    Utility.warning(message)
                 }
             },
             */
@@ -132,7 +132,7 @@ define("setupBillLive.view", ['require', 'exports', 'template', 'modal.view', 'u
                     //直播
                     this.initLiveRefererAntiLeech();
                 } else {
-                    alert("您的平台不是下载也不是直播，applicationType为" + applicationType);
+                    Utility.warning("您的平台不是下载也不是直播，applicationType为" + applicationType);
                 }
             },
 

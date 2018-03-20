@@ -49,16 +49,16 @@ define("applicationChange.view", ['require','exports', 'template', 'modal.view',
         onClickSaveButton:function(){
             var args = this.args;
             if(!args.originId){
-                alert("请先查询你的域名是否存在");
+                Utility.alerts("请先查询你的域名是否存在！", "warning", 5000)
                 return false;
             }
             if(!args.applicationType){
-                alert("请选择平台");
+                Utility.alerts("请选择平台！", "warning", 5000);
                 return false;
             }
 
             if(!args.topologyId){
-                alert("请选择拓扑");
+                Utility.alerts("请选择拓扑！", "warning", 5000);
                 return false;
             }
 
@@ -68,7 +68,7 @@ define("applicationChange.view", ['require','exports', 'template', 'modal.view',
         onClickQueryButton:function(){
             var val = this.$el.find("#input-domain").val();
             if(!val){
-                alert("请输入要查询的域名");
+                Utility.alerts("请输入要查询的域名！", "warning", 5000);
                 return false;
             }
             var args = {
@@ -89,7 +89,7 @@ define("applicationChange.view", ['require','exports', 'template', 'modal.view',
         },
 
         setApplicationSuccess:function(){
-            alert("保存成功");
+            Utility.alerts("保存成功！", "success", 5000);
         },
 
         showLoading:function(){
@@ -168,9 +168,9 @@ define("applicationChange.view", ['require','exports', 'template', 'modal.view',
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         hide: function(){

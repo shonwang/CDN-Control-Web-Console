@@ -18,11 +18,11 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
                 endSecond = parseInt(this.$el.find("#end-second").val() || "0");
 
             if (startHour > 23 || endHour > 23) {
-                alert("小时不能大于23！")
+                Utility.warning("小时不能大于23！")
                 return false;
             }
             if (startMinutes > 59 || endMinutes > 59 || endMinutes > 59 || endSecond > 59) {
-                alert("分钟、秒不能大于59！")
+                Utility.warning("分钟、秒不能大于59！")
                 return false;
             }
 
@@ -34,7 +34,7 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
             var startTime = new Date(nowDate + " " + startTimeStr).format("hhmmss"),
                 endTime   = new Date(nowDate + " " + endTimeStr).format("hhmmss")
             if (parseInt(endTime) <= parseInt(startTime)) {
-                alert("结束时间不能小于等于开始时间！")
+                Utility.warning("结束时间不能小于等于开始时间！")
                 return false;
             }
 
@@ -101,7 +101,7 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            Utility.alerts("保存成功！", "success", 5000)
         },
 
         launchSendPopup: function(){
@@ -166,9 +166,9 @@ define("luaClientLimitSpeed.view", ['require','exports', 'template', 'modal.view
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         initSetup: function(data){

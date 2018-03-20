@@ -37,14 +37,14 @@ define("deviceManage.importDevice.view", ['require','exports', 'template', 'moda
 
             this.uploader.bind("Error", function(up, obj){
                 if (obj && obj.code === -600){
-                    alert("上传文件超出最大限制:10MB");
+                    Utility.warning("上传文件超出最大限制:10MB");
                     return;
                 }
                 try{
                     var error = JSON.parse(obj.response)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 } catch(e){
-                    alert("导入失败了！")
+                    Utility.warning("导入失败了！")
                 }
                 this.isError = true;
                 this.uploader.splice(0, 1);
@@ -80,14 +80,14 @@ define("deviceManage.importDevice.view", ['require','exports', 'template', 'moda
                 this.$el.find("#import-device-file").removeAttr("readonly")
                 this.$el.find("#import-device-file").val("");
                 if (this.isError) return;
-                alert("导入完成！")
+                Utility.warning("导入完成！")
                 this.options.uploadCompleteCallback && this.options.uploadCompleteCallback();
             }.bind(this));
         },
 
         onClickOK: function(){
             if (!this.isSelectedFile){
-                alert("你还没有选择要导入的文件，或者你选择的文件已经导入过了！")
+                Utility.warning("你还没有选择要导入的文件，或者你选择的文件已经导入过了！")
                 return false;
             }
             if (this.isUploading) return false;

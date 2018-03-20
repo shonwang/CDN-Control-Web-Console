@@ -223,7 +223,7 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                             "type=2 protocol= 1,3真直播<br>" +
                             "subType = 3, 直播上行<br>" +
                             "当前返回的type=" + this.curType + "，protocol=" + this.curProtocol + "，subType=" + this.curSubType;
-                        alert(message);
+                        Utility.warning(message);
                     }
                 }
             },*/
@@ -249,7 +249,7 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                                 "type=2 直播<br>" +
                                 "subType = 3, 直播上行<br>" +
                                 "当前返回的type=" + this.curType + "，subType=" + this.curSubType;
-                            alert(message);
+                            Utility.warning(message);
                         }
                         
                     }
@@ -298,12 +298,12 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
             },
 
             changeConfCustomTypeSuccess: function() {
-                alert("变更成功")
+                Utility.alerts("变更成功！", "success", 5000)
                 this.redirectToManage();
             },
 
             changeConfCustomTypeError: function(res) {
-                alert("变更失败: " + res)
+                Utility.warning("变更失败: " + res)
             },
 
             setNoData: function(msg) {

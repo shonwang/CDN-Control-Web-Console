@@ -63,7 +63,7 @@ define("liveUpFlowNameChange.view", ['require', 'exports', 'template', 'modal.vi
             },
 
             onSaveSuccess: function() {
-                alert("保存成功！")
+                Utility.alerts("保存成功！", "success", 5000)
             },
 
             launchSendPopup: function() {
@@ -98,7 +98,7 @@ define("liveUpFlowNameChange.view", ['require', 'exports', 'template', 'modal.vi
 
             onClickSaveBtn: function() {
                 if (this.$el.find("#alias-name").val() === "" && this.defaultParam.aliasFlag === 1) {
-                    alert("既然开启了流名变换，就请输入流名变换参数！")
+                    Utility.warning("既然开启了流名变换，就请输入流名变换参数！")
                     return;
                 }
 
@@ -124,9 +124,9 @@ define("liveUpFlowNameChange.view", ['require', 'exports', 'template', 'modal.vi
 
             onGetError: function(error) {
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
             },
 
             hide: function() {

@@ -14,22 +14,22 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             this.collection.on("get.node.success", $.proxy(this.onNodeListSuccess, this));
             this.collection.on("get.node.error", $.proxy(this.onGetError, this));
             this.collection.on("add.node.success", function() {
-                alert("添加成功！")
+                Utility.alerts("添加成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("add.node.error", $.proxy(this.onGetError, this));
             this.collection.on("update.node.success", function() {
-                alert("编辑成功！")
+                Utility.alerts("编辑成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("update.node.error", $.proxy(this.onGetError, this));
             this.collection.on("delete.node.success", function() {
-                alert("删除成功！")
+                Utility.alerts("删除成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("delete.node.error", $.proxy(this.onGetError, this));
             this.collection.on("update.node.status.success", function() {
-                alert("操作成功！")
+                Utility.alerts("操作成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("update.node.status.error", $.proxy(this.onGetError, this));
@@ -50,7 +50,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             }.bind(this));
 
             this.collection.on("add.assocateDispGroups.success", function() {
-                alert("操作成功！")
+                Utility.alerts("操作成功！", "success", 5000)
             }.bind(this));
             this.collection.on("add.assocateDispGroups.error", $.proxy(this.onGetError, this));
 
@@ -193,9 +193,9 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
 
         onGetError: function(error) {
             if (error && error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onNodeListSuccess: function() {
@@ -682,14 +682,14 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
         onOperateNodeSuccess: function(res) {
             this.disablePopup && this.disablePopup.$el.modal('hide');
             if (res.msg == "1" && res.status === 200) {
-                alert("操作成功！")
+                Utility.alerts("操作成功！", "success", 5000)
                 this.onClickQueryButton();
             } else if (res.msg == "-1" && res.status === 200) {
                 require(["dispSuggesttion.view", "dispSuggesttion.model"], function(DispSuggesttionViews, DispSuggesttionModel) {
                     this.onRequireDispSuggesttionModule(DispSuggesttionViews, DispSuggesttionModel, this.currentPauseNodeId)
                 }.bind(this))
             } else {
-                alert("操作失败！")
+                Utility.warning("操作失败！")
                 this.onClickQueryButton();
             }
         },
@@ -742,7 +742,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             if (ids.length === 0) return;
             var result = confirm("你确定要批量删除选择的节点吗？")
             if (!result) return
-            alert(ids.join(",") + "。接口不支持，臣妾做不到啊！");
+            Utility.warning(ids.join(",") + "。接口不支持，臣妾做不到啊！");
         },
 
         initPaginator: function() {

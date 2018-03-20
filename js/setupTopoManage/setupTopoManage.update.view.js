@@ -147,7 +147,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
 
             startNodeInitSetupSuccess: function(res) {
                 if (res && res.message) {
-                    alert(res.message);
+                    Utility.warning(res.message);
                     return;
                 }
                 this.topoData.initProgress.job_status = null;
@@ -168,7 +168,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
 
             startCreateSetupSuccess: function(res) {
                 if (res && res.message) {
-                    alert(res.message);
+                    Utility.warning(res.message);
                     return;
                 }
 
@@ -305,7 +305,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
             onClickCreateSetupBtn: function() {
                 if (this.options.pageType == 1) {
                     // if (this.topoData.configUpdateProgress.job_status == 2) {
-                    //     alert('已完成配置生成操作');
+                    //     Utility.warning('已完成配置生成操作');
                     //     return;
                     // }
                     this.collection.startCreateSetup({
@@ -313,7 +313,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                     })
                 } else if (this.options.pageType == 2) {
                     // if (this.topoData.configUpdateProgress.job_status == 2) {
-                    //     alert('已完成配置生成操作');
+                    //     Utility.warning('已完成配置生成操作');
                     //     return;
                     // }
                     this.collection.startSpecialLayerCreateSetup({
@@ -321,7 +321,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                     })
                 } else if (this.options.pageType == 3) {
                     // if (this.topoData.initProgress.job_status == 2) {
-                    //     alert('已完成配置操作')
+                    //     Utility.warning('已完成配置操作')
                     //     return;
                     // }
                     this.collection.startNodeInitSetup({
@@ -369,9 +369,9 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
 
             onGetError: function(error) {
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("网络阻塞，请刷新重试！")
             },
 
             render: function(target) {

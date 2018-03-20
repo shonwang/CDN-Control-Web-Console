@@ -70,7 +70,7 @@ define("interfaceQuota.view", ['require', 'exports', 'template', 'utility', "mod
                 this.collection.on("get.user.success", $.proxy(this.onChannelListSuccess, this));
                 this.collection.on("get.user.error", $.proxy(this.onGetError, this));
                 this.collection.on("update.quota.success", function () {
-                    alert("修改配额成功！")
+                    Utility.alerts("修改成功！", "success", 5000)
                     this.onClickQueryButton();
                 }.bind(this));
                 this.collection.on('update.quota.error', $.proxy(this.onGetError, this));      
@@ -81,9 +81,9 @@ define("interfaceQuota.view", ['require', 'exports', 'template', 'utility', "mod
             },
             onGetError: function (error) {
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
             },
             onChannelListSuccess: function () {
                 this.total = this.collection.total || 0;

@@ -152,11 +152,11 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
             var reg = /^\//g,
                 detectionFile = this.$el.find(".way #detectionFile").val().trim();
             if(reg.test(detectionFile) == false || detectionFile === "/"){
-                alert('探测文件需以"/"开头, 但是不能只输入“/”');
+                Utility.warning('探测文件需以"/"开头, 但是不能只输入“/”');
                 return;
             }
             if(this.$el.find(".host #setupHost").val() == ""){
-                alert('请求HOST头不能为空');
+                Utility.warning('请求HOST头不能为空');
                 return;
             }
             
@@ -180,7 +180,7 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            Utility.alerts("保存成功！", "success", 5000)
         },
 
         launchSendPopup: function(){
@@ -212,9 +212,9 @@ define("backOriginDetection.view", ['require','exports', 'template', 'modal.view
         },
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         hide: function(){

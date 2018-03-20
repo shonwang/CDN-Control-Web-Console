@@ -209,7 +209,7 @@ define("luaConfigListEdit.view", ['require','exports', 'template', 'modal.view',
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            Utility.alerts("保存成功！", "success", 5000)
         },
 
         launchSendPopup: function(){

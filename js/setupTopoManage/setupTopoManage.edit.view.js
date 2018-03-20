@@ -59,7 +59,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.isSaving = false;
                 console.log(res)
                 if (this.btnFlag == 2) {
-                    alert('保存成功');
+                    Utility.alerts("保存成功！", "success", 5000);
                     this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback(res);
                 } else {
                     this.options.onSaveCallback && this.options.onSaveCallback();
@@ -68,7 +68,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
             modifyTopoSuccess: function() {
                 this.isSaving = false;
-                alert("保存成功！")
+                Utility.alerts("保存成功！", "success", 5000)
                 if (this.btnFlag == 2) {
                     this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback();
                 } else {
@@ -180,19 +180,19 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
                 this.defaultParam.name = $.trim(this.$el.find("#input-name").val());
                 if (this.defaultParam.name == '') {
-                    alert('请输入拓扑关系名称');
+                    Utility.warning('请输入拓扑关系名称');
                     return;
                 } else if (this.defaultParam.type == null) {
-                    alert('请选择设备类型');
+                    Utility.warning('请选择设备类型');
                     return;
                 } else if (this.defaultParam.allNodes.length == 0) {
-                    alert('请选择加入拓扑关系的节点');
+                    Utility.warning('请选择加入拓扑关系的节点');
                     return;
                 } else if (this.defaultParam.upperNodes.length == 0) {
-                    alert('请选择拓扑关系的上层节点');
+                    Utility.warning('请选择拓扑关系的上层节点');
                     return;
                 } else if (this.defaultParam.rule.length == 0) {
-                    alert('请添加规则');
+                    Utility.warning('请添加规则');
                     return;
                 }
 
@@ -352,7 +352,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
             onClickAddUpperNodeButton: function(event) {
                 if (this.defaultParam.allNodes.length === 0) {
-                    alert("请先添加拓扑节点!")
+                    Utility.warning("请先添加拓扑节点!")
                     return;
                 }
 
@@ -524,7 +524,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 }.bind(this))
                 //  console.log("this.curEditRule"+this.curEditRule.local[1].name);
                 if (!this.curEditRule) {
-                    alert("找不到此行的数据，无法编辑");
+                    Utility.warning("找不到此行的数据，无法编辑");
                     return;
                 }
 
@@ -566,7 +566,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
             onClickAddRuleButton: function() {
                 if (this.defaultParam.allNodes.length === 0 || this.defaultParam.upperNodes === 0) {
-                    alert("请先添加拓扑所有节点和上层节点！")
+                    Utility.warning("请先添加拓扑所有节点和上层节点！")
                     return;
                 }
 
@@ -598,17 +598,17 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
             onGetError: function(error) {
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
             },
 
             onSaveError: function(error) {
                 this.isSaving = false;
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
                 this.$el.find(".opt-ctn .save").removeAttr("disabled");
             },
 

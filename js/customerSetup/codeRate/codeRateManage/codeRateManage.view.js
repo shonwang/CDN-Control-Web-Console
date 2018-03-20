@@ -39,24 +39,24 @@ define("codeRateManage.view", ['require', 'exports', 'template', 'utility', "mod
                     value = this.$el.find("#rate-value").val().trim();
 
                 if (name === "") {
-                    alert("名称不能为空！")
+                    Utility.warning("名称不能为空！")
                     return false;
                 }
                 
                 if(!value){
-                    alert("码率不能为空");
+                    Utility.warning("码率不能为空");
                     return false;
                 }
 
                 var re = /\uff0c/g;
                 if(re.test(value)){
-                    alert("不能中文逗号");
+                    Utility.warning("不能中文逗号");
                     return false;
                 }                
 
                 var nodeIds = this.nodeIds;
                 if(nodeIds.length == 0){
-                    alert("请选择节点");
+                    Utility.warning("请选择节点");
                     return false;
                 }
 
@@ -136,7 +136,7 @@ define("codeRateManage.view", ['require', 'exports', 'template', 'utility', "mod
 
             setRateUpdateSuccess:function(){
                 this.codeRateInfo.rate = this.$el.find("#input-value-manage").val().trim();
-                alert("修改成功");
+                Utility.alerts("修改成功！", "success", 5000);
             },
 
             onDeleteSuccess:function(){
@@ -150,7 +150,7 @@ define("codeRateManage.view", ['require', 'exports', 'template', 'utility', "mod
             onClickSave:function(){
                 var value = this.$el.find("#input-value-manage").val().trim();
                 if(!value){
-                    alert("请输入全局码率配置值");
+                    Utility.warning("请输入全局码率配置值");
                     return false;
                 }
                 var args = {
@@ -172,9 +172,9 @@ define("codeRateManage.view", ['require', 'exports', 'template', 'utility', "mod
 
             onGetError: function(error) {
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
             },
 
             onDataArrival: function() {

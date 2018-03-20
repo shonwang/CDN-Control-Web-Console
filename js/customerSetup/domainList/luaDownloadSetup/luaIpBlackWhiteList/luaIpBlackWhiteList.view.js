@@ -102,7 +102,7 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            Utility.alerts("保存成功！", "success", 5000)
         },
 
         launchSendPopup: function(){
@@ -134,9 +134,9 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onClickSetupToggle: function(){
@@ -186,7 +186,7 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
                 if(data[data.length - 1] === "") data.splice(data.length - 1,1);
                 data = data.join('\n')
                 var lengthcontrol = data;
-                if(lengthcontrol.split('\n').length > 100) {alert('已超出最大限制100条');return false;}
+                if(lengthcontrol.split('\n').length > 100) {Utility.warning('已超出最大限制100条');return false;}
             }else if(type == 2){
                 data = data.split(',');
                 data = data.join('\n');
@@ -206,13 +206,13 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
                 for (var i = 0; i < ips.length; i++){
                     if (!Utility.isIP(ips[i])){
                         error = {message: "第" + (i + 1) + "个IP输错了！"};
-                        alert(error.message)
+                        Utility.alerts(error.message)
                         return false;
                     }
                 }
             } else if (!Utility.isIP(value)){
                 error = {message: "请输入正确的IP！"};
-                alert(error.message)
+                Utility.alerts(error.message)
                 return false;
             } else {
                 this.$el.find(".error-ctn").html("");
@@ -225,11 +225,11 @@ define("luaIpBlackWhiteList.view", ['require','exports', 'template', 'modal.view
                 balckIP = this.$el.find("#black-IP").val();
 
             if (this.defaultParam.refererType === 1 && whiteIP === "" ){
-                alert("请输入合法IP！")
+                Utility.warning("请输入合法IP！")
                 return false;
             }
             else if (this.defaultParam.refererType === 2 && balckIP === ""){
-                alert("请输入非法IP！")
+                Utility.warning("请输入非法IP！")
                 return false;
             }
             var result = true;

@@ -126,9 +126,9 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         render: function(target) {
@@ -322,7 +322,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             }), checkedNodeIds = [];
 
             if (checkedNodes.length === 0) {
-                alert("至少选择一个再点确定！")
+                Utility.warning("至少选择一个再点确定！")
                 return false;
             }
             for (var i = 0; i < checkedNodes.length; i++){
@@ -353,9 +353,9 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
         onGetError: function(error){
             this.$el.find("#node-list-filter").hide();
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         render: function(target, rootNode) {
@@ -385,7 +385,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
 
             this.collection.on("advice.dispDns.success", function(){
                 this.disablePopup.$el.modal('hide');
-                alert("下发成功！");
+                Utility.alerts("下发成功！", "success", 5000);
                 setTimeout(function(){
                     this.backCallback && this.backCallback();
                 }.bind(this), 1000)
@@ -430,9 +430,9 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onDispConfigListSuccess: function(res){
@@ -624,7 +624,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
             }.bind(this))
 
             if (ipZeroRegionName.length > 0) {
-                alert("调度失败的<span class='text-danger'>" + ipZeroRegionName.join(",")+ "</span>区域当前没有服务节点，请设置服务节点后进行下发!")
+                Utility.warning("调度失败的<span class='text-danger'>" + ipZeroRegionName.join(",")+ "</span>区域当前没有服务节点，请设置服务节点后进行下发!")
             } else {
                 this.pauseNodes = [];
                 var failedSkipCheckedList = this.collection.filter(function(obj){
@@ -968,7 +968,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                         for (var i = 0; i < list.length; i++){
                             if (list[i].get("node.id") === parseInt(options[k]["node.id"])) options.splice(k, 1);
                             if (options.length === 0) {
-                                alert("你选择的节点已经添加过了！")
+                                Utility.warning("你选择的节点已经添加过了！")
                                 this.selectNodePopup.$el.modal("hide");
                                 return;
                             }
@@ -1026,7 +1026,7 @@ define("dispSuggesttion.view", ['require','exports', 'template', 'modal.view', '
                     if (!result) return;
                     for (var i = 0; i < list.length; i++){
                         if (list[i].get("node.id") === parseInt(options[0]["node.id"])){
-                            alert("你选择的节点已经添加过了！")
+                            Utility.warning("你选择的节点已经添加过了！")
                             this.selectNodePopup.$el.modal("hide");
                             return;
                         }

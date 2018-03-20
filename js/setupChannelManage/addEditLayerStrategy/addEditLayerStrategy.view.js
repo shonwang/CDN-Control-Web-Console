@@ -414,26 +414,26 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             if(!this.proAndoperator) this.proAndoperator=[];
             if(!this.areaAndoperator) this.areaAndoperator=[];
             if(this.defaultParam.localType==1 && this.defaultParam.local.length==0){
-                   alert('请选择本层节点');
+                   Utility.warning('请选择本层节点');
                    return;
             }else if(this.defaultParam.localType==2){
                 if (this.onlyOperator.length==0) {
-                   alert('请选择本层节点');
+                   Utility.warning('请选择本层节点');
                    return;
                 }
             }else if(this.defaultParam.localType==3){
                 if (this.province.length==0|| this.proAndoperator.length==0) {
-                   alert('请选择本层节点');
+                   Utility.warning('请选择本层节点');
                    return;
                 }
             }else if(this.defaultParam.localType==4){
                 if (this.area.length==0 || this.areaAndoperator.length==0) {
-                   alert('请选择本层节点');
+                   Utility.warning('请选择本层节点');
                    return;
                 }
             }
             if (this.defaultParam.upper.length == 0) {
-                   alert('请选择上层节点');
+                   Utility.warning('请选择上层节点');
                    return;
             }
             var chiefTypeArray = [];
@@ -441,7 +441,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 return obj.chiefType === 0
             }.bind(this))
             if (chiefTypeArray.length === this.defaultParam.upper.length) {
-                alert("不能都设置为备用")
+                Utility.warning("不能都设置为备用")
                 return;
             }
             var nodesError =[];
@@ -489,19 +489,19 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     _.each(nodesError,function(el){
                        errorMessage+=el.name+"不能同时存在于两条规则的“本层”中"+"<br>"
                     }.bind(this))
-                    alert(errorMessage)
+                    Utility.warning(errorMessage)
                     return;
                 }else if(this.defaultParam.localType==3){
                     _.each(nodesError,function(el){
                        errorMessage+=el.provinceName+"/"+el.name+"不能同时存在于两条规则的“本层”中<br>"
                     }.bind(this))
-                    alert(errorMessage)
+                    Utility.warning(errorMessage)
                     return;
                 }else if(this.defaultParam.localType==4){
                     _.each(nodesError,function(el){
                        errorMessage+=el.areaName +'/'+ el.name + '不能同时存在于两条规则的“本层”中<br>'
                     }.bind(this))
-                    alert(errorMessage);
+                    Utility.warning(errorMessage);
                     return;
                 }
             }
@@ -601,9 +601,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
 
         onGetError: function(error) {
             if (error && error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onGetLocalNodeFromArgs: function() {

@@ -81,11 +81,11 @@ define("blockUrl.model", ['require','exports', 'utility'], function(require, exp
                 if(res){
                      res = JSON.parse(res);
                      if(res.status == 401) {
-                        alert(res.message+'不属于此客户,请重新输入');
+                        Utility.alerts(res.message + '不属于此客户,请重新输入', "warning", 5000);
                         return;
                      }else if(res.status == 202) {
                         var result = res.result.join(';');
-                        alert(result+'已在当前屏蔽列表中,请重新输入');
+                        Utility.alerts(result + '已在当前屏蔽列表中,请重新输入', "warning", 5000);
                         return;
                      }
                      else{

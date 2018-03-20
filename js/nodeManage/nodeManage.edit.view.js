@@ -155,49 +155,49 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
 
 
             if (!re.test(maxBandwidth) || !re.test(minBandwidth)) {
-                alert("上联带宽和保底带宽只能填入数字！");
+                Utility.warning("上联带宽和保底带宽只能填入数字！");
                 return false;
             }
             if (parseInt(maxBandwidth) > 100000000 || parseInt(maxBandwidth) < 0) {
-                alert("上联带宽：0-100000000（0-100T，单位转换按1000算）");
+                Utility.warning("上联带宽：0-100000000（0-100T，单位转换按1000算）");
                 return false;
             }
             if (parseInt(minBandwidth) > 100000000 || parseInt(minBandwidth) < 0) {
-                alert("保底带宽：0-100000000（0-100T，单位转换按1000算）");
+                Utility.warning("保底带宽：0-100000000（0-100T，单位转换按1000算）");
                 return false;
             }
             if (parseInt(maxBandwidth) < parseInt(minBandwidth)) {
-                alert("上联带宽不能小于保底带宽！");
+                Utility.warning("上联带宽不能小于保底带宽！");
                 return false;
             }
             if (!re.test(maxBandwidthThreshold) || !re.test(minBandwidthThreshold)) {
-                alert("上联带宽阈值和保底带宽阈值只能填入数字！");
+                Utility.warning("上联带宽阈值和保底带宽阈值只能填入数字！");
                 return false;
             }
             if (parseInt(maxBandwidthThreshold) < 0 || parseInt(maxBandwidthThreshold) > parseInt(maxBandwidth)) {
-                alert("上联带宽阈值：0-上联带宽");
+                Utility.warning("上联带宽阈值：0-上联带宽");
                 return false;
             }
             if (parseInt(minBandwidthThreshold) < 0 || parseInt(minBandwidthThreshold) > parseInt(maxBandwidth)) {
-                alert("保底带宽阈值：0-上联带宽");
+                Utility.warning("保底带宽阈值：0-上联带宽");
                 return false;
             }
             if (parseInt(minBandwidthThreshold) < parseInt(minBandwidth)) {
-                alert("保底带宽阈值：只能>=保底带宽");
+                Utility.warning("保底带宽阈值：只能>=保底带宽");
                 return false;
             }
             if (!re.test(unitPrice)) {
-                alert("成本权值只能填入数字！");
+                Utility.warning("成本权值只能填入数字！");
                 return false;
             }
             if (parseInt(unitPrice) > 2147483647 || parseInt(unitPrice) < 0) {
-                alert("成本权值不能小于0且大于长整型的最大值");
+                Utility.warning("成本权值不能小于0且大于长整型的最大值");
                 return false;
             }
             // if (!outzabnameRe.test(outzabname) || outzabname.indexOf("-") === -1 ||
             //     outzabname.indexOf("_") === -1 || outzabname.indexOf("[") === -1 ||
             //     outzabname.indexOf("]") === -1 || !letterRe.test(outzabname)) {
-            //     alert("zabbix出口带宽英文、“-”、“_”、“[”、“]”为必填项，数字为可填项，即组合可包含数字，也可不包含数字");
+            //     Utility.warning("zabbix出口带宽英文、“-”、“_”、“[”、“]”为必填项，数字为可填项，即组合可包含数字，也可不包含数字");
             //     return false;
             // }
 
@@ -415,7 +415,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
         getArgs: function() {
             this.args.rsNodeCorpDtos = this.formatRsNodeCorpDtosList();
             if (this.args.rsNodeCorpDtos.length == 0) {
-                alert("请添加运营商!");
+                Utility.warning("请添加运营商!");
                 return false;
             }
             return this.args;
@@ -554,11 +554,11 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 letterRe = /[A-Za-z]+/,
                 reLocation = /^\d+(\.\d+)?----\d+(\.\d+)?$/;
             if (!reLocation.test(longitudeLatitude)) {
-                alert("需要填写正确的经纬度，否则该节点无法在地图中展示！比如：108.953098----34.2778");
+                Utility.warning("需要填写正确的经纬度，否则该节点无法在地图中展示！比如：108.953098----34.2778");
                 return
             }
             if (!enName || !chName) {
-                alert("节点名称和英文名称都要填写！");
+                Utility.warning("节点名称和英文名称都要填写！");
                 return;
             }
            
@@ -904,9 +904,9 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
 
         onGetError: function(error) {
             if (error && error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         destroy: function() {

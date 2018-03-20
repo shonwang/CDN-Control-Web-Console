@@ -40,11 +40,11 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.args.value = $.trim(this.$el.find("#input-val").val());
             this.args.code = $.trim(this.$el.find("#input-code").val());
             if(this.args.name.length == 0){
-                alert('属性名称不能为空');
+                Utility.warning('属性名称不能为空');
                 return;
             }
             if(this.args.code.length == 0){
-                alert('属性编码不能为空');
+                Utility.warning('属性编码不能为空');
                 return;
             }
             this.collection.checkTpl({fileType:this.fileType,code:this.args.code});
@@ -62,9 +62,9 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         render: function(target) {
@@ -87,9 +87,9 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         render: function(target) {
@@ -524,19 +524,19 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         getArgs: function(){
             this.args.domain = $.trim(this.$el.find("#input-domain").val());
             if(this.args.domain.length > 0){
                 if (!/\.com$|\.net$|\.org$|\.edu$|\.gov$|\.cn$/gi.test(this.args.domain)){
-                    alert('加速域名需以com、org、net、edu、gov、cn结尾');
+                    Utility.warning('加速域名需以com、org、net、edu、gov、cn结尾');
                     return;
                 }else if(this.args.domain.length > 100){
-                    alert("加速域名最大可输入100个字符");
+                    Utility.warning("加速域名最大可输入100个字符");
                     return;
                 }
             }
@@ -555,7 +555,7 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                     this.args.propertyAndValueList.push(json);
                 }
             }else{
-                alert('属性不可以为空');
+                Utility.warning('属性不可以为空');
                 return;
             }
 
@@ -607,13 +607,13 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
             this.collection.on("add.tpl.success", function(){
                 this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn");
-                alert("新建成功");
+                Utility.alerts("新建成功！", "success", 5000);
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("add.tpl.error", $.proxy(this.onGetError, this));
             this.collection.on("edit.tpl.success", function(){
                 this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn");
-                alert("编辑成功");
+                Utility.alerts("编辑成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("edit.tpl.error", $.proxy(this.onGetError, this));
@@ -621,7 +621,7 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
             this.collection.on("get.editData.error", $.proxy(this.onGetError, this));
             this.collection.on("delete.tpl.success", function(){
                 this.showMainList(".main-list", ".create-edit-panel", ".create-edit-ctn");
-                alert("删除成功");
+                Utility.alerts("删除成功！", "success", 5000);
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("delete.tpl.error", $.proxy(this.onGetError, this));
@@ -641,9 +641,9 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onGetTplPageListSuccess: function(){
@@ -763,10 +763,10 @@ define("templateManage.view", ['require','exports', 'template', 'modal.view', 'u
                 this.queryArgs.domain = null;
             }else{
                 if (!/\.com$|\.net$|\.org$|\.edu$|\.gov$|\.cn$|^default$/gi.test(this.queryArgs.domain)){
-                    alert('加速域名需以com、org、net、edu、gov、cn结尾');
+                    Utility.warning('加速域名需以com、org、net、edu、gov、cn结尾');
                     return;
                 }else if(this.queryArgs.domain.length > 100){
-                    alert("加速域名最大可输入100个字符");
+                    Utility.warning("加速域名最大可输入100个字符");
                     return;
                 }
             }

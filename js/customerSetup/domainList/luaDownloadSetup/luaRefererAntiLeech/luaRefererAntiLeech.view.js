@@ -86,7 +86,7 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            Utility.alerts("保存成功！", "success", 5000)
         },
 
         launchSendPopup: function(){
@@ -145,9 +145,9 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onClickSetupToggle: function(){
@@ -210,19 +210,19 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
             if (value.indexOf("\n") > -1){
                 domains = value.split("\n");
                 if (domains.length > 100){
-                    alert("超过100条")
+                    Utility.warning("超过100条")
                     return;
                 }
                 for (var i = 0; i < domains.length; i++){
                     if (!Utility.isAntileechDomain(domains[i], true) && !Utility.isIP(domains[i])){
                         error = {message: "第" + (i + 1) + "个既不是IP也不是域名！"};
-                        alert(error.message)
+                        Utility.alerts(error.message)
                         return false;
                     }
                 }
             } else if (!Utility.isAntileechDomain(value, true) && !Utility.isIP(domains[i])){
                 error = {message: "既不是IP也不是域名！"};
-                alert(error.message)
+                Utility.alerts(error.message)
                 return false;
             } else {
                 this.$el.find(".error-ctn").html("");
@@ -240,13 +240,13 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
                 for (var i = 0; i < domains.length; i++){
                     if (!Utility.isURL(domains[i])){
                         error = {message: "第" + (i + 1) + "个URL输错了！"};
-                        alert(error.message)
+                        Utility.alerts(error.message)
                         return false;
                     }
                 }
             } else if (!Utility.isURL(value)){
                 error = {message: "请输入正确的URL！"};
-                alert(error.message)
+                Utility.alerts(error.message)
                 return false;
             } else {
                 this.$el.find(".error-ctn").html("");
@@ -261,24 +261,24 @@ define("luaRefererAntiLeech.view", ['require','exports', 'template', 'modal.view
                 blackUrl    = "暂时隐藏"//this.$el.find("#black-url").val();
 
             if (this.defaultParam.refererType === 1 && (whiteDomain === "" || whiteUrl === "")){
-                alert("请输入合法域名、URL！")
+                Utility.warning("请输入合法域名、URL！")
                 return false;
             }
             else if (this.defaultParam.refererType === 2 && (balckDomain === "" || blackUrl === "")){
-                alert("请输入非法域名、URL！")
+                Utility.warning("请输入非法域名、URL！")
                 return false;
             }
             if (this.defaultParam.refererType === 1 && whiteDomain.indexOf("\n") > -1){
                 var domains = whiteDomain.split("\n");
                 if (domains.length > 100){
-                    alert("超过100条")
+                    Utility.warning("超过100条")
                     return false;
                 }
             }
             if (this.defaultParam.refererType === 2 && balckDomain.indexOf("\n") > -1){
                 var domains = whiteDomain.split("\n");
                 if (domains.length > 100){
-                    alert("超过100条")
+                    Utility.warning("超过100条")
                     return false;
                 }
             }

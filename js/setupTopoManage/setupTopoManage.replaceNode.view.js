@@ -88,7 +88,7 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
 
         onClickDeleteButton: function(){
             if(this.ruleList.length==0){
-                alert("此节点没有匹配的规则");
+                Utility.warning("此节点没有匹配的规则");
                 return;
             }
             var i;
@@ -96,7 +96,7 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
                 if(this.ruleList[i].itemRuleIsChecked) break;
             }
             if(i==this.ruleList.length) {
-                alert("请先选择规则")
+                Utility.warning("请先选择规则")
                 return;
             } 
 
@@ -119,7 +119,7 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
 
         onClickReplaceButton: function(){
             if(this.ruleList.length==0){
-                alert("此节点没有匹配的规则");
+                Utility.warning("此节点没有匹配的规则");
                 return;
             }
             var i;
@@ -127,14 +127,14 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
                 if(this.ruleList[i].itemRuleIsChecked) break;
             }
             if(i==this.ruleList.length) {
-                alert("请先选择规则")
+                Utility.warning("请先选择规则")
                 return;
             }
            this.operateRule.id=this.defaultParam.id;
            this.operateRule.type="topo";
            this.operateRule.operateType="replace";
           if(this.operateRule.oldNodeId==this.operateRule.newNodeId){
-            alert("替换节点与原节点不能相同");
+            Utility.warning("替换节点与原节点不能相同");
             return;
          }
            console.log(this.operateRule);
@@ -339,15 +339,15 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
        deleteTopoSuccess: function(){
           this.collection.getRuleInfo(this.queryArgs);
           this.ruleIdArr=[];
-          alert("选定的规则中的节点删除成功！")
+          Utility.alerts("选定的规则中的节点删除成功！", "success", 5000)
           this.$el.find(".opt-ctn #delete").removeAttr("disabled");
        },
 
         onDeleteError: function(error) {
           if (error && error.message)
-            alert(error.message)
+            Utility.alerts(error.message)
           else
-            alert("网络阻塞，请刷新重试！")
+            Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
           this.$el.find(".opt-ctn #delete").removeAttr("disabled");
         },
        
@@ -355,15 +355,15 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
           //  console.log(this.queryArgs);
             this.collection.getRuleInfo(this.queryArgs);
             this.ruleIdArr=[];
-            alert("选定的规则中的节点替换成功！")
+            Utility.alerts("选定的规则中的节点替换成功！", "success", 5000)
             this.$el.find(".opt-ctn #replace").removeAttr("disabled");
         },
 
         onReplaceError: function(error){
             if (error && error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
             this.$el.find(".opt-ctn #replace").removeAttr("disabled");
 
         },
@@ -374,9 +374,9 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
         
         onGetError: function(error) {
             if (error && error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         render: function(target) {

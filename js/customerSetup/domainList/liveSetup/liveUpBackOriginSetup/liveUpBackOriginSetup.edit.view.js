@@ -75,11 +75,11 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
             getDetectionInfo: function() {
                 var reg = /^\//g;
                 if (reg.test(this.$el.find(".way #detectionFile").val()) == false && this.defaultParam.flag === 1) {
-                    alert('探测文件需以"/"开头');
+                    Utility.warning('探测文件需以"/"开头');
                     return false;
                 }
                 if (this.$el.find(".host #setupHost").val() == "" && this.defaultParam.flag === 1) {
-                    alert('请求HOST头不能为空');
+                    Utility.warning('请求HOST头不能为空');
                     return false;
                 }
 
@@ -271,7 +271,7 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     value = this.$el.find("#input-push-address").val();
                 if (value === "") return false;
                 if (!re.test(value) || value.length > 32) {
-                    alert("频道设置的字符长度最大为：32位，支持字符：字母，数字；不支持大写，下划线；不支持转义字符和urlencode会处理的特殊字符，如:！ # $ % & ‘ （ ）* + , . / : ; = ? @ [ / ]");
+                    Utility.warning("频道设置的字符长度最大为：32位，支持字符：字母，数字；不支持大写，下划线；不支持转义字符和urlencode会处理的特殊字符，如:！ # $ % & ‘ （ ）* + , . / : ; = ? @ [ / ]");
                     return false
                 }
                 return true;
@@ -338,19 +338,19 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     //验证IP
                     if (!originAddress) {
                         //不能为空
-                        alert("IP不能为空");
+                        Utility.warning("IP不能为空");
                         return false;
                     }
 
                     var ipArray = originAddress.split("\n");
                     if (ipArray.length > 1) {
-                        alert("你的IP数是否超过了1个。");
+                        Utility.warning("你的IP数是否超过了1个。");
                         return false;
                     }
                     for (var i = 0; i < ipArray.length; i++) {
                         result = Utility.isIP(ipArray[i].trim());
                         if (!result) {
-                            alert("你的IP填写有误,请检查");
+                            Utility.warning("你的IP填写有误,请检查");
                             return false;
                         }
                     }
@@ -358,12 +358,12 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     //验证域名
                     if (!originAddress) {
                         //不能为空
-                        alert("域名不能为空");
+                        Utility.warning("域名不能为空");
                         return false;
                     }
                     if (domainName == originAddress) {
                         //域名不能与填写的域名相同
-                        alert("源站地址不能与加速域名相同");
+                        Utility.warning("源站地址不能与加速域名相同");
                         return false;
                     }
                     //域名校验
@@ -372,7 +372,7 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     if (result && !isIPStr && originAddress !== domainName && originAddress.substr(0, 1) !== "-" && originAddress.substr(-1, 1) !== "-") {
                         return true;
                     } else {
-                        alert("域名填写错误");
+                        Utility.warning("域名填写错误");
                         return false;
                     }
                 } else if (originType == 3) {
@@ -380,12 +380,12 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     //验证IP
                     if (!originAddress) {
                         //不能为空
-                        alert("域名不能为空");
+                        Utility.warning("域名不能为空");
                         return false;
                     }
                     if (domainName == originAddress) {
                         //域名不能与填写的域名相同
-                        alert("源站地址不能与加速域名相同");
+                        Utility.warning("源站地址不能与加速域名相同");
                         return false;
                     }
                     //域名校验
@@ -394,13 +394,13 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     if (result && !isIPStr && originAddress !== domainName && originAddress.substr(0, 1) !== "-" && originAddress.substr(-1, 1) !== "-") {
                         return true;
                     } else {
-                        alert("域名填写错误");
+                        Utility.warning("域名填写错误");
                         return false;
                     }
                 } else if (originType == 100) {
                     if (!originAddress) {
                         //不能为空
-                        alert("回源host不能为空");
+                        Utility.warning("回源host不能为空");
                         return false;
                     }
                     //域名校验
@@ -409,7 +409,7 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     if (result && !isIPStr && originAddress.substr(0, 1) !== "-" && originAddress.substr(-1, 1) !== "-") {
                         return true;
                     } else {
-                        alert("回源host填写错误");
+                        Utility.warning("回源host填写错误");
                         return false;
                     }
                 }
@@ -436,7 +436,7 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     "detectConfig": ""
                 };
                 if (postParam.sourceName === "") {
-                    alert("请输入名称！");
+                    Utility.warning("请输入名称！");
                     return false;
                 }
                 var isCorrectBackHost,
@@ -452,24 +452,24 @@ define("liveUpBackOriginSetup.edit.view", ['require', 'exports', 'template', 'ba
                     postParam.id = new Date().valueOf();
                 }
                 if (postParam.pushPort === "") {
-                    alert("请输入正确的端口号");
+                    Utility.warning("请输入正确的端口号");
                     return false;
                 }
                 if (postParam.pushAppFlag === 1 && !this.onBlurPushAddressInput()) {
-                    alert("既然开启了转推地址频道, 就请输入正确的转推地址频道！");
+                    Utility.warning("既然开启了转推地址频道, 就请输入正确的转推地址频道！");
                     return false;
                 }
 
                 if (postParam.pushArgsFlag === 1 && (postParam.pushArgs === "" || !Utility.isKeyAndValue(postParam.pushArgs))) {
-                    alert("既然开启了转推参数, 就请输入正确的转推参数！");
+                    Utility.warning("既然开启了转推参数, 就请输入正确的转推参数！");
                     return false;
                 }
                 if (postParam.connectArgsFlag === 1 && (postParam.connectArgs === "" || !Utility.isKeyAndValue(postParam.connectArgs))) {
-                    alert("既然开启了增加connect阶段参数, 就请输入正确的增加connect阶段参数！");
+                    Utility.warning("既然开启了增加connect阶段参数, 就请输入正确的增加connect阶段参数！");
                     return false;
                 }
                 if (postParam.reconnectArgsFlag === 1 && postParam.reconnectArgs === "") {
-                    alert("既然开启了转推重连参数, 就请输入正确的转推重连参数！");
+                    Utility.warning("既然开启了转推重连参数, 就请输入正确的转推重连参数！");
                     return false;
                 }
                 if (postParam.originAddr.indexOf("\n") > -1 && postParam.originType === 1) {

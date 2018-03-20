@@ -107,7 +107,7 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            Utility.alerts("保存成功！", "success", 5000)
         },
 
         launchSendPopup: function(){
@@ -160,9 +160,9 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onClickSetupToggle : function(){
@@ -232,7 +232,7 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
             if (value.indexOf("\n") > -1){
                 domains = value.split("\n");
                 if (domains.length > 100){
-                    alert("超过100条")
+                    Utility.warning("超过100条")
                     return;
                 }
                 for (var i = 0; i < domains.length; i++){
@@ -241,13 +241,13 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
                             error = {message: "第" + i + "个域名后面换行了，请继续输入域名，否则请取消换行!"}
                         else
                             error = {message: "第" + (i + 1) + "个域名输错了！"};
-                        alert(error.message)
+                        Utility.alerts(error.message)
                         return false;
                     }
                 }
             } else if (!Utility.isAntileechDomain(value)){
                 error = {message: "请输入正确的域名！"};
-                alert(error.message)
+                Utility.alerts(error.message)
                 return false;
             } else {
                 this.$el.find(".error-ctn").html("");
@@ -262,23 +262,23 @@ define("liveRefererAntiLeech.view", ['require','exports', 'template', 'modal.vie
             var whiteRe = this.$el.find("#white-re").val();
 
             if (this.defaultParam.refererType === 1 && (whiteDomain === "") && (whiteRe === "")){
-                alert("请输入合法域名！")
+                Utility.warning("请输入合法域名！")
                 return false;
             } else if (this.defaultParam.refererType === 2 && (balckDomain === "") && (blackRe === "")){
-                alert("请输入非法域名！")
+                Utility.warning("请输入非法域名！")
                 return false;
             }
             if (this.defaultParam.refererType === 1 && whiteDomain.indexOf("\n") > -1){
                 var domains = whiteDomain.split("\n");
                 if (domains.length > 100){
-                    alert("超过100条")
+                    Utility.warning("超过100条")
                     return false;
                 }
             }
             if (this.defaultParam.refererType === 2 && balckDomain.indexOf("\n") > -1){
                 var domains = whiteDomain.split("\n");
                 if (domains.length > 100){
-                    alert("超过100条")
+                    Utility.warning("超过100条")
                     return false;
                 }
             }

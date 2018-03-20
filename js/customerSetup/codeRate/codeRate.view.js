@@ -22,12 +22,12 @@ define("codeRate.view", ['require', 'exports', 'template', 'utility', "modal.vie
 
                 var value = this.$el.find("#input-value").val().trim();
                 if(!value){
-                    alert("请填全局码率配置");
+                    Utility.warning("请填全局码率配置");
                     return false;
                 }
                 var re = /\uff0c/g;
                 if(re.test(value)){
-                    alert("不能中文逗号");
+                    Utility.warning("不能中文逗号");
                     return false;
                 }
                 return {
@@ -174,9 +174,9 @@ define("codeRate.view", ['require', 'exports', 'template', 'utility', "modal.vie
 
             onGetError: function(error){
                 if (error&&error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
             },
 
             render: function(target) {
@@ -217,17 +217,17 @@ define("codeRate.view", ['require', 'exports', 'template', 'utility', "modal.vie
                     rate = this.$el.find("#input-value").val().trim();
 
                 if (stream === "") {
-                    alert("流名不能为空！")
+                    Utility.warning("流名不能为空！")
                     return false;
                 }
 
                 if(!rate){
-                    alert("请填全局码率配置");
+                    Utility.warning("请填全局码率配置");
                     return false;
                 }
                 var re = /\uff0c/g;
                 if(re.test(rate)){
-                    alert("不能中文逗号");
+                    Utility.warning("不能中文逗号");
                     return false;
                 }
 
@@ -236,12 +236,12 @@ define("codeRate.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 }.bind(this))
 
                 // if (repeatList.length > 0) {
-                //     alert(stream + " 控制台显示值已经添加过了!")
+                //     Utility.warning(stream + " 控制台显示值已经添加过了!")
                 //     return false
                 // }
                 var domain = this.domainSelect;
                 if(!domain){
-                    alert("请选择域名");
+                    Utility.warning("请选择域名");
                     return false;
                 }
                 return {
@@ -305,7 +305,7 @@ define("codeRate.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 this.collection.on("get.rate.success", $.proxy(this.onGetRateSuccess, this));
                 this.collection.on("get.rete.error", $.proxy(this.onGetError, this));
                 this.collection.on("set.rateConf.success", function() {
-                    alert("添加成功！")
+                    Utility.alerts("添加成功！", "success", 5000)
                     this.onClickQueryButton();
                 }.bind(this));
                 this.collection.on('set.rateConf.error', $.proxy(this.onGetError, this));
@@ -346,7 +346,7 @@ define("codeRate.view", ['require', 'exports', 'template', 'utility', "modal.vie
                     return obj.isChecked === true;
                 })
                 if(list.length ==0 ){
-                    alert("请选择至少一项，再进行修改");
+                    Utility.warning("请选择至少一项，再进行修改");
                     return false;
                 }
 
@@ -416,9 +416,9 @@ define("codeRate.view", ['require', 'exports', 'template', 'utility', "modal.vie
 
             onGetError: function(error) {
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
             },
 
             onGetRateSuccess: function() {

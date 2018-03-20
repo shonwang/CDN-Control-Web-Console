@@ -57,7 +57,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             addStrategySuccess: function(res) {
-                alert('保存成功');
+                Utility.alerts("保存成功！", "success", 5000);
                 console.log(res)
                 if (this.btnFlag == 2) {
                     this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback(res);
@@ -67,7 +67,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             modifyStrategySuccess: function() {
-                alert('修改成功');
+                Utility.alerts("修改成功！", "success", 5000)
                 if (this.btnFlag == 2) {
                     this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback();
                 } else {
@@ -77,7 +77,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
 
             copyStrategySuccess: function() {
                 this.options.onSaveCallback && this.options.onSaveCallback();
-                alert('复制成功');
+                Utility.alerts("复制成功！", "success", 5000)
             },
 
             onStrategyInfo: function(res) {
@@ -174,13 +174,13 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             onClickSaveButton: function() {
                 this.defaultParam.name = $.trim(this.$el.find("#input-name").val());
                 if (this.defaultParam.name == '') {
-                    alert('请输入名称');
+                    Utility.warning('请输入名称');
                     return;
                 } else if (this.defaultParam.type == null) {
-                    alert('请选择设备类型');
+                    Utility.warning('请选择设备类型');
                     return;
                 } else if (this.defaultParam.rule.length == 0) {
-                    alert('请添加规则');
+                    Utility.warning('请添加规则');
                     return;
                 }
 
@@ -380,7 +380,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 }.bind(this))
 
                 if (!this.curEditRule) {
-                    alert("找不到此行的数据，无法编辑");
+                    Utility.warning("找不到此行的数据，无法编辑");
                     return;
                 }
 
@@ -447,9 +447,9 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
 
             onGetError: function(error) {
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
             },
 
             render: function(target) {
@@ -512,9 +512,9 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
 
             onGetError: function(error) {
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
             },
 
             onGetStrategySuccess: function() {

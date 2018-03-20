@@ -53,9 +53,9 @@ define("deviceManage.edit.view", ['require','exports', 'template', 'modal.view',
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onDeleteIpError: function(){},
@@ -77,7 +77,7 @@ define("deviceManage.edit.view", ['require','exports', 'template', 'modal.view',
                 return obj["id"] === parseInt(res.id);
             })
             if (ipTypeArray.length > 0){
-                alert("这个IP已经添加过了")
+                Utility.warning("这个IP已经添加过了")
                 return;
             }
             this.ipList.push(res);
@@ -282,13 +282,13 @@ define("deviceManage.edit.view", ['require','exports', 'template', 'modal.view',
 
         getArgs: function(){
             if (this.isLoading) {
-                alert("请等待节点加载完毕再点确定！")
+                Utility.warning("请等待节点加载完毕再点确定！")
                 return;
             }
 
             var options = {}, deviceName = this.$el.find("#input-name").val(), re = /^[a-zA-Z\d\.\-]+$/;
             if (!re.test(deviceName)){
-                alert("设备名称只能输入如下字符：英文 数字 - .");
+                Utility.warning("设备名称只能输入如下字符：英文 数字 - .");
                 return;
             }
             if (!this.isEdit){

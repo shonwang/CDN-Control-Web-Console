@@ -46,7 +46,7 @@ define("luaCacheRule.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            Utility.alerts("保存成功！", "success", 5000)
         },
 
         launchSendPopup: function(){
@@ -95,7 +95,7 @@ define("luaCacheRule.view", ['require','exports', 'template', 'modal.view', 'uti
             var cacheOriginTime = this.$el.find("#origin-cache-time").val();
             var reg = /^\d+$/;
             if(cacheTimeType === 2 && !reg.test(cacheTimeValue) || cacheTimeType===3 && !reg.test(cacheOriginTime)){
-                alert("只能输入正整数");
+                Utility.warning("只能输入正整数");
                 return false;
             }
 
@@ -116,9 +116,9 @@ define("luaCacheRule.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         initSetup: function(data){

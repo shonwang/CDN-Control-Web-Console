@@ -152,9 +152,9 @@ define("importDomainManage.edit.view", ['require','exports', 'template', 'modal.
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         render: function(target) {
@@ -220,7 +220,7 @@ define("importDomainManage.edit.view", ['require','exports', 'template', 'modal.
         },
 
         onSaveSuccess: function(){
-            alert("保存并下发成功")
+            Utility.alerts("保存并下发成功！", "success", 5000)
             this.onClickCancelButton();
         },
 
@@ -258,9 +258,9 @@ define("importDomainManage.edit.view", ['require','exports', 'template', 'modal.
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         render: function(target) {

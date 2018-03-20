@@ -15,29 +15,29 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.device.error", $.proxy(this.onGetError, this));
 
             this.collection.on("add.device.success", function(){
-                alert("添加成功！")
+                Utility.alerts("添加成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("add.device.error", $.proxy(this.onGetError, this));
 
             this.collection.on("update.device.success", function(){
-                alert("编辑成功！")
+                Utility.alerts("编辑成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("update.device.error", $.proxy(this.onGetError, this));
 
             this.collection.on("delete.device.success", function(){
-                alert("删除成功！")
+                Utility.alerts("删除成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("delete.device.error", $.proxy(this.onGetError, this));
 
             this.collection.on("update.device.status.success", function(){
-                alert("操作成功！")
+                Utility.alerts("操作成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("get.deviceStatusSubmit.success", function(){
-                alert('设置成功');
+                Utility.alerts("设置成功！", "success", 5000);
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("get.deviceStatusSubmit.error", $.proxy(this.onGetError, this));
@@ -120,9 +120,9 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onDeviceListSuccess: function(){
@@ -446,7 +446,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 message = "<span class='text-success'>以下设备操作成功：</span><br>" + successList.join("<br>") + "<br>";
             if (errorList.length > 0)
                 message = message +  "<span class='text-danger'>以下设备为不可用状态暂时无法操作：</span><br>" + errorList.join("<br>");
-            alert(message)
+            Utility.warning(message)
             this.onClickQueryButton();
         },
 
@@ -653,7 +653,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             if (ids.length === 0) return;
             var result = confirm("你确定要批量删除选择的设备吗？")
             if (!result) return
-            alert(ids.join(",") + "。接口不支持，臣妾做不到啊！");
+            Utility.warning(ids.join(",") + "。接口不支持，臣妾做不到啊！");
         },
 
         onClickItemHangup: function(event){

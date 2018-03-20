@@ -68,7 +68,7 @@ define("speedMeasure.view", ['require','exports', 'template', 'modal.view', 'uti
         onSure: function(){
             localStorage["SPEED_MEASURE_TEST_DIR"] = this.imageParam.testDir;
             localStorage["SPEED_MEASURE_TYPE_DATA"] = JSON.stringify(this.typeData);
-            alert("已经成功保存至你的电脑！")
+            Utility.alerts("已经成功保存至你的电脑！", "success", 5000)
         },
 
         render: function(target) {
@@ -132,7 +132,7 @@ define("speedMeasure.view", ['require','exports', 'template', 'modal.view', 'uti
             inputContainer.focus();
             inputContainer.select();
             document.execCommand("copy");
-            alert("复制成功!")
+            Utility.alerts("复制成功！", "success", 5000)
         },
 
         onGetError: function(error){
@@ -224,7 +224,7 @@ define("speedMeasure.view", ['require','exports', 'template', 'modal.view', 'uti
             this.defaultParam.domain = this.$el.find("#input-domain").val().trim();
 
             if (this.defaultParam.domain === "") {
-                alert("你什么都没有输入！")
+                Utility.warning("你什么都没有输入！")
                 return;
             }
 
@@ -272,9 +272,9 @@ define("speedMeasure.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         hide: function(){

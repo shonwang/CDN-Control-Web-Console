@@ -835,16 +835,16 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
             },
 
             onSubmitSuccess: function() {
-                alert("操作成功！")
+                Utility.alerts("操作成功！", "success", 5000)
                 this.$el.find("#add-domain-btnSubmit").removeAttr("disabled");
                 this.options.okCallback && this.options.okCallback();
             },
 
             onGetError: function(error) {
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
                 this.$el.find("#add-domain-btnSubmit").removeAttr("disabled");
             },
 
@@ -941,7 +941,7 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 var domainName = this.args.DomainName;
                 if(domainName.indexOf("*")==0){
                     if(this.args.CdnType == "liveUpward" || (this.args.CdnType == "live" && result.CdnProtocol !="HLS")){
-                        alert("泛域名只支持使用点播平台的域名");
+                        Utility.warning("泛域名只支持使用点播平台的域名");
                         return false;
                     }
                     var test_url = this.$el.find("#text-test-domainName").val();

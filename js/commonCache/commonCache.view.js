@@ -32,7 +32,13 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
         },
         onSure: function(){
 
-            var codes = this.$el.find("#args").val(), expireTime = this.$el.find("#values").val();
+            var host = this.$el.find("#host").val();
+            var uri = this.$el.find("#uri").val();
+            var args = this.$el.find("#args").val();
+            var method = this.$el.find("#method").val();
+            var body = this.$el.find("#body").val();
+            var expire = this.$el.find("#expire").val();
+
             if (codes === "" || expireTime === ""){
                 alert("状态码和缓存时间不能为空");
                 return false
@@ -110,6 +116,9 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
 
         onGetCacheRuleSuccess:function(data){
             this.cacheData = data;
+            _.each(this.cacheData,function(el){
+                el.createTimeName = new Date(el.createTime).format("yyyy/MM/dd hh:mm");
+            });
             this.table = $(_.template(template['tpl/commonCache/commonCache.cacheRule.table.html'])({data:this.cacheData}));
             this.$el.find(".table-ctn").html(this.table);
         },
@@ -117,10 +126,6 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
         onGetCacheRuleError:function(data){
             var msg =  data.message && data.message || "出现未知错误";
             alert(msg);
-        },
-
-        onDataArrival:function(data){
-            
         },
 
         updateView:function(){

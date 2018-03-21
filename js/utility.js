@@ -475,6 +475,37 @@ define("utility", ['require','exports'], function(require, exports) {
             $.ajax(defaultParas);
         },
 
+        putAjax: function(url, args, successCallback, errorCallback, timeout){
+            var defaultParas = {
+                type: "PUT",
+                url: url,
+                async: true,
+                timeout: timeout || 40 * 60 * 1000,
+                contentType: "application/json",
+                processData: false
+            };
+            defaultParas.data = JSON.stringify(args);
+
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
+            defaultParas.success = function(res){
+                successCallback && successCallback(res)
+            };
+
+            defaultParas.error = function(response, msg){
+                try{
+                    if (response&&response.responseText)
+                        response = JSON.parse(response.responseText)
+                    errorCallback && errorCallback(response)
+                } catch(e){
+                    errorCallback && errorCallback(response)
+                } 
+            };
+
+            $.ajax(defaultParas);
+        },
+
         isKeyAndValue:function(str){
             var _arr = str.split("&");
             var reg = /^[0-9a-zA-Z\-_%]+\=[0-9a-zA-Z\-_%]/;

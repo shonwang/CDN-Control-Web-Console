@@ -98,7 +98,7 @@ define("commonCache.model", ['require','exports', 'utility'], function(require, 
                 errorCallback = function(res) {
                     args.error && args.error(res);
                 }.bind(this);
-            Utility.postAjax(url, _data, successCallback, errorCallback);            
+            Utility.putAjax(url, _data, successCallback, errorCallback);            
         },
 
         addIpWhiteRule:function(args){
@@ -133,7 +133,7 @@ define("commonCache.model", ['require','exports', 'utility'], function(require, 
                 errorCallback = function(res) {
                     args.error && args.error(res);
                 }.bind(this);
-            Utility.postAjax(url, _data, successCallback, errorCallback);            
+            Utility.putAjax(url, _data, successCallback, errorCallback);            
         },
 
         addClearRule:function(args){
@@ -168,7 +168,7 @@ define("commonCache.model", ['require','exports', 'utility'], function(require, 
                 errorCallback = function(res) {
                     args.error && args.error(res);
                 }.bind(this);
-            Utility.postAjax(url, _data, successCallback, errorCallback);            
+            Utility.putAjax(url, _data, successCallback, errorCallback);            
         },
 
         removeCacheRule:function(args){

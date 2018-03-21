@@ -40,6 +40,9 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             this.collection.on("get.area.success", $.proxy(this.onGetLargeAreaSuccess, this));
             this.collection.on("get.area.error", $.proxy(this.onGetError, this));
 
+            this.collection.on("get.operate.type.success", $.proxy(this.onGetOperateTypeListSuccess, this));
+            this.collection.on("get.operate.type.error", $.proxy(this.onGetError, this));
+
             this.collection.on("get.province.success", $.proxy(this.onGetProvinceSuccess, this));
             this.collection.on("get.province.error", $.proxy(this.onGetError, this));
 
@@ -78,7 +81,8 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 "status": null, //节点状态
                 "appType": null, //节点类型
                 "provinceId": null, //省份名称
-                "areaId": null //大区名称
+                "areaId": null, //大区名称
+                "opType": null
 
             }
             this.tableColumn = [{
@@ -427,6 +431,11 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
         },
 
         onClickItemDelete: function(event) {
+            if (!this.operateTypeList || this.operateTypeList.length == 0) {
+                Utility.alerts("没有获取到操作说明列表!")
+                return false;
+            }
+
             var eventTarget = event.srcElement || event.target,
                 id;
             if (eventTarget.tagName == "SPAN") {
@@ -444,6 +453,8 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     type: 1,
                     model: model,
                     whoCallMe: 'node',
+                    operateTypeList: this.operateTypeList,
+                    collection: this.collection,
                     placeHolder: "请输入删除的原因,并请您谨慎操作，一旦删除，不可恢复"
                 });
                 var options = {
@@ -456,7 +467,8 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                         if (!options) return;
                         this.collection.deleteNode({
                             id: parseInt(id),
-                            opRemark: options.opRemark
+                            opRemark: options.opRemark,
+                            opType: options.opType
                         })
                         this.deleteNodeTipsPopup.$el.modal("hide");
                     }.bind(this)
@@ -541,6 +553,11 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
         },
 
         onClickDetail: function(event) {
+            if (!this.operateTypeList || this.operateTypeList.length == 0) {
+                Utility.alerts("没有获取到操作说明列表!")
+                return false;
+            }
+
             var eventTarget = event.srcElement || event.target,
                 id;
             if (eventTarget.tagName == "SPAN") {
@@ -556,22 +573,27 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 var detailTipsView = new NodeTips({
                     type: 2,
                     model: model,
-                    whoCallMe: 'node'
+                    whoCallMe: 'node',
+                    collection: this.collection,
+                    operateTypeList: this.operateTypeList
                 });
                 var options = {
                     title: "操作说明",
                     body: detailTipsView,
                     backdrop: 'static',
                     type: 1,
-                    onHiddenCallback: function() {
-
-                    }.bind(this)
+                    onHiddenCallback: function() {}.bind(this)
                 }
                 this.nodeTipsPopup = new Modal(options);
             }.bind(this));
         },
 
         onClickItemStop: function(event) {
+            if (!this.operateTypeList || this.operateTypeList.length == 0) {
+                Utility.alerts("没有获取到操作说明列表!")
+                return false;
+            }
+
             var eventTarget = event.srcElement || event.target,
                 id;
             if (eventTarget.tagName == "SPAN") {
@@ -588,7 +610,9 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 var stopNodeView = new NodeTips({
                     type: 1,
                     model: model,
-                    whoCallMe: 'node'
+                    whoCallMe: 'node',
+                    operateTypeList: this.operateTypeList,
+                    collection: this.collection,
                 });
                 var options = {
                     title: "暂停节点操作",
@@ -601,6 +625,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                         this.currentPauseNodeId = id;
                         this.collection.operateNode({
                             opRemark: options.opRemark,
+                            opType: options.opType,
                             nodeId: id,
                             operator: -1,
                             t: new Date().valueOf()
@@ -767,38 +792,29 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 this.onClickQueryButton();
             }.bind(this));
 
-            var typeArray = [{
-                name: "全部",
-                value: "All"
-            },{
-                name: "网络故障",
-                value: "All"
-            }, {
-                name: "系统故障",
-                value: 203
-            }, {
-                name: "软件升级",
-                value: 202
-            },{
-                name: "配置下发",
-                value: 202
-            },{
-                name: "网络改造",
-                value: 202
-            },{
-                name: "其他",
-                value: 202
-            }]
-            Utility.initDropMenu(this.$el.find(".dropdown-reason"), typeArray, function(value) {
-                // if (value !== "All")
-                //     this.queryArgs.appType = parseInt(value)
-                // else
-                //     this.queryArgs.appType = null;
-            }.bind(this));
-
             this.collection.getOperatorList();
             this.collection.getAllProvince();
             this.collection.getAreaList();
+            this.collection.getOpereteTypeList();
+        },
+
+        onGetOperateTypeListSuccess: function(res){
+            this.operateTypeList = [{
+                name: "全部",
+                value: "All"
+            }]
+            _.each(res, function(el, index){
+                this.operateTypeList.push({
+                    name: el.name,
+                    value: el.id
+                })
+            }.bind(this))
+            Utility.initDropMenu(this.$el.find(".dropdown-reason"), this.operateTypeList, function(value) {
+                if (value !== "All")
+                    this.queryArgs.opType = parseInt(value)
+                else
+                    this.queryArgs.opType = null;
+            }.bind(this));
         },
 
         onGetLargeAreaSuccess: function(res) {

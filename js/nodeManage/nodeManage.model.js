@@ -411,6 +411,35 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
+
+        getOpereteTypeList: function(args) {
+            var url = BASE_URL + "/rs/metaData/getOpereteTypeList",
+                successCallback = function(res) {
+                    if (res)
+                        this.trigger("get.operate.type.success", res);
+                    else
+                        this.trigger("get.operate.type.error", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("get.operate.type.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        selecOperatetRecords: function(args) {
+            //resourceName=mstest01&type=1   1是节点 2是设备 3 是ip
+            var url = BASE_URL + "/rs/history/selecOperatetRecords",
+                successCallback = function(res) {
+                    if (res)
+                        this.trigger("get.operate.history.success", res);
+                    else
+                        this.trigger("get.operate.history.error", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("get.operate.history.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        }
     });
 
     return NodeManageCollection;

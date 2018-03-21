@@ -333,6 +333,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
                 }
             },
+
             onClickDispGroupInfo: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id;
@@ -431,53 +432,6 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 }.bind(this))
             },
 
-            onClickItemDelete: function(event) {
-                if (!this.operateTypeList || this.operateTypeList.length == 0) {
-                    Utility.alerts("没有获取到操作说明列表!")
-                    return false;
-                }
-
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "SPAN") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                var model = this.collection.get(id);
-
-                if (this.deleteNodeTipsPopup) $("#" + this.deleteNodeTipsPopup.modalId).remove();
-
-                require(["nodeManage.operateDetail.view"], function(NodeTips) {
-                    var deleteNodeTips = new NodeTips({
-                        type: 1,
-                        model: model,
-                        whoCallMe: 'node',
-                        operateTypeList: this.operateTypeList,
-                        collection: this.collection,
-                        placeHolder: "请输入删除的原因,并请您谨慎操作，一旦删除，不可恢复"
-                    });
-                    var options = {
-                        title: "你确定要删除节点<span class='text-danger'>" + model.attributes.name + "</span>吗？删除后将不可恢复, 请谨慎操作！",
-                        body: deleteNodeTips,
-                        backdrop: 'static',
-                        type: 2,
-                        onOKCallback: function() {
-                            var options = deleteNodeTips.getArgs();
-                            if (!options) return;
-                            this.collection.deleteNode({
-                                id: parseInt(id),
-                                opRemark: options.opRemark,
-                                opType: options.opType
-                            })
-                            this.deleteNodeTipsPopup.$el.modal("hide");
-                        }.bind(this)
-                    }
-                    this.deleteNodeTipsPopup = new Modal(options);
-                }.bind(this));
-            },
-
             onClickItemPlay: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id;
@@ -521,21 +475,6 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 }.bind(this));
             },
 
-            onClickMultiPlay: function(event) {
-                var checkedList = this.collection.filter(function(model) {
-                    return model.get("isChecked") === true;
-                })
-                var ids = [];
-                _.each(checkedList, function(el, index, list) {
-                    ids.push(el.attributes.id);
-                })
-                if (ids.length === 0) return;
-                this.collection.updateNodeStatus({
-                    ids: ids,
-                    status: 1
-                })
-            },
-
             onClickItemHangup: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id;
@@ -553,95 +492,6 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 })
             },
 
-            onClickDetail: function(event) {
-                if (!this.operateTypeList || this.operateTypeList.length == 0) {
-                    Utility.alerts("没有获取到操作说明列表!")
-                    return false;
-                }
-
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "SPAN") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                var model = this.collection.get(id);
-                if (this.detailTipsPopup) $("#" + this.detailTipsPopup.modalId).remove();
-
-                require(["nodeManage.operateDetail.view"], function(NodeTips) {
-                    var detailTipsView = new NodeTips({
-                        type: 2,
-                        model: model,
-                        whoCallMe: 'node',
-                        collection: this.collection,
-                        operateTypeList: this.operateTypeList
-                    });
-                    var options = {
-                        title: "操作说明",
-                        body: detailTipsView,
-                        backdrop: 'static',
-                        type: 1,
-                        onHiddenCallback: function() {}.bind(this)
-                    }
-                    this.nodeTipsPopup = new Modal(options);
-                }.bind(this));
-            },
-
-            onClickItemStop: function(event) {
-                if (!this.operateTypeList || this.operateTypeList.length == 0) {
-                    Utility.alerts("没有获取到操作说明列表!")
-                    return false;
-                }
-
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "SPAN") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-
-                var model = this.collection.get(id);
-                if (this.nodeTipsPopup) $("#" + this.nodeTipsPopup.modalId).remove();
-
-                require(["nodeManage.operateDetail.view"], function(NodeTips) {
-                    var stopNodeView = new NodeTips({
-                        type: 1,
-                        model: model,
-                        whoCallMe: 'node',
-                        operateTypeList: this.operateTypeList,
-                        collection: this.collection,
-                    });
-                    var options = {
-                        title: "暂停节点操作",
-                        body: stopNodeView,
-                        backdrop: 'static',
-                        type: 2,
-                        onOKCallback: function() {
-                            var options = stopNodeView.getArgs();
-                            if (!options) return;
-                            this.currentPauseNodeId = id;
-                            this.collection.operateNode({
-                                opRemark: options.opRemark,
-                                opType: options.opType,
-                                nodeId: id,
-                                operator: -1,
-                                t: new Date().valueOf()
-                            })
-                            this.nodeTipsPopup.$el.modal("hide");
-                            this.showDisablePopup("服务端正在努力暂停中...")
-                        }.bind(this),
-                        onHiddenCallback: function() {
-
-                        }.bind(this)
-                    }
-                    this.nodeTipsPopup = new Modal(options);
-                }.bind(this));
-            },
-
             onOperateNodeSuccess: function(res) {
                 this.disablePopup && this.disablePopup.$el.modal('hide');
                 if (res.msg == "1" && res.status === 200) {
@@ -657,24 +507,19 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 }
             },
 
-            onRequireDispSuggesttionModule: function(DispSuggesttionViews, DispSuggesttionModel, nodeId) { //
-                if (!this.dispSuggesttionFailModel)
-                    this.dispSuggesttionFailModel = new DispSuggesttionModel();
-                this.hide();
-                var options = {
-                    nodeId: nodeId,
-                    collection: this.dispSuggesttionFailModel,
-                    backCallback: $.proxy(this.backFromDispSuggesttion, this)
-                };
-                this.dispSuggesttionView = new DispSuggesttionViews.DispSuggesttionView(options);
-                this.dispSuggesttionView.render($('.ksc-content'));
-            },
-
-            backFromDispSuggesttion: function() {
-                this.dispSuggesttionView.remove();
-                this.dispSuggesttionView = null;
-                this.dispSuggesttionFailModel = null;
-                this.update();
+            onClickMultiPlay: function(event) {
+                var checkedList = this.collection.filter(function(model) {
+                    return model.get("isChecked") === true;
+                })
+                var ids = [];
+                _.each(checkedList, function(el, index, list) {
+                    ids.push(el.attributes.id);
+                })
+                if (ids.length === 0) return;
+                this.collection.updateNodeStatus({
+                    ids: ids,
+                    status: 1
+                })
             },
 
             onClickMultiStop: function(event) {
@@ -706,6 +551,26 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 var result = confirm("你确定要批量删除选择的节点吗？")
                 if (!result) return
                 alert(ids.join(",") + "。接口不支持，臣妾做不到啊！");
+            },
+
+            onRequireDispSuggesttionModule: function(DispSuggesttionViews, DispSuggesttionModel, nodeId) { //
+                if (!this.dispSuggesttionFailModel)
+                    this.dispSuggesttionFailModel = new DispSuggesttionModel();
+                this.hide();
+                var options = {
+                    nodeId: nodeId,
+                    collection: this.dispSuggesttionFailModel,
+                    backCallback: $.proxy(this.backFromDispSuggesttion, this)
+                };
+                this.dispSuggesttionView = new DispSuggesttionViews.DispSuggesttionView(options);
+                this.dispSuggesttionView.render($('.ksc-content'));
+            },
+
+            backFromDispSuggesttion: function() {
+                this.dispSuggesttionView.remove();
+                this.dispSuggesttionView = null;
+                this.dispSuggesttionFailModel = null;
+                this.update();
             },
 
             initPaginator: function() {
@@ -976,7 +841,143 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             render: function(target) {
                 this.$el.appendTo(target)
                 this.target = target
-            }
+            },
+
+            onClickDetail: function(event) {
+                if (!this.operateTypeList || this.operateTypeList.length == 0) {
+                    Utility.alerts("没有获取到操作说明列表!")
+                    return false;
+                }
+
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                var model = this.collection.get(id);
+                if (this.detailTipsPopup) $("#" + this.detailTipsPopup.modalId).remove();
+
+                require(["nodeManage.operateDetail.view"], function(NodeTips) {
+                    var detailTipsView = new NodeTips({
+                        type: 2,
+                        model: model,
+                        whoCallMe: 'node',
+                        collection: this.collection,
+                        operateTypeList: this.operateTypeList
+                    });
+                    var options = {
+                        title: "操作说明",
+                        body: detailTipsView,
+                        backdrop: 'static',
+                        type: 1,
+                        onHiddenCallback: function() {}.bind(this)
+                    }
+                    this.nodeTipsPopup = new Modal(options);
+                }.bind(this));
+            },
+
+            onClickItemDelete: function(event) {
+                if (!this.operateTypeList || this.operateTypeList.length == 0) {
+                    Utility.alerts("没有获取到操作说明列表!")
+                    return false;
+                }
+
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                var model = this.collection.get(id);
+
+                if (this.deleteNodeTipsPopup) $("#" + this.deleteNodeTipsPopup.modalId).remove();
+
+                require(["nodeManage.operateDetail.view"], function(NodeTips) {
+                    var deleteNodeTips = new NodeTips({
+                        type: 1,
+                        model: model,
+                        whoCallMe: 'node',
+                        operateTypeList: this.operateTypeList,
+                        collection: this.collection,
+                        placeHolder: "请输入删除的原因,并请您谨慎操作，一旦删除，不可恢复"
+                    });
+                    var options = {
+                        title: "你确定要删除节点<span class='text-danger'>" + model.attributes.name + "</span>吗？删除后将不可恢复, 请谨慎操作！",
+                        body: deleteNodeTips,
+                        backdrop: 'static',
+                        type: 2,
+                        onOKCallback: function() {
+                            var options = deleteNodeTips.getArgs();
+                            if (!options) return;
+                            this.collection.deleteNode({
+                                id: parseInt(id),
+                                opRemark: options.opRemark,
+                                opType: options.opType
+                            })
+                            this.deleteNodeTipsPopup.$el.modal("hide");
+                        }.bind(this)
+                    }
+                    this.deleteNodeTipsPopup = new Modal(options);
+                }.bind(this));
+            },
+
+            onClickItemStop: function(event) {
+                if (!this.operateTypeList || this.operateTypeList.length == 0) {
+                    Utility.alerts("没有获取到操作说明列表!")
+                    return false;
+                }
+
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+
+                var model = this.collection.get(id);
+                if (this.nodeTipsPopup) $("#" + this.nodeTipsPopup.modalId).remove();
+
+                require(["nodeManage.operateDetail.view"], function(NodeTips) {
+                    var stopNodeView = new NodeTips({
+                        type: 1,
+                        model: model,
+                        whoCallMe: 'node',
+                        operateTypeList: this.operateTypeList,
+                        collection: this.collection,
+                    });
+                    var options = {
+                        title: "暂停节点操作",
+                        body: stopNodeView,
+                        backdrop: 'static',
+                        type: 2,
+                        onOKCallback: function() {
+                            var options = stopNodeView.getArgs();
+                            if (!options) return;
+                            this.currentPauseNodeId = id;
+                            this.collection.operateNode({
+                                opRemark: options.opRemark,
+                                opType: options.opType,
+                                nodeId: id,
+                                operator: -1,
+                                t: new Date().valueOf()
+                            })
+                            this.nodeTipsPopup.$el.modal("hide");
+                            this.showDisablePopup("服务端正在努力暂停中...")
+                        }.bind(this),
+                        onHiddenCallback: function() {
+
+                        }.bind(this)
+                    }
+                    this.nodeTipsPopup = new Modal(options);
+                }.bind(this));
+            },
         });
 
         return NodeManageView;

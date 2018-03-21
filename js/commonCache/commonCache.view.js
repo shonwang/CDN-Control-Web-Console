@@ -288,8 +288,8 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
                         alert("添加成功");
                         this.getIpList();
                     }.bind(this);
-                    postParam.error = function(){
-                        this.setIpListError();
+                    postParam.error = function(res){
+                        this.setIpListError(res);
                     }.bind(this);
                     this.collection.addIpWhiteRule(postParam);
                     this.addAddWhitePopup.$el.modal('hide');
@@ -379,8 +379,8 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
                         alert("修改成功");
                         this.getIpList();
                     }.bind(this);
-                    postParam.error = function(){
-                        this.setIpListError();
+                    postParam.error = function(res){
+                        this.setIpListError(res);
                     }.bind(this);
                     this.collection.modifyIpWhiteRule(postParam);
                     this.addAddWhitePopup.$el.modal('hide');
@@ -491,8 +491,8 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
                         alert("添加成功");
                         this.getClearRulesList();
                     }.bind(this);
-                    postParam.error = function(){
-                        this.setIpListError();
+                    postParam.error = function(res){
+                        this.setIpListError(res);
                     }.bind(this);
                     this.collection.addClearRule(postParam);
                     this.addClearCachePopup.$el.modal('hide');

@@ -540,8 +540,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
         },
 
        onClickItemInit:function(evnet){
-            var eventTarget = event.srcElement || event.target,
-                    id;
+            var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN") {
                 eventTarget = $(eventTarget).parent();
                 id = eventTarget.attr("id");
@@ -552,34 +551,32 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             if (this.chosePlatPopup) $("#" + this.chosePlatPopup.modalId).remove();
 
             require(["nodeManage.chosePlatform.view"], function(ChosePlatformView) {
-               var myChosePlatformView=new ChosePlatformView({})
-               var options = {
-                    title: "选择平台",
-                    body: myChosePlatformView,
-                    backdrop: 'static',
-                    type: 2,
-                    width:300,
-                    onOKCallback: function() {
+               var myChosePlatformView = new ChosePlatformView({
+                    onSelectPlatform: function(platformId) {
                         require(['setupTopoManage.update.view'], function(UpdateTopoView) {
                             var myUpdateTopoView = new UpdateTopoView({
                                 collection: this.collection,
                                 model: model,
                                 isEdit: false,
-                                pageType:3,
-                                platformId:myChosePlatformView.platformId,
-                                onSaveCallback: function() {
-                                }.bind(this),
+                                pageType: 3,
+                                platformId: platformId,
+                                onSaveCallback: function() {}.bind(this),
                                 onCancelCallback: function() {
                                     myUpdateTopoView.$el.remove();
                                     this.$el.find(".node-manage-list-pannel").show();
-                                    this.enterKeyBindQuery();
                                 }.bind(this)
                             })
                             this.$el.find(".node-manage-list-pannel").hide();
                             myUpdateTopoView.render(this.$el.find(".update-panel"));
-                           }.bind(this));
-                        this.chosePlatPopup.$el.modal("hide");
-                       }.bind(this),
+                        }.bind(this));
+                    }.bind(this)
+               })
+               var options = {
+                    title: "选择平台",
+                    body: myChosePlatformView,
+                    backdrop: 'static',
+                    type: 1,
+                    onOKCallback: function() {}.bind(this),
                     onHiddenCallback: function() {
                         this.enterKeyBindQuery();
                     }.bind(this)

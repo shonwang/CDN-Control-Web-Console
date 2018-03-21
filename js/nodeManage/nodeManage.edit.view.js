@@ -524,6 +524,9 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             this.$el.find(".save").on("click", $.proxy(this.onSaveClick, this));
             this.$el.find(".cancel").on("click", $.proxy(this.onCancelClick, this));
 
+            if (this.isEdit)
+                this.$el.find("small").html("/编辑");
+
             this.initDropList(options.list);
             this.initChargeDatePicker();
         },

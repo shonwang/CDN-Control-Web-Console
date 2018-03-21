@@ -28,7 +28,7 @@ define("nodeManage.operateDetail.view", ['require', 'exports', 'template', 'moda
             }));
             this.$el.find("#stop-reason").on("focus", $.proxy(this.onFocus, this));
 
-            if (this.whoCallMe != 'node' && this.whoCallMe != 'device') {
+            if (this.whoCallMe != 'node' && this.whoCallMe != 'device' && this.collection) {
                 this.collection.off("block.detail.success");
                 this.collection.off("block.detail.error");
                 this.collection.on("block.detail.success", $.proxy(this.onGetDetailSuccess, this));
@@ -40,6 +40,8 @@ define("nodeManage.operateDetail.view", ['require', 'exports', 'template', 'moda
 
             if (this.whoCallMe == 'node' || this.whoCallMe == 'device') {
                 this.initDropMenu();
+            } else {
+                this.$el.find(".dropdown-reason").hide();
             }
         },
 

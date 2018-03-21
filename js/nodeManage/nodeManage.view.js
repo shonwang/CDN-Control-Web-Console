@@ -181,6 +181,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 })
                 this.initTable();
             },
+            
             enterKeyBindQuery: function() {
                 $(document).on('keydown', function(e) {
                     if (e.keyCode == 13) {

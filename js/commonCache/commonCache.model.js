@@ -11,13 +11,13 @@ define("commonCache.model", ['require','exports', 'utility'], function(require, 
 
         getCacheRulesList:function(args){
             var _data = {
+                host:args.host,
+                uri:args.uri,
                 start:args.start,
                 total:args.total
             };
             var url = BASE_URL + "/rs/common/cache/getCacheRulesList",
                 successCallback = function(res) {
-                    console.log(res);
-                    console.log(args.success);
                     args.success && args.success(res);
                 }.bind(this),
                 errorCallback = function(res) {
@@ -28,6 +28,8 @@ define("commonCache.model", ['require','exports', 'utility'], function(require, 
 
         getIpWhiteList:function(args){
             var _data = {
+                host:args.host,
+                uri:args.uri,
                 start:args.start,
                 total:args.total
             };
@@ -43,6 +45,8 @@ define("commonCache.model", ['require','exports', 'utility'], function(require, 
 
         getClearRulesList:function(args){
             var _data = {
+                host:args.host,
+                uri:args.uri,
                 start:args.start,
                 total:args.total
             };
@@ -168,8 +172,37 @@ define("commonCache.model", ['require','exports', 'utility'], function(require, 
         },
 
         removeCacheRule:function(args){
+            var url = BASE_URL + "/rs/common/cache/removeCacheRule?ruleId="+args.id,
+                successCallback = function(res) {
+                    args.success && args.success(res);
+                }.bind(this),
+                errorCallback = function(res) {
+                    args.error && args.error(res);
+                }.bind(this);
+            Utility.deleteAjax(url, null, successCallback, errorCallback);
+        }, 
 
-        },    
+        removeIpWhiteRule:function(args){
+            var url = BASE_URL + "/rs/common/cache/removeIpWhiteRule?ruleId="+args.id,
+                successCallback = function(res) {
+                    args.success && args.success(res);
+                }.bind(this),
+                errorCallback = function(res) {
+                    args.error && args.error(res);
+                }.bind(this);
+            Utility.deleteAjax(url, null, successCallback, errorCallback);
+        }, 
+
+        removeClearRule:function(args){
+            var url = BASE_URL + "/rs/common/cache/removeClearRule?ruleId="+args.id,
+                successCallback = function(res) {
+                    args.success && args.success(res);
+                }.bind(this),
+                errorCallback = function(res) {
+                    args.error && args.error(res);
+                }.bind(this);
+            Utility.deleteAjax(url, null, successCallback, errorCallback);
+        }   
 
     });
 

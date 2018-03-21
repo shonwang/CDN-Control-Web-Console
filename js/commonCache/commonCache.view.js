@@ -61,6 +61,7 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
             this.$el = $(_.template(template['tpl/commonCache/commonCache.cacheRule.html'])());
             this.getCacheRule();
             this.$el.find(".create").on("click", $.proxy(this.onClickAddCacheRule, this));
+            this.$el.find(".query").on("click", $.proxy(this.getCacheRule, this));
         },
 
         onClickAddCacheRule: function(event){
@@ -94,7 +95,11 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
         },
 
         getCacheRule:function(){
+            var host = this.$el.find("#input-domain").val();
+            var uri = this.$el.find("#input-url").val();
             var args = {
+                host:host,
+                uri:uri,
                 start:1,
                 total:1000,
                 success:function(data){
@@ -117,6 +122,29 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
             this.table = $(_.template(template['tpl/commonCache/commonCache.cacheRule.table.html'])({data:this.DATA}));
             this.$el.find(".table-ctn").html(this.table);
             this.table.find(".edit").on("click",$.proxy(this.onEditClick,this));
+            this.table.find(".delete").on("click",$.proxy(this.removeCacheRule,this));
+        },
+
+        removeCacheRule:function(event){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+
+            var args = {
+                id:id,
+                success:function(){
+                    this.getCacheRule();
+                }.bind(this),
+                error:function(res){
+                    var msg = res.message || "删除失败";
+                    alert(msg);
+                }.bind(this)
+            };
+            this.collection.removeCacheRule(args);
         },
 
         setCacheRuleError:function(){
@@ -216,7 +244,6 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
             var ipList = this.$el.find("#ipList").val();
 
             var containCdnDevice = this.$el.find("input[name=cache-containDevice]:checked").val();
-            console.log(containCdnDevice);
             var postParam = {
                 "id": this.isEdit ? this.defaultParam.id : null,
                 host:host,
@@ -238,6 +265,7 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
             this.$el = $(_.template(template['tpl/commonCache/commonCache.ipBlackWhite.html'])());
             this.getIpList();
             this.$el.find(".create").on("click", $.proxy(this.onClickAddCacheRule, this));
+            this.$el.find(".query").on("click", $.proxy(this.getIpList, this));
         },
 
 
@@ -272,7 +300,11 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
         },
 
         getIpList:function(){
+            var host = this.$el.find("#input-domain").val();
+            var uri = this.$el.find("#input-url").val();
             var args = {
+                host:host,
+                uri:uri,
                 start:1,
                 total:1000,
                 success:function(data){
@@ -293,6 +325,29 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
             this.table = $(_.template(template['tpl/commonCache/commonCache.ipBlackWhite.table.html'])({data:this.DATA}));
             this.$el.find(".table-ctn").html(this.table);
             this.table.find(".edit").on("click",$.proxy(this.onEditClick,this));
+            this.table.find(".delete").on("click",$.proxy(this.removeIpWhiteRule,this));
+        },
+
+        removeIpWhiteRule:function(event){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+
+            var args = {
+                id:id,
+                success:function(){
+                    this.getIpList();
+                }.bind(this),
+                error:function(res){
+                    var msg = res.message || "删除失败";
+                    alert(msg);
+                }.bind(this)
+            };
+            this.collection.removeIpWhiteRule(args);
         },
 
         onEditClick:function(event){
@@ -413,6 +468,7 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
             this.$el = $(_.template(template['tpl/commonCache/commonCache.clearCache.html'])());
             this.getClearRulesList();
             this.$el.find(".create").on("click", $.proxy(this.onClickAddCacheRule, this));
+            this.$el.find(".query").on("click", $.proxy(this.getClearRulesList, this));
         },
 
 
@@ -447,9 +503,11 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
         },
 
         getClearRulesList:function(){
+            var host = this.$el.find("#input-domain").val();
+            var uri = this.$el.find("#input-url").val();
             var args = {
-                start:1,
-                total:1000,
+                host:host,
+                uri:uri,
                 success:function(data){
                     this.onGetSuccess(data);
                 }.bind(this),
@@ -481,7 +539,6 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
                 id = $(eventTarget).attr("id");
             }
             var model = this.getCurrentObj(id);
-            console.log(model);
             if (this.addClearCachePopup) $("#" + this.addClearCachePopup.modalId).remove();
             var myAddClearCacheView = new AddClearCacheView({
                 collection: this.collection,

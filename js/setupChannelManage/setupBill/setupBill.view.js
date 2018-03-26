@@ -481,6 +481,7 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                     else
                         $(el).parents(".togglebutton").html('<span class="label label-danger">关闭</span>')
                 }.bind(this))
+                this.dragPlayTable.find("#dropdown-dragmode").prop("disabled", true);
 
                 if (this.versionType === 2)
                     this.initLuaClientLimitSpeed();
@@ -922,8 +923,23 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                 return this.timestampTable
             } else {
                 this.timestampTable.appendTo(this.$el.find(".bill-ctn"));
-                this.initAdvancedConfig();
+                this.initForceRedirect();
             }
+        },
+
+        initForceRedirect: function() {
+            this.followingInfo = {};
+            var domainConf = this.config.domainConf, originDomain = this.config.originDomain;
+            if (domainConf.following === 0) this.followingInfo.followingStr = '<span class="label label-danger">关闭</span>';
+            if (domainConf.following  === 1) this.followingInfo.followingStr = '<span class="label label-success">开启</span>';
+
+            this.followingTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.following.html'])({
+                data: this.followingInfo
+            }));
+            this.followingTable.find("td:eq(0)").html("HTTPS配置-强制跳转");
+            this.followingTable.find("td:eq(1)").html(this.followingInfo.followingStr);
+            this.followingTable.appendTo(this.$el.find(".bill-ctn"));
+            this.initAdvancedConfig();
         },
 
         initTimestamp: function(){

@@ -900,7 +900,8 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 var postParam = {
                     "domain": result.DomainName,
                     "userId": this.options.userInfo.uid,
-                    "subType": result.CdnType === "download" ? 1 : (result.CdnType === "liveUpward" ? 3 : 2),
+                    //"subType": result.CdnType === "download" ? 1 : (result.CdnType === "liveUpward" ? 3 : 2),
+                    "subType": result.CdnType,
                     "protocol": protocols[result.CdnProtocol],
                     "backSourceProtocol": protocols[result.OriginProtocol],
                     "region": result.Regions,
@@ -948,7 +949,11 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 
                 var domainName = this.args.DomainName;
                 if(domainName.indexOf("*")==0){
-                    if(this.args.CdnType == "liveUpward" || (this.args.CdnType == "live" && result.CdnProtocol !="HLS")){
+                    // if(this.args.CdnType == "liveUpward" || (this.args.CdnType == "live" && result.CdnProtocol !="HLS")){
+                    //     alert("泛域名只支持使用点播平台的域名");
+                    //     return false;
+                    // }
+                    if(this.args.CdnType == "3" || (this.args.CdnType == "2" && result.CdnProtocol !="HLS")){
                         alert("泛域名只支持使用点播平台的域名");
                         return false;
                     }
@@ -982,19 +987,20 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 //业务类型
                 var ctn = this.$el.find("#dropdown-menu-domain-type");
                 var viewCtn = this.$el.find(".download-live-view-ctn");
-                var dateArray = [{
-                    name: "请选择",
-                    value: "1"
-                }, {
-                    name: "下载加速",
-                    value: "download"
-                }, {
-                    name: "直播加速",
-                    value: "live"
-                }, {
-                    name: "直播推流加速",
-                    value: "liveUpward"
-                }];
+                // var dateArray = [{
+                //     name: "请选择",
+                //     value: "1"
+                // }, {
+                //     name: "下载加速",
+                //     value: "download"
+                // }, {
+                //     name: "直播加速",
+                //     value: "live"
+                // }, {
+                //     name: "直播推流加速",
+                //     value: "liveUpward"
+                // }];
+                var dateArray = Utility.liveAndDownloadList;
                 this.initDropMenu(ctn, dateArray, function(obj) {
                     var cdnType = obj.value;
                     if (cdnType == this.args.CdnType) {
@@ -1004,28 +1010,47 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     viewCtn.html("");
                     this.downloadAndLiveView = null;
                     this.args.CdnType = cdnType;
-                    if (cdnType == 1) {
-                        //如果是请选择项，只清空视图
-                        return false;
-                    }
-                    this.$el.find("#cdn-type-error").hide();
-                    this.args.DomainName = this.$el.find("#text-domainName").val();
-                    if (cdnType == "download") {
+                    //原来的逻辑不要删，产品不在了，需要有参考
+                    // if (cdnType == 1) {
+                    //     //如果是请选择项，只清空视图
+                    //     return false;
+                    // }
+                    // this.$el.find("#cdn-type-error").hide();
+                    // this.args.DomainName = this.$el.find("#text-domainName").val();
+                    // if (cdnType == "download") {
+                    //     this.downloadAndLiveView = new AddDownloadView({
+                    //         collection: this.collection,
+                    //         obj: this
+                    //     });
+                    // } else if (cdnType == "live") {
+                    //     this.downloadAndLiveView = new AddLiveView({
+                    //         collection: this.collection,
+                    //         obj: this
+                    //     })
+                    // } else if (cdnType == "liveUpward") {
+                    //     this.downloadAndLiveView = new AddLiveUpwardView({
+                    //         collection: this.collection,
+                    //         obj: this
+                    //     })
+                    // }
+
+                    if (cdnType == "1" || cdnType == "4") {
                         this.downloadAndLiveView = new AddDownloadView({
                             collection: this.collection,
                             obj: this
                         });
-                    } else if (cdnType == "live") {
+                    } else if (cdnType == "2") {
                         this.downloadAndLiveView = new AddLiveView({
                             collection: this.collection,
                             obj: this
                         })
-                    } else if (cdnType == "liveUpward") {
+                    } else if (cdnType == "3") {
                         this.downloadAndLiveView = new AddLiveUpwardView({
                             collection: this.collection,
                             obj: this
                         })
                     }
+
                     this.downloadAndLiveView.render(viewCtn);
 
                 }.bind(this));

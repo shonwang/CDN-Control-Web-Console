@@ -521,7 +521,37 @@ define("utility", ['require','exports'], function(require, exports) {
         
         onContentSave:function(){
             window.IS_ALERT_SAVE = false;
+        },
+
+        liveAndDownloadList:[
+            {
+                name: "请选择",
+                value: "100"
+            }, 
+            {
+                name: "大文件下载加速",
+                value: "4"
+            }, 
+            {
+                name: "音视频点播加速",
+                value: "1"
+            }, 
+            {
+                name:"直播加速",
+                value:"2"
+            },
+            {
+                name: "直播推流加速",
+                value: "3"
+            }
+        ],
+        liveAndDownloadListBack:{
+            1:"音视频点播加速",
+            2:"直播加速",
+            3:"直播推流加速",
+            4:"大文件下载加速"
         }
+
     };
     return Utility;
 });

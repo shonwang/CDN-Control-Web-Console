@@ -86,6 +86,31 @@ define("dragPlay.view", ['require','exports', 'template', 'modal.view', 'utility
 
         onDragListSuccess: function(){
             this.initTable();
+            var  typeArray = [
+                {name: "按字节", value: 2},
+                {name: "按时间", value: 1}
+            ],
+            rootNode = this.$el.find(".dragmode");
+            var dropRoot = rootNode.find(".dropdown-menu"),
+                showNode = rootNode.find(".cur-value");
+            dropRoot.html("");
+            _.each(typeArray, function(element, index, list){
+                var itemTpl = '<li value="' + element.value + '">' + 
+                                  '<a href="javascript:void(0);" value="' + element.value + '">'+ element.name + '</a>' + 
+                            '</li>',
+                itemNode = $(itemTpl);
+                itemNode.on("click", function(event){
+                    var eventTarget = event.srcElement || event.target;
+                        showNode.html($(eventTarget).html()),
+                        value = $(eventTarget).attr("value");
+                    var dataId = $(eventTarget).parents("tr").attr("data-id");
+                    this.collection.each(function(obj){
+                        if (obj.get("id") == dataId) obj.set('dragMode', parseInt(value))
+                    }.bind(this))
+                    Utility.onContentChange();
+                }.bind(this));
+                itemNode.appendTo(dropRoot);
+            }.bind(this));
         },
 
         initTable: function(){

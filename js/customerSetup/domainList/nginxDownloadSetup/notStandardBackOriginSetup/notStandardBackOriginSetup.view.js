@@ -76,7 +76,6 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
         }
     });
 
-
     var BackOriginSetupView = Backbone.View.extend({
         events: {},
 
@@ -291,7 +290,68 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
             }
             this.$el.find(".edge-open .togglebutton input").on("click", $.proxy(this.onClickAdvanceEdgeBtn, this));
             this.$el.find(".edge-save").on("click", $.proxy(this.onClickEdgeSaveBtn, this));
+
+            if (this.defaultParam.backsourceAdvance.edgeOpenFlag === 1){
+                this.$el.find(".slice-open .togglebutton input").get(0).checked = true;
+            } else {
+                this.$el.find(".slice-open .togglebutton input").get(0).checked = false;
+            }
+            this.$el.find(".slice-open .togglebutton input").on("click", $.proxy(this.onClickSliceBtn, this));
+            if (this.defaultParam.backsourceAdvance.edgeOpenFlag === 1){
+                this.$el.find(".file-check input").get(0).checked = true;
+            } else {
+                this.$el.find(".file-check input").get(0).checked = false;
+            }
+            this.$el.find(".file-check input").on("click", $.proxy(this.onClickFileCheckBtn, this));
+            this.$el.find(".slice-save").on("click", $.proxy(this.onClickEdgeSaveBtn, this));
+
+            this.initOriginProtocol();
             Utility.onContentSave();
+        },
+
+        initOriginProtocol: function(){
+            var  baseArray = [
+                {name: "http", value: 2},
+                {name: "https", value: 1},
+                {name: "协议跟随", value: 3}
+            ],
+            rootNode = this.$el.find(".origin-domain-protocol");
+
+            Utility.initDropMenu(rootNode, baseArray, function(value){
+                Utility.onContentChange();
+                //this.defaultParam.originType = parseInt(value)
+            }.bind(this));
+
+            var defaultValue = _.find(baseArray, function(object){
+                return object.value === this.defaultParam.originType;
+            }.bind(this));
+
+            if (defaultValue)
+                this.$el.find("#dropdown-origin-domain-protocol .cur-value").html(defaultValue.name);
+            else
+                this.$el.find("#dropdown-origin-domain-protocol .cur-value").html(baseArray[0].name);
+        },
+
+        onClickSliceBtn: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            if (eventTarget.checked){
+                this.defaultParam.backsourceAdvance.edgeOpenFlag = 1;
+            } else {
+                this.defaultParam.backsourceAdvance.edgeOpenFlag = 0;
+            }
+            Utility.onContentChange();
+        },
+
+        onClickFileCheckBtn: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            if (eventTarget.checked){
+                this.defaultParam.backsourceAdvance.edgeOpenFlag = 1;
+            } else {
+                this.defaultParam.backsourceAdvance.edgeOpenFlag = 0;
+            }
+            Utility.onContentChange();
         },
 
         onClickAdvanceEdgeBtn: function(event){

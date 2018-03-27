@@ -21,24 +21,18 @@ define("forceRedirect.view", ['require','exports', 'template', 'modal.view', 'ut
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"));
 
-            require(["domainSetup.model"], function(DomainSetupModel){
-                var myDomainSetupModel = new DomainSetupModel();
-                    myDomainSetupModel.on("get.domainInfo.success", $.proxy(this.onGetDomainInfo, this));
-                    myDomainSetupModel.on("get.domainInfo.error", $.proxy(this.onGetError, this));
-                    myDomainSetupModel.getDomainInfo({originId: this.domainInfo.id});
-            }.bind(this))
+            this.collection.on("get.forceRedirect.success", $.proxy(this.onGetDomainInfo, this));
+            this.collection.on("get.forceRedirect.error", $.proxy(this.onGetError, this));
+            this.collection.getHttpsForceJump({originId: this.domainInfo.id});
         },
 
         onGetDomainInfo: function(data){
             this.defaultParam = {
-                following: 0,
-                locationDomain: ""
+                "httpsForceJump": 0
             }
 
-            if (data.domainConf && data.domainConf.following !== null && data.domainConf.following !== undefined)
-                this.defaultParam.following = data.domainConf.following //0:关闭 1:开启
-            if (data.domainConf && data.domainConf.locationDomain !== null && data.domainConf.locationDomain !== undefined)
-                this.defaultParam.locationDomain = data.domainConf.locationDomain
+            if (data.domainConf && data.domainConf.httpsForceJump !== null && data.domainConf.httpsForceJump !== undefined)
+                this.defaultParam.httpsForceJump = data.domainConf.httpsForceJump //0:关闭 1:开启
 
             this.initSetup();
 
@@ -46,8 +40,8 @@ define("forceRedirect.view", ['require','exports', 'template', 'modal.view', 'ut
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this));
             this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
 
-            this.collection.on("set.following.success", $.proxy(this.onSaveSuccess, this));
-            this.collection.on("set.following.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.forceRedirect.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.forceRedirect.error", $.proxy(this.onGetError, this));
         },
 
         onSaveSuccess: function(){
@@ -82,7 +76,7 @@ define("forceRedirect.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         initSetup: function(){
-            if (this.defaultParam.following === 0) {
+            if (this.defaultParam.httpsForceJump === 0) {
                 this.$el.find(".forceRedirect .togglebutton input").get(0).checked = false;
             } else {
                 this.$el.find(".forceRedirect .togglebutton input").get(0).checked = true;
@@ -92,10 +86,9 @@ define("forceRedirect.view", ['require','exports', 'template', 'modal.view', 'ut
         onClickSaveBtn: function(){
             var postParam =  {
                 "originId": this.domainInfo.id,
-                "following": this.defaultParam.following,
-                "locationDomain": ""
+                "httpsForceJump": this.defaultParam.httpsForceJump,
             }
-            this.collection.setFollowing(postParam)
+            this.collection.setHttpsForceJump(postParam)
         },
 
         onClickToggle: function(){

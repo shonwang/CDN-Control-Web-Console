@@ -6,32 +6,85 @@ define("domainListHistory.view", ['require', 'exports', 'template', 'modal.view'
         initialize: function(options) {
             this.collection = options.collection;
             this.options = options;
+            this.originId = options.originId;
             this.$el = $(_.template(template['tpl/customerSetup/domainList/domainListHistory/domainListHistory.html'])());
             this.$el.find(".bill-ctn").html('<tr><td  colspan="6" class="text-center"><div class="domain-spinner">正在加载...</div></td></tr>');
             this.$el.find(".cancel").on("click", $.proxy(this.onClickBackButton, this))
+
+            this.defaultParam = {
+                originId: this.originId,
+                currentPage: 1,
+                pageSize: 10 
+            }
+            this.collection.on("get.log.success", $.proxy(this.onGetLogSuccess, this));
+            this.collection.on("get.log.error", $.proxy(this.onGetError, this));
+            this.collection.getOperateLog(this.defaultParam)
             this.initPageDropMenu();
+            this.isInitPaginator = false;
         },
 
         onClickBackButton: function(){
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
 
+        onGetLogSuccess: function(res){
+            //返回数据示例
+            // res = {
+            //     "totalCount": 2,
+            //     "data": [{
+            //         "operator":"1", //操作人
+            //         "operateTime": new Date().valueOf(),//操作时间
+            //         "operateContent":"操作内容"//操作内容
+            //     },{
+            //         "operator":"2",
+            //         "operateTime": new Date().valueOf(),
+            //         "operateContent": "操作内容"
+            //     }]
+            // };
+
+            _.each(res.data, function(el){
+                el.id = Utility.randomStr(8);
+                if (el.operateTime)
+                    el.operateTimeFormated = new Date(el.operateTime).format("yyyy/MM/dd hh:mm");
+            }.bind(this))
+            this.total = res.totalCount;
+            this.initTable(res.data);
+        },
+
+        initTable: function(data){
+            if (data.length == 0) {
+                this.$el.find(".history-ctn").html(_.template(template['tpl/empty-2.html'])({
+                    data: {
+                        message: "暂无数据"
+                    }
+                }));
+            } else {
+                this.table = $(_.template(template['tpl/customerSetup/domainList/domainListHistory/domainListHistory.table.html'])({
+                    data: data
+                }));
+                this.$el.find(".history-ctn").html(this.table[0]);
+            }
+
+            if (!this.isInitPaginator) {
+                this.$el.find(".pagination").html('');
+                this.initPaginator();
+            }
+        },
+
         initPaginator: function() {
-            this.$el.find(".total-items span").html(this.collection.total)
-            if (this.collection.total <= this.queryArgs.count) return;
-            var total = Math.ceil(this.collection.total / this.queryArgs.count);
+            this.$el.find(".total-items span").html(this.total)
+            if (this.total <= this.defaultParam.pageSize) return;
+            var total = Math.ceil(this.total / this.defaultParam.pageSize);
 
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
                 visiblePages: 10,
-                currentPage: 1,
+                currentPage: this.defaultParam.currentPage,
                 onPageChange: function(num, type) {
                     if (type !== "init") {
                         this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                        var args = _.extend(this.queryArgs);
-                        args.page = num;
-                        args.count = this.queryArgs.count;
-                        //this.collection.getNodeList(args);
+                        this.defaultParam.currentPage = num;
+                        this.collection.getOperateLog(this.defaultParam);
                     }
                 }.bind(this)
             });
@@ -53,7 +106,9 @@ define("domainListHistory.view", ['require', 'exports', 'template', 'modal.view'
                 value: 100
             }]
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value) {
-
+                this.defaultParam.pageSize = parse(value);
+                this.defaultParam.currentPage = 1;
+                this.collection.getOperateLog(this.defaultParam);
             }.bind(this));         
         },
 

@@ -9,14 +9,23 @@ define("forceRedirect.model", ['require','exports', 'utility'], function(require
 
         initialize: function(){},
 
-        setFollowing: function(args){
-            var url = BASE_URL + "/channelManager/domain/download/setFollowing";
-            Utility.getAjax(url, args, function(res){
-                this.trigger("set.following.success");
+        setHttpsForceJump: function(args){
+            var url = BASE_URL + "/channelManager/domain/https/setHttpsForceJump";
+            Utility.postAjax(url, args, function(res){
+                this.trigger("set.forceRedirect.success");
             }.bind(this),function(res){
-                this.trigger("set.following.error", res);
+                this.trigger("set.forceRedirect.error", res);
             }.bind(this));
         },
+
+        getHttpsForceJump: function(args){
+            var url = BASE_URL + "/channelManager/domain/https/getHttpsForceJump";
+            Utility.getAjax(url, args, function(res){
+                this.trigger("get.forceRedirect.success");
+            }.bind(this),function(res){
+                this.trigger("get.forceRedirect.error", res);
+            }.bind(this));
+        }
     });
 
     return ForceRedirectCollection;

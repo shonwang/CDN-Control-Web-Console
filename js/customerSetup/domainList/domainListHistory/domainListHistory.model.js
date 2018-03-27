@@ -9,30 +9,12 @@ define("domainListHistory.model", ['require','exports', 'utility'], function(req
 
         initialize: function(){},
 
-        getLogSetup: function(args){
-            var url = BASE_URL + "/2017-4-1/log/setting/query";
+        getOperateLog: function(args){
+            var url = BASE_URL + "/channelManager/domain/log/getOperateLog";
             Utility.getAjax(url, args, function(res){
-                this.trigger("get.logSetup.success", res);
+                this.trigger("get.log.success", res);
             }.bind(this),function(res){
-                this.trigger("get.logSetup.error", res);
-            }.bind(this));
-        },
-
-        setLogSetup: function(args){
-            var url = BASE_URL + "/2017-4-1/log/setting/set";
-            Utility.postAjax(url, args, function(res){
-                this.trigger("set.logSetup.success", res);
-            }.bind(this),function(res){
-                this.trigger("set.logSetup.error", res);
-            }.bind(this));
-        },
-
-        getAPITemplateInfo: function(args){
-            var url = BASE_URL + "/2017-4-1/log/initialparams/query";
-            Utility.getAjax(url, args, function(res){
-                this.trigger("get.templateInfo.success", res);
-            }.bind(this),function(res){
-                this.trigger("get.templateInfo.error", res);
+                this.trigger("get.log.error", res);
             }.bind(this));
         }
     });

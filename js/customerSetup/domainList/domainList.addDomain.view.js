@@ -1000,7 +1000,13 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 //     name: "直播推流加速",
                 //     value: "liveUpward"
                 // }];
-                var dateArray = Utility.liveAndDownloadList;
+                var dateArray = [
+                        {
+                            name: "请选择",
+                            value: "100"
+                        }
+                    ];
+                dateArray = dateArray.concat(Utility.liveAndDownloadList);
                 this.initDropMenu(ctn, dateArray, function(obj) {
                     var cdnType = obj.value;
                     if (cdnType == this.args.CdnType) {

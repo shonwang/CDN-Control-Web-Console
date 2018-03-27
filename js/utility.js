@@ -525,10 +525,6 @@ define("utility", ['require','exports'], function(require, exports) {
 
         liveAndDownloadList:[
             {
-                name: "请选择",
-                value: "100"
-            }, 
-            {
                 name: "大文件下载加速",
                 value: "4"
             }, 

@@ -238,7 +238,7 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                     if(applicationType == 202){//Cache_APP--下载
                         window.location.hash = '#/domainList/' + this.args1 + "/luaBasicInformation/" + this.args2
                     } else if (applicationType == 203){//LIVE_APP-- 直播
-                        if(this.curType == 1){
+                        if(this.curType == 1 || this.curType == 4){
                             //下载
                             window.location.hash = '#/domainList/' + this.args1 + "/basicInformation/" + this.args2
                         } else if (this.curType == 2){

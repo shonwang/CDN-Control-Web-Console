@@ -144,11 +144,11 @@ define("nodeManage.operateDetail.view", ['require', 'exports', 'template', 'moda
 
         getArgs: function() {
             var opRemark = this.$el.find("#stop-reason").val().trim();
-            if (!opRemark) {
-                this.$el.find("#stop-reason").addClass("error-tip-input");
-                this.$el.find("#stop-reason").css("-webkit-animation-name", "error-tip-input");
-                return false;
-            }
+            // if (!opRemark) {
+            //     this.$el.find("#stop-reason").addClass("error-tip-input");
+            //     this.$el.find("#stop-reason").css("-webkit-animation-name", "error-tip-input");
+            //     return false;
+            // }
             this.args.opRemark = opRemark;
             return this.args;
         },

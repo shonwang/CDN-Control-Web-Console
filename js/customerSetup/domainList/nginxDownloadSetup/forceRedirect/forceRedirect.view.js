@@ -95,9 +95,9 @@ define("forceRedirect.view", ['require','exports', 'template', 'modal.view', 'ut
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){
-                this.defaultParam.following = 1;
+                this.defaultParam.httpsForceJump = 1;
             } else {
-                this.defaultParam.following = 0;
+                this.defaultParam.httpsForceJump = 0;
             }
         },
 

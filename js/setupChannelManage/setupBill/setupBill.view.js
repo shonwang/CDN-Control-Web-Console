@@ -263,6 +263,37 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             else
                 this.originHostSetupInfo.edgeOpenFlagStr = '<span class="label label-danger">关闭</span>'
 
+            if (this.config.backsourceAdvance&&this.config.backsourceAdvance.rangeConfig === 1) 
+                this.originHostSetupInfo.rangeConfigStr = '<span class="label label-success">开启</span>'
+            else
+                this.originHostSetupInfo.rangeConfigStr = '<span class="label label-danger">关闭</span>'
+
+            if (this.config.backsourceAdvance&&this.config.backsourceAdvance.checkLastmod === 1) 
+                this.originHostSetupInfo.checkLastmodStr = '<span class="label label-success">开启</span>'
+            else
+                this.originHostSetupInfo.checkLastmodStr = '<span class="label label-danger">关闭</span>'
+
+            switch(domainConf.originProtocol){
+                case 0:
+                    this.originHostSetupInfo.originProtocolStr = "HTTP";
+                    break;
+                case 1:
+                    this.originHostSetupInfo.originProtocolStr = "HDL";
+                    break;
+                case 2:
+                    this.originHostSetupInfo.originProtocolStr = "HLS";
+                    break;
+                case 3:
+                    this.originHostSetupInfo.originProtocolStr = "RTMP";
+                    break;
+                case 4:
+                    this.originHostSetupInfo.originProtocolStr = "HTTPS";
+                    break;
+                case 5:
+                    this.originHostSetupInfo.originProtocolStr = "协议跟随";
+                    break;
+            }
+
             this.originHostSetupInfo.edgeIpCount = domainConf.edgeIpCount; 
 
             this.originHostSetupTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.originHostSetup.html'])({
@@ -928,17 +959,19 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         initForceRedirect: function() {
-            this.followingInfo = {};
+            this.httpsForceJumpInfo = {};
             var domainConf = this.config.domainConf, originDomain = this.config.originDomain;
-            if (domainConf.following === 0) this.followingInfo.followingStr = '<span class="label label-danger">关闭</span>';
-            if (domainConf.following  === 1) this.followingInfo.followingStr = '<span class="label label-success">开启</span>';
+            if (domainConf.httpsForceJump === 0 || domainConf.httpsForceJump === null) 
+                this.httpsForceJumpInfo.httpsForceJumpStr = '<span class="label label-danger">关闭</span>';
+            if (domainConf.httpsForceJump  === 1) 
+                this.httpsForceJumpInfo.httpsForceJumpStr = '<span class="label label-success">开启</span>';
 
-            this.followingTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.following.html'])({
-                data: this.followingInfo
+            this.httpsForceJumpTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.following.html'])({
+                data: this.httpsForceJumpInfo
             }));
-            this.followingTable.find("td:eq(0)").html("HTTPS配置-强制跳转");
-            this.followingTable.find("td:eq(1)").html(this.followingInfo.followingStr);
-            this.followingTable.appendTo(this.$el.find(".bill-ctn"));
+            this.httpsForceJumpTable.find("td:eq(0)").html("HTTPS配置-强制跳转");
+            this.httpsForceJumpTable.find("td:eq(1)").html(this.httpsForceJumpInfo.httpsForceJumpStr);
+            this.httpsForceJumpTable.appendTo(this.$el.find(".bill-ctn"));
             this.initAdvancedConfig();
         },
 

@@ -21,7 +21,7 @@ define("forceRedirect.model", ['require','exports', 'utility'], function(require
         getHttpsForceJump: function(args){
             var url = BASE_URL + "/channelManager/domain/https/getHttpsForceJump";
             Utility.getAjax(url, args, function(res){
-                this.trigger("get.forceRedirect.success");
+                this.trigger("get.forceRedirect.success", res);
             }.bind(this),function(res){
                 this.trigger("get.forceRedirect.error", res);
             }.bind(this));

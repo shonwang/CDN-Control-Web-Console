@@ -109,7 +109,7 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
             */
 
             var headerKey = this.$el.find("#args").val(), headerValue = this.$el.find("#values").val();
-            if (headerKey === "" || headerValue === ""){
+            if (headerKey === "" || headerValue === "" && this.defaultParam.actionType!=3){
                 alert("参数和值不能为空");
                 return false
             } else {

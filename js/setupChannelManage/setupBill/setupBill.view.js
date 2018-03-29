@@ -961,7 +961,7 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
         initForceRedirect: function() {
             this.httpsForceJumpInfo = {};
             var domainConf = this.config.domainConf, originDomain = this.config.originDomain;
-            if (domainConf.httpsForceJump === 0 || domainConf.httpsForceJump === null) 
+            if (!domainConf.httpsForceJump) 
                 this.httpsForceJumpInfo.httpsForceJumpStr = '<span class="label label-danger">关闭</span>';
             if (domainConf.httpsForceJump  === 1) 
                 this.httpsForceJumpInfo.httpsForceJumpStr = '<span class="label label-success">开启</span>';

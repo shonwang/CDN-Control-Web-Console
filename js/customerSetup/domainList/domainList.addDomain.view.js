@@ -975,7 +975,7 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
             checkCdnType: function() {
                 //业务类型
                 var cdnType = this.args.CdnType;
-                if (cdnType == 1 || !cdnType) {
+                if (cdnType == 100 || !cdnType) {
                     this.$el.find("#cdn-type-error").show();
                     return false;
                 }

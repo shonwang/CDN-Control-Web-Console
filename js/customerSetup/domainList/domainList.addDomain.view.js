@@ -1016,12 +1016,12 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     viewCtn.html("");
                     this.downloadAndLiveView = null;
                     this.args.CdnType = cdnType;
+                    if (cdnType == 100) {
+                        //如果是请选择项，只清空视图
+                        return false;
+                    }
+                    this.$el.find("#cdn-type-error").hide();
                     //原来的逻辑不要删，产品不在了，需要有参考
-                    // if (cdnType == 1) {
-                    //     //如果是请选择项，只清空视图
-                    //     return false;
-                    // }
-                    // this.$el.find("#cdn-type-error").hide();
                     // this.args.DomainName = this.$el.find("#text-domainName").val();
                     // if (cdnType == "download") {
                     //     this.downloadAndLiveView = new AddDownloadView({

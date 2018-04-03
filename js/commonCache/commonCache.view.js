@@ -528,6 +528,29 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
             }
             this.$el.find(".table-ctn").html(this.table);
             this.table.find(".edit").on("click",$.proxy(this.onEditClick,this));
+            this.table.find(".delete").on("click",$.proxy(this.removeClearRule,this));
+        },
+
+        removeClearRule:function(event){
+            var eventTarget = event.srcElement || event.target, id;
+            if (eventTarget.tagName == "SPAN"){
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+
+            var args = {
+                id:id,
+                success:function(){
+                    this.getClearRulesList();
+                }.bind(this),
+                error:function(res){
+                    var msg = res.message || "删除失败";
+                    alert(msg);
+                }.bind(this)
+            };
+            this.collection.removeClearRule(args);
         },
 
         onEditClick:function(event){

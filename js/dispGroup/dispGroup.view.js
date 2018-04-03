@@ -186,7 +186,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.queryArgs = {
                 "disgId"      : this.model.get("id"),
                 "domain"      : null,
-                "clientName"  : null,
+                //"clientName"  : null,
                 "page"        : 1,
                 "count"       : 5
              }
@@ -291,7 +291,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty-2.html'])({
-                        data:{message: "赵宪亮在胸前仔细摸索了一番，但是却没有找到数据！"}
+                        data:{message: "宁明祥在胸前仔细摸索了一番，但是却没有找到数据！"}
                     }));
 
             this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
@@ -1128,7 +1128,8 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 }.bind(this)
             }
             this.channelInfoPopup = new Modal(options);
-            this.channelInfoPopup.$el.find(".btn-primary").html('<span class="glyphicon glyphicon-link"></span>关联');
+            //this.channelInfoPopup.$el.find(".btn-primary").html('<span class="glyphicon glyphicon-link"></span>关联');
+            this.channelInfoPopup.$el.find(".btn-primary").hide();
             if (!AUTH_OBJ.GslbGroupAssociatetoDomain)
                  this.channelInfoPopup.$el.find(".btn-primary").remove()
         },

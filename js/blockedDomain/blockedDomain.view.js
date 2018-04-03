@@ -203,7 +203,8 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
             require(["nodeManage.operateDetail.view"], function(NodeTips) {
                 var stopNodeView = new NodeTips({
                     type: 1,
-                    model: model
+                    model: model,
+                    whoCallMe: "block"
                 });
                 var options = {
                     title: "封禁说明",
@@ -253,7 +254,8 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
                 var detailTipsView = new NodeTips({
                     type: 2,
                     model: model,
-                    collection: this.collection
+                    collection: this.collection,
+                    whoCallMe: "block"
                 });
                 var options = {
                     title: "操作说明",

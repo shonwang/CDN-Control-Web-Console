@@ -123,7 +123,7 @@ define("commonCache.model", ['require','exports', 'utility'], function(require, 
                 id:args.id,
                 host:args.host,
                 uri:args.uri,
-                args:args.containCdnDevice,
+                containCdnDevice:args.containCdnDevice,
                 ipList:args.ipList
             };
             var url = BASE_URL + "/rs/common/cache/modifyIpWhiteRule",

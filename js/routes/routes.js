@@ -39,6 +39,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "setupTopoManage": "setupTopoManage",
                 "specialLayerManage": "specialLayerManage",
                 "speedMeasure" : "speedMeasure",
+                "commonCache"  : "commonCache",
 
                 // 调度配置
                 "dispGroup": "dispGroup",

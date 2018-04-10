@@ -555,10 +555,10 @@ define("utility", ['require','exports'], function(require, exports) {
         },
 
         liveAndDownloadList:[
-            {
-                name: "大文件下载加速",
-                value: "4"
-            }, 
+            // {
+            //     name: "大文件下载加速",
+            //     value: "4"
+            // }, 
             {
                 name: "音视频点播加速",
                 value: "1"

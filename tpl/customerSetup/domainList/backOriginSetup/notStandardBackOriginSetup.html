@@ -282,19 +282,26 @@
                         <div class="col-sm-offset-2 col-sm-8">
                             <div class="alert alert-dismissable alert-info">
                                 <button type="button" class="close" data-dismiss="alert">×</button>
-                                <strong>如回源请求协议为https，需要保证客户的源站部署了有效证书以及开启了443端口，否则会导致回源失败；如不需要校验源站整数，请去掉校验源站是否可用的勾选。</strong>
+                                <strong>如回源请求协议为https，需要保证客户的源站部署了有效证书以及开启了443端口，否则会导致回源失败；如不需要校验源站证书，请去掉校验源站是否可用的勾选。</strong>
                             </div>
                         </div>
                     </div>
                     <div class="form-group origin-domain-protocol">
                         <label for="dropdown-origin-domain-protocol" class="col-sm-2 control-label">回源协议</label>
-                        <div class="col-sm-8">
+                        <div class="col-sm-2">
                             <div class="dropdown">
                                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-origin-domain-protocol" data-toggle="dropdown">
                                     <span class="cur-value">加载中...</span>
                                     <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu"></ul>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 check-source">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox">校验源站是否可用
+                                </label>
                             </div>
                         </div>
                     </div>

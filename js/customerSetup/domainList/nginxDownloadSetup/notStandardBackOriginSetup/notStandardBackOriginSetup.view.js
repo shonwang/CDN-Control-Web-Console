@@ -180,6 +180,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
             this.busnessType = data.originDomain.type;
             this.protocol = data.domainConf.protocol;
             this.originProtocol = data.domainConf.originProtocol;
+            this.checkSourceHttps = data.domainConf.checkSourceHttps;
             this.collection.getBackSourceConfig({originId: this.domainInfo.id})
         },
 
@@ -328,6 +329,11 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
             Utility.initDropMenu(rootNode, baseArray, function(value){
                 Utility.onContentChange();
                 this.originProtocol = parseInt(value)
+                if (this.originProtocol == 4 || this.originProtocol == 5) {
+                    this.$el.find(".check-source").show();
+                } else if (this.originProtocol == 0) {
+                    this.$el.find(".check-source").hide();
+                }
             }.bind(this));
 
             var defaultValue = _.find(baseArray, function(object){
@@ -339,7 +345,31 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
             else
                 this.$el.find("#dropdown-origin-domain-protocol .cur-value").html(baseArray[0].name);
 
+            if (this.checkSourceHttps === 1){
+                this.$el.find(".check-source input").get(0).checked = true;
+            } else {
+                this.$el.find(".check-source input").get(0).checked = false;
+            }
+            this.$el.find(".check-source input").on("click", $.proxy(this.onClickSourceCheckBtn, this));
+
+            if (this.originProtocol == 4 || this.originProtocol == 5) {
+                this.$el.find(".check-source").show();
+            } else if (this.originProtocol == 0) {
+                this.$el.find(".check-source").hide();
+            }
+
             this.$el.find(".origin-protocol-save").on("click", $.proxy(this.onClickOriginProSaveBtn, this));
+        },
+
+        onClickSourceCheckBtn: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            if (eventTarget.checked){
+                this.checkSourceHttps = 1;
+            } else {
+                this.checkSourceHttps = 0;
+            }
+            Utility.onContentChange();
         },
 
         onClickSliceBtn: function(event){
@@ -397,7 +427,8 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
         onClickOriginProSaveBtn: function(){
             this.collection.setOriginProtocol({
                 originId: this.domainInfo.id,
-                "originProtocol": this.originProtocol
+                "originProtocol": this.originProtocol,
+                "checkSourceHttps": this.originProtocol == 0 ? null : this.checkSourceHttps
             });
             Utility.onContentSave();
         },

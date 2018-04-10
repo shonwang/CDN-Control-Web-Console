@@ -294,6 +294,11 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                     break;
             }
 
+            if (domainConf.checkSourceHttps == 1) 
+                this.originHostSetupInfo.checkSourceHttpsStr = '<span class="label label-success">开启</span>'
+            else
+                this.originHostSetupInfo.checkSourceHttpsStr = '<span class="label label-danger">关闭</span>'
+
             this.originHostSetupInfo.edgeIpCount = domainConf.edgeIpCount; 
 
             this.originHostSetupTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.originHostSetup.html'])({

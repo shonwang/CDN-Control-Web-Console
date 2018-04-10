@@ -13,7 +13,11 @@
         <tr>
           <td>回源协议</td>
           <td><%=data["originProtocolStr"]%></td>
+          <% if (data["originProtocolStr"] !== "HTTP") { %>
+          <td>校验源站是否可用: <%=data["checkSourceHttpsStr"]%></td>
+          <% } else { %>
           <td></td>
+          <% } %>
         </tr>
         <tr>
           <td>回源host</td>

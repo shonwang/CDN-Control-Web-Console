@@ -2,11 +2,11 @@
     <thead> 
       <tr>
         <% if (type === 0) { %>
-        <th><input type="checkbox" id="inlineCheckbox6" <% if (isCheckedAll) { %> checked="true" <% } %>></th>
+        <th style="display:none"><input type="checkbox" id="inlineCheckbox6" <% if (isCheckedAll) { %> checked="true" <% } %>></th>
         <% } %>
         <th>域名/名称</th>
         <th>加速域名</th> 
-        <th>客户名称</th>
+        <th style="display:none">客户名称</th>
 <!--         <th>状态</th>    --> 
       </tr>
     </thead>
@@ -14,11 +14,11 @@
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].id%>">
               <% if (type === 0) { %>
-              <td><input type="checkbox" id="<%=data[i].id%>" <% if (data[i].isChecked) { %> checked="true" <% } %> ></td>
+              <td style="display:none"><input type="checkbox" id="<%=data[i].id%>" <% if (data[i].isChecked) { %> checked="true" <% } %> ></td>
               <% } %>
               <td><%=data[i]["domain"]%></td>
               <td><%=data[i]["cname"]%></td>
-              <td><%=data[i]["clientName"]%></td>
+              <td style="display:none"><%=data[i]["clientName"]%></td>
 <!--               <td><%=data[i]["statusName"]%></td> -->
             </tr>
         <% } %>  

@@ -61,6 +61,13 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("set.status.success", $.proxy(this.onSetStatusSuccess, this));
             this.collection.on("set.status.error", $.proxy(this.onGetError, this));
 
+            require(["nodeManage.model"], function(NodeManageModel) {
+                var myNodeManageModel = new NodeManageModel();
+                myNodeManageModel.on("get.operate.type.success", $.proxy(this.onGetOperateTypeListSuccess, this));
+                myNodeManageModel.on("get.operate.type.error", $.proxy(this.onGetError, this));
+                myNodeManageModel.getOpereteTypeList();
+            }.bind(this));
+
             if (AUTH_OBJ.CreateHost)
                 this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
             else 
@@ -115,6 +122,25 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     e.preventDefault();
                     this.onClickQueryButton();
                 }
+            }.bind(this));
+        },
+
+        onGetOperateTypeListSuccess: function(res){
+            this.operateTypeList = [{
+                name: "全部",
+                value: "All"
+            }]
+            _.each(res, function(el, index){
+                this.operateTypeList.push({
+                    name: el.name,
+                    value: el.id
+                })
+            }.bind(this))
+            Utility.initDropMenu(this.$el.find(".dropdown-reason"), this.operateTypeList, function(value) {
+                if (value !== "All")
+                    this.queryArgs.opType = parseInt(value)
+                else
+                    this.queryArgs.opType = null;
             }.bind(this));
         },
 
@@ -247,16 +273,16 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             require(["nodeManage.operateDetail.view"], function(NodeTips) {
                 var detailTipsView = new NodeTips({
                     type: 2,
-                    model: model
+                    model: model,
+                    whoCallMe: 'device',
+                    operateTypeList: this.operateTypeList
                 });
                 var options = {
                     title: "操作说明",
                     body: detailTipsView,
                     backdrop: 'static',
                     type: 1,
-                    onHiddenCallback: function() {
-
-                    }.bind(this)
+                    onHiddenCallback: function() {}.bind(this)
                 }
                 this.nodeTipsPopup = new Modal(options);
             }.bind(this));
@@ -343,7 +369,9 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             require(["nodeManage.operateDetail.view"], function(NodeTips) {
                 var stopNodeView = new NodeTips({
                     type: 1,
-                    model: model
+                    model: model,
+                    whoCallMe: 'device',
+                    operateTypeList: this.operateTypeList
                 });
                 var options = {
                     title: "暂停设备",
@@ -425,7 +453,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 var options = {
                     "ids":[this.clickDeviceId],
                     "status": this.clickStatus,
-                    "reason": this.reason.opRemark  
+                    "reason": this.reason.opRemark,
+                    "opType": this.reason.opType  
                  }
                 this.collection.modifyStatus(options);
                 this.nodeTipsPopup.$el.modal("hide");
@@ -617,7 +646,9 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 var stopNodeView = new NodeTips({
                     type: 1,
                     model: model,
-                    isMulti: true
+                    isMulti: true,
+                    whoCallMe: 'device',
+                    operateTypeList: this.operateTypeList
                 });
                 var options = {
                     title: "暂停设备",
@@ -630,7 +661,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                         var args = {
                             "ids": ids,
                             "status": 2,
-                            "reason": options.opRemark  
+                            "reason": options.opRemark,
+                            "opType": options.opType  
                          }
                         this.collection.modifyStatus(args);
                         this.nodeTipsPopup.$el.modal("hide");

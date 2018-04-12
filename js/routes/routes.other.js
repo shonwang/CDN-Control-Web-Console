@@ -1,6 +1,25 @@
 define("routes.other", ['require', 'exports', 'subNavbar.view'], 
     function(require, exports, SubNavbar) {
         var RouterOther = {
+            commonCache:function(){
+                require(['commonCache.view', 'commonCache.model'], function(CommonCacheView, CommonCacheModel) {
+                    this.curPage = 'commonCache';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    if (!this.speedMeasureModel)
+                        this.commonCacheModel = new CommonCacheModel();
+                    if (!this.commonCacheView) {
+                        var options = {
+                            collection: this.commonCacheModel
+                        };
+                        this.commonCacheView = new CommonCacheView(options);
+                        this.commonCacheView.render($('.ksc-content'));
+                    } else {
+                        this.commonCacheView.update();
+                    }
+                    this.curView = this.commonCacheView;
+                }.bind(this));                
+            },
+
             speedMeasure: function() {
                 require(['speedMeasure.view', 'speedMeasure.model'], function(SpeedMeasureView, SpeedMeasureModel) {
                     this.curPage = 'speedMeasure';

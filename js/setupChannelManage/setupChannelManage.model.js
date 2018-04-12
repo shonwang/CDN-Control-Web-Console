@@ -31,9 +31,13 @@ define("setupChannelManage.model", ['require', 'exports', 'utility'], function(r
             if (status === 19) this.set("statusName", '<span class="text-primary">封禁中</span>');
             if (status === 20) this.set("statusName", '<span class="text-primary">解禁中</span>');
 
-            if (businessType === 1) this.set("businessTypeName", '下载加速');
-            if (businessType === 2) this.set("businessTypeName", '直播加速');
-            if (businessType === 3) this.set("businessTypeName", '直播推流加速');
+            // if (businessType === 1) this.set("businessTypeName", '下载加速');
+            // if (businessType === 2) this.set("businessTypeName", '直播加速');
+            // if (businessType === 3) this.set("businessTypeName", '直播推流加速');
+            var liveAndDownloadListBack = Utility.liveAndDownloadListBack;
+            if(businessType){
+                this.set("businessTypeName", liveAndDownloadListBack[businessType]);
+            }
 
             if (protocol === 1) this.set("protocolName", "http+hlv");
             if (protocol === 2) this.set("protocolName", "hls");

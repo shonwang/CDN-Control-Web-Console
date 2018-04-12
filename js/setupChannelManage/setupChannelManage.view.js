@@ -650,16 +650,21 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                         this.queryArgs.cdnFactory = parseInt(value)
                 }.bind(this));
 
-                var typeArray = [{
+                // var typeArray = [{
+                //         name: "全部",
+                //         value: "All"
+                //     }, {
+                //         name: "下载加速",
+                //         value: 1
+                //     }, {
+                //         name: "直播加速",
+                //         value: 2
+                //     }],
+                    var typeArray = [{
                         name: "全部",
                         value: "All"
-                    }, {
-                        name: "下载加速",
-                        value: 1
-                    }, {
-                        name: "直播加速",
-                        value: 2
                     }],
+                    typeArray = typeArray.concat(Utility.liveAndDownloadList),
                     rootNode = this.$el.find(".dropdown-type");
                 Utility.initDropMenu(rootNode, typeArray, function(value) {
                     if (value == "All")

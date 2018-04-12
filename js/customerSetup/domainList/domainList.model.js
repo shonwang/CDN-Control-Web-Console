@@ -26,9 +26,13 @@ define("domainList.model", ['require','exports','utility'], function(require, ex
             if (auditStatus === 20) this.set("statusName", '<span class="text-info">解禁中</span>');
 
             var type = this.get("subType");
-            if (type === 2) this.set("typeName", '直播');
-            if (type === 1) this.set("typeName", '下载');
-            if (type === 3) this.set("typeName", '直播推流加速');
+            var liveAndDownloadListBack = Utility.liveAndDownloadListBack;
+            // if (type === 2) this.set("typeName", '直播');
+            // if (type === 1) this.set("typeName", '下载');
+            // if (type === 3) this.set("typeName", '直播推流加速');
+            if(type){
+                this.set("typeName", liveAndDownloadListBack[type]);
+            }
 
             var cnameData = this.get("cnameData"), cnameDomainStr = [], cdnFoctoryStr = [];
             _.each(cnameData, function(el, index, ls){

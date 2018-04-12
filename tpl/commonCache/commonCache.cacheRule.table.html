@@ -1,0 +1,34 @@
+<table class="table table-striped table-hover">  
+  <thead> 
+    <tr>
+      <th>host</th>
+      <th>uri</th>
+      <th>参数</th>
+      <th>方式</th>
+      <th>主体</th>
+      <th>过期时间</th>
+      <th>在线状态</th>
+    </tr>
+  </thead>
+  <tbody>
+      <%for(var i=0;i<data.length;i++){%>
+      <tr>
+        <td><%=data[i].host%></td>
+        <td><%=data[i].uri%></td>
+        <td><%=data[i].args%></td>
+        <td><%=data[i].method%></td>
+        <td><%=data[i].body%></td>
+        <td><%=data[i].createTimeName%></td>
+        <td><%=data[i].offlineName%></td>
+        <td>
+          <a href="javascript:void(0)" class="edit" id='<%=data[i].id%>' title="编辑节点">
+              <span class="glyphicon glyphicon-edit"></span>
+          </a>
+          <a href="javascript:void(0)" class="delete" id='<%=data[i].id%>' title="删除">
+              <span class="glyphicon glyphicon-trash"></span>
+          </a>
+        </td>
+      </tr>
+      <%}%>
+  </tbody>
+</table>

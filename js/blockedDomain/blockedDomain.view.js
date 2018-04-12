@@ -124,10 +124,15 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
             var typeArray = [{
                     name: "全部",
                     value: "All"
-                }, {
-                    name: "下载加速",
-                    value: 1
+                },
+                {
+                    name: "大文件下载加速",
+                    value: "4"
                 }, 
+                {
+                    name: "音视频点播加速",
+                    value: "1"
+                }                
                 // {
                 //     name: "直播加速",
                 //     value: 2

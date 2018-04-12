@@ -416,7 +416,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     body = body + 
                         '<div class="checkbox">' +
                           '<label>' +
-                            '<input type="checkbox" value="" id="refresh" disabled>同步刷新(<span style="color:red;">若已清缓存，请勿勾选</span>)' +
+                            '<input type="checkbox" value="" id="refresh">同步刷新(<span style="color:red;">若已清缓存，请勿勾选</span>)' +
                           '</label>' +
                         '</div>'
                 }
@@ -600,7 +600,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 '</div>' +
                 '<div class="checkbox">' +
                   '<label>' +
-                    '<input type="checkbox" value="" id="refresh" disabled>同步刷新(<span style="color:red;">若已清缓存，请勿勾选</span>)' +
+                    '<input type="checkbox" value="" id="refresh">同步刷新(<span style="color:red;">若已清缓存，请勿勾选</span>)' +
                   '</label>' +
                 '</div>'
 

@@ -106,7 +106,7 @@ define("domainListHistory.view", ['require', 'exports', 'template', 'modal.view'
                 value: 100
             }]
             Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value) {
-                this.defaultParam.pageSize = parse(value);
+                this.defaultParam.pageSize = parseInt(value);
                 this.defaultParam.currentPage = 1;
                 this.collection.getOperateLog(this.defaultParam);
             }.bind(this));         

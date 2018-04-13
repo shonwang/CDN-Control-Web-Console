@@ -109,6 +109,7 @@ define("domainListHistory.view", ['require', 'exports', 'template', 'modal.view'
                 this.defaultParam.pageSize = parseInt(value);
                 this.defaultParam.currentPage = 1;
                 this.collection.getOperateLog(this.defaultParam);
+                this.isInitPaginator = false;
             }.bind(this));         
         },
 

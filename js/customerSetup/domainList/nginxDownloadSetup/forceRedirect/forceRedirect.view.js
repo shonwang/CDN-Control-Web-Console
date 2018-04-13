@@ -32,7 +32,7 @@ define("forceRedirect.view", ['require','exports', 'template', 'modal.view', 'ut
             }
 
             if (data.httpsForceJump !== null && data.httpsForceJump !== undefined)
-                this.defaultParam.httpsForceJump = data.domainConf.httpsForceJump //0:关闭 1:开启
+                this.defaultParam.httpsForceJump = data.httpsForceJump //0:关闭 1:开启
 
             this.initSetup();
 

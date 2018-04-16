@@ -45,12 +45,12 @@ define("userMove.view", ['require','exports', 'template', 'modal.view', 'utility
 
         onSetSuccess:function(){
             var msg = "成功"
-            Utility.alerts(msg,1,3000);
+            Utility.alerts(msg,"success",3000);
         },
 
         onSetError:function(res){
             var msg = res.message || "失败，请重试";  
-            Utility.alerts(msg,1,3000);
+            Utility.alerts(msg,"danger",3000);
         },
 
         checkArgs:function(){
@@ -62,43 +62,43 @@ define("userMove.view", ['require','exports', 'template', 'modal.view', 'utility
             var remark = this.$el.find("#remark").val();
 
             if(!domains){
-                Utility.alerts("请填加速域名",1,3000);
+                Utility.alerts("请填加速域名","danger",3000);
                 return false;
             }
             for (var i = 0; i < domains.length; i++) {
                 result = Utility.isDomain(domains[i],true);
                 if (!result) {
-                    Utility.alerts("域名填写错误，请检查",1,3000);
+                    Utility.alerts("域名填写错误，请检查","danger",3000);
                     return false;
                 }
             }
 
             if(!oldUserId){
-                Utility.alerts("请填加原用户ID",1,3000);
+                Utility.alerts("请填加原用户ID","danger",3000);
                 return false;
             }
             if(!newUserId){
-                Utility.alerts("请填加新用户ID",1,3000);
+                Utility.alerts("请填加新用户ID","danger",3000);
                 return false;
             }
             if(!remark){
-                Utility.alerts("请填原因",1,3000);
+                Utility.alerts("请填原因","danger",3000);
                 return false;
             }
 
             var currentTime = new Date().valueOf();
             if(currentTime < fixTime){
-                Utility.alerts("时间不能超过当前时间，请重新选择",1,3000);
+                Utility.alerts("时间不能超过当前时间，请重新选择","danger",3000);
                 return false;
             }
 
             if(oldUserId == newUserId){
-                Utility.alerts("原ID与新ID不能一样",1,3000);
+                Utility.alerts("原ID与新ID不能一样","danger",3000);
                 return false;
             }
 
             if(!Utility.isNumber(oldUserId) && !Utility.isNumber(newUserId)){
-                Utility.alerts("用户ID不正确，应该输入数字",1,3000);
+                Utility.alerts("用户ID不正确，应该输入数字","danger",3000);
                 return false;
             }
 

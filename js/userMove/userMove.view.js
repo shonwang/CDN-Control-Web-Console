@@ -15,14 +15,14 @@ define("userMove.view", ['require','exports', 'template', 'modal.view', 'utility
 
         initCalendar: function(tpl,tplindex){
             var endTime = new Date().getTime();
-            this.startTime = new Date(new Date().format("yyyy/MM/dd") + " 00:00").valueOf();
+            this.startTime = new Date(new Date().format("yyyy/MM/dd hh:mm")).valueOf();
             var starttime = endTime - 31 * 24 * 60 * 60 *1000;
             var startOption = {
                 lang:'ch',
                 minDate: new Date(starttime).format("yyyy/MM/dd"),
                 maxDate: new Date().format("yyyy/MM/dd"),
                 // maxTime  : new Date().format("yyyy/MM/dd hh:mm"),
-                value: new Date().format("yyyy/MM/dd") + " 00:00",
+                value: new Date().format("yyyy/MM/dd hh:mm"),
                 //closeOnWithoutClick : false,
                 timepicker: true,
                 scrollInput: false,

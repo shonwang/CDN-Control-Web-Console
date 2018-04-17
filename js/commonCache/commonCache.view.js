@@ -117,6 +117,7 @@ define("commonCache.view", ['require','exports', 'template', 'modal.view', 'util
             this.DATA = data;
             _.each(this.DATA,function(el){
                 el.createTimeName = new Date(el.createTime).format("yyyy/MM/dd hh:mm");
+                el.expireName = el.expire+"秒";
                 el.offlineName = el.offline === 0 ? "不在线" : "在线";
             });
             this.table = $(_.template(template['tpl/commonCache/commonCache.cacheRule.table.html'])({data:this.DATA}));

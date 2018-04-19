@@ -121,7 +121,22 @@ define("setupSendWaitSend.model", ['require','exports', 'utility'], function(req
                 this.trigger("get.topoSpecialStrategy.error", response);  
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
-        }
+        },
+
+        getStrategyList: function(args) {
+            var url = BASE_URL + "/resource/special/getStrategyList",
+                successCallback = function(res) {
+                    if (res) {
+                        this.trigger("get.topoSpecialStrategy.success", res);
+                    } else {
+                        this.trigger("get.topoSpecialStrategy.error", res);
+                    }
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger('get.topoSpecialStrategy.error', response);
+                }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
     });
 
     return SetupAppManageCollection;

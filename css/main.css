@@ -1357,3 +1357,6 @@ ul, li {
   height: 420px;
   overflow-y: auto;
 }
+
+/* 新增帐号迁移css */
+.user-move-label {min-width:110px;}

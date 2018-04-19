@@ -1,11 +1,32 @@
 define("routes.other", ['require', 'exports', 'subNavbar.view'], 
     function(require, exports, SubNavbar) {
         var RouterOther = {
+            userMove:function(){
+                if (!AUTH_OBJ.ChangeDomainUser) return;
+                require(['userMove.view', 'userMove.model'], function(UserMoveView, UserMoveModel) {
+                    this.curPage = 'userMove';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    if (!this.userMoveModel)
+                        this.userMoveModel = new UserMoveModel();
+                    if (!this.userMoveView) {
+                        var options = {
+                            collection: this.userMoveModel
+                        };
+                        this.userMoveView = new UserMoveView(options);
+                        this.userMoveView.render($('.ksc-content'));
+                    } else {
+                        this.userMoveView.update();
+                    }
+                    this.curView = this.userMoveView;
+                }.bind(this));                  
+            },
+
             commonCache:function(){
+                if (!AUTH_OBJ.CcacheManager) return;
                 require(['commonCache.view', 'commonCache.model'], function(CommonCacheView, CommonCacheModel) {
                     this.curPage = 'commonCache';
                     this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
-                    if (!this.speedMeasureModel)
+                    if (!this.commonCacheModel)
                         this.commonCacheModel = new CommonCacheModel();
                     if (!this.commonCacheView) {
                         var options = {

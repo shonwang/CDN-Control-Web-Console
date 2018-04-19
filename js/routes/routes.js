@@ -40,6 +40,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "specialLayerManage": "specialLayerManage",
                 "speedMeasure" : "speedMeasure",
                 "commonCache"  : "commonCache",
+                "userMove"     : "userMove",
 
                 // 调度配置
                 "dispGroup": "dispGroup",

@@ -250,7 +250,10 @@ define("utility", ['require','exports'], function(require, exports) {
             }
         },
 
-        isDomain: function(str_url){
+        isDomain: function(str_url,isCommon){
+            if(isCommon && str_url.indexOf("*.")==0){
+                str_url = str_url.substring(2);
+            }
             if (str_url == "" || str_url.indexOf("_")  > -1) return false;
             if (str_url.substr(0, 4) !== "http") str_url = "http://" + str_url;
             var strRegex = /^(http|https):\/\/([\w-]+(\.[\w-]+)+(:[0-9]{1,5})?([\w-.]*)?){1}$/;

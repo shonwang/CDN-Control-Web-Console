@@ -319,8 +319,17 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
         },
 
         initOriginProtocol: function(){
+            // HTTP(0, "HTTP"),
+            // HTTPFLV(1, "HDL"),
+            // HLS(2, "HLS"),
+            // RTMP(3, "RTMP"),
+            // HTTPS(4, "HTTPS"),
+            // PROTOCOL_FOLLOW(5, "协议跟随");
             var  baseArray = [
                 {name: "http", value: 0},
+                {name: "HDL", value: 1},
+                {name: "HLS", value: 2},
+                {name: "RTMP", value: 3},
                 {name: "https", value: 4},
                 {name: "协议跟随", value: 5}
             ],
@@ -331,7 +340,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
                 this.originProtocol = parseInt(value)
                 if (this.originProtocol == 4 || this.originProtocol == 5) {
                     this.$el.find(".check-source").show();
-                } else if (this.originProtocol == 0) {
+                } else if (this.originProtocol != 4 && this.originProtocol != 5) {
                     this.$el.find(".check-source").hide();
                 }
             }.bind(this));
@@ -354,7 +363,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
 
             if (this.originProtocol == 4 || this.originProtocol == 5) {
                 this.$el.find(".check-source").show();
-            } else if (this.originProtocol == 0) {
+            } else if (this.originProtocol != 4 && this.originProtocol != 5) {
                 this.$el.find(".check-source").hide();
             }
 

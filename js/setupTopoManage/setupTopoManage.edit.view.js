@@ -56,22 +56,95 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
             },
 
             addTopoSuccess: function(res) {
+                res = {
+                  "needUpdateConfig": true, 
+                  "affectNode": [
+                    {
+                      "nodeId": 3, 
+                      "name": "德州联通01节点"
+                    }, 
+                    {
+                      "nodeId": 4, 
+                      "name": "德州联通02节点"
+                    }
+                  ], 
+                  "message": "拓扑是否需要更新的提示信息"
+                }
                 this.isSaving = false;
-                console.log(res)
                 if (this.btnFlag == 2) {
-                    Utility.alerts("保存成功！", "success", 5000);
-                    this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback(res);
+                    var message = res.message + "<br>", detail = "";
+                    if (res.affectNode.length > 0) {
+                        message = message + '影响的节点:<a href="javascript:void(0)" class="detail">详情</a><br>';
+                        _.each(res.affectNode, function(el){
+                            detail = detail + el.name + "<br>";
+                        }.bind(this))
+                        message = message + '<div class="detail-list" style="display:none">' + detail + '</div>'
+                    }
+                    if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
+                    var options = {
+                        title: "提示",
+                        body: message,
+                        backdrop: 'static',
+                        type: 1
+                    }
+                    this.commonPopup = new Modal(options);
+                    this.commonPopup.$el.find(".detail").on("click", function(event){
+                        if (this.commonPopup.$el.find(".detail-list").css("display") == "none") {
+                            this.commonPopup.$el.find(".detail-list").show(200)
+                        } else {
+                            this.commonPopup.$el.find(".detail-list").hide(200)
+                        }
+                    }.bind(this))
+                    //this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback(res);
                 } else {
+                    Utility.alerts("暂存成功！", "success", 5000);
                     this.options.onSaveCallback && this.options.onSaveCallback();
                 }
             },
 
             modifyTopoSuccess: function() {
+                res = {
+                  "needUpdateConfig": true, 
+                  "affectNode": [
+                    {
+                      "nodeId": 3, 
+                      "name": "德州联通01节点"
+                    }, 
+                    {
+                      "nodeId": 4, 
+                      "name": "德州联通02节点"
+                    }
+                  ], 
+                  "message": "拓扑是否需要更新的提示信息"
+                }
                 this.isSaving = false;
-                Utility.alerts("保存成功！", "success", 5000)
                 if (this.btnFlag == 2) {
-                    this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback();
+                    var message = res.message + "<br>", detail = "";
+                    if (res.affectNode.length > 0) {
+                        message = message + '影响的节点:<a href="javascript:void(0)" class="detail">详情</a><br>';
+                        _.each(res.affectNode, function(el){
+                            detail = detail + el.name + "<br>";
+                        }.bind(this))
+                        message = message + '<div class="detail-list" style="display:none">' + detail + '</div>'
+                    }
+                    if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
+                    var options = {
+                        title: "提示",
+                        body: message,
+                        backdrop: 'static',
+                        type: 1
+                    }
+                    this.commonPopup = new Modal(options);
+                    this.commonPopup.$el.find(".detail").on("click", function(event){
+                        if (this.commonPopup.$el.find(".detail-list").css("display") == "none") {
+                            this.commonPopup.$el.find(".detail-list").show(200)
+                        } else {
+                            this.commonPopup.$el.find(".detail-list").hide(200)
+                        }
+                    }.bind(this))
+                    //this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback();
                 } else {
+                    Utility.alerts("暂存成功！", "success", 5000)
                     this.options.onSaveCallback && this.options.onSaveCallback();
                 }
             },
@@ -95,7 +168,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 if(this.isView || this.isEdit) {
                     this.$el.find(".edit-show").show();
                     this.$el.find("#input-version").val(res.id);
-                    this.$el.find("#input-isused").val(res.flag?"是":"否");
+                    this.$el.find("#input-isused").val(res.flag ? "是" : "否");
                 }
 
                 console.log("编辑的拓扑: ", this.defaultParam)
@@ -240,6 +313,10 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 }.bind(this));
                 postTopo.rule = postRules
                 postTopo.mark = this.$el.find("#comment").val();
+                if (this.btnFlag == 2)
+                    postTopo.ispub = 1;
+                else
+                    postTopo.ispub = 0;
                 console.log(postTopo)
                 if (this.isEdit)
                     this.collection.topoModify(postTopo);

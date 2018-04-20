@@ -215,7 +215,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                             myEditTopoView.$el.remove();
                             this.$el.find(".list-panel").show();
                             this.onClickQueryButton();
-                            setTimeout($.proxy(this.alertChangeType, this, model), 500);
+                            //setTimeout($.proxy(this.alertChangeType, this, model), 500);
                         }.bind(this),
                         onSaveAndSendCallback: function() {
                             require(['setupTopoManage.update.view'], function(UpdateTopoView) {

@@ -327,9 +327,9 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
             // PROTOCOL_FOLLOW(5, "协议跟随");
             var  baseArray = [
                 {name: "http", value: 0},
-                {name: "HDL", value: 1},
+                //{name: "HDL", value: 1},
                 {name: "HLS", value: 2},
-                {name: "RTMP", value: 3},
+                //{name: "RTMP", value: 3},
                 {name: "https", value: 4},
                 {name: "协议跟随", value: 5}
             ],

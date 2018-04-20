@@ -56,20 +56,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
             },
 
             addTopoSuccess: function(res) {
-                res = {
-                  "needUpdateConfig": true, 
-                  "affectNode": [
-                    {
-                      "nodeId": 3, 
-                      "name": "德州联通01节点"
-                    }, 
-                    {
-                      "nodeId": 4, 
-                      "name": "德州联通02节点"
-                    }
-                  ], 
-                  "message": "拓扑是否需要更新的提示信息"
-                }
                 this.isSaving = false;
                 if (this.btnFlag == 2) {
                     var message = res.message + "<br>", detail = "";
@@ -102,21 +88,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 }
             },
 
-            modifyTopoSuccess: function() {
-                res = {
-                  "needUpdateConfig": true, 
-                  "affectNode": [
-                    {
-                      "nodeId": 3, 
-                      "name": "德州联通01节点"
-                    }, 
-                    {
-                      "nodeId": 4, 
-                      "name": "德州联通02节点"
-                    }
-                  ], 
-                  "message": "拓扑是否需要更新的提示信息"
-                }
+            modifyTopoSuccess: function(res) {
                 this.isSaving = false;
                 if (this.btnFlag == 2) {
                     var message = res.message + "<br>", detail = "";

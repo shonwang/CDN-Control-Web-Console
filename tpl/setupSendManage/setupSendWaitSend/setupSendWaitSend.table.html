@@ -2,7 +2,9 @@
 <% for(var i = 0; i < data.length; i++) { %>
     <% if (data[i].get("isDisplay")) { %>
     <tr data-id="<%=data[i].attributes.id%>">
-      <td><input type="checkbox" id="<%=data[i].id%>"></td>
+      <td>
+          <input type="checkbox" id="<%=data[i].get('id')%>" <% if (data[i].get("isChecked")) { %> checked="true"<% } %>>
+      </td>
       <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("creatorName") || "神秘人"%></a></td>
       <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("domain")%></a></td>
       <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("configReasonName")%></a></td>

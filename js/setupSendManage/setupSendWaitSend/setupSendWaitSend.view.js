@@ -215,6 +215,7 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
 
             this.table.find(".remark").popover();
             this.table.find("[data-toggle='tooltip']").tooltip();
+            this.table.find("thead input").get(0).checked = false;
         },
 
         onClickItemSend: function(event) {

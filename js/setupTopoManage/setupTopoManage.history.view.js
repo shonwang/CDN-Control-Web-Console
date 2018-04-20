@@ -88,7 +88,7 @@ define("setupTopoManage.history.view", ['require', 'exports', 'template', 'modal
                     }));
                 }
 
-                this.table.find("tbody .publish").hide();
+                //this.table.find("tbody .publish").hide();
                 this.table.find("tbody .publish").on("click", $.proxy(this.onClickItemPublish, this));
                 this.table.find("tbody .views").on("click", $.proxy(this.onClickItemViews, this));
 

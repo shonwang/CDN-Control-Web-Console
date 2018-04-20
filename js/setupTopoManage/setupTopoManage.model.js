@@ -136,15 +136,13 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
         topoAdd: function(args) {
             var url = BASE_URL + "/resource/topo/add",
                 successCallback = function(res) {
-                    this.reset();
                     if (res) {
-                        _.each(res.rows, function(element, index, list) {
-                            this.push(new Model(element));
-                        }.bind(this))
-                        this.total = res.total;
-                        this.trigger("add.topo.success",res);
+                        if (typeof res == "string") {
+                            res = JSON.parse(res);
+                        }
+                        this.trigger("add.topo.success", res);
                     } else {
-                        this.trigger("add.topo.error");
+                        this.trigger("add.topo.error", res);
                     }
                 }.bind(this),
                 errorCallback = function(response) {
@@ -156,15 +154,13 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
         topoModify: function(args) {
             var url = BASE_URL + "/resource/topo/modify",
                 successCallback = function(res) {
-                    this.reset();
                     if (res) {
-                        _.each(res.rows, function(element, index, list) {
-                            this.push(new Model(element));
-                        }.bind(this))
-                        this.total = res.total;
-                        this.trigger("modify.topo.success");
+                        if (typeof res == "string") {
+                            res = JSON.parse(res);
+                        }
+                        this.trigger("modify.topo.success", res);
                     } else {
-                        this.trigger("modify.topo.error");
+                        this.trigger("modify.topo.error", res);
                     }
                 }.bind(this),
                 errorCallback = function(response) {
@@ -218,6 +214,9 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
         changeTopoVersion: function(args) {
             var url = BASE_URL + "/resource/topo/changeTopoVersion",//innerId
                 successCallback = function(res) {
+                    if (typeof res == "string") {
+                        res = JSON.parse(res);
+                    }
                     this.trigger("set.version.success", res);
                 }.bind(this),
                 errorCallback = function(response) {

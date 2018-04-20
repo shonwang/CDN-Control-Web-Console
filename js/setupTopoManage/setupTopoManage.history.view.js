@@ -23,18 +23,45 @@ define("setupTopoManage.history.view", ['require', 'exports', 'template', 'modal
                 this.collection.off('get.version.error');
                 this.collection.on('get.version.success', $.proxy(this.initSetup, this));
                 this.collection.on('get.version.error', $.proxy(this.onGetError, this));
+                this.collection.off('set.version.success');
+                this.collection.off('set.version.error');
+                this.collection.on('set.version.success', $.proxy(this.onSetVersionSuccess, this));
+                this.collection.on('set.version.error', $.proxy(this.onGetError, this));
                 this.collection.getTopoVersion({
                     innerId: this.model.get('id')
                 });
                 
             },
             
-            onSetVersionSuccess: function() {
+            onSetVersionSuccess: function(res) {
+                var message = res.message + "<br>", detail = "";
+                if (res.affectNode.length > 0) {
+                    message = message + '影响的节点:<a href="javascript:void(0)" class="detail">详情</a><br>';
+                    _.each(res.affectNode, function(el){
+                        detail = detail + el.name + ", ";
+                    }.bind(this))
+                    message = message + '<div class="detail-list" style="display:none">' + detail + '</div>'
+                }
+                if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
+                var options = {
+                    title: "提示",
+                    body: message,
+                    backdrop: 'static',
+                    type: 1
+                }
+                this.commonPopup = new Modal(options);
+                this.commonPopup.$el.find(".detail").on("click", function(event){
+                    if (this.commonPopup.$el.find(".detail-list").css("display") == "none") {
+                        this.commonPopup.$el.find(".detail-list").show(200)
+                    } else {
+                        this.commonPopup.$el.find(".detail-list").hide(200)
+                    }
+                }.bind(this))
                 // this.collection.getTopoVersion({
                 //     innerId: this.curVersion
                 // });
-                this.onClickCancelButton();
-                this.options.onSaveCallback && this.options.onSaveCallback(this.curVersion);
+                // this.onClickCancelButton();
+                // this.options.onSaveCallback && this.options.onSaveCallback(this.curVersion);
             },
 
             initSetup: function(data) {

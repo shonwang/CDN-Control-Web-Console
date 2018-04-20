@@ -57,9 +57,9 @@ define("setupTopoManage.history.view", ['require', 'exports', 'template', 'modal
                         this.commonPopup.$el.find(".detail-list").hide(200)
                     }
                 }.bind(this))
-                // this.collection.getTopoVersion({
-                //     innerId: this.curVersion
-                // });
+                this.collection.getTopoVersion({
+                    innerId: this.curVersion
+                });
                 // this.onClickCancelButton();
                 // this.options.onSaveCallback && this.options.onSaveCallback(this.curVersion);
             },

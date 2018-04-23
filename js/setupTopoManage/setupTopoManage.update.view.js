@@ -163,7 +163,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                         if (this.topoData.initProgress.job_status == 2)
                             this.$el.find(".sendSetup").removeAttr("disabled")
                     }
-                }.bind(this), 500)
+                }.bind(this), 5000)
             },
 
             startCreateSetupSuccess: function(res) {
@@ -191,7 +191,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                             this.$el.find(".sendSetup").removeAttr("disabled")
                         }
                     }
-                }.bind(this), 500)
+                }.bind(this), 5000)
             },
 
             onClickSendSetupBtn: function() {
@@ -257,7 +257,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                 setTimeout(function() {
                     Utility.alerts("创建任务成功！", "success", 3000);
                     window.location.hash = '#/setupSending';
-                }.bind(this), 500)
+                }.bind(this), 5000)
             },
 
             showDisablePopup: function(msg) {

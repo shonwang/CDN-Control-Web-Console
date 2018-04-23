@@ -59,7 +59,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.isSaving = false;
                 if (this.btnFlag == 2) {
                     var message = res.message + "<br>", detail = "";
-                    if (res.affectNode.length > 0) {
+                    if (res.affectNode&&res.affectNode.length > 0) {
                         message = message + '影响的节点:<a href="javascript:void(0)" class="detail">详情</a><br>';
                         _.each(res.affectNode, function(el){
                             detail = detail + el.name + ", ";
@@ -92,7 +92,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.isSaving = false;
                 if (this.btnFlag == 2) {
                     var message = res.message + "<br>", detail = "";
-                    if (res.affectNode.length > 0) {
+                    if (res.affectNode&&res.affectNode.length > 0) {
                         message = message + '影响的节点:<a href="javascript:void(0)" class="detail">详情</a><br>';
                         _.each(res.affectNode, function(el){
                             detail = detail + el.name + ", ";

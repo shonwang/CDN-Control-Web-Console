@@ -111,6 +111,7 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                     this.$el.find(".ks-table tbody .log-setup").on("click", $.proxy(this.onClickItemlogSetup, this));
                     this.$el.find(".ks-table tbody .setup-bill").on("click", $.proxy(this.onClickViewSetupBillBtn, this));
                     this.$el.find(".ks-table tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+                    this.$el.find(".ks-table tbody .history").on("click", $.proxy(this.onClickViewHistoryBtn, this));
 
                     _.each(this.$el.find(".ks-table tbody .manage"), function(el) {
                         var protocol = this.collection.get(el.id).get("protocol");
@@ -156,6 +157,27 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
 
                     this.$el.find(".main-list").hide();
                     mySetupBillView.render(this.$el.find(".bill-panel"));
+                }.bind(this))
+            },
+
+            onClickViewHistoryBtn: function(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id = $(eventTarget).attr("id");
+
+                require(['domainListHistory.view', 'domainListHistory.model'], function(DomainListHistoryView, DomainListHistoryModel) {
+                    var myDomainListHistoryModel = new DomainListHistoryModel();
+                    var myDomainListHistoryView = new DomainListHistoryView({
+                        collection: myDomainListHistoryModel,
+                        originId: id,
+                        onSaveCallback: function() {}.bind(this),
+                        onCancelCallback: function() {
+                            myDomainListHistoryView.$el.remove();
+                            this.$el.find(".main-list").show();
+                        }.bind(this)
+                    })
+
+                    this.$el.find(".main-list").hide();
+                    myDomainListHistoryView.render(this.$el.find(".history-panel"));
                 }.bind(this))
             },
 

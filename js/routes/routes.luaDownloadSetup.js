@@ -491,6 +491,31 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
                     this.domainManageNavbar.select(this.curPage);
                     this.curView = this.luaStatusCodeCacheView;
                 }.bind(this));            
+            },
+
+            luaForceRedirect: function(query, query2) {
+                require(['forceRedirect.view', 'forceRedirect.model'], function(RorceRedirectView, RorceRedirectModel) {
+                    this.navbarView.select('customerSetup');
+                    this.curPage = 'customerSetup-domainList-forceRedirect';
+                    this.setupLuaDomainManageNavbar(query, query2);
+                    var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                    if (!this.forceRedirectModel)
+                        this.forceRedirectModel = new RorceRedirectModel();
+                    if (!this.forceRedirectView) {
+                        var options = {
+                            collection: this.forceRedirectModel,
+                            query: query,
+                            query2: query2
+                        };
+                        this.forceRedirectView = new RorceRedirectView(options);
+                        this.forceRedirectView.render(renderTarget);
+                    } else {
+                        this.forceRedirectView.update(query, query2, renderTarget);
+                    }
+                    this.domainManageNavbar.select(this.curPage);
+                    this.curView = this.forceRedirectView;
+                }.bind(this));
             }
         }
 

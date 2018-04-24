@@ -14,7 +14,19 @@
         <% for(var i = 0; i < data.length; i++) { %>
         <tr data-id="<%=data[i].get('id')%>">
             <td><%=data[i].get('videoTypeName')%></td>
-            <td><%=data[i].get('dragModeName')%></td>
+            <% if (data[i].get('videoTypeName') == "FLV") { %>
+            <td>
+                <div class="dropdown dragmode">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-dragmode" data-toggle="dropdown">
+                        <span class="cur-value"><%=data[i].get('dragModeName')%></span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu"></ul>
+                </div>
+            </td>
+            <% } else { %>
+                <td><%=data[i].get('dragModeName')%></td>
+            <% } %>
             <td><input type="text" class="form-control suffix" value="<%=data[i].get('suffix')%>" id="<%=data[i].get('id')%>" readonly="true"></td>
             <td><input type="text" class="form-control start" value="<%=data[i].get('startParam')%>" id="<%=data[i].get('id')%>" readonly="true"></td>
             <td><input type="text" class="form-control end" value="<%=data[i].get('endParam')%>" id="<%=data[i].get('id')%>" readonly="true"></td>

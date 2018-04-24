@@ -87,6 +87,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "domainList/:query/luaTimestamp/:query2": "luaTimestamp",
                 "domainList/:query/luaAdvanceConfig/:query2/luaConfigListEdit/:query3": "luaConfigListEdit",
                 "domainList/:query/luaStatusCodeCache/:query2": "luaStatusCodeCache",
+                "domainList/:query/luaForceRedirect/:query2": "luaForceRedirect",
                  
 
                 //直播域名配置

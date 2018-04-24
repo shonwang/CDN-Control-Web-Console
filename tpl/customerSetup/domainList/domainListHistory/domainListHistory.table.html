@@ -1,0 +1,19 @@
+<table class="table table-striped table-hover">
+<caption>默认显示最近一个月的操作记录</caption>  
+<thead> 
+  <tr>
+    <th>操作人</th>
+    <th>操作时间</th>
+    <th>操作内容</th>
+  </tr>
+</thead>
+<tbody>
+    <% for(var i = 0; i < data.length; i++) { %>
+        <tr data-id="<%=data[i].id%>">
+          <td><%=data[i]["operator"]%></td>
+          <td><%=data[i]["operateTimeFormated"]%></td>
+          <td><%=data[i]["operateContent"]%></td>
+        </tr>
+    <% } %>  
+</tbody>
+</table>

@@ -44,6 +44,24 @@ define("notStandardBackOriginSetup.model", ['require','exports', 'utility'], fun
                 this.trigger("set.hostConfig.error", res);
             }.bind(this));
         },
+
+        setRangeConfig: function(args){
+            var url = BASE_URL + "/channelManager/domain/download/setRangeConfig";
+            Utility.postAjax(url, args, function(res){
+                this.trigger("set.rangeConfig.success");
+            }.bind(this),function(res){
+                this.trigger("set.rangeConfig.error", res);
+            }.bind(this));
+        },
+
+        setOriginProtocol: function(args){
+            var url = BASE_URL + "/channelManager/domain/download/setOriginProtocol";
+            Utility.postAjax(url, args, function(res){
+                this.trigger("set.originProtocol.success");
+            }.bind(this),function(res){
+                this.trigger("set.originProtocol.error", res);
+            }.bind(this));
+        },
     });
 
     return BackOriginSetupCollection;

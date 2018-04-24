@@ -76,7 +76,6 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
         }
     });
 
-
     var BackOriginSetupView = Backbone.View.extend({
         events: {},
 
@@ -109,6 +108,8 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
                     "backsourceBestcount":1,//当OriginPolicy是quality时，该项必填。取值1-10
                     "strategyOpenFlag": 0,//高级回源策略开关
                     "edgeOpenFlag": 0,//边缘回源设置
+                    "rangeConfig": 0,//分片回源开关
+                    "checkLastmod": 0,//文件一致性校验
                     "backsourceCustom": "",
                     "advanceConfigList":[],
                     "strategyAdvanceList":[]
@@ -160,6 +161,10 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
             this.collection.on("get.backSourceConfig.error", $.proxy(this.onGetError, this));
             this.collection.on("set.edgeOpen.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.edgeOpen.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.rangeConfig.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.rangeConfig.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.originProtocol.success", $.proxy(this.onSaveSuccess, this));
+            this.collection.on("set.originProtocol.error", $.proxy(this.onGetError, this));
 
             require(["domainSetup.model"], function(DomainSetupModel){
                 var myDomainSetupModel = new DomainSetupModel();
@@ -174,6 +179,8 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
             this.hostType = data.domainConf.hostType;
             this.busnessType = data.originDomain.type;
             this.protocol = data.domainConf.protocol;
+            this.originProtocol = data.domainConf.originProtocol;
+            this.checkSourceHttps = data.domainConf.checkSourceHttps;
             this.collection.getBackSourceConfig({originId: this.domainInfo.id})
         },
 
@@ -291,7 +298,109 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
             }
             this.$el.find(".edge-open .togglebutton input").on("click", $.proxy(this.onClickAdvanceEdgeBtn, this));
             this.$el.find(".edge-save").on("click", $.proxy(this.onClickEdgeSaveBtn, this));
+
+            if (this.defaultParam.backsourceAdvance.rangeConfig === 1){
+                this.$el.find(".slice-open .togglebutton input").get(0).checked = true;
+            } else {
+                this.$el.find(".slice-open .togglebutton input").get(0).checked = false;
+            }
+            this.$el.find(".slice-open .togglebutton input").on("click", $.proxy(this.onClickSliceBtn, this));
+
+            if (this.defaultParam.backsourceAdvance.checkLastmod === 1){
+                this.$el.find(".file-check input").get(0).checked = true;
+            } else {
+                this.$el.find(".file-check input").get(0).checked = false;
+            }
+            this.$el.find(".file-check input").on("click", $.proxy(this.onClickFileCheckBtn, this));
+            this.$el.find(".slice-save").on("click", $.proxy(this.onClickSliceSaveBtn, this));
+
+            this.initOriginProtocol();
             Utility.onContentSave();
+        },
+
+        initOriginProtocol: function(){
+            // HTTP(0, "HTTP"),
+            // HTTPFLV(1, "HDL"),
+            // HLS(2, "HLS"),
+            // RTMP(3, "RTMP"),
+            // HTTPS(4, "HTTPS"),
+            // PROTOCOL_FOLLOW(5, "协议跟随");
+            var  baseArray = [
+                {name: "http", value: 0},
+                //{name: "HDL", value: 1},
+                {name: "HLS", value: 2},
+                //{name: "RTMP", value: 3},
+                {name: "https", value: 4},
+                {name: "协议跟随", value: 5}
+            ],
+            rootNode = this.$el.find(".origin-domain-protocol");
+
+            Utility.initDropMenu(rootNode, baseArray, function(value){
+                Utility.onContentChange();
+                this.originProtocol = parseInt(value)
+                if (this.originProtocol == 4 || this.originProtocol == 5) {
+                    this.$el.find(".check-source").show();
+                } else if (this.originProtocol != 4 && this.originProtocol != 5) {
+                    this.$el.find(".check-source").hide();
+                }
+            }.bind(this));
+
+            var defaultValue = _.find(baseArray, function(object){
+                return object.value === this.originProtocol;
+            }.bind(this));
+
+            if (defaultValue)
+                this.$el.find("#dropdown-origin-domain-protocol .cur-value").html(defaultValue.name);
+            else
+                this.$el.find("#dropdown-origin-domain-protocol .cur-value").html(baseArray[0].name);
+
+            if (this.checkSourceHttps === 1){
+                this.$el.find(".check-source input").get(0).checked = true;
+            } else {
+                this.$el.find(".check-source input").get(0).checked = false;
+            }
+            this.$el.find(".check-source input").on("click", $.proxy(this.onClickSourceCheckBtn, this));
+
+            if (this.originProtocol == 4 || this.originProtocol == 5) {
+                this.$el.find(".check-source").show();
+            } else if (this.originProtocol != 4 && this.originProtocol != 5) {
+                this.$el.find(".check-source").hide();
+            }
+
+            this.$el.find(".origin-protocol-save").on("click", $.proxy(this.onClickOriginProSaveBtn, this));
+        },
+
+        onClickSourceCheckBtn: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            if (eventTarget.checked){
+                this.checkSourceHttps = 1;
+            } else {
+                this.checkSourceHttps = 0;
+            }
+            Utility.onContentChange();
+        },
+
+        onClickSliceBtn: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            if (eventTarget.checked){
+                this.defaultParam.backsourceAdvance.rangeConfig = 1;
+            } else {
+                this.defaultParam.backsourceAdvance.rangeConfig = 0;
+            }
+            Utility.onContentChange();
+        },
+
+        onClickFileCheckBtn: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            if (eventTarget.checked){
+                this.defaultParam.backsourceAdvance.checkLastmod = 1;
+            } else {
+                this.defaultParam.backsourceAdvance.checkLastmod = 0;
+            }
+            Utility.onContentChange();
         },
 
         onClickAdvanceEdgeBtn: function(event){
@@ -309,6 +418,26 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
             this.collection.setEdgeOpenFlag({
                 originId: this.domainInfo.id,
                 edgeOpenFlag: this.defaultParam.backsourceAdvance.edgeOpenFlag
+            });
+            Utility.onContentSave();
+        },
+
+        onClickSliceSaveBtn: function(){
+            var rangeConfig = this.defaultParam.backsourceAdvance.rangeConfig,
+                checkLastmod = this.defaultParam.backsourceAdvance.checkLastmod;
+            this.collection.setRangeConfig({
+                originId: this.domainInfo.id,
+                "rangeConfig": rangeConfig === undefined ? 0 : rangeConfig,
+                "checkLastmod": checkLastmod === undefined ? 0 : checkLastmod
+            });
+            Utility.onContentSave();
+        },
+
+        onClickOriginProSaveBtn: function(){
+            this.collection.setOriginProtocol({
+                originId: this.domainInfo.id,
+                "originProtocol": this.originProtocol,
+                "checkSourceHttps": this.originProtocol == 0 ? null : this.checkSourceHttps
             });
             Utility.onContentSave();
         },

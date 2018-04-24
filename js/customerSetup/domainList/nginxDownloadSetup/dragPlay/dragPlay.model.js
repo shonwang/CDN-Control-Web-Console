@@ -6,7 +6,7 @@ define("dragPlay.model", ['require','exports', 'utility'], function(require, exp
             if (videoType === 2) this.set("videoTypeName", "FLV");
 
             var dragMode = this.get("dragMode");
-            if (dragMode === 1) this.set("dragModeName", "按秒");
+            if (dragMode === 1) this.set("dragModeName", "按时间");
             if (dragMode === 2) this.set("dragModeName", "按字节");
         }
     });

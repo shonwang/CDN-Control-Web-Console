@@ -137,7 +137,7 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
             var url = BASE_URL + "/resource/topo/add",
                 successCallback = function(res) {
                     if (res) {
-                        if (typeof res == "string") {
+                        if (typeof res == "string" && res != "ok") {
                             res = JSON.parse(res);
                         }
                         this.trigger("add.topo.success", res);
@@ -155,7 +155,7 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
             var url = BASE_URL + "/resource/topo/modify",
                 successCallback = function(res) {
                     if (res) {
-                        if (typeof res == "string") {
+                        if (typeof res == "string" && res != "ok") {
                             res = JSON.parse(res);
                         }
                         this.trigger("modify.topo.success", res);

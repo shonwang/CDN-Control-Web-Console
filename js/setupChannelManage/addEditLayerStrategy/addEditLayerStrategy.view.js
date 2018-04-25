@@ -932,6 +932,10 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 return obj.rsNodeMsgVo.id !== parseInt(id)
             }.bind(this));
 
+            if (this.defaultParam.upper.length == 1 && this.defaultParam.upper[0].chiefType == 0) {
+                this.defaultParam.upper[0].chiefType = 1;
+            }
+
             this.initUpperTable();
         },
 

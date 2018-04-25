@@ -472,10 +472,12 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
             var topoArray = [{
                 name: "全部",
                 value: "All"
-            }, {
-                name: "默认拓扑",
-                value: "default"
-            }]
+            }, 
+            // {
+            //     name: "默认拓扑",
+            //     value: "default"
+            // }
+            ]
             this.mySetupTopoManageModel.each(function(el, index, lst) {
                 topoArray.push({
                     name: el.get('name'),

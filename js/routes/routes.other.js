@@ -14,7 +14,7 @@ define("routes.other", ['require', 'exports', 'subNavbar.view'],
                         this.statisticsDataSourceSwitchView = new StatisticsDataSourceSwitchView(options);
                         this.statisticsDataSourceSwitchView.render($('.ksc-content'));
                     } else {
-                        this.statisticsDataSourceSwitchView.update();
+                        this.statisticsDataSourceSwitchView.update($('.ksc-content'));
                     }
                     this.curView = this.statisticsDataSourceSwitchView;
                 }.bind(this));

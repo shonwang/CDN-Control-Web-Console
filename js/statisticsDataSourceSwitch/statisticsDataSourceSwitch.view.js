@@ -31,7 +31,7 @@ define("statisticsDataSourceSwitch.view", ['require','exports', 'template', 'mod
         },
 
         onSetInfoSuccess: function(){
-            Utility.alerts("提交成功！", "success");
+            Utility.alerts("提交成功！", "success", 3000);
             this.collection.getInfo();
         },
 

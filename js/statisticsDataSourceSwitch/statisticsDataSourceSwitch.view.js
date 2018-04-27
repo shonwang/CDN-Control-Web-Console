@@ -32,6 +32,7 @@ define("statisticsDataSourceSwitch.view", ['require','exports', 'template', 'mod
 
         onSetInfoSuccess: function(){
             Utility.alerts("提交成功！", "success");
+            this.collection.getInfo();
         },
 
         initTable: function(){
@@ -76,8 +77,7 @@ define("statisticsDataSourceSwitch.view", ['require','exports', 'template', 'mod
                 sources: checkedList[0].get("sourceBackup") + "," + checkedList[0].get("sourcePrimary")
             }
 
-            console.log(postParam)
-            //this.collection.setInfo(postParam);
+            this.collection.setInfo(postParam);
         },
 
         onItemCheckedUpdated: function(event){

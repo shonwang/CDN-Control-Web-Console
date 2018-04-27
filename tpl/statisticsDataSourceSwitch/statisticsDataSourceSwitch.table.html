@@ -7,8 +7,8 @@
     <th>#</th>
     <th>请求URI</th>
     <th>请求名称</th>
-    <th>数据源主</th>
-    <th>数据源备</th>
+    <th>数据源-主</th>
+    <th>数据源-备</th>
     <th>测试URL</th>
   </tr>
 </thead>
@@ -21,8 +21,8 @@
           <td><%=data[i].get("id")%></td>
           <td><%=data[i].get("requestUri")%></td>
           <td><%=data[i].get("requestName")%></td>
-          <td><%=data[i].get("sourcePrimary")%></td>
-          <td><%=data[i].get("sourceBackup")%></td>
+          <td><%=data[i].get("sourcePrimaryLabel")%></td>
+          <td><%=data[i].get("sourceBackupLabel")%></td>
           <td>
               <a href='<%=data[i].get("testUrl")%>' id="<%=data[i].get('id')%>" target="_blank">
                   <%=data[i].get("testUrl")%>

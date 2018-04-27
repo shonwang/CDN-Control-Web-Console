@@ -13,7 +13,7 @@ define("statisticsDataSourceSwitch.view", ['require','exports', 'template', 'mod
             this.collection.on("get.info.success", $.proxy(this.onListSuccess, this));
             this.collection.on("get.info.error", $.proxy(this.onGetError, this));
 
-            this.collection.on("set.info.success", $.proxy(this.onSetStatusSuccess, this));
+            this.collection.on("set.info.success", $.proxy(this.onSetInfoSuccess, this));
             this.collection.on("set.info.error", $.proxy(this.onGetError, this));
 
             this.collection.getInfo();
@@ -30,6 +30,10 @@ define("statisticsDataSourceSwitch.view", ['require','exports', 'template', 'mod
             this.initTable();
         },
 
+        onSetInfoSuccess: function(){
+            Utility.alerts("提交成功！", "success");
+        },
+
         initTable: function(){
             this.table = $(_.template(template['tpl/statisticsDataSourceSwitch/statisticsDataSourceSwitch.table.html'])({
                 data: this.collection.models
@@ -43,21 +47,6 @@ define("statisticsDataSourceSwitch.view", ['require','exports', 'template', 'mod
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
             }
         },
-
-        onClickItemDelete: function(event){
-            var eventTarget = event.srcElement || event.target, id;
-            if (eventTarget.tagName == "SPAN"){
-                eventTarget = $(eventTarget).parent();
-                id = eventTarget.attr("id");
-            } else {
-                id = $(eventTarget).attr("id");
-            }
-            var model = this.collection.get(id);
-            var result = confirm("你确定要删除设备" + model.attributes.name + "吗");
-            if (!result) return;
-            this.collection.deleteDevice({id:parseInt(id)})
-        },
-
 
         onClickSubmitBtn: function(event){
             var checkedList = this.collection.filter(function(model) {
@@ -88,6 +77,7 @@ define("statisticsDataSourceSwitch.view", ['require','exports', 'template', 'mod
             }
 
             console.log(postParam)
+            //this.collection.setInfo(postParam);
         },
 
         onItemCheckedUpdated: function(event){
@@ -104,15 +94,6 @@ define("statisticsDataSourceSwitch.view", ['require','exports', 'template', 'mod
                 this.table.find("thead input").get(0).checked = true;
             if (checkedList.length !== this.collection.models.length)
                 this.table.find("thead input").get(0).checked = false;
-            if (checkedList.length === 0) {
-                this.$el.find(".opt-ctn .multi-delete").attr("disabled", "disabled");
-                this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
-                this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
-            } else {
-                this.$el.find(".opt-ctn .multi-delete").removeAttr("disabled", "disabled");
-                this.$el.find(".opt-ctn .multi-play").removeAttr("disabled", "disabled");
-                this.$el.find(".opt-ctn .multi-stop").removeAttr("disabled", "disabled");
-            }
         },
 
         onAllCheckedUpdated: function(event){
@@ -122,15 +103,6 @@ define("statisticsDataSourceSwitch.view", ['require','exports', 'template', 'mod
                 model.set("isChecked", eventTarget.checked);
             }.bind(this))
             this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
-            if (eventTarget.checked){
-                this.$el.find(".opt-ctn .multi-delete").removeAttr("disabled", "disabled");
-                this.$el.find(".opt-ctn .multi-stop").removeAttr("disabled", "disabled");
-                this.$el.find(".opt-ctn .multi-play").removeAttr("disabled", "disabled");
-            } else {
-                this.$el.find(".opt-ctn .multi-delete").attr("disabled", "disabled");
-                this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
-                this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
-            }
         },
 
         hide: function(){

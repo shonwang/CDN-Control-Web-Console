@@ -27,7 +27,7 @@
                                 </td>
                                 <td>
                                     <input style="width:50px;" type="number" class="weight" 
-                                    id='<%=_list[j].id%>' 
+                                    id='<%=_list[j].nodeId%>' 
                                     node-id='<%=_list[j].nodeId%>' 
                                     region-id='<%=data[i].get("region").id%>' 
                                     max='<%=_list[j].maxIpNum%>' 
@@ -39,14 +39,14 @@
                                     <%}%>
                                     <% if (permission.EditNodeList) { %>
                                     <a href="javascript:void(0)" class="edit" 
-                                    id='<%=_list[j].id%>' 
+                                    id='<%=_list[j].nodeId%>' 
                                     region-id='<%=data[i].get("region").id%>' title="编辑节点">
                                         <span class="glyphicon glyphicon-edit"></span>
                                     </a>
                                     <% } %>
                                     <% if (permission.DeleteNodeList) { %>
                                     <a href="javascript:void(0)" class="delete" 
-                                    id='<%=_list[j].id%>' 
+                                    id='<%=_list[j].nodeId%>' 
                                     region-id='<%=data[i].get("region").id%>'  title="删除">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </a>

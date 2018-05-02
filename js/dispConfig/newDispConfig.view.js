@@ -362,7 +362,6 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
             var selectedNode = _.filter(list ,function(obj) {
                 return obj["nodeId"] === parseInt(id);
             })
-            console.log(selectedNode);
             selectedNode[0].currNum = parseInt(value);
         },
 
@@ -456,7 +455,7 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
             var model = this.collection.get(regionId),
                 list = model.get("list");
             var selectedNode = _.filter(list ,function(obj) {
-                return obj.id=== parseInt(id);
+                return obj.nodeId === parseInt(id);
             });
             if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
 
@@ -520,13 +519,13 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
             var model = this.collection.get(regionId),
                 list = model.get("list");
             var selectedNode = _.filter(list ,function(obj) {
-                return obj["id"] === parseInt(id);
+                return obj["nodeId"] === parseInt(id);
             })
 
             var result = confirm("你确定要删除节点 " + selectedNode[0].nodeName + " 吗？")
             if (!result) return;
             for (var i = 0; i < list.length; i++){
-                if (list[i]["id"] === parseInt(id)){
+                if (list[i]["nodeId"] === parseInt(id)){
                     list.splice(i, 1);
                     break;
                 }

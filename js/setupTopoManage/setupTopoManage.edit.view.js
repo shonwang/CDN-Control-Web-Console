@@ -56,9 +56,15 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
             },
 
             addTopoSuccess: function(res) {
-                this.isSaving = false;
+                this.isSaving = false; 
+                var message = "", detail = "";
                 if (this.btnFlag == 2) {
-                    var message = res.message + "<br>", detail = "";
+                    if (res.message.length > 200) {
+                        message = res.message.substring(0, 99) + '...<a href="javascript:void(0)" class="message">详情</a><br>';
+                        message = message + '<div class="message-list" style="display:none">' + res.message + '</div>';
+                    } else {
+                        message = res.message + "<br>";
+                    }
                     if (res.affectNode&&res.affectNode.length > 0) {
                         message = message + '影响的节点:<a href="javascript:void(0)" class="detail">详情</a><br>';
                         _.each(res.affectNode, function(el){
@@ -81,6 +87,13 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                             this.commonPopup.$el.find(".detail-list").hide(200)
                         }
                     }.bind(this))
+                    this.commonPopup.$el.find(".message").on("click", function(event){
+                        if (this.commonPopup.$el.find(".message-list").css("display") == "none") {
+                            this.commonPopup.$el.find(".message-list").show(200)
+                        } else {
+                            this.commonPopup.$el.find(".message-list").hide(200)
+                        }
+                    }.bind(this))
                     //this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback(res);
                 } else {
                     Utility.alerts("暂存成功！", "success", 5000);
@@ -90,8 +103,14 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
             modifyTopoSuccess: function(res) {
                 this.isSaving = false;
+                var message = "", detail = "";
                 if (this.btnFlag == 2) {
-                    var message = res.message + "<br>", detail = "";
+                    if (res.message.length > 200) {
+                        message = res.message.substring(0, 99) + '...<a href="javascript:void(0)" class="message">详情</a><br>';
+                        message = message + '<div class="message-list" style="display:none">' + res.message + '</div>';
+                    } else {
+                        message = res.message + "<br>"
+                    }
                     if (res.affectNode&&res.affectNode.length > 0) {
                         message = message + '影响的节点:<a href="javascript:void(0)" class="detail">详情</a><br>';
                         _.each(res.affectNode, function(el){
@@ -112,6 +131,13 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                             this.commonPopup.$el.find(".detail-list").show(200)
                         } else {
                             this.commonPopup.$el.find(".detail-list").hide(200)
+                        }
+                    }.bind(this))
+                    this.commonPopup.$el.find(".message").on("click", function(event){
+                        if (this.commonPopup.$el.find(".message-list").css("display") == "none") {
+                            this.commonPopup.$el.find(".message-list").show(200)
+                        } else {
+                            this.commonPopup.$el.find(".message-list").hide(200)
                         }
                     }.bind(this))
                     //this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback();

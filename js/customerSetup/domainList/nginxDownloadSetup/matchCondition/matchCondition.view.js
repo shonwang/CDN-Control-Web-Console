@@ -44,9 +44,9 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onGetFileType: function(data){
@@ -93,19 +93,19 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
                 reValue  = this.$el.find("#textarea-re").val();
 
             if (urlValue === "" && this.options.defaultCondition === 2) {
-                alert("匹配条件你没有填写任何东西！")
+                Utility.warning("匹配条件你没有填写任何东西！")
                 return false;
             } else if (dirValue === "" && this.options.defaultCondition === 1) {
-                alert("匹配条件你没有填写任何东西！")
+                Utility.warning("匹配条件你没有填写任何东西！")
                 return false;
             } else if (reValue === "" && this.options.defaultCondition === 3) {
-                alert("匹配条件你没有填写任何东西！")
+                Utility.warning("匹配条件你没有填写任何东西！")
                 return false;
             }
 
             var isError = this.$el.find(".alert-danger").css("display") === "none" ? false : true;
             if (isError) {
-                alert("匹配条件有错误，请改正后再提交！");
+                Utility.warning("匹配条件有错误，请改正后再提交！");
                 return false;
             }
 
@@ -297,7 +297,7 @@ define("matchCondition.view", ['require','exports', 'template', 'modal.view', 'u
             var customFileType = this.$el.find("#textarea-file-type").val();
             if (this.matchFileTypeNodes.length === 0 &&
                 customFileType === ""){
-                alert("文件类型不能为空");
+                Utility.warning("文件类型不能为空");
                 return false
             }
             var fileTypeArray = [];

@@ -63,9 +63,9 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onGetChannelSuccess: function(res){
@@ -184,7 +184,7 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
                     "channelId"   : this.model.get("id")
                 }
             } else {
-                alert("没有选择任何调度组！")
+                Utility.alerts("没有选择任何调度组！", "warning", 5000)
                 options = false; 
             }
             return options
@@ -235,9 +235,9 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onChannelListSuccess: function(){
@@ -302,7 +302,7 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
                     this.collection.off("add.dispGroup.channel.error");
                     this.collection.on("add.dispGroup.channel.success", function(){
                         this.collection.getChannelDispgroup({channelid: model.get("id")});
-                        alert("操作成功！")
+                        Utility.alerts("操作成功！", "success", 5000)
                     }.bind(this));
                     this.collection.on("add.dispGroup.channel.error", $.proxy(this.onGetError, this));
                     this.collection.addDispGroupChannel(options)
@@ -328,7 +328,7 @@ define("channelManage.view", ['require','exports', 'template', 'modal.view', 'ut
                         this.collection.off("add.dispGroup.channel.error");
                         this.collection.on("add.dispGroup.channel.success", function(){
                             this.collection.getChannelDispgroup({channelid: model.get("id")});
-                            alert("操作成功！")
+                            Utility.alerts("操作成功！", "success", 5000)
                         }.bind(this));
                         this.collection.on("add.dispGroup.channel.error", $.proxy(this.onGetError, this));
                         this.collection.deleteDispGroupChannel(options)

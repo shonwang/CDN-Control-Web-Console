@@ -28,33 +28,33 @@
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].attributes.id%>">
               <td><input type="checkbox" id="<%=data[i].id%>"></td>
-              <td><%=data[i].get("creatorName") || "神秘人"%></td>
-              <td><%=data[i].get("taskName")%></td>
-              <td><%=data[i].get("taskTypeName")%></td>
-              <td><%=data[i].get("platformName")%></td>
-              <td><%=data[i].get("topologyName")%></td>
-              <td><%=data[i].get("deliveryStrategyDefName")%></td>
-              <td><%=data[i].get("currStepName")%></td>
-              <td><%=data[i].get("taskProgress")%></td>
-              <td><%=data[i].get("stepProgress")%></td>
-              <td><%=data[i].get("statusName")%></td>
-              <td><%=data[i].get("createTimeFormated")%></td>
+              <td><a title='<%=data[i].get("taskName")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("creatorName") || "神秘人"%></a></td>
+              <td><a title='<%=data[i].get("taskName")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("taskName")%></a></td>
+              <td><a title='<%=data[i].get("taskName")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("taskTypeName")%></a></td>
+              <td><a title='<%=data[i].get("taskName")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("platformName")%></a></td>
+              <td><a title='<%=data[i].get("taskName")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("topologyName")%></a></td>
+              <td><a title='<%=data[i].get("taskName")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("deliveryStrategyDefName")%></a></td>
+              <td><a title='<%=data[i].get("taskName")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("currStepName")%></a></td>
+              <td><a title='<%=data[i].get("taskName")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("taskProgress")%></a></td>
+              <td><a title='<%=data[i].get("taskName")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("stepProgress")%></a></td>
+              <td><a title='<%=data[i].get("taskName")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("statusName")%></a></td>
+              <td><a title='<%=data[i].get("taskName")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("createTimeFormated")%></a></td>
               <td>
                   <% if(permission.ViewSendDetails) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="detail"
-                     title="详情" data-toggle="tooltip" data-placement="bottom">
+                     title="<%=data[i].get('taskName')%>&nbsp;详情" data-toggle="tooltip" data-placement="bottom">
                       <span class="glyphicon glyphicon-list-alt"></span>
                   </a>
                   <% } %>
                   <% if(permission.SendToNextStep) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="send"
-                     title="进入下一步" data-toggle="tooltip" data-placement="bottom">
+                     title="<%=data[i].get('taskName')%>&nbsp;进入下一步" data-toggle="tooltip" data-placement="bottom">
                       <span class="glyphicon glyphicon-circle-arrow-right"></span>
                   </a>
                   <% } %>
                   <% if(permission.StopSending) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="reject"
-                     title="终止" data-toggle="tooltip" data-placement="bottom">
+                     title="<%=data[i].get('taskName')%>&nbsp;终止" data-toggle="tooltip" data-placement="bottom">
                       <span class="glyphicon glyphicon-remove-circle"></span>
                   </a>
                   <% } %>

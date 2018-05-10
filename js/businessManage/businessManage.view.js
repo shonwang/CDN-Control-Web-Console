@@ -305,7 +305,7 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
             this.collection.on("get.editNode.success", $.proxy(this.onEditNodeSuccess), this);
 
             this.collection.on("add.node.success", function() {
-                alert("添加成功！")
+                Utility.alerts("添加成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             //this.collection.on("add.node.error", $.proxy(this.onGetError, this));
@@ -314,7 +314,7 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("edit.node.success", function() {
-                alert("编辑成功！")
+                Utility.alerts("编辑成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("edit.node.error", $.proxy(this.onGetError, this));
@@ -344,9 +344,9 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
 
         onGetError: function(error) {
             if (error && error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         initNodeDropMenu: function(res) {
@@ -459,7 +459,7 @@ define("businessManage.view", ['require', 'exports', 'template', 'modal.view', '
                     if (!options) return;
                     //var len = this.editBusinessPopup.$el.find('.addOrEdit').children().length;
                     // if(len < 1){
-                    //     alert('请添加节点');
+                    //     Utility.alerts("请添加节点！", "warning", 5000);
                     // }else{
                         this.collection.editNode(options);
                         this.editBusinessPopup.$el.modal("hide");

@@ -46,7 +46,7 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            Utility.alerts("保存成功！", "success", 5000)
         },
 
         launchSendPopup: function(){
@@ -80,12 +80,12 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
             //检查域名
             var domainName = this.$el.find("#cname-set").val().trim();
             if(domainName == ""){
-                alert("不能为空");
+                Utility.warning("不能为空");
                 return false;
             }
             var result = Utility.isDomain(domainName);
             if(!result){
-                alert("填写错误");
+                Utility.warning("填写错误");
                 return false;
             }
             return true;
@@ -104,9 +104,9 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         hide: function(){

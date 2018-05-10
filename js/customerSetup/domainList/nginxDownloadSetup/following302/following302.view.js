@@ -51,7 +51,7 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            Utility.alerts("保存成功！", "success", 5000)
         },
 
         launchSendPopup: function(){
@@ -98,12 +98,12 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
                 for (var i = 0; i < domainArray.length; i++) {
                     domain = domainArray[i];
                     if (domain === "") {
-                        alert("第" + (i+1) + "个域名为空！");
+                        Utility.warning("第" + (i+1) + "个域名为空！");
                         return;
                     }
                     result = Utility.isDomain(domain)
                     if (!result) {
-                        alert("第" + (i+1) + "个域名输错了！");
+                        Utility.warning("第" + (i+1) + "个域名输错了！");
                         return;
                     }
                 }
@@ -131,9 +131,9 @@ define("following302.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         hide: function(){

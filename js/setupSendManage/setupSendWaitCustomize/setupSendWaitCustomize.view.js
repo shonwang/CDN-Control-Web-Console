@@ -21,6 +21,7 @@ define("setupSendWaitCustomize.view", ['require', 'exports', 'template', 'modal.
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".mulit-send").on("click", $.proxy(this.onClickMultiSend, this));
+            this.$el.find(".mulit-reject").on("click", $.proxy(this.onClickMultiReject, this));
 
             this.enterKeyBindQuery();
 
@@ -85,6 +86,21 @@ define("setupSendWaitCustomize.view", ['require', 'exports', 'template', 'modal.
             this.showDisablePopup("服务器正在努力处理中...")
         },
 
+        onClickMultiReject:function(){
+            var checkedList = this.collection.filter(function(model) {
+                return model.get("isChecked") === true;
+            });
+
+            this.domainArray = [];
+            _.each(checkedList, function(el, index, ls) {
+                this.domainArray.push({
+                    predeliveryId: el.get("id")
+                });
+            }.bind(this))
+
+            this.collection.rollBack(this.domainArray)
+        },
+
         onPublishSuccess: function() {
             this.disablePopup && this.disablePopup.$el.modal('hide');
             Utility.alerts("操作成功！", "success", 3000);
@@ -108,6 +124,7 @@ define("setupSendWaitCustomize.view", ['require', 'exports', 'template', 'modal.
 
         initTable: function() {
             this.$el.find(".mulit-send").attr("disabled", "disabled");
+            this.$el.find(".mulit-reject").attr("disabled", "disabled");
             this.table = $(_.template(template['tpl/setupSendManage/setupSendWaitCustomize/setupSendWaitCustomize.table.html'])({
                 data: this.collection.models,
                 permission: AUTH_OBJ
@@ -124,7 +141,9 @@ define("setupSendWaitCustomize.view", ['require', 'exports', 'template', 'modal.
             this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
 
-            this.table.find(".remark").popover();
+            this.table.find(".remark").popover(); 
+            this.table.find("[data-toggle='tooltip']").tooltip();
+
         },
 
         onClickItemSend: function(event) {
@@ -145,9 +164,9 @@ define("setupSendWaitCustomize.view", ['require', 'exports', 'template', 'modal.
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
 
-                this.collection.rollBack({
+                this.collection.rollBack([{
                     predeliveryId: id
-                })
+                }])
             }.bind(this));
         },
 
@@ -194,8 +213,10 @@ define("setupSendWaitCustomize.view", ['require', 'exports', 'template', 'modal.
                 this.table.find("thead input").get(0).checked = false;
             if (checkedList.length === 0) {
                 this.$el.find(".mulit-send").attr("disabled", "disabled");
+                this.$el.find(".mulit-reject").attr("disabled", "disabled");
             } else {
                 this.$el.find(".mulit-send").removeAttr("disabled", "disabled");
+                this.$el.find(".mulit-reject").removeAttr("disabled", "disabled");
             }
         },
 
@@ -208,8 +229,10 @@ define("setupSendWaitCustomize.view", ['require', 'exports', 'template', 'modal.
             this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
             if (eventTarget.checked) {
                 this.$el.find(".mulit-send").removeAttr("disabled", "disabled");
+                this.$el.find(".mulit-reject").removeAttr("disabled", "disabled");
             } else {
                 this.$el.find(".mulit-send").attr("disabled", "disabled");
+                this.$el.find(".mulit-reject").attr("disabled", "disabled");
             }
         },
 

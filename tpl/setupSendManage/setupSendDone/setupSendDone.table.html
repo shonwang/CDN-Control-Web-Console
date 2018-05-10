@@ -15,16 +15,16 @@
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].attributes.id%>">
               <td><a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="detail"><%=data[i].get("taskName")%></a></td>
-              <td><%=data[i].get("platformName")%></td>
-              <td><%=data[i].get("topologyName")%></td>
-              <td><%=data[i].get("deliveryStrategyDefName")%></td>
-              <td><%=data[i].get("startTimeFormated")%></td>
-              <td><%=data[i].get("endTimeFormated")%></td>
-              <td><%=data[i].get("statusName")%></td>
+              <td><a title='<%=data[i].get("taskName")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("platformName")%></a></td>
+              <td><a title='<%=data[i].get("taskName")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("topologyName")%></a></td>
+              <td><a title='<%=data[i].get("taskName")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("deliveryStrategyDefName")%></a></td>
+              <td><a title='<%=data[i].get("taskName")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("startTimeFormated")%></a></td>
+              <td><a title='<%=data[i].get("taskName")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("endTimeFormated")%></a></td>
+              <td><a title='<%=data[i].get("taskName")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("statusName")%></a></td>
               <td>
     					<% if(data[i].get("status") == 3 && permission.RepeatSend) { %>
     					<a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="repeat"
-                 title="重新发布" data-toggle="tooltip" data-placement="bottom">
+                 title="<%=data[i].get('taskName')%>&nbsp;重新发布" data-toggle="tooltip" data-placement="bottom">
     					  <span class="glyphicon glyphicon-repeat"></span>
     					</a>
     					<% } %>

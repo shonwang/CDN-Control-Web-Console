@@ -34,9 +34,9 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onClickApplyButton: function(){
@@ -334,7 +334,7 @@ define("statisticsManage.view", ['require', 'exports', 'template', 'modal.view',
                 this.chart = echarts.init(this.$el.find(".chart").get(0));
                 this.chart.setOption(option);
             } catch (e){
-                alert("数据中心返回数据的JSON格式有误！")
+                Utility.alerts("数据中心返回数据的JSON格式有误！")
             }
         },
 

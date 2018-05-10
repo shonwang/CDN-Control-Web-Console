@@ -61,9 +61,9 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
 
         onGetError: function(error) {
             if (error && error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         initTree: function(res){
@@ -167,7 +167,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         getAddSelected: function(){
             var domain = $.trim(this.$el.find('#input-domain').val());
             if(domain == ''){
-                alert('请输入域名');
+                Utility.warning('请输入域名');
                 var treeObj = $.fn.zTree.getZTreeObj("tree");
                 treeObj.checkAllNodes(false);
                 return ;
@@ -314,11 +314,11 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             this.args.domain = $.trim(this.$el.find("#input-domain").val());
             if(this.args.domain.length > 0){
                 /*if (!/\.com$|\.net$|\.org$|\.edu$|\.gov$|\.cn$/gi.test(this.args.domain)){
-                    alert('域名需以com、org、net、edu、gov、cn结尾');
+                    Utility.warning('域名需以com、org、net、edu、gov、cn结尾');
                     return;
                 }else */
                 if(this.args.domain.length > 100){
-                    alert("域名最大可输入100个字符");
+                    Utility.warning("域名最大可输入100个字符");
                     return;
                 }
             }
@@ -336,7 +336,7 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             }
             _.each(this.args.confFile,function(obj,k,l){
                 if(obj.content.length > 4000){
-                    alert("配置文件内容最多允许输入4000个字符");
+                    Utility.warning("配置文件内容最多允许输入4000个字符");
                     return;
                 }
             }.bind(this));
@@ -393,10 +393,10 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
         onSyncProgressError:function(error){
                 /*
             if (error && error.message){
-                alert(error.message)
+                Utility.alerts(error.message)
             }
             else{
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
             }
                 */
             var _message = error && error.message || "网络阻塞，请刷新重试！";
@@ -448,17 +448,17 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
             this.collection.on("get.businessList.success", $.proxy(this.initBisDropMenu, this));
             this.collection.on("get.businessList.error", $.proxy(this.onGetError, this));
             this.collection.on("add.graydomain.success", function(){
-                alert("新建灰度域名成功");
+                Utility.alerts("新建成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("add.graydomain.error", $.proxy(this.onGetError, this));
             this.collection.on("edit.graydomain.success", function(){
-                alert("编辑灰度域名成功");
+                Utility.alerts("编辑成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("eidt.graydomain.error", $.proxy(this.onGetError, this));
             this.collection.on("delete.grayDomain.success", function(){
-                alert("删除灰度域名成功");
+                Utility.alerts("删除成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("delete.grayDomain.error", $.proxy(this.onGetError, this));
@@ -547,11 +547,11 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
                 this.getPageArgs.domain = null;
             }else{
                 /*if (!/\.com$|\.net$|\.org$|\.edu$|\.gov$|\.cn$/gi.test(this.getPageArgs.domain)){
-                    alert('域名需以com、org、net、edu、gov、cn结尾');
+                    Utility.warning('域名需以com、org、net、edu、gov、cn结尾');
                     return;
                 }else*/ 
                 if(this.getPageArgs.domain.length > 100){
-                    alert("域名最大可输入100个字符");
+                    Utility.warning("域名最大可输入100个字符");
                     return;
                 }
             }
@@ -773,9 +773,9 @@ define("grayscaleSetup.view", ['require', 'exports', 'template', 'modal.view', '
 
         onGetError: function(error) {
             if (error && error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
             
             this.timer && clearInterval(this.timer);
         },

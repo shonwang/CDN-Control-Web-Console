@@ -14,7 +14,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         getArgs: function(){
             var keyName = this.$el.find("#input-name").val();
             if (!this.isEdit && (!keyName || keyName.length > 100)){
-                alert("唯一KEY不能为空且长度不大于100！");
+                Utility.warning("唯一KEY不能为空且长度不大于100！");
                 return false;
             }
             if (!this.isEdit)
@@ -117,7 +117,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         onClickEditName: function(){
             this.$el.find(".lock-name").show();
             this.$el.find(".edit-name").hide();
-            alert("编辑文件路径有风险，请谨慎修改！")
+            Utility.warning("编辑文件路径有风险，请谨慎修改！")
             this.$el.find("#input-name").removeAttr("readonly");
         },
 
@@ -149,7 +149,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                         return obj.domain === options.domain;
                     })
                     if (parObjArray.length > 0){
-                        alert("你添加的域名已经存在！")
+                        Utility.warning("你添加的域名已经存在！")
                         return;
                     }
                     this.args.partitions.push(options);
@@ -344,7 +344,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         getArgs: function(){
             var fileName = this.$el.find("#input-name").val();
             if (!fileName || fileName == "/"){
-                alert("文件名称填错了")
+                Utility.warning("文件名称填错了")
                 return;
             } 
             var re = /^\/[^\/]{0,}([a-z0-9\_\-\.]|\/[^\/]){0,}[^\/]{0,}$/;
@@ -352,7 +352,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 re = /^\/[^\/]{0,}([a-z0-9\_\-\.]|\/[^\/]){0,}\/$/;
             result = re.test(fileName)
             if (!result) {
-                alert("文件名称填错了")
+                Utility.warning("文件名称填错了")
                 return;
             }
             var args = {
@@ -377,9 +377,9 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         render: function(target) {
@@ -421,9 +421,9 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onSetupHistoryListSuccess: function(res){
@@ -528,7 +528,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.find(".checkAll").on("click", $.proxy(this.onClickCheckAll, this));
             this.$el.find(".cancelAll").on("click", $.proxy(this.onClickCancelCheckAll, this));
             this.$el.find("#node-list-filter").on("keyup", $.proxy(this.onKeyupSearch, this));
-
+         
             this.initTree(this.nodeTreeLists);
 
             // this.collection.off("get.allDevice.success");
@@ -544,9 +544,9 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("出错了")
+                Utility.warning("出错了")
         },
 
         initTree: function(res){
@@ -706,7 +706,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.off("check.version.error");
             
             this.collection.on("get.confirmAdd.success", function(){
-                alert("操作成功！")
+                Utility.alerts("操作成功！", "success", 5000)
                 this.onClickCancel();
             }.bind(this));
             this.collection.on("get.confirmAdd.error", $.proxy(this.onGetError, this));
@@ -796,9 +796,9 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onClickSelectDevice: function(event){
@@ -869,14 +869,14 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             //         for (var i = 0; i < ipStringArray.length; i++){
             //             var res = Utility.isIP(ipStringArray[i].trim())
             //             if (!res) {
-            //                 alert(this.nodeGroupList[k].name + "的第" + (i+1) + "个ip没填对！");
+            //                 Utility.warning(this.nodeGroupList[k].name + "的第" + (i+1) + "个ip没填对！");
             //                 return;
             //             }
             //         }
             //     } else {
             //         var res = Utility.isIP(ipString.trim())
             //         if (!res) {
-            //             alert(this.nodeGroupList[k].name + "的ip没填对！")
+            //             Utility.warning(this.nodeGroupList[k].name + "的ip没填对！")
             //             return;
             //         }
             //     }
@@ -884,7 +884,7 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
             for (var i = 0; i < this.nodeDeviceArray.length; i++){
                 if (!this.nodeDeviceArray[i].nodes || this.nodeDeviceArray[i].nodes.length === 0){
-                    alert(this.nodeDeviceArray[i].name + "还没有选择任何节点设备")
+                    Utility.warning(this.nodeDeviceArray[i].name + "还没有选择任何节点设备")
                     return;
                 }
             }
@@ -1218,9 +1218,9 @@ define("liveAllSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onSetupFileListSuccess: function(){

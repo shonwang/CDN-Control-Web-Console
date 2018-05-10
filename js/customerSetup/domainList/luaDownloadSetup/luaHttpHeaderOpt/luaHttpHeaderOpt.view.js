@@ -109,8 +109,9 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
             */
 
             var headerKey = this.$el.find("#args").val(), headerValue = this.$el.find("#values").val();
+
             if (headerKey === "" || headerValue === "" && this.defaultParam.actionType!=3){
-                alert("参数和值不能为空");
+                Utility.warning("参数和值不能为空");
                 return false
             } else {
                 var headerKeyName = "参数: " + headerKey + "<br>",
@@ -119,7 +120,7 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
 
             var reg = /^[a-zA-Z][a-zA-Z\d\-]{0,}$/;
             if(!reg.test(headerKey)){
-                alert("http头中只能输入字母、数字、”-“,必须以字母开头");
+                Utility.warning("http头中只能输入字母、数字、”-“,必须以字母开头");
                 return false;
             }
 
@@ -195,7 +196,7 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！");
+            Utility.alerts("保存成功！", "success", 5000);
             var args = {
                 originId:this.domainInfo.id,
                 locationId:this.locationId || null
@@ -204,7 +205,7 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
         },
         
         onModifySuccess: function(){
-            alert("修改成功！");
+            Utility.alerts("修改成功！", "success", 5000);
             var args = {
                 originId:this.domainInfo.id,
                 locationId:this.locationId || null
@@ -213,7 +214,7 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
         },
 
         onDelSuccess: function(){
-            alert("删除成功！");
+            Utility.alerts("删除成功！", "success", 5000);
             var args = {
                 originId:this.domainInfo.id,
                 locationId:this.locationId || null
@@ -250,9 +251,9 @@ define("luaHttpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onChannelListSuccess: function(){

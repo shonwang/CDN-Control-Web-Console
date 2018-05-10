@@ -1,64 +1,47 @@
-<table class="table table-striped table-hover">
-    <thead> 
-      <tr>
-        <th><input type="checkbox" id="inlineCheckbox6"></th>
-        <th>发布者</th>
-        <th>加速域名</th>
-        <th>下发类型</th>
-        <th>是否定制化</th>
-        <th>应用</th>
-        <th>拓扑关系</th>
-        <th>特殊分层策略</th>
-        <th>版本号</th>
-        <th>发布时间</th>   
-        <th>备注</th>
-        <th>操作</th>    
-      </tr>
-    </thead>
-    <tbody>
-        <% for(var i = 0; i < data.length; i++) { %>
-            <% if (data[i].get("isDisplay")) { %>
-            <tr data-id="<%=data[i].attributes.id%>">
-              <td><input type="checkbox" id="<%=data[i].id%>"></td>
-              <td><%=data[i].get("creatorName") || "神秘人"%></td>
-              <td><%=data[i].get("domain")%></td>
-              <td><%=data[i].get("configReasonName")%></td>
-              <td><%=data[i].get("isCustomName")%></td>
-              <td><%=data[i].get("platformName")%></td>
-              <td><%=data[i].get("topologyName")%></td>
-              <td><%=data[i].get("specialruleName")%></td>
-              <td><%=data[i].get("domainVersion")%></td>
-              <td><%=data[i].get("createTimeFormated")%></td>
-              <td>
-                <a href="javascript:void(0)" class="remark" id="<%=data[i].attributes['id']%>"
-                   data-container="body" 
-                   data-toggle="popover"
-                   data-trigger="hover" 
-                   data-placement="top" 
-                   data-content='<%=data[i].get("description") || "无" %>'>备注</a>
-              </td>
-              <td>
-                  <% if(permission.ViewConfigDetails) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit"
-                     title="查看详情" data-toggle="tooltip" data-placement="bottom">
-                      <span class="glyphicon glyphicon-eye-open"></span>
-                  </a>
-                  <% } %>
-                  <% if(permission.SendToSending) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="send"
-                     title="下发" data-toggle="tooltip" data-placement="bottom">
-                      <span class="glyphicon glyphicon-send"></span>
-                  </a>
-                  <% } %>
-                  <% if(permission.SendBackInWS) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="reject"
-                     title="打回" data-toggle="tooltip" data-placement="bottom">
-                      <span class="glyphicon glyphicon-remove-circle"></span>
-                  </a>
-                  <% } %>
-              </td>
-            </tr>
-            <% } %> 
-        <% } %>  
-    </tbody>
-</table>
+
+<% for(var i = 0; i < data.length; i++) { %>
+    <% if (data[i].get("isDisplay")) { %>
+    <tr data-id="<%=data[i].attributes.id%>">
+      <td>
+          <input type="checkbox" id="<%=data[i].get('id')%>" <% if (data[i].get("isChecked")) { %> checked="true"<% } %>>
+      </td>
+      <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("creatorName") || "神秘人"%></a></td>
+      <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("domain")%></a></td>
+      <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("configReasonName")%></a></td>
+      <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("isCustomName")%></a></td>
+      <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("platformName")%></a></td>
+      <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("topologyName")%></a></td>
+      <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("specialruleName")%></a></td>
+      <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("domainVersion")%></a></td>
+      <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("createTimeFormated")%></a></td>
+      <td>
+        <a href="javascript:void(0)" class="remark" id="<%=data[i].attributes['id']%>"
+           data-container="body" 
+           data-toggle="popover"
+           data-trigger="hover" 
+           data-placement="top" 
+           data-content='<%=data[i].get("description") || "无" %>'>备注</a>
+      </td>
+      <td>
+          <% if(permission.ViewConfigDetails) { %>
+          <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit"
+             title="<%=data[i].get('domain')%>&nbsp;查看详情" data-toggle="tooltip" data-placement="bottom">
+              <span class="glyphicon glyphicon-eye-open"></span>
+          </a>
+          <% } %>
+          <% if(permission.SendToSending) { %>
+          <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="send"
+             title="<%=data[i].get('domain')%>&nbsp;下发" data-toggle="tooltip" data-placement="bottom">
+              <span class="glyphicon glyphicon-send"></span>
+          </a>
+          <% } %>
+          <% if(permission.SendBackInWS) { %>
+          <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="reject"
+             title="<%=data[i].get('domain')%>&nbsp;打回" data-toggle="tooltip" data-placement="bottom">
+              <span class="glyphicon glyphicon-remove-circle"></span>
+          </a>
+          <% } %>
+      </td>
+    </tr>
+    <% } %> 
+<% } %>  

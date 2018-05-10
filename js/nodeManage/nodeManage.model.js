@@ -426,6 +426,21 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
+        getNodeProgress:function(args){
+            var url = BASE_URL + "/cd/node/initcfg/getprogress",
+                successCallback = function(res) {
+                    if(res){
+                      this.trigger("get.nodeInitSetup.success", res);
+                   }else{
+                      this.trigger("get.nodeInitSetup.error", res);
+                   }
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("get.nodeInitSetup.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
         selecOperatetRecords: function(args) {
             //resourceName=mstest01&type=1   1是节点 2是设备 3 是ip
             var url = BASE_URL + "/rs/history/selecOperatetRecords",
@@ -437,6 +452,28 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
                 }.bind(this),
                 errorCallback = function(response) {
                     this.trigger("get.operate.history.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        setdeliveryswitch:function(args){
+           var url = BASE_URL + "/cd/system/config/setdeliveryswitch",
+                successCallback = function(res) {
+                    this.trigger("set.deliveryswitch.success");
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("set.deliveryswitch.error", response);
+                }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+        startNodeInitSetup:function(args){
+            var url = BASE_URL + "/cd/node/initcfg/start",
+                successCallback = function(res) {
+                    this.trigger("start.nodeInitSetup.success", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("start.nodeInitSetup.error", response);
                 }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         }

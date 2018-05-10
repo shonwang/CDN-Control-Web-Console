@@ -187,7 +187,7 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            Utility.alerts("保存成功！", "success", 5000)
         },
 
         launchSendPopup: function(){
@@ -299,9 +299,9 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onClickSetupToggle: function(event){
@@ -466,7 +466,7 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
             //     re = /^[a-zA-Z0-9]+$/
             // if (value === "") return false;
             // if (!re.test(value) || value.length < 6 || value.length > 32){
-            //     alert("KEY只能由大小写字母，数字组成，长度6到32位")
+            //     Utility.warning("KEY只能由大小写字母，数字组成，长度6到32位")
             //     return false
             // }
             // Utility.onContentChange();
@@ -503,7 +503,7 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
 
             var newKey = this.$el.find(".base-setup #new-backup-key").val();
             if (this.defaultParam.baseSecretKeyBackup.length >= 4) {
-                alert("只能设置4个备选秘钥");
+                Utility.warning("只能设置4个备选秘钥");
                 return;
             }
             this.defaultParam.baseSecretKeyBackup.push({
@@ -557,15 +557,15 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.curAtuthDivisorParam = this.$el.find("#atuth-divisor-param").val();
             if (this.curAtuthDivisor === 4 && this.curAtuthDivisorParam === ""){
-                alert("参数不能为空")
+                Utility.warning("参数不能为空")
                 return;
             }
             if (this.curAtuthDivisor === 10 && this.curAtuthDivisorParam === ""){
-                alert("参数不能为空")
+                Utility.warning("参数不能为空")
                 return;
             }
             if (this.defaultParam.atuthDivisorArray.length >= 10) {
-                alert("最大可以设置10个");
+                Utility.warning("最大可以设置10个");
                 return;
             }
 
@@ -599,7 +599,7 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
             }.bind(this))
 
             if (filterArray.length <= 1) {
-                alert("最少不能少于2个");
+                Utility.warning("最少不能少于2个");
                 return;
             }
 
@@ -634,7 +634,7 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
 
             var newKey = this.$el.find(".advanced-setup #new-backup-key").val();
             if (this.defaultParam.advancedSecretKeyBackup.length >= 4) {
-                alert("只能设置4个备选秘钥");
+                Utility.warning("只能设置4个备选秘钥");
                 return;
             }
             this.defaultParam.advancedSecretKeyBackup.push({
@@ -649,27 +649,27 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
         checkBalabala: function(){
             var baseDeadlineTime = this.$el.find(".base-setup #deadline-time").val();
             if (this.defaultParam.isBaseSetup === 1 && this.defaultParam.baseDeadline === 2 && baseDeadlineTime === ""){
-                alert("你选择了标准设置失效时间自定义，需要填写失效时间！");
+                Utility.warning("你选择了标准设置失效时间自定义，需要填写失效时间！");
                 return;
             }
             var advancedDeadlineTime = this.$el.find(".advanced-setup #deadline-time").val();
             if (this.defaultParam.isBaseSetup === 2 && this.defaultParam.advancedDeadline === 2 && advancedDeadlineTime === ""){
-                alert("你选择了高级设置失效时间自定义，需要填写失效时间！");
+                Utility.warning("你选择了高级设置失效时间自定义，需要填写失效时间！");
                 return;
             }
             var baseKey = this.$el.find(".base-setup #secret-key-primary").val();
             if (this.defaultParam.isBaseSetup === 1 && baseKey === ""){
-                alert("你选择了标准设置，需要填写主享秘钥！");
+                Utility.warning("你选择了标准设置，需要填写主享秘钥！");
                 return;
             }
             var advancedKey = this.$el.find(".advanced-setup #secret-key-primary").val();
             if (this.defaultParam.isBaseSetup === 2 &&  advancedKey === ""){
-                alert("你选择了高级设置，需要填写主享秘钥！");
+                Utility.warning("你选择了高级设置，需要填写主享秘钥！");
                 return;
             }
             var atuthDivisor = this.$el.find(".advanced-setup #atuth-divisor").val();
             if (this.defaultParam.isBaseSetup === 2 &&  atuthDivisor === ""){
-                alert("你选择了高级设置，需要填写鉴权因子！");
+                Utility.warning("你选择了高级设置，需要填写鉴权因子！");
                 return;
             }
             var spliceMd5Min = this.$el.find("#md5-start").val(),
@@ -681,7 +681,7 @@ define("luaTimestamp.view", ['require','exports', 'template', 'modal.view', 'uti
                      parseInt(spliceMd5Max) - parseInt(spliceMd5Min) < 0 || 
                      spliceMd5Min < 1 || 
                      spliceMd5Max > 32)) {
-                    alert("你选择了高级设置截取MD5值，需要填写正确的取值范围！");
+                    Utility.warning("你选择了高级设置截取MD5值，需要填写正确的取值范围！");
                     return;
                 }
             }

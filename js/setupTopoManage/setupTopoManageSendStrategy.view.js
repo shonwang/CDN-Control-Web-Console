@@ -199,7 +199,7 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
         onClickSaveButton: function () {
             //this.currentStep.shell = $(".scriptContent").val();
             if (this.currentStep.nodeId.length == 0) {
-                alert('您还未选择节点');
+                Utility.warning('您还未选择节点');
                 return;
             }
             if (!this.isEdit) {
@@ -215,7 +215,7 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
         render: function (target) {
             this.$el.appendTo(target);
             if (this.allNodesforFilter.length === 0) {
-                alert("已经没有节点可以添加了")
+                Utility.warning("已经没有节点可以添加了")
                 this.onClickCancelButton();
             }
         }
@@ -460,12 +460,12 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
         },
 
         addSendViewSuccess: function (res) {
-            alert('保存成功');
+            Utility.alerts("保存成功！", "success", 5000);
             this.options.onSaveCallback && this.options.onSaveCallback();
         },
 
         modifySendStrategySuccess: function (res) {
-            alert('修改成功');
+            Utility.alerts("修改成功！", "success", 5000)
             this.options.onSaveCallback && this.options.onSaveCallback();
         },
 
@@ -475,9 +475,9 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
 
         onGetError: function (error) {
             if (error && error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         render: function (target) {
@@ -636,12 +636,12 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
         },
 
         deleteSendStrategySuccess: function () {
-            alert('删除成功');
+            Utility.alerts("删除成功！", "success", 5000)
             this.refreshList();
         },
 
         setDefaultStrategySuccess: function () {
-            alert('设置成功');
+            Utility.alerts("设置成功！", "success", 5000);
             this.refreshList();
         },
 
@@ -682,9 +682,9 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
 
         onGetError: function (error) {
             if (error && error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         render: function (target) {

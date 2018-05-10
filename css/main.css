@@ -1228,11 +1228,6 @@ vertical-align: middle;
 
 }
 
-.close {
-  font-size: 40px;
-  line-height: 0.5;
-}
-
 .advance-config-cacheSetup-panel-content {
   overflow: hidden;
 }
@@ -1274,24 +1269,6 @@ vertical-align: middle;
   margin-top: 5px;
 }
 
-.myRow {
-  clear: both;
-  margin: 15px 0;
-}
-
-.mainOrBackupSpan {
-  font-weight: 800;
-  float: left;
-}
-
-.myTable-ctn {
-  min-height: 300px;
-  overflow: auto;
-}
-
-.hideOperator {
-  display: none;
-}
 
 .CodeEditBox {
   min-height: 500px;
@@ -1356,6 +1333,42 @@ ul, li {
 .codeRate-add-tableList .table-responsive {
   height: 420px;
   overflow-y: auto;
+}
+
+.statusBox {
+  clear: both;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.topoNode-item {
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.table-a {
+  color: #333;
+  text-decoration: none;
+}
+
+.table-a:hover {
+  color: #333;
+  text-decoration: none;
+}
+
+.statusBox code {
+  height: 300px;
+  overflow: auto;
+}
+
+.myRow {
+  clear: both;
+  margin: 15px 0;
+}
+
+.mainOrBackupSpan {
+  font-weight: 800;
+  float: left;
 }
 
 /* 新增帐号迁移css */

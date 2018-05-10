@@ -148,7 +148,7 @@ define("deviceManage.ipManage.view", ['require','exports', 'template', 'modal.vi
         },
 
         onDeleteIpSuccess: function(){
-            alert("删除成功！")
+            Utility.alerts("删除成功！", "success", 5000)
             var id = this.model.get("id");
             this.collection.getDeviceIpList({deviceId:id});
             this.showIpManagePopup();
@@ -184,9 +184,9 @@ define("deviceManage.ipManage.view", ['require','exports', 'template', 'modal.vi
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert(error)
+                Utility.warning(error)
         },
 
         onClickItemEdit: function(event){
@@ -216,7 +216,7 @@ define("deviceManage.ipManage.view", ['require','exports', 'template', 'modal.vi
         },
 
         onClickUpateIP: function(){
-            alert("接口暂未提供！")
+            Utility.warning("接口暂未提供！")
         },
 
         onClickItemDelete: function(event){

@@ -101,17 +101,17 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
         },
 
         onDeleteLocationSuccess:function(){
-            alert("删除成功");
+            Utility.alerts("删除成功！", "success", 5000);
             this.onClickQueryButton();
         },
 
         onSortSuccess:function(){
-            alert("保存成功");
+            Utility.alerts("保存成功！", "success", 5000);
             this.onClickQueryButton();
         },
 
         onSaveSuccess: function(){
-            alert("添加成功！");
+            Utility.alerts("添加成功！", "success", 5000);
             this.onClickQueryButton();
         },
 
@@ -158,9 +158,9 @@ define("luaAdvanceConfig.view", ['require','exports', 'template', 'modal.view', 
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onGetAdvanceLocationListSuccess: function(){

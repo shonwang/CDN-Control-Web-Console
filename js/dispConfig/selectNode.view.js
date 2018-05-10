@@ -184,7 +184,7 @@ define("selectNode.view", ['require','exports', 'template', 'modal.view', 'utili
             }), checkedNodeIds = [];
 
             if (checkedNodes.length === 0) {
-                alert("至少选择一个再点确定！")
+                Utility.warning("至少选择一个再点确定！")
                 return false;
             }
             for (var i = 0; i < checkedNodes.length; i++){
@@ -243,9 +243,9 @@ define("selectNode.view", ['require','exports', 'template', 'modal.view', 'utili
         onGetError: function(error){
             this.$el.find("#node-list-filter").hide();
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         render: function(target, rootNode) {

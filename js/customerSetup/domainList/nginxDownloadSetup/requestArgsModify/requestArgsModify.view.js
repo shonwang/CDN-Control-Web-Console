@@ -92,7 +92,7 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
 
                         if (tempObj.length > 1) {
                             isContinue = false
-                            alert("添加了重复参数！")
+                            Utility.warning("添加了重复参数！")
                         }
                     }
                 }.bind(this)) 
@@ -110,7 +110,7 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            Utility.alerts("保存成功！", "success", 5000)
         },
 
         launchSendPopup: function(){
@@ -180,7 +180,7 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
                 value: newKey
             });
             if (this.defaultParam.addParamList.length > 20){
-                alert("只能添加20个");
+                Utility.warning("只能添加20个");
                 return
             }
             this.updateAddArgsTable();
@@ -224,9 +224,9 @@ define("requestArgsModify.view", ['require','exports', 'template', 'modal.view',
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         hide: function(){

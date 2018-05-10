@@ -31,7 +31,7 @@ define("pnoSetup.view", ['require', 'exports', 'template', 'utility', "modal.vie
                     value = this.$el.find("#input-value").val().trim();
 
                 if (name === "") {
-                    alert("名称不能为空！")
+                    Utility.warning("名称不能为空！")
                     return false;
                 }
 
@@ -40,7 +40,7 @@ define("pnoSetup.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 }.bind(this))
 
                 if (repeatList.length > 0) {
-                    alert(name + " 控制台显示值已经添加过了!")
+                    Utility.warning(name + " 控制台显示值已经添加过了!")
                     return false
                 }
 
@@ -85,7 +85,7 @@ define("pnoSetup.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 this.collection.on("get.params.success", $.proxy(this.onParamsListSuccess, this));
                 this.collection.on("get.params.error", $.proxy(this.onGetError, this));
                 this.collection.on("set.params.success", function() {
-                    alert("修改成功！")
+                    Utility.alerts("修改成功！", "success", 5000)
                     this.onClickQueryButton();
                 }.bind(this));
                 this.collection.on('set.params.error', $.proxy(this.onGetError, this));
@@ -121,9 +121,9 @@ define("pnoSetup.view", ['require', 'exports', 'template', 'utility', "modal.vie
 
             onGetError: function(error) {
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
             },
 
             onParamsListSuccess: function() {

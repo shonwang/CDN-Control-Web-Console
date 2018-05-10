@@ -143,9 +143,9 @@ define("routes.customerSetup", ['require', 'exports'],
                         this.onGetError = function(error) {
                             this.blockUrlView.$elload.remove();
                             if (error && error.message) {
-                                alert(error.message);
+                                Utility.alerts(error.message);
                             } else {
-                                alert('网络阻塞,请刷新重试');
+                                Utility.warning('网络阻塞,请刷新重试');
                             }
                         }
                         query = JSON.parse(query);

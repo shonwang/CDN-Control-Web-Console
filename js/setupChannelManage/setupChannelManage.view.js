@@ -118,7 +118,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     });
 
                     if (checkedList.length !== topoTypeDomains.length) {
-                        alert("所选域名关联的拓扑不是同一种应用类型，不能进行批量操作！");
+                        Utility.warning("所选域名关联的拓扑不是同一种应用类型，不能进行批量操作！");
                         return;
                     }
 
@@ -175,7 +175,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     });
 
                     if (checkedList.length !== layerTypeDomains.length) {
-                        alert("所选域名关联的特殊分层策略不是同一种应用类型，不能进行批量操作！");
+                        Utility.warning("所选域名关联的特殊分层策略不是同一种应用类型，不能进行批量操作！");
                         return;
                     }
 

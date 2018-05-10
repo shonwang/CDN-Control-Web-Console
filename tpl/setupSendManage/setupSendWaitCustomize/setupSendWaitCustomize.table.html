@@ -17,13 +17,13 @@
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].attributes.id%>">
               <td><input type="checkbox" id="<%=data[i].id%>"></td>
-              <td><%=data[i].get("creatorName") || "神秘人"%></td>
-              <td><%=data[i].get("domain")%></td>
-              <td><%=data[i].get("configReasonName")%></td>
-              <td><%=data[i].get("platformName")%></td>
-              <td><%=data[i].get("topologyName")%></td>
-              <td><%=data[i].get("domainVersion")%></td>
-              <td><%=data[i].get("createTimeFormated")%></td>
+              <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("creatorName") || "神秘人"%></a></td>
+              <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("domain")%></a></td>
+              <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("configReasonName")%></a></td>
+              <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("platformName")%></a></td>
+              <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("topologyName")%></a></td>
+              <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("domainVersion")%></a></td>
+              <td><a title='<%=data[i].get("domain")%>' data-toggle="tooltip" class="table-a"><%=data[i].get("createTimeFormated")%></a></td>
               <td>
                 <a href="javascript:void(0)" class="remark" id="<%=data[i].attributes['id']%>"
                    data-container="body" 
@@ -34,13 +34,13 @@
               </td>
               <td>
                   <% if(permission.EditCustomize) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit">编辑</a>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="edit" title='<%=data[i].get("domain")%>' data-toggle="tooltip">编辑</a>
                   <% } %>
                   <% if(permission.SendToWaitSend) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="send">发布到待下发</a>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="send" title='<%=data[i].get("domain")%>' data-toggle="tooltip">发布到待下发</a>
                   <% } %>
                   <% if(permission.SendBackInWC) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="reject">打回</a>
+                  <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="reject" title='<%=data[i].get("domain")%>' data-toggle="tooltip">打回</a>
                   <% } %>
               </td>
             </tr>

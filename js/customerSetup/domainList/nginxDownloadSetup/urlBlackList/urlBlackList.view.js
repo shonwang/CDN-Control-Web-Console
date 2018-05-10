@@ -62,13 +62,13 @@ define("urlBlackList.view", ['require','exports', 'template', 'modal.view', 'uti
                 for (var i = 0; i < urls.length; i++){
                     if (!this.isStartWithHTTP(urls[i])){
                         error = {message: "第" + (i + 1) + "个URL需要输入http://！"};
-                        alert(error.message)
+                        Utility.alerts(error.message)
                         return false;
                     }
                 }
             } else if (!this.isStartWithHTTP(value)){
                 error = {message: "需要输入http://！"};
-                alert(error.message)
+                Utility.alerts(error.message)
                 return false;
             } 
             return true;
@@ -115,9 +115,9 @@ define("urlBlackList.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         hide: function(){

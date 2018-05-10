@@ -119,7 +119,7 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
 
             var headerKey = this.$el.find("#args").val(), headerValue = this.$el.find("#values").val();
             if (headerKey === "" || headerValue === ""){
-                alert("参数和值不能为空");
+                Utility.warning("参数和值不能为空");
                 return false
             } else {
                 var headerKeyName = "参数: " + headerKey + "<br>",
@@ -195,7 +195,7 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            Utility.alerts("保存成功！", "success", 5000)
         },
 
         launchSendPopup: function(){
@@ -248,9 +248,9 @@ define("httpHeaderOpt.view", ['require','exports', 'template', 'modal.view', 'ut
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onChannelListSuccess: function(){

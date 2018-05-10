@@ -23,18 +23,58 @@ define("setupTopoManage.history.view", ['require', 'exports', 'template', 'modal
                 this.collection.off('get.version.error');
                 this.collection.on('get.version.success', $.proxy(this.initSetup, this));
                 this.collection.on('get.version.error', $.proxy(this.onGetError, this));
+                this.collection.off('set.version.success');
+                this.collection.off('set.version.error');
+                this.collection.on('set.version.success', $.proxy(this.onSetVersionSuccess, this));
+                this.collection.on('set.version.error', $.proxy(this.onGetError, this));
                 this.collection.getTopoVersion({
                     innerId: this.model.get('id')
                 });
                 
             },
             
-            onSetVersionSuccess: function() {
-                // this.collection.getTopoVersion({
-                //     innerId: this.curVersion
-                // });
-                this.onClickCancelButton();
-                this.options.onSaveCallback && this.options.onSaveCallback(this.curVersion);
+            onSetVersionSuccess: function(res) {
+                var message = "", detail = "";
+                if (res.message.length > 200) {
+                    message = res.message.substring(0, 99) + '...<a href="javascript:void(0)" class="message">详情</a><br>';
+                    message = message + '<div class="message-list" style="display:none">' + res.message + '</div>';
+                } else {
+                    message = res.message + "<br>"
+                }
+                if (res.affectNode&&res.affectNode.length > 0) {
+                    message = message + '影响的节点:<a href="javascript:void(0)" class="detail">详情</a><br>';
+                    _.each(res.affectNode, function(el){
+                        detail = detail + el.name + ", ";
+                    }.bind(this))
+                    message = message + '<div class="detail-list" style="display:none">' + detail + '</div>'
+                }
+                if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
+                var options = {
+                    title: "提示",
+                    body: message,
+                    backdrop: 'static',
+                    type: 1
+                }
+                this.commonPopup = new Modal(options);
+                this.commonPopup.$el.find(".detail").on("click", function(event){
+                    if (this.commonPopup.$el.find(".detail-list").css("display") == "none") {
+                        this.commonPopup.$el.find(".detail-list").show(200)
+                    } else {
+                        this.commonPopup.$el.find(".detail-list").hide(200)
+                    }
+                }.bind(this))
+                this.commonPopup.$el.find(".message").on("click", function(event){
+                    if (this.commonPopup.$el.find(".message-list").css("display") == "none") {
+                        this.commonPopup.$el.find(".message-list").show(200)
+                    } else {
+                        this.commonPopup.$el.find(".message-list").hide(200)
+                    }
+                }.bind(this))
+                this.collection.getTopoVersion({
+                    innerId: this.curVersion
+                });
+                // this.onClickCancelButton();
+                // this.options.onSaveCallback && this.options.onSaveCallback(this.curVersion);
             },
 
             initSetup: function(data) {
@@ -61,6 +101,7 @@ define("setupTopoManage.history.view", ['require', 'exports', 'template', 'modal
                     }));
                 }
 
+                //this.table.find("tbody .publish").hide();
                 this.table.find("tbody .publish").on("click", $.proxy(this.onClickItemPublish, this));
                 this.table.find("tbody .views").on("click", $.proxy(this.onClickItemViews, this));
 
@@ -112,9 +153,9 @@ define("setupTopoManage.history.view", ['require', 'exports', 'template', 'modal
 
             onGetError: function(error) {
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
             },
 
             render: function(target) {

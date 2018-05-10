@@ -64,7 +64,7 @@ define("liveEdge302.view", ['require','exports', 'template', 'modal.view', 'util
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            Utility.alerts("保存成功！", "success", 5000)
         },
 
         launchSendPopup: function(){
@@ -115,9 +115,9 @@ define("liveEdge302.view", ['require','exports', 'template', 'modal.view', 'util
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         hide: function(){

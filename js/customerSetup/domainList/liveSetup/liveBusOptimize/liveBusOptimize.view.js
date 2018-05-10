@@ -128,7 +128,7 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
         onBlurCloseClient: function(target){
             var value = parseInt(this.closeClientEl.find("#closeclient").val());
             if (!Utility.isNumber(value) || value < 1 || value > 60)
-                alert("延时关闭填写内容为正整数，默认为5秒，最小值为1秒，最大值为60秒")
+                Utility.warning("延时关闭填写内容为正整数，默认为5秒，最小值为1秒，最大值为60秒")
         },
 
         initTimeoutSetup: function(){
@@ -143,7 +143,7 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
         onBlurTimeout: function(target){
             var value = parseInt(this.timeoutEl.find("#timeout").val());
             if (!Utility.isNumber(value) || value < 5 || value > 60)
-                alert("无流断开的超时时间填写内容为正整数，默认为20秒，最小值为5秒，最大值为60秒")
+                Utility.warning("无流断开的超时时间填写内容为正整数，默认为20秒，最小值为5秒，最大值为60秒")
         },
 
         initGopSetup: function(){
@@ -180,26 +180,26 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
         onBlurGopDuration: function(target){
             var value = parseInt(this.gopEl.find("#gopduration").val());
             if (!Utility.isNumber(value) || value < 2 || value > 30)
-                alert("gop缓存时长填写内容为正整数，默认为5秒，最小值为2秒，最大值为30秒")
+                Utility.warning("gop缓存时长填写内容为正整数，默认为5秒，最小值为2秒，最大值为30秒")
         },
 
         onBlurGopNum: function(target){
             var value = parseInt(this.gopEl.find("#gopnum").val());
             if (!Utility.isNumber(value) || value < 1 || value > 15)
-                alert("gop缓存个数填写内容为正整数，默认为2个，最小值为1个，最大值为15个")
+                Utility.warning("gop缓存个数填写内容为正整数，默认为2个，最小值为1个，最大值为15个")
         },
 
         onBlurGopMaxDuration: function(){
             var value = parseInt(this.gopEl.find("#gopmaxduration").val());
             var minVal = parseInt(this.gopEl.find("#gopduration").val());
             if (!Utility.isNumber(value) || value < minVal || value > 30)
-                alert("最大gop缓存时长填写内容为正整数，默认为30秒，最小值不能小于gop缓存时长填写的时间，最大值为30秒")
+                Utility.warning("最大gop缓存时长填写内容为正整数，默认为30秒，最小值不能小于gop缓存时长填写的时间，最大值为30秒")
         },
 
         onBlurGopMinLength: function(){
             var value = parseInt(this.gopEl.find("#gopminlength").val());
             if (!Utility.isNumber(value) || value < 1 || value > 30)
-                alert("最大gop缓存时长填写内容为正整数，默认为30秒，最小值不能小于gop缓存时长填写的时间，最大值为30秒")
+                Utility.warning("最大gop缓存时长填写内容为正整数，默认为30秒，最小值不能小于gop缓存时长填写的时间，最大值为30秒")
         },
 
         onClickGopMinLengthToggle: function(event){
@@ -220,14 +220,14 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
                 this.defaultParam.gopType = 1;
                 value = parseInt(this.gopEl.find("#gopduration").val());
                 if (!Utility.isNumber(value) || value < 2 || value > 30){
-                    alert("gop缓存时长填写内容为正整数，默认为5秒，最小值为2秒，最大值为30秒")
+                    Utility.warning("gop缓存时长填写内容为正整数，默认为5秒，最小值为2秒，最大值为30秒")
                     return;
                 }
             } else if (this.gopEl.find("#gopCacheType2").get(0).checked === true){
                 this.defaultParam.gopType = 2;
                 value = parseInt(this.gopEl.find("#gopnum").val());
                 if (!Utility.isNumber(value) || value < 1 || value > 15){
-                    alert("gop缓存个数填写内容为正整数，默认为2个，最小值为1个，最大值为15个")
+                    Utility.warning("gop缓存个数填写内容为正整数，默认为2个，最小值为1个，最大值为15个")
                     return;
                 }
             }
@@ -236,7 +236,7 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
             var gopMaxDuration = parseInt(this.gopEl.find("#gopmaxduration").val());
             var minVal = parseInt(this.gopEl.find("#gopduration").val());
             if (!Utility.isNumber(gopMaxDuration) || gopMaxDuration < minVal || gopMaxDuration > 30){
-                alert("最大gop缓存时长填写内容为正整数，默认为30秒，最小值不能小于gop缓存时长填写的时间，最大值为30秒")
+                Utility.warning("最大gop缓存时长填写内容为正整数，默认为30秒，最小值不能小于gop缓存时长填写的时间，最大值为30秒")
                 return;
             }
             this.defaultParam.gopMaxDuration = gopMaxDuration;
@@ -244,7 +244,7 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
             if (this.defaultParam.gopMinSendFlag === 1) {
                 var gopMinSend = parseInt(this.gopEl.find("#gopminlength").val());
                 if (!Utility.isNumber(gopMinSend) || gopMinSend < 1 || gopMinSend > 30){
-                    alert("最大gop缓存时长填写内容为正整数，默认为30秒，最小值不能小于gop缓存时长填写的时间，最大值为30秒")
+                    Utility.warning("最大gop缓存时长填写内容为正整数，默认为30秒，最小值不能小于gop缓存时长填写的时间，最大值为30秒")
                     return;
                 }
                 this.defaultParam.gopMinSend = gopMinSend;
@@ -252,14 +252,14 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
 
             var noFlowTimeout = parseInt(this.timeoutEl.find("#timeout").val());
             if (!Utility.isNumber(noFlowTimeout) || noFlowTimeout < 5 || noFlowTimeout > 60){
-                alert("无流断开的超时时间填写内容为正整数，默认为20秒，最小值为5秒，最大值为60秒")
+                Utility.warning("无流断开的超时时间填写内容为正整数，默认为20秒，最小值为5秒，最大值为60秒")
                 return;
             }
             this.defaultParam.noFlowTimeout = noFlowTimeout
 
             var delayClose = parseInt(this.closeClientEl.find("#closeclient").val());
             if (!Utility.isNumber(delayClose) || delayClose < 1 || delayClose > 60) {
-                alert("延时关闭填写内容为正整数，默认为5秒，最小值为1秒，最大值为60秒")
+                Utility.warning("延时关闭填写内容为正整数，默认为5秒，最小值为1秒，最大值为60秒")
                 return;
             }
             this.defaultParam.delayClose = delayClose
@@ -279,7 +279,7 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            Utility.alerts("保存成功！", "success", 5000)
         },
 
         launchSendPopup: function(){
@@ -314,9 +314,9 @@ define("liveBusOptimize.view", ['require','exports', 'template', 'modal.view', '
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         hide: function(){

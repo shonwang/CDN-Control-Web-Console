@@ -683,7 +683,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
         onClickSaveBtn: function(){
             if ((this.hostType === 2 && this.defaultParam.originType === 1 && this.defaultParam.backsourceFlag === 0) || 
                 (this.hostType === 2 && this.defaultParam.backsourceFlag === 1)){
-                alert("修改回源Host设置为源站域名，不能使用IP回源");
+                Utility.warning("修改回源Host设置为源站域名，不能使用IP回源");
                 return;
             };
             if (this.defaultParam.backsourceFlag === 0 && !this.checkBaseOrigin()){
@@ -701,7 +701,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
                 }
                 defaultPrimary = this.$el.find(".default #primary-1").val().trim();
                 if (defaultPrimary === ""){
-                    alert("默认源主必填！")
+                    Utility.warning("默认源主必填！")
                     return;
                 }
                 //校验备源
@@ -717,14 +717,14 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
                 ipNum = this.$el.find("#ip-num").val();
                 if (this.defaultParam.backsourceAdvance.backsourcePolicy === 2 && (!ipNum || parseInt(ipNum) > 10 || parseInt(ipNum) < 1)){
                     this.$el.find("#ip-num").focus();
-                    alert("回源策略IP数量取值1-10")
+                    Utility.warning("回源策略IP数量取值1-10")
                     return;
                 }
                 var isError = false;
                 _.each(this.defaultParam.backsourceAdvance.strategyAdvanceList, function(el, index){
                     if (el.openFlag === 1 && el.backsourcePolicy === 2 && 
                        (!el.backsourceBestcount || parseInt(el.backsourceBestcount) > 10 || parseInt(el.backsourceBestcount) < 1)){
-                       alert("高级回源策略第" + (index + 1) + "行IP数量取值1-10")
+                       Utility.warning("高级回源策略第" + (index + 1) + "行IP数量取值1-10")
                        isError = true
                     }
                 }.bind(this))
@@ -760,7 +760,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            Utility.alerts("保存成功！", "success", 5000)
             this.update(this.options.query, this.options.query2, this.target);
         },
 
@@ -798,25 +798,25 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
             var domainName = this.userInfo.domain;
 
             if (!originAddress) {
-                alert("不能为空");
+                Utility.warning("不能为空");
                 return false;
             }
             if (originType == 1) {
                 var ipArray = originAddress.split(",");
                 if (ipArray.length > 10) {
-                    alert("你的IP数是否超过了10个。");
+                    Utility.warning("你的IP数是否超过了10个。");
                     return false;
                 }
                 for (var i = 0; i < ipArray.length; i++) {
                     result = Utility.isIP(ipArray[i].trim());
                     if (!result) {
-                        alert("你的IP填写有误,请检查");
+                        Utility.warning("你的IP填写有误,请检查");
                         return false;
                     }
                 }
             } else if (originType == 2 || originType == 3) {
                 if (domainName == originAddress) {
-                    alert("源站地址不能与加速域名相同");
+                    Utility.warning("源站地址不能与加速域名相同");
                     return false;
                 }
                 //域名校验
@@ -826,7 +826,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
                     originAddress.substr(0, 1) !== "-" && originAddress.substr(-1, 1) !== "-") {
                     return true;
                 } else {
-                    alert("域名填写错误");
+                    Utility.warning("域名填写错误");
                     return false;
                 }
             }
@@ -875,7 +875,7 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
         onClickHostSaveBtn: function(){
             if ((this.defaultParamModifyHost.domainType === 2 && this.originType === 1 && this.isUseAdvanced === 1) ||
                 (this.defaultParamModifyHost.domainType === 2 && this.isUseAdvanced === 2)) {
-                alert("未设置回源域名不能使用此项");
+                Utility.warning("未设置回源域名不能使用此项");
                 return;
             }
             if (this.defaultParamModifyHost.domainType === 3) {
@@ -955,9 +955,9 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         hide: function(){

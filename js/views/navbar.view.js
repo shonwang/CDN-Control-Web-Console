@@ -86,7 +86,7 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
                         this.redirect();
                     }.bind(this),
                     errorCallBack  : function(){
-                        alert("权限系统岂是你说来就来，说走就走的！！！")
+                        Utility.warning("权限系统岂是你说来就来，说走就走的！！！")
                     }
                 }
                 this.sendRequest(data)

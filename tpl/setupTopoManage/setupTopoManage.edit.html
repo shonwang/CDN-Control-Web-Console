@@ -1,4 +1,4 @@
-<div class="setup-topo-manage-edit">
+<div class="setup-topo-manage-edit fadeInLeft animated">
     <h4>配置下发<small>/拓扑管理</small></h4>
     <div class="well ">
         <div class="add-topo">
@@ -17,6 +17,18 @@
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu"></ul>
+                    </div>
+                </div>
+                <div class="form-group edit-show" style="display: none">
+                    <label for="input-version" class="col-sm-2 control-label">版本</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="input-version" disabled="disabled">
+                    </div>
+                </div>
+                <div class="form-group edit-show" style="display: none">
+                    <label for="input-isused" class="col-sm-2 control-label">正在使用</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="input-isused" disabled="disabled">
                     </div>
                 </div>
                 <div class="form-group">
@@ -91,7 +103,8 @@
             </div>
             <hr>
             <div class="text-center opt-ctn">
-                <a href="javascript:void(0)" class="btn btn-primary save">保存</a>
+                <a href="javascript:void(0)" class="btn btn-primary save">暂存</a>
+                <a href="javascript:void(0)" class="btn btn-success saveAndSend">发布</a>
                 <a href="javascript:void(0)" class="btn btn-default cancel">取消</a>
             </div>
         </div>

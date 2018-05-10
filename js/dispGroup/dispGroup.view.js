@@ -21,9 +21,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onGetNodeSuccess: function(res){
@@ -63,9 +63,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         getArgs: function(){
@@ -102,9 +102,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onGetNodeSuccess: function(res){
@@ -196,9 +196,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onClickQueryButton: function(){
@@ -501,9 +501,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         initDropmenu: function(){
@@ -631,16 +631,16 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             };
             var ttl = this.$el.find("#input-ttl").val(), re = /^\d+$/;
             if (!re.test(ttl)){
-                alert("TTL只能填入数字！");
+                Utility.warning("TTL只能填入数字！");
                 return false;
             }
             if (parseInt(ttl) >= 3600 || parseInt(ttl) <= 60){
-                alert("60 < TTL < 3600");
+                Utility.warning("60 < TTL < 3600");
                 return false; 
             }
             var setupNodes = this.$el.find(".setup input:checked");
             if (setupNodes.length === 0){
-                alert("配置至少选择一项！")
+                Utility.warning("配置至少选择一项！")
                 return false;
             }
             if (setupNodes.length === 1&&setupNodes.get(0).id === "inlineCheckbox1"){
@@ -702,26 +702,26 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.collection.on("get.dispGroup.error", $.proxy(this.onGetError, this));
 
             this.collection.on("add.dispGroup.success", function(){
-                alert("添加成功！")
+                Utility.alerts("添加成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("add.dispGroup.error", $.proxy(this.onGetError, this));
 
             this.collection.on("update.dispGroup.success", function(){
-                alert("编辑成功！")
+                Utility.alerts("编辑成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("update.dispGroup.error", $.proxy(this.onGetError, this));
 
             this.collection.on("delete.dispGroup.success", function(){
-                alert("删除成功！")
+                Utility.alerts("删除成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("delete.dispGroup.error", $.proxy(this.onGetError, this));
 
             this.collection.on("copy.dispGroup.success", function(){
                 this.disablePopup&&this.disablePopup.$el.modal('hide');
-                alert("复制成功！")
+                Utility.alerts("复制成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("copy.dispGroup.error", function(res){
@@ -730,13 +730,13 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             }.bind(this));
 
             this.collection.on("update.dispGroup.status.success", function(){
-                alert("操作成功！")
+                Utility.alerts("操作成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("update.dispGroup.status.error", $.proxy(this.onGetError, this));
 
             this.collection.on("add.dispGroup.channel.success", function(){
-                alert("操作成功！")
+                Utility.alerts("操作成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("add.dispGroup.channel.error", $.proxy(this.onGetError, this));
@@ -810,9 +810,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onDispGroupListSuccess: function(){

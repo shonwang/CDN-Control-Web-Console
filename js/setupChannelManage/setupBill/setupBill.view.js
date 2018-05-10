@@ -39,7 +39,7 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.liveOriginData=data.backSourceDto;
                 }
             } catch(e){
-                alert("返回的JSON数据有问题！")
+                Utility.warning("返回的JSON数据有问题！")
             }
             this.initBaseInfo();
         },
@@ -117,7 +117,7 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                 //直播
                 this.initLiveOriginSetup();
             } else {
-                alert("您的平台不是下载也不是直播，applicationType为" + applicationType);
+                Utility.warning("您的平台不是下载也不是直播，applicationType为" + applicationType);
             }
         },
 
@@ -1071,9 +1071,9 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         hide: function(){

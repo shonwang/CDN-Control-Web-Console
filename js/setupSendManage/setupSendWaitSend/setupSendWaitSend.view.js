@@ -21,6 +21,7 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".mulit-send").on("click", $.proxy(this.onClickMultiSend, this))
+            this.$el.find(".mulit-reject").on("click", $.proxy(this.onClickMultiReject, this))
 
             this.enterKeyBindQuery();
 
@@ -53,6 +54,10 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
         },
 
         onChannelListSuccess: function() {
+            this.curLayer = "All"
+            this.$el.find("#dropdown-layer .cur-value").html("全部");
+            this.curTopo = "All"
+            this.$el.find("#dropdown-topo .cur-value").html("全部");
             this.initTable();
             if (!this.isInitPaginator) this.initPaginator();
         },
@@ -60,6 +65,22 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
         onRollBackSuccess: function() {
             Utility.alerts("操作成功！", "success", 3000);
             this.update(this.target)
+        },
+        
+        onClickMultiReject:function(){
+            Utility.confirm("你确定要打回吗？", function(){
+                var checkedList = this.collection.filter(function(model) {
+                    return model.get("isChecked") === true;
+                });
+
+                this.domainArray = [];
+                _.each(checkedList, function(el, index, ls) {
+                    this.domainArray.push({
+                        predeliveryId: el.get("id")
+                    });
+                }.bind(this))
+                this.collection.rollBack(this.domainArray)
+            }.bind(this))      
         },
 
         onClickMultiSend: function() {
@@ -86,7 +107,6 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
             } else {
                 this.currentModel = checkedList[0];
             }
-
             this.showSelectStrategyPopup();
         },
 
@@ -167,21 +187,24 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
             this.queryArgs.page = 1;
             this.queryArgs.domain = this.$el.find("#input-domain").val().trim();
             if (this.queryArgs.domain == "") this.queryArgs.domain = null;
-            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.$el.find(".table-ctn tbody").html('<tr><td  colspan="12" class="text-center"><div class="domain-spinner">正在加载...</div></td></tr>');
             this.$el.find(".pagination").html("");
             this.collection.queryChannel(this.queryArgs);
         },
 
         initTable: function() {
             this.$el.find(".mulit-send").attr("disabled", "disabled");
-            this.table = $(_.template(template['tpl/setupSendManage/setupSendWaitSend/setupSendWaitSend.table.html'])({
+            this.$el.find(".mulit-reject").attr("disabled", "disabled");
+            this.tableList = $(_.template(template['tpl/setupSendManage/setupSendWaitSend/setupSendWaitSend.table.html'])({
                 data: this.collection.models,
                 permission: AUTH_OBJ
             }));
+
+            this.table = this.$el.find(".table-ctn .table");
             if (this.collection.models.length !== 0)
-                this.$el.find(".table-ctn").html(this.table[0]);
+                this.$el.find(".table-ctn .table tbody").html(this.tableList);
             else
-                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+                this.$el.find(".table-ctn .table tbody").html('<tr><td  colspan="12" class="text-center">' + _.template(template['tpl/empty.html'])() + '</td></tr>');
 
             this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
             this.table.find("tbody .send").on("click", $.proxy(this.onClickItemSend, this));
@@ -192,6 +215,7 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
 
             this.table.find(".remark").popover();
             this.table.find("[data-toggle='tooltip']").tooltip();
+            this.table.find("thead input").get(0).checked = false;
         },
 
         onClickItemSend: function(event) {
@@ -210,7 +234,6 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
                 }
 
                 var model = this.collection.get(id);
-
                 this.domainArray = [{
                     domain: model.get("domain"),
                     id: model.get("id"),
@@ -235,10 +258,9 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
                 } else {
                     id = $(eventTarget).attr("id");
                 }
-
-                this.collection.rollBack({
+                this.collection.rollBack([{
                     predeliveryId: id
-                })
+                }])
             }.bind(this))
         },
 
@@ -288,8 +310,10 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
                 this.table.find("thead input").get(0).checked = false;
             if (checkedList.length === 0) {
                 this.$el.find(".mulit-send").attr("disabled", "disabled");
+                this.$el.find(".mulit-reject").attr("disabled", "disabled");
             } else {
                 this.$el.find(".mulit-send").removeAttr("disabled", "disabled");
+                this.$el.find(".mulit-reject").removeAttr("disabled", "disabled");
             }
         },
 
@@ -303,8 +327,10 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
             this.table.find("tbody tr").find("input").prop("checked", eventTarget.checked);
             if (eventTarget.checked) {
                 this.$el.find(".mulit-send").removeAttr("disabled", "disabled");
+                this.$el.find(".mulit-reject").removeAttr("disabled", "disabled");
             } else {
                 this.$el.find(".mulit-send").attr("disabled", "disabled");
+                this.$el.find(".mulit-reject").attr("disabled", "disabled");
             }
         },
 
@@ -319,7 +345,7 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
                 currentPage: 1,
                 onPageChange: function(num, type) {
                     if (type !== "init") {
-                        this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                        this.$el.find(".table-ctn tbody").html('<tr><td  colspan="12" class="text-center"><div class="domain-spinner">正在加载...</div></td></tr>');
                         var args = _.extend(this.queryArgs);
                         args.page = num;
                         args.count = this.queryArgs.count;
@@ -422,6 +448,7 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
                     "size": 99999
                 }
                 this.mySetupTopoManageModel.getTopoinfo(postParam);
+                this.curTopo = "All";
             }.bind(this))
 
             require(["setupAppManage.model"], function(SetupAppManageModel) {
@@ -431,17 +458,26 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
                 this.mySetupAppManageModel.getAppInfo();
             }.bind(this))
 
-            this.collection.topoSpecialStrategy({t: new Date().valueOf()});
+            this.curLayer = "All";
+            this.collection.getStrategyList({
+                "name": null,
+                "type": null,
+                "page": 1,
+                "size": 99999
+            });
+            //this.collection.topoSpecialStrategy({t: new Date().valueOf()});
         },
 
         onGetTopoSuccess: function() {
             var topoArray = [{
                 name: "全部",
                 value: "All"
-            }, {
-                name: "默认拓扑",
-                value: "default"
-            }]
+            }, 
+            // {
+            //     name: "默认拓扑",
+            //     value: "default"
+            // }
+            ]
             this.mySetupTopoManageModel.each(function(el, index, lst) {
                 topoArray.push({
                     name: el.get('name'),
@@ -451,66 +487,64 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
 
             rootNode = this.$el.find(".dropdown-topo");
             Utility.initDropMenu(rootNode, topoArray, function(value) {
-                if (value == "All") {
-                    this.collection.each(function(el) {
-                        el.set("isDisplay", true)
-                        el.set("isChecked", false)
-                    }.bind(this))
-                } else {
-                    this.collection.each(function(el) {
-                        el.set("isDisplay", false)
-                        el.set("isChecked", false)
-                    }.bind(this))
-                    this.filterByTopo("topologyId", value)
-                }
-                this.initTable();
+                this.curTopo = value;
+                this.filterByTopoAndLayer();
             }.bind(this));
         },
 
-        filterByTopo: function(type, topoId) {
+        filterByTopoAndLayer: function() {
+            this.collection.each(function(el) {
+                el.set("isDisplay", false);
+                el.set("isChecked", false);
+            }.bind(this))
+
             var topoDomainArray = [];
-            if (topoId !== "default") {
+            topoId = this.curTopo;
+
+            if (topoId !== "default" && topoId !== "All") {
                 topoDomainArray = this.collection.filter(function(obj) {
-                    return parseInt(obj.get(type)) === parseInt(topoId)
+                    return parseInt(obj.get("topologyId")) === parseInt(topoId)
                 }.bind(this));
+            } else if (topoId == "All") {
+                topoDomainArray = this.collection.models;
             } else {
                 topoDomainArray = this.collection.filter(function(obj) {
-                    return !obj.get(type)
+                    return !obj.get("topologyId")
                 }.bind(this));
             }
 
-            _.each(topoDomainArray, function(el) {
+            var layerDomainArray = [];
+            layerId = this.curLayer;
+
+            if (layerId == "All") {
+                layerDomainArray = topoDomainArray;
+            } else {
+                layerDomainArray = topoDomainArray.filter(function(obj) {
+                    return parseInt(obj.get("specialStrategyId")) === parseInt(layerId)
+                }.bind(this));         
+            }
+            _.each(layerDomainArray, function(el) {
                 el.set("isDisplay", true)
             }.bind(this))
+            this.initTable();
         },
 
         onGetLayerSuccess: function(data) {
-            var topoArray = [{
+            var layerArray = [{
                 name: "全部",
                 value: "All"
             }]
-            _.each(data, function(el, index, lst) {
-                topoArray.push({
+            _.each(data.rows, function(el, index, lst) {
+                layerArray.push({
                     name: el.name,
                     value: el.id
                 })
             }.bind(this))
 
             rootNode = this.$el.find(".dropdown-layer");
-            Utility.initDropMenu(rootNode, topoArray, function(value) {
-                if (value == "All") {
-                    this.collection.each(function(el) {
-                        el.set("isDisplay", true)
-                        el.set("isChecked", false)
-                    }.bind(this))
-                } else {
-                    this.collection.each(function(el) {
-                        el.set("isDisplay", false)
-                        el.set("isChecked", false)
-                    }.bind(this))
-                    this.filterByTopo("specialStrategyId", value)
-                }
-                this.initTable();
+            Utility.initDropMenu(rootNode, layerArray, function(value) {
+                this.curLayer = value;
+                this.filterByTopoAndLayer();
             }.bind(this));
         },
 
@@ -528,10 +562,30 @@ define("setupSendWaitSend.view", ['require', 'exports', 'template', 'modal.view'
 
             rootNode = this.$el.find(".dropdown-app");
             Utility.initDropMenu(rootNode, appArray, function(value) {
-                if (value == "All")
+                var temp = value;
+                if (value == "All") temp = null;
+                if (this.queryArgs.platformId != temp) {
+                    this.curLayer = "All"
+                    this.$el.find("#dropdown-layer .cur-value").html("全部");
+                    this.filterByTopoAndLayer();
+                }
+                if (value == "All") {
                     this.queryArgs.platformId = null;
-                else
+                    this.collection.getStrategyList({
+                        "name": null,
+                        "type": null,
+                        "page": 1,
+                        "size": 99999
+                    });
+                } else {
                     this.queryArgs.platformId = parseInt(value)
+                    this.collection.getStrategyList({
+                        "name": null,
+                        "type": this.queryArgs.platformId,
+                        "page": 1,
+                        "size": 99999
+                    });
+                }
             }.bind(this));
         },
 

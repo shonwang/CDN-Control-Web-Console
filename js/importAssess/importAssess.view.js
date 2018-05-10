@@ -120,9 +120,9 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         render: function(target) {
@@ -229,7 +229,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
         onSure: function(){
             var selectedDomain = this.$el.find("input:checked");
             if (!selectedDomain.get(0)){
-                alert("请选择一个域名")
+                Utility.warning("请选择一个域名")
                 return false;
             }
             var id = selectedDomain.get(0).id,
@@ -242,9 +242,9 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         render: function(target) {
@@ -290,30 +290,30 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onClickConfirmButton: function(){
             if (!this.currentModel){
-                alert("请填写相关信息!");
+                Utility.warning("请填写相关信息!");
                 return
             }
             if (!this.currentModel.get("groupName")){
-                alert("请选择调度组!");
+                Utility.warning("请选择调度组!");
                 return
             }
             if (!this.regionId){
-                alert("请选择区域!");
+                Utility.warning("请选择区域!");
                 return
             }
             if (!this.$el.find("#input-bandwidth").val()){
-                alert("请填写带宽!");
+                Utility.warning("请填写带宽!");
                 return
             }
             if (parseInt(this.$el.find("#input-bandwidth").val()) <= 0){
-                alert("带宽必须大于零!");
+                Utility.warning("带宽必须大于零!");
                 return
             }
             var defaultParam = {
@@ -343,7 +343,7 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
             }.bind(this))
 
             if (checkedList.length === 0){
-                alert("至少添加并选择一条信息!")
+                Utility.warning("至少添加并选择一条信息!")
                 return;
             }
 

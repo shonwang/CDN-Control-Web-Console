@@ -76,8 +76,7 @@ define("setupBillLive.view", ['require', 'exports', 'template', 'modal.view', 'u
                     }));
                     this.liveUpFlowNameChangeTable.appendTo(this.$el.find(".bill-ctn"));
                 }.bind(this))
-
-                //this.initLiveDynamicSetup();
+                
                 this.initLiveUpConnection();
             },
 
@@ -104,7 +103,7 @@ define("setupBillLive.view", ['require', 'exports', 'template', 'modal.view', 'u
                     //直播
                     this.initLiveRefererAntiLeech();
                 } else {
-                    alert("您的平台不是下载也不是直播，applicationType为" + applicationType);
+                    Utility.warning("您的平台不是下载也不是直播，applicationType为" + applicationType);
                 }
             },
 

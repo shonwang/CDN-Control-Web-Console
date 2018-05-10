@@ -1,4 +1,3 @@
-
 define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.view', 'utility'],
     function(require, exports, template, Modal, Utility) {
 
@@ -12,7 +11,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.isEdit = options.isEdit;
                 this.isView = options.isView;
                 this.isSaving = false;
-
                 this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.edit.html'])({
                     data: {}
                 }));
@@ -35,8 +33,8 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
                 if (this.isEdit && !this.isView) {
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                    this.collection.getTopoOrigininfo(this.model.get('id'));
-                } else if (!this.isEdit && this.isView){
+                    this.collection.getLatestVersion(this.model.get('id'));
+                } else if (!this.isEdit && this.isView) {
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                     this.collection.getTopoInfo(this.model.get('id'));
                     this.$el.find(".opt-ctn .save").hide();
@@ -57,15 +55,96 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 }
             },
 
-            addTopoSuccess: function() {
-                this.isSaving = false;
-                alert('保存成功');
-                this.options.onSaveCallback && this.options.onSaveCallback();
+            addTopoSuccess: function(res) {
+                this.isSaving = false; 
+                var message = "", detail = "";
+                if (this.btnFlag == 2) {
+                    if (res.message.length > 200) {
+                        message = res.message.substring(0, 99) + '...<a href="javascript:void(0)" class="message">详情</a><br>';
+                        message = message + '<div class="message-list" style="display:none">' + res.message + '</div>';
+                    } else {
+                        message = res.message + "<br>";
+                    }
+                    if (res.affectNode&&res.affectNode.length > 0) {
+                        message = message + '影响的节点:<a href="javascript:void(0)" class="detail">详情</a><br>';
+                        _.each(res.affectNode, function(el){
+                            detail = detail + el.name + ", ";
+                        }.bind(this))
+                        message = message + '<div class="detail-list" style="display:none">' + detail + '</div>'
+                    }
+                    if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
+                    var options = {
+                        title: "提示",
+                        body: message,
+                        backdrop: 'static',
+                        type: 1
+                    }
+                    this.commonPopup = new Modal(options);
+                    this.commonPopup.$el.find(".detail").on("click", function(event){
+                        if (this.commonPopup.$el.find(".detail-list").css("display") == "none") {
+                            this.commonPopup.$el.find(".detail-list").show(200)
+                        } else {
+                            this.commonPopup.$el.find(".detail-list").hide(200)
+                        }
+                    }.bind(this))
+                    this.commonPopup.$el.find(".message").on("click", function(event){
+                        if (this.commonPopup.$el.find(".message-list").css("display") == "none") {
+                            this.commonPopup.$el.find(".message-list").show(200)
+                        } else {
+                            this.commonPopup.$el.find(".message-list").hide(200)
+                        }
+                    }.bind(this))
+                    //this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback(res);
+                } else {
+                    Utility.alerts("暂存成功！", "success", 5000);
+                    this.options.onSaveCallback && this.options.onSaveCallback();
+                }
             },
 
-            modifyTopoSuccess: function() {
+            modifyTopoSuccess: function(res) {
                 this.isSaving = false;
-                this.options.onSaveCallback && this.options.onSaveCallback();
+                var message = "", detail = "";
+                if (this.btnFlag == 2) {
+                    if (res.message.length > 200) {
+                        message = res.message.substring(0, 99) + '...<a href="javascript:void(0)" class="message">详情</a><br>';
+                        message = message + '<div class="message-list" style="display:none">' + res.message + '</div>';
+                    } else {
+                        message = res.message + "<br>"
+                    }
+                    if (res.affectNode&&res.affectNode.length > 0) {
+                        message = message + '影响的节点:<a href="javascript:void(0)" class="detail">详情</a><br>';
+                        _.each(res.affectNode, function(el){
+                            detail = detail + el.name + ", ";
+                        }.bind(this))
+                        message = message + '<div class="detail-list" style="display:none">' + detail + '</div>'
+                    }
+                    if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
+                    var options = {
+                        title: "提示",
+                        body: message,
+                        backdrop: 'static',
+                        type: 1
+                    }
+                    this.commonPopup = new Modal(options);
+                    this.commonPopup.$el.find(".detail").on("click", function(event){
+                        if (this.commonPopup.$el.find(".detail-list").css("display") == "none") {
+                            this.commonPopup.$el.find(".detail-list").show(200)
+                        } else {
+                            this.commonPopup.$el.find(".detail-list").hide(200)
+                        }
+                    }.bind(this))
+                    this.commonPopup.$el.find(".message").on("click", function(event){
+                        if (this.commonPopup.$el.find(".message-list").css("display") == "none") {
+                            this.commonPopup.$el.find(".message-list").show(200)
+                        } else {
+                            this.commonPopup.$el.find(".message-list").hide(200)
+                        }
+                    }.bind(this))
+                    //this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback();
+                } else {
+                    Utility.alerts("暂存成功！", "success", 5000)
+                    this.options.onSaveCallback && this.options.onSaveCallback();
+                }
             },
 
             onOriginInfo: function(res) {
@@ -84,6 +163,11 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.$el.find("#input-name").attr("readonly", "true");
                 if (this.isView)
                     this.$el.find("#comment").attr("readonly", "true");
+                if(this.isView || this.isEdit) {
+                    this.$el.find(".edit-show").show();
+                    this.$el.find("#input-version").val(res.id);
+                    this.$el.find("#input-isused").val(res.flag ? "是" : "否");
+                }
 
                 console.log("编辑的拓扑: ", this.defaultParam)
                 this.initSetup();
@@ -92,8 +176,14 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
             initSetup: function() {
                 if (!this.isEdit && AUTH_OBJ.ApplyCreateTopos) {
                     this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
+                    this.$el.find(".opt-ctn .saveAndSend").on("click", $.proxy(this.onClickSaveAndSendButton, this));
                 } else if (AUTH_OBJ.ApplyEditTopos) {
                     this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
+                    this.$el.find(".opt-ctn .saveAndSend").on("click", $.proxy(this.onClickSaveAndSendButton, this));
+                }
+
+                if (this.isView) {
+                    this.$el.find(".opt-ctn .saveAndSend").hide();
                 }
 
                 this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
@@ -150,24 +240,30 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.initRuleTable();
             },
 
+            onClickSaveAndSendButton: function() {
+                this.btnFlag = 2;
+                this.onClickSaveButton();
+                //       this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback();
+            },
+
             onClickSaveButton: function() {
                 if (this.isSaving === true) return;
 
                 this.defaultParam.name = $.trim(this.$el.find("#input-name").val());
                 if (this.defaultParam.name == '') {
-                    alert('请输入拓扑关系名称');
+                    Utility.warning('请输入拓扑关系名称');
                     return;
                 } else if (this.defaultParam.type == null) {
-                    alert('请选择设备类型');
+                    Utility.warning('请选择设备类型');
                     return;
                 } else if (this.defaultParam.allNodes.length == 0) {
-                    alert('请选择加入拓扑关系的节点');
+                    Utility.warning('请选择加入拓扑关系的节点');
                     return;
                 } else if (this.defaultParam.upperNodes.length == 0) {
-                    alert('请选择拓扑关系的上层节点');
+                    Utility.warning('请选择拓扑关系的上层节点');
                     return;
                 } else if (this.defaultParam.rule.length == 0) {
-                    alert('请添加规则');
+                    Utility.warning('请添加规则');
                     return;
                 }
 
@@ -181,9 +277,9 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         upperObjArray = [],
                         tempRule = {};
                     _.each(rule.local, function(node) {
-                        if(rule.localType===3){
+                        if (rule.localType === 3) {
                             localIdArray.push(node.provinceId);
-                        }else if(rule.localType===4){
+                        } else if (rule.localType === 4) {
                             localIdArray.push(node.areaId);
                         }
                         localIdArray.push(node.id)
@@ -203,18 +299,22 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 }.bind(this))
 
                 postTopo.allNodes = [];
-                _.each(this.defaultParam.allNodes, function(el){
+                _.each(this.defaultParam.allNodes, function(el) {
                     postTopo.allNodes.push(el.id)
                 }.bind(this));
                 postTopo.id = this.defaultParam.id;
                 postTopo.name = this.defaultParam.name;
                 postTopo.type = this.defaultParam.type;
                 postTopo.upperNodes = [];
-                _.each(this.defaultParam.upperNodes, function(el){
-                       postTopo.upperNodes.push(el.id)
+                _.each(this.defaultParam.upperNodes, function(el) {
+                    postTopo.upperNodes.push(el.id)
                 }.bind(this));
                 postTopo.rule = postRules
                 postTopo.mark = this.$el.find("#comment").val();
+                if (this.btnFlag == 2)
+                    postTopo.ispub = 1;
+                else
+                    postTopo.ispub = 0;
                 console.log(postTopo)
                 if (this.isEdit)
                     this.collection.topoModify(postTopo);
@@ -222,9 +322,10 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     this.collection.topoAdd(postTopo);
 
                 this.isSaving = true;
-                this.$el.find("opt-ctn .save").attr("disabled","disabled");
+
+                this.$el.find("opt-ctn .save").attr("disabled", "disabled");
             },
-    
+
             onClickCancelButton: function() {
                 this.options.onCancelCallback && this.options.onCancelCallback();
             },
@@ -326,7 +427,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
             onClickAddUpperNodeButton: function(event) {
                 if (this.defaultParam.allNodes.length === 0) {
-                    alert("请先添加拓扑节点!")
+                    Utility.warning("请先添加拓扑节点!")
                     return;
                 }
 
@@ -405,14 +506,14 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         backupNameArray = [];
                     _.each(rule.local, function(local, inx, list) {
                         var name = local.name;
-                        if(rule.localType===3) {
-                            name = local.provinceName + '/'+local.name;
-                        }else if(rule.localType===4){
-                            name = local.areaName+'/'+local.name;
+                        if (rule.localType === 3) {
+                            name = local.provinceName + '/' + local.name;
+                        } else if (rule.localType === 4) {
+                            name = local.areaName + '/' + local.name;
                         }
                         localLayerArray.push(name || "[后端没有返回名称]")
                     }.bind(this));
-                   // if(rule.localType===1) localLayerArray=localLayerArray.join('<br>')
+                    // if(rule.localType===1) localLayerArray=localLayerArray.join('<br>')
                     primaryArray = _.filter(rule.upper, function(obj) {
                         return obj.chiefType !== 0;
                     }.bind(this))
@@ -462,7 +563,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         id: rule.id,
                         localLayer: localLayerArray.join("<br>"),
                         upperLayer: upperLayer,
-                        localType:rule.localType
+                        localType: rule.localType
                     }
                     this.ruleList.push(ruleStrObj)
                 }.bind(this))
@@ -484,7 +585,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
                 this.roleTable.find("[data-toggle='popover']").popover();
 
-                if (this.isView){
+                if (this.isView) {
                     this.roleTable.find("tbody .edit").hide();
                     this.roleTable.find("tbody .delete").hide();
                 }
@@ -496,9 +597,9 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.curEditRule = _.find(this.defaultParam.rule, function(obj) {
                     return obj.id === parseInt(id)
                 }.bind(this))
-             //  console.log("this.curEditRule"+this.curEditRule.local[1].name);
+                //  console.log("this.curEditRule"+this.curEditRule.local[1].name);
                 if (!this.curEditRule) {
-                    alert("找不到此行的数据，无法编辑");
+                    Utility.warning("找不到此行的数据，无法编辑");
                     return;
                 }
 
@@ -531,16 +632,16 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
             onClickItemDelete: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
-                    this.defaultParam.rule=_.filter(this.defaultParam.rule,function(el){
-                         return parseInt(id)!=el.id
-                    }.bind(this))
-                
+                this.defaultParam.rule = _.filter(this.defaultParam.rule, function(el) {
+                    return parseInt(id) != el.id
+                }.bind(this))
+
                 this.initRuleTable();
             },
 
             onClickAddRuleButton: function() {
                 if (this.defaultParam.allNodes.length === 0 || this.defaultParam.upperNodes === 0) {
-                    alert("请先添加拓扑所有节点和上层节点！")
+                    Utility.warning("请先添加拓扑所有节点和上层节点！")
                     return;
                 }
 
@@ -572,18 +673,18 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
             onGetError: function(error) {
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
+                    Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
             },
 
             onSaveError: function(error) {
                 this.isSaving = false;
                 if (error && error.message)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 else
-                    alert("网络阻塞，请刷新重试！")
-             this.$el.find(".opt-ctn .save").removeAttr("disabled");
+                    Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
+                this.$el.find(".opt-ctn .save").removeAttr("disabled");
             },
 
             render: function(target) {

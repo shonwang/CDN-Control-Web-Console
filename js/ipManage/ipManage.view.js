@@ -30,9 +30,9 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         render: function(target) {
@@ -117,11 +117,11 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
 
             this.onStartQueryButton();
             this.collection.on("get.ipInfoSubmit.success", function(){
-                alert('设置成功');
+                Utility.alerts("设置成功！", "success", 5000);
                 this.onStartQueryButton();
             }.bind(this));
             this.collection.on("get.ipInfoSubmit.error", function(){
-                alert('设置失败');
+                Utility.warning('设置失败');
             }.bind(this));
 
             this.collection.on("get.ipInfoStart.error", function(err){
@@ -164,9 +164,9 @@ define("ipManage.view", ['require','exports', 'template', 'modal.view', 'utility
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onIpInfoListSuccess: function(){

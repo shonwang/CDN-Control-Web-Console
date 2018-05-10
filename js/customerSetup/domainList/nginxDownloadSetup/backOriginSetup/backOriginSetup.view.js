@@ -246,7 +246,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
         onClickSaveBtn: function(){
             if ((this.hostType === 2 && this.defaultParam.originBaseType === 1 && this.defaultParam.isUseAdvance === 1) || 
                 (this.hostType === 2 && this.defaultParam.isUseAdvance === 2)){
-                alert("修改回源Host设置为源站域名，不能使用IP回源");
+                Utility.warning("修改回源Host设置为源站域名，不能使用IP回源");
                 return;
             };
             if (this.defaultParam.isUseAdvance === 1 && !this.checkBaseOrigin()){
@@ -261,12 +261,12 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 }
                 var defaultPrimary = this.$el.find(".default #primary").val();
                 if (defaultPrimary === ""){
-                    alert("默认源主必填！")
+                    Utility.warning("默认源主必填！")
                     return;
                 }
                 var ipNum = parseInt(this.$el.find("#ip-num").val());
                 if (this.defaultParam.originStrategy === 2 && (ipNum > 10 || ipNum < 1)){
-                    alert("IP数量取值1-10")
+                    Utility.warning("IP数量取值1-10")
                     return;
                 }
             }
@@ -302,7 +302,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            Utility.alerts("保存成功！", "success", 5000)
             this.update(this.options.query, this.options.query2, this.target);
         },
 
@@ -342,19 +342,19 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 //验证IP
                 if(!originAddress){
                     //不能为空
-                    alert("IP不能为空");
+                    Utility.warning("IP不能为空");
                     return false;
                 }
 
                 var ipArray = originAddress.split(",");
                 if(ipArray.length>10){
-                    alert("你的IP数是否超过了10个。");
+                    Utility.warning("你的IP数是否超过了10个。");
                     return false;
                 }
                 for (var i = 0; i < ipArray.length; i++){
                     result = Utility.isIP(ipArray[i].trim());
                     if (!result){
-                        alert("你的IP填写有误,请检查");
+                        Utility.warning("你的IP填写有误,请检查");
                         return false;
                     }
                 }
@@ -362,12 +362,12 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 //验证域名
                 if(!originAddress){
                     //不能为空
-                    alert("域名不能为空");
+                    Utility.warning("域名不能为空");
                     return false;
                 }
                 if(domainName == originAddress){
                     //域名不能与填写的域名相同
-                    alert("源站地址不能与加速域名相同");
+                    Utility.warning("源站地址不能与加速域名相同");
                     return false;
                 }
                 //域名校验
@@ -376,7 +376,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 if (result && !isIPStr && originAddress !== domainName && originAddress.substr(0, 1) !== "-" && originAddress.substr(-1, 1) !== "-"){
                     return true;
                 } else {
-                    alert("域名填写错误");
+                    Utility.warning("域名填写错误");
                     return false;
                 }
             } else if(originType == 3){
@@ -384,12 +384,12 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                 //验证IP
                 if(!originAddress){
                     //不能为空
-                    alert("域名不能为空");
+                    Utility.warning("域名不能为空");
                     return false;
                 }
                 if(domainName == originAddress){
                     //域名不能与填写的域名相同
-                    alert("源站地址不能与加速域名相同");
+                    Utility.warning("源站地址不能与加速域名相同");
                     return false;
                 }
                 //域名校验
@@ -399,7 +399,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
                     return true;
                 }
                 else{
-                    alert("域名填写错误");
+                    Utility.warning("域名填写错误");
                     return false;
                 }          
             }
@@ -446,7 +446,7 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
         onClickHostSaveBtn: function(){
             if ((this.defaultParamModifyHost.domainType === 2 && this.originType === 1 && this.isUseAdvanced === 1) ||
                 (this.defaultParamModifyHost.domainType === 2 && this.isUseAdvanced === 2)) {
-                alert("未设置回源域名不能使用此项");
+                Utility.warning("未设置回源域名不能使用此项");
                 return;
             }
             if (this.defaultParamModifyHost.domainType === 3) {
@@ -526,9 +526,9 @@ define("backOriginSetup.view", ['require','exports', 'template', 'modal.view', '
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         hide: function(){

@@ -106,9 +106,9 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
         onGetError: function(error){
             this.$el.find(".ok-again").hide();
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         render: function(target) {
@@ -145,7 +145,7 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                 this.disablePopup.$el.modal('hide');
                 this.$el.find(".opt-panel").slideDown(200);
                 Utility.showMainList(this.$el, ".main-list", ".diff-send-panel", ".diff-send-ctn");
-                alert("下发成功！")
+                Utility.alerts("下发成功！", "success", 5000)
                 this.onClickQueryButton();
             }.bind(this));
             this.collection.on("dispDns.error", function(res){
@@ -181,9 +181,9 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         onDispConfigListSuccess: function(){
@@ -481,7 +481,7 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                         for (var i = 0; i < list.length; i++){
                             if (list[i].nodeId === parseInt(options[0]["nodeId"])){
                                 this.selectNodePopup.$el.modal("hide");
-                                alert("列表里已包含您选的节点");
+                                Utility.warning("列表里已包含您选的节点");
                                 return;
                             }
                         }

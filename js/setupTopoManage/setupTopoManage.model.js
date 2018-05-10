@@ -50,6 +50,22 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
+        getLatestVersion: function(args) {
+            var url = BASE_URL + "/resource/topo/getLatestVersion?id=" + args,
+                successCallback = function(res) {
+                    if (res) {
+                        this.total = res.total;
+                        this.trigger("get.topo.OriginInfo.success", res);
+                    } else {
+                        this.trigger("get.topo.OriginInfo.error");
+                    }
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger('get.topo.OriginInfo.error', response)
+                }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
         getTopoInfo: function(args) {
             var url = BASE_URL + "/resource/topo/getTopoVerionDetail?innerId=" + args,
                 successCallback = function(res) {
@@ -120,15 +136,13 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
         topoAdd: function(args) {
             var url = BASE_URL + "/resource/topo/add",
                 successCallback = function(res) {
-                    this.reset();
                     if (res) {
-                        _.each(res.rows, function(element, index, list) {
-                            this.push(new Model(element));
-                        }.bind(this))
-                        this.total = res.total;
-                        this.trigger("add.topo.success");
+                        if (typeof res == "string" && res != "ok") {
+                            res = JSON.parse(res);
+                        }
+                        this.trigger("add.topo.success", res);
                     } else {
-                        this.trigger("add.topo.error");
+                        this.trigger("add.topo.error", res);
                     }
                 }.bind(this),
                 errorCallback = function(response) {
@@ -140,15 +154,13 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
         topoModify: function(args) {
             var url = BASE_URL + "/resource/topo/modify",
                 successCallback = function(res) {
-                    this.reset();
                     if (res) {
-                        _.each(res.rows, function(element, index, list) {
-                            this.push(new Model(element));
-                        }.bind(this))
-                        this.total = res.total;
-                        this.trigger("modify.topo.success");
+                        if (typeof res == "string" && res != "ok") {
+                            res = JSON.parse(res);
+                        }
+                        this.trigger("modify.topo.success", res);
                     } else {
-                        this.trigger("modify.topo.error");
+                        this.trigger("modify.topo.error", res);
                     }
                 }.bind(this),
                 errorCallback = function(response) {
@@ -202,13 +214,90 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
         changeTopoVersion: function(args) {
             var url = BASE_URL + "/resource/topo/changeTopoVersion",//innerId
                 successCallback = function(res) {
+                    if (typeof res == "string") {
+                        res = JSON.parse(res);
+                    }
                     this.trigger("set.version.success", res);
                 }.bind(this),
                 errorCallback = function(response) {
                     this.trigger("set.version.error", response);
                 }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
-        }
+        },
+
+        getProgress:function(args){
+           var url = BASE_URL + "/cd/node/updatecfg/topology/getprogress",
+                successCallback = function(res) {
+                    if(res){
+                      this.trigger("get.topoUpdateSetup.success", res);
+                   }else{
+                      this.trigger("get.topoUpdateSetup.error", res);
+                   }
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("get.topoUpdateSetup.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        getSpecialLayerProgress:function(args){
+           var url = BASE_URL + "/cd/node/updatecfg/sls/getprogress",
+                successCallback = function(res) {
+                    if(res){
+                      this.trigger("get.specialLayerSetup.success", res);
+                   }else{
+                      this.trigger("get.specialLayerSetup.error", res);
+                   }
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("get.specialLayerSetup.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        setdeliveryswitch:function(args){
+           var url = BASE_URL + "/cd/system/config/setdeliveryswitch",
+                successCallback = function(res) {
+                    this.trigger("set.deliveryswitch.success");
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("set.deliveryswitch.error", response);
+                }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+        startCreateSetup:function(args){
+            var url = BASE_URL + "/cd/node/updatecfg/topology/start",
+                successCallback = function(res) {
+                    this.trigger("start.createSetup.success",res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("start.createSetup.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        startSpecialLayerCreateSetup:function(args){
+            var url = BASE_URL + "/cd/node/updatecfg/sls/start",
+                successCallback = function(res) {
+                    this.trigger("start.createSetup.success");
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("start.createSetup.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        createSendTask:function(args){
+           var url = BASE_URL + "/cd/node/updatecfg/delivery",
+                successCallback = function(res) {
+                    this.trigger("create.sendTask.success", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("create.sendTask.error", response);
+                }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
     });
 
     return SetupTopoManageCollection;

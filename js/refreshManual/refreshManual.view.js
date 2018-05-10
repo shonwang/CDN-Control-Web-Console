@@ -72,14 +72,14 @@ define("refreshManual.view", ['require','exports', 'template', 'modal.view', 'ut
 
             this.uploader.bind("Error", function(up, obj){
                 if (obj && obj.code === -600){
-                    alert("上传文件超出最大限制:10MB");
+                    Utility.warning("上传文件超出最大限制:10MB");
                     return;
                 }
                 try{
                     var error = JSON.parse(obj.response)
-                    alert(error.message)
+                    Utility.alerts(error.message)
                 } catch(e){
-                    alert("导入失败了！")
+                    Utility.warning("导入失败了！")
                 }
                 this.isError = true;
                 this.uploader.splice(0, 1);
@@ -115,14 +115,14 @@ define("refreshManual.view", ['require','exports', 'template', 'modal.view', 'ut
                 this.$el.find("#import-refresh-file").removeAttr("readonly")
                 this.$el.find("#import-refresh-file").val("");
                 if (this.isError) return;
-                alert("导入完成！")
+                Utility.warning("导入完成！")
                 this.options.uploadCompleteCallback && this.options.uploadCompleteCallback();
             }.bind(this));
         },
 
         onClickOK: function(){
             if (!this.isSelectedFile){
-                alert("你还没有选择要导入的文件，或者你选择的文件已经导入过了！")
+                Utility.warning("你还没有选择要导入的文件，或者你选择的文件已经导入过了！")
                 return false;
             }
             if (this.isUploading) return false;
@@ -198,9 +198,9 @@ define("refreshManual.view", ['require','exports', 'template', 'modal.view', 'ut
 
         onGetError: function(error){
             if (error&&error.message)
-                alert(error.message)
+                Utility.alerts(error.message)
             else
-                alert("网络阻塞，请刷新重试！")
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         hide: function(){

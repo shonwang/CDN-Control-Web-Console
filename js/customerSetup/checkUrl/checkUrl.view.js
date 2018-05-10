@@ -133,11 +133,11 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
             },
             setVerifyError:function(res){
                 this.changeBtn();
-                alert(res.message || "出现错误了");
+                Utility.warning(res.message || "出现错误了");
             },
 
             setVerifySuccess:function(){
-                alert("检验成功！");
+                Utility.alerts("检验成功！", "success", 5000);
                 this.args.page = 1;
                 this.isInitPaginator = false;
                 this.changeBtn();

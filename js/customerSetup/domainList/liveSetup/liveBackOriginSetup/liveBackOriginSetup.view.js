@@ -213,7 +213,7 @@ define("liveBackOriginSetup.view", ['require','exports', 'template', 'modal.view
                 //验证域名
                 if(domainName == backupOriginAddress){
                     //域名不能与填写的域名相同
-                    alert("源站地址不能与加速域名相同");
+                    Utility.warning("源站地址不能与加速域名相同");
                     return false;
                 }
                 //域名校验
@@ -222,7 +222,7 @@ define("liveBackOriginSetup.view", ['require','exports', 'template', 'modal.view
                 if (result && !isIPStr && backupOriginAddress !== domainName && backupOriginAddress.substr(0, 1) !== "-" && backupOriginAddress.substr(-1, 1) !== "-"){
                     return true;
                 } else {
-                    alert("域名填写错误");
+                    Utility.warning("域名填写错误");
                     return false;
                 }
             } else if(originType == 3){
@@ -230,7 +230,7 @@ define("liveBackOriginSetup.view", ['require','exports', 'template', 'modal.view
                 //验证IP
                 if(domainName == backupOriginAddress){
                     //域名不能与填写的域名相同
-                    alert("源站地址不能与加速域名相同");
+                    Utility.warning("源站地址不能与加速域名相同");
                     return false;
                 }
                 //域名校验
@@ -240,7 +240,7 @@ define("liveBackOriginSetup.view", ['require','exports', 'template', 'modal.view
                     return true;
                 }
                 else{
-                    alert("域名填写错误");
+                    Utility.warning("域名填写错误");
                     return false;
                 }          
             }
@@ -310,7 +310,7 @@ define("liveBackOriginSetup.view", ['require','exports', 'template', 'modal.view
         onClickSaveBtn: function(){
             if ((this.hostType === 2 && this.backOiginParam.originBaseType === 1 && this.defaultParam.isUseAdvance === 1) || 
                 (this.hostType === 2 && this.defaultParam.isUseAdvance === 2)){
-                alert("修改回源Host设置为源站域名，不能使用IP回源");
+                Utility.warning("修改回源Host设置为源站域名，不能使用IP回源");
                 return;
             };
             if (this.defaultParam.isUseAdvance === 1 && !this.checkBaseOrigin()){
@@ -326,12 +326,12 @@ define("liveBackOriginSetup.view", ['require','exports', 'template', 'modal.view
             //     }
             //     var defaultPrimary = this.$el.find(".default #primary").val();
             //     if (defaultPrimary === ""){
-            //         alert("默认源主必填！")
+            //         Utility.warning("默认源主必填！")
             //         return;
             //     }
             //     var ipNum = parseInt(this.$el.find("#ip-num").val());
             //     if (this.defaultParam.originStrategy === 2 && (ipNum > 10 || ipNum < 1)){
-            //         alert("IP数量取值1-10")
+            //         Utility.warning("IP数量取值1-10")
             //         return;
             //     }
             // }
@@ -370,7 +370,7 @@ define("liveBackOriginSetup.view", ['require','exports', 'template', 'modal.view
         },
 
         onSaveBackSourceSuccess:function(){
-            alert("保存成功！");
+            Utility.alerts("保存成功！", "success", 5000);
             this.update(this.options.query, this.options.query2, this.target);
         },
 

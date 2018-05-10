@@ -186,6 +186,8 @@
   "domainStatistics.view": "domainStatistics/domainStatistics.view",
   "grayscaleSetup.model": "grayscaleSetup/grayscaleSetup.model",
   "grayscaleSetup.view": "grayscaleSetup/grayscaleSetup.view",
+  "hashOrigin.model": "hashOrigin/hashOrigin.model",
+  "hashOrigin.view": "hashOrigin/hashOrigin.view",
   "importAssess.model": "importAssess/importAssess.model",
   "importAssess.view": "importAssess/importAssess.view",
   "importDomainManage.edit.view": "importDomainManage/importDomainManage.edit.view",

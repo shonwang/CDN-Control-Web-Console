@@ -43,6 +43,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "userMove"     : "userMove",
 
                 // 调度配置
+                "hashOrigin": "hashOrigin",
                 "dispGroup": "dispGroup",
                 "importAssess": "importAssess",
                 "dispConfig": "dispConfigNew",

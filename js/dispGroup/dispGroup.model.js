@@ -81,7 +81,9 @@ define("dispGroup.model", ['require','exports', 'utility'], function(require, ex
                 "count"   : 99999,
                 "chname"  : null,//节点名称
                 "operator": null,//运营商id
-                "status"  : null//节点状态
+                "status"  : null,//节点状态
+                "cacheLevel":null,
+                "liveLevel":null
             };
             defaultParas.data = JSON.stringify(defaultParas.data);
 

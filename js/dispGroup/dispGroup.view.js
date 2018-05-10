@@ -17,7 +17,10 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.collection.on("get.dispGroup.node.success", $.proxy(this.onGetNodeSuccess, this));
             this.collection.on("get.dispGroup.node.error", $.proxy(this.onGetError, this));
             this.collection.getNodeByGroup({groupId: this.model.get("id"), associated: 1})
+            
         },
+
+        
 
         onGetError: function(error){
             if (error&&error.message)
@@ -438,6 +441,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             else
                 this.table.find("#inlineCheckbox5").hide();
         },
+
         onGetGroupDomainListSuccess: function(data){
             this.GroupDomainList = data;
             var typeIpArray = [];
@@ -452,14 +456,15 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (!this.isEdit){
                 this.kdnsDomainId = data[0].id;
                 this.$el.find(".dropdown-firstDomain .cur-value").html(data[0].name);
+                
                // AUTH_OBJ.ChooseGtld = true;
                 if(!AUTH_OBJ.ChooseGtld){
-                    this.$el.find(".dropdown-firstDomain #dropdown-GropDomain-list").attr("disabled", "disabled")
+                    this.$el.find(".dropdown-firstDomain #dropdown-GropDomain-list").attr("disabled", "disabled");
                 }
             } else {
                 var aIpTypeArray = _.filter(this.domainList,function(obj) {
                     return obj["name"] === this.model.get("kdnsDomainIddomainName");
-                }.bind(this))
+                }.bind(this));
                 if (aIpTypeArray[0]){
                     this.$el.find(".dropdown-firstDomain .cur-value").html(aIpTypeArray[0].name)
                     this.kdnsDomainId = aIpTypeArray[0].value;
@@ -475,6 +480,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 }
             }
         },
+
         onGetIpTypeSuccess: function(data){
             this.ipTypeList = data;
             var typeIpArray = [];
@@ -627,7 +633,8 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 "ttl"          : this.$el.find("#input-ttl").val(),
                 "remark"       : this.$el.find("#textarea-comment").val(),
                 "resolveIpType": this.ipType,
-                "kdnsDomainId" : this.kdnsDomainId
+                "kdnsDomainId" : this.kdnsDomainId,
+                "topoId"   : this.topoId
             };
             var ttl = this.$el.find("#input-ttl").val(), re = /^\d+$/;
             if (!re.test(ttl)){
@@ -652,6 +659,8 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (setupNodes.length === 2){
                 options.priority = "1,2";
             }
+
+
             var checkedList = this.nodeList.filter(function(object) {
                 return object.isChecked === true;
             })
@@ -764,7 +773,8 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 "status"       : null,//调度组状态
                 "level"        : null,//覆盖级别
                 "page"         :1,
-                "count"        :10
+                "count"        :10,
+                "topoId"       :null
             }
             this.onClickQueryButton();
         }, 
@@ -840,8 +850,9 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.queryArgs.page = 1;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
-            this.queryArgs.name = this.$el.find("#input-domain").val() || null
-            
+            this.queryArgs.name = this.$el.find("#input-domain").val() || null;
+            this.queryArgs.topoId = this.model.get("topoId") || null;
+
             this.collection.getDispGroupList(this.queryArgs);
         },
 
@@ -899,7 +910,6 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             id = $(eventTarget).attr("id");
 
             var model = this.collection.get(id);
-
             if (this.dgDetailPopup) $("#" + this.dgDetailPopup.modalId).remove();
 
             var dgDetailView = new DispGroupDetailView({
@@ -1002,7 +1012,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 id = $(eventTarget).attr("id");
             }
             var model = this.collection.get(id);
-
+            
             this.clickInfo = model;
 
             if (this.editDispGroupPopup) $("#" + this.editDispGroupPopup.modalId).remove();

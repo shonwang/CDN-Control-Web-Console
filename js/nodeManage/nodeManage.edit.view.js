@@ -89,6 +89,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             this.operatorList = arr;
         },
 
+        
         setDropDownList: function() {
             var nameList = [{
                     name: "95峰值",
@@ -152,6 +153,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 outzabnameRe = /^[0-9A-Za-z\-\[\]\_]+$/,
                 letterRe = /[A-Za-z]+/,
                 reLocation = /^\d+(\.\d+)?----\d+(\.\d+)?$/;
+
+
 
 
             if (!re.test(maxBandwidth) || !re.test(minBandwidth)) {
@@ -426,6 +429,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
         }
     });
 
+
     var AddOrEditNodeView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
@@ -458,7 +462,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "operatorId": this.model.get("operatorId"),
                     "operatorName": this.model.get("operatorName"),
                     "startChargingTime": this.model.get("startChargingTime"),
-                    "rsNodeCorpDtos": this.model.get("rsNodeCorpDtos")
+                    "rsNodeCorpDtos": this.model.get("rsNodeCorpDtos"),
+
                 }
             } else {
                 this.args = {
@@ -479,12 +484,14 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "operatorName": "",
                     "startChargingTime": new Date().valueOf(),
                     "rsNodeCorpDtos": []
+
                 }
             }
 
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.add&edit.html'])({
                 data: this.args
             }));
+
 
             this.collection.off("get.city.success");
             this.collection.off("get.city.error");
@@ -524,15 +531,57 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             this.$el.find(".save").on("click", $.proxy(this.onSaveClick, this));
             this.$el.find(".cancel").on("click", $.proxy(this.onCancelClick, this));
 
+            this.initLiveLevelDropMenu();
+            this.initCacheLevelDropMenu();
             this.initDropList(options.list);
             this.initChargeDatePicker();
         },
+
+        initLiveLevelDropMenu: function() {
+            var liveLevelArray = [{
+                name: "非直播属性",
+                value: 0
+            }, {
+                name: "上层",
+                value: 1
+            }, {
+                name: "中层",
+                value: 2
+            },{
+                name: "下层",
+                value: 3
+            }]
+            Utility.initDropMenu(this.$el.find(".dropdown-liveLevel"), liveLevelArray, function(value) {
+                this.liveLevel = parseInt(value);
+            }.bind(this));
+        },
+
+        initCacheLevelDropMenu: function() {
+            var cacheLevelArray = [{
+                name: "非点播属性",
+                value: 0
+            }, {
+                name: "上层",
+                value: 1
+            }, {
+                name: "中层",
+                value: 2
+            },{
+                name: "下层",
+                value: 3
+            }]
+            Utility.initDropMenu(this.$el.find(".dropdown-cacheLevel"), cacheLevelArray, function(value) {
+                this.cacheLevel = parseInt(value);
+            }.bind(this));
+        },
+
 
         onSaveClick: function() {
             var args = this.getArgs();
             if (!args) {
                 return false;
             }
+            console.log(args);
             this.onOKCallback && this.onOKCallback();
             this.hide();
             this.showParentList();
@@ -582,7 +631,12 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 "chName": this.$el.find("#input-name").val().replace(/\s+/g, ""),
                 "operatorId": this.operatorId,
                 "operatorName": this.operatorName,
-               
+                
+                // 自添部分开始
+                "liveLevel": this.liveLevel,
+                "cacheLevel": this.cacheLevel,
+                // 自添部分结束
+
                 "remark": this.$el.find("#textarea-comment").val(),
                 "startChargingTime": this.args.startChargingTime,
                 //"chargingType": this.args.chargingType,
@@ -603,6 +657,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             }
             return args;
         },
+
 
         onGetOperatorSuccess: function(res) {
             var nameList = [];

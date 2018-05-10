@@ -20,7 +20,9 @@ define("importDomainManage.edit.view", ['require','exports', 'template', 'modal.
                     "level" : null,//覆盖级别
                     "remark": null,
                     "page"  : 1,
-                    "count" : 10
+                    "count" : 10,
+
+                    "topoId": this.model.get("topoId")
                 }
             this.refreshList();
         },
@@ -34,6 +36,7 @@ define("importDomainManage.edit.view", ['require','exports', 'template', 'modal.
             }.bind(this))
         },
 
+        // 回车键绑定查询按键
         enterKeyBindQuery: function(){
             $(document).on('keydown', function(e){
                 if(e.keyCode == 13){
@@ -42,6 +45,7 @@ define("importDomainManage.edit.view", ['require','exports', 'template', 'modal.
             }.bind(this));
         },
 
+        // 查询按键
         onClickSearchButton: function(){
             this.curPage = 1;
             this.refreshList();
@@ -163,6 +167,7 @@ define("importDomainManage.edit.view", ['require','exports', 'template', 'modal.
         }
     }); 
 
+
     var ImportDomainManageEditView = Backbone.View.extend({
         events: {},
 
@@ -179,11 +184,13 @@ define("importDomainManage.edit.view", ['require','exports', 'template', 'modal.
             this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
 
             this.currentDispId = this.model.get('dispId');
+
             this.curOpen302 = this.model.get('open302') ? 1 : 0;
             this.$el.find(".disp-list-ctn").hide();
             this.initDispList();
         },
 
+        // 302调度
         onClickToggle: function(){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;

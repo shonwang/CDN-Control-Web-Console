@@ -9,10 +9,13 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.options = options;
                 this.collection = options.collection;
                 this.model = options.model;
+                // 是新建还是编辑状态
                 this.isEdit = options.isEdit;
+                // 是否是查看状态
                 this.isView = options.isView;
                 this.isSaving = false;
 
+                // 注意这里this.$el指的是什么，在哪里应该都一样，是引用的那个tpl模板
                 this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.edit.html'])({
                     data: {}
                 }));
@@ -33,23 +36,35 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.collection.on('modify.topo.error', $.proxy(this.onSaveError, this));
                 this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
 
+                // 编辑模式（isEdit）
                 if (this.isEdit && !this.isView) {
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                    // 通过model文件中的this.collection.xxx()发起Ajax请求
                     this.collection.getTopoOrigininfo(this.model.get('id'));
+                    // 发起Ajax请求成功后，观察成功或失败的回调函数get.topo.OriginInfo.success/error
+
+                // 查看模式（isView）
                 } else if (!this.isEdit && this.isView){
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+
                     this.collection.getTopoInfo(this.model.get('id'));
                     this.$el.find(".opt-ctn .save").hide();
-                    this.$el.find('.all .add-node').hide();
                     this.$el.find('.upper .add-node').hide();
+                    this.$el.find('.middle .add-node').hide();
+                    this.$el.find('.lower .add-node').hide();
                     this.$el.find(".add-rule").hide();
+                // 新建模式（！isEdit）
                 } else {
                     this.defaultParam = {
                         "id": null,
                         "name": "",
+                        // 可能是直播、点播类型
                         "type": null,
-                        "allNodes": [],
                         "upperNodes": [],
+                        // 中下层节点自添开始
+                        "middleNodes":[],
+                        "lowerNodes":[],
+                        // 中下层节点自添结束
                         "rule": [],
                         "mark": ""
                     }
@@ -72,9 +87,14 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.defaultParam = {
                     "id": res.id,
                     "name": res.name,
-                    "allNodes": res.allNodes,
                     "upperNodes": res.upperNodes,
+
+                    // 向resource/topo/origin/consoleInfo?Id发起请求
+                    "middleNodes":res.middleNodes,
+                    "lowerNodes":res.lowerNodes,
+
                     "rule": res.rule,
+                    // 拓扑关系有类型之分
                     "type": res.type,
                     "mark": res.mark
                 }
@@ -89,7 +109,9 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.initSetup();
             },
 
+            // 只用于新建状态下
             initSetup: function() {
+                // 管理权限
                 if (!this.isEdit && AUTH_OBJ.ApplyCreateTopos) {
                     this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
                 } else if (AUTH_OBJ.ApplyEditTopos) {
@@ -97,8 +119,14 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 }
 
                 this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
-                this.$el.find('.all .add-node').on("click", $.proxy(this.onClickAddAllNodeButton, this))
-                this.$el.find('.upper .add-node').on("click", $.proxy(this.onClickAddUpperNodeButton, this))
+
+                // 上、中、下层节点自添部分开始
+                this.$el.find('.upper .add-node').on("click", $.proxy(this.onClickAddUpperNodeButton, this));
+                this.$el.find('.middle .add-node').on("click",$.proxy(this.onClickAddMiddleNodeButton,this));
+                this.$el.find('.lower .add-node').on("click",$.proxy(this.onClickAddLowerNodeButton,this));
+                // 上、中、下层节点自添部分结束
+                
+                // 显示与隐藏
                 this.$el.find(".view-more").on("click", $.proxy(this.onClickViewMoreButton, this));
                 this.$el.find(".view-less").on("click", $.proxy(this.onClickViewLessButton, this));
 
@@ -108,40 +136,53 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
                 this.collection.getDeviceTypeList(); //获取应用类型列表接口
 
-                this.initAllNodesTable();
+                // this.initAllNodesTable();
                 this.initUpperTable();
+                this.initMiddleTable();
+                this.initLowerTable();
 
                 require(['nodeManage.model'], function(NodeManageModel) {
                     var myNodeManageModel = new NodeManageModel();
+                    // 获取运营商信息
                     myNodeManageModel.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
                     myNodeManageModel.on("get.operator.error", $.proxy(this.onGetError, this));
                     myNodeManageModel.getOperatorList();
                 }.bind(this))
             },
 
+            // 显示更多，已做修改
             onClickViewMoreButton: function(event) {
                 var eventTarget = event.srcElement || event.target;
-                if ($(eventTarget).parents(".all").get(0)) {
-                    this.$el.find(".all .table-ctn").show(200)
-                    this.$el.find('.all .view-less').show();
-                    this.$el.find(".all .view-more").hide();
-                } else {
+                if($(eventTarget).parents(".upper").get(0)){
                     this.$el.find(".upper .table-ctn").show(200);
                     this.$el.find('.upper .view-less').show();
                     this.$el.find(".upper .view-more").hide();
+                }else if($(eventTarget).parents(".middle").get(0)){
+                    this.$el.find(".middle .table-ctn").show(200);
+                    this.$el.find('.middle .view-less').show();
+                    this.$el.find(".middle .view-more").hide();
+                }else if($(eventTarget).parents(".lower").get(0)){
+                    this.$el.find(".lower .table-ctn").show(200);
+                    this.$el.find('.lower .view-less').show();
+                    this.$el.find(".lower .view-more").hide();
                 }
             },
 
+            // 显示省略，已做修改
             onClickViewLessButton: function(event) {
                 var eventTarget = event.srcElement || event.target;
-                if ($(eventTarget).parents(".all").get(0)) {
-                    this.$el.find(".all .table-ctn").hide(200)
-                    this.$el.find('.all .view-less').hide();
-                    this.$el.find(".all .view-more").show();
-                } else {
+                if($(eventTarget).parents(".upper").get(0)){
                     this.$el.find(".upper .table-ctn").hide(200);
                     this.$el.find('.upper .view-less').hide();
                     this.$el.find(".upper .view-more").show();
+                }else if($(eventTarget).parents(".middle").get(0)){
+                    this.$el.find(".middle .table-ctn").hide(200);
+                    this.$el.find('.middle .view-less').hide();
+                    this.$el.find(".middle .view-more").show();
+                }else if($(eventTarget).parents(".lower").get(0)){
+                    this.$el.find(".lower .table-ctn").hide(200);
+                    this.$el.find('.lower .view-less').hide();
+                    this.$el.find(".lower .view-more").show();
                 }
             },
 
@@ -150,6 +191,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.initRuleTable();
             },
 
+            // 逻辑没问题，暂不需要修改
             onClickSaveButton: function() {
                 if (this.isSaving === true) return;
 
@@ -160,13 +202,18 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 } else if (this.defaultParam.type == null) {
                     alert('请选择设备类型');
                     return;
-                } else if (this.defaultParam.allNodes.length == 0) {
-                    alert('请选择加入拓扑关系的节点');
-                    return;
                 } else if (this.defaultParam.upperNodes.length == 0) {
                     alert('请选择拓扑关系的上层节点');
                     return;
-                } else if (this.defaultParam.rule.length == 0) {
+                    // 中层节点
+                } else if(this.defaultParam.middleNodes.length == 0){
+                    alert("请选择拓扑关系的中层节点");
+                    return;
+                    // 下层节点
+                }else if(this.defaultParam.lowerNodes.length == 0){
+                    alert("请选择拓扑关系的下层节点");
+                    return;
+                }else if (this.defaultParam.rule.length == 0) {
                     alert('请添加规则');
                     return;
                 }
@@ -187,14 +234,14 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                             localIdArray.push(node.areaId);
                         }
                         localIdArray.push(node.id)
-                    }.bind(this))
+                    }.bind(this));
                     _.each(rule.upper, function(node) {
                         upperObjArray.push({
                             nodeId: node.rsNodeMsgVo.id,
                             ipCorporation: node.ipCorporation,
                             chiefType: node.chiefType === undefined ? 1 : node.chiefType
                         })
-                    }.bind(this))
+                    }.bind(this));
                     tempRule.id = rule.id;
                     tempRule.localType = rule.localType
                     tempRule.local = localIdArray;
@@ -202,10 +249,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     postRules.push(tempRule);
                 }.bind(this))
 
-                postTopo.allNodes = [];
-                _.each(this.defaultParam.allNodes, function(el){
-                    postTopo.allNodes.push(el.id)
-                }.bind(this));
                 postTopo.id = this.defaultParam.id;
                 postTopo.name = this.defaultParam.name;
                 postTopo.type = this.defaultParam.type;
@@ -213,12 +256,22 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 _.each(this.defaultParam.upperNodes, function(el){
                        postTopo.upperNodes.push(el.id)
                 }.bind(this));
+                postTopo.middleNodes = [];
+                _.each(this.defaultParam.middleNodes, function(el){
+                       postTopo.middleNodes.push(el.id)
+                }.bind(this));
+                postTopo.lowerNodes = [];
+                _.each(this.defaultParam.lowerNodes, function(el){
+                       postTopo.lowerNodes.push(el.id)
+                }.bind(this));
                 postTopo.rule = postRules
                 postTopo.mark = this.$el.find("#comment").val();
-                console.log(postTopo)
+                // console.log(postTopo)
                 if (this.isEdit)
+                // Ajax拓扑关系编辑
                     this.collection.topoModify(postTopo);
                 else
+                // Ajax拓扑关系新建
                     this.collection.topoAdd(postTopo);
 
                 this.isSaving = true;
@@ -260,93 +313,31 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 }
             },
 
-            onClickAddAllNodeButton: function(event) {
-                require(['setupTopoManage.selectNode.view'], function(SelectNodeView) {
-                    if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
-
-                    var mySelectNodeView = new SelectNodeView({
-                        collection: this.collection,
-                        selectedNodes: this.defaultParam.allNodes,
-                        appType: this.defaultParam.type
-                    });
-                    var options = {
-                        title: "选择节点",
-                        body: mySelectNodeView,
-                        backdrop: 'static',
-                        type: 2,
-                        width: 800,
-                        onOKCallback: function() {
-                            this.defaultParam.allNodes = mySelectNodeView.getArgs();
-                            this.selectNodePopup.$el.modal("hide");
-                            this.initAllNodesTable();
-                        }.bind(this),
-                        onHiddenCallback: function() {}.bind(this)
-                    }
-                    this.selectNodePopup = new Modal(options);
-                }.bind(this))
-            },
-
-            initAllNodesTable: function() {
-                this.localTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
-                    data: this.defaultParam.allNodes
-                }));
-
-                if (this.defaultParam.allNodes.length !== 0) {
-                    this.$el.find(".all .table-ctn").html(this.localTable[0]);
-                } else {
-                    this.$el.find(".all .table-ctn").html(_.template(template['tpl/empty-2.html'])({
-                        data: {
-                            message: "还没有添加节点"
-                        }
-                    }));
-                }
-
-                this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemAllDelete, this));
-
-                if (this.isView)
-                    this.localTable.find("tbody .delete").hide();
-            },
-
-            onClickItemAllDelete: function(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "SPAN") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-
-                this.defaultParam.allNodes = _.filter(this.defaultParam.allNodes, function(obj) {
-                    return obj.id !== parseInt(id)
-                }.bind(this))
-
-                this.initAllNodesTable();
-            },
-
+            // 接口还未规定，这个接口是另一个接口
             onClickAddUpperNodeButton: function(event) {
-                if (this.defaultParam.allNodes.length === 0) {
-                    alert("请先添加拓扑节点!")
+                if(this.defaultParam.type != 202 && this.defaultParam.type !==203){
+                    alert("目前只支持直播(Live)或点播(Cache)类型");
                     return;
-                }
-
+                };
                 require(['setupTopoManage.selectNode.view'], function(SelectNodeView) {
                     if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
-
                     var mySelectNodeView = new SelectNodeView({
                         collection: this.collection,
-                        selectedNodes: this.defaultParam.upperNodes,
-                        nodesList: this.defaultParam.allNodes,
-                        appType: this.defaultParam.type
+                        // 节点列表应该就是upper，选择的打钩节点先假设为upper
+                        selectedNodes: this.defaultParam.upperNodes,            
+                        appType: this.defaultParam.type,
+                        level: 1
                     });
+                    // 这部分是打钩选择的节点
                     var options = {
                         title: "选择节点",
+                        // 渲染出来应该就是上层节点全打钩
                         body: mySelectNodeView,
                         backdrop: 'static',
                         type: 2,
                         width: 800,
                         onOKCallback: function() {
-                            this.defaultParam.upperNodes = mySelectNodeView.getArgs();
+                            this.defaultParam.upperNodes = mySelectNodeView.getUpperArgs();
                             this.selectNodePopup.$el.modal("hide");
                             this.initUpperTable();
                         }.bind(this),
@@ -356,8 +347,10 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 }.bind(this))
             },
 
+            // 重新渲染上层节点列表，出来的应该是已经选择的节点
             initUpperTable: function() {
                 this.upperTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
+                    // 所以节点变量应该如下
                     data: this.defaultParam.upperNodes
                 }));
                 if (this.defaultParam.upperNodes.length !== 0)
@@ -392,6 +385,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.initUpperTable();
             },
 
+            // 规则选择部分，不需要修改，只是刷新规则列表,有效的是localLayer和upperLayer
             initRuleTable: function() {
                 //var data = [{localLayer: "1111", upperLayer: "22222"}];
                 this.ruleList = [];
@@ -458,6 +452,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     if (backupArray.length > 0)
                         upperLayer += '<br><strong>备：</strong><br>' + backupNameArray.join('<br>');
 
+                    // 这部分是规则选择后的数据形式
                     var ruleStrObj = {
                         id: rule.id,
                         localLayer: localLayerArray.join("<br>"),
@@ -467,6 +462,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     this.ruleList.push(ruleStrObj)
                 }.bind(this))
 
+                // 渲染到数据列表中
                 this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.rule.table.html'])({
                     data: this.ruleList
                 }));
@@ -490,6 +486,154 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 }
             },
 
+            onClickAddMiddleNodeButton: function(event) {
+                if(this.defaultParam.type != 202 && this.defaultParam.type !==203){
+                    alert("目前只支持直播(Live)或点播(Cache)类型");
+                    return;
+                };
+                if (this.defaultParam.upperNodes.length === 0) {
+                    alert("请先添加拓扑上层节点!")
+                    return;
+                }
+
+                require(['setupTopoManage.selectNode.view'], function(SelectNodeView) {
+                    if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
+
+                    var mySelectNodeView = new SelectNodeView({
+                        collection: this.collection,
+                        // 默认中层节点全打钩
+                        selectedNodes: this.defaultParam.middleNodes,
+                        // nodesList: this.defaultParam.allNodes,
+                        appType: this.defaultParam.type,
+                        level: 2
+                    });
+                    var options = {
+                        title: "选择节点",
+                        body: mySelectNodeView,
+                        backdrop: 'static',
+                        type: 2,
+                        width: 800,
+                        onOKCallback: function() {
+                            this.defaultParam.middleNodes = mySelectNodeView.getMiddleArgs();
+                            this.selectNodePopup.$el.modal("hide");
+                            this.initMiddleTable();
+                        }.bind(this),
+                        onHiddenCallback: function() {}.bind(this)
+                    }
+                    this.selectNodePopup = new Modal(options);
+                }.bind(this))
+            },
+
+            initMiddleTable: function() {
+                this.middleTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
+                    data: this.defaultParam.middleNodes
+                }));
+                if (this.defaultParam.middleNodes.length !== 0)
+                    this.$el.find(".middle .table-ctn").html(this.middleTable[0]);
+                else
+                    this.$el.find(".middle .table-ctn").html(_.template(template['tpl/empty-2.html'])({
+                        data: {
+                            message: "还没有添加节点"
+                        }
+                    }));
+
+                this.middleTable.find("tbody .delete").on("click", $.proxy(this.onClickItemMiddleDelete, this));
+
+                if (this.isView)
+                    this.middleTable.find("tbody .delete").hide();
+            },
+
+            onClickItemMiddleDelete: function(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+
+                this.defaultParam.middleNodes = _.filter(this.defaultParam.middleNodes, function(obj) {
+                    return obj.id !== parseInt(id)
+                }.bind(this))
+
+                this.initMiddleTable();
+            },
+
+            onClickAddLowerNodeButton: function(event) {
+                if(this.defaultParam.type != 202 && this.defaultParam.type !==203){
+                    alert("目前只支持直播(Live)或点播(Cache)类型");
+                    return;
+                };
+                if (this.defaultParam.middleNodes.length === 0) {
+                    alert("请先添加拓扑中层节点!")
+                    return;
+                }
+
+                require(['setupTopoManage.selectNode.view'], function(SelectNodeView) {
+                    if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
+
+                    var mySelectNodeView = new SelectNodeView({
+                        collection: this.collection,
+                        // 默认下层节点全打钩
+                        selectedNodes: this.defaultParam.lowerNodes,
+                        // nodesList: this.defaultParam.allNodes,
+                        appType: this.defaultParam.type,
+                        level: 3
+                    });
+                    var options = {
+                        title: "选择节点",
+                        body: mySelectNodeView,
+                        backdrop: 'static',
+                        type: 2,
+                        width: 800,
+                        onOKCallback: function() {
+                            this.defaultParam.lowerNodes = mySelectNodeView.getLowerArgs();
+                            this.selectNodePopup.$el.modal("hide");
+                            this.initLowerTable();
+                        }.bind(this),
+                        onHiddenCallback: function() {}.bind(this)
+                    }
+                    this.selectNodePopup = new Modal(options);
+                }.bind(this))
+            },
+
+            initLowerTable: function() {
+                this.lowerTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
+                    data: this.defaultParam.lowerNodes
+                }));
+                if (this.defaultParam.lowerNodes.length !== 0)
+                    this.$el.find(".lower .table-ctn").html(this.lowerTable[0]);
+                else
+                    this.$el.find(".lower .table-ctn").html(_.template(template['tpl/empty-2.html'])({
+                        data: {
+                            message: "还没有添加节点"
+                        }
+                    }));
+
+                this.lowerTable.find("tbody .delete").on("click", $.proxy(this.onClickItemLowerDelete, this));
+
+                if (this.isView)
+                    this.lowerTable.find("tbody .delete").hide();
+            },
+
+            onClickItemLowerDelete: function(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+
+                this.defaultParam.lowerNodes = _.filter(this.defaultParam.lowerNodes, function(obj) {
+                    return obj.id !== parseInt(id)
+                }.bind(this))
+
+                this.initLowerTable();
+            },
+
             onClickItemEdit: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
@@ -504,10 +648,15 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
                 require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
                     function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
+                        var newLocalNodes = _.union(this.defaultParam.lowerNodes,this.defaultParam.middleNodes);
+                        var newUpperNodes = _.union(this.defaultParam.upperNodes,this.defaultParam.middleNodes);
                         var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
+                            
                             collection: this.collection,
-                            localNodes: this.defaultParam.allNodes,
-                            upperNodes: this.defaultParam.upperNodes,
+                            // 本层：下 + 中
+                            localNodes: newLocalNodes,
+                            // 上层：中 + 上
+                            upperNodes: newUpperNodes,
                             rule: this.defaultParam.rule,
                             curEditRule: this.curEditRule,
                             appType: this.defaultParam.type,
@@ -538,20 +687,27 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.initRuleTable();
             },
 
+            // 添加规则按钮
             onClickAddRuleButton: function() {
-                if (this.defaultParam.allNodes.length === 0 || this.defaultParam.upperNodes === 0) {
-                    alert("请先添加拓扑所有节点和上层节点！")
-                    return;
-                }
+                // if(this.defaultParam.upperNodes.length === 0 || this.defaultParam.middleNodes.length === 0 || this.defaultParam.lowerNodes.length === 0){
+                //     alert("请先完成上层、中层和下层节点的添加！");
+                //     return;
+                // }
 
                 require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
                     function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                         var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                         var options = myAddEditLayerStrategyModel;
+                        console.log("zzz",this.defaultParam.lowerNodes);
+                        console.log("xxx",this.defaultParam.middleNodes);
+                        console.log("vvv",this.defaultParam.upperNodes);
+                        var newLocalNodes = _.union(this.defaultParam.lowerNodes,this.defaultParam.middleNodes);
+                        var newUpperNodes = _.union(this.defaultParam.upperNodes,this.defaultParam.middleNodes);
                         var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
                             collection: options,
-                            localNodes: this.defaultParam.allNodes,
-                            upperNodes: this.defaultParam.upperNodes,
+                            localNodes: newLocalNodes,
+                            upperNodes: newUpperNodes,
+                            
                             rule: this.defaultParam.rule,
                             appType: this.defaultParam.type,
                             onSaveCallback: function() {
@@ -564,7 +720,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                                 this.$el.find(".add-topo").show();
                             }.bind(this)
                         })
-
                         this.$el.find(".add-topo").hide();
                         myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
                     }.bind(this))
@@ -593,3 +748,10 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
         return EditTopoView;
     });
+
+
+    // upperAllNodes-->upperNodes   由可选的上层节点中选择自己需要的上层节点
+    // middleAllNodes-->middleNodes 由可选的中层节点中选择自己需要的中层节点
+    // lowerAllNodes-->lowerNodes   由可选的下层节点中选择自己需要的下层节点
+    // upperNodes + middleNodes = newUpperNodes-->upperLayer 
+    // middleNodes + lowerNodes = newLocalNodes-->localLayer

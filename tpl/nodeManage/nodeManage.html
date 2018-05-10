@@ -12,12 +12,25 @@
 					<label for="input-name">ID</label>
 					<input type="text" class="form-control" id="input-id">
 				</div>
+				<hr>
 				<div class="form-group">
-					<label for="dropdown-nodeType">类型</label>
+					<label for="dropdown-liveLevel">直播层级</label>
 				</div>
-				<div class="form-group dropdown-nodeType">
+				<div class="form-group dropdown-liveLevel">
 					<div class="dropdown">
-						<button class="btn btn-default dropdown-toggle" type="button" id="dropdown-nodeType" data-toggle="dropdown">
+						<button class="btn btn-default dropdown-toggle" type="button" id="dropdown-liveLevel" data-toggle="dropdown">
+							<span class="cur-value">全部</span>
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu"></ul>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="dropdown-cacheLevel">点播层级</label>
+				</div>
+				<div class="form-group dropdown-cacheLevel">
+					<div class="dropdown">
+						<button class="btn btn-default dropdown-toggle" type="button" id="dropdown-cacheLevel" data-toggle="dropdown">
 							<span class="cur-value">全部</span>
 							<span class="caret"></span>
 						</button>

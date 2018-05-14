@@ -14,7 +14,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.appType = options.appType
 
             this.topologyId = options.topologyId;
-
             if (!this.isEdit) {
                 this.defaultParam = {
                     "id": new Date().valueOf(),
@@ -26,7 +25,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.defaultParam = this.curEditRule
                 this.onCancelParam= $.extend(true,{},this.curEditRule)     
             }
-            console.log("新建规则初始化默认值: ", this.defaultParam)
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 
@@ -399,6 +397,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 // if (this.options.localNodes.length <= this.options.upperNodes.length) {
                 //     this.$el.find("#strategyRadio1").attr("disabled", "disabled")
                 // }
+
                 this.onGetLocalNodeFromArgs();
                 this.onGetUpperNodeFromArgs();
             }
@@ -621,7 +620,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.$el.find('.local .add-node').show();
 
             this.topoAllNodes = [];
-            console.log(this.options.localNodes)
+            // console.log(this.options.localNodes)
             _.each(this.options.localNodes, function(node) {
                 var tempNode = _.find(this.allNodesArray, function(obj) {
                     return obj.id === node.id
@@ -630,28 +629,36 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }.bind(this))
 
           //  console.log("拓扑所有节点: ", this.topoAllNodes);
-
+        // 通过深拷贝来解决这一问题
             this.topoUpperNodes = [];
             _.each(this.options.upperNodes, function(node) {
-                var tempNode = _.find(this.allNodesArray, function(obj) {
+                var tempNode = _.find(this.options.upperNodes, function(obj) {
                     return obj.id === node.id
                 }.bind(this))
-                if (tempNode) this.topoUpperNodes.push(tempNode)
+                // console.log(tempNode.isChecked)
+                if(tempNode) this.topoUpperNodes.push(_.clone(tempNode));
             }.bind(this));
+            _.each(this.topoUpperNodes,function(node){
+                node.isChecked = false;
+                // console.log(node.isChecked,"iiii")
+            }.bind(this))
 
             // this.topoUpperNodes
-            this.topoUpperNodes = this.options.upperNodes;
 //            console.log("拓扑上层节点: ", this.topoUpperNodes);
 
-            this.localNodeListForSelect = this.options.localNodes;
-            // if (!this.notFilter) {
-            //     _.each(this.topoUpperNodes, function(node) {
-            //         this.localNodeListForSelect = _.filter(this.localNodeListForSelect, function(obj) {
-            //             return obj.id !== node.id;
-            //         }.bind(this))
-            //     }.bind(this))
-            // }
-
+            this.localNodeListForSelect = [];
+            if (!this.notFilter) {
+                _.each(this.options.localNodes, function(node) {
+                    var tempNodeLocal = _.find(this.options.localNodes, function(obj) {
+                        return obj.id === node.id;
+                    }.bind(this))
+                    // console.log(tempNodeLocal.isChecked)
+                    if(tempNodeLocal) this.localNodeListForSelect.push(_.clone(tempNodeLocal))
+                }.bind(this))
+            };
+            _.each(this.localNodeListForSelect,function(node){
+                node.isChecked = false;
+            }.bind(this))
             // this.localNodesListForSelect
        //     console.log("拓扑本层节点: ", this.localNodeListForSelect);
             this.$el.find('.local .add-node').on('click', $.proxy(this.onClickAddLocalNodeButton, this))
@@ -686,7 +693,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         onGetLocalNodeByTopo: function(res) {
-            console.log("根据拓扑ID获取拓扑信息：", res);
             this.options.localNodes = res.allNodes;
             this.options.upperNodes = res.upperNodes;
             this.onGetLocalNodeFromArgs();
@@ -791,7 +797,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         onClickAddUpperNodeButton: function(event) {
             require(['setupTopoManage.selectNode.view'], function(SelectNodeView) {
                 if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
-
                 var mySelectNodeView = new SelectNodeView({
                     collection: this.collection,
                     selectedNodes: this.defaultParam.upper,
@@ -849,7 +854,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }.bind(this))
 
             nodeList = duoxianArray.concat(feiDuoxianArray)
-
+            console.log("ppp",nodeList)
             this.upperTable = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.upper.table.html'])({
                 data: nodeList
             }));

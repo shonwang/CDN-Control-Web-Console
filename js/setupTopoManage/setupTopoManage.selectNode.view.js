@@ -11,221 +11,6 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                 this.appType = options.appType;
                 this.level = options.level;
 
-                // 假数据验证部分
-                this.testUpperAllNodes = [{
-                    areaId:874,
-                    areaName:"海外",
-                    chName:"ddd",
-                    id:187,
-                    name:"北京多线01上层节点",
-                    operatorId:9,
-                    operatorName:"多线",
-                    provId:877,
-                    provName:"东京",
-                    cacheLevel:1,
-                    liveLevel:null,
-                    isChecked:false,
-                    isDisplay:true
-                },{
-                    areaId:430,
-                    areaName:"华北",
-                    id:218,
-                    chName:"xxxx",
-                    name:"天津多线01上层节点",
-                    operatorId:9,
-                    operatorName:"多线",
-                    provId:507,
-                    provName:"北京",
-                    cacheLevel:1,
-                    liveLevel:1,
-                    isChecked:false,
-                    isDisplay:true
-                },{
-                    areaId:874,
-                    areaName:"海外",
-                    id:166,
-                    chName:"研发测试",
-                    name:"广州多线01节点",
-                    operatorId:9,
-                    operatorName:"多线",
-                    provId:877,
-                    provName:"东京",
-                    cacheLevel:null,
-                    liveLevel:1,
-                    isChecked:false,
-                    isDisplay:true
-                },{
-                    areaId:0,
-                    areaName:"华南",
-                    id:234,
-                    chName:"test",
-                    name:"南京多线01节点",
-                    operatorId:9,
-                    operatorName:"多线",
-                    provId:570,
-                    provName:"南京",
-                    cacheLevel:null,
-                    liveLevel:1,
-                    isChecked:false,
-                    isDisplay:true
-                },{
-                    areaId:0,
-                    areaName:"华中",
-                    id:181,
-                    chName:"测试节点-test",
-                    name:"武汉多线01节点",
-                    operatorId:9,
-                    operatorName:"多线",
-                    provId:365,
-                    provName:"兰州",
-                    cacheLevel:1,
-                    liveLevel:null,
-                    isChecked:false,
-                    isDisplay:true
-                }];
-                this.testMiddleAllNodes = [{
-                    areaId:874,
-                    areaName:"海外",
-                    chName:"ddd",
-                    id:187,
-                    name:"北京多线01上层节点",
-                    operatorId:9,
-                    operatorName:"多线",
-                    provId:877,
-                    provName:"东京",
-                    cacheLevel:2,
-                    liveLevel:null,
-                    isChecked:false,
-                    isDisplay:true
-                },{
-                    areaId:430,
-                    areaName:"华北",
-                    id:218,
-                    chName:"xxxx",
-                    name:"天津多线01上层节点",
-                    operatorId:9,
-                    operatorName:"多线",
-                    provId:507,
-                    provName:"北京",
-                    cacheLevel:2,
-                    liveLevel:2,
-                    isChecked:false,
-                    isDisplay:true
-                },{
-                    areaId:874,
-                    areaName:"海外",
-                    id:166,
-                    chName:"研发测试",
-                    name:"广州多线01节点",
-                    operatorId:9,
-                    operatorName:"多线",
-                    provId:877,
-                    provName:"东京",
-                    cacheLevel:null,
-                    liveLevel:2,
-                    isChecked:false,
-                    isDisplay:true
-                },{
-                    areaId:0,
-                    areaName:"华南",
-                    id:234,
-                    chName:"test",
-                    name:"南京多线01节点",
-                    operatorId:9,
-                    operatorName:"多线",
-                    provId:570,
-                    provName:"南京",
-                    cacheLevel:null,
-                    liveLevel:2,
-                    isChecked:false,
-                    isDisplay:true
-                },{
-                    areaId:0,
-                    areaName:"华中",
-                    id:181,
-                    chName:"测试节点-test",
-                    name:"武汉多线01节点",
-                    operatorId:9,
-                    operatorName:"多线",
-                    provId:365,
-                    provName:"兰州",
-                    cacheLevel:2,
-                    liveLevel:null,
-                    isChecked:false,
-                    isDisplay:true
-                }];
-                this.testLowerAllNodes = [{
-                    areaId:874,
-                    areaName:"海外",
-                    chName:"ddd",
-                    id:187,
-                    name:"北京多线01上层节点",
-                    operatorId:9,
-                    operatorName:"多线",
-                    provId:877,
-                    provName:"东京",
-                    cacheLevel:3,
-                    liveLevel:null,
-                    isChecked:false,
-                    isDisplay:true
-                },{
-                    areaId:430,
-                    areaName:"华北",
-                    id:218,
-                    chName:"xxxx",
-                    name:"天津多线01上层节点",
-                    operatorId:9,
-                    operatorName:"多线",
-                    provId:507,
-                    provName:"北京",
-                    cacheLevel:3,
-                    liveLevel:3,
-                    isChecked:false,
-                    isDisplay:true
-                },{
-                    areaId:874,
-                    areaName:"海外",
-                    id:166,
-                    chName:"研发测试",
-                    name:"广州多线01节点",
-                    operatorId:9,
-                    operatorName:"多线",
-                    provId:877,
-                    provName:"东京",
-                    cacheLevel:null,
-                    liveLevel:3,
-                    isChecked:false,
-                    isDisplay:true
-                },{
-                    areaId:0,
-                    areaName:"华南",
-                    id:234,
-                    chName:"test",
-                    name:"南京多线01节点",
-                    operatorId:9,
-                    operatorName:"多线",
-                    provId:570,
-                    provName:"南京",
-                    cacheLevel:null,
-                    liveLevel:3,
-                    isChecked:false,
-                    isDisplay:true
-                },{
-                    areaId:0,
-                    areaName:"华中",
-                    id:181,
-                    chName:"测试节点-test",
-                    name:"武汉多线01节点",
-                    operatorId:9,
-                    operatorName:"多线",
-                    provId:365,
-                    provName:"兰州",
-                    cacheLevel:3,
-                    liveLevel:null,
-                    isChecked:false,
-                    isDisplay:true
-                }];
-
                 this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.selectNode.html'])({}));
                 this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                 require(['nodeManage.model'], function(NodeManageModel) {
@@ -407,32 +192,20 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                         this.allNodes.push(el);
                     // }
                 }.bind(this))
-                // this.allNodes此时已经请求完所有的节点
-
-                if(this.level === 1){
-                    this.onGetUpperAllNodes();
-                }else if(this.level === 2){
-                    this.onGetMiddleAllNodes();
-                }else if(this.level === 3){
-                    this.onGetLowerAllNodes();
-                }
-                // else{
-                //     alert("目前层级只支持上、中、下");
-                //     return;
-                // }
-
-                // var checkedArray = _.filter(this.allNodes, function(obj) {
-                //     return obj.isChecked === true;
-                // }.bind(this))
-
-                // var notCheckedArray = _.filter(this.allNodes, function(obj) {
-                //     return obj.isChecked === false;
-                // }.bind(this))
-
-                // this.allNodes = checkedArray.concat(notCheckedArray);
-
-                // if (this.selectedNodes.length === this.allNodes.length)
-                //     this.isCheckedAll = true
+            
+                    if(this.level === 1){
+                        this.onGetUpperAllNodes();
+                    }else if(this.level === 2){
+                        this.onGetMiddleAllNodes();
+                    }else if(this.level === 3){
+                        this.onGetLowerAllNodes();
+                    }
+                    // else{
+                    //     alert("目前层级只支持上、中、下");
+                    //     return;
+                    // }
+           
+                this.checkedOptions(this.nodesList);
 
                 this.initTable();
 
@@ -441,16 +214,24 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                 this.$el.find("#input-name").on("keyup", $.proxy(this.onKeyupNodeNameFilter, this));
             },
 
+            checkedOptions:function(nodesList){
+                var checkedArray = _.filter(this.nodesList, function(obj) {
+                    return obj.isChecked === true;
+                }.bind(this))
+
+                var notCheckedArray = _.filter(this.nodesList, function(obj) {
+                    return obj.isChecked === false;
+                }.bind(this))
+
+                this.nodesList = checkedArray.concat(notCheckedArray);
+
+                if (this.selectedNodes.length === this.nodesList.length)
+                    this.isCheckedAll = true
+            },
+
             onGetUpperAllNodes: function(){
                 if(this.appType == 202){
                     _.each(this.allNodes, function(el){
-                        if(el.cacheLevel == 1){
-                            this.upperAllNodes.push(el);
-                        }
-                        }.bind(this))
-
-                    // 测试部分
-                    _.each(this.testUpperAllNodes,function(el){
                         if(el.cacheLevel == 1){
                             this.upperAllNodes.push(el);
                         }
@@ -461,28 +242,10 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                             this.upperAllNodes.push(el);
                         }
                     }.bind(this))
-                    _.each(this.testUpperAllNodes,function(el){
-                        if(el.liveLevel == 1){
-                            this.upperAllNodes.push(el);
-                        }
-                        }.bind(this))
                 }else{
                     alert("目前只支持直播或点播类型");
                     return;
                 };
-             
-                var checkedArray = _.filter(this.upperAllNodes, function(obj) {
-                    return obj.isChecked === true;        
-                }.bind(this))
-
-                var notCheckedArray = _.filter(this.upperAllNodes, function(obj) {
-                    return obj.isChecked === false;    
-                }.bind(this))
-
-                this.upperAllNodes = checkedArray.concat(notCheckedArray);
-
-                if (this.selectedNodes.length === this.upperAllNodes.length)
-                    this.isCheckedAll = true;
                 
                 this.nodesList = this.upperAllNodes;
             },
@@ -494,39 +257,16 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                             this.middleAllNodes.push(el);
                         }
                     }.bind(this))
-                    _.each(this.testMiddleAllNodes,function(el){
-                        if(el.cacheLevel == 2){
-                            this.middleAllNodes.push(el);
-                        }
-                        }.bind(this))
                 }else if(this.appType == 203){
                     _.each(this.allNodes, function(el){
                         if(el.liveLevel == 2){
                             this.middleAllNodes.push(el);
                 }
                     }.bind(this))
-                    _.each(this.testMiddleAllNodes,function(el){
-                        if(el.cacheLevel == 2){
-                            this.middleAllNodes.push(el);
-                        }
-                        }.bind(this))
                 }else{
                     alert("目前只支持直播或点播类型");
                     return;
                 };
-
-                var checkedArray = _.filter(this.middleAllNodes, function(obj) {
-                    return obj.isChecked === true;
-                        }.bind(this))
-
-                var notCheckedArray = _.filter(this.middleAllNodes, function(obj) {
-                    return obj.isChecked === false;
-                    }.bind(this))
-
-                this.middleAllNodes = checkedArray.concat(notCheckedArray);
-
-                if (this.selectedNodes.length === this.middleAllNodes.length)
-                    this.isCheckedAll = true;
 
                 this.nodesList = this.middleAllNodes
             },
@@ -537,40 +277,17 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                         if(el.cacheLevel == 3){
                             this.lowerAllNodes.push(el);
                 }
-                    }.bind(this))
-                    _.each(this.testLowerAllNodes,function(el){
-                        if(el.cacheLevel == 3){
-                            this.lowerAllNodes.push(el);
-                        }
-                        }.bind(this))
+                    }.bind(this)) 
                 }else if(this.appType == 203){
                     _.each(this.allNodes, function(el){
                         if(el.liveLevel == 3){
                             this.lowerAllNodes.push(el);
                 }
                     }.bind(this))
-                    _.each(this.testLowerAllNodes,function(el){
-                        if(el.cacheLevel == 3){
-                            this.lowerAllNodes.push(el);
-                        }
-                        }.bind(this))
                 }else{
                     alert("目前只支持直播或点播类型");
                     return;
                 };
-
-                var checkedArray = _.filter(this.lowerAllNodes, function(obj) {
-                    return obj.isChecked === true;
-                }.bind(this))
-
-                var notCheckedArray = _.filter(this.lowerAllNodes, function(obj) {
-                    return obj.isChecked === false;
-                }.bind(this))
-
-                this.lowerAllNodes = checkedArray.concat(notCheckedArray);
-
-                if (this.selectedNodes.length === this.lowerAllNodes.length)
-                    this.isCheckedAll = true
 
                 this.nodesList = this.lowerAllNodes
             },
@@ -581,7 +298,6 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                     data: this.nodesList,
                     isCheckedAll: this.isCheckedAll || false
                 }));
-                console.log(this.nodesList)
                 if (this.nodesList.length !== 0)
                     this.$el.find(".table-ctn").html(this.table[0]);
                 else
@@ -595,27 +311,6 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                 this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
             },
 
-         
-
-            // onItemCheckedUpdated: function(event) {
-            //     var eventTarget = event.srcElement || event.target;
-            //     if (eventTarget.tagName !== "INPUT") return;
-            //     var id = $(eventTarget).attr("id");
-
-            //     var selectedObj = _.find(this.allNodes, function(object) {
-            //         return object.id === parseInt(id)
-            //     }.bind(this));
-
-            //     selectedObj.isChecked = eventTarget.checked
-
-            //     var checkedList = this.allNodes.filter(function(object) {
-            //         return object.isChecked === true;
-            //     })
-            //     if (checkedList.length === this.allNodes.length)
-            //         this.table.find("thead input").get(0).checked = true;
-            //     if (checkedList.length !== this.allNodes.length)
-            //         this.table.find("thead input").get(0).checked = false;
-            // },
 
             onItemCheckedUpdated: function(event) {
                 var eventTarget = event.srcElement || event.target;
@@ -642,7 +337,7 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                 if (eventTarget.tagName !== "INPUT") return;
                 this.table.find("tbody tr").find("input").each(function(index, node) {
                     $(node).prop("checked", eventTarget.checked);
-                    _.each(this.allNodes, function(el){
+                    _.each(this.nodesList, function(el){
                         if (el.id === parseInt(node.id)) el.isChecked = eventTarget.checked;
                     }.bind(this))
                 }.bind(this))
@@ -653,7 +348,6 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                 var checkedList = _.filter(this.nodesList, function(object) {
                     return object.isChecked === true;
                 })
-                console.log(checkedList)
                 return checkedList
             },
             getUpperArgs: function() {

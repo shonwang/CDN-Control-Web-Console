@@ -689,18 +689,15 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
             // 添加规则按钮
             onClickAddRuleButton: function() {
-                // if(this.defaultParam.upperNodes.length === 0 || this.defaultParam.middleNodes.length === 0 || this.defaultParam.lowerNodes.length === 0){
-                //     alert("请先完成上层、中层和下层节点的添加！");
-                //     return;
-                // }
+                if(this.defaultParam.upperNodes.length === 0 || this.defaultParam.middleNodes.length === 0 || this.defaultParam.lowerNodes.length === 0){
+                    alert("请先完成上层、中层和下层节点的添加！");
+                    return;
+                }
 
                 require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
                     function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                         var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                         var options = myAddEditLayerStrategyModel;
-                        console.log("zzz",this.defaultParam.lowerNodes);
-                        console.log("xxx",this.defaultParam.middleNodes);
-                        console.log("vvv",this.defaultParam.upperNodes);
                         var newLocalNodes = _.union(this.defaultParam.lowerNodes,this.defaultParam.middleNodes);
                         var newUpperNodes = _.union(this.defaultParam.upperNodes,this.defaultParam.middleNodes);
                         var myAddEditLayerStrategyView = new AddEditLayerStrategyView({

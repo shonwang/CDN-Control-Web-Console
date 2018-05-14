@@ -851,7 +851,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
             this.queryArgs.name = this.$el.find("#input-domain").val() || null;
-            this.queryArgs.topoId = this.model.get("topoId") || null;
+            // this.queryArgs.topoId = this.model.get("topoId") || null;
 
             this.collection.getDispGroupList(this.queryArgs);
         },

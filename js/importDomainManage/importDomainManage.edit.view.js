@@ -22,7 +22,7 @@ define("importDomainManage.edit.view", ['require','exports', 'template', 'modal.
                     "page"  : 1,
                     "count" : 10,
 
-                    "topoId": this.model.get("topoId")
+                    "topoId": null
                 }
             this.refreshList();
         },
@@ -217,6 +217,7 @@ define("importDomainManage.edit.view", ['require','exports', 'template', 'modal.
                 dispId: this.currentDispId,
                 open302: this.curOpen302
             }
+            
             if (result) {
                 this.collection.off("set.cname.success");
                 this.collection.off("set.cname.error");

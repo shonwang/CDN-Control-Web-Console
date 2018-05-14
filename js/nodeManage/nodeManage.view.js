@@ -165,9 +165,6 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     name: "全部",
                     value: "All"
                 },{
-                    name: "非直播属性",
-                    value: 0
-                }, {
                     name: "上层",
                     value: 1
                 }, {
@@ -192,9 +189,6 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     name:"全部",
                     value: "All"
                 },{
-                    name: "非点播属性",
-                    value: 0
-                }, {
                     name: "上层",
                     value: 1
                 }, {

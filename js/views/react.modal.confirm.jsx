@@ -32,19 +32,19 @@ define("react.modal.confirm", ['require', 'exports'],
 
             render: function() {
                 var reactModalConfirm = (
-                            <Modal show={this.state.showModal} onHide={this.close} backdrop={this.props.backdrop}>
-                                <Modal.Header>
-                                    <Modal.Title>请确认</Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>
-                                    <span className="glyphicon glyphicon-question-sign"></span>
-                                    <span dangerouslySetInnerHTML={this.createMarkup()} />
-                                </Modal.Body>
-                                <Modal.Footer>
-                                    <Button bsStyle="primary" onClick={this.onClickSure}>确定</Button>
-                                    <Button onClick={this.close}>取消</Button>
-                                </Modal.Footer>
-                            </Modal>
+                            React.createElement(Modal, {show: this.state.showModal, onHide: this.close, backdrop: this.props.backdrop}, 
+                                React.createElement(Modal.Header, null, 
+                                    React.createElement(Modal.Title, null, "请确认")
+                                ), 
+                                React.createElement(Modal.Body, null, 
+                                    React.createElement("span", {className: "glyphicon glyphicon-question-sign"}), 
+                                    React.createElement("span", {dangerouslySetInnerHTML: this.createMarkup()})
+                                ), 
+                                React.createElement(Modal.Footer, null, 
+                                    React.createElement(Button, {bsStyle: "primary", onClick: this.onClickSure}, "确定"), 
+                                    React.createElement(Button, {onClick: this.close}, "取消")
+                                )
+                            )
                         );
 
                 return reactModalConfirm

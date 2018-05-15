@@ -83,11 +83,14 @@
               <% } %>
           </td>
           <td>
-              <% if ((data[i].attributes.status == 2 || data[i].attributes.status == 6) && permission.EnableorPauseHost) { %>
+<!--               <% if ((data[i].attributes.status == 2 || data[i].attributes.status == 6) && permission.EnableorPauseHost) { %>
               <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="operateDetail">
                 操作详情
               </a>
-              <% } %>
+              <% } %> -->
+              <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="operateDetail">
+                操作详情
+              </a>
           </td>
         </tr>
     <% } %>  

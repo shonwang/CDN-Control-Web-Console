@@ -342,7 +342,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },        
            
         initSetup: function(data) {
-            // allNodesArray默认为所有的节点
             this.allNodesArray = [];
             _.each(data, function(el, index, list) {
                 // if (el.s`tatus !== 3 && el.status !== 2) {
@@ -393,11 +392,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.onGetLocalNodeFromArgs();
                 this.onGetUpperNodeFromArgs();
             } else {
-                // 目前中下层节点为0，也就是该条件恒成立
-                // if (this.options.localNodes.length <= this.options.upperNodes.length) {
-                //     this.$el.find("#strategyRadio1").attr("disabled", "disabled")
-                // }
-
                 this.onGetLocalNodeFromArgs();
                 this.onGetUpperNodeFromArgs();
             }
@@ -628,7 +622,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 if (tempNode) this.topoAllNodes.push(tempNode)
             }.bind(this))
 
-          //  console.log("拓扑所有节点: ", this.topoAllNodes);
         // 通过深拷贝来解决这一问题
             this.topoUpperNodes = [];
             _.each(this.options.upperNodes, function(node) {
@@ -640,27 +633,30 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }.bind(this));
             _.each(this.topoUpperNodes,function(node){
                 node.isChecked = false;
-                // console.log(node.isChecked,"iiii")
+                node.isDisplay = true;
             }.bind(this))
 
             // this.topoUpperNodes
-//            console.log("拓扑上层节点: ", this.topoUpperNodes);
-
+           console.log("拓扑上层节点: ", this.topoUpperNodes);
             this.localNodeListForSelect = [];
             if (!this.notFilter) {
                 _.each(this.options.localNodes, function(node) {
                     var tempNodeLocal = _.find(this.options.localNodes, function(obj) {
                         return obj.id === node.id;
                     }.bind(this))
-                    // console.log(tempNodeLocal.isChecked)
                     if(tempNodeLocal) this.localNodeListForSelect.push(_.clone(tempNodeLocal))
+                }.bind(this))
+            }else{
+                _.each(this.options.localNodes,function(node){
+                    this.localNodeListForSelect.push(_.clone(node))
                 }.bind(this))
             };
             _.each(this.localNodeListForSelect,function(node){
                 node.isChecked = false;
+                node.isDisplay = true;
             }.bind(this))
             // this.localNodesListForSelect
-       //     console.log("拓扑本层节点: ", this.localNodeListForSelect);
+            console.log("拓扑本层节点: ", this.localNodeListForSelect);
             this.$el.find('.local .add-node').on('click', $.proxy(this.onClickAddLocalNodeButton, this))
             this.initLocalTable();
         },

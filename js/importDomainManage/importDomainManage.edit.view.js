@@ -13,7 +13,6 @@ define("importDomainManage.edit.view", ['require','exports', 'template', 'modal.
 
             this.curPage = 1;
             this.initDispListDropMenu();
-
             this.queryArgs = {
                     "name"  : null,//调度组名称
                     "status": null,//调度组状态
@@ -22,7 +21,7 @@ define("importDomainManage.edit.view", ['require','exports', 'template', 'modal.
                     "page"  : 1,
                     "count" : 10,
 
-                    "topoId": null
+                    "topoId": this.options.curModel.get("topoId")
                 }
             this.refreshList();
         },

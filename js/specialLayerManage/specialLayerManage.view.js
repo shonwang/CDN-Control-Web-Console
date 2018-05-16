@@ -405,7 +405,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             onClickAddRuleButton: function() {
-                console.log("zzzz");
                 require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
                     function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                         var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();

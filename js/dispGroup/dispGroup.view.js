@@ -417,9 +417,60 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.collection.off("ip.type.error");
             this.collection.on("ip.type.success", $.proxy(this.onGetIpTypeSuccess, this));
             this.collection.on("ip.type.error", $.proxy(this.onGetError, this));
-
             this.collection.ipTypeList();
+
+            this.collection.off("get.topo.success");
+            this.collection.off("get.topo.error");
+            this.collection.on("get.topo.success", $.proxy(this.onGetTopoSuccess, this));
+            this.collection.on("get.topo.error", $.proxy(this.onGetError, this));
+            this.collection.getTopoList({
+                name:null,
+                page:1,
+                size:9999,
+            });
+
             this.initDropmenu();
+        },
+
+        onGetTopoSuccess:function(data){
+            // 接收的是id，转换为topoId
+            var _data = data.rows
+            this.TopoList = _data;
+           
+            var topoArray = [];
+            _.each(this.TopoList, function(el, key, ls){
+                topoArray.push({name: el.name, value: el.id})
+            })
+            
+            Utility.initDropMenu(this.$el.find(".dropdown-topoRelationship"), topoArray, function(value){
+                this.topoId = parseInt(value);
+            }.bind(this));
+            this.topoTypeList = topoArray;
+            if (!this.isEdit){
+                this.topoId = _data[0].id;
+                this.$el.find(".dropdown-topoRelationship .cur-value").html(_data[0].name);
+               // AUTH_OBJ.ChooseGtld = true;
+                if(!AUTH_OBJ.ChooseGtld){
+                    this.$el.find(".dropdown-topoRelationship #topoRelationship-list").attr("disabled", "disabled");
+                }
+            } else {
+                var topoArray = _.filter(this.topoTypeList,function(obj) {
+                    return obj["value"] === this.model.get("topoId");
+                }.bind(this));
+                if (topoArray[0]){
+                    this.$el.find(".dropdown-topoRelationship .cur-value").html(topoArray[0].name)
+                    this.topoId = topoArray[0].value;
+                }
+                if(! this.isCopy){
+                   this.$el.find(".dropdown-topoRelationship #topoRelationship-list").attr("disabled", "disabled")
+                }else {
+                   if(!AUTH_OBJ.ChooseGtld){
+                      this.$el.find(".dropdown-topoRelationship #topoRelationship-list").attr("disabled", "disabled");
+                      this.$el.find(".dropdown-topoRelationship .cur-value").html(_data[0].name);
+                      this.topoId = _data[0].id;
+                   }
+                }
+            }
         },
 
         onKeyupNodeListFilter: function() {

@@ -581,7 +581,6 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             if (!args) {
                 return false;
             }
-            console.log(args);
             this.onOKCallback && this.onOKCallback();
             this.hide();
             this.showParentList();
@@ -631,11 +630,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 "chName": this.$el.find("#input-name").val().replace(/\s+/g, ""),
                 "operatorId": this.operatorId,
                 "operatorName": this.operatorName,
-                
-                // 自添部分开始
                 "liveLevel": this.liveLevel,
                 "cacheLevel": this.cacheLevel,
-                // 自添部分结束
 
                 "remark": this.$el.find("#textarea-comment").val(),
                 "startChargingTime": this.args.startChargingTime,

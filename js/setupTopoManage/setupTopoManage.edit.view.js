@@ -19,7 +19,23 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.edit.html'])({
                     data: {}
                 }));
+                require(['nodeManage.model'], function(NodeManageModel) {
+                    var myNodeManageModel = new NodeManageModel();
+                    myNodeManageModel.on("get.node.success", $.proxy(this.onGetAllNode, this));
+                    myNodeManageModel.on("get.node.error", $.proxy(this.onGetError, this));
+                    myNodeManageModel.getNodeList({
+                        "page": 1,
+                        "count": 9999,
+                        "chname": null, //节点名称
+                        "operator": null, //运营商id
+                        "status": "1,4", //节点状态
+                        "appType": this.appType,
+                        "cacheLevel":null,
+                        "liveLevel":null
+                    });
+                }.bind(this))
 
+                this.spareAllNode = [];
                 this.collection.off('get.topo.OriginInfo.success');
                 this.collection.off('get.topo.OriginInfo.error');
                 this.collection.on('get.topo.OriginInfo.success', $.proxy(this.onOriginInfo, this));
@@ -39,7 +55,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 // 编辑模式（isEdit）
                 if (this.isEdit && !this.isView) {
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                    // 通过model文件中的this.collection.xxx()发起Ajax请求
                     this.collection.getTopoOrigininfo(this.model.get('id'));
                     // 发起Ajax请求成功后，观察成功或失败的回调函数get.topo.OriginInfo.success/error
 
@@ -58,18 +73,41 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     this.defaultParam = {
                         "id": null,
                         "name": "",
-                        // 可能是直播、点播类型
                         "type": null,
                         "upperNodes": [],
-                        // 中下层节点自添开始
                         "middleNodes":[],
                         "lowerNodes":[],
-                        // 中下层节点自添结束
                         "rule": [],
                         "mark": ""
                     }
                     this.initSetup();
                 }
+            },
+
+            onGetAllNode:function(res){
+                var testUpperArray = [];
+                var testLowerArray = [];
+                var testMiddleArray = [];
+                _.each(res, function(el, index, list) {
+                    _.each(this.defaultParam.upperNodes, function(node){
+                        if(el.id === node.id){
+                            testUpperArray.push(el)
+                        }
+                    }.bind(this));
+                    _.each(this.defaultParam.middleNodes, function(node){
+                        if(el.id === node.id){
+                            testMiddleArray.push(el)
+                        }
+                    }.bind(this))
+                    _.each(this.defaultParam.lowerNodes, function(node){
+                        if(el.id === node.id){
+                            testLowerArray.push(el)
+                        }
+                    }.bind(this))
+                }.bind(this));
+                this.defaultParam.upperNodes = testUpperArray;
+                this.defaultParam.middleNodes = testMiddleArray;
+                this.defaultParam.lowerNodes = testLowerArray;
             },
 
             addTopoSuccess: function() {
@@ -83,13 +121,13 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.options.onSaveCallback && this.options.onSaveCallback();
             },
 
+
+
             onOriginInfo: function(res) {
                 this.defaultParam = {
                     "id": res.id,
                     "name": res.name,
                     "upperNodes": res.upperNodes,
-
-                    // 向resource/topo/origin/consoleInfo?Id发起请求
                     "middleNodes":res.middleNodes,
                     "lowerNodes":res.lowerNodes,
 
@@ -106,10 +144,11 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     this.$el.find("#comment").attr("readonly", "true");
 
                 console.log("编辑的拓扑: ", this.defaultParam)
+
                 this.initSetup();
             },
 
-            // 只用于新建状态下
+            // 新建和编辑状态下都会用到
             initSetup: function() {
                 // 管理权限
                 if (!this.isEdit && AUTH_OBJ.ApplyCreateTopos) {
@@ -319,11 +358,11 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     alert("目前只支持直播(Live)或点播(Cache)类型");
                     return;
                 };
+                console.log(this.defaultParam.upperNodes)
                 require(['setupTopoManage.selectNode.view'], function(SelectNodeView) {
                     if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
                     var mySelectNodeView = new SelectNodeView({
                         collection: this.collection,
-                        // 节点列表应该就是upper，选择的打钩节点先假设为upper
                         selectedNodes: this.defaultParam.upperNodes,            
                         appType: this.defaultParam.type,
                         level: 1
@@ -693,7 +732,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     alert("请先完成上层、中层和下层节点的添加！");
                     return;
                 }
-
                 require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
                     function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                         var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();

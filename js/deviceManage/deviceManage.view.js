@@ -300,7 +300,6 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     var refreshFlag = false
                     if (this.curDevice.get("type") != 203) {
                         refreshFlag = this.commonPopup.$el.find("#refresh").get(0).checked
-                        console.log()
                     }
                     var options = {
                         "ids":[this.clickDeviceId],

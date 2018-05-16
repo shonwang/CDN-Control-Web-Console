@@ -153,6 +153,17 @@ define("dispGroup.model", ['require','exports', 'utility'], function(require, ex
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
+        getTopoList: function(args) {
+            var url = BASE_URL + "/resource/topo/info/list",
+            successCallback = function(res) {
+                this.trigger("get.topo.success",res);
+            }.bind(this),
+            errorCallback = function(response) {
+                this.trigger('get.topo.error', response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
         addDispGroup: function(args){
             var url = BASE_URL + "/rs/dispGroup/createGroup"
             var defaultParas = {

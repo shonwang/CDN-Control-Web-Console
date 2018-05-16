@@ -13,6 +13,7 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
 
                 this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.selectNode.html'])({}));
                 this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                this.initLevelDropMenu();
                 require(['nodeManage.model'], function(NodeManageModel) {
                     var myNodeManageModel = new NodeManageModel();
                     myNodeManageModel.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
@@ -48,38 +49,121 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                 this.curOperator = null;
                 this.curArea = null;
                 this.curProv = null;
+                this.curCacheLevel = null;
+                this.curLiveLevel = null;
                 console.log("打勾的节点：", this.selectedNodes)
             },
 
-            onKeyupNodeNameFilter: function() {
-                if (!this.allNodes || this.allNodes.length === 0) return;
-                var keyWord = this.$el.find("#input-name").val();
-
-                _.each(this.allNodes, function(model, index, list) {
-                    if ((this.curOperator === model.operatorId && this.curArea === model.areaId && this.curProv === model.provId) ||
-
-                        (this.curOperator === null && this.curArea === model.areaId && this.curProv === model.provId) ||
-                        (this.curOperator === model.operatorId && this.curArea === null && this.curProv === model.provId) ||
-                        (this.curOperator === model.operatorId && this.curArea === model.areaId && this.curProv === null) ||
-
-                        (this.curOperator === null && this.curArea === null && this.curProv === model.provId) ||
-                        (this.curOperator === model.operatorId && this.curArea === null && this.curProv === null) ||
-                        (this.curOperator === null && this.curArea === model.areaId && this.curProv === null) ||
-
-                        (this.curOperator === null && this.curArea === null && this.curProv === null)) {
-                        if (keyWord === "") {
-                            model.isDisplay = true;
-                        } else if (model.chName.indexOf(keyWord) > -1) {
-                            model.isDisplay = true;
-                        } else {
-                            model.isDisplay = false;
+            initLevelDropMenu:function(){
+                var levelListArray = [{
+                    name: "全部",
+                    value: "All"
+                },{
+                    name: "上层",
+                    value: 1
+                },{
+                    name: "中层",
+                    value: 2
+                },{
+                    name: "下层",
+                    value: 3
+                }]
+                Utility.initDropMenu(this.$el.find(".dropdown-level"), levelListArray, function(value){
+                    if(this.appType === 202){
+                        if(value !== "All"){
+                            this.curCacheLevel = parseInt(value)
+                        }else{
+                            this.curCacheLevel = null;
                         }
-                    } else {
-                        model.isDisplay = false;
-                    }
+                        this.onKeyupNodeNameFilter();
+                    }else if(this.appType === 203){
+                        if(value !== "All"){
+                            this.curLiveLevel = parseInt(value)
+                        }else{
+                            this.curLiveLevel = null;
+                        }
+                        this.onKeyupNodeNameFilter();
+                    }     
                 }.bind(this));
+            },
+     
+            onKeyupNodeNameFilter: function() {
+                if (!this.nodesList || this.nodesList.length === 0) return;
+                var keyWord = this.$el.find("#input-name").val();
+                var filterOperatorNode = this.onFilterOperator(this.nodesList, keyWord);
+                var filterAreaNode = this.onFilterArea(filterOperatorNode, keyWord)
+                var filterProvNode = this.onFilterProvince(filterAreaNode, keyWord);
+                var filterCacheNode = this.onFilterCacheLevel(filterProvNode, keyWord);
+                var filterLiveNode = this.onFilterLiveLevel(filterCacheNode, keyWord);
+                var filterKeyNode = this.onFilterKey(filterLiveNode, keyWord);
+                this.initTable(filterKeyNode);
+            },
 
-                this.initTable();
+
+            onFilterOperator:function(nodesList, keyWord){
+                if(this.curOperator === null){
+                    return nodesList
+                }else{
+                    nodesList = _.filter(nodesList,function(model, index, list){
+                        return (this.curOperator === model.operatorId && (keyWord === "" || model.chName.indexOf(keyWord) > -1))
+                    }.bind(this));
+                    return nodesList
+                }
+            },
+
+            onFilterArea:function(nodesList, keyWord){
+                if(this.curArea === null){
+                    return nodesList
+                }else{
+                    nodesList = _.filter(nodesList,function(model, index, list){
+                            return (this.curArea === model.areaId && (keyWord === "" || model.chName.indexOf(keyWord) > -1))
+                    }.bind(this));
+                    return nodesList
+                }
+            },
+
+            onFilterProvince:function(nodesList, keyWord){
+                if(this.curProv === null){
+                    return nodesList
+                }else{
+                    nodesList = _.filter(nodesList,function(model, index, list){
+                        return (this.curProv === model.provId && (keyWord === "" || model.chName.indexOf(keyWord) > -1))
+                    }.bind(this));
+                    return nodesList
+                }
+            },
+
+            onFilterCacheLevel:function(nodesList, keyWord){
+                if(this.curCacheLevel === null){
+                    return nodesList
+                }else{
+                    nodesList = _.filter(nodesList,function(model, index, list){
+                        return (this.curCacheLevel === model.cacheLevel && (keyWord === "" || model.chName.indexOf(keyWord) > -1))
+                    }.bind(this));
+                    return nodesList
+                }
+            },
+
+            onFilterLiveLevel:function(nodesList, keyWord){
+                if(this.curLiveLevel === null){
+                    return nodesList
+                }else{
+                    nodesList = _.filter(nodesList,function(model, index, list){
+                        return (this.curLiveLevel === model.liveLevel && (keyWord === "" || model.chName.indexOf(keyWord) > -1))
+                    }.bind(this));
+                    return nodesList
+                }
+            },
+
+            onFilterKey:function(nodesList, keyWord){
+                if(keyWord === ""){
+                    return nodesList
+                }else{
+                    nodesList = _.filter(nodesList,function(model, index, list){
+                        return model.chName.indexOf(keyWord) > -1
+                    }.bind(this));
+                    return nodesList
+                }
             },
 
             // 这部分不需要修改
@@ -190,9 +274,8 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                             }
                         }.bind(this))
                         this.allNodes.push(el);
+                    }.bind(this))
                     // }
-                }.bind(this))
-            
                     if(this.level === 1){
                         this.onGetUpperAllNodes();
                     }else if(this.level === 2){
@@ -207,17 +290,17 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
            
                 this.checkedOptions(this.nodesList);
 
-                this.initTable();
-
+                this.initTable(this.nodesList);
                 this.$el.find("#input-name").val("")
                 this.$el.find("#input-name").off("keyup");
                 this.$el.find("#input-name").on("keyup", $.proxy(this.onKeyupNodeNameFilter, this));
             },
 
-            checkedOptions:function(nodesList){
+    
+            checkedOptions: function(nodesList){
                 var checkedArray = _.filter(this.nodesList, function(obj) {
                     return obj.isChecked === true;
-                }.bind(this))
+                }.bind(this));
 
                 var notCheckedArray = _.filter(this.nodesList, function(obj) {
                     return obj.isChecked === false;
@@ -293,12 +376,12 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
             },
 
             // 这部分是节点展示的地方，传输的是this.allNodes，需要修改
-            initTable: function() {
+            initTable: function(nodesList) {
                 this.table = $(_.template(template['tpl/setupTopoManage/setupTopoManage.selectNode.table.html'])({
-                    data: this.nodesList,
+                    data: nodesList,
                     isCheckedAll: this.isCheckedAll || false
                 }));
-                if (this.nodesList.length !== 0)
+                if (nodesList.length !== 0)
                     this.$el.find(".table-ctn").html(this.table[0]);
                 else
                     this.$el.find(".table-ctn").html(_.template(template['tpl/empty-2.html'])({

@@ -411,18 +411,29 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
             },
 
             predelivery: function(){
-                var postParam = [{
-                    domain: this.model.get("domain"),
-                    version: this.model.get("version"),
-                    description: this.model.get("description"),
-                    configReason: 2
-                }]
+                var args = {
+                    ruleId:this.curLayerId,
+                    domains:[this.model.get("domain")],
+                    comment:''
+                };
+                this.collection.off("send.success");
+                this.collection.off("send.error");
+                this.collection.on("send.success", $.proxy(this.onPostPredelivery, this));
+                this.collection.on("send.error", $.proxy(this.onGetError, this));
+                this.collection.strategyUpdate(args);
 
-                this.collection.off("post.predelivery.success");
-                this.collection.off("post.predelivery.error");
-                this.collection.on("post.predelivery.success", $.proxy(this.onPostPredelivery, this));
-                this.collection.on("post.predelivery.error", $.proxy(this.onGetError, this));
-                this.collection.predelivery(postParam)                
+                // var postParam = [{
+                //     domain: this.model.get("domain"),
+                //     version: this.model.get("version"),
+                //     description: this.model.get("description"),
+                //     configReason: 2
+                // }]
+
+                // this.collection.off("post.predelivery.success");
+                // this.collection.off("post.predelivery.error");
+                // this.collection.on("post.predelivery.success", $.proxy(this.onPostPredelivery, this));
+                // this.collection.on("post.predelivery.error", $.proxy(this.onGetError, this));
+                // this.collection.predelivery(postParam)                
             },
 
             onPostPredelivery: function(res) {

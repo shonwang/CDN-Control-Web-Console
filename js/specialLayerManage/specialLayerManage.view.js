@@ -35,9 +35,16 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection.on('copy.strategy.success', $.proxy(this.copyStrategySuccess, this));
                 this.collection.on('copy.strategy.error', $.proxy(this.onGetError, this));
 
+                this.collection.off("edit.send.success");
+                this.collection.off("edit.send.error");
+                this.collection.on("edit.send.success", $.proxy(this.onSendSuccess, this));
+                this.collection.on("edit.send.error", $.proxy(this.onSendError, this));
+
                 this.$el.find(".add-rule").hide();
                 this.$el.find(".opt-ctn .save").hide();
+                this.$el.find(".opt-ctn .send").hide();
                 this.$el.find('.view-less').hide();
+                this.$el.find(".opt-ctn .send").on("click", $.proxy(this.onClickItemSend, this));
 
                 if (this.isEdit) {
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
@@ -56,23 +63,41 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 }
             },
 
-            addStrategySuccess: function(res) {
-                Utility.alerts("保存成功！", "success", 5000);
-                console.log(res)
-                if (this.btnFlag == 2) {
-                    this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback(res);
-                } else {
-                    this.options.onSaveCallback && this.options.onSaveCallback();
-                }
+            onSendSuccess:function(){
+                alert("成功");
+                window.location.href="#/setupSending";
+            },
+
+            onSendError:function(data){
+                alert(data.message);
+            },
+
+            onClickItemSend:function(){
+                var args = {
+                    comment:this.model.get("type"),
+                    ruleId:this.model.get("id")
+                };
+                this.collection.strategyEditUpdate(args);
+            },
+
+            openSendBtn:function(){
+                this.$el.find(".send").removeAttr("disabled");
+            },
+
+            closeSendBtn:function(){
+                this.$el.find(".send").attr("disabled",'disabled');
+            },
+
+            addStrategySuccess: function() {
+                alert('保存成功');
+                this.openSendBtn();
+                this.options.onSaveCallback && this.options.onSaveCallback();
             },
 
             modifyStrategySuccess: function() {
-                Utility.alerts("修改成功！", "success", 5000)
-                if (this.btnFlag == 2) {
-                    this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback();
-                } else {
-                    this.options.onSaveCallback && this.options.onSaveCallback();
-                }
+                this.openSendBtn();
+                //this.options.onSaveCallback && this.options.onSaveCallback();
+                alert('修改成功，可以进行下发或其它操作');
             },
 
             copyStrategySuccess: function() {
@@ -122,6 +147,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     this.$el.find(".add-rule").on("click", $.proxy(this.onClickAddRuleButton, this));
                     this.$el.find(".add-rule").show();
                     this.$el.find(".opt-ctn .save").show();
+                    this.$el.find(".opt-ctn .send").show();
                     //this.$el.find(".comment-group").hide();
                 } else if (this.isView) {
                     this.$el.find(".view-more").on("click", $.proxy(this.onClickViewMoreButton, this));
@@ -372,6 +398,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             onClickItemEdit: function(event) {
+                this.closeSendBtn();
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
 
@@ -411,6 +438,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             onClickItemDelete: function(event) {
+                this.closeSendBtn();
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
                 this.defaultParam.rule = _.filter(this.defaultParam.rule, function(obj) {
@@ -421,6 +449,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             onClickAddRuleButton: function() {
+                this.closeSendBtn();
                 require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
                     function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                         var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
@@ -473,6 +502,9 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 //获取应用类型
                 this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
                 this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
+
+                this.collection.on("send.success", $.proxy(this.onSendSuccess, this));
+                this.collection.on("send.error", $.proxy(this.onSendError, this));
 
                 // if (AUTH_OBJ.QueryTopos) {
                 this.$el.find(".opt-ctn .query").on("click", $.proxy(this.resetList, this));
@@ -547,7 +579,84 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
                 this.table.find("tbody .update").on("click", $.proxy(this.onClickItemUpdate, this));
                 this.table.find("tbody .copy").on("click", $.proxy(this.onClickItemCopy, this));
+                this.table.find("tbody .send").on("click", $.proxy(this.onClickItemSend, this));
+
                 this.table.find("[data-toggle='popover']").popover();
+            },
+
+            onClickItemSend:function(event){
+                var eventTarget = event.srcElement || event.target,id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                
+                var model = this.collection.get(id);
+
+                // this.domainArray = [{
+                //     domain: model.get("name"),
+                //     id: model.get("id"),
+                //     platformId: model.get("type")                    
+                // }];
+                // this.showSelectStrategyPopup(model);
+                var args = {
+                    comment:model.get("type"),
+                    ruleId:model.get("id")
+                };
+                this.collection.strategyUpdate(args);
+
+            },
+
+            showSelectStrategyPopup: function(model) {
+                if (this.selectStrategyPopup) $("#" + this.selectStrategyPopup.modalId).remove();
+
+                require(["setupSendWaitCustomize.stratety.view"], function(SelectStrategyView) {
+                    var mySelectStrategyView = new SelectStrategyView({
+                        collection: this.collection,
+                        domainArray: this.domainArray,
+                        model: model,
+                        source:"specialLayerManage"
+                    });
+                    //var type = AUTH_OBJ.ApplySendMission ? 2 : 1;
+                    var options = {
+                        title: "生成下发任务",
+                        body: mySelectStrategyView,
+                        backdrop: 'static',
+                        type: 2,
+                        onOKCallback: function() {
+                            this.createTaskParam = mySelectStrategyView.onSure();
+                            if (!this.createTaskParam) return;
+                            console.log(this.createTaskParam);
+                            var args = {
+                                taskName:this.domainArray[0].platformId,
+                                ruleId:this.domainArray[0].id,
+                                strategyId:this.createTaskParam.strategyId
+                            };
+                            console.log(args);
+                            this.collection.off("send.success");
+                            this.collection.off("send.error");
+                            this.collection.on("send.success", $.proxy(this.onSendSuccess, this));
+                            this.collection.on("send.error", $.proxy(this.onSendError, this));
+                            this.collection.strategyUpdate(args);
+                            this.selectStrategyPopup.$el.modal('hide')
+                        }.bind(this),
+                        onHiddenCallback: function() {
+                            this.enterKeyBindQuery();
+                        }.bind(this)
+                    }
+                    this.selectStrategyPopup = new Modal(options);
+                }.bind(this))
+            },
+
+            onSendSuccess:function(){
+                alert("成功");
+                window.location.href="#/setupSendWaitSend";
+            },
+
+            onSendError:function(data){
+                alert(data.message);
             },
 
             onClickAddRuleTopoBtn: function() {

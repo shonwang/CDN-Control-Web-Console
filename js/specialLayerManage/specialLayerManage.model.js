@@ -99,6 +99,31 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
                     }.bind(this);
                 Utility.postAjax(url, args, successCallback, errorCallback);
             },
+
+            strategyUpdate:function(args){
+                var url = BASE_URL + "/cd/task/strategyupdate/create?comment="+args.comment+"&ruleId="+args.ruleId,
+                    successCallback = function(res) {
+                        this.trigger("send.success", res);
+                    }.bind(this),
+                    errorCallback = function(response) {
+                        this.trigger('send.error', response);
+                    }.bind(this);
+                Utility.postAjax(url, [], successCallback, errorCallback);
+            },
+
+            strategyEditUpdate:function(args){
+                var url = BASE_URL + "/cd/task/strategyupdate/create?comment="+args.comment+"&ruleId="+args.ruleId,
+                    successCallback = function(res) {
+                        this.trigger("edit.send.success", res);
+                    }.bind(this),
+                    errorCallback = function(response) {
+                        this.trigger('edit.send.error', response);
+                    }.bind(this);
+                Utility.postAjax(url, [], successCallback, errorCallback);
+            }
+
+
+
         });
 
         return SpecialLayerManageCollection;

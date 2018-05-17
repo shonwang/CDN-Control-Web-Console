@@ -205,6 +205,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                         onOKCallback: function() {
                             var result = mySelectLayerView.onSure();
                             if (!result) return;
+                            this.selectRuldId = result.ruleId;
                             this.collection.off("set.layerStrategy.success");
                             this.collection.off("set.layerStrategy.error");
                             this.collection.on("set.layerStrategy.success", $.proxy(this.onAddChannelLayerSuccess, this));
@@ -272,6 +273,7 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                 var ids = _.map(this.domainArray, function(el){
                     return el.id
                 }.bind(this)).join(",");
+                this.selectRuldId = '';//解除时，不能传ruldId,在此将它置为空
                 this.collection.off("get.delTopologyRuleList.success");
                 this.collection.off("get.delTopologyRuleList.error");
                 this.collection.on("get.delTopologyRuleList.success", $.proxy(this.onAddChannelLayerSuccess, this));
@@ -311,7 +313,9 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
 
             onAddChannelLayerSuccess: function() {
                 var postParam = [];
+                var domains = [];
                 _.each(this.domainArray, function(el, index, ls) {
+                    domains.push(el.domain);
                     postParam.push({
                         domain: el.domain,
                         version: el.version,
@@ -319,12 +323,22 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                         configReason: 4
                     });
                 }.bind(this))
+                var args = {
+                    ruleId:this.selectRuldId,
+                    domains:domains,
+                    comment:''
+                }
+                this.collection.off("send.success");
+                this.collection.off("send.error");
+                this.collection.on("send.success", $.proxy(this.onPostPredelivery, this));
+                this.collection.on("send.error", $.proxy(this.onGetError, this));                 
+                this.collection.strategyUpdate(args);
 
-                this.collection.off("post.predelivery.success");
-                this.collection.off("post.predelivery.error");
-                this.collection.on("post.predelivery.success", $.proxy(this.onPostPredelivery, this));
-                this.collection.on("post.predelivery.error", $.proxy(this.onGetError, this));
-                this.collection.predelivery(postParam)
+                // this.collection.off("post.predelivery.success");
+                // this.collection.off("post.predelivery.error");
+                // this.collection.on("post.predelivery.success", $.proxy(this.onPostPredelivery, this));
+                // this.collection.on("post.predelivery.error", $.proxy(this.onGetError, this));    
+                //this.collection.predelivery(postParam)
             },
 
             onPostPredelivery: function() {

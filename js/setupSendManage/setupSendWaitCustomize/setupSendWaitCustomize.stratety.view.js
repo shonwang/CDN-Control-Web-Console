@@ -7,6 +7,7 @@ define("setupSendWaitCustomize.stratety.view", ['require', 'exports', 'template'
             this.collection = options.collection;
             this.domainArray = options.domainArray;
             this.model = options.model;
+
             this.pageType = options.pageType;
 
             this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({
@@ -20,6 +21,17 @@ define("setupSendWaitCustomize.stratety.view", ['require', 'exports', 'template'
             } else {
                 this.$el.find("#input-task-name").val(this.domainArray[0].domain + "等" + this.domainArray.length + "个域名的下发任务")
             }
+
+            /*
+            ** source:specialLayerManage从特殊分层策略过来的，不需要展示文字和涉及的域名
+            */
+            this.source = options.source || null;
+            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({data: {name: "下发策略"}}));
+            if(this.source){
+                this.$el.find("#input-task-name").val(this.domainArray[0].domain);
+                this.$el.find(".domain-list").hide();
+            }
+
             this.initDomainList();
             require(["setupTopoManageSendStrategy.model"], function(SetupTopoManageSendStrategy) {
                 this.mySetupTopoManageSendStrategy = new SetupTopoManageSendStrategy();

@@ -76,6 +76,18 @@ define("setupChannelManage.model", ['require', 'exports', 'utility'], function(r
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
+        strategyUpdate:function(args){
+            var data = args.domains;
+            var url = BASE_URL + "/cd/task/strategyupdate/create?comment="+args.comment+"&ruleId="+args.ruleId,
+                successCallback = function(res) {
+                    this.trigger("send.success", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger('send.error', response);
+                }.bind(this);
+            Utility.postAjax(url, data, successCallback, errorCallback);
+        },        
+
         queryChannel: function(args) {
             var url = BASE_URL + "/channelManager/domain/getChannelManager",
                 successCallback = function(res) {

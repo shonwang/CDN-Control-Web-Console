@@ -43,9 +43,11 @@
                     <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="copy" title="复制">
                         <span class="glyphicon glyphicon-duplicate"></span>
                     </a>
-<!--                     <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="update" title="配置更新">
-                        <span class="glyphicon glyphicon-open"></span>
-                    </a> -->
+                    <%if(data[i].attributes['domainFlag']){%>
+                    <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="send" title="下发">
+                        <span class="glyphicon glyphicon-save"></span>
+                    </a>
+                    <%}%>
                 </td>
             </tr>
             <% } %>

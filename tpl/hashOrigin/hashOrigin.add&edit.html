@@ -1,0 +1,51 @@
+<h4>hash环管理<small>/新建</small></h4>
+<div class="well">
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label for="input-name" class="col-sm-2 control-label">中文名称</label>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" id="input-name" value="fdsa">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="input-english" class="col-sm-2 control-label">类型</label>
+            <div class="dropdown col-sm-1">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-hash-type" data-toggle="dropdown">
+                    <span class="cur-value">加载中...</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu"></ul>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="input-english" class="col-sm-2 control-label">是否允许自动调度</label>
+            <div class="dropdown col-sm-1">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-auto-dispatch" data-toggle="dropdown">
+                    <span class="cur-value">允许</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu"></ul>
+            </div>
+        </div>
+        <hr>
+        <div class="form-group">
+            <label for="input-english" class="col-sm-2 control-label">选择加入hash环的节点</label>
+            <div class="dropdown col-sm-1">
+                <a href="javascript:void(0)" class="btn btn-success add-node" style="">添加节点</a>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="textarea-comment" class="col-sm-2 control-label">&nbsp;</label>
+            <div class="col-sm-6">
+                
+                <div id="hash-node-list">                           
+                    
+                </div> 
+
+            </div>
+        </div>
+    </form>
+    <hr>
+    <div class="text-center opt-ctn"><a href="javascript:void(0)" class="btn btn-primary save">保存</a><a href="javascript:void(0)" class="btn btn-default cancel">放弃</a></div>
+</div>

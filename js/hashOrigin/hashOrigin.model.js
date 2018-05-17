@@ -41,6 +41,20 @@ define("hashOrigin.model", ['require','exports', 'utility'], function(require, e
         model: Model,
 
         initialize: function(){},
+        
+        getAreaList: function(args) {
+            var url = BASE_URL + "/rs/provCity/selectAllArea",
+                successCallback = function(res) {
+                    if (res)
+                        this.trigger("get.area.success", res);
+                    else
+                        this.trigger("get.area.error", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("get.area.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
 
         getDeviceList: function(args){
             var url = BASE_URL + "/rs/device/pagelist";

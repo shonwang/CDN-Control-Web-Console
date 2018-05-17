@@ -81,32 +81,31 @@ define("hashOrigin.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         onClickCreate: function(){
-            if (this.addDevicePopup) $("#" + this.addDevicePopup.modalId).remove();
-
-            require(["deviceManage.edit.view"], function(AddOrEditDeviceView) {
-                var addDeviceView = new AddOrEditDeviceView({
+            this.hideList();
+            if (this.addHashView) {
+                this.addHashView.destroy();
+                this.addHashView = null;
+            }
+            require(["hashOrigin.edit.view"], function(AddOrEditHashView) {
+                this.addHashView = new AddOrEditHashView({
                     collection: this.collection,
-                    deviceTypeArray: this.deviceTypeArray
-                });
-                var options = {
-                    title:"添加设备",
-                    body : addDeviceView,
-                    backdrop : 'static',
-                    type     : 2,
-                    width : 700,
-                    onOKCallback:  function(){
-                        var options = addDeviceView.getArgs();
-                        if (!options) return;
-                        this.collection.addDevice(options)
-                        this.addDevicePopup.$el.modal("hide");
+                    operatorList:null,
+                    showList: function() {
+                        this.showList();
                     }.bind(this),
-                    onHiddenCallback: function(){
-                        if (AUTH_OBJ.QueryHost) this.enterKeyBindQuery();
+                    onHiddenCallback: function() {
+                        this.showList();
+                        if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
+                    }.bind(this),
+                    onOKCallback: function() {
+                        var options = this.addNodeView.getArgs();
+                        if (!options) return;
+                        this.collection.addNode(options);
+                        this.showList();
+                        if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
                     }.bind(this)
-                }
-                this.addDevicePopup = new Modal(options);
-                if (!AUTH_OBJ.ApplyCreateHost)
-                    this.addDevicePopup.$el.find(".modal-footer .btn-primary").remove();
+                });
+                this.addHashView.render(this.$el.find(".hash-origin-add-edit-pannel"));
             }.bind(this))
         },
 

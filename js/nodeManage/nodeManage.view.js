@@ -360,7 +360,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                         title: model.get("chName") + "关联调度组信息",
                         body: dispGroupInfoView,
                         backdrop: 'static',
-                        type: 2,
+                        type: 1,
                         width: 800,
                         height: 500,
                         onOKCallback: function() {

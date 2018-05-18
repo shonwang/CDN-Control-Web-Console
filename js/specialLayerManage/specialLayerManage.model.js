@@ -37,16 +37,16 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
             },
 
             checkWithTopo:function(args){
-                var url = BASE_URL + "/resource/special/getStrategyConsoleInfo?topoId="+args.topoId+"&strategyId="+args.strategyId,
+                var url = BASE_URL + "/resource/special/checkWithTopo?topoId="+args.topoId+"&strategyId="+args.strategyId,
                     successCallback = function(res) {
                         if (res) {
                             this.trigger("checkWithTopo.success", res);
                         } else {
-                            this.trigger("get.checkWithTopo.error", res);
+                            this.trigger("checkWithTopo.error", res);
                         }
                     }.bind(this),
                     errorCallback = function(response) {
-                        this.trigger('get.checkWithTopo.error', response);
+                        this.trigger('checkWithTopo.error', response);
                     }.bind(this);
                 Utility.getAjax(url, {}, successCallback, errorCallback);                
             },

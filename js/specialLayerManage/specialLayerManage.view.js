@@ -14,12 +14,17 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.strategyId = this.model.get("id");
                 this.$el = $(_.template(template['tpl/specialLayerManage/checkLayerManageAndTopo.html'])({}));
 
-                this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
+                this.$el.find(".query").on("click", $.proxy(this.checkWithTopo, this));
                 
                 this.collection.off('get.topoInfo.success');
                 this.collection.off('get.topoInfo.error');
                 this.collection.on('get.topoInfo.success',$.proxy(this.onGetTopuInfo, this));
                 this.collection.on('get.topoInfo.error',$.proxy(this.onGetError, this));
+
+                this.collection.off('checkWithTopo.success');
+                this.collection.off('checkWithTopo.error');
+                this.collection.on('checkWithTopo.success',$.proxy(this.onCheckTopoSuccess, this));
+                this.collection.on('checkWithTopo.error',$.proxy(this.onGetError, this));
                 
                 if(!this.parent.topoList){
                     //请求完，数据保存在parent层的topoList中,避免再次请求
@@ -30,9 +35,10 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     this.collection.getTopoinfo(args);
                 }
                 else if(this.parent.topoList.length>0){
-                    this.topoId = this.parent.topoList[0].value;
-                    this.$el.find("#dropdown-topoList .cur-value").html(this.parent.topoList[0].name);
-                    this.checkWithTopo();
+                    // this.topoId = this.parent.topoList[0].value;
+                    // this.$el.find("#dropdown-topoList .cur-value").html(this.parent.topoList[0].name);
+                    // this.checkWithTopo();
+                    this.setDropdownMenuAndCheck();
                 }
                 else{
                     Utility.alerts("拓扑不存在，请刷新重试!");
@@ -41,6 +47,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 //this.initSetup()
                 //this.initSetup();
             },
+
             onGetTopuInfo:function(res){
                 var data = res.rows;
                 _.each(data,function(el){
@@ -48,17 +55,32 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 });
                 var typeArray = data;
                 this.parent.topoList = typeArray;
+                this.setDropdownMenuAndCheck();       
+            },
+
+            setDropdownMenuAndCheck:function(){
+                var typeArray = this.parent.topoList;
                 this.topoId = typeArray[0].value;
                 var rootNode = this.$el.find(".dropdown-topoList");
                 Utility.initDropMenu(rootNode, typeArray, function(value) {
                     this.topoId = parseInt(value);
                 }.bind(this));
                 this.$el.find("#dropdown-topoList .cur-value").html(typeArray[0].name); 
-                this.checkWithTopo();               
+                this.checkWithTopo();                 
+            },
+
+            onCheckTopoSuccess:function(data){
+                if(data.length>0){
+                    this.table = $(_.template(template['tpl/specialLayerManage/checkLayerManageAndTopo.table.html'])({data:data}));
+                }
+                else{
+                    this.table = $(_.template(template['tpl/empty.html'])({}));
+                }
+                this.$el.find(".checkList").html(this.table);
             },
 
             checkWithTopo:function(){
-                console.log(this.strategyId,this.topoId);
+                this.$el.find(".checkList").html(_.template(template['tpl/loading.html'])({}));
                 var args = {
                     topoId:this.topoId,
                     strategyId:this.strategyId

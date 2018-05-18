@@ -26,7 +26,6 @@ define("setupSendWaitCustomize.stratety.view", ['require', 'exports', 'template'
             ** source:specialLayerManage从特殊分层策略过来的，不需要展示文字和涉及的域名
             */
             this.source = options.source || null;
-            this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({data: {name: "下发策略"}}));
             if(this.source){
                 this.$el.find("#input-task-name").val(this.domainArray[0].domain);
                 this.$el.find(".domain-list").hide();

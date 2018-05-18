@@ -1,6 +1,87 @@
 define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view', 'utility'],
     function(require, exports, template, Modal, Utility) {
 
+        var CheckSpecialLayerAndTopoView = Backbone.View.extend({
+            events: {
+                //"click .search-btn":"onClickSearch"
+            },
+
+            initialize: function(options) {
+                this.options = options;
+                this.collection = options.collection;
+                this.model      = options.model;
+                this.parent = options.obj;
+                this.strategyId = this.model.get("id");
+                this.$el = $(_.template(template['tpl/specialLayerManage/checkLayerManageAndTopo.html'])({}));
+
+                this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
+                
+                this.collection.off('get.topoInfo.success');
+                this.collection.off('get.topoInfo.error');
+                this.collection.on('get.topoInfo.success',$.proxy(this.onGetTopuInfo, this));
+                this.collection.on('get.topoInfo.error',$.proxy(this.onGetError, this));
+                
+                if(!this.parent.topoList){
+                    //请求完，数据保存在parent层的topoList中,避免再次请求
+                    var args = {
+                        page:1,
+                        size:9999
+                    };
+                    this.collection.getTopoinfo(args);
+                }
+                else if(this.parent.topoList.length>0){
+                    this.topoId = this.parent.topoList[0].value;
+                    this.$el.find("#dropdown-topoList .cur-value").html(this.parent.topoList[0].name);
+                    this.checkWithTopo();
+                }
+                else{
+                    Utility.alerts("拓扑不存在，请刷新重试!");
+                }
+                
+                //this.initSetup()
+                //this.initSetup();
+            },
+            onGetTopuInfo:function(res){
+                var data = res.rows;
+                _.each(data,function(el){
+                    el.value = el.id;
+                });
+                var typeArray = data;
+                this.parent.topoList = typeArray;
+                this.topoId = typeArray[0].value;
+                var rootNode = this.$el.find(".dropdown-topoList");
+                Utility.initDropMenu(rootNode, typeArray, function(value) {
+                    this.topoId = parseInt(value);
+                }.bind(this));
+                this.$el.find("#dropdown-topoList .cur-value").html(typeArray[0].name); 
+                this.checkWithTopo();               
+            },
+
+            checkWithTopo:function(){
+                console.log(this.strategyId,this.topoId);
+                var args = {
+                    topoId:this.topoId,
+                    strategyId:this.strategyId
+                };
+                this.collection.checkWithTopo(args);
+            },
+
+            onClickCancelButton: function(){
+                this.options.onCancelCallback && this.options.onCancelCallback();
+            },
+
+            onGetError: function(error){
+                if (error&&error.message)
+                    Utility.alerts(error.message)
+                else
+                    Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
+            },
+
+            render: function(target) {
+                this.$el.appendTo(target);
+            }
+        });
+
         var AddEditLayerView = Backbone.View.extend({
             events: {},
 
@@ -580,8 +661,38 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.table.find("tbody .update").on("click", $.proxy(this.onClickItemUpdate, this));
                 this.table.find("tbody .copy").on("click", $.proxy(this.onClickItemCopy, this));
                 this.table.find("tbody .send").on("click", $.proxy(this.onClickItemSend, this));
+                this.table.find("tbody .check").on("click", $.proxy(this.onClickItemCheck, this));
 
                 this.table.find("[data-toggle='popover']").popover();
+            },
+
+            onClickItemCheck:function(event){
+                var eventTarget = event.srcElement || event.target, id;
+                if (eventTarget.tagName == "SPAN"){
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+
+                var model = this.collection.get(id);
+
+                if (this.checkTopoViewPopup) $("#" + this.checkTopoViewPopup.modalId).remove();
+
+                var myCheckSpecialLayerAndTopoView = new CheckSpecialLayerAndTopoView({
+                    collection: this.collection,
+                    model     : model,
+                    obj:this
+                });
+                var options = {
+                    title:"分层策略与拓扑覆盖检查",
+                    body : myCheckSpecialLayerAndTopoView,
+                    backdrop : 'static',
+                    type     : 1,
+                    onOKCallback:  function(){}.bind(this),
+                    onHiddenCallback: function(){}.bind(this)
+                }
+                this.checkTopoViewPopup = new Modal(options);
             },
 
             onClickItemSend:function(event){

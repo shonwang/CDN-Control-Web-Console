@@ -21,6 +21,36 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
 
             initialize: function() {},
 
+            getTopoinfo: function(args) {
+                var url = BASE_URL + "/resource/topo/info/list",
+                    successCallback = function(res) {
+                        if (res) {
+                            this.trigger("get.topoInfo.success",res);
+                        } else {
+                            this.trigger("get.topoInfo.error",res);
+                        }
+                    }.bind(this),
+                    errorCallback = function(response) {
+                        this.trigger('get.topoInfo.error', response);
+                    }.bind(this);
+                Utility.postAjax(url, args, successCallback, errorCallback);
+            },
+
+            checkWithTopo:function(args){
+                var url = BASE_URL + "/resource/special/getStrategyConsoleInfo?topoId="+args.topoId+"&strategyId="+args.strategyId,
+                    successCallback = function(res) {
+                        if (res) {
+                            this.trigger("checkWithTopo.success", res);
+                        } else {
+                            this.trigger("get.checkWithTopo.error", res);
+                        }
+                    }.bind(this),
+                    errorCallback = function(response) {
+                        this.trigger('get.checkWithTopo.error', response);
+                    }.bind(this);
+                Utility.getAjax(url, {}, successCallback, errorCallback);                
+            },
+
             getStrategyList: function(args) {
                 var url = BASE_URL + "/resource/special/getStrategyList",
                     successCallback = function(res) {

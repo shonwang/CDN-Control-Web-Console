@@ -234,17 +234,19 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                         active: false,
                         children: []
                     }]
-                },{
-                    id: '',
-                    name: 'HTTPS配置',
-                    hash: 'javascript:void(0)',
-                    children: [{
-                        id: 'customerSetup-domainList-forceRedirect',
-                        name: '强制跳转',
-                        hash: 'index.html#/domainList/' + query + '/luaForceRedirect/' + query2,
-                        children: []
-                    }]
-                },{
+                },
+                // {
+                //     id: '',
+                //     name: 'HTTPS配置',
+                //     hash: 'javascript:void(0)',
+                //     children: [{
+                //         id: 'customerSetup-domainList-forceRedirect',
+                //         name: '强制跳转',
+                //         hash: 'index.html#/domainList/' + query + '/luaForceRedirect/' + query2,
+                //         children: []
+                //     }]
+                // },
+                {
                     id: 'customerSetup-domainList-luaConfig',
                     name: '高级配置',
                     hash: 'index.html#/domainList/' + query + '/luaAdvanceConfig/' + query2,

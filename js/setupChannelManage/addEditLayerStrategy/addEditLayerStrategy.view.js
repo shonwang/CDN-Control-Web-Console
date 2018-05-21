@@ -659,14 +659,19 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             // console.log("拓扑本层节点: ", this.localNodeListForSelect);
             this.$el.find('.local .add-node').on('click', $.proxy(this.onClickAddLocalNodeButton, this))
             this.initLocalTable();
-            
-
-            
+                     
         },
 
+
         updateChecked:function(sonNode,parentNode){
-            _.each(parentNode, function(node){
-                if(sonNode.indexOf(node) == -1){
+            var tempIpArray = [];
+            _.each(sonNode, function(el){
+                var id = el.id || el.nodeId;
+                tempIpArray.push(id)
+            }.bind(this));
+            _.each(parentNode,function(node){
+                var tempId = node.id || node.nodeId;
+                if(tempIpArray.indexOf(tempId) === -1){
                     node.isChecked = false
                 }
             }.bind(this))
@@ -676,6 +681,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             require(['setupTopoManage.selectNode.view'], function(SelectNodeView) {
                 if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
                 this.updateChecked(this.defaultParam.local, this.localNodeListForSelect);
+                console.log(this.defaultParam.local)
                 var mySelectNodeView = new SelectNodeView({
                     collection: this.collection,
                     selectedNodes: this.defaultParam.local,
@@ -804,6 +810,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             require(['setupTopoManage.selectNode.view'], function(SelectNodeView) {
                 if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
                 this.updateChecked(this.defaultParam.upper, this.topoUpperNodes);
+                console.log(this.defaultParam.upper,this.topoUpperNodes)
                 var mySelectNodeView = new SelectNodeView({
                     collection: this.collection,
                     selectedNodes: this.defaultParam.upper,
@@ -956,7 +963,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.defaultParam.upper = _.filter(this.defaultParam.upper, function(obj) {
                 return obj.rsNodeMsgVo.id !== parseInt(id)
             }.bind(this));
-
+            console.log(this.defaultParam.upper)
             this.initUpperTable();
         },
 

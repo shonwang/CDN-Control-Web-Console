@@ -74,7 +74,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     this.table = $(_.template(template['tpl/specialLayerManage/checkLayerManageAndTopo.table.html'])({data:data}));
                 }
                 else{
-                    this.table = $(_.template(template['tpl/empty.html'])({}));
+                    this.table = $(_.template(template['tpl/success.popup.html'])({data:{message:"已全部覆盖"}}));
                 }
                 this.$el.find(".checkList").html(this.table);
             },

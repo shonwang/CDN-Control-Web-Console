@@ -49,6 +49,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     "liveLevel":null
                 });
             }.bind(this));
+            
             require(['setupTopoManage.model'], function(SetUpToPoModel) {
                 var mySetUpToPoModel = new SetUpToPoModel();
                 mySetUpToPoModel.on('get.area.success', $.proxy(this.onGetAreaSuccess, this));
@@ -681,7 +682,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             require(['setupTopoManage.selectNode.view'], function(SelectNodeView) {
                 if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
                 this.updateChecked(this.defaultParam.local, this.localNodeListForSelect);
-                console.log(this.defaultParam.local)
                 var mySelectNodeView = new SelectNodeView({
                     collection: this.collection,
                     selectedNodes: this.defaultParam.local,

@@ -241,15 +241,11 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 } else if (this.defaultParam.type == null) {
                     alert('请选择设备类型');
                     return;
-                } else if (this.defaultParam.upperNodes.length == 0) {
-                    alert('请选择拓扑关系的上层节点');
+                } else if (this.defaultParam.upperNodes.length == 0 && this.defaultParam.middleNodes.length == 0) {
+                    alert('请选择拓扑关系的上层或中层节点');
                     return;
-                    // 中层节点
-                } else if(this.defaultParam.middleNodes.length == 0){
-                    alert("请选择拓扑关系的中层节点");
-                    return;
-                    // 下层节点
-                }else if(this.defaultParam.lowerNodes.length == 0){
+                    // 中层或上层节点
+                } else if(this.defaultParam.lowerNodes.length == 0){
                     alert("请选择拓扑关系的下层节点");
                     return;
                 }else if (this.defaultParam.rule.length == 0) {
@@ -728,7 +724,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     alert("请完成下层节点的添加！");
                     return;
                 }
-                
+
                 require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
                     function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                         var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();

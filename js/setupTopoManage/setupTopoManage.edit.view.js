@@ -530,10 +530,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     alert("目前只支持直播(Live)或点播(Cache)类型");
                     return;
                 };
-                if (this.defaultParam.upperNodes.length === 0) {
-                    alert("请先添加拓扑上层节点!")
-                    return;
-                }
 
                 require(['setupTopoManage.selectNode.view'], function(SelectNodeView) {
                     if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
@@ -604,10 +600,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     alert("目前只支持直播(Live)或点播(Cache)类型");
                     return;
                 };
-                if (this.defaultParam.middleNodes.length === 0) {
-                    alert("请先添加拓扑中层节点!")
-                    return;
-                }
 
                 require(['setupTopoManage.selectNode.view'], function(SelectNodeView) {
                     if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
@@ -728,10 +720,15 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
             // 添加规则按钮
             onClickAddRuleButton: function() {
-                if(this.defaultParam.upperNodes.length === 0 || this.defaultParam.middleNodes.length === 0 || this.defaultParam.lowerNodes.length === 0){
-                    alert("请先完成上层、中层和下层节点的添加！");
+                if(this.defaultParam.upperNodes.length === 0 && this.defaultParam.middleNodes.length === 0){
+                    alert("请先完成上层或中层节点的添加！");
                     return;
                 }
+                if(this.defaultParam.lowerNodes.length === 0){
+                    alert("请完成下层节点的添加！");
+                    return;
+                }
+                
                 require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
                     function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                         var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();

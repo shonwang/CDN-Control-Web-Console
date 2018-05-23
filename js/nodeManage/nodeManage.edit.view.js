@@ -557,7 +557,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 this.liveLevel = parseInt(value);
             }.bind(this));
             if(this.isEdit){
-                this.$el.find("#dropdown-liveLevel").attr("disabled","disabled");
+                // this.$el.find("#dropdown-liveLevel").attr("disabled","disabled");
                 var defaultValue = _.find(liveLevelArray, function(object) {
                     return object.value === this.model.attributes.liveLevel
                 }.bind(this));
@@ -592,7 +592,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 this.cacheLevel = parseInt(value);
             }.bind(this));
             if(this.isEdit){
-                this.$el.find("#dropdown-cacheLevel").attr("disabled","disabled");
+                // this.$el.find("#dropdown-cacheLevel").attr("disabled","disabled");
                 var defaultValue = _.find(cacheLevelArray, function(object) {
                     return object.value === this.model.attributes.cacheLevel
                 }.bind(this));

@@ -462,8 +462,10 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "operatorId": this.model.get("operatorId"),
                     "operatorName": this.model.get("operatorName"),
                     "startChargingTime": this.model.get("startChargingTime"),
-                    "rsNodeCorpDtos": this.model.get("rsNodeCorpDtos"),
+                    "rsNodeCorpDtos": this.model.get("rsNodeCorpDtos"),   
 
+                    "cacheLevel": this.model.get("cacheLevel"),
+                    "liveLevel":this.model.get("liveLevel")
                 }
             } else {
                 this.args = {
@@ -483,8 +485,10 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "operatorId": "",
                     "operatorName": "",
                     "startChargingTime": new Date().valueOf(),
-                    "rsNodeCorpDtos": []
+                    "rsNodeCorpDtos": [],
 
+                    "cacheLevel": 0,
+                    "liveLevel": 0
                 }
             }
 
@@ -531,8 +535,6 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             this.$el.find(".save").on("click", $.proxy(this.onSaveClick, this));
             this.$el.find(".cancel").on("click", $.proxy(this.onCancelClick, this));
 
-            this.initLiveLevelDropMenu();
-            this.initCacheLevelDropMenu();
             this.initDropList(options.list);
             this.initChargeDatePicker();
         },
@@ -554,6 +556,22 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             Utility.initDropMenu(this.$el.find(".dropdown-liveLevel"), liveLevelArray, function(value) {
                 this.liveLevel = parseInt(value);
             }.bind(this));
+            if(this.isEdit){
+                this.$el.find("#dropdown-liveLevel").attr("disabled","disabled");
+                var defaultValue = _.find(liveLevelArray, function(object) {
+                    return object.value === this.model.attributes.liveLevel
+                }.bind(this));
+                if (defaultValue) {
+                    this.$el.find(".dropdown-liveLevel .cur-value").html(defaultValue.name)
+                    this.liveLevel = defaultValue.value;
+                } else {
+                    this.$el.find(".dropdown-liveLevel .cur-value").html(liveLevelArray[0].name);
+                    this.liveLevel = liveLevelArray[0].value;
+                }
+            }else{
+                this.$el.find(".dropdown-liveLevel .cur-value").html(liveLevelArray[0].name);
+                this.liveLevel = liveLevelArray[0].value;
+            }
         },
 
         initCacheLevelDropMenu: function() {
@@ -573,6 +591,22 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             Utility.initDropMenu(this.$el.find(".dropdown-cacheLevel"), cacheLevelArray, function(value) {
                 this.cacheLevel = parseInt(value);
             }.bind(this));
+            if(this.isEdit){
+                this.$el.find("#dropdown-cacheLevel").attr("disabled","disabled");
+                var defaultValue = _.find(cacheLevelArray, function(object) {
+                    return object.value === this.model.attributes.cacheLevel
+                }.bind(this));
+                if (defaultValue) {
+                    this.$el.find(".dropdown-cacheLevel .cur-value").html(defaultValue.name)
+                    this.cacheLevel = defaultValue.value;
+                } else {
+                    this.$el.find(".dropdown-cacheLevel .cur-value").html(cacheLevelArray[0].name);
+                    this.cacheLevel = cacheLevelArray[0].value;
+                }
+            }else{
+                this.$el.find(".dropdown-cacheLevel .cur-value").html(cacheLevelArray[0].name);
+                this.cacheLevel = cacheLevelArray[0].value;
+            }
         },
 
 
@@ -721,6 +755,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
         },
 
         initDropList: function(list) {
+            this.initLiveLevelDropMenu();
+            this.initCacheLevelDropMenu();
             this.collection.getAllContinent();
             this.collection.getAllProvince();
             //this.collection.getAllCity();

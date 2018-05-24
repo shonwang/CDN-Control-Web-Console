@@ -271,6 +271,8 @@
   "specialLayerManage.view": "specialLayerManage/specialLayerManage.view",
   "speedMeasure.model": "speedMeasure/speedMeasure.model",
   "speedMeasure.view": "speedMeasure/speedMeasure.view",
+  "statisticsDataSourceSwitch.model": "statisticsDataSourceSwitch/statisticsDataSourceSwitch.model",
+  "statisticsDataSourceSwitch.view": "statisticsDataSourceSwitch/statisticsDataSourceSwitch.view",
   "statisticsManage.model": "statisticsManage/statisticsManage.model",
   "statisticsManage.view": "statisticsManage/statisticsManage.view",
   "template": "template",

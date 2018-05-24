@@ -1,7 +1,26 @@
-define("routes.other", ['require', 'exports', 'subNavbar.view'], 
+define("routes.other", ['require', 'exports', 'subNavbar.view'],
     function(require, exports, SubNavbar) {
         var RouterOther = {
-            userMove:function(){
+            statisticsDataSourceSwitch: function() {
+                require(['statisticsDataSourceSwitch.view', 'statisticsDataSourceSwitch.model'], function(StatisticsDataSourceSwitchView, StatisticsDataSourceSwitchModel) {
+                    this.curPage = 'statisticsDataSourceSwitch';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    if (!this.statisticsDataSourceSwitchModel)
+                        this.statisticsDataSourceSwitchModel = new StatisticsDataSourceSwitchModel();
+                    if (!this.statisticsDataSourceSwitchView) {
+                        var options = {
+                            collection: this.statisticsDataSourceSwitchModel
+                        };
+                        this.statisticsDataSourceSwitchView = new StatisticsDataSourceSwitchView(options);
+                        this.statisticsDataSourceSwitchView.render($('.ksc-content'));
+                    } else {
+                        this.statisticsDataSourceSwitchView.update($('.ksc-content'));
+                    }
+                    this.curView = this.statisticsDataSourceSwitchView;
+                }.bind(this));
+            },
+
+            userMove: function() {
                 if (!AUTH_OBJ.ChangeDomainUser) return;
                 require(['userMove.view', 'userMove.model'], function(UserMoveView, UserMoveModel) {
                     this.curPage = 'userMove';
@@ -18,10 +37,10 @@ define("routes.other", ['require', 'exports', 'subNavbar.view'],
                         this.userMoveView.update();
                     }
                     this.curView = this.userMoveView;
-                }.bind(this));                  
+                }.bind(this));
             },
 
-            commonCache:function(){
+            commonCache: function() {
                 if (!AUTH_OBJ.CcacheManager) return;
                 require(['commonCache.view', 'commonCache.model'], function(CommonCacheView, CommonCacheModel) {
                     this.curPage = 'commonCache';
@@ -38,7 +57,7 @@ define("routes.other", ['require', 'exports', 'subNavbar.view'],
                         this.commonCacheView.update();
                     }
                     this.curView = this.commonCacheView;
-                }.bind(this));                
+                }.bind(this));
             },
 
             speedMeasure: function() {

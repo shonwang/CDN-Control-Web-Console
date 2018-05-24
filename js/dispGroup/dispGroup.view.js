@@ -932,6 +932,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         initTable: function(){
+            console.log(this.collection.models)
             this.table = $(_.template(template['tpl/dispGroup/dispGroup.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);

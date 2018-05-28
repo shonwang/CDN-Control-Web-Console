@@ -283,10 +283,6 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                     }else if(this.level === 3){
                         this.onGetLowerAllNodes();
                     }
-                    // else{
-                    //     alert("目前层级只支持上、中、下");
-                    //     return;
-                    // }
            
                 this.checkedOptions(this.nodesList);
 

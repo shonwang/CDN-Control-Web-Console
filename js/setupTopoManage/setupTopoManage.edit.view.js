@@ -88,20 +88,24 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 _.each(res, function(el, index, list) {
                     _.each(this.defaultParam.upperNodes, function(node){
                         if(el.id === node.id){
-                            testUpperArray.push(el)
+                            el.name = el.chName;
+                            testUpperArray.push(el);
                         }
                     }.bind(this));
                     _.each(this.defaultParam.middleNodes, function(node){
                         if(el.id === node.id){
+                            el.name = el.chName;
                             testMiddleArray.push(el)
                         }
                     }.bind(this))
                     _.each(this.defaultParam.lowerNodes, function(node){
                         if(el.id === node.id){
+                            el.name = el.chName;
                             testLowerArray.push(el)
                         }
                     }.bind(this))
                 }.bind(this));
+                console.log("555", this.defaultParam);
                 this.defaultParam.upperNodes = testUpperArray;
                 this.defaultParam.middleNodes = testMiddleArray;
                 this.defaultParam.lowerNodes = testLowerArray;
@@ -117,7 +121,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.isSaving = false;
                 this.options.onSaveCallback && this.options.onSaveCallback();
             },
-
 
 
             onOriginInfo: function(res) {
@@ -493,7 +496,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     }
                     this.ruleList.push(ruleStrObj)
                 }.bind(this))
-
+                console.log("66666", this.ruleList);
                 // 渲染到数据列表中
                 this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.rule.table.html'])({
                     data: this.ruleList
@@ -599,9 +602,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
                     var mySelectNodeView = new SelectNodeView({
                         collection: this.collection,
-                        // 默认下层节点全打钩
                         selectedNodes: this.defaultParam.lowerNodes,
-                        // nodesList: this.defaultParam.allNodes,
                         appType: this.defaultParam.type,
                         level: 3
                     });

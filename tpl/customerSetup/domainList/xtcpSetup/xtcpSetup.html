@@ -10,12 +10,12 @@
                 <form class="form-horizontal">
                     <div class="form-group">
                         <label for="workmode" class="col-sm-3 control-label">工作模式</label>
-                        <div class="col-sm-6">
+                        <div class="col-sm-5">
                             <label class="radio-inline">
                                 <input type="radio" name="options-workmode" id="workmode-keep">0
                             </label>
                             <label class="radio-inline">
-                                <input type="radio" name="options-workmode" id="workmode-balance">1
+                                <input type="radio" name="options-workmode" id="workmode-balance" checked="checked">1
                             </label>
                             <label class="radio-inline">
                                 <input type="radio" name="options-workmode" id="workmode-radical">2
@@ -31,19 +31,24 @@
                     <div class="form-group">
                         <label for="effect-ratio" class="col-sm-3 control-label">生效比例</label>
                         <div class="col-sm-2">
-                            <label class="">
-                                <input type="text" id="effect-ratio" value="100">
-                            </label>
+                            <input type="text" id="effect-ratio" value="100" class="form-control">
                         </div>
                     </div>
                 </form>
           </div>
           <hr>
           <div class="col-md-10">
-            <div class="form-group" style="margin:0 10px 0 10px;">
-                <label><h4>高级配置</h4></label>
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><h4>高级配置</h4></label>
+                <div class="col-sm-2 advanceSetup">
+                    <div class="togglebutton" style="padding-top:5px;margin-right:0;">
+                        <label>
+                            <input type="checkbox"><span class="toggle"></span>
+                        </label>
+                    </div>
+                </div>
             </div>  
-            
+
           </div>
       </div>
   </div>

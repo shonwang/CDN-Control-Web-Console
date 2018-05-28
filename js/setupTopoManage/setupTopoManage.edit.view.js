@@ -51,14 +51,11 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.collection.on('modify.topo.success', $.proxy(this.modifyTopoSuccess, this));
                 this.collection.on('modify.topo.error', $.proxy(this.onSaveError, this));
                 this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-
+                
                 // 编辑模式（isEdit）
                 if (this.isEdit && !this.isView) {
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                    this.collection.getTopoOrigininfo(this.model.get('id'));
-                    // 发起Ajax请求成功后，观察成功或失败的回调函数get.topo.OriginInfo.success/error
-
-                // 查看模式（isView）
+                    this.collection.getLatestVersion(this.model.get('id'));
                 } else if (!this.isEdit && this.isView){
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
 

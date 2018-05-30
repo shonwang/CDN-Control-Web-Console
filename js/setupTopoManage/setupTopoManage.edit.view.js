@@ -88,19 +88,19 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 _.each(res, function(el, index, list) {
                     _.each(this.defaultParam.upperNodes, function(node){
                         if(el.id === node.id){
-                            el.name = el.chName;
+                            el.name = el.chName || el.name;
                             testUpperArray.push(el);
                         }
                     }.bind(this));
                     _.each(this.defaultParam.middleNodes, function(node){
                         if(el.id === node.id){
-                            el.name = el.chName;
+                            el.name = el.chName || el.name;
                             testMiddleArray.push(el)
                         }
                     }.bind(this))
                     _.each(this.defaultParam.lowerNodes, function(node){
                         if(el.id === node.id){
-                            el.name = el.chName;
+                            el.name = el.chName || el.name;
                             testLowerArray.push(el)
                         }
                     }.bind(this))

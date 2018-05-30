@@ -629,33 +629,47 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 var tempNode = _.find(this.options.upperNodes, function(obj) {
                     return obj.id === node.id
                 }.bind(this))
-                // console.log(tempNode.isChecked)
-                if(tempNode) this.topoUpperNodes.push(_.clone(tempNode));
+                if(this.options.appType == 202 && (tempNode.cacheLevel == 1 || tempNode.cacheLevel == 2)){
+                    this.topoUpperNodes.push(_.clone(tempNode));
+                }else if(this.options.appType == 203 && (tempNode.liveLevel == 1 || tempNode.liveLevel == 2)){
+                    this.topoUpperNodes.push(_.clone(tempNode));
+                }
             }.bind(this));
             _.each(this.topoUpperNodes,function(node){
+                node.name = node.chName || node.name;
                 node.isChecked = false;
                 node.isDisplay = true;
             }.bind(this))
-
+            
             // this.topoUpperNodes
         //    console.log("拓扑上层节点: ", this.topoUpperNodes);
-            this.localNodeListForSelect = [];
+            this.localNodeListForSelect = [];          
             if (!this.notFilter) {
                 _.each(this.options.localNodes, function(node) {
                     var tempNodeLocal = _.find(this.options.localNodes, function(obj) {
                         return obj.id === node.id;
                     }.bind(this))
-                    if(tempNodeLocal) this.localNodeListForSelect.push(_.clone(tempNodeLocal))
+                    if(this.options.appType == 202 && (tempNodeLocal.cacheLevel == 2 || tempNodeLocal.cacheLevel == 3)){
+                        this.localNodeListForSelect.push(_.clone(tempNodeLocal));
+                    }else if(this.options.appType == 203 && (tempNodeLocal.liveLevel == 2 || tempNodeLocal.liveLevel == 3)){
+                        this.localNodeListForSelect.push(_.clone(tempNodeLocal));
+                    }
                 }.bind(this))
             }else{
                 _.each(this.options.localNodes,function(node){
-                    this.localNodeListForSelect.push(_.clone(node))
+                    if(this.options.appType == 202 && (node.cacheLevel == 2 || node.cacheLevel == 3)){
+                        this.localNodeListForSelect.push(_.clone(node));
+                    }else if(this.options.appType == 203 && (node.liveLevel == 2 || node.liveLevel == 3)){
+                        this.localNodeListForSelect.push(_.clone(node));
+                    }
                 }.bind(this))
             };
-            _.each(this.localNodeListForSelect,function(node){
+            _.each(this.localNodeListForSelect, function(node){
+                node.name = node.chName || node.name;
                 node.isChecked = false;
                 node.isDisplay = true;
             }.bind(this))
+            
             // this.localNodesListForSelect
             // console.log("拓扑本层节点: ", this.localNodeListForSelect);
             this.$el.find('.local .add-node').on('click', $.proxy(this.onClickAddLocalNodeButton, this))
@@ -810,7 +824,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             require(['setupTopoManage.selectNode.view'], function(SelectNodeView) {
                 if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
                 this.updateChecked(this.defaultParam.upper, this.topoUpperNodes);
-                console.log(this.defaultParam.upper,this.topoUpperNodes)
                 var mySelectNodeView = new SelectNodeView({
                     collection: this.collection,
                     selectedNodes: this.defaultParam.upper,
@@ -963,7 +976,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.defaultParam.upper = _.filter(this.defaultParam.upper, function(obj) {
                 return obj.rsNodeMsgVo.id !== parseInt(id)
             }.bind(this));
-            console.log(this.defaultParam.upper)
             this.initUpperTable();
         },
 

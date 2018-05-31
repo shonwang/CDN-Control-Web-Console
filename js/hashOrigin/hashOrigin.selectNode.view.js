@@ -177,6 +177,7 @@ define("hashOrigin.selectNode.view", ['require', 'exports', 'template', 'modal.v
                                 el.isChecked = true;
                                 el.chiefType = node.chiefType;
                                 el.ipCorporation = node.ipCorporation;
+                                el.maxBandwidth = node.maxBandwidth;
                             }
                         }.bind(this))
                         this.allNodes.push(el);

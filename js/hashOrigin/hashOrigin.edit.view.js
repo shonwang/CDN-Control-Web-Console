@@ -9,6 +9,7 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
             this.collection = options.collection;
             this.isEdit     = options.isEdit;
             this.model      = options.model;
+            this.parent = options.obj;
             this.deviceTypeArray = options.deviceTypeArray;
             this.isLoading = true;
 
@@ -26,9 +27,19 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
                 }                
             }        
             this.$el.find(".add-node").on("click",$.proxy(this.onClickAddNode,this));
+            this.$el.find(".cancel").on("click",$.proxy(this.onCancelClick,this));
 
             
             //this.initIpTypeDropmenu();
+        },
+
+        onCancelClick: function() {
+            this.destroy();
+            this.parent.showList();
+        },        
+
+        destroy: function() {
+            this.$el.remove();
         },
 
         onClickAddNode:function(){
@@ -48,6 +59,8 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
                     onOKCallback: function() {
                         this.defaultParam.selectedNodes = mySelectNodeView.getArgs();
                         this.selectNodePopup.$el.modal("hide");
+                        this.changeToObj();
+                        this.changeToArray();
                         this.initNodeTable();
                     }.bind(this),
                     onHiddenCallback: function() {}.bind(this)
@@ -67,13 +80,49 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
             this.$el.find("#hash-node-list").html(this.table);
             if(this.defaultParam.selectedNodes.length>0){
                 this.table.find(".maxBandwidth-input").on("blur",$.proxy(this.onMaxBandwidthInputBlur,this));
+                this.table.find(".delete").on("click",$.proxy(this.onDeleteNode,this));
             }
         },
 
         onMaxBandwidthInputBlur:function(event){
             var eventTarget = event.target || event.srcElement;
             var id = $(eventTarget).attr('data-id');
-            console.log(id);
+            this.changeToObj();
+            this.selectedObj[id].maxBandwidth = $(eventTarget).val();
+            this.changeToArray();
+        },
+
+        onDeleteNode:function(event){
+            var eventTarget = event.target || event.srcElement;
+            var id;
+            if (eventTarget.tagName == "SPAN") {
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("id");
+            } else {
+                id = $(eventTarget).attr("id");
+            }
+            this.changeToObj();
+            delete this.selectedObj[id];
+            this.changeToArray();
+            this.initNodeTable();
+        },
+
+        changeToObj:function(){
+            var selectedNodes = this.defaultParam.selectedNodes;
+            var obj = {};
+            for(var i=0;i<selectedNodes.length;i++){
+                obj[selectedNodes[i]["id"]] = selectedNodes[i];
+            }
+            this.selectedObj = obj;
+        },
+
+        changeToArray:function(){
+            var selectedObj = this.selectedObj;
+            var arr = [];
+            for(var i in selectedObj){
+                arr.push(selectedObj[i]);
+            }
+            this.defaultParam.selectedNodes = arr;
         },
 
         onGetError: function(error){

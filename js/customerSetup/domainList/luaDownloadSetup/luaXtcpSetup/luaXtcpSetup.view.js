@@ -32,8 +32,11 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.collection.on("get.xtcp.error", $.proxy(this.onGetError, this));
             this.collection.on("set.xtcp.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.xtcp.error", $.proxy(this.onGetError, this));
-            this.colleciton.getXtcpSetupInfo();
+            // this.colleciton.getXtcpSetupInfo();
            
+            this.defaultParam = {
+
+            };
         },
 
         initSetup:function(data){
@@ -154,6 +157,18 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             //     this.$el.find(".dropdown-liveLevel .cur-value").html(liveLevelArray[0].name);
             //     this.liveLevel = liveLevelArray[0].value;
             // }
+        },
+
+        onClickSaveButton:function(){
+
+            var postParam = {
+                "originId": this.domainInfo.id,
+                "userId": this.clientInfo.uid,
+                
+            }
+
+            // this.collection.postXtcpSetupInfo(postParam);
+            // Utility.onContentSave();
         },
 
         onSaveSuccess: function(){

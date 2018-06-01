@@ -63,7 +63,7 @@ define("nodeManage.operateDetail.view", ['require', 'exports', 'template', 'moda
                     this.$el.find(".dropdown-reason .cur-value").html("服务器返回了未知的操作原因");
                     this.args.opType = null;
                 }
-                this.$el.find(".dropdown-reason button").prop("disabled", true);
+                //this.$el.find(".dropdown-reason button").prop("disabled", true);
                 if (this.whoCallMe == 'node') {
                     this.collection.off("get.operate.history.success");
                     this.collection.off("get.operate.history.error");

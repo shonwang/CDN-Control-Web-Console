@@ -476,7 +476,19 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
                     this.trigger("start.nodeInitSetup.error", response);
                 }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        updateRemark:function(args){
+            var url = BASE_URL + "/rs/node/update/remark?nodeId="+args.id+"&opRemark="+args.opRemark+"&opType="+args.opType,
+                successCallback = function(res) {
+                    this.trigger("update.remark.success", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("update.remark.error", response);
+                }.bind(this);
+            Utility.getAjax(url, {}, successCallback, errorCallback);
         }
+
     });
 
     return NodeManageCollection;

@@ -12,6 +12,9 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 this.initNodeDropMenu();
                 this.initNodeTypeDropMenu();
 
+                this.collection.on("update.remark.success", $.proxy(this.onUpdateRemarkSuccess, this));
+                this.collection.on("get.node.error", $.proxy(this.onGetError, this));
+
                 this.collection.on("get.node.success", $.proxy(this.onNodeListSuccess, this));
                 this.collection.on("get.node.error", $.proxy(this.onGetError, this));
                 this.collection.on("add.node.success", function() {
@@ -153,6 +156,12 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     key: "areaName"
                 }];
                 this.initTableHeader();
+                this.onClickQueryButton();
+            },
+
+
+            onUpdateRemarkSuccess:function(){
+                Utility.alerts("更新成功", "success", 5000);
                 this.onClickQueryButton();
             },
 
@@ -965,7 +974,16 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                         title: "操作说明",
                         body: detailTipsView,
                         backdrop: 'static',
-                        type: 1,
+                        type: 2,
+                        onOKCallback:function(){
+                            var result = detailTipsView.getArgs();
+                            if(!result){
+                                return false;
+                            }
+                            result.id = id;
+                            this.collection.updateRemark(result);
+                            this.nodeTipsPopup.$el.modal("hide");
+                        }.bind(this),
                         onHiddenCallback: function() {}.bind(this)
                     }
                     this.nodeTipsPopup = new Modal(options);

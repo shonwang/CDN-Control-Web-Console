@@ -4,7 +4,6 @@ define("cnameSetup.view", ['require','exports', 'template', 'modal.view', 'utili
         events: {},
 
         initialize: function(options) {
-            console.log("just a test!")
             this.collection = options.collection;
             this.options = options;
             this.$el = $(_.template(template['tpl/customerSetup/domainList/cnameSetup/cnameSetup.html'])());

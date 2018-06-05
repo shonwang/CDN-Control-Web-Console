@@ -19,26 +19,12 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.edit.html'])({
                     data: {}
                 }));
-                require(['nodeManage.model'], function(NodeManageModel) {
-                    var myNodeManageModel = new NodeManageModel();
-                    myNodeManageModel.on("get.node.success", $.proxy(this.onGetAllNode, this));
-                    myNodeManageModel.on("get.node.error", $.proxy(this.onGetError, this));
-                    myNodeManageModel.getNodeList({
-                        "page": 1,
-                        "count": 9999,
-                        "chname": null, //节点名称
-                        "operator": null, //运营商id
-                        "status": "1,4", //节点状态
-                        "appType": this.appType,
-                        "cacheLevel":null,
-                        "liveLevel":null
-                    });
-                }.bind(this))
 
                 this.spareAllNode = [];
                 this.collection.off('get.topo.OriginInfo.success');
                 this.collection.off('get.topo.OriginInfo.error');
                 this.collection.on('get.topo.OriginInfo.success', $.proxy(this.onOriginInfo, this));
+                this.collection.on('get.topo.OriginInfo.success', $.proxy(this.onGetAllNode, this));
                 this.collection.on('get.topo.OriginInfo.error', $.proxy(this.onGetError, this));
                 //添加拓扑关系
                 this.collection.off('add.topo.success');
@@ -58,7 +44,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     this.collection.getLatestVersion(this.model.get('id'));
                 } else if (!this.isEdit && this.isView){
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-
                     this.collection.getTopoInfo(this.model.get('id'));
                     this.$el.find(".opt-ctn .save").hide();
                     this.$el.find('.upper .add-node').hide();
@@ -81,7 +66,25 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 }
             },
 
-            onGetAllNode:function(res){
+            onGetAllNode:function(){
+                require(['nodeManage.model'], function(NodeManageModel) {
+                    var myNodeManageModel = new NodeManageModel();
+                    myNodeManageModel.on("get.node.success", $.proxy(this.onGetAllNodeTest, this));
+                    myNodeManageModel.on("get.node.error", $.proxy(this.onGetError, this));
+                    myNodeManageModel.getNodeList({
+                        "page": 1,
+                        "count": 9999,
+                        "chname": null, //节点名称
+                        "operator": null, //运营商id
+                        "status": "1,4", //节点状态
+                        "appType": this.appType,
+                        "cacheLevel":null,
+                        "liveLevel":null
+                    });
+                }.bind(this))
+            },
+
+            onGetAllNodeTest:function(res){
                 var testUpperArray = [];
                 var testLowerArray = [];
                 var testMiddleArray = [];
@@ -105,7 +108,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         }
                     }.bind(this))
                 }.bind(this));
-                console.log("555", this.defaultParam);
                 this.defaultParam.upperNodes = testUpperArray;
                 this.defaultParam.middleNodes = testMiddleArray;
                 this.defaultParam.lowerNodes = testLowerArray;
@@ -354,7 +356,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     alert("目前只支持直播(Live)或点播(Cache)类型");
                     return;
                 };
-                console.log(this.defaultParam.upperNodes)
                 require(['setupTopoManage.selectNode.view'], function(SelectNodeView) {
                     if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
                     var mySelectNodeView = new SelectNodeView({
@@ -496,7 +497,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     }
                     this.ruleList.push(ruleStrObj)
                 }.bind(this))
-                console.log("66666", this.ruleList);
                 // 渲染到数据列表中
                 this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.rule.table.html'])({
                     data: this.ruleList
@@ -678,9 +678,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
                             
                             collection: this.collection,
-                            // 本层：下 + 中
                             localNodes: newLocalNodes,
-                            // 上层：中 + 上
                             upperNodes: newUpperNodes,
                             rule: this.defaultParam.rule,
                             curEditRule: this.curEditRule,

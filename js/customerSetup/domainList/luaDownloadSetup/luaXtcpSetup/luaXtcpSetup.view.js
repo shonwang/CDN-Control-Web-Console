@@ -4,7 +4,6 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         events: {},
 
         initialize: function(options) {
-            console.log("This is a second test!")
             this.collection = options.collection;
             this.options = options;
             this.$el = $(_.template(template['tpl/customerSetup/domainList/xtcpSetup/xtcpSetup.html'])());
@@ -25,24 +24,80 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.find(".publish").hide();
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveButton, this));
             this.$el.find(".advanceSetup-toggle .togglebutton input").on("click", $.proxy(this.onClickIsAdvanceSetupBtn,this));
-
-            this.initEffectTimeDropMenu();
-
+            this.initEffectWeek();
+        
             this.collection.on("get.xtcp.success", $.proxy(this.initSetup, this));
             this.collection.on("get.xtcp.error", $.proxy(this.onGetError, this));
             this.collection.on("set.xtcp.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.xtcp.error", $.proxy(this.onGetError, this));
-            // this.colleciton.getXtcpSetupInfo();
+            // this.colleciton.getXtcpSetupInfo({originId: this.domainInfo.id});
            
-            this.defaultParam = {
+            this.initSetup()
+            this.initEffectTimeDropMenu();
+        },
 
-            };
+        initEffectWeek:function(){
+            this.$el.find("input[name=options-effectWeek]").prop("checked", true);
+            this.$el.find("input[name=options-effectWeek]").on("click", $.proxy(this.onClickCheckedWeek, this));
         },
 
         initSetup:function(data){
             var _data = data;
+            if(_data){
+                this.defaultParam = _data
+                
+            }else{
+                this.defaultParam = {
+                    userInfo:{
+                        "originId": this.domainInfo.id,
+                        "userId": this.clientInfo.uid
+                    },
+                    defSetup:{
+                        "workModeDef": 1,      //默认配置工作模式
+                        "effectRadioDef": 100,  //默认配置生效比例
+                    },
+                    vipSetup:{
+                        "effectWeek": ["Sun","Mon","Tue","Wes","Thu","Fri","Sat"],
+                        "effectTime": [0,24],
+                        "workModeVip": 1,     //高级配置工作模式
+                        "effectRadioVip": 100   //高级配置生效比例
+                    } 
+                };
+            }
             
 
+
+        },
+
+        onClickCheckedWeek:function(event){
+            var globalWeek = this.defaultParam.vipSetup.effectWeek;
+            var effectWeek = this.$el.find("input[name=options-effectWeek]:not(#effectweek-all)");
+            var tempWeek = [];
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            if(eventTarget.value == "all"){
+                if(eventTarget.checked){
+                    this.$el.find("input[name=options-effectWeek]:not(#effectweek-all)").prop("checked", true);
+                }else{
+                    this.$el.find("input[name=options-effectWeek]:not(#effectweek-all)").prop("checked", false);
+                }
+            }else{
+                if(eventTarget.checked){
+                    if(globalWeek.length === 6){
+                        this.$el.find("input#effectweek-all").prop("checked", true);
+                    }
+                }else{
+                    this.$el.find("input#effectweek-all").prop("checked", false);
+                }
+            }
+            _.each(effectWeek, function(el){
+                if(el.checked === true){
+                    tempWeek.push(el.value)
+                }
+            }.bind(this))
+            console.log(tempWeek)
+            this.defaultParam.vipSetup.effectWeek = tempWeek
+            // 输出tempweek,将值传递给this.defaultParam.vipSetup.effectWeek
         },
 
         onClickIsAdvanceSetupBtn:function(event){
@@ -54,6 +109,7 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find(".advanceSetup").hide();
             }
         },
+
 
         initEffectTimeDropMenu:function(){
             var timeBeginArray = [{
@@ -138,10 +194,14 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             });
             Utility.initDropMenu(this.$el.find(".dropdown-effecttime-begin"), timeBeginArray, function(value) {
                 this.effectTimeBegin = parseInt(value);
+                this.defaultParam.vipSetup.effectTime[0] = this.effectTimeBegin;
             }.bind(this));
             Utility.initDropMenu(this.$el.find(".dropdown-effecttime-end"), timeEndArray, function(value) {
                 this.effectTimeEnd = parseInt(value);
+                this.defaultParam.vipSetup.effectTime[1] = this.effectTimeEnd;
             }.bind(this));
+            //将生效时间传递给this.defaultParam.vipSetup.effectTime
+
             // if(this.isEdit){
             //     var defaultValue = _.find(liveLevelArray, function(object) {
             //         return object.value === this.model.attributes.liveLevel
@@ -151,6 +211,7 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             //         this.liveLevel = defaultValue.value;
             //     } else {
             //         this.$el.find(".dropdown-liveLevel .cur-value").html(liveLevelArray[0].name);
+            
             //         this.liveLevel = liveLevelArray[0].value;
             //     }
             // }else{
@@ -160,13 +221,11 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
         },
 
         onClickSaveButton:function(){
-
-            var postParam = {
-                "originId": this.domainInfo.id,
-                "userId": this.clientInfo.uid,
-                
+            var postParam = this.defaultParam
+            console.log(postParam.vipSetup.effectTime);
+            if(postParam.vipSetup.effectTime[0] >= postParam.vipSetup.effectTime[1]){
+                console.log("请选择合理的生效时间")
             }
-
             // this.collection.postXtcpSetupInfo(postParam);
             // Utility.onContentSave();
         },

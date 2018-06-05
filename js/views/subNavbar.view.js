@@ -43,12 +43,6 @@ define("subNavbar.view", ['require','exports', 'template'], function(require, ex
                         hash: 'index.html#/domainList/' + query + '/cnameSetup/' + query2,
                         active: false,
                         children: []
-                    },{
-                        id: 'customerSetup-domainList-xtcpSetup',
-                        name: 'xtcp配置',
-                        hash: 'index.html#/domainList/' + query + '/xtcpSetup/' + query2,
-                        active: false,
-                        children: []
                     }]
                 },{
                     id: '',

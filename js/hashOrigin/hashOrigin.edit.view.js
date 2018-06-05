@@ -8,29 +8,114 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
         initialize: function(options) {
             this.collection = options.collection;
             this.isEdit     = options.isEdit;
-            this.model      = options.model;
+            this.model      = options.model || null;
             this.parent = options.obj;
             this.deviceTypeArray = options.deviceTypeArray;
             this.isLoading = true;
+            this.canAddNode = true;
 
-            this.$el = $(_.template(template['tpl/hashOrigin/hashOrigin.add&edit.html'])({}));
+            this.collection.off("get.hashInfo.success");
+            this.collection.off("get.hashInfo.error");
+            this.collection.off("add.hashOrigin.success");
+            this.collection.off("add.hashOrigin.error");
+            this.collection.off("modify.hashOrigin.success");
+            this.collection.off("modify.hashOrigin.error");
+            this.collection.on("get.hashInfo.success",$.proxy(this.onGetHashInfoSuccess,this));
+            this.collection.on("get.hashInfo.error",$.proxy(this.onGetError,this));
+
+            this.collection.on("add.hashOrigin.success",$.proxy(this.onAddHashInfoSuccess,this));
+            this.collection.on("add.hashOrigin.error",$.proxy(this.onGetError,this));
+
+            this.collection.on("modify.hashOrigin.success",$.proxy(this.onModifyHashInfoSuccess,this));
+            this.collection.on("modify.hashOrigin.error",$.proxy(this.onGetError,this));
+
             this.defaultParam = {
                 "id": null,
                 "name": "",
-                "selectedNodes": []
+                type:202,
+                autoFlag:1,
+                autoFlagName:'',
+                typeName:'',
+                "hashNodeList": []
             }
             if(this.isEdit){
+                this.stopAddNode();
                 this.defaultParam = {
                     "id": this.model.get("id"),
                     "name": this.model.get("name"),
-                    "selectedNodes": this.model.get("nodeList")
-                }                
-            }        
+                    type:this.model.get("type"),
+                    autoFlag:this.model.get('autoFlag'),
+                    autoFlagName:this.autoFlagName[this.model.get('autoFlag')],
+                    typeName:this.typeNameList[this.model.get("type")],
+                    "hashNodeList":[]
+                }
+                this.collection.getHashInfoById(this.defaultParam.id);            
+            }     
+            this.$el = $(_.template(template['tpl/hashOrigin/hashOrigin.add&edit.html'])({data:this.defaultParam}));   
             this.$el.find(".add-node").on("click",$.proxy(this.onClickAddNode,this));
+            this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onSave, this));
             this.$el.find(".cancel").on("click",$.proxy(this.onCancelClick,this));
+            this.initDropMenu();
 
             
             //this.initIpTypeDropmenu();
+        },
+
+        typeNameList:{
+            202:"Cache",
+            203:"Live"
+        },
+
+        autoFlagName:{
+            1:"允许",
+            0:"不允许"
+        },
+
+        onGetHashInfoSuccess:function(){
+            this.onCancelClick();
+            this.parent.resetPageAndQuery();
+        },
+
+        onModifyHashInfoSuccess:function(){
+            this.onCancelClick();
+            this.parent.resetPageAndQuery();
+        },
+
+        onSave:function(){
+            this.defaultParam.name = this.$el.find("#input-name").val().trim();
+            if(!this.defaultParam.name){
+                Utility.alerts("请填名称");
+                return false;
+            }
+            if(this.defaultParam.hashNodeList.length == 0){
+                Utility.alerts("请选择至少一个节点名称");
+                return false;
+            }
+            if(this.isEdit){
+                this.collection.modifyHashOrigin(this.defaultParam);
+            }
+            else{
+                this.collection.addHashOrigin(this.defaultParam);
+            }
+        },
+
+        onGetHashInfoSuccess:function(res){
+            _.each(res.hashNodeList,function(el){
+                el.name = el.nodeName;
+            });
+            this.defaultParam.hashNodeList = res.hashNodeList;
+            this.initNodeTable();
+            this.openAddNode();
+        },
+
+        stopAddNode:function(){
+            this.canAddNode = false;
+            this.$el.find(".add-node").attr("disabled","disabled");
+        },
+
+        openAddNode:function(){
+            this.canAddNode = true;
+            this.$el.find(".add-node").removeAttr("disabled");
         },
 
         onCancelClick: function() {
@@ -43,12 +128,15 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
         },
 
         onClickAddNode:function(){
+            if(!this.canAddNode){
+                return false;
+            }
             require(['hashOrigin.selectNode.view'], function(SelectNodeView) {
                 if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
 
                 var mySelectNodeView = new SelectNodeView({
                     collection: this.collection,
-                    selectedNodes: this.defaultParam.selectedNodes,
+                    selectedNodes: this.defaultParam.hashNodeList,
                 });
                 var options = {
                     title: "选择节点",
@@ -57,7 +145,7 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
                     type: 2,
                     width: 800,
                     onOKCallback: function() {
-                        this.defaultParam.selectedNodes = mySelectNodeView.getArgs();
+                        this.defaultParam.hashNodeList = mySelectNodeView.getArgs();
                         this.selectNodePopup.$el.modal("hide");
                         this.changeToObj();
                         this.changeToArray();
@@ -70,15 +158,14 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
         },
 
         initNodeTable:function(){
-            
-            if(this.defaultParam.selectedNodes.length>0){
-                this.table = $(_.template(template['tpl/hashOrigin/hashOrigin.nodeList.table.html'])({data:this.defaultParam.selectedNodes}));
+            if(this.defaultParam.hashNodeList.length>0){
+                this.table = $(_.template(template['tpl/hashOrigin/hashOrigin.nodeList.table.html'])({data:this.defaultParam.hashNodeList}));
             }
             else{
                 this.table = _.template(template['tpl/empty.html'])();
             }
             this.$el.find("#hash-node-list").html(this.table);
-            if(this.defaultParam.selectedNodes.length>0){
+            if(this.defaultParam.hashNodeList.length>0){
                 this.table.find(".maxBandwidth-input").on("blur",$.proxy(this.onMaxBandwidthInputBlur,this));
                 this.table.find(".delete").on("click",$.proxy(this.onDeleteNode,this));
             }
@@ -88,7 +175,7 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
             var eventTarget = event.target || event.srcElement;
             var id = $(eventTarget).attr('data-id');
             this.changeToObj();
-            this.selectedObj[id].maxBandwidth = $(eventTarget).val();
+            this.selectedObj[id].weight = $(eventTarget).val();
             this.changeToArray();
         },
 
@@ -108,10 +195,10 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
         },
 
         changeToObj:function(){
-            var selectedNodes = this.defaultParam.selectedNodes;
+            var hashNodeList = this.defaultParam.hashNodeList;
             var obj = {};
-            for(var i=0;i<selectedNodes.length;i++){
-                obj[selectedNodes[i]["id"]] = selectedNodes[i];
+            for(var i=0;i<hashNodeList.length;i++){
+                obj[hashNodeList[i]["id"]] = hashNodeList[i];
             }
             this.selectedObj = obj;
         },
@@ -122,7 +209,7 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
             for(var i in selectedObj){
                 arr.push(selectedObj[i]);
             }
-            this.defaultParam.selectedNodes = arr;
+            this.defaultParam.hashNodeList = arr;
         },
 
         onGetError: function(error){
@@ -136,25 +223,23 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
 
         onGetNodeError: function(){},
 
-        initIpTypeDropmenu: function(res){
-            var typeArray = this.deviceTypeArray;
+        initDropMenu: function(res){
+            var typeArray = [
+                {name:"Cache",value:202},
+                {name:"Live",value:203}
+            ];
+            var flagArray = [
+                {name:"允许",value:1},
+                {name:"不允许",value:0}
+            ];
 
-            Utility.initDropMenu(this.$el.find(".dropdown-type"), typeArray, function(value){
-                this.deviceType = parseInt(value);
+            Utility.initDropMenu(this.$el.find(".dropdown-hash-type"), typeArray, function(value){
+                this.defaultParam.type = parseInt(value);
             }.bind(this));
 
-            this.collection.getNodeList();
-
-            if (this.isEdit){ 
-                var defaultValue = _.find(typeArray, function(object){
-                    return object.value === this.model.attributes.type
-                }.bind(this));
-                if (defaultValue)
-                    this.$el.find(".dropdown-type .cur-value").html(defaultValue.name)
-            } else {
-                this.$el.find(".dropdown-type .cur-value").html(typeArray[0].name);
-                this.deviceType = typeArray[0].value
-            }
+            Utility.initDropMenu(this.$el.find(".dropdown-auto-dispatch"), flagArray, function(value){
+                this.defaultParam.autoFlag = parseInt(value);
+            }.bind(this));
         },
        
         getArgs: function(){

@@ -1,8 +1,7 @@
 <table class="table table-striped table-hover">  
 <thead> 
   <tr>
-    <th>中文名称</th>
-    <th>英文名称</th>
+    <th>名称</th>
     <th>类型</th>
     <th>是否允许自动调度</th>
     <th>创建时间</th>
@@ -12,25 +11,26 @@
   </tr>
 </thead>
 <tbody>
+      <%for(var i=0;i<data.length;i++){%>
       <tr>
-        <td>中文名称</td>
-        <td>英文名称</td>
-        <td>类型</td>
-        <td>是否允许自动调度</td>
-        <td>创建时间</td>
-        <td>更新时间</td>
-        <td>操作人</td>
+        <td><%= data[i].get('name')%></td>
+        <td><%= data[i].get('typeName')%></td>
+        <td><%= data[i].get('autoFlagName')%></td>
+        <td><%= data[i].get('createTimeFormated')%></td>
+        <td><%= data[i].get('updateTimeFormated')%></td>
+        <td><%= data[i].get('operator')%></td>
         <td>
-          <a href="javascript:void(0)" id="" class="edit" title="编辑">
+          <a href="javascript:void(0)" id="<%= data[i].get('id')%>" class="edit" title="编辑">
               <span class="glyphicon glyphicon-edit"></span>
           </a>
-          <a href="javascript:void(0)" id="" class="delete" title="删除">
+<!--           <a href="javascript:void(0)" id="<%= data[i].get('id')%>" class="delete" title="删除">
               <span class="glyphicon glyphicon-trash"></span>
-          </a>
-          <a href="javascript:void(0)" id="" class="check" title="检查">
+          </a> -->
+          <a href="javascript:void(0)" id="<%= data[i].get('id')%>" class="check" title="检查">
              <span class="glyphicon glyphicon-check"></span>
          </a> 
         </td>
       </tr>
+      <%}%>
 </tbody>
 </table>

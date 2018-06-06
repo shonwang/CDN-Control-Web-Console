@@ -18,15 +18,15 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     alert("添加成功！")
                     this.onClickQueryButton();
                 }.bind(this));
-                this.collection.on("add.node.error", function(message){
-                    this.onGetError(message);
-                    this.onClickQueryButton();
-                }.bind(this));
+                this.collection.on("add.node.error", $.proxy(this.onGetError, this));
                 this.collection.on("update.node.success", function() {
                     alert("编辑成功！")
                     this.onClickQueryButton();
                 }.bind(this));
-                this.collection.on("update.node.error", $.proxy(this.onGetError, this));
+                this.collection.on("update.node.error", function(error){
+                    this.onGetError(error);
+                    this.onClickQueryButton();
+                }.bind(this));
                 this.collection.on("delete.node.success", function() {
                     alert("删除成功！")
                     this.onClickQueryButton();

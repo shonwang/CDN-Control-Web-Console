@@ -266,6 +266,19 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                         el.name = el.chName;
                         el.isDisplay = true;
                         el.isChecked = false;
+                        this.allNodes.push(el);
+                    }.bind(this))
+                    // }
+                    if(this.level){
+                        if(this.level === 1){
+                            this.onGetUpperAllNodes();
+                        }else if(this.level === 2){
+                            this.onGetMiddleAllNodes();
+                        }else if(this.level === 3){
+                            this.onGetLowerAllNodes();
+                        }
+                    }
+                    _.each(this.nodesList, function(el){
                         _.each(this.selectedNodes, function(node) {
                             if (el.id === node.id) {
                                 el.isChecked = true;
@@ -273,17 +286,7 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                                 el.ipCorporation = node.ipCorporation;
                             }
                         }.bind(this))
-                        this.allNodes.push(el);
                     }.bind(this))
-                    // }
-                    if(this.level === 1){
-                        this.onGetUpperAllNodes();
-                    }else if(this.level === 2){
-                        this.onGetMiddleAllNodes();
-                    }else if(this.level === 3){
-                        this.onGetLowerAllNodes();
-                    }
-           
                 this.checkedOptions(this.nodesList);
 
                 this.initTable(this.nodesList);

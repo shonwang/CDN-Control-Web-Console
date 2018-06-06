@@ -314,18 +314,18 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
             onGetUpperAllNodes: function(){
                 if(this.appType == 202){
                     _.each(this.allNodes, function(el){
-                        if(el.cacheLevel == 1){
+                        if(el.cacheLevel === 1 || el.cacheLevel === 2){
                             this.upperAllNodes.push(el);
                         }
                         }.bind(this))
                 }else if(this.appType == 203){
                     _.each(this.allNodes, function(el){
-                        if(el.liveLevel == 1){
+                        if(el.liveLevel === 1 || el.liveLevel === 2){
                             this.upperAllNodes.push(el);
                         }
                     }.bind(this))
                 }else{
-                    alert("目前只支持直播或点播类型");
+                    Utility.warning("目前只支持直播或点播类型");
                     return;
                 };
                 
@@ -346,7 +346,7 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                 }
                     }.bind(this))
                 }else{
-                    alert("目前只支持直播或点播类型");
+                    Utility.warning("目前只支持直播或点播类型");
                     return;
                 };
 
@@ -367,7 +367,7 @@ define("setupTopoManage.selectNode.view", ['require', 'exports', 'template', 'mo
                 }
                     }.bind(this))
                 }else{
-                    alert("目前只支持直播或点播类型");
+                    Utility.warning("目前只支持直播或点播类型");
                     return;
                 };
 

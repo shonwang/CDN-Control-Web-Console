@@ -9,7 +9,6 @@ define("hashOrigin.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.off("check.hashOrigin.error");
             this.collection.on("check.hashOrigin.success",$.proxy(this.onCheckSuccess,this));
             this.collection.on("check.hashOrigin.errir",$.proxy(this.onGetError,this));
-            //this.$el = $(_.template(template['tpl/hashOrigin/hashOrigin.check.html'])({}));
             this.$el = $("<div class='checkCtn'></div>");
             this.showLoading();
             this.collection.selectStrategyByHashId(this.id);
@@ -22,6 +21,7 @@ define("hashOrigin.view", ['require','exports', 'template', 'modal.view', 'utili
             else{
                 this.table = $(_.template(template['tpl/empty.html'])({}));
             }
+            this.table = $(_.template(template['tpl/hashOrigin/hashOrigin.check.html'])({data:res}));
             this.$el.html(this.table);
         },
 

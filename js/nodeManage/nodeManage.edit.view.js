@@ -104,7 +104,6 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     name: "第三峰",
                     value: 4
                 }
-                // {name: "免费", value: 0}
             ];
             Utility.initDropMenu(this.$el.find(".dropdown-charging"), nameList, function(value) {
                 this.args.chargingType = parseInt(value);
@@ -592,7 +591,6 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 this.cacheLevel = parseInt(value);
             }.bind(this));
             if(this.isEdit){
-                // this.$el.find("#dropdown-cacheLevel").attr("disabled","disabled");
                 var defaultValue = _.find(cacheLevelArray, function(object) {
                     return object.value === this.model.attributes.cacheLevel
                 }.bind(this));
@@ -684,6 +682,10 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 "cityId": this.cityId,
                 "lon": this.$el.find('#input-longitude-latitude').val().split("----")[0],
                 "lat": this.$el.find('#input-longitude-latitude').val().split("----")[1]
+            }
+            if(args.cacheLevel === 0 && args.liveLevel === 0){
+                alert("节点的直播或点播层级属性设置错误");
+                return;
             }
             return args;
         },

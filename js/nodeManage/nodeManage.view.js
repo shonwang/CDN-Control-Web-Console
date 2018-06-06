@@ -18,7 +18,10 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     alert("添加成功！")
                     this.onClickQueryButton();
                 }.bind(this));
-                this.collection.on("add.node.error", $.proxy(this.onGetError, this));
+                this.collection.on("add.node.error", function(message){
+                    this.onGetError(message);
+                    this.onClickQueryButton();
+                }.bind(this));
                 this.collection.on("update.node.success", function() {
                     alert("编辑成功！")
                     this.onClickQueryButton();
@@ -455,7 +458,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     this.editNodeView.destroy();
                     this.editNodeView = null;
                 }
-
+                
                 require(["nodeManage.edit.view"], function(AddOrEditNodeView) {
                     this.editNodeView = new AddOrEditNodeView({
                         collection: this.collection,

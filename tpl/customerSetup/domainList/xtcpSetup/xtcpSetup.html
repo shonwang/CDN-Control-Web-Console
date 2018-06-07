@@ -1,43 +1,40 @@
 ﻿<div class="xtcp-setup-panel fadeInLeft animated">
-  <h4>域名设置<small>/xtcp配置</small></h4>
-  <div class="well opt-ctn"></div>
-  <div class="well">
-      <div class="row">
-            <div class="col-md-10">        
+  
+            <div class="col-md-12">        
                 <div class="form-group" style="margin:0 10px 0 10px;">
                     <label><h4>默认配置</h4></label>
                 </div>  
                 <form class="form-horizontal">
                     <div class="form-group">
                         <label for="workmode" class="col-sm-3 control-label">工作模式</label>
-                        <div class="col-sm-5">
+                        <div class="col-sm-6">
                             <label class="radio-inline">
-                                <input type="radio" name="options-workmode" id="workmode-keep">0
+                                <input type="radio" name="options-workmode" id="workmode-keep" <%if(data.defSetup.workModeDef === 0){%>checked<%}%>>0
                             </label>
                             <label class="radio-inline">
-                                <input type="radio" name="options-workmode" id="workmode-balance" checked="checked">1
+                                <input type="radio" name="options-workmode" id="workmode-balance" <%if(data.defSetup.workModeDef === 1){%>checked<%}%>>1
                             </label>
                             <label class="radio-inline">
-                                <input type="radio" name="options-workmode" id="workmode-radical">2
+                                <input type="radio" name="options-workmode" id="workmode-radical" <%if(data.defSetup.workModeDef === 2){%>checked<%}%>>2
                             </label>
                             <label class="radio-inline">
-                                <input type="radio" name="options-workmode" id="workmode-spare1">3
+                                <input type="radio" name="options-workmode" id="workmode-spare1" <%if(data.defSetup.workModeDef === 3){%>checked<%}%>>3
                             </label>
                             <label class="radio-inline">
-                                <input type="radio" name="options-workmode" id="workmode-sapre2">4
+                                <input type="radio" name="options-workmode" id="workmode-sapre2" <%if(data.defSetup.workModeDef === 4){%>checked<%}%>>4
                             </label>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="effect-ratio" class="col-sm-3 control-label">生效比例</label>
                         <div class="col-sm-2">
-                            <input type="text" id="effect-ratio" value="100" class="form-control">
+                            <input type="text" id="effect-ratio" value="<%=data.defSetup.effectRadioDef%>" class="form-control">
                         </div>
                     </div>
                 </form>
           </div>
           <div class="col-md-10"><hr></div>
-          <div class="col-md-10">
+          <div class="col-md-12">
             <div class="form-group" style="margin:0 10px 0 10px;">
                 <label><h4>高级配置</h4></label>
                 <div class="advanceSetup-toggle" style="display: inline-block">
@@ -47,34 +44,34 @@
                 </div>
             </div>  
           </div>
-          <div class="col-md-10 advanceSetup" style="display:none">
+          <div class="col-md-12 advanceSetup" style="display:none">
             <form class="form-horizontal">
                 <div class="form-group">
                     <label for="effect-week" class="col-sm-3 control-label">生效周别</label>
                     <div class="col-sm-8">
-                        <label class="checkbox-inline">
+                        <label class="checkbox-inline" style="margin-right:5px;">
                             <input type="checkbox" name="options-effectWeek" id="effectweek-all" value="all">全选
                         </label>
-                        <label class="checkbox-inline">
-                            <input type="checkbox" name="options-effectWeek" id="effectweek-Sun" value="Sun">日
+                        <label class="checkbox-inline" style="margin-right:5px;">
+                            <input type="checkbox" name="options-effectWeek" id="effectweek-Sun" value="Sun" <%if(data.vipSetup.effectWeek.indexOf("Sun") > -1){%>checked<%}%>>日
                         </label>
-                        <label class="checkbox-inline">
-                            <input type="checkbox" name="options-effectWeek" id="effectweek-Mon" value="Mon">一
+                        <label class="checkbox-inline" style="margin-right:5px;">
+                            <input type="checkbox" name="options-effectWeek" id="effectweek-Mon" value="Mon" <%if(data.vipSetup.effectWeek.indexOf("Mon") > -1){%>checked<%}%>>一
                         </label>
-                        <label class="checkbox-inline">
-                            <input type="checkbox" name="options-effectWeek" id="effectweek-Tue" value="Tue">二
+                        <label class="checkbox-inline" style="margin-right:5px;">
+                            <input type="checkbox" name="options-effectWeek" id="effectweek-Tue" value="Tue" <%if(data.vipSetup.effectWeek.indexOf("Tue") > -1){%>checked<%}%>>二
                         </label>
-                        <label class="checkbox-inline">
-                            <input type="checkbox" name="options-effectWeek" id="effectweek-Wes" value="Wes">三
+                        <label class="checkbox-inline" style="margin-right:5px;">
+                            <input type="checkbox" name="options-effectWeek" id="effectweek-Wes" value="Wes" <%if(data.vipSetup.effectWeek.indexOf("Wes") > -1){%>checked<%}%>>三
                         </label>
-                        <label class="checkbox-inline">
-                            <input type="checkbox" name="options-effectWeek" id="effectweek-Thu" value="Thu">四
+                        <label class="checkbox-inline" style="margin-right:5px;">
+                            <input type="checkbox" name="options-effectWeek" id="effectweek-Thu" value="Thu" <%if(data.vipSetup.effectWeek.indexOf("Thu") > -1){%>checked<%}%>>四
                         </label>
-                        <label class="checkbox-inline">
-                            <input type="checkbox" name="options-effectWeek" id="effectweek-Fri" value="Fri">五
+                        <label class="checkbox-inline" style="margin-right:5px;">
+                            <input type="checkbox" name="options-effectWeek" id="effectweek-Fri" value="Fri" <%if(data.vipSetup.effectWeek.indexOf("Fri") > -1){%>checked<%}%>>五
                         </label>
-                        <label class="checkbox-inline">
-                            <input type="checkbox" name="options-effectWeek" id="effectweek-Sat" value="Sat">六
+                        <label class="checkbox-inline" style="margin-right:5px;">
+                            <input type="checkbox" name="options-effectWeek" id="effectweek-Sat" value="Sat" <%if(data.vipSetup.effectWeek.indexOf("Sat") > -1){%>checked<%}%>>六
                         </label>
                     </div>
                 </div>
@@ -98,41 +95,33 @@
                 </div>
                 <div class="form-group">
                     <label for="workmode" class="col-sm-3 control-label">工作模式</label>
-                    <div class="col-sm-5">
+                    <div class="col-sm-6">
                         <label class="radio-inline">
-                            <input type="radio" name="options-workmode" id="workmode-0">0
+                            <input type="radio" name="options-workmode" id="workmode-0" <%if(data.vipSetup.workModeVip === 0){%>checked<%}%>>0
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="options-workmode" id="workmode-1" checked="checked">1
+                            <input type="radio" name="options-workmode" id="workmode-1" <%if(data.vipSetup.workModeVip === 1){%>checked<%}%>>1
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="options-workmode" id="workmode-2">2
+                            <input type="radio" name="options-workmode" id="workmode-2" <%if(data.vipSetup.workModeVip === 2){%>checked<%}%>>2
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="options-workmode" id="workmode-3">3
+                            <input type="radio" name="options-workmode" id="workmode-3" <%if(data.vipSetup.workModeVip === 3){%>checked<%}%>>3
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="options-workmode" id="workmode-4">4
+                            <input type="radio" name="options-workmode" id="workmode-4" <%if(data.vipSetup.workModeVip === 4){%>checked<%}%>>4
                         </label>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="effect-ratio-vip" class="col-sm-3 control-label">生效比例</label>
                     <div class="col-sm-2">
-                        <input type="text" id="effect-ratio-vip" value="100" class="form-control">
+                        <input type="text" id="effect-ratio-vip" value="<%=data.vipSetup.effectRadioVip%>" class="form-control">
                     </div>
                 </div>
                 <br>   
             </form>
           </div>
-          <div class="col-md-10"><hr></div>
-          <div class="col-md-10">
-            <div class="form-group">
-                <div class="col-sm-offset-2">
-                    <a href="javascript:void(0)" class="btn btn-primary save"><span class="glyphicon glyphicon-save"></span>保存</a>
-                </div>
-            </div>
-          </div>
-      </div>
-  </div>
+     
+  
 </div>

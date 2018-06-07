@@ -11,15 +11,15 @@ define("react.config.panel", ['require', 'exports', 'utility'],
         var ReactLoading = React.createBackboneClass({
             render: function(){
                 return (     
-                    <div className="loader">
-                        <div className="loader-inner pacman">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>
-                    </div>
+                    React.createElement("div", {className: "loader"}, 
+                        React.createElement("div", {className: "loader-inner pacman"}, 
+                            React.createElement("div", null), 
+                            React.createElement("div", null), 
+                            React.createElement("div", null), 
+                            React.createElement("div", null), 
+                            React.createElement("div", null)
+                        )
+                    )
                 )
             }
         });
@@ -265,35 +265,35 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                     var view = _.map(data, function(group, index){
                         var myPanels = _.map(group.fileArray, function(fileObj, inx){
                                 var eventKey = randomStr + "_" + index + "_" +inx + "_" + fileObj.id,
-                                    fileContent = <pre><code>{fileObj.content || ""}</code></pre>,
+                                    fileContent = React.createElement("pre", null, React.createElement("code", null, fileObj.content || "")),
                                     alertMessage = "：文件不包含全部配置，请下发nginx文件",
                                     headerStr = fileObj.fileType;
                                     if (!fileObj.luaOnly) headerStr = headerStr + alertMessage;
 
                                 if (this.props.type === 2) {
                                     fileContent = (
-                                        <FormControl 
-                                            componentClass="textarea" value={fileObj.content || ""} 
-                                            rows="10" id={eventKey} onChange={this.onChangeTextarea}/>
+                                        React.createElement(FormControl, {
+                                            componentClass: "textarea", value: fileObj.content || "", 
+                                            rows: "10", id: eventKey, onChange: this.onChangeTextarea})
                                     )
                                 }
 
                                 return (
-                                    <Panel key={inx}
-                                    header={headerStr} 
-                                    eventKey={eventKey} 
-                                    id={eventKey}>{fileContent}</Panel>
+                                    React.createElement(Panel, {key: inx, 
+                                    header: headerStr, 
+                                    eventKey: eventKey, 
+                                    id: eventKey}, fileContent)
                                 )
                         }.bind(this))
 
                         return (
-                            <Panel key={index} header={group.topologyLevelName} bsStyle="primary">
-                                <PanelGroup 
-                                    id={randomStr + index} 
-                                    activeKey={this.state.activeKeys[index]} 
-                                    onSelect={this.handleSelect} 
-                                    accordion={true}>{myPanels}</PanelGroup>
-                            </Panel>
+                            React.createElement(Panel, {key: index, header: group.topologyLevelName, bsStyle: "primary"}, 
+                                React.createElement(PanelGroup, {
+                                    id: randomStr + index, 
+                                    activeKey: this.state.activeKeys[index], 
+                                    onSelect: this.handleSelect, 
+                                    accordion: true}, myPanels)
+                            )
                         )
                     }.bind(this));
 
@@ -304,27 +304,27 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                     var view = _.map(data, function(group, index){
                         var myPanels = _.map(group.fileArray, function(fileObj, inx){
                                 var eventKey = randomStr + "_" + index + "_" +inx + "_" + fileObj.id,
-                                    fileContent = <pre><code>{fileObj.content || ""}</code></pre>,
+                                    fileContent = React.createElement("pre", null, React.createElement("code", null, fileObj.content || "")),
                                     //alertMessage = "：文件不包含全部配置，请下发nginx文件",
                                     headerStr = fileObj.fileType;
                                     //if (!fileObj.luaOnly) headerStr = headerStr + alertMessage;
 
                                 return (
-                                    <Panel key={inx}
-                                    header={headerStr} 
-                                    eventKey={eventKey} 
-                                    id={eventKey}>{fileContent}</Panel>
+                                    React.createElement(Panel, {key: inx, 
+                                    header: headerStr, 
+                                    eventKey: eventKey, 
+                                    id: eventKey}, fileContent)
                                 )
                         }.bind(this))
 
                         return (
-                            <Panel key={index} header={group.topologyLevelName} bsStyle="info">
-                                <PanelGroup 
-                                    id={randomStr + index} 
-                                    activeKey={this.state.activeKeysDiff[index]} 
-                                    onSelect={this.handleDiffSelect} 
-                                    accordion={true}>{myPanels}</PanelGroup>
-                            </Panel>
+                            React.createElement(Panel, {key: index, header: group.topologyLevelName, bsStyle: "info"}, 
+                                React.createElement(PanelGroup, {
+                                    id: randomStr + index, 
+                                    activeKey: this.state.activeKeysDiff[index], 
+                                    onSelect: this.handleDiffSelect, 
+                                    accordion: true}, myPanels)
+                            )
                         )
                     }.bind(this));
 
@@ -337,50 +337,50 @@ define("react.config.panel", ['require', 'exports', 'utility'],
                         editButtons = [], optButtons = null;
 
                     if (this.state.isLoading) {
-                        myAccordions = <ReactLoading />
+                        myAccordions = React.createElement(ReactLoading, null)
                     } else {
                         myAccordions = this.getViewFromData(this.state.levelGroup)
                     }
 
                     if (this.state.isDiffLoading) {
-                        diffContent = <ReactLoading />
+                        diffContent = React.createElement(ReactLoading, null)
                     } else {
                         diffContent = this.getViewFromDiffData(this.state.diffInfo)
                     }
 
                     if (this.props.type === 2) {
                         editButtons = [
-                            <Button key={1} bsStyle="success" onClick={this.onClickDiff}>查看DIFF</Button>,
-                            <Button key={2} bsStyle="primary" onClick={this.onClickPublish}>发布</Button>
+                            React.createElement(Button, {key: 1, bsStyle: "success", onClick: this.onClickDiff}, "查看DIFF"),
+                            React.createElement(Button, {key: 2, bsStyle: "primary", onClick: this.onClickPublish}, "发布")
                         ]                
                     }
 
                     if (this.props.isShowOpt) {
                         optButtons = (
-                            <div>
-                                <ButtonToolbar>
-                                    <Button bsStyle="default" onClick={this.onClickBack}>返回</Button>
-                                    {editButtons}
-                                </ButtonToolbar>
-                                <hr />
-                            </div>
+                            React.createElement("div", null, 
+                                React.createElement(ButtonToolbar, null, 
+                                    React.createElement(Button, {bsStyle: "default", onClick: this.onClickBack}, "返回"), 
+                                    editButtons
+                                ), 
+                                React.createElement("hr", null)
+                            )
                         )
                     }
 
                     var reactConfigPanel = (
-                            <div>
-                                <h4>{this.props.headerStr}<small>/{this.props.version}</small></h4>
-                                <Well className="row">
-                                    {optButtons}
+                            React.createElement("div", null, 
+                                React.createElement("h4", null, this.props.headerStr, React.createElement("small", null, "/", this.props.version)), 
+                                React.createElement(Well, {className: "row"}, 
+                                    optButtons, 
                                     
-                                    <div className={this.state.editClassName}>
-                                        {myAccordions}
-                                    </div>
-                                    <div className={this.state.diffClassName}>
-                                        {diffContent}
-                                    </div>
-                                </Well>
-                            </div>
+                                    React.createElement("div", {className: this.state.editClassName}, 
+                                        myAccordions
+                                    ), 
+                                    React.createElement("div", {className: this.state.diffClassName}, 
+                                        diffContent
+                                    )
+                                )
+                            )
                         );
                     return reactConfigPanel
                 }

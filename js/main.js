@@ -269,6 +269,8 @@
   "sharedSetup.view": "sharedSetup/sharedSetup.view",
   "specialLayerManage.model": "specialLayerManage/specialLayerManage.model",
   "specialLayerManage.view": "specialLayerManage/specialLayerManage.view",
+  "specialLayerManage.replaceNode.view": "specialLayerManage/specialLayerManage.replaceNode.view",
+  "specialLayerManage.deleteNode.view": "specialLayerManage/specialLayerManage.deleteNode.view",
   "speedMeasure.model": "speedMeasure/speedMeasure.model",
   "speedMeasure.view": "speedMeasure/speedMeasure.view",
   "statisticsDataSourceSwitch.model": "statisticsDataSourceSwitch/statisticsDataSourceSwitch.model",

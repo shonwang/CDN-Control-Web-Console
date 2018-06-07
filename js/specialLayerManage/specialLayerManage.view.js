@@ -619,6 +619,8 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 // }
                 // if (AUTH_OBJ.CreateTopos)
                 this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
+                this.$el.find(".opt-ctn .replace").on("click", $.proxy(this.onClickReplaceNodeBtn, this));
+                this.$el.find(".opt-ctn .delete").on("click", $.proxy(this.onClickDeleteNodeBtn, this));
                 // else
                 //     this.$el.find(".opt-ctn .new").remove();
                 this.curPage = 1;
@@ -830,6 +832,57 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.$el.find(".list-panel").hide();
                 myAddEditLayerView.render(this.$el.find(".edit-panel"))
             },
+
+            onClickReplaceNodeBtn:function(){
+                this.off('enterKeyBindQuery');
+                if (this.replaceNodePopup) $("#" + this.replaceNodePopup.modalId).remove();
+                require(["specialLayerManage.replaceNode.view"], function(ReplaceNodeView) {
+                    var myReplaceNodeView = new ReplaceNodeView({
+                        collection: this.collection,
+                    });
+                    var options = {
+                        title:"替换节点",
+                        body : myReplaceNodeView,
+                        backdrop : 'static',
+                        type     : 2,
+                        onOKCallback:  function(){
+                            this.on('enterKeyBindQuery', $.proxy(this.resetList, this));
+                            myReplaceNodeView.$el.remove();
+                            this.$el.find(".list-panel").show();
+                            this.onClickQueryButton();
+                        }.bind(this),
+                        onHiddenCallback: function(){
+                            myReplaceNodeView.$el.remove();
+                            this.$el.find(".list-panel").show();
+                        }.bind(this)
+                    }
+                    this.replaceNodePopup = new Modal(options);
+                }.bind(this));
+            },
+
+            onClickDeleteNodeBtn:function(){
+                if (this.deleteNodePopup) $("#" + this.deleteNodePopup.modalId).remove();
+                require(["specialLayerManage.deleteNode.view"], function(DeleteNodeView) {
+                    var deleteNodeView = new DeleteNodeView({
+                        collection: this.collection,
+                    });
+                    var options = {
+                        title:"删除节点",
+                        body : deleteNodeView,
+                        backdrop : 'static',
+                        type     : 2,
+                        onOKCallback:  function(){
+                           
+                        }.bind(this),
+                        onHiddenCallback: function(){
+                            
+                        }.bind(this)
+                    }
+                    this.deleteNodePopup = new Modal(options);
+                }.bind(this));
+
+            },
+
 
             onClickItemUpdate: function(event) {
                 var eventTarget = event.srcElement || event.target,

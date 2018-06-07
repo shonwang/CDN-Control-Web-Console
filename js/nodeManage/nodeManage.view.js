@@ -10,7 +10,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 this.$el = $(_.template(template['tpl/nodeManage/nodeManage.html'])());
 
                 this.initNodeDropMenu();
-                this.initNodeTypeDropMenu();
+                // this.initNodeTypeDropMenu();
 
                 this.collection.on("get.node.success", $.proxy(this.onNodeListSuccess, this));
                 this.collection.on("get.node.error", $.proxy(this.onGetError, this));
@@ -23,7 +23,10 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     alert("编辑成功！")
                     this.onClickQueryButton();
                 }.bind(this));
-                this.collection.on("update.node.error", $.proxy(this.onGetError, this));
+                this.collection.on("update.node.error", function(error){
+                    this.onGetError(error);
+                    this.onClickQueryButton();
+                }.bind(this));
                 this.collection.on("delete.node.success", function() {
                     alert("删除成功！")
                     this.onClickQueryButton();
@@ -83,8 +86,10 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     "appType": null, //节点类型
                     "provinceId": null, //省份名称
                     "areaId": null, //大区名称
-                    "opType": null
+                    "opType": null,
 
+                    "liveLevel": null,//直播层级，没有就null
+                    "cacheLevel": null
                 }
                 this.tableColumn = [{
                     name: "运营商",
@@ -152,8 +157,57 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     isChecked: false,
                     key: "areaName"
                 }];
+                this.initLiveLevelDropMenu();
+                this.initCacheLevelDropMenu();
                 this.initTableHeader();
                 this.onClickQueryButton();
+            },
+
+            initLiveLevelDropMenu: function() {
+                var liveLevelArray = [{
+                    name: "全部",
+                    value: "All"
+                },{
+                    name: "上层",
+                    value: 1
+                }, {
+                    name: "中层",
+                    value: 2
+                },{
+                    name: "下层",
+                    value: 3
+                }]
+                Utility.initDropMenu(this.$el.find(".dropdown-liveLevel"), liveLevelArray, function(value) {
+                    if(value !== "All"){
+                        this.queryArgs.liveLevel = parseInt(value);
+                    }else{
+                        this.queryArgs.liveLevel = null;
+                    }
+                    
+                }.bind(this));
+            },
+    
+            initCacheLevelDropMenu: function() {
+                var cacheLevelArray = [{
+                    name:"全部",
+                    value: "All"
+                },{
+                    name: "上层",
+                    value: 1
+                }, {
+                    name: "中层",
+                    value: 2
+                },{
+                    name: "下层",
+                    value: 3
+                }]
+                Utility.initDropMenu(this.$el.find(".dropdown-cacheLevel"), cacheLevelArray, function(value) {
+                    if(value !== "All"){
+                        this.queryArgs.cacheLevel = parseInt(value);
+                    }else{
+                        this.queryArgs.cacheLevel = null;
+                    }
+                }.bind(this));
             },
 
             initTableHeader: function() {
@@ -404,7 +458,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     this.editNodeView.destroy();
                     this.editNodeView = null;
                 }
-
+                
                 require(["nodeManage.edit.view"], function(AddOrEditNodeView) {
                     this.editNodeView = new AddOrEditNodeView({
                         collection: this.collection,
@@ -422,6 +476,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                         onOKCallback: function() {
                             var options = this.editNodeView.getArgs();
                             if (!options) return;
+
                             var args = _.extend(model.attributes, options)
                             this.collection.updateNode(args);
                             this.showList();
@@ -596,24 +651,6 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 this.isInitPaginator = true;
             },
 
-            initNodeTypeDropMenu: function() {
-                var typeArray = [{
-                    name: "全部",
-                    value: "All"
-                }, {
-                    name: "直播",
-                    value: 203
-                }, {
-                    name: "下载",
-                    value: 202
-                }]
-                Utility.initDropMenu(this.$el.find(".dropdown-nodeType"), typeArray, function(value) {
-                    if (value !== "All")
-                        this.queryArgs.appType = parseInt(value)
-                    else
-                        this.queryArgs.appType = null;
-                }.bind(this));
-            },
 
             initNodeDropMenu: function() {
                 var statusArray = [{

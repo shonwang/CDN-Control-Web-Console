@@ -81,7 +81,9 @@ define("dispGroup.model", ['require','exports', 'utility'], function(require, ex
                 "count"   : 99999,
                 "chname"  : null,//节点名称
                 "operator": null,//运营商id
-                "status"  : null//节点状态
+                "status"  : null,//节点状态
+                "cacheLevel":null,
+                "liveLevel":null
             };
             defaultParas.data = JSON.stringify(defaultParas.data);
 
@@ -147,6 +149,17 @@ define("dispGroup.model", ['require','exports', 'utility'], function(require, ex
             }.bind(this),
             errorCallback = function(response){
                 this.trigger("get.channel.error", response); 
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+        getTopoList: function(args) {
+            var url = BASE_URL + "/resource/topo/info/list",
+            successCallback = function(res) {
+                this.trigger("get.topo.success",res);
+            }.bind(this),
+            errorCallback = function(response) {
+                this.trigger('get.topo.error', response);
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },

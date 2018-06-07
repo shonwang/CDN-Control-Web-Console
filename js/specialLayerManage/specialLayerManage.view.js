@@ -423,7 +423,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                                 this.$el.find(".add-topo").show();
                             }.bind(this)
                         })
-
+                        console.log(myAddEditLayerStrategyView)
                         this.$el.find(".add-topo").hide();
                         myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
                     }.bind(this))

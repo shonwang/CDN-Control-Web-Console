@@ -97,6 +97,62 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
                 Utility.postAjax(url, args, successCallback, errorCallback);
             },
 
+            getStrategyInfoByNode: function(args) {
+                var url = BASE_URL + "/resource/topo/batch/getStragetysInfoByNodeId?nodeId=" + args.value,
+                    successCallback = function(res) {
+                        if (res) {
+                            this.trigger("get.strategyInfoByNode.success", res);
+                        } else {
+                            this.trigger("get.strategyInfoByNode.error", res);
+                        }
+                    }.bind(this),
+                    errorCallback = function(response) {
+                        this.trigger('get.strategyInfoByNode.error', response);
+                    }.bind(this);
+                    console.log(url)
+                Utility.getAjax(url, args, successCallback, errorCallback);
+            },
+
+            getNodeList: function(args){
+                var url = BASE_URL + "/rs/node/list";
+                var defaultParas = {
+                    type: "POST",
+                    url: url,
+                    async: true,
+                    timeout: 30000,
+                    contentType: "application/json",
+                    processData: false
+                };
+                
+                defaultParas.data = args || {
+                    "page"    : 1,
+                    "count"   : 99999,
+                    "chname"  : null,//节点名称
+                    "operator": null,//运营商id
+                    "status"  : null//节点状态
+                };
+                defaultParas.data = JSON.stringify(defaultParas.data);
+    
+                defaultParas.beforeSend = function(xhr){
+                    //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+                }
+                defaultParas.success = function(res){
+                    if (res){
+                        this.trigger("get.node.success", res);
+                    } else {
+                        this.trigger("get.node.error", res); 
+                    }
+                }.bind(this);
+    
+                defaultParas.error = function(response, msg){
+                    if (response&&response.responseText)
+                        response = JSON.parse(response.responseText)
+                    this.trigger("get.node.error", response); 
+                }.bind(this);
+    
+                $.ajax(defaultParas);
+            },    
+
             modifyStrategy: function(args) {
                 var url = BASE_URL + "/resource/special/modifyStrategy",
                     successCallback = function(res) {

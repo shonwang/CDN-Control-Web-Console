@@ -835,52 +835,37 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
 
             onClickReplaceNodeBtn:function(){
                 this.off('enterKeyBindQuery');
-                if (this.replaceNodePopup) $("#" + this.replaceNodePopup.modalId).remove();
+                // if (this.replaceNodePopup) $("#" + this.replaceNodePopup.modalId).remove();
                 require(["specialLayerManage.replaceNode.view"], function(ReplaceNodeView) {
                     var myReplaceNodeView = new ReplaceNodeView({
                         collection: this.collection,
-                    });
-                    var options = {
-                        title:"替换节点",
-                        body : myReplaceNodeView,
-                        backdrop : 'static',
-                        type     : 2,
-                        onOKCallback:  function(){
-                            this.on('enterKeyBindQuery', $.proxy(this.resetList, this));
-                            myReplaceNodeView.$el.remove();
-                            this.$el.find(".list-panel").show();
-                            this.onClickQueryButton();
-                        }.bind(this),
-                        onHiddenCallback: function(){
+                        onSaveCallback: function() {}.bind(this),
+                        onCancelCallback: function() {
                             myReplaceNodeView.$el.remove();
                             this.$el.find(".list-panel").show();
                         }.bind(this)
-                    }
-                    this.replaceNodePopup = new Modal(options);
+                    });
+                    this.$el.find(".list-panel").hide();
+                    myReplaceNodeView.render(this.$el.find(".edit-panel"))
                 }.bind(this));
+                
             },
 
             onClickDeleteNodeBtn:function(){
-                if (this.deleteNodePopup) $("#" + this.deleteNodePopup.modalId).remove();
+                this.off('enterKeyBindQuery');
+                // if (this.replaceNodePopup) $("#" + this.replaceNodePopup.modalId).remove();
                 require(["specialLayerManage.deleteNode.view"], function(DeleteNodeView) {
-                    var deleteNodeView = new DeleteNodeView({
+                    var myDeleteNodeView = new DeleteNodeView({
                         collection: this.collection,
-                    });
-                    var options = {
-                        title:"删除节点",
-                        body : deleteNodeView,
-                        backdrop : 'static',
-                        type     : 2,
-                        onOKCallback:  function(){
-                           
-                        }.bind(this),
-                        onHiddenCallback: function(){
-                            
+                        onSaveCallback: function() {}.bind(this),
+                        onCancelCallback: function() {
+                            myDeleteNodeView.$el.remove();
+                            this.$el.find(".list-panel").show();
                         }.bind(this)
-                    }
-                    this.deleteNodePopup = new Modal(options);
+                    });
+                    this.$el.find(".list-panel").hide();
+                    myDeleteNodeView.render(this.$el.find(".edit-panel"))
                 }.bind(this));
-
             },
 
 

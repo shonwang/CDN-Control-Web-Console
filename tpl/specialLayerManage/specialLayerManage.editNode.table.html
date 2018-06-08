@@ -8,19 +8,20 @@
         </thead>
         <tbody>
             <% for(var i = 0; i < data.length; i++) { %>
-                <tr data-id="<%=data[i].attributes.id%>">
+                <tr data-id="<%=data[i].id%>">
                     <td>
-                        <%=data[i].attributes["name"] %>
+                        <%=data[i].name%>
                     </td>
                     <td>
-                        <%=data[i].attributes["typeName"]%>
+                        <%=data[i].typeName%>
                     </td>
                     <td>
-                        <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="view" title="查看">
+                        <a href="javascript:void(0)" id="<%=data[i].id%>" class="view" title="查看">
                             <span class="glyphicon glyphicon-eye-open"></span>
                         </a>               
                     </td>
                 </tr>
+                <tr data-nodeid="<%=data[i].id%>" class="toggle-show" style="display:none"></tr>
                 <% } %>
         </tbody>
     </table>

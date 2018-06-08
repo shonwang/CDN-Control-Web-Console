@@ -8,21 +8,91 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
             this.collection = options.collection;
             this.model = options.model;
             this.$el = $(_.template(template['tpl/specialLayerManage/specialLayerManage.deleteNode.html'])({}));
+            this.$el.find("#dropdown-node").attr("disabled", true);
 
-            this.defaultParam = {
-                local: {}
-            }
-            this.initNodeTable();
+
+            this.collection.off("get.strategyInfoByNode.success");
+            this.collection.off("get.strategyInfoByNode.error");
+            this.collection.on("get.strategyInfoByNode.success", $.proxy(this.onGetStrategySuccess, this));
+            this.collection.on("get.strategyInfoByNode.error", $.proxy(this.onGetError, this));
+            this.collection.off("get.node.success");
+            this.collection.off("get.node.error");
+            this.collection.on("get.node.success", $.proxy(this.onGetNodeSuccess, this));
+            this.collection.on("get.node.error", $.proxy(this.onGetError, this));
+            this.collection.getNodeList();
+            
+            this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
+            this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
+            this.initSetup();
+            this.initLayerStrategyTable();
             
         },
          
-        initNodeTable: function() {
+        onGetNodeSuccess:function(res){
+            this.$el.find("#dropdown-node").attr("disabled", false);
+            var nameList = [];
+            var isMultiwireList = {};
+            _.each(res.rows, function(el, index, list){
+                nameList.push({name: el.chName, value:el.id})
+                isMultiwireList[el.id]= (el.operatorId == 9);
+            });
+            // this.isMultiwireList = originIsMultiwireList;
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-node').get(0),
+                panelID: this.$el.find('#dropdown-node').get(0),
+                isSingle: true,
+                openSearch: true,
+                onOk: function(){},
+                data: nameList,
+                callback: function(data) {
+                    this.nodeId = data.value;
+                    this.$el.find('#dropdown-node .cur-value').html(data.name);
+                    this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                    this.collection.getStrategyInfoByNode(data)
+                }.bind(this)
+            });
+
+
+        },
+
+        onGetStrategySuccess:function(res){
+            
+            _.each(res, function(el){
+                if(el.type === 202){
+                    el.typeName = "cache"
+                }else if(el.type === 203){
+                    el.typeName = "live"
+                }
+            }.bind(this))
+            console.log(res)
+            this.initLayerStrategyTable(res);
+        },
+
+        initSetup:function(){
+            
+            
+            
+
+        },
+
+        onClickSaveButton: function(){
+
+        },
+
+        onClickCancelButton: function() {
+            console.log("zzzzz",this.options)
+            this.options.onCancelCallback && this.options.onCancelCallback();
+        },
+
+        initLayerStrategyTable: function(testData) {
+            var dataObj = testData || [];
             this.nodeTable = $(_.template(template['tpl/specialLayerManage/specialLayerManage.editNode.table.html'])({
-                data: this.collection.models
+                data: dataObj
             }));
-            if (this.defaultParam.local.length === 100){
-                console.log("bbbb")
-                this.$el.find(".table-ctn").html(this.localTable);
+            console.log(dataObj)
+            if (dataObj.length !== 0){
+                this.$el.find(".table-ctn").html(this.nodeTable[0]);
+                // this.table.find("tbody .view").on("click", $.proxy(this.onClickItemView, this));
             }else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty-2.html'])({
                     data: {
@@ -30,7 +100,18 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                     }
                 }));
 
-            // this.localTable.find("tbody .delete").on("click", $.proxy(this.onClickItemLocalDelete, this));
+            
+        },
+
+        onClickItemView:function(){
+            console.log("bbbb")
+        },
+
+        onGetError: function(error){
+            if (error&&error.message)
+                Utility.alerts(error.message)
+            else
+                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
         render: function(target) {

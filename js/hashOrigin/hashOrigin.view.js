@@ -77,6 +77,11 @@ define("hashOrigin.view", ['require','exports', 'template', 'modal.view', 'utili
                 {name:"不允许",value:0}
             ];
 
+            var isMultiArray = [
+                {name:"否",value:0},
+                {name:"是",value:1}
+            ];
+
             var pageNum = [{
                 name: "10条",
                 value: 10
@@ -115,6 +120,10 @@ define("hashOrigin.view", ['require','exports', 'template', 'modal.view', 'utili
                     this.queryArgs.autoFlag = parseInt(value);
                 }
             }.bind(this));
+
+            // Utility.initDropMenu(this.$el.find(".dropdown-is-multi"), isMultiArray, function(value){
+            //     this.queryArgs.isMulti = parseInt(value);
+            // }.bind(this));
         },
 
         hideList: function() {

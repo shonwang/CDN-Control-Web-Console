@@ -8,7 +8,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.collection = options.collection;
 
             this.rule = options.rule;
-            this.curEditRule = options.curEditRule
+            this.curEditRule = options.curEditRule;
             this.isEdit = options.isEdit;
             this.notFilter = options.notFilter;
             this.appType = options.appType
@@ -20,6 +20,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     "local": [], //???
                     "localType": 2,
                     "upper": [],
+                    "upperHash":[]
                 }
             } else {
                 this.defaultParam = this.curEditRule
@@ -27,6 +28,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.$el.find("input[name=strategyUpperRadio]").on("click",$.proxy(this.onUpperStyleChange,this));
 
             require(['nodeManage.model'], function(NodeManageModel) {
                 var myNodeManageModel = new NodeManageModel();
@@ -67,6 +69,23 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.$el.find("#strategyRadio2").attr("disabled", "disabled");
             this.$el.find("#strategyRadio3").attr("disabled", "disabled");
             this.$el.find("#strategyRadio4").attr("disabled", "disabled");
+        },
+
+        onUpperStyleChange:function(event){
+            //清空upper数据
+            var eventTarget = event.srcElement || event.target;
+            var value = $(eventTarget).val();
+            this.defaultParam.upper = [];
+            if(value == 1){
+                this.defaultParam.upType == 1;
+                this.initUpperTable();
+                
+            }
+            else if(value == 2){
+                this.defaultParam.upType = 2;
+                this.initUpperHashTable();
+            }
+
         },
 
         // 省份运营商
@@ -392,9 +411,11 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.options.upperNodes = this.allNodesArray;
                 this.onGetLocalNodeFromArgs();
                 this.onGetUpperNodeFromArgs();
+                this.initUpperHash();
             } else {
                 this.onGetLocalNodeFromArgs();
                 this.onGetUpperNodeFromArgs();
+                this.initUpperHash();
             }
         },
 
@@ -725,6 +746,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.options.upperNodes = res.upperNodes;
             this.onGetLocalNodeFromArgs();
             this.onGetUpperNodeFromArgs();
+            this.initUpperHash();
         },
 
         initLocalTable: function() {
@@ -812,12 +834,78 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         onGetUpperNodeFromArgs: function() {
+            
+        
             this.$el.find('.upper .add-node').show();
             _.each(this.defaultParam.upper, function(el) {
                 el.id = el.rsNodeMsgVo.id;
             }.bind(this))
             this.$el.find('.upper .add-node').on('click', $.proxy(this.onClickAddUpperNodeButton, this))
+            if(this.defaultParam.upType == 1){
+                return false;
+            }
+            
             this.initUpperTable();
+        },
+
+        initUpperHash:function(){
+            this.$el.find('.upper .add-hash').on('click', $.proxy(this.onClickAddUpperHashButton, this))
+            this.initUpperHashTable();
+        },
+
+        initUpperHashTable:function(){
+            var obj= this.defaultParam.upper;
+            if(this.defaultParam.upType != 2){
+                return false;
+            }
+            this.$el.find(".strategyUpper-node-ctn").hide();
+            this.$el.find(".strategyUpper-hash-ctn").show();
+            if(obj.length !==0){
+                this.upperHashTable = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.upperHash.table.html'])({
+                    data:obj
+                }));
+                this.$el.find(".upper .table-ctn-hash").html(this.upperHashTable[0]);
+                this.upperHashTable.find("tbody .hash-radio-main").on("click", $.proxy(this.onClickItemUpperHashKey, this));
+            }
+            else{
+                this.$el.find(".upper .table-ctn-hash").html(_.template(template['tpl/empty-2.html'])({
+                    data: {
+                        message: "你还没有添加hash环"
+                    }
+                }));
+            }
+
+            
+            // this.upperTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperDelete, this));
+            // this.upperTable.find("tbody .spareradio").on("click", $.proxy(this.onClickCheckboxButton, this));
+
+            // require(['deviceManage.model'], function(deviceManageModel) {
+            //     var mydeviceManageModel = new deviceManageModel();
+            //     mydeviceManageModel.on("operator.type.success", $.proxy(this.initOperatorUpperList, this));
+            //     mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
+            //     mydeviceManageModel.operatorTypeList();
+            // }.bind(this));
+
+            
+        },
+
+        onClickItemUpperHashKey:function(events){
+            var eventTarget = event.srcElement || event.target;
+            var id = $(eventTarget).attr("data-id");
+            this.resetHashIndex(id);
+        },
+
+        resetHashIndex:function(id){
+            var upperHash = this.defaultParam.upper;
+            for(var i=0;i<upperHash.length;i++){
+                if(upperHash[i].id == id){
+                    upperHash[i].hashIndex = 0;
+                }
+                else{
+                    upperHash[i].hashIndex = null;
+                }
+            }
+            this.defaultParam.upper = this.upperHashFormat(upperHash);
         },
 
         onClickAddUpperNodeButton: function(event) {
@@ -840,6 +928,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                         this.defaultParam.upper = mySelectNodeView.getArgs();
                         var tempArray = []
                         _.each(this.defaultParam.upper, function(el) {
+                            el.upType = 1;
                             var rsNodeMsgVo = {};
                             rsNodeMsgVo.id = el.id;
                             rsNodeMsgVo.name = el.chName;
@@ -861,7 +950,89 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }.bind(this))
         },
 
+        upperHashFormat:function(list){
+            var firstList = [];
+            var arr=[];
+            for(var i=0,_len=list.length;i<_len;i++){
+                if(list[i].hashIndex == 0){
+                    firstList.push(list[i]);
+                }
+                else{
+                    arr.push(list[i]);
+                }
+            }
+            var newArr = firstList.concat(arr);
+            for(var i=0,_len=newArr.length;i<_len;i++){
+                newArr[i].hashIndex = i;
+            }
+            return newArr;
+        },
+
+        onClickAddUpperHashButton:function(){
+            require(['hashOrigin.selectHash.view','hashOrigin.model'], function(SelectHashView,HashModel) {
+                var hashModel = new HashModel();
+                if (this.selectHashPopup) $("#" + this.selectHashPopup.modalId).remove();
+                //this.updateChecked(this.defaultParam.upper, this.topoUpperNodes);
+                var mySelectHashView = new SelectHashView({
+                    collection: hashModel,
+                    selectedHash:this.defaultParam.upper,
+                    //appType: this.appType
+                });
+                var options = {
+                    title: "选择hash环",
+                    body: mySelectHashView,
+                    backdrop: 'static',
+                    type: 2,
+                    width: 800,
+                    onOKCallback: function() {
+                        var result = mySelectHashView.getArgs();
+                        var upperHashFormat = this.upperHashFormat(result);
+                        this.defaultParam.upper = upperHashFormat;
+                        var tempArray = []
+                        _.each(this.defaultParam.upper, function(el) {
+                            el.upType = 2;
+                            var rsNodeMsgVo = {};
+                            rsNodeMsgVo.id = el.id;
+                            rsNodeMsgVo.name = el.name;
+                            rsNodeMsgVo.operatorId = el.operatorId;
+                            rsNodeMsgVo.isMulti = el.isMulti;
+                            tempArray.push({
+                                name:el.name,
+                                hashIndex: el.hashIndex,
+                                ipCorporation: el.ipCorporation,
+                                rsNodeMsgVo: rsNodeMsgVo,
+                                id: el.id,
+                                chiefType:el.hashIndex == 0 ? 1:0
+                            })
+                        }.bind(this))
+                        this.defaultParam.upper = tempArray;
+                        this.selectHashPopup.$el.modal("hide");
+                        // var tempArray = []
+                        // _.each(this.defaultParam.upper, function(el) {
+                        //     var rsNodeMsgVo = {};
+                        //     rsNodeMsgVo.id = el.id;
+                        //     rsNodeMsgVo.name = el.chName;
+                        //     rsNodeMsgVo.operatorId = el.operatorId;
+                        //     tempArray.push({
+                        //         chiefType: el.chiefType,
+                        //         ipCorporation: el.ipCorporation,
+                        //         rsNodeMsgVo: rsNodeMsgVo,
+                        //         id: el.id
+                        //     })
+                        // }.bind(this))
+                        // this.defaultParam.upper = tempArray;
+                        // this.selectNodePopup.$el.modal("hide");
+                        this.initUpperHashTable();
+                    }.bind(this),
+                    onHiddenCallback: function() {}.bind(this)
+                }
+                this.selectHashPopup = new Modal(options);
+            }.bind(this))            
+        },
+
         initUpperTable: function() {
+            this.$el.find(".strategyUpper-hash-ctn").hide();
+            this.$el.find(".strategyUpper-node-ctn").show();
             var nodeList = [];
             _.each(this.defaultParam.upper, function(el) {
                 nodeList.push({

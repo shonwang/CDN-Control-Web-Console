@@ -1,0 +1,22 @@
+<table class="table table-striped table-hover">  
+    <thead> 
+      <tr>
+        <th>
+          <input type="checkbox" <% if (isCheckedAll) { %> checked="true" <% } %>>
+        </th>
+        <th>名称</th>
+      </tr>
+    </thead>
+    <tbody>
+        <% for(var i = 0; i < data.length; i++) { %>
+            <% if (data[i]["isDisplay"]) { %>
+            <tr data-id="<%=data[i].id%>">
+              <th scope="row">
+                  <input type="checkbox" id="<%=data[i]['id']%>" <% if (data[i].isChecked) { %> checked="true"<% } %>>
+              </th>
+              <td><%=data[i]["name"]%></td>
+            </tr>
+            <% } %>
+        <% } %>  
+    </tbody>
+</table>

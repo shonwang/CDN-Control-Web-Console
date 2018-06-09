@@ -35,6 +35,7 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
                 type:202,
                 autoFlag:1,
                 autoFlagName:'',
+                isMulti:0,
                 typeName:'',
                 "hashNodeList": []
             }
@@ -61,6 +62,10 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
             //this.initIpTypeDropmenu();
         },
 
+        onAddHashInfoSuccess:function(){
+            this.onModifyHashInfoSuccess();
+        },
+
         typeNameList:{
             202:"Cache",
             203:"Live"
@@ -69,6 +74,11 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
         autoFlagName:{
             1:"允许",
             0:"不允许"
+        },
+
+        isMultiName:{
+            0:"否",
+            1:"是"
         },
 
         onGetHashInfoSuccess:function(){
@@ -233,6 +243,11 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
                 {name:"不允许",value:0}
             ];
 
+            var isMultiArray = [
+                {name:"否",value:0},
+                {name:"是",value:1}
+            ];            
+
             Utility.initDropMenu(this.$el.find(".dropdown-hash-type"), typeArray, function(value){
                 this.defaultParam.type = parseInt(value);
             }.bind(this));
@@ -240,6 +255,10 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
             Utility.initDropMenu(this.$el.find(".dropdown-auto-dispatch"), flagArray, function(value){
                 this.defaultParam.autoFlag = parseInt(value);
             }.bind(this));
+
+            Utility.initDropMenu(this.$el.find(".dropdown-is-multi"), isMultiArray, function(value){
+                this.defaultParam.isMulti = parseInt(value);
+            }.bind(this));            
         },
        
         getArgs: function(){

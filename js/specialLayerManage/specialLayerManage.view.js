@@ -173,7 +173,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
 
                 var postRules = [],
                     postTopo = {};
-
                 _.each(this.defaultParam.rule, function(rule) {
                     var localIdArray = [],
                         upperObjArray = [],
@@ -187,11 +186,21 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         localIdArray.push(node.id);
                     }.bind(this))
                     _.each(rule.upper, function(node) {
-                        upperObjArray.push({
-                            nodeId: node.rsNodeMsgVo.id,
-                            ipCorporation: node.ipCorporation,
-                            chiefType: node.chiefType === undefined ? 1 : node.chiefType
-                        })
+                        if(rule.upType == 1){
+                            upperObjArray.push({
+                                nodeId: node.rsNodeMsgVo.id,
+                                ipCorporation: node.ipCorporation,
+                                chiefType: node.chiefType === undefined ? 1 : node.chiefType
+                            })
+                        }
+                        else if(rule.upType == 2){
+                            upperObjArray.push({
+                                hashId: node.rsNodeMsgVo.id,
+                                hashIndex: node.hashIndex,
+                                ipCorporation: node.ipCorporation,
+                                chiefType: node.chiefType === undefined ? 1 : node.chiefType
+                            })
+                        }
                     }.bind(this))
 
                     tempRule.id = rule.id;
@@ -206,7 +215,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 postTopo.type = this.defaultParam.type;
                 postTopo.rule = postRules;
                 postTopo.remark = this.$el.find("#secondary").val();
-
                 if (this.isEdit && !this.isCopy)
                     this.collection.modifyStrategy(postTopo);
                 else if(this.isEdit && this.isCopy)
@@ -260,7 +268,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             initRuleTable: function() {
                 //var data = [{localLayer: "1111", upperLayer: "22222"}];
                 this.ruleList = [];
-
+                console.log(this.defaultParam.rule);
                 _.each(this.defaultParam.rule, function(rule, index, ls) {
                     var localLayerArray = [],
                         upperLayer = [],
@@ -277,46 +285,93 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         }
                         localLayerArray.push(name)
                     }.bind(this));
+                    var upType = rule.upType;//1是按节点,2是按hash
+                    if(upType == 1){
+                        //按节点
+                        primaryArray = _.filter(rule.upper, function(obj) {
+                            return obj.chiefType !== 0;
+                        }.bind(this))
+                        backupArray = _.filter(rule.upper, function(obj) {
+                            return obj.chiefType === 0;
+                        }.bind(this))
+                        _.each(primaryArray, function(upper, inx, list) {
+                            upper.ipCorporationName = "";
+                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                                for (var i = 0; i < this.operatorList.length; i++) {
+                                    if (this.operatorList[i].id === upper.ipCorporation) {
+                                        upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (upper.rsNodeMsgVo)
+                                primaryNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                            else
+                                primaryNameArray.push("[后端没有返回名称]")
+                        }.bind(this));
+                        _.each(backupArray, function(upper, inx, list) {
+                            upper.ipCorporationName = "";
+                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                                for (var i = 0; i < this.operatorList.length; i++) {
+                                    if (this.operatorList[i].id === upper.ipCorporation) {
+                                        upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (upper.rsNodeMsgVo)
+                                backupNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                            else
+                                backupNameArray.push("[后端没有返回名称]")
+                        }.bind(this));
 
-                    primaryArray = _.filter(rule.upper, function(obj) {
-                        return obj.chiefType !== 0;
-                    }.bind(this))
-                    backupArray = _.filter(rule.upper, function(obj) {
-                        return obj.chiefType === 0;
-                    }.bind(this))
+                    }
+                    else {
+                        //按hash环
+                        console.log("upper",rule.upper);
+                        primaryArray = _.filter(rule.upper, function(obj) {
+                            return obj.hashIndex == 0;
+                        }.bind(this))
+                        backupArray = _.filter(rule.upper, function(obj) {
+                            return obj.hashIndex != 0;
+                        }.bind(this))
+
+                        _.each(primaryArray, function(upper, inx, list) {
+                            upper.ipCorporationName = "";
+                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.isMulti) {
+                                for (var i = 0; i < this.operatorList.length; i++) {
+                                    if (this.operatorList[i].id === upper.ipCorporation) {
+                                        upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (upper.rsNodeMsgVo)
+                                primaryNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                            else
+                                primaryNameArray.push("[后端没有返回名称]")
+                        }.bind(this));
+                        _.each(backupArray, function(upper, inx, list) {
+                            upper.ipCorporationName = "";
+                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.isMulti) {
+                                for (var i = 0; i < this.operatorList.length; i++) {
+                                    if (this.operatorList[i].id === upper.ipCorporation) {
+                                        upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (upper.rsNodeMsgVo)
+                                backupNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                            else
+                                backupNameArray.push("[后端没有返回名称]")
+                        }.bind(this));    
+
+                    }
 
                    // console.log(backupArray)
 
-                    _.each(primaryArray, function(upper, inx, list) {
-                        upper.ipCorporationName = "";
-                        if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
-                            for (var i = 0; i < this.operatorList.length; i++) {
-                                if (this.operatorList[i].id === upper.ipCorporation) {
-                                    upper.ipCorporationName = "-" + this.operatorList[i].name;
-                                    break;
-                                }
-                            }
-                        }
-                        if (upper.rsNodeMsgVo)
-                            primaryNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
-                        else
-                            primaryNameArray.push("[后端没有返回名称]")
-                    }.bind(this));
-                    _.each(backupArray, function(upper, inx, list) {
-                        upper.ipCorporationName = "";
-                        if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
-                            for (var i = 0; i < this.operatorList.length; i++) {
-                                if (this.operatorList[i].id === upper.ipCorporation) {
-                                    upper.ipCorporationName = "-" + this.operatorList[i].name;
-                                    break;
-                                }
-                            }
-                        }
-                        if (upper.rsNodeMsgVo)
-                            backupNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
-                        else
-                            backupNameArray.push("[后端没有返回名称]")
-                    }.bind(this));
+
 
                     var upperLayer = primaryNameArray.join('<br>');
                     if (rule.upper.length > 1)
@@ -331,7 +386,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     }
                     this.ruleList.push(ruleStrObj)
                 }.bind(this))
-
+                console.log("-----",this.ruleList);
                 this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.rule.table.html'])({
                     data: this.ruleList
                 }));

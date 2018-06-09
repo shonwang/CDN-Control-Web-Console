@@ -65,9 +65,9 @@ define("hashOrigin.model", ['require','exports', 'utility'], function(require, e
                         this.push(new Model(element));
                     }.bind(this))
                     this.total = res.total;
-                    this.trigger("get.hashOrigin.success");
+                    this.trigger("get.hashOrigin.success",res);
                 } else {
-                    this.trigger("get.hashOrigin.error"); 
+                    this.trigger("get.hashOrigin.error",res); 
                 }
             }.bind(this);
 

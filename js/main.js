@@ -188,6 +188,7 @@
   "grayscaleSetup.view": "grayscaleSetup/grayscaleSetup.view",
   "hashOrigin.edit.view": "hashOrigin/hashOrigin.edit.view",
   "hashOrigin.model": "hashOrigin/hashOrigin.model",
+  "hashOrigin.selectHash.view": "hashOrigin/hashOrigin.selectHash.view",
   "hashOrigin.selectNode.view": "hashOrigin/hashOrigin.selectNode.view",
   "hashOrigin.view": "hashOrigin/hashOrigin.view",
   "importAssess.model": "importAssess/importAssess.model",

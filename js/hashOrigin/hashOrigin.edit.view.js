@@ -45,8 +45,10 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
                     "id": this.model.get("id"),
                     "name": this.model.get("name"),
                     type:this.model.get("type"),
+                    isMulti:this.model.get("isMulti"),
                     autoFlag:this.model.get('autoFlag'),
                     autoFlagName:this.autoFlagName[this.model.get('autoFlag')],
+                    isMultiName:this.isMultiName[this.model.get('isMulti')],
                     typeName:this.typeNameList[this.model.get("type")],
                     "hashNodeList":[]
                 }

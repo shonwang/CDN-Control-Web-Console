@@ -21,7 +21,7 @@
             <label for="input-english" class="col-sm-2 control-label">是否允许自动调度</label>
             <div class="dropdown col-sm-1 dropdown-auto-dispatch">
                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-auto-dispatch" data-toggle="dropdown">
-                    <span class="cur-value">允许</span>
+                    <span class="cur-value"><%= data.autoFlagName || "允许"%></span>
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu"></ul>
@@ -31,7 +31,7 @@
             <label for="input-english" class="col-sm-2 control-label">是否多线</label>
             <div class="dropdown col-sm-1 dropdown-is-multi">
                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-is-multi" data-toggle="dropdown">
-                    <span class="cur-value">否</span>
+                    <span class="cur-value"><%= data.isMultiName || "否"%></span>
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu"></ul>

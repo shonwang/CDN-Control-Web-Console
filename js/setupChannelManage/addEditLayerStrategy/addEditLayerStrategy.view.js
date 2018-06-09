@@ -20,6 +20,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     "local": [], //???
                     "localType": 2,
                     "upper": [],
+                    "upType": 1,
                     "upperHash":[]
                 }
             } else {
@@ -29,6 +30,12 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find("input[name=strategyUpperRadio]").on("click",$.proxy(this.onUpperStyleChange,this));
+            if(this.defaultParam.upType == 2){
+                this.$el.find("#strategyRadio6").prop("checked",true)
+            }
+            else{
+                this.$el.find("#strategyRadio5").prop("checked",true)
+            }
 
             require(['nodeManage.model'], function(NodeManageModel) {
                 var myNodeManageModel = new NodeManageModel();
@@ -835,13 +842,13 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
 
         onGetUpperNodeFromArgs: function() {
             
-        
+            console.log('--------------------',this.defaultParam);
             this.$el.find('.upper .add-node').show();
             _.each(this.defaultParam.upper, function(el) {
                 el.id = el.rsNodeMsgVo.id;
             }.bind(this))
             this.$el.find('.upper .add-node').on('click', $.proxy(this.onClickAddUpperNodeButton, this))
-            if(this.defaultParam.upType == 1){
+            if(this.defaultParam.upType != 1){
                 return false;
             }
             
@@ -855,15 +862,41 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
 
         initUpperHashTable:function(){
             var obj= this.defaultParam.upper;
+            console.log("生成",obj);
             if(this.defaultParam.upType != 2){
                 return false;
             }
             this.$el.find(".strategyUpper-node-ctn").hide();
             this.$el.find(".strategyUpper-hash-ctn").show();
-            if(obj.length !==0){
-                this.upperHashTable = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.upperHash.table.html'])({
-                    data:obj
-                }));
+
+            var hashList = [];
+            _.each(this.defaultParam.upper,function(el){
+                hashList.push({
+                    hashId:el.rsNodeMsgVo.id,
+                    name:el.rsNodeMsgVo.name,
+                    isMulti:el.rsNodeMsgVo.isMulti,
+                    chiefType:el.chiefType,
+                    ipCorporation:el.ipCorporation,
+                    hashIndex:el.hashIndex,
+                    id:el.rsNodeMsgVo.id
+                });
+            }.bind(this));
+
+            var duoxianArray = _.filter(hashList, function(obj) {
+                return obj.isMulti === 1
+            }.bind(this))
+            var feiDuoxianArray = _.filter(hashList, function(obj) {
+                return obj.isMulti !== 1
+            }.bind(this))
+
+            hashList = duoxianArray.concat(feiDuoxianArray)
+
+
+            this.upperHashTable = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.upperHash.table.html'])({
+                    data:hashList
+            }));
+
+            if(hashList.length !==0){
                 this.$el.find(".upper .table-ctn-hash").html(this.upperHashTable[0]);
                 this.upperHashTable.find("tbody .hash-radio-main").on("click", $.proxy(this.onClickItemUpperHashKey, this));
             }
@@ -875,7 +908,56 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 }));
             }
 
-            
+
+            // this.upperTable = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.upper.table.html'])({
+            //     data: nodeList
+            // }));
+
+            // if (nodeList.length !== 0) {
+            //     this.$el.find(".upper .table-ctn").html(this.upperTable[0]);
+            // } else {
+            //     this.$el.find(".upper .table-ctn").html(_.template(template['tpl/empty-2.html'])({
+            //         data: {
+            //             message: "你还没有添加节点"
+            //         }
+            //     }));
+            // }            
+
+            require(['deviceManage.model'], function(deviceManageModel) {
+                var mydeviceManageModel = new deviceManageModel();
+                mydeviceManageModel.on("operator.type.success", $.proxy(this.initOperatorUpperHashList, this));
+                mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
+                mydeviceManageModel.operatorTypeList();
+            }.bind(this));
+
+
+            //  var nodeList = [];
+            // _.each(this.defaultParam.upper, function(el) {
+            //     nodeList.push({
+            //         nodeId: el.rsNodeMsgVo.id,
+            //         nodeName: el.rsNodeMsgVo.name,
+            //         operatorId: el.rsNodeMsgVo.operatorId,
+            //         chiefType: el.chiefType,
+            //         ipCorporation: el.ipCorporation
+            //     })
+            // }.bind(this))
+
+            // var duoxianArray = _.filter(nodeList, function(obj) {
+            //     return obj.operatorId === 9
+            // }.bind(this))
+            // var feiDuoxianArray = _.filter(nodeList, function(obj) {
+            //     return obj.operatorId !== 9
+            // }.bind(this))
+
+            // nodeList = duoxianArray.concat(feiDuoxianArray)
+            // this.upperTable = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.upper.table.html'])({
+            //     data: nodeList
+            // }));
+
+
+
+
+
             // this.upperTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperDelete, this));
             // this.upperTable.find("tbody .spareradio").on("click", $.proxy(this.onClickCheckboxButton, this));
 
@@ -889,23 +971,47 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             
         },
 
+        initOperatorUpperHashList: function(data) {
+            var operatorArray = [];
+            _.each(data, function(el, key, list) {
+                operatorArray.push({
+                    name: el.name,
+                    value: el.id
+                })
+            }.bind(this))
+            rootNodes = this.upperHashTable.find(".hashOperator .dropdown");
+
+            for (var i = 0; i < rootNodes.length; i++) {
+                this.initTableDropMenu($(rootNodes[i]), operatorArray, function(value, nodeId) {
+                    _.each(this.defaultParam.upper, function(el, key, list) {
+                        if (el.rsNodeMsgVo.id == parseInt(nodeId)) {
+                            el.ipCorporation = parseInt(value);
+                        }
+                    }.bind(this));
+                }.bind(this));
+
+                _.each(this.defaultParam.upper, function(node) {
+                    var curNodeId = parseInt(rootNodes[i].id);
+                    if (node.rsNodeMsgVo.id === curNodeId) {
+                        var defaultValue = _.find(operatorArray, function(obj) {
+                            return obj.value === node.ipCorporation
+                        }.bind(this))
+
+                        if (defaultValue) {
+                            $(rootNodes[i]).find("#dropdown-hash-operator .cur-value").html(defaultValue.name)
+                        } else {
+                            $(rootNodes[i]).find("#dropdown-hash-operator .cur-value").html(operatorArray[0].name);
+                            node.ipCorporation = operatorArray[0].value;
+                        }
+                    }
+                }.bind(this))
+            }
+        },
+
         onClickItemUpperHashKey:function(events){
             var eventTarget = event.srcElement || event.target;
             var id = $(eventTarget).attr("data-id");
             this.resetHashIndex(id);
-        },
-
-        resetHashIndex:function(id){
-            var upperHash = this.defaultParam.upper;
-            for(var i=0;i<upperHash.length;i++){
-                if(upperHash[i].id == id){
-                    upperHash[i].hashIndex = 0;
-                }
-                else{
-                    upperHash[i].hashIndex = null;
-                }
-            }
-            this.defaultParam.upper = this.upperHashFormat(upperHash);
         },
 
         onClickAddUpperNodeButton: function(event) {
@@ -950,6 +1056,19 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }.bind(this))
         },
 
+        resetHashIndex:function(id){
+            var upperHash = this.defaultParam.upper;
+            for(var i=0;i<upperHash.length;i++){
+                if(upperHash[i].id == id){
+                    upperHash[i].hashIndex = 0;
+                }
+                else{
+                    upperHash[i].hashIndex = null;
+                }
+            }
+            this.defaultParam.upper = this.upperHashFormat(upperHash);
+        },
+
         upperHashFormat:function(list){
             var firstList = [];
             var arr=[];
@@ -988,6 +1107,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                         var result = mySelectHashView.getArgs();
                         var upperHashFormat = this.upperHashFormat(result);
                         this.defaultParam.upper = upperHashFormat;
+                        console.log('---',this.defaultParam.upper);
                         var tempArray = []
                         _.each(this.defaultParam.upper, function(el) {
                             el.upType = 2;
@@ -1000,6 +1120,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                                 name:el.name,
                                 hashIndex: el.hashIndex,
                                 ipCorporation: el.ipCorporation,
+                                isMulti : el.isMulti,
                                 rsNodeMsgVo: rsNodeMsgVo,
                                 id: el.id,
                                 chiefType:el.hashIndex == 0 ? 1:0

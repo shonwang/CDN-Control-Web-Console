@@ -5,6 +5,7 @@ define("hashOrigin.model", ['require','exports', 'utility'], function(require, e
                 type       = this.get("type"),
                 autoFlag   = this.get("autoFlag"),
                 createTime = this.get("createTime"),
+                isMulti    = this.get("isMulti"),
                 updateTime = this.get("updateTime");
             if(type == "202"){
                 this.set("typeName","Cache");
@@ -13,10 +14,17 @@ define("hashOrigin.model", ['require','exports', 'utility'], function(require, e
                 this.set("typeName","Live")
             }
             if(autoFlag == 1){
-                this.set("autoFlagName","是");
+                this.set("autoFlagName","允许");
             }
             else{
-                this.set("autoFlagName","否");
+                this.set("autoFlagName","不允许");
+            }
+
+            if(isMulti==1){
+                this.set("isMultiName","是");
+            }
+            else {
+                this.set("isMultiName","否");
             }
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
             if (updateTime) this.set("updateTimeFormated", new Date(updateTime).format("yyyy/MM/dd hh:mm"));

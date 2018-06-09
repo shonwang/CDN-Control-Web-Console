@@ -51,6 +51,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         "name": "",
                         "type": null,
                         'remark': null,
+                        'upType': 1,
                         "rule": []
                     }
                     this.initSetup();
@@ -207,6 +208,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     tempRule.localType = rule.localType
                     tempRule.local = localIdArray;
                     tempRule.upper = upperObjArray;
+                    tempRule.upType = rule.upType;
                     postRules.push(tempRule);
                 }.bind(this))
 
@@ -329,6 +331,18 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     else {
                         //按hash环
                         console.log("upper",rule.upper);
+                        _.each(rule.upper,function(el){
+                            //第一次点添加或编辑时需要编造，其它情况与节点的一致
+                            if(!el.rsNodeMsgVo){
+                                el.rsNodeMsgVo = {
+                                    id:el.id,
+                                    chiefType:el.hashIndex == 0 ? 1:0,
+                                    ipCorporation:el.ipCorporation,
+                                    hashName:el.hashName,
+                                    name:el.hashName
+                                };
+                            }
+                        });
                         primaryArray = _.filter(rule.upper, function(obj) {
                             return obj.hashIndex == 0;
                         }.bind(this))
@@ -338,7 +352,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
 
                         _.each(primaryArray, function(upper, inx, list) {
                             upper.ipCorporationName = "";
-                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.isMulti) {
+                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.chiefType) {
                                 for (var i = 0; i < this.operatorList.length; i++) {
                                     if (this.operatorList[i].id === upper.ipCorporation) {
                                         upper.ipCorporationName = "-" + this.operatorList[i].name;
@@ -353,7 +367,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         }.bind(this));
                         _.each(backupArray, function(upper, inx, list) {
                             upper.ipCorporationName = "";
-                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.isMulti) {
+                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.chiefType) {
                                 for (var i = 0; i < this.operatorList.length; i++) {
                                     if (this.operatorList[i].id === upper.ipCorporation) {
                                         upper.ipCorporationName = "-" + this.operatorList[i].name;

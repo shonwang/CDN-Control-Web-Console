@@ -4,6 +4,7 @@
     <th>名称</th>
     <th>类型</th>
     <th>是否允许自动调度</th>
+    <th>是否多线</th>
     <th>创建时间</th>
     <th>更新时间</th>
     <th>操作人</th>
@@ -16,6 +17,7 @@
         <td><%= data[i].get('name')%></td>
         <td><%= data[i].get('typeName')%></td>
         <td><%= data[i].get('autoFlagName')%></td>
+        <td><%= data[i].get('isMultiName')%></td>
         <td><%= data[i].get('createTimeFormated')%></td>
         <td><%= data[i].get('updateTimeFormated')%></td>
         <td><%= data[i].get('operator')%></td>

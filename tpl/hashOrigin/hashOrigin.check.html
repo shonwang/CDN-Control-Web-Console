@@ -1,14 +1,14 @@
 <table class="table table-striped table-hover">  
 <thead> 
   <tr>
-    <th>名称</th>
-    <th>结果</th>
+    <th>特殊分层策略名称</th>
   </tr>
 </thead>
 <tbody>
+	<%for(var i=0;i<data.length;i++){%>
       <tr>
-        <td>aaaaaaa</td>
-        <td>通过</td>
+        <td><%=data[i]%></td>
       </tr>
+    <%}%>
 </tbody>
 </table>

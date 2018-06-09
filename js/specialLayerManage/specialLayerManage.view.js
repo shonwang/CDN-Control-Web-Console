@@ -270,7 +270,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             initRuleTable: function() {
                 //var data = [{localLayer: "1111", upperLayer: "22222"}];
                 this.ruleList = [];
-                console.log(this.defaultParam.rule);
                 _.each(this.defaultParam.rule, function(rule, index, ls) {
                     var localLayerArray = [],
                         upperLayer = [],
@@ -330,12 +329,11 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     }
                     else {
                         //按hash环
-                        console.log("upper",rule.upper);
                         _.each(rule.upper,function(el){
                             //第一次点添加或编辑时需要编造，其它情况与节点的一致
                             if(!el.rsNodeMsgVo){
                                 el.rsNodeMsgVo = {
-                                    id:el.id,
+                                    id:el.hashId,
                                     chiefType:el.hashIndex == 0 ? 1:0,
                                     ipCorporation:el.ipCorporation,
                                     hashName:el.hashName,
@@ -400,7 +398,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     }
                     this.ruleList.push(ruleStrObj)
                 }.bind(this))
-                console.log("-----",this.ruleList);
                 this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.rule.table.html'])({
                     data: this.ruleList
                 }));

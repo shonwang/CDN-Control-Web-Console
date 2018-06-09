@@ -269,7 +269,6 @@ define("hashOrigin.selectNode.view", ['require', 'exports', 'template', 'modal.v
                 var checkedList = _.filter(this.allNodes, function(object) {
                     return object.isChecked === true;
                 })
-                console.log(checkedList)
                 return checkedList
             },
 

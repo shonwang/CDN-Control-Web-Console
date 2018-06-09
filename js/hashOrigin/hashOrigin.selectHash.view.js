@@ -46,7 +46,6 @@ define("hashOrigin.selectHash.view", ['require', 'exports', 'template', 'modal.v
                 }.bind(this))
 
                 this.allHash = checkedArray.concat(notCheckedArray);
-                console.log('allHash:',this.allHash);
 
                 if (this.selectedHash.length === this.allHash.length){
                     this.isCheckedAll = true

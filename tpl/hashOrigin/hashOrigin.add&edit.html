@@ -10,7 +10,7 @@
         <div class="form-group">
             <label for="input-english" class="col-sm-2 control-label">类型</label>
             <div class="dropdown col-sm-1 dropdown-hash-type">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-hash-type" data-toggle="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-hash-type" data-toggle="dropdown" <%if(isEdit){%>disabled<%}%>>
                     <span class="cur-value"><%= data.typeName || "Cache"%></span>
                     <span class="caret"></span>
                 </button>
@@ -30,7 +30,7 @@
         <div class="form-group">
             <label for="input-english" class="col-sm-2 control-label">是否多线</label>
             <div class="dropdown col-sm-1 dropdown-is-multi">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-is-multi" data-toggle="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-is-multi" data-toggle="dropdown" <%if(isEdit){%>disabled<%}%>>
                     <span class="cur-value"><%= data.isMultiName || "否"%></span>
                     <span class="caret"></span>
                 </button>

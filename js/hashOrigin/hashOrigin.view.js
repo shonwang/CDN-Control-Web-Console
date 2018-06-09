@@ -287,7 +287,7 @@ define("hashOrigin.view", ['require','exports', 'template', 'modal.view', 'utili
             });
 
             var options = {
-                title: "检查",
+                title: "hash关联特殊分层策略列表",
                 body: myCheckView,
                 backdrop: 'static',
                 type: 1,
@@ -310,7 +310,6 @@ define("hashOrigin.view", ['require','exports', 'template', 'modal.view', 'utili
                 onPageChange: function (num, type) {
                     if (type !== "init"){
                         this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                        console.log(num)
                         this.queryArgs.page = num;
                         this.onClickQueryButton();
                     }

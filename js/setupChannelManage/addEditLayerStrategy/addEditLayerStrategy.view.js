@@ -29,6 +29,10 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            console.log(this.notFilter)
+            if(!this.notFilter){
+                this.$el.find("#asHashstrategyRadio6").hide();
+            }
             this.$el.find("input[name=strategyUpperRadio]").on("click",$.proxy(this.onUpperStyleChange,this));
             if(this.defaultParam.upType == 2){
                 this.$el.find("#strategyRadio6").prop("checked",true)
@@ -84,7 +88,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             var value = $(eventTarget).val();
             this.defaultParam.upper = [];
             if(value == 1){
-                this.defaultParam.upType == 1;
+                this.defaultParam.upType = 1;
                 this.initUpperTable();
                 
             }
@@ -464,13 +468,24 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                    alert('请选择上层节点');
                    return;
             }
-            var chiefTypeArray = [];
-            chiefTypeArray = _.filter(this.defaultParam.upper, function(obj) {
-                return obj.chiefType === 0
-            }.bind(this))
-            if (chiefTypeArray.length === this.defaultParam.upper.length) {
-                alert("不能都设置为备用")
-                return;
+            if(this.defaultParam.upType == 1){
+                var chiefTypeArray = [];
+                chiefTypeArray = _.filter(this.defaultParam.upper, function(obj) {
+                    return obj.chiefType === 0
+                }.bind(this))
+                if (chiefTypeArray.length === this.defaultParam.upper.length) {
+                    alert("不能都设置为备用")
+                    return;
+                }
+            }
+            if(this.defaultParam.upType == 2){
+                var hashMain = _.filter(this.defaultParam.upper, function(obj) {
+                    return obj.hashIndex === 0
+                }.bind(this))
+                if(hashMain.length < 1){
+                    alert("请设置主环");
+                    return false;
+                }
             }
             var nodesError =[];
             // 检测错误情况，给nodesError赋值
@@ -841,8 +856,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         onGetUpperNodeFromArgs: function() {
-            
-            console.log('--------------------',this.defaultParam);
             this.$el.find('.upper .add-node').show();
             _.each(this.defaultParam.upper, function(el) {
                 el.id = el.rsNodeMsgVo.id;
@@ -862,7 +875,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
 
         initUpperHashTable:function(){
             var obj= this.defaultParam.upper;
-            console.log("生成",obj);
             if(this.defaultParam.upType != 2){
                 return false;
             }
@@ -899,6 +911,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             if(hashList.length !==0){
                 this.$el.find(".upper .table-ctn-hash").html(this.upperHashTable[0]);
                 this.upperHashTable.find("tbody .hash-radio-main").on("click", $.proxy(this.onClickItemUpperHashKey, this));
+                this.upperHashTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperHashDelete, this));
             }
             else{
                 this.$el.find(".upper .table-ctn-hash").html(_.template(template['tpl/empty-2.html'])({
@@ -1107,7 +1120,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                         var result = mySelectHashView.getArgs();
                         var upperHashFormat = this.upperHashFormat(result);
                         this.defaultParam.upper = upperHashFormat;
-                        console.log('---',this.defaultParam.upper);
                         var tempArray = []
                         _.each(this.defaultParam.upper, function(el) {
                             el.upType = 2;
@@ -1269,6 +1281,23 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 return obj.rsNodeMsgVo.id !== parseInt(id)
             }.bind(this));
             this.initUpperTable();
+        },
+
+
+        onClickItemUpperHashDelete: function(event) {
+            var eventTarget = event.srcElement || event.target,
+                id;
+            if (eventTarget.tagName == "SPAN") {
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("data-id");
+            } else {
+                id = $(eventTarget).attr("data-id");
+            }
+
+            this.defaultParam.upper = _.filter(this.defaultParam.upper, function(obj) {
+                return obj.rsNodeMsgVo.id !== parseInt(id)
+            }.bind(this));
+            this.initUpperHashTable();
         },
 
         onClickCheckboxButton: function(event) {

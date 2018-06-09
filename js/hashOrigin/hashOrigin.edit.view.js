@@ -54,7 +54,7 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
                 }
                 this.collection.getHashInfoById(this.defaultParam.id);            
             }     
-            this.$el = $(_.template(template['tpl/hashOrigin/hashOrigin.add&edit.html'])({data:this.defaultParam}));   
+            this.$el = $(_.template(template['tpl/hashOrigin/hashOrigin.add&edit.html'])({data:this.defaultParam,isEdit:this.isEdit}));   
             this.$el.find(".add-node").on("click",$.proxy(this.onClickAddNode,this));
             this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onSave, this));
             this.$el.find(".cancel").on("click",$.proxy(this.onCancelClick,this));

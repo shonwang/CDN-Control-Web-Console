@@ -13,7 +13,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 this.initNodeTypeDropMenu();
 
                 this.collection.on("update.remark.success", $.proxy(this.onUpdateRemarkSuccess, this));
-                this.collection.on("get.node.error", $.proxy(this.onGetError, this));
+                this.collection.on("update.remark.error", $.proxy(this.onGetError, this));
 
                 this.collection.on("get.node.success", $.proxy(this.onNodeListSuccess, this));
                 this.collection.on("get.node.error", $.proxy(this.onGetError, this));

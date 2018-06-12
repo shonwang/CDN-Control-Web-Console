@@ -143,12 +143,14 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
             if(!this.canAddNode){
                 return false;
             }
-            require(['hashOrigin.selectNode.view'], function(SelectNodeView) {
+            require(['hashOrigin.selectNodes.view'], function(SelectNodeView) {
                 if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
 
                 var mySelectNodeView = new SelectNodeView({
                     collection: this.collection,
                     selectedNodes: this.defaultParam.hashNodeList,
+                    appType: this.defaultParam.type,
+                    level: 1
                 });
                 var options = {
                     title: "选择节点",

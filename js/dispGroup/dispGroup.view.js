@@ -432,18 +432,31 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.initDropmenu();
         },
 
+        initTopoAlertInfo:function(){
+            if(this.topoId === 0){
+                if(this.$el.find(".second-warning").css("display") === "none"){
+                    this.$el.find(".second-warning").show()
+                }   
+            }else if(this.topoId !== 0){
+                if(this.$el.find(".second-warning").css("display") !== "none"){
+                    this.$el.find(".second-warning").hide()
+                }
+            }
+        },
+            
         onGetTopoSuccess:function(data){
-            // 接收的是id，转换为topoId
             var _data = data.rows
             this.TopoList = _data;
-           
+            
             var topoArray = [];
+            var initTopo = {name:"无",value:0}
             _.each(this.TopoList, function(el, key, ls){
                 topoArray.push({name: el.name, value: el.id})
-            })
-            
+            }) 
+            topoArray.push(initTopo);
             Utility.initDropMenu(this.$el.find(".dropdown-topoRelationship"), topoArray, function(value){
                 this.topoId = parseInt(value);
+                this.initTopoAlertInfo();
             }.bind(this));
             this.topoTypeList = topoArray;
             if (!this.isEdit){
@@ -451,21 +464,39 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.$el.find(".dropdown-topoRelationship .cur-value").html(_data[0].name);
                // AUTH_OBJ.ChooseGtld = true;
                 if(!AUTH_OBJ.ChooseGtld){
-                    this.$el.find(".dropdown-topoRelationship #topoRelationship-list").attr("disabled", "disabled");
+                    if(this.topoId !== 0){
+                        this.$el.find(".dropdown-topoRelationship #topoRelationship-list").attr("disabled", "disabled");
+                    }
                 }
             } else {
                 var topoArray = _.filter(this.topoTypeList,function(obj) {
-                    return obj["value"] === this.model.get("topoId");
+                    if(this.model.get("topoId") !== 0){
+                        return obj["value"] === this.model.get("topoId");
+                    }else{
+                        return obj.name === "无"
+                    }
                 }.bind(this));
+                console.log(topoArray[0])
                 if (topoArray[0]){
+                    console.log(topoArray[0])
                     this.$el.find(".dropdown-topoRelationship .cur-value").html(topoArray[0].name)
                     this.topoId = topoArray[0].value;
+                }else{
+                    this.$el.find(".dropdown-topoRelationship .cur-value").html(_data[0].name)
+                    this.topoId = _data[0].value;
                 }
                 if(! this.isCopy){
-                   this.$el.find(".dropdown-topoRelationship #topoRelationship-list").attr("disabled", "disabled")
+                    console.log("dddd", this.topoId)
+                    console.log(this.topoId)
+                    if(this.topoId !== 0){
+                        this.$el.find(".dropdown-topoRelationship #topoRelationship-list").attr("disabled", "disabled");
+                    }
                 }else {
                    if(!AUTH_OBJ.ChooseGtld){
-                      this.$el.find(".dropdown-topoRelationship #topoRelationship-list").attr("disabled", "disabled");
+                    console.log("xxxx",this.topoId)
+                    if(this.topoId !== 0){
+                        this.$el.find(".dropdown-topoRelationship #topoRelationship-list").attr("disabled", "disabled");
+                    }
                       this.$el.find(".dropdown-topoRelationship .cur-value").html(_data[0].name);
                       this.topoId = _data[0].id;
                    }
@@ -687,6 +718,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 "kdnsDomainId" : this.kdnsDomainId,
                 "topoId"   : this.topoId
             };
+            console.log(options)
             var ttl = this.$el.find("#input-ttl").val(), re = /^\d+$/;
             if (!re.test(ttl)){
                 alert("TTL只能填入数字！");
@@ -1064,7 +1096,6 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 id = $(eventTarget).attr("id");
             }
             var model = this.collection.get(id);
-            
             this.clickInfo = model;
 
             if (this.editDispGroupPopup) $("#" + this.editDispGroupPopup.modalId).remove();

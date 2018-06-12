@@ -476,9 +476,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                         return obj.name === "无"
                     }
                 }.bind(this));
-                console.log(topoArray[0])
                 if (topoArray[0]){
-                    console.log(topoArray[0])
                     this.$el.find(".dropdown-topoRelationship .cur-value").html(topoArray[0].name)
                     this.topoId = topoArray[0].value;
                 }else{
@@ -486,14 +484,11 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                     this.topoId = _data[0].value;
                 }
                 if(! this.isCopy){
-                    console.log("dddd", this.topoId)
-                    console.log(this.topoId)
                     if(this.topoId !== 0){
                         this.$el.find(".dropdown-topoRelationship #topoRelationship-list").attr("disabled", "disabled");
                     }
                 }else {
                    if(!AUTH_OBJ.ChooseGtld){
-                    console.log("xxxx",this.topoId)
                     if(this.topoId !== 0){
                         this.$el.find(".dropdown-topoRelationship #topoRelationship-list").attr("disabled", "disabled");
                     }
@@ -718,7 +713,6 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 "kdnsDomainId" : this.kdnsDomainId,
                 "topoId"   : this.topoId
             };
-            console.log(options)
             var ttl = this.$el.find("#input-ttl").val(), re = /^\d+$/;
             if (!re.test(ttl)){
                 alert("TTL只能填入数字！");
@@ -964,7 +958,6 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         initTable: function(){
-            console.log(this.collection.models)
             this.table = $(_.template(template['tpl/dispGroup/dispGroup.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);

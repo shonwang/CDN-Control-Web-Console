@@ -23,9 +23,12 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
             
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
             this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
-            this.initSetup();
             this.initLayerStrategyTable();
             
+            this.defaultParam = {
+                
+
+            }
         },
          
         onGetNodeSuccess:function(res){
@@ -51,8 +54,8 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                     this.collection.getStrategyInfoByNode(data)
                 }.bind(this)
             });
-
-
+            
+            
         },
 
         onGetStrategySuccess:function(res){
@@ -64,47 +67,58 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                     el.typeName = "live"
                 }
             }.bind(this))
-            console.log(res)
             this.initLayerStrategyTable(res);
         },
 
-        initSetup:function(){
-            
-            
-            
-
-        },
 
         onClickSaveButton: function(){
 
         },
 
         onClickCancelButton: function() {
-            console.log("zzzzz",this.options)
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
 
-        initLayerStrategyTable: function(testData) {
-            var dataObj = testData || [];
+        initLayerStrategyTable: function(args) {
+            var dataObj = args || [];
+            this.defaultParam = dataObj;
             this.nodeTable = $(_.template(template['tpl/specialLayerManage/specialLayerManage.editNode.table.html'])({
                 data: dataObj
             }));
-            console.log(dataObj)
-            if (dataObj.length !== 0){
+            if (dataObj.length !== 0){    
                 this.$el.find(".table-ctn").html(this.nodeTable[0]);
-                // this.table.find("tbody .view").on("click", $.proxy(this.onClickItemView, this));
+                this.nodeTable.find("tbody .view").on("click", $.proxy(this.onClickItemView, this));
             }else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty-2.html'])({
                     data: {
                         message: "暂无数据"
                     }
                 }));
-
-            
         },
 
-        onClickItemView:function(){
-            console.log("bbbb")
+        onClickItemView:function(event){     
+            var eventTarget = event.currentTarget || event.target, id;
+            var dataObj;
+            id = $(eventTarget).attr("id");
+            _.each(this.defaultParam, function(el){
+                if(el.id == id){
+                    dataObj = el.rule
+                }
+            }.bind(this));
+            this.ruleTable = $(_.template(template['tpl/specialLayerManage/specialLayerManage.viewRule.html'])({
+                data: dataObj
+            }));
+            if (dataObj){    
+                var idStrPar = "tr[data-nodeid=" + id + "]" + ".toggle-show";
+                var idStrSon = "td[data-nodeid=" + id + "]" + ".tdTable";
+
+                this.$el.find(idStrSon).html(this.ruleTable[0]);
+            }
+            if(this.$el.find(idStrPar).css("display") == "none"){
+                this.$el.find(idStrPar).show()
+            }else{
+                this.$el.find(idStrPar).hide()
+            }
         },
 
         onGetError: function(error){

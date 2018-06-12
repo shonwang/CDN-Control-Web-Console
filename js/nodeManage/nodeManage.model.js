@@ -103,6 +103,22 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             $.ajax(defaultParas);
         },
 
+        getTopoinfo: function(args) {
+            var url = BASE_URL + "/resource/topo/info/list",
+                successCallback = function(res) {
+                    if(res){
+                        this.trigger("get.topoInfo.success", res);
+                    } else {
+                        this.trigger("get.topoInfo.error", res);
+                    }
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger('get.topoInfo.error', response);
+                }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+
         updateNode: function(args){
             var url = BASE_URL + "/rs/node/modifyNode"
             var defaultParas = {

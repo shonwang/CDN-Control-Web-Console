@@ -349,13 +349,13 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 var model = this.collection.get(id);
 
                 if (this.dispGroupPopup) $("#" + this.dispGroupPopup.modalId).remove();
-
                 require(["nodeManage.dispInfo.view"], function(DispGroupInfoView) {
                     var dispGroupInfoView = new DispGroupInfoView({
                         collection: this.collection,
                         model: model,
                         isEdit: true
                     });
+                   
                     var options = {
                         title: model.get("chName") + "关联调度组信息",
                         body: dispGroupInfoView,

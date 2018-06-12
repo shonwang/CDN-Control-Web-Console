@@ -8,20 +8,71 @@ define("nodeManage.dispInfo.view", ['require', 'exports', 'template', 'modal.vie
         initialize: function(options) {
             this.collection = options.collection;
             this.model = options.model;
-
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.dispGroup.html'])({}));
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-
+            
             this.collection.off("get.assocateDispGroups.success");
             this.collection.off("get.assocateDispGroups.error");
             this.collection.on("get.assocateDispGroups.success", $.proxy(this.onGetDispConfigSuccess, this));
             this.collection.on("get.assocateDispGroups.error", $.proxy(this.onGetError, this));
-
             this.collection.getAssocateDispGroups({
                 nodeId: this.model.get("id")
             });
+            this.collection.off("get.topoInfo.success");
+            this.collection.off("get.topoInfo.error");
+            this.collection.on("get.topoInfo.success", $.proxy(this.onGetTopoInfoSuccess, this));
+            this.collection.on("get.topoInfo.error", $.proxy(this.onGetError, this));
+            this.collection.getTopoinfo({
+                name:null,
+                page:1,
+                size:9999,
+            });
+
+            // this.collection.off("get.deleteRelateTopo.success");
+            // this.collection.off("get.deleteRelateTopo.error");
+            // this.collection.on("get.deleteRelateTopo.success", $.proxy(this.onDeleteRelateTopoSuccess, this));
+            // this.collection.on("get.deleteRelateTopo.error", $.proxy(this.onGetError, this));
             this.initSearchTypeDropList();
+            
         },
+
+        onGetTopoInfoSuccess:function(res){
+            var _data = res.rows
+            var topoInfoList = [];
+            console.log(res)
+            _.each(_data, function(el){
+                var topoList = {
+                    name: el.name,
+                    value: el.id
+                }
+                topoInfoList.push(topoList)
+            }.bind(this));
+            Utility.initDropMenu(this.$el.find(".dropdown-topo"), topoInfoList, function(value) {
+                this.topoId = parseInt(value)
+                this.onTopoListFilter()
+            }.bind(this));
+        },
+
+        onTopoListFilter:function(){
+            if (!this.channelList || this.channelList.length === 0) return;
+            var topoId = this.topoId
+            _.each(this.channelList, function(model, index, list) {
+                if (!topoId) {
+                    model.isDisplay = true;
+                } else if (model.topoId == topoId) {
+                    model.isDisplay = true;
+                }else if(model.topoId != topoId){
+                    model.isDisplay = false;
+                }
+            }.bind(this));
+            this.initTable();
+        },
+
+        onDeleteRelateTopoSuccess:function(res){
+
+        },
+
+       
 
         initSearchTypeDropList: function() {
             var searchArray = [{
@@ -68,8 +119,19 @@ define("nodeManage.dispInfo.view", ['require', 'exports', 'template', 'modal.vie
                 Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
+        onDeleteTopo: function(){
+            var 
+        },
+
         onGetDispConfigSuccess: function(res) {
             this.channelList = res;
+            if(this.channelList.length >= 1){
+                console.log(this.channelList)
+                var deleteRelateTopo = $("<button type='button' class='btn btn-danger deleteTopo'>解除关联</button>");
+                this.target.find(".modal-footer").prepend(deleteRelateTopo);
+                this.target.find(".deleteTopo").on("click", $.proxy(this.onDeleteTopo, this));
+            }
+            
             var count = 0;
             this.isCheckedAll = false;
             _.each(this.channelList, function(el, index, list) {
@@ -163,7 +225,8 @@ define("nodeManage.dispInfo.view", ['require', 'exports', 'template', 'modal.vie
             return checkedList
         },
 
-        render: function(target) {
+        render: function(target,el) {
+            this.target = el;
             this.$el.appendTo(target);
         }
     });

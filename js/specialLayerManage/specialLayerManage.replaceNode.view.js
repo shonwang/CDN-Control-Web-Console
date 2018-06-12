@@ -123,20 +123,20 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                     dataObj = el.rule
                 }
             }.bind(this));
-            console.log(dataObj)
             this.ruleTable = $(_.template(template['tpl/specialLayerManage/specialLayerManage.viewRule.html'])({
                 data: dataObj
             }));
             if (dataObj){    
-                var idStr = "tr[data-nodeid=" + id + "]"+".toggle-show"
-                this.$el.find(idStr).html(this.ruleTable[0]);
+                var idStrPar = "tr[data-nodeid=" + id + "]" + ".toggle-show";
+                var idStrSon = "td[data-nodeid=" + id + "]" + ".tdTable";
+
+                this.$el.find(idStrSon).html(this.ruleTable[0]);
             }
-            if(this.$el.find(idStr).css("display") == "none"){
-                this.$el.find(idStr).show()
+            if(this.$el.find(idStrPar).css("display") == "none"){
+                this.$el.find(idStrPar).show()
             }else{
-                this.$el.find(idStr).hide()
+                this.$el.find(idStrPar).hide()
             }
-            
         },
 
         onGetError: function(error){

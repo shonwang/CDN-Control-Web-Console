@@ -15,6 +15,7 @@ define("hashOrigin.selectHash.view", ['require', 'exports', 'template', 'modal.v
                 this.collection.on("get.hashOrigin.success",$.proxy(this.onGetHashSuccess,this));
                 this.collection.on("get.hashOrigin.error",$.proxy(this.onGetError,this));
                 var args = {
+                    type:options.appType || '',
                     "page"      : 1,
                     "count"     : 9999
                 };
@@ -22,9 +23,21 @@ define("hashOrigin.selectHash.view", ['require', 'exports', 'template', 'modal.v
                 this.collection.getHashList(args);
             },
 
+            typeNameList:{
+                202:"Cache",
+                203:"Live"
+            },
+
+            autoFlagName:{
+                1:"允许",
+                0:"不允许"
+            },            
+
             onGetHashSuccess: function(res) {
                 var _res = res.rows;
                 _.each(_res, function(el, index, list) {
+                        el.typeName = this.typeNameList[el.type] || '---';
+                        el.autoFlagName = this.autoFlagName[el.autoFlag] || '---';
                         el.isDisplay = true;
                         el.isChecked = false;
                         _.each(this.selectedHash, function(hash) {

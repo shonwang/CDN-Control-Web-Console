@@ -5,6 +5,8 @@
           <input type="checkbox" <% if (isCheckedAll) { %> checked="true" <% } %>>
         </th>
         <th>名称</th>
+        <th>类型</th>
+        <th>是否允许自动调度</th>
       </tr>
     </thead>
     <tbody>
@@ -15,6 +17,8 @@
                   <input type="checkbox" id="<%=data[i]['id']%>" <% if (data[i].isChecked) { %> checked="true"<% } %>>
               </th>
               <td><%=data[i]["name"]%></td>
+              <td><%=data[i]["typeName"]%></td>
+              <td><%=data[i]["autoFlagName"]%></td>
             </tr>
             <% } %>
         <% } %>  

@@ -1108,7 +1108,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 var mySelectHashView = new SelectHashView({
                     collection: hashModel,
                     selectedHash:this.defaultParam.upper,
-                    //appType: this.appType
+                    appType: this.appType
                 });
                 var options = {
                     title: "选择hash环",

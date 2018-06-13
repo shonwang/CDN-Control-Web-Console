@@ -861,10 +861,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 el.id = el.rsNodeMsgVo.id;
             }.bind(this))
             this.$el.find('.upper .add-node').on('click', $.proxy(this.onClickAddUpperNodeButton, this))
-            if(this.defaultParam.upType != 1){
+            if(this.defaultParam.upType == 2){
                 return false;
             }
-            
             this.initUpperTable();
         },
 
@@ -887,7 +886,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     hashId:el.rsNodeMsgVo.id,
                     name:el.rsNodeMsgVo.name,
                     isMulti:el.rsNodeMsgVo.isMulti,
-                    chiefType:el.chiefType,
+                    //chiefType:el.chiefType,
                     ipCorporation:el.ipCorporation,
                     hashIndex:el.hashIndex,
                     id:el.rsNodeMsgVo.id
@@ -920,21 +919,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     }
                 }));
             }
-
-
-            // this.upperTable = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.upper.table.html'])({
-            //     data: nodeList
-            // }));
-
-            // if (nodeList.length !== 0) {
-            //     this.$el.find(".upper .table-ctn").html(this.upperTable[0]);
-            // } else {
-            //     this.$el.find(".upper .table-ctn").html(_.template(template['tpl/empty-2.html'])({
-            //         data: {
-            //             message: "你还没有添加节点"
-            //         }
-            //     }));
-            // }            
+         
 
             require(['deviceManage.model'], function(deviceManageModel) {
                 var mydeviceManageModel = new deviceManageModel();
@@ -942,46 +927,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
                 mydeviceManageModel.operatorTypeList();
             }.bind(this));
-
-
-            //  var nodeList = [];
-            // _.each(this.defaultParam.upper, function(el) {
-            //     nodeList.push({
-            //         nodeId: el.rsNodeMsgVo.id,
-            //         nodeName: el.rsNodeMsgVo.name,
-            //         operatorId: el.rsNodeMsgVo.operatorId,
-            //         chiefType: el.chiefType,
-            //         ipCorporation: el.ipCorporation
-            //     })
-            // }.bind(this))
-
-            // var duoxianArray = _.filter(nodeList, function(obj) {
-            //     return obj.operatorId === 9
-            // }.bind(this))
-            // var feiDuoxianArray = _.filter(nodeList, function(obj) {
-            //     return obj.operatorId !== 9
-            // }.bind(this))
-
-            // nodeList = duoxianArray.concat(feiDuoxianArray)
-            // this.upperTable = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.upper.table.html'])({
-            //     data: nodeList
-            // }));
-
-
-
-
-
-            // this.upperTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperDelete, this));
-            // this.upperTable.find("tbody .spareradio").on("click", $.proxy(this.onClickCheckboxButton, this));
-
-            // require(['deviceManage.model'], function(deviceManageModel) {
-            //     var mydeviceManageModel = new deviceManageModel();
-            //     mydeviceManageModel.on("operator.type.success", $.proxy(this.initOperatorUpperList, this));
-            //     mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
-            //     mydeviceManageModel.operatorTypeList();
-            // }.bind(this));
-
-            
         },
 
         initOperatorUpperHashList: function(data) {
@@ -1134,27 +1079,12 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                                 ipCorporation: el.ipCorporation,
                                 isMulti : el.isMulti,
                                 rsNodeMsgVo: rsNodeMsgVo,
-                                id: el.id,
-                                chiefType:el.hashIndex == 0 ? 1:0
+                                id: el.id
+                                //chiefType:el.hashIndex == 0 ? 1:0
                             })
                         }.bind(this))
                         this.defaultParam.upper = tempArray;
                         this.selectHashPopup.$el.modal("hide");
-                        // var tempArray = []
-                        // _.each(this.defaultParam.upper, function(el) {
-                        //     var rsNodeMsgVo = {};
-                        //     rsNodeMsgVo.id = el.id;
-                        //     rsNodeMsgVo.name = el.chName;
-                        //     rsNodeMsgVo.operatorId = el.operatorId;
-                        //     tempArray.push({
-                        //         chiefType: el.chiefType,
-                        //         ipCorporation: el.ipCorporation,
-                        //         rsNodeMsgVo: rsNodeMsgVo,
-                        //         id: el.id
-                        //     })
-                        // }.bind(this))
-                        // this.defaultParam.upper = tempArray;
-                        // this.selectNodePopup.$el.modal("hide");
                         this.initUpperHashTable();
                     }.bind(this),
                     onHiddenCallback: function() {}.bind(this)

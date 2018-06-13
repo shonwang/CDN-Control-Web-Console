@@ -198,8 +198,8 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             upperObjArray.push({
                                 hashId: node.rsNodeMsgVo.id,
                                 hashIndex: node.hashIndex,
-                                ipCorporation: node.ipCorporation,
-                                chiefType: node.chiefType === undefined ? 1 : node.chiefType
+                                ipCorporation: node.ipCorporation
+                                //chiefType: node.chiefType === undefined ? 1 : node.chiefType
                             })
                         }
                     }.bind(this))
@@ -334,7 +334,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             if(!el.rsNodeMsgVo){
                                 el.rsNodeMsgVo = {
                                     id:el.hashId,
-                                    chiefType:el.hashIndex == 0 ? 1:0,
+                                    //chiefType:el.hashIndex == 0 ? 1:0,
                                     ipCorporation:el.ipCorporation,
                                     hashName:el.hashName,
                                     name:el.hashName
@@ -350,7 +350,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
 
                         _.each(primaryArray, function(upper, inx, list) {
                             upper.ipCorporationName = "";
-                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.chiefType) {
+                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
                                 for (var i = 0; i < this.operatorList.length; i++) {
                                     if (this.operatorList[i].id === upper.ipCorporation) {
                                         upper.ipCorporationName = "-" + this.operatorList[i].name;
@@ -365,7 +365,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         }.bind(this));
                         _.each(backupArray, function(upper, inx, list) {
                             upper.ipCorporationName = "";
-                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.chiefType) {
+                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
                                 for (var i = 0; i < this.operatorList.length; i++) {
                                     if (this.operatorList[i].id === upper.ipCorporation) {
                                         upper.ipCorporationName = "-" + this.operatorList[i].name;

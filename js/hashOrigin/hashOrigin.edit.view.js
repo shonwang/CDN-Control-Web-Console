@@ -103,12 +103,57 @@ define("hashOrigin.edit.view", ['require','exports', 'template', 'modal.view', '
                 Utility.alerts("请选择至少一个节点名称");
                 return false;
             }
+
+            var isWeightRight = this.checkWeight();
+            if(!isWeightRight){
+                Utility.alerts("权重需要大于等于0");
+                return false;
+            }
+
+            var isDiffIsp = this.checkISP();
+            if(isDiffIsp){
+                Utility.confirm("你选了不同的运营商，还要继续吗？",function(){
+                    if(this.isEdit){
+                        this.collection.modifyHashOrigin(this.defaultParam);
+                    }
+                    else{
+                        this.collection.addHashOrigin(this.defaultParam);
+                    }                    
+                }.bind(this));
+                return false;
+            }
+
             if(this.isEdit){
                 this.collection.modifyHashOrigin(this.defaultParam);
             }
             else{
                 this.collection.addHashOrigin(this.defaultParam);
             }
+        },
+
+        checkWeight:function(){
+            var hashNodeList = this.defaultParam.hashNodeList;
+            var isShow = true;
+            _.each(hashNodeList,function(el){
+                if(el.weight < 0){
+                    isShow = false;
+                    return false;
+                }
+            });
+            return isShow;            
+        },
+
+        checkISP:function(){
+            var hashNodeList = this.defaultParam.hashNodeList;
+            var operatorId = hashNodeList[0].operatorId;
+            var isShowTip = false;
+            _.each(hashNodeList,function(el){
+                if(operatorId != el.operatorId){
+                    isShowTip = true;
+                    return false;
+                }
+            });
+            return isShowTip;
         },
 
         onGetHashInfoSuccess:function(res){

@@ -69,7 +69,7 @@ define("nodeManage.dispInfo.view", ['require', 'exports', 'template', 'modal.vie
         },
 
         onDeleteRelateTopoSuccess:function(res){
-
+            Utility.alerts("节点解除关联成功","success",5000);
         },
 
        
@@ -120,7 +120,17 @@ define("nodeManage.dispInfo.view", ['require', 'exports', 'template', 'modal.vie
         },
 
         onDeleteTopo: function(){
-            var 
+            var args = [];
+            _.each(this.channelList, function(el){
+                if(el.isChecked === true){
+                    args.push(el)
+                }
+            }.bind(this))
+            console.log(args)
+            // this.collection.deleTopo(args)
+            this.onDeleteRelateTopoSuccess();
+            this.target.modal("hide");
+            
         },
 
         onGetDispConfigSuccess: function(res) {

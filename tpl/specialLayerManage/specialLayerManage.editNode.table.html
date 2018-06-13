@@ -1,13 +1,9 @@
 <table class="table table-striped table-hover">
-        <thead>
+        <thead data-parent="layerManage">
             <tr>
-                <%if(data.allSpecialLayerIsChecked){%>
-                    <th>   
-                        <input type="checkbox" checked="true">分层策略名称  
-                    </th>
-                    <%}else{%>
-                        <th><input type="checkbox">分层策略名称</th>
-                    <%}%>
+                <th>   
+                    <input type="checkbox" checked="true">分层策略名称  
+                </th>
                 <!-- <th>分层策略名称</th> -->
                 <th>应用</th>
                 <th>操作</th>
@@ -16,11 +12,7 @@
         <tbody>
             <% for(var i = 0; i < data.length; i++) { %>
                 <tr data-id="<%=data[i].id%>">
-                    <%if(data[i].itemRuleIsChecked){%>
-                     <td><input type="checkbox" checked="true" id="<%=i%>"><%=data[i].name%></td>
-                    <%}else{%>
-                       <td><input type="checkbox" id="<%=i%>"><%=data[i].name%></td>
-                    <%}%>
+                     <td><input type="checkbox" checked="true" id="<%=data[i].id%>"><%=data[i].name%></td>
                     <!-- <td>
                         <%=data[i].name%>
                     </td> -->

@@ -1,5 +1,29 @@
 define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
+    var DistributeLowerLevelView = Backbone.View.extend({
+        events: {},
+
+        initialize: function(options){
+            this.options = options;
+            this.collection = options.collection;
+            // this.model = options.model;
+            console.log(this.collection)
+            this.collection
+            this.$el = $(_.template(template['tpl/specialLayerManage/specialLayerManage.distributeLowerLevel.html'])({
+                data: this.collection
+            }));
+
+
+            
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target);
+        }
+
+
+    });
+
     var ReplaceNodeView = Backbone.View.extend({
         events: {},
 
@@ -24,12 +48,10 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
             this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
+            this.defaultParam = []
             this.initLayerStrategyTable();
             
-            this.defaultParam = {
-                
-
-            }
+            
         },
          
         onGetNodeSuccess:function(res){
@@ -79,44 +101,99 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
         onGetStrategySuccess:function(res){
             
             _.each(res, function(el){
+                el.isChecked = true;
+                this.defaultParam.push(el)
                 if(el.type === 202){
                     el.typeName = "cache"
                 }else if(el.type === 203){
                     el.typeName = "live"
                 }
-            }.bind(this))
-            this.initLayerStrategyTable(res);
+            }.bind(this));
+            this.initLayerStrategyTable();
         },
 
 
         onClickSaveButton: function(){
+            // console.log(args)
+            console.log("我点了保存键")
+            if (this.distributeLowerLevelPopup) $("#" + this.distributeLowerLevelPopup.modalId).remove();
 
+                var myDistributeLowerLevelView = new DistributeLowerLevelView({
+                    collection: this.collection,
+                    // model     : model,
+                  
+                });
+                var options = {
+                    title:"配置下发",
+                    body : myDistributeLowerLevelView,
+                    backdrop : 'static',
+                    type     : 1,
+                    onOKCallback:  function(){
+
+                    }.bind(this),
+                    onHiddenCallback: function(){
+
+                    }.bind(this)
+                }
+                this.distributeLowerLevelPopup = new Modal(options);
+                this.distributeLowerLevelPopup.$el.find(".ok").show();
+                this.distributeLowerLevelPopup.$el.find(".cancel").html("取消");
         },
 
         onClickCancelButton: function() {
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
 
-        initLayerStrategyTable: function(args) {
-            var dataObj = args || [];
-            this.defaultParam = dataObj;
+        initLayerStrategyTable: function() {
             this.nodeTable = $(_.template(template['tpl/specialLayerManage/specialLayerManage.editNode.table.html'])({
-                data: dataObj
+                data: this.defaultParam
             }));
-            if (dataObj.length !== 0){    
+            if (this.defaultParam.length !== 0){    
                 this.$el.find(".table-ctn").html(this.nodeTable[0]);
                 this.nodeTable.find("tbody .view").on("click", $.proxy(this.onClickItemView, this));
+                this.nodeTable.find("tbody tr[data-id]").on("click", $.proxy(this.onItemCheckedUpdated, this));
+                this.nodeTable.find("thead[data-parent] input").on("click", $.proxy(this.onAllCheckedUpdated, this));
             }else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty-2.html'])({
                     data: {
                         message: "暂无数据"
                     }
                 }));
+            
+        },
+
+        onItemCheckedUpdated: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            var id = $(eventTarget).attr("id");
+            var selectedObj = _.find(this.defaultParam, function(object){
+                return object.id === parseInt(id)
+            }.bind(this));
+            selectedObj.isChecked = eventTarget.checked
+            console.log(this.defaultParam)
+            var checkedList = this.defaultParam.filter(function(object) {
+                return object.isChecked === true;
+            })
+            console.log(checkedList.length,this.defaultParam.length)
+            if (checkedList.length === this.defaultParam.length)
+                this.nodeTable.find("thead[data-parent] input").get(0).checked = true;
+            if (checkedList.length !== this.defaultParam.length)
+                this.nodeTable.find("thead[data-parent] input").get(0).checked = false;
+        },
+
+        onAllCheckedUpdated: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            _.each(this.de1, function(el, index, list){
+                el.isChecked = eventTarget.checked
+            }.bind(this))
+            this.nodeTable.find("tbody tr[data-id]").find("input").prop("checked", eventTarget.checked);
         },
 
         onClickItemView:function(event){     
             var eventTarget = event.currentTarget || event.target, id;
             var dataObj;
+
             id = $(eventTarget).attr("id");
             _.each(this.defaultParam, function(el){
                 if(el.id == id){

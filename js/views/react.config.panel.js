@@ -1,5 +1,5 @@
-define("react.config.panel", ['require', 'exports', 'utility'],
-    function(require, exports, Utility) {
+define("react.config.panel", ['require', 'exports', 'utility', 'react.backbone', 'react-bootstrap'],
+    function(require, exports, Utility, React, ReactBootstrap) {
         var PanelGroup = ReactBootstrap.PanelGroup,
             Panel = ReactBootstrap.Panel,
             Button = ReactBootstrap.Button,

@@ -1,12 +1,12 @@
-define("sharedSetup.view", ['require', 'exports', 'template', 'modal.view', 'utility', 'react.table'],
-    function(require, exports, template, Modal, Utility, ReactTableComponent) {
+define("sharedSetup.view", ['require', 'exports', 'template', 'modal.view', 'utility', 'react.table', "react", "react-dom"],
+    function(require, exports, template, Modal, Utility, ReactTableComponent, React, ReactDOM) {
 
         var SharedSetupView = Backbone.View.extend({
             events: {
-                "click .opt-ctn .query": "resetList",
-                "keyup #input-domain-name": "onKeyupInput",
-                "keyup #input-customer-id": "onKeyupInput",
-                "click .add": "onClickAddBtn",
+                // "click .opt-ctn .query": "resetList",
+                // "keyup #input-domain-name": "onKeyupInput",
+                // "keyup #input-customer-id": "onKeyupInput",
+                // "click .add": "onClickAddBtn",
             },
 
             initialize: function(options) {
@@ -14,6 +14,11 @@ define("sharedSetup.view", ['require', 'exports', 'template', 'modal.view', 'uti
                 this.collection = options.collection;
                 this.query = options.query;
                 this.$el = $(_.template(template['tpl/sharedSetup/sharedSetup.html'])());
+
+                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.resetList, this));
+                this.$el.find("#input-domain-name").on("keyup", $.proxy(this.onKeyupInput, this))
+                this.$el.find("#input-customer-id").on("keyup", $.proxy(this.onKeyupInput, this))
+                this.$el.find(".add").on("click", $.proxy(this.onClickAddBtn, this))
 
                 this.collection.on("get.configSharedGroup.success", $.proxy(this.onGetChannelSuccess, this));
                 this.collection.on("get.configSharedGroup.error", $.proxy(this.onGetError, this));

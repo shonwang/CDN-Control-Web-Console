@@ -1,7 +1,0 @@
-{
-  "create-react-class": "../libs/react/create-react-class",
-  "react-bootstrap": "../libs/react/react-bootstrap",
-  "react-dom": "../libs/react/react-dom",
-  "react.backbone": "../libs/react/react.backbone",
-  "react": "../libs/react/react"
-}

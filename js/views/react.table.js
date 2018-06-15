@@ -1,5 +1,5 @@
-define("react.table", ['require', 'exports'],
-    function(require, exports) {
+define("react.table", ['require', 'exports', 'react.backbone', 'react-bootstrap'],
+    function(require, exports, React, ReactBootstrap) {
         var Table = ReactBootstrap.Table;
 
         var ReactTableRow = React.createBackboneClass({

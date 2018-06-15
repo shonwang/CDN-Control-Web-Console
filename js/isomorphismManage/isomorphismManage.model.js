@@ -1,5 +1,5 @@
-define("isomorphismManage.model", ['require', 'exports', 'utility', 'setupTopoManage.model'],
-    function(require, exports, Utility, SetupTopoManageCollection) {
+define("isomorphismManage.model", ['require', 'exports', 'utility', 'setupTopoManage.model', 'react'],
+    function(require, exports, Utility, SetupTopoManageCollection, React) {
         var Model = Backbone.Model.extend({
             initialize: function() {
                 var businessType = this.get("subType"),

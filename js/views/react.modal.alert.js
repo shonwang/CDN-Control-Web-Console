@@ -1,5 +1,5 @@
-define("react.modal.alert", ['require', 'exports'],
-    function(require, exports) {
+define("react.modal.alert", ['require', 'exports', 'react.backbone', 'react-bootstrap'],
+    function(require, exports, React, ReactBootstrap) {
         var Modal = ReactBootstrap.Modal,
             Alert = ReactBootstrap.Alert;
 

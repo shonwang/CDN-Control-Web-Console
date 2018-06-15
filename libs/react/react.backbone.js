@@ -4,12 +4,12 @@
         module.exports = factory(require('backbone'), require('react'), require('underscore'));
     } else if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
-        define(['backbone', 'react', 'underscore'], factory);
+        define(['react'], factory);
     } else {
         // Browser globals
         root.amdWeb = factory(root.Backbone, root.React, root._);
     }
-}(this, function(Backbone, React,  _) {
+}(this, function(React) {
 
     'use strict';
 

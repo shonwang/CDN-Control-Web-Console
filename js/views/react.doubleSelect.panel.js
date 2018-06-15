@@ -1,5 +1,5 @@
-define("react.doubleSelect.panel", ['require', 'exports'],
-    function(require, exports) {
+define("react.doubleSelect.panel", ['require', 'exports', 'react.backbone', 'react-bootstrap'],
+    function(require, exports, React, ReactBootstrap) {
         var PanelGroup = ReactBootstrap.PanelGroup,
             Panel = ReactBootstrap.Panel,
             Button = ReactBootstrap.Button,

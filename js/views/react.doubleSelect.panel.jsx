@@ -1,5 +1,5 @@
-define("react.doubleSelect.panel", ['require', 'exports'],
-    function(require, exports) {
+define("react.doubleSelect.panel", ['require', 'exports', 'react.backbone', 'react-bootstrap'],
+    function(require, exports, React, ReactBootstrap) {
         var PanelGroup = ReactBootstrap.PanelGroup,
             Panel = ReactBootstrap.Panel,
             Button = ReactBootstrap.Button,
@@ -13,15 +13,15 @@ define("react.doubleSelect.panel", ['require', 'exports'],
         var ReactLoading = React.createBackboneClass({
             render: function(){
                 return (     
-                    React.createElement("div", {className: "loader"}, 
-                        React.createElement("div", {className: "loader-inner pacman"}, 
-                            React.createElement("div", null), 
-                            React.createElement("div", null), 
-                            React.createElement("div", null), 
-                            React.createElement("div", null), 
-                            React.createElement("div", null)
-                        )
-                    )
+                    <div className="loader">
+                        <div className="loader-inner pacman">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
                 )
             }
         });
@@ -38,21 +38,21 @@ define("react.doubleSelect.panel", ['require', 'exports'],
 
             render: function() {
                 var tr = (
-                        React.createElement("tr", null, 
-                            React.createElement("td", null, 
-                                React.createElement(Radio, {name: "radioGroup", onChange: this.onClickMainDomain, id: this.props.domain},  this.props.domain)
-                            ), 
-                            React.createElement("td", null, React.createElement("a", {href: "javascript:void(0)", onClick: this.handleClickDelete, id: this.props.domain}, "删除"))
-                        )
+                        <tr>
+                            <td>
+                                <Radio name="radioGroup" onChange={this.onClickMainDomain} id={this.props.domain}>{ this.props.domain }</Radio>
+                            </td>
+                            <td><a href="javascript:void(0)" onClick={this.handleClickDelete} id={this.props.domain}>删除</a></td>
+                        </tr>
                     );
                 if (this.props.mainDomain === this.props.domain) {
                     tr = (
-                        React.createElement("tr", null, 
-                            React.createElement("td", null, 
-                                React.createElement(Radio, {name: "radioGroup", onChange: this.onClickMainDomain, id: this.props.domain, checked: true},  this.props.domain)
-                            ), 
-                            React.createElement("td", null, React.createElement("span", {className: "label label-success"}, "主域名"))
-                        )
+                        <tr>
+                            <td>
+                                <Radio name="radioGroup" onChange={this.onClickMainDomain} id={this.props.domain} checked>{ this.props.domain }</Radio>
+                            </td>
+                            <td><span className="label label-success">主域名</span></td>
+                        </tr>
                     );
                 }
 
@@ -68,9 +68,9 @@ define("react.doubleSelect.panel", ['require', 'exports'],
 
             render: function() {
                 return (
-                    React.createElement("tr", {onClick: this.handleClickTr}, 
-                        React.createElement("td", null,  this.props.domain)
-                    )
+                    <tr onClick={this.handleClickTr}>
+                        <td>{ this.props.domain }</td>
+                    </tr>
                 );
             }
         });
@@ -191,71 +191,71 @@ define("react.doubleSelect.panel", ['require', 'exports'],
 
                 render: function() {
                     var header = (
-                         React.createElement("div", null, 
-                            React.createElement(FormGroup, {style: {marginBottom: 0}}, 
-                                React.createElement(Col, {sm: 9}, 
-                                    React.createElement(FormControl, {type: "text", placeholder: "搜索域名", bsSize: "small", 
-                                                 value: this.state.keyword, onChange: this.onChangeInput, onKeyUp: this.onKeyupInput})
-                                ), 
-                                React.createElement(Col, {sm: 2}, 
-                                    React.createElement(Button, {bsStyle: "primary", onClick: this.onClickSearch, bsSize: "small"}, "查询")
-                                )
-                            )
-                        )
+                         <div>
+                            <FormGroup style={{marginBottom: 0}}>
+                                <Col sm={9}>
+                                    <FormControl type="text" placeholder="搜索域名" bsSize="small" 
+                                                 value={this.state.keyword} onChange={this.onChangeInput} onKeyUp={this.onKeyupInput}/>
+                                </Col>
+                                <Col sm={2}>
+                                    <Button bsStyle="primary" onClick={this.onClickSearch} bsSize="small">查询</Button>
+                                </Col>
+                            </FormGroup>
+                        </div>
                     );
 
                     var empty = (
-                            React.createElement("div", {className: "empty-ctn"}, 
-                                React.createElement(ReactBootstrap.Image, {src: "images/404.png", responsive: true, style: {margin:"0 auto"}}), 
-                                React.createElement("p", {className: "text-muted text-center"}, "暂无数据")
-                            )
+                            <div className="empty-ctn">
+                                <ReactBootstrap.Image src="images/404.png" responsive style={{margin:"0 auto"}}/>
+                                <p className="text-muted text-center">暂无数据</p>
+                            </div>
                         );
 
                     var searchRows = this.state.search.map(function(domain, index){
                         return (
-                                React.createElement(ReactSearchRow, {key: index, domain: domain, onClickItemCallback: this.onClickSearchItem})
+                                <ReactSearchRow key={index} domain={domain} onClickItemCallback={this.onClickSearchItem}/>
                             );
                     }.bind(this))
 
                     var searchTable = (
-                            React.createElement(Table, {striped: true, hover: true}, 
-                                React.createElement("thead", null, 
-                                    React.createElement("tr", null, 
-                                        React.createElement("th", null, "域名")
-                                    )
-                                ), 
-                                React.createElement("tbody", null, 
-                                    searchRows
-                                )
-                            )
+                            <Table striped hover>
+                                <thead>
+                                    <tr>
+                                        <th>域名</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {searchRows}
+                                </tbody>
+                            </Table>
                         );
 
                     if (searchRows.length === 0 && !this.state.isLoading) {
                         searchTable = empty;
                     } else if (this.state.isLoading){
-                        searchTable = React.createElement(ReactLoading, null)
+                        searchTable = <ReactLoading />
                     }
 
                     var selectedRows = this.state.selected.map(function(domain, index){
                         return (
-                                React.createElement(ReactSelectedRow, {key: index, domain: domain, mainDomain: this.state.mainDomain, 
-                                 onClickDeleteCallback: this.onClickSelectDelete, 
-                                 onClickRadioCallback: this.onClickMainDomain})
+                                <ReactSelectedRow key={index} domain={domain} mainDomain={this.state.mainDomain}
+                                 onClickDeleteCallback={this.onClickSelectDelete}
+                                 onClickRadioCallback={this.onClickMainDomain}/>
                             );
                     }.bind(this))
 
                     var selectedTable = (
-                            React.createElement(Table, {striped: true, hover: true}, 
-                                React.createElement("thead", null, 
-                                    React.createElement("tr", null, 
-                                        React.createElement("th", null, "设置主域名"), 
-                                        React.createElement("th", null, "操作")
-                                    )
-                                ), 
-                                React.createElement("tbody", null, 
-                                    selectedRows
-                                )
-                            )
+                            <Table striped hover>
+                                <thead>
+                                    <tr>
+                                        <th>设置主域名</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {selectedRows}
+                                </tbody>
+                            </Table>
                         );
 
                     if (selectedRows.length === 0) {
@@ -263,20 +263,20 @@ define("react.doubleSelect.panel", ['require', 'exports'],
                     } 
 
                     var reactDoubleSelect = (
-                        React.createElement("div", {className: "row"}, 
-                            React.createElement("div", {className: "col-md-6"}, 
-                                React.createElement(Panel, {header: header, style: {maxHeight: "600px", "overflow": "auto"}}, 
-                                    searchTable
-                                ), 
-                                React.createElement(Button, {bsStyle: "success", onClick: this.onClickSelectAll}, "全部选择")
-                            ), 
-                            React.createElement("div", {className: "col-md-6"}, 
-                                React.createElement(Panel, {header: "已选域名", style: {maxHeight: "600px", "overflow": "auto"}}, 
-                                    selectedTable
-                                ), 
-                                React.createElement(Button, {bsStyle: "danger", onClick: this.onClickClearAll}, "全部清空")
-                            )
-                        )
+                        <div className="row">
+                            <div className="col-md-6">
+                                <Panel header={header} style={{maxHeight: "600px", "overflow": "auto"}}>
+                                    {searchTable}
+                                </Panel>
+                                <Button bsStyle="success" onClick={this.onClickSelectAll}>全部选择</Button>
+                            </div>
+                            <div className="col-md-6">
+                                <Panel header="已选域名" style={{maxHeight: "600px", "overflow": "auto"}}>
+                                    {selectedTable}
+                                </Panel>
+                                <Button bsStyle="danger" onClick={this.onClickClearAll}>全部清空</Button>
+                            </div>
+                        </div>
                     );
 
                     return reactDoubleSelect

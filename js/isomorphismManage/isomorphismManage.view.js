@@ -1,10 +1,10 @@
-define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view', 'utility', 'react.table'],
-    function(require, exports, template, Modal, Utility, ReactTableComponent) {
+define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view', 'utility', 'react.table', "react", "react-dom"],
+    function(require, exports, template, Modal, Utility, ReactTableComponent, React, ReactDOM) {
 
         var IsomorphismManageView = Backbone.View.extend({
             events: {
-                "click .opt-ctn .query": "resetList",
-                "keyup #input-domain-name": "onKeyupInput"
+                // "click .opt-ctn .query": "resetList",
+                // "keyup #input-domain-name": "onKeyupInput"
             },
 
             initialize: function(options) {
@@ -14,6 +14,8 @@ define("isomorphismManage.view", ['require', 'exports', 'template', 'modal.view'
 
                 this.collection.on("get.channel.success", $.proxy(this.onGetChannelSuccess, this));
                 this.collection.on("get.channel.error", $.proxy(this.onGetError, this));
+                this.$el.find(".opt-ctn .query").on("click", $.proxy(this.resetList, this));
+                this.$el.find("#input-domain-name").on("keyup", $.proxy(this.onKeyupInput, this))
 
                 this.curPage = 1;
                 this.isInitPaginator = false;

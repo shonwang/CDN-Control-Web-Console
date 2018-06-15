@@ -1,5 +1,5 @@
-define("react.modal.confirm", ['require', 'exports'],
-    function(require, exports) {
+define("react.modal.confirm", ['require', 'exports', 'react.backbone', 'react-bootstrap'],
+    function(require, exports, React, ReactBootstrap) {
         var Modal = ReactBootstrap.Modal,
             Button = ReactBootstrap.Button;
 

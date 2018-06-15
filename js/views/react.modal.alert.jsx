@@ -1,5 +1,5 @@
-define("react.modal.alert", ['require', 'exports'],
-    function(require, exports) {
+define("react.modal.alert", ['require', 'exports', 'react.backbone', 'react-bootstrap'],
+    function(require, exports, React, ReactBootstrap) {
         var Modal = ReactBootstrap.Modal,
             Alert = ReactBootstrap.Alert;
 
@@ -36,12 +36,12 @@ define("react.modal.alert", ['require', 'exports'],
 
             render: function() {
                 var reactModalAlert = (
-                            React.createElement(Modal, {show: this.state.showModal, onHide: this.close, backdrop: this.props.backdrop}, 
-                                React.createElement(Alert, {bsStyle: this.props.type, onDismiss: this.close, style: {marginBottom: 0}}, 
-                                    React.createElement("strong", {className: "glyphicon glyphicon-info-sign"}), 
-                                    React.createElement("span", {dangerouslySetInnerHTML: this.createMarkup()})
-                                )
-                            )
+                            <Modal show={this.state.showModal} onHide={this.close} backdrop={this.props.backdrop}>
+                                <Alert bsStyle={this.props.type} onDismiss={this.close} style={{marginBottom: 0}}>
+                                    <strong className="glyphicon glyphicon-info-sign"></strong>
+                                    <span dangerouslySetInnerHTML={this.createMarkup()} />
+                                </Alert>
+                            </Modal>
                         );
 
                 return reactModalAlert

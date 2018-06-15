@@ -327,7 +327,7 @@ module.exports = function(grunt) {
         modifyFile("login.html", 'DEBUG', 'window.DEBUG = 1.1;');
     });
 
-    grunt.registerTask('temp', ["clean", 'underscore', 'react', "getpaths:react"]);
+    grunt.registerTask('temp', ["clean", 'underscore', 'react']);
     grunt.registerTask('module', ["clean", 'underscore', 'getpaths:js', 'getpaths:react','module-url']);
     grunt.registerTask('debug', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
         'copy:main','debug-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])

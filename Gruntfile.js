@@ -72,6 +72,10 @@ module.exports = function(grunt) {
             js: {
                 src: ['js/**/*.js', 'js/*.js'], 
                 dest: ''
+            },
+            react: {
+                src: ['libs/react/**/*.js', 'libs/react/*.js'], 
+                dest: ''
             }
         },
         uglify: {
@@ -84,23 +88,23 @@ module.exports = function(grunt) {
                 },
                 files: {
                     'dest/libs/libs.js': [
-                        "libs/jquery.min.js",
-                        "libs/jquery.qrcode.min.js",
-                        "libs/bootstrap.min.js",
-                        "libs/jqPaginator.js",
-                        "libs/jquery.datetimepicker.js",
-                        "libs/jquery-accordion-menu.js",
-                        "libs/jquery.ztree.core.js",
-                        "libs/jquery.ztree.excheck.js",
-                        "libs/jquery.ztree.exhide.js",
+                        "libs/jquery/jquery.min.js",
+                        "libs/jquery/jquery.qrcode.min.js",
+                        "libs/jquery/bootstrap.min.js",
+                        "libs/jquery/bootstrap-switch.js",
+                        "libs/jquery/jqPaginator.js",
+                        "libs/jquery/jquery.datetimepicker.js",
+                        "libs/jquery/jquery-accordion-menu.js",
+                        "libs/jquery/jquery.ztree.core.js",
+                        "libs/jquery/jquery.ztree.excheck.js",
+                        "libs/jquery/jquery.ztree.exhide.js",
                         "libs/underscore.js",
-                        "libs/backbone-min.js",
+                        "libs/backbone.js",
                         "libs/weige-alert.js",
-                        "libs/highlight.min.js",
                         "libs/searchSelect.js",
+                        "libs/highlight.min.js",
                         "libs/plupload.full.min.js",
                         "libs/async.min.js",
-                        "libs/bootstrap-switch.js",
                         "libs/socket.io-1.4.5.js",
                         "libs/toastr.js"
                     ]
@@ -170,10 +174,10 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: '',
                     src: ['libs/require.min.js',
-                        "libs/jquery.min.js",
-                        "libs/bootstrap.min.js",
-                        "libs/particles.min.js",
-                        "libs/app.js",
+                        "libs/jquery/jquery.min.js",
+                        "libs/jquery/bootstrap.min.js",
+                        "libs/login/particles.min.js",
+                        "libs/login/app.js",
                         "libs/echarts.min.js",
                         "libs/echart-plain.js",
                         "libs/react.backbone.js",
@@ -323,8 +327,8 @@ module.exports = function(grunt) {
         modifyFile("login.html", 'DEBUG', 'window.DEBUG = 1.1;');
     });
 
-    grunt.registerTask('temp', ["clean", 'underscore', 'react']);
-    grunt.registerTask('module', ["clean", 'underscore', 'getpaths', 'module-url']);
+    grunt.registerTask('temp', ["clean", 'underscore', 'react', "getpaths:react"]);
+    grunt.registerTask('module', ["clean", 'underscore', 'getpaths:js', 'getpaths:react','module-url']);
     grunt.registerTask('debug', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
         'copy:main','debug-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
     // clean 清空temp dest 文件夹 

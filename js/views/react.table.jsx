@@ -15,29 +15,29 @@ define("react.table", ['require', 'exports'],
             render: function() {
                 var model = this.getModel();
                 var tds = this.props.rowFeilds.map(function(feildName, index){
-                    var td = <td key={index}>{model.get(feildName)}</td>;
+                    var td = React.createElement("td", {key: index}, model.get(feildName));
                     if (feildName === "checkbox"){
-                        td = <td key={index}>
-                                <input type="checkbox" checked={model.get('isChecked')} onChange={this.handleClickCheckbox} />
-                             </td>;
+                        td = React.createElement("td", {key: index}, 
+                                React.createElement("input", {type: "checkbox", checked: model.get('isChecked'), onChange: this.handleClickCheckbox})
+                             );
                     }
                     return td;
                 }.bind(this));
                 var buttons = this.props.operationList.map(function(operation, index){
-                    return <a key={index} 
-                              href="javascript:void(0)" 
-                              className={operation.className} 
-                              id={model.get('id')} 
-                              onClick={operation.callback}>{operation.name}</a>;
+                    return React.createElement("a", {key: index, 
+                              href: "javascript:void(0)", 
+                              className: operation.className, 
+                              id: model.get('id'), 
+                              onClick: operation.callback}, operation.name);
                 });
-                var thOper = <td>{buttons}</td>;
+                var thOper = React.createElement("td", null, buttons);
 
                 if (this.props.noOperCol) thOper = null;
                 return (
-                    <tr>
-                        {tds}
-                        {thOper}
-                    </tr>
+                    React.createElement("tr", null, 
+                        tds, 
+                        thOper
+                    )
                 )
             }
         });
@@ -77,46 +77,46 @@ define("react.table", ['require', 'exports'],
                     noOperCol = this.props.noOperCol;
 
                 var rows = collection.map(function(model, index){
-                    return <ReactTableRow key={index} 
-                                          model={model} 
-                                          operationList={operationList}
-                                          noOperCol={noOperCol} 
-                                          rowFeilds={rowFeilds} 
-                                          checkboxCallback={this.handleItemClickCheckbox}/>;
+                    return React.createElement(ReactTableRow, {key: index, 
+                                          model: model, 
+                                          operationList: operationList, 
+                                          noOperCol: noOperCol, 
+                                          rowFeilds: rowFeilds, 
+                                          checkboxCallback: this.handleItemClickCheckbox});
                 }.bind(this));
                 var theadName = this.props.theadNames.map(function(name, index){
-                    var th = <th key={index}>{name}</th>
+                    var th = React.createElement("th", {key: index}, name)
                     if (name === "checkbox"){
-                        th = <th key={index}>
-                                <input type="checkbox" onChange={this.handleClickCheckbox} checked={this.state.isCheckedAll} />
-                             </th>
+                        th = React.createElement("th", {key: index}, 
+                                React.createElement("input", {type: "checkbox", onChange: this.handleClickCheckbox, checked: this.state.isCheckedAll})
+                             )
                     }
                     return th;
                 }.bind(this));
 
-                var table = null, thOper = <th>操作</th>;
+                var table = null, thOper = React.createElement("th", null, "操作");
 
                 if (noOperCol) thOper = null;
                 if (rows.length > 0) {
                     table = (
-                        <Table striped hover>
-                            <thead>
-                                <tr>
-                                    {theadName}
-                                    {thOper}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {rows}
-                            </tbody>
-                        </Table>
+                        React.createElement(Table, {striped: true, hover: true}, 
+                            React.createElement("thead", null, 
+                                React.createElement("tr", null, 
+                                    theadName, 
+                                    thOper
+                                )
+                            ), 
+                            React.createElement("tbody", null, 
+                                rows
+                            )
+                        )
                     );
                 } else {
                     table = (
-                        <div className="empty-ctn">
-                            <ReactBootstrap.Image src="images/404.png" responsive style={{margin:"0 auto"}}/>
-                            <p className="text-muted text-center">暂无数据</p>
-                        </div>
+                        React.createElement("div", {className: "empty-ctn"}, 
+                            React.createElement(ReactBootstrap.Image, {src: "images/404.png", responsive: true, style: {margin:"0 auto"}}), 
+                            React.createElement("p", {className: "text-muted text-center"}, "暂无数据")
+                        )
                     )
                 }
 

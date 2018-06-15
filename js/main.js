@@ -251,10 +251,10 @@
   "setupSending.detail.view": "setupSendManage/setupSending/setupSending.detail.view",
   "setupSending.model": "setupSendManage/setupSending/setupSending.model",
   "setupSending.view": "setupSendManage/setupSending/setupSending.view",
-  "setupTemplateManage.model": "setupTemplateManage/setupTemplateManage.model",
-  "setupTemplateManage.view": "setupTemplateManage/setupTemplateManage.view",
   "setupSendingSwitch.model": "setupSendManage/setupSendingSwitch/setupSendingSwitch.model",
   "setupSendingSwitch.view": "setupSendManage/setupSendingSwitch/setupSendingSwitch.view",
+  "setupTemplateManage.model": "setupTemplateManage/setupTemplateManage.model",
+  "setupTemplateManage.view": "setupTemplateManage/setupTemplateManage.view",
   "setupTopoManage.edit.view": "setupTopoManage/setupTopoManage.edit.view",
   "setupTopoManage.history.view": "setupTopoManage/setupTopoManage.history.view",
   "setupTopoManage.model": "setupTopoManage/setupTopoManage.model",
@@ -288,7 +288,12 @@
   "react.modal.alert": "views/react.modal.alert",
   "react.modal.confirm": "views/react.modal.confirm",
   "react.table": "views/react.table",
-  "subNavbar.view": "views/subNavbar.view"
+  "subNavbar.view": "views/subNavbar.view",
+  "create-react-class": "../libs/react/create-react-class",
+  "react-bootstrap": "../libs/react/react-bootstrap",
+  "react-dom": "../libs/react/react-dom",
+  "react.backbone": "../libs/react/react.backbone",
+  "react": "../libs/react/react"
 };
 //PATH END===
 window.DEBUG = 1.1;

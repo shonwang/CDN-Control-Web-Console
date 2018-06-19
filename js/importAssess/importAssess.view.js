@@ -555,13 +555,15 @@ define("importAssess.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.myDispGroupModel = new DispGroupModel();
                 this.myDispGroupModel.on("get.dispGroup.success", $.proxy(this.onGetDispGroupList, this));
                 this.myDispGroupModel.on("get.dispGroup.error", $.proxy(this.onGetError, this));
-                this.myDispGroupModel.getDispGroupList({
+                var dispDomainParam = {
                     "name"  : null,//调度组名称
                     "status": null,//调度组状态
                     "level" : null,//覆盖级别
                     "page"  : 1,
-                    "count" : 99999
-                });
+                    "count" : 99999,
+                    "topoId": null
+                };
+                this.myDispGroupModel.getDispGroupList(dispDomainParam);
             }.bind(this))
 
             this.collection.on("get.region.success", $.proxy(this.onGetRegionList, this));

@@ -214,13 +214,13 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
                 Utility.postAjax(url, args, successCallback, errorCallback);
             },
 
-            strategyUpdate:function(args){
+            strategyUpdate:function(args, num){
                 var url = BASE_URL + "/cd/task/strategyupdate/create?comment="+args.comment+"&ruleId="+args.ruleId,
                     successCallback = function(res) {
-                        this.trigger("send.success", res, args.ruleId);
+                        this.trigger("send.success", res, args.ruleId, num);
                     }.bind(this),
                     errorCallback = function(response) {
-                        this.trigger('send.error', response, args.ruleId);
+                        this.trigger('send.error', response, args.ruleId, num);
                     }.bind(this);
                 Utility.postAjax(url, [], successCallback, errorCallback);
             },

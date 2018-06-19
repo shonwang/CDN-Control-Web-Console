@@ -11,8 +11,17 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
                 this.collection.on("get.layerInfo.success", $.proxy(this.onGetlayerInfoSuccess,this));
                 this.collection.on("get.ruleConfirmInfo.success", $.proxy(this.onGetRuleConfirmInfoSuccess,this));
                 this.collection.on("get.ruleConfirmInfo.error", $.proxy(this.onGetRuleConfirmInfoError,this));
+                this.collection.on("get.unchecked", $.proxy(this.onGetUncheckedItem,this));
                 this.dataList = [];
-                
+                this.checkedItem = [];
+                _.each(this.dataParam, function(el){
+                    el[1].isChecked = true;
+                    this.checkedItem.push(el[1])
+                }.bind(this))
+            },
+
+            onGetUncheckedItem: function(){
+                this.$el.find("tr[data-id] input").hide();
             },
 
             onGetRuleConfirmInfoSuccess: function(data, id){
@@ -44,22 +53,40 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
                                     "'></td><td>"+tempList.name+"</td></tr>";
                     this.$el.find("tbody").append(itemList)
                 }
+                this.$el.find("tr[data-id] input").on("click", $.proxy(this.onItemCheckedUpdated, this));
                 if(this.dataList.length === this.dataParam.length){
                     this.getArgs();
                     this.collection.trigger("set.dataItem.success")
                 }
             },
+
+            onItemCheckedUpdated: function(event){
+                var eventTarget = event.srcElement || event.target;
+                if (eventTarget.tagName !== "INPUT") return;
+                var id = $(eventTarget).attr("id");
+                var selectedObj = _.find(this.checkedItem, function(object){
+                    return object.id === parseInt(id)
+                }.bind(this));
+                selectedObj.isChecked = eventTarget.checked
+                var checkedList = this.checkedItem.filter(function(object) {
+                    return object.isChecked === true;
+                })
+            },
     
             getArgs:function(){
+                var num = 0;
                 this.lowerLevel = [];
-                _.each(this.dataParam, function(el){
-                    var args = {
-                        comment: el[1].type,
-                        ruleId: el[1].id
-                    }
-                    this.lowerLevel.push(args)
+                _.each(this.checkedItem, function(el){
+                    if(el.isChecked === true){
+                        num += 1;
+                        var args = {
+                            comment: el.type,
+                            ruleId: el.id
+                        }
+                        this.lowerLevel.push(args)
+                    } 
                 }.bind(this))
-                return this.lowerLevel
+                return [this.lowerLevel, num]
             },
             
             render: function(target) {

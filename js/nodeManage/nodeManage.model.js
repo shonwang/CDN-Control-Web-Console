@@ -199,7 +199,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
         },
 
         removeNodeInDispGroups: function(args) {
-            var url = BASE_URL + "/rs/dispConf/removeNodeInDispGroups?nodeId=" + args.id + "&dispGroupIds=" + args.groupIds,
+            var url = BASE_URL + "/rs/dispConf/removeNodeInDispGroups?nodeId=" + args.id + "&dispGroupIds=" + args.dispGroup,
                 successCallback = function(res) {
                     if (res)
                         this.trigger("remove.nodeInDispGroup.success", res);

@@ -113,8 +113,8 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                         }
                 }.bind(this));
             }
-            this.defaultParam = strategyParam
-            this.checkedParam = strategyParam
+            this.defaultParam = strategyParam;
+            this.checkedParam = strategyParam;
             this.initLayerStrategyTable();
         },
 
@@ -154,7 +154,6 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                     }.bind(this))
                     var ruleStr = tempRule.join(",");
                     localArgs.rules = ruleStr;
-                    console.log(localArgs)
                     this.collection.updateStrategy(localArgs);
                 }
             }.bind(this))
@@ -180,8 +179,8 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                         this.collection.off("send.error");
                         this.collection.on("send.success", $.proxy(this.onSendSuccess, this));
                         this.collection.on("send.error", $.proxy(this.onSendError, this));
-                        _.each(args, function(el){
-                            this.collection.strategyUpdate(el);
+                        _.each(args[0], function(el){
+                            this.collection.strategyUpdate(el,args[1]);
                         }.bind(this))
                         this.options.onCancelCallback && this.options.onCancelCallback();
 
@@ -197,10 +196,11 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             }.bind(this))
         },
 
-        onSendSuccess:function(data, id){
+        onSendSuccess:function(data, id, num){
             this.ruleConfirmInfo.push(data);
             this.collection.trigger("get.ruleConfirmInfo.success", data, id)
-            if(this.ruleConfirmInfo.length === this.checkedParam.length){
+            if(this.ruleConfirmInfo.length === num){
+                this.collection.trigger("get.unchecked");
                 this.distributeLowerLevelPopup.$el.find(".ok").off("click");
                 this.distributeLowerLevelPopup.$el.find(".ok").on("click" ,function(){
                     this.distributeLowerLevelPopup.$el.modal('hide');
@@ -208,10 +208,11 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             }
         },
 
-        onSendError: function(data, id){
+        onSendError: function(data, id, num){
             this.ruleConfirmInfo.push(data);
             this.collection.trigger("get.ruleConfirmInfo.error", data, id)
-            if(this.ruleConfirmInfo.length === this.checkedParam.length){
+            if(this.ruleConfirmInfo.length === num){
+                this.collection.trigger("get.unchecked");
                 this.distributeLowerLevelPopup.$el.find(".ok").off("click");
                 this.distributeLowerLevelPopup.$el.find(".ok").on("click" ,function(){
                     this.distributeLowerLevelPopup.$el.modal('hide');
@@ -269,7 +270,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
         onLayerAllCheckedUpdated: function(event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
-            _.each(this.de1, function(el, index, list){
+            _.each(this.defaultParam, function(el, index, list){
                 el.isChecked = eventTarget.checked
             }.bind(this))
             this.nodeTable.find("tbody tr[data-id]").find("input").prop("checked", eventTarget.checked);
@@ -332,7 +333,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
         onRuleAllCheckedUpdated: function(event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
-            _.each(this.de1, function(el, index, list){
+            _.each(this.defaultRuleParam, function(el, index, list){
                 el.isChecked = eventTarget.checked
             }.bind(this))
             this.ruleTable.find("tbody[data-rule] tr").find("input").prop("checked", eventTarget.checked);

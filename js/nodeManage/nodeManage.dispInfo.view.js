@@ -33,6 +33,7 @@ define("nodeManage.dispInfo.view", ['require', 'exports', 'template', 'modal.vie
             this.collection.on("remove.nodeInDispGroup.success", $.proxy(this.onDeleteRelateTopoSuccess, this));
             this.collection.on("remove.nodeInDispGroup.error", $.proxy(this.onGetError, this));
             this.initSearchTypeDropList();
+
             
         },
 
@@ -120,15 +121,16 @@ define("nodeManage.dispInfo.view", ['require', 'exports', 'template', 'modal.vie
         },
 
         onDeleteTopo: function(){
-            var args = [];
+            var args = {};
+            var temp = []
+            args.id = this.model.get('id');
             _.each(this.channelList, function(el){
                 if(el.isChecked === true){
-                    args.push(el)
+                    temp.push(el.dispId)
                 }
             }.bind(this))
-            console.log(args)
-            // this.collection.deleTopo(args)
-            this.onDeleteRelateTopoSuccess();
+            args.dispGroup = temp.join(",")
+            this.collection.removeNodeInDispGroups(args)
             this.target.modal("hide");
             
         },
@@ -136,7 +138,6 @@ define("nodeManage.dispInfo.view", ['require', 'exports', 'template', 'modal.vie
         onGetDispConfigSuccess: function(res) {
             this.channelList = res;
             if(this.channelList.length >= 1){
-                console.log(this.channelList)
                 var deleteRelateTopo = $("<button type='button' class='btn btn-danger deleteTopo'>解除关联</button>");
                 this.target.find(".modal-footer").prepend(deleteRelateTopo);
                 this.target.find(".deleteTopo").on("click", $.proxy(this.onDeleteTopo, this));

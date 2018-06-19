@@ -120,7 +120,6 @@
 			<% if (permission.ShareConfig) { %>
             <li id="sharedSetup"><a href="index.html#/sharedSetup/all"><i class="glyphicon glyphicon-share"></i>共享配置</a></li>
 			<% } %>
-            <li id="sharedSetup"><a href="index.html#/sharedSetup/all"><i class="glyphicon glyphicon-share"></i>共享配置</a></li>
         </ul>
     </li>
     <% } %>
@@ -152,10 +151,23 @@
             </li>
         </ul>
     </li>
-    <li style="display:none"><a href="javascript:void(0)"><i class="glyphicon glyphicon-refresh"></i>刷新自助</a>
+    <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-refresh"></i>预热刷新相关</a>
         <ul class="submenu">
-            <li id="refreshManual"><a href="javascript:void(0)" path="index.html#/refreshManual"><i class="glyphicon glyphicon-hand-up"></i>手动刷新</a></li>
-            <li id="customMaintenance"><a href="javascript:void(0)" path="index.html#/customMaintenance"><i class="glyphicon glyphicon-th"></i>自助运维</a></li>
+            <li id="preheatManage">
+                <a href="javascript:void(0)" path="index.html#/preheatManage">
+                    <i class="anticon anticon-cloud-download"></i>预热管理
+                </a>
+            </li>
+            <li id="refreshManual" style="display:none">
+                <a href="javascript:void(0)" path="index.html#/refreshManual">
+                    <i class="anticon anticon-cloud-download"></i>手动刷新
+                </a>
+            </li>
+            <li id="customMaintenance" style="display:none">
+                <a href="javascript:void(0)" path="index.html#/customMaintenance">
+                    <i class="glyphicon glyphicon-th"></i>自助运维
+                </a>
+            </li>
         </ul>
     </li>
 	<% if (permission.DomainSeting) { %>

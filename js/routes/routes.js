@@ -161,7 +161,8 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "templateManage": "templateManage",
                 "channelManage": "channelManage",
 
-                //张振建提的半途而废的需求（废弃）
+                //预热刷新相关
+                "preheatManage": "preheatManage",
                 "refreshManual": "refreshManual",
                 "customMaintenance": "customMaintenance",
 

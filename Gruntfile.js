@@ -1,7 +1,7 @@
 module.exports = function(grunt) {
     var pkg = grunt.file.readJSON('package.json');
     grunt.initConfig({
-        clean: ["dest", "temp"],
+        clean: ["dest", "temp", "js/react"],
         underscore: {
             compile: {
                 options: {
@@ -17,8 +17,22 @@ module.exports = function(grunt) {
             single_file_output: {
                 files: [{
                     expand: true,
-                    cwd: 'js/',
-                    src: ['**/*.jsx'],
+                    cwd: '',
+                    src: ['react/**/*.jsx'],
+                    dest: 'js/'
+                }]
+            }
+        },
+        babel: {
+            options: {
+                sourceMap: false,
+                "presets": [["env"], "react"]
+            },
+            dist: {
+                files: [{
+                    expand: true,
+                    cwd: '',
+                    src: ['react/**/*.js'],
                     dest: 'js/'
                 }]
             }
@@ -27,6 +41,7 @@ module.exports = function(grunt) {
             target: {
                 files: {
                     'dest/css/all.css': [
+                        "css/antd.css",
                         "css/bootstrap.min.css",
                         "css/jquery.datetimepicker.css",
                         "css/jquery-accordion-menu.css",
@@ -66,7 +81,7 @@ module.exports = function(grunt) {
         },
         getpaths: {
             options: {
-                mapping: 'assets.json', 
+                mapping: 'dest/assets.json', 
                 srcBasePath: 'js/'
             },
             js: {
@@ -106,9 +121,24 @@ module.exports = function(grunt) {
                         "libs/plupload.full.min.js",
                         "libs/async.min.js",
                         "libs/socket.io-1.4.5.js",
-                        "libs/toastr.js"
+                        "libs/toastr.js",
+                        "libs/polyfill.js"
                     ]
                 }
+            },
+            react: {
+                options: {
+                    compress: true,
+                    mangle: {
+                        except: ['define', 'exports', 'require']
+                    }
+                },
+                files: [{
+                    expand: true,
+                    cwd: '',
+                    src: ['libs/react/**/*.js', 'libs/react/*.js'],
+                    dest: 'dest/'
+                }]
             },
             js: {
                 options: {
@@ -180,11 +210,6 @@ module.exports = function(grunt) {
                         "libs/login/app.js",
                         "libs/echarts.min.js",
                         "libs/echart-plain.js",
-                        "libs/react.backbone.js",
-                        "libs/create-react-class.js",
-                        "libs/react.js",
-                        "libs/react-dom.js",
-                        "libs/react-bootstrap.js"
                     ], 
                     dest: 'dest/'
                 }, {
@@ -224,6 +249,7 @@ module.exports = function(grunt) {
     require("./build/hash")(grunt);
     require("./build/getPaths")(grunt);
     grunt.loadNpmTasks('grunt-react');
+    grunt.loadNpmTasks('grunt-babel');
 
     var modifyFile = function(filePath, key, val, setQeqPath) {
         grunt.log.writeln(filePath)
@@ -323,13 +349,13 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('module-url', '', function() {
-        modifyFile("js/main.js", 'DEBUG', 'window.DEBUG = 1.1;', "assets.json");
+        modifyFile("js/main.js", 'DEBUG', 'window.DEBUG = 1.1;', "dest/assets.json");
         modifyFile("login.html", 'DEBUG', 'window.DEBUG = 1.1;');
     });
 
-    grunt.registerTask('temp', ["clean", 'underscore', 'react']);
-    grunt.registerTask('module', ["clean", 'underscore', 'getpaths:js', 'getpaths:react','module-url']);
-    grunt.registerTask('debug', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('temp', ["clean", 'underscore', 'react', 'babel']);
+    grunt.registerTask('module', ["clean", 'underscore', 'react', 'babel', 'getpaths:js', 'getpaths:react','module-url']);
+    grunt.registerTask('debug', ["clean", 'underscore', 'react', 'babel', "copy:other", 'uglify:libs', 'uglify:react', 'uglify:js', 'getpaths:react', 'hash', 
         'copy:main','debug-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
     // clean 清空temp dest 文件夹 
     // underscore 编译模版
@@ -342,24 +368,24 @@ module.exports = function(grunt) {
     // cssmin 压缩css文件到 dest/css/all.css
     // processhtml: 将html中的引用替换为 all.css 、libs.js
     // filerev & usemin: 生成 dest/js/main.js 、dest/libs/libs.js 和 dest/css/all.css 文件的MD5，并在文件中替换 
-    grunt.registerTask('set', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('set', ["clean", 'underscore', 'react', 'babel', "copy:other", 'uglify:libs', 'uglify:react', 'uglify:js', 'getpaths:react', 'hash', 
         'copy:main', 'set-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
-    grunt.registerTask('online', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('online', ["clean", 'underscore', 'react', 'babel', "copy:other", 'uglify:libs', 'uglify:react', 'uglify:js', 'getpaths:react', 'hash', 
         'copy:main', 'online-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
-    grunt.registerTask('test', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('test', ["clean", 'underscore', 'react', 'babel', "copy:other", 'uglify:libs', 'uglify:react', 'uglify:js', 'getpaths:react', 'hash', 
         'copy:main', 'test-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
-    grunt.registerTask('gray', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('gray', ["clean", 'underscore', 'react', 'babel', "copy:other", 'uglify:libs', 'uglify:react', 'uglify:js', 'getpaths:react', 'hash', 
         'copy:main', 'gray-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
-    grunt.registerTask('develop', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('develop', ["clean", 'underscore', 'react', 'babel', "copy:other", 'uglify:libs', 'uglify:react', 'uglify:js', 'getpaths:react', 'hash', 
         'copy:main', 'dev-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
-    grunt.registerTask('shanghai', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('shanghai', ["clean", 'underscore', 'react', 'babel', "copy:other", 'uglify:libs', 'uglify:react', 'uglify:js', 'getpaths:react', 'hash', 
         'copy:main', 'shanghai-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
-    grunt.registerTask('gatewaydevelop', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('gatewaydevelop', ["clean", 'underscore', 'react', 'babel', "copy:other", 'uglify:libs', 'uglify:react', 'uglify:js', 'getpaths:react', 'hash', 
         'copy:main', 'gateway-develop-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
-    grunt.registerTask('wuqing', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('wuqing', ["clean", 'underscore', 'react', 'babel', "copy:other", 'uglify:libs', 'uglify:react', 'uglify:js', 'getpaths:react', 'hash', 
         'copy:main', 'wuqing-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
-    grunt.registerTask('preonline', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('preonline', ["clean", 'underscore', 'react', 'babel', "copy:other", 'uglify:libs', 'uglify:react', 'uglify:js', 'getpaths:react', 'hash', 
         'copy:main', 'preonline-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
-    grunt.registerTask('wq01k8s', ["clean", 'underscore', "copy:other", 'uglify:libs','uglify:js', 'hash', 
+    grunt.registerTask('wq01k8s', ["clean", 'underscore', 'react', 'babel', "copy:other", 'uglify:libs', 'uglify:react', 'uglify:js', 'getpaths:react', 'hash', 
         'copy:main', 'wq01k8s-url', 'uglify:main', "cssmin", 'processhtml', 'filerev', 'usemin'])
 };

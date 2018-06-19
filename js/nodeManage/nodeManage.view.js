@@ -218,7 +218,6 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 }.bind(this));
             },
             
-
             initTableHeader: function() {
                 var isCheckedStr = '<div class="checkbox">' +
                     '<label>' +

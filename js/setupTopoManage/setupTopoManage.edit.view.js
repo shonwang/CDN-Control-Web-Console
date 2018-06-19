@@ -13,8 +13,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 // 是否是查看状态
                 this.isView = options.isView;
                 this.isSaving = false;
-
-                // 注意这里this.$el指的是什么，在哪里应该都一样，是引用的那个tpl模板
                 this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.edit.html'])({
                     data: {}
                 }));
@@ -400,12 +398,10 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 }.bind(this));
                 postTopo.rule = postRules
                 postTopo.mark = this.$el.find("#comment").val();
-
                 if (this.btnFlag == 2)
                     postTopo.ispub = 1;
                 else
                     postTopo.ispub = 0;
-
                 if (this.isEdit)
                 // Ajax拓扑关系编辑
                     this.collection.topoModify(postTopo);

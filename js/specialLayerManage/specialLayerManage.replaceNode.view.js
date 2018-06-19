@@ -35,7 +35,9 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
             this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
             this.defaultParam = [];
+            this.checkedParam = [];
             this.defaultRuleParam = [];
+            this.checkedRuleParam = [];
             this.distributeLowerLevelParam = []
             this.dataList = {};
             this.ruleDataList = {};
@@ -112,6 +114,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                 }.bind(this));
             }
             this.defaultParam = strategyParam
+            this.checkedParam = strategyParam
             this.initLayerStrategyTable();
         },
 
@@ -120,7 +123,6 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             this.ruleDataList[id] = res;
             this.collection.trigger("get.layerInfo.success",res)
             
-
         },
 
         onClickSaveButton: function(){
@@ -133,8 +135,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                 return false;
             }
             var args = [];
-            _.each(this.defaultParam, function(el){
-                console.log(el.id, el.isChecked)
+            _.each(this.checkedParam, function(el){
                 if(el.isChecked === true){
                     var localArgs = {
                         id: el.id,
@@ -145,6 +146,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                         operateType: "replace"
                     }
                     var tempRule = []
+                    console.log(this.dataList)
                     _.each(this.dataList[el.id], function(item){
                         if(item.isChecked === true){
                             tempRule.push(item.id)
@@ -154,9 +156,6 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                     localArgs.rules = ruleStr;
                     console.log(localArgs)
                     this.collection.updateStrategy(localArgs);
-                    // if(Object.getOwnPropertyNames(this.ruleDataList).length > 0){
-                    //     this.ruleDataList = {}
-                    // }
                 }
             }.bind(this))
 
@@ -166,7 +165,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             require(["specialLayerManage.lowerLevel.view"], function(DistributeLowerLevelView) {
                 var myDistributeLowerLevelView = new DistributeLowerLevelView({
                     collection: this.collection,
-                    dataParam: this.defaultParam
+                    dataParam: this.checkedParam
                 });
                 var options = {
                     title:"配置下发",
@@ -185,7 +184,6 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                             this.collection.strategyUpdate(el);
                         }.bind(this))
                         this.options.onCancelCallback && this.options.onCancelCallback();
-                        // this.distributeLowerLevelPopup.$el.modal('hide');
 
                     }.bind(this),
                     onHiddenCallback: function(){
@@ -202,7 +200,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
         onSendSuccess:function(data, id){
             this.ruleConfirmInfo.push(data);
             this.collection.trigger("get.ruleConfirmInfo.success", data, id)
-            if(this.ruleConfirmInfo.length === this.defaultParam.length){
+            if(this.ruleConfirmInfo.length === this.checkedParam.length){
                 this.distributeLowerLevelPopup.$el.find(".ok").off("click");
                 this.distributeLowerLevelPopup.$el.find(".ok").on("click" ,function(){
                     this.distributeLowerLevelPopup.$el.modal('hide');
@@ -213,7 +211,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
         onSendError: function(data, id){
             this.ruleConfirmInfo.push(data);
             this.collection.trigger("get.ruleConfirmInfo.error", data, id)
-            if(this.ruleConfirmInfo.length === this.defaultParam.length){
+            if(this.ruleConfirmInfo.length === this.checkedParam.length){
                 this.distributeLowerLevelPopup.$el.find(".ok").off("click");
                 this.distributeLowerLevelPopup.$el.find(".ok").on("click" ,function(){
                     this.distributeLowerLevelPopup.$el.modal('hide');
@@ -261,6 +259,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             var checkedList = this.defaultParam.filter(function(object) {
                 return object.isChecked === true;
             })
+            this.checkedParam = checkedList;
             if (checkedList.length === this.defaultParam.length)
                 this.nodeTable.find("thead[data-parent] input").get(0).checked = true;
             if (checkedList.length !== this.defaultParam.length)
@@ -279,7 +278,8 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
         onClickItemView:function(event){     
             var eventTarget = event.currentTarget || event.target, id;
             id = $(eventTarget).attr("id");
-            this.defaultRuleParam = this.dataList[id] || []
+            this.defaultRuleParam = this.dataList[id] || [];
+            this.checkedRuleParam = this.defaultRuleParam;
             this.ruleTable = $(_.template(template['tpl/specialLayerManage/specialLayerManage.viewRule.html'])({
                 data: this.defaultRuleParam
             }));
@@ -319,10 +319,10 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                 return object.id === parseInt(id)
             }.bind(this));
             selectedObj.isChecked = eventTarget.checked
-            
             var checkedList = this.defaultRuleParam.filter(function(object) {
                 return object.isChecked === true;
             })
+            this.checkedRuleParam = checkedList
             if (checkedList.length === this.defaultRuleParam.length)
                 this.ruleTable.find("thead[data-rule] input").get(0).checked = true;
             if (checkedList.length !== this.defaultRuleParam.length)

@@ -198,6 +198,20 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             $.ajax(defaultParas);
         },
 
+        removeNodeInDispGroups: function(args) {
+            var url = BASE_URL + "/rs/dispConf/removeNodeInDispGroups?nodeId=" + args.id + "&dispGroupIds=" + args.groupIds,
+                successCallback = function(res) {
+                    if (res)
+                        this.trigger("remove.nodeInDispGroup.success", res);
+                    else
+                        this.trigger("remove.nodeInDispGroup.error", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("remove.nodeInDispGroup.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
         getAreaList: function(args) {
             var url = BASE_URL + "/rs/provCity/selectAllArea",
                 successCallback = function(res) {

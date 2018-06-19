@@ -13,7 +13,6 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
                 this.collection.on("get.ruleConfirmInfo.error", $.proxy(this.onGetRuleConfirmInfoError,this));
                 this.dataList = [];
                 
-                
             },
 
             onGetRuleConfirmInfoSuccess: function(data, id){

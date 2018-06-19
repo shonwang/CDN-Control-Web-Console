@@ -28,10 +28,10 @@ define("nodeManage.dispInfo.view", ['require', 'exports', 'template', 'modal.vie
                 size:9999,
             });
 
-            // this.collection.off("get.deleteRelateTopo.success");
-            // this.collection.off("get.deleteRelateTopo.error");
-            // this.collection.on("get.deleteRelateTopo.success", $.proxy(this.onDeleteRelateTopoSuccess, this));
-            // this.collection.on("get.deleteRelateTopo.error", $.proxy(this.onGetError, this));
+            this.collection.off("remove.nodeInDispGroup.success");
+            this.collection.off("remove.nodeInDispGroup.error");
+            this.collection.on("remove.nodeInDispGroup.success", $.proxy(this.onDeleteRelateTopoSuccess, this));
+            this.collection.on("remove.nodeInDispGroup.error", $.proxy(this.onGetError, this));
             this.initSearchTypeDropList();
             
         },

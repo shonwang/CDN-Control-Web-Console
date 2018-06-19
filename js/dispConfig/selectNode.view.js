@@ -23,10 +23,10 @@ define("selectNode.view", ['require','exports', 'template', 'modal.view', 'utili
             this.collection.on("get.regionOtherNode.success", $.proxy(this.onGetOtherNodeSuccess, this));
             this.collection.on("get.regionOtherNode.error", $.proxy(this.onGetError, this));
 
-            if (AUTH_OBJ.ShowMoreNode)
-                this.$el.find(".more").on("click", $.proxy(this.onClickMoreButton, this));
-            else
-                this.$el.find(".more").remove();
+            // if (AUTH_OBJ.ShowMoreNode)
+            //     this.$el.find(".more").on("click", $.proxy(this.onClickMoreButton, this));
+            // else
+            //     this.$el.find(".more").remove();
 
             this.args = {
                 regionId: this.regionId,
@@ -55,11 +55,11 @@ define("selectNode.view", ['require','exports', 'template', 'modal.view', 'utili
             this.initList();
         },
 
-        onClickMoreButton: function(){
-            this.$el.find(".more").hide();
-            this.$el.find(".node-list").html(_.template(template['tpl/loading.html'])());
-            this.collection.getRegionOtherNodeList(this.args)
-        },
+        // onClickMoreButton: function(){
+        //     this.$el.find(".more").hide();
+        //     this.$el.find(".node-list").html(_.template(template['tpl/loading.html'])());
+        //     this.collection.getRegionOtherNodeList(this.args)
+        // },
 
         onGetOtherNodeSuccess: function(res){
             _.each(res.rows, function(element, index, list){

@@ -1,6 +1,12 @@
 <div>
     <form class="form-horizontal">
-        <div class="alert alert-dismissable alert-info">
+        <div class="alert alert-dismissable alert-info second-warning" style="display:none">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong style="margin:0 50px;display:inline-block;">
+                请注意您的拓扑关系设置为无!
+            </strong>
+        </div>
+        <div class="alert alert-dismissable alert-info first-warning">
             <button type="button" class="close" data-dismiss="alert">×</button>
             <strong style="margin:0 50px;display:inline-block;">
                1、名称只能是 a--z、A--Z、0--9、'-' 、'.'、'*'   不要中文汉字
@@ -24,6 +30,16 @@
                 <ul class="dropdown-menu"></ul>
             </div>
         </div>
+        <div class="form-group dropdown-topoRelationship">
+            <label for="dropdown-level" class="col-sm-2 control-label">拓扑关系</label>
+            <div class="dropdown col-sm-8">
+                <button class="btn btn-default dropdown-toggle" type="button" id="topoRelationship-list" data-toggle="dropdown">
+                    <span class="cur-value">加载中...</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" style="height:150px;overflow-y:auto;"></ul>
+            </div>
+        </div>
         <div class="form-group setup">
             <label class="col-sm-2 control-label">配置</label>
             <div class="col-sm-8">
@@ -41,7 +57,7 @@
                 <input type="text" class="form-control" id="input-ttl" placeholder="只能是非负整数">
             </div>
         </div>
-        <div class="form-group dropdown-level">
+        <!-- <div class="form-group dropdown-level">
             <label for="dropdown-level" class="col-sm-2 control-label">Level</label>
             <div class="dropdown col-sm-8">
                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-level" data-toggle="dropdown">
@@ -50,7 +66,7 @@
                 </button>
                 <ul class="dropdown-menu"></ul>
             </div>
-        </div>
+        </div> -->
         <div class="form-group">
             <label for="textarea-comment" class="col-sm-2 control-label">备注</label>
             <div class="col-sm-8">

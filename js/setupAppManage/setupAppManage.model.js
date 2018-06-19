@@ -29,6 +29,7 @@ define("setupAppManage.model", ['require','exports', 'utility'], function(requir
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
+        
         getTopoOrigininfo:function(args){
             var url = BASE_URL + "/resource/topo/origin/consoleInfo?id="+args,
             successCallback = function(res){

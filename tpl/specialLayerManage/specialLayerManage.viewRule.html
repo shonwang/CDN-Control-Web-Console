@@ -1,28 +1,18 @@
 <form class="form-horizontal col-sm-offset-1" >
     <div class="form-group">
         <table class="table table-striped table-hover">
-            <thead>
+            <thead data-rule="head">
                 <tr>
-                    <%if(data.allRuleIsChecked){%>
-                    <th>   
-                       <input type="checkbox" checked="true">  
-                    </th>
-                    <%}else{%>
-                       <th><input type="checkbox"></th>
-                    <%}%>
+                    <th><input type="checkbox" checked="true">  </th>
                      <th>本层</th>
                     <th>上一层</th>
                 </tr>
             </thead>
           
             <% for(var i = 0; i < data.length; i++) { %>
-              <tbody>
+              <tbody data-rule="body">
                 <tr>
-                    <%if(data[i].itemRuleIsChecked){%>
-                     <th><input type="checkbox" checked="true" id="<%=i%>"></th>
-                    <%}else{%>
-                       <th><input type="checkbox" id="<%=i%>"></th>
-                    <%}%>
+                    <th><input type="checkbox" checked="true" id="<%=data[i].id%>"></th>
                     <%if(data[i].localType==1){%>
                         <%if(data[i].local.length>1){%>
                          <td><table>

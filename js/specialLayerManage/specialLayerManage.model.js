@@ -153,6 +153,34 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
                 $.ajax(defaultParas);
             },    
 
+            getRuleInfo: function(args, id) {
+                var url = "http://10.12.8.161:9099" + "/resource/topo/batch/getStrategysRulesByNodeId?id="+args.id+"&nodeId="+args.nodeId,
+                    successCallback = function(res) {
+                        if (res) {
+                            this.trigger("get.ruleInfo.success", res,args.id);
+                        } else {
+                            this.trigger("get.ruleInfo.error", res);
+                        }
+                    }.bind(this),
+                    errorCallback = function(response) {
+                        this.trigger('get.ruleInfo.error', response);
+                    }.bind(this);
+                    console.log(url)
+                Utility.getAjax(url, args, successCallback, errorCallback);
+            },
+
+            updateStrategy: function(args) {
+                var url = "http://10.12.8.161:9099" + "/resource/topo/batch/updateTopoOrStrategy",
+                    successCallback = function(res) {
+                        this.trigger("update.strategy.success", res, args.id);
+                    }.bind(this),
+                    errorCallback = function(response) {
+                        this.trigger('update.strategy.error', response);
+                    }.bind(this);
+                Utility.postAjax(url, args, successCallback, errorCallback);
+            },
+
+
             modifyStrategy: function(args) {
                 var url = BASE_URL + "/resource/special/modifyStrategy",
                     successCallback = function(res) {
@@ -189,10 +217,10 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
             strategyUpdate:function(args){
                 var url = BASE_URL + "/cd/task/strategyupdate/create?comment="+args.comment+"&ruleId="+args.ruleId,
                     successCallback = function(res) {
-                        this.trigger("send.success", res);
+                        this.trigger("send.success", res, args.ruleId);
                     }.bind(this),
                     errorCallback = function(response) {
-                        this.trigger('send.error', response);
+                        this.trigger('send.error', response, args.ruleId);
                     }.bind(this);
                 Utility.postAjax(url, [], successCallback, errorCallback);
             },

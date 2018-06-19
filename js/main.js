@@ -271,6 +271,7 @@
   "specialLayerManage.view": "specialLayerManage/specialLayerManage.view",
   "specialLayerManage.replaceNode.view": "specialLayerManage/specialLayerManage.replaceNode.view",
   "specialLayerManage.deleteNode.view": "specialLayerManage/specialLayerManage.deleteNode.view",
+  "specialLayerManage.lowerLevel.view": "specialLayerManage/specialLayerManage.lowerLevel.view",
   "speedMeasure.model": "speedMeasure/speedMeasure.model",
   "speedMeasure.view": "speedMeasure/speedMeasure.view",
   "statisticsDataSourceSwitch.model": "statisticsDataSourceSwitch/statisticsDataSourceSwitch.model",
@@ -320,6 +321,8 @@ else if(window.DEBUG === 10)
     window.BASE_URL = "http://preonline.center.cdn.ksyun.com";
 else if(window.DEBUG === 11)
     window.BASE_URL = "http://cdn.center.wq01.k8s.op.ksyun.com";
+else if(window.DEBUG === 12)
+    window.BASE_URL = "http://10.12.8.161:9099";
 requirejs.config({
     paths:REQ_PATH,
     urlArgs: new Date().valueOf()

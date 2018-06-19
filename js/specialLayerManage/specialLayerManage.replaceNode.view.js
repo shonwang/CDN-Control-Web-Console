@@ -1,29 +1,4 @@
 define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
-
-    var DistributeLowerLevelView = Backbone.View.extend({
-        events: {},
-
-        initialize: function(options){
-            this.options = options;
-            this.collection = options.collection;
-            // this.model = options.model;
-            console.log(this.collection)
-            this.collection
-            this.$el = $(_.template(template['tpl/specialLayerManage/specialLayerManage.distributeLowerLevel.html'])({
-                data: this.collection
-            }));
-
-
-            
-        },
-
-        render: function(target) {
-            this.$el.appendTo(target);
-        }
-
-
-    });
-
     var ReplaceNodeView = Backbone.View.extend({
         events: {},
 
@@ -35,7 +10,8 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             this.$el.find("#dropdown-originNode").attr("disabled", true);
             this.$el.find("#dropdown-nowNode").attr("disabled", true);
 
-
+            this.collection.off("set.dataItem.success");
+            this.collection.on("set.dataItem.success", $.proxy(this.onSetDataItemSuccess, this));
             this.collection.off("get.strategyInfoByNode.success");
             this.collection.off("get.strategyInfoByNode.error");
             this.collection.on("get.strategyInfoByNode.success", $.proxy(this.onGetStrategySuccess, this));
@@ -45,15 +21,34 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             this.collection.on("get.node.success", $.proxy(this.onGetNodeSuccess, this));
             this.collection.on("get.node.error", $.proxy(this.onGetError, this));
             this.collection.getNodeList();
+
+            this.collection.off("get.ruleInfo.success");
+            this.collection.off("get.ruleInfo.error");
+            this.collection.on("get.ruleInfo.success", $.proxy(this.onGetRuleInfoSuccess, this));
+            this.collection.on("get.ruleInfo.error", $.proxy(this.onGetError, this));
+
+            this.collection.off("update.strategy.success");
+            this.collection.off("update.strategy.error");
+            this.collection.on("update.strategy.success", $.proxy(this.onUpdateStrategySuccess, this));
+            this.collection.on("update.strategy.error", $.proxy(this.onGetError, this));
             
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
             this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
-            this.defaultParam = []
+            this.defaultParam = [];
+            this.defaultRuleParam = [];
+            this.distributeLowerLevelParam = []
+            this.dataList = {};
+            this.ruleDataList = {};
             this.initLayerStrategyTable();
             
             
         },
+
          
+        onSetDataItemSuccess:function(){
+            this.distributeLowerLevelPopup.$el.find(".ok").removeAttr("disabled");
+        },
+
         onGetNodeSuccess:function(res){
             this.$el.find("#dropdown-originNode").attr("disabled", false);
             this.$el.find("#dropdown-nowNode").attr("disabled", false);
@@ -76,8 +71,11 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                 onOk: function(){},
                 data: originNameList,
                 callback: function(data) {
-                    this.nodeId = data.value;
+                    this.oldNodeId = data.value;
                     this.$el.find('#dropdown-originNode .cur-value').html(data.name);
+                    if(Object.getOwnPropertyNames(this.dataList).length > 0){
+                        this.dataList = {}
+                    }
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                     this.collection.getStrategyInfoByNode(data)
                 }.bind(this)
@@ -90,54 +88,137 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                 onOk: function(){},
                 data: nowNameList,
                 callback: function(data) {
-                    this.nodeId = data.value;
+                    this.newNodeId = data.value;
                     this.$el.find('#dropdown-nowNode .cur-value').html(data.name);
-                    // this.setIspList();
                 }.bind(this)
             });
             
         },
 
         onGetStrategySuccess:function(res){
-            
-            _.each(res, function(el){
-                el.isChecked = true;
-                this.defaultParam.push(el)
-                if(el.type === 202){
-                    el.typeName = "cache"
-                }else if(el.type === 203){
-                    el.typeName = "live"
-                }
-            }.bind(this));
+            var strategyParam = []
+            if(res.length !== 0){
+                _.each(res, function(el){
+                    el.isChecked = true;
+                    _.each(el.rule, function(item){
+                        item.isChecked = true
+                    }.bind(this))
+                    strategyParam.push(el)
+                    if(el.type === 202){
+                        el.typeName = "cache"
+                    }else if(el.type === 203){
+                        el.typeName = "live"
+                        }
+                }.bind(this));
+            }
+            this.defaultParam = strategyParam
             this.initLayerStrategyTable();
         },
 
+        onUpdateStrategySuccess: function(res, id){
+            if(!res) return;
+            this.ruleDataList[id] = res;
+            this.collection.trigger("get.layerInfo.success",res)
+            
+
+        },
 
         onClickSaveButton: function(){
-            // console.log(args)
-            console.log("我点了保存键")
+            if(!this.oldNodeId){
+                Utility.warning("请设置原节点！");
+                return false;
+            }
+            if(!this.newNodeId){
+                Utility.warning("请设置现节点！");
+                return false;
+            }
+            var args = [];
+            _.each(this.defaultParam, function(el){
+                console.log(el.id, el.isChecked)
+                if(el.isChecked === true){
+                    var localArgs = {
+                        id: el.id,
+                        type: "strategy",
+                        rules: "",
+                        oldNodeId: this.oldNodeId,
+                        newNodeId: this.newNodeId,
+                        operateType: "replace"
+                    }
+                    var tempRule = []
+                    _.each(this.dataList[el.id], function(item){
+                        if(item.isChecked === true){
+                            tempRule.push(item.id)
+                        }
+                    }.bind(this))
+                    var ruleStr = tempRule.join(",");
+                    localArgs.rules = ruleStr;
+                    console.log(localArgs)
+                    this.collection.updateStrategy(localArgs);
+                    // if(Object.getOwnPropertyNames(this.ruleDataList).length > 0){
+                    //     this.ruleDataList = {}
+                    // }
+                }
+            }.bind(this))
+
+
             if (this.distributeLowerLevelPopup) $("#" + this.distributeLowerLevelPopup.modalId).remove();
 
+            require(["specialLayerManage.lowerLevel.view"], function(DistributeLowerLevelView) {
                 var myDistributeLowerLevelView = new DistributeLowerLevelView({
                     collection: this.collection,
-                    // model     : model,
-                  
+                    dataParam: this.defaultParam
                 });
                 var options = {
                     title:"配置下发",
                     body : myDistributeLowerLevelView,
                     backdrop : 'static',
-                    type     : 1,
+                    type     : 2,
                     onOKCallback:  function(){
+                        var args = myDistributeLowerLevelView.getArgs();
+                        if(!args) return;
+                        this.ruleConfirmInfo = []
+                        this.collection.off("send.success");
+                        this.collection.off("send.error");
+                        this.collection.on("send.success", $.proxy(this.onSendSuccess, this));
+                        this.collection.on("send.error", $.proxy(this.onSendError, this));
+                        _.each(args, function(el){
+                            this.collection.strategyUpdate(el);
+                        }.bind(this))
+                        this.options.onCancelCallback && this.options.onCancelCallback();
+                        // this.distributeLowerLevelPopup.$el.modal('hide');
 
                     }.bind(this),
                     onHiddenCallback: function(){
-
-                    }.bind(this)
-                }
+    
+                        }.bind(this)
+                    }
                 this.distributeLowerLevelPopup = new Modal(options);
-                this.distributeLowerLevelPopup.$el.find(".ok").show();
+                this.distributeLowerLevelPopup.$el.find(".ok").attr("disabled","disabled");
                 this.distributeLowerLevelPopup.$el.find(".cancel").html("取消");
+                
+            }.bind(this))
+        },
+
+        onSendSuccess:function(data, id){
+            this.ruleConfirmInfo.push(data);
+            this.collection.trigger("get.ruleConfirmInfo.success", data, id)
+            if(this.ruleConfirmInfo.length === this.defaultParam.length){
+                this.distributeLowerLevelPopup.$el.find(".ok").off("click");
+                this.distributeLowerLevelPopup.$el.find(".ok").on("click" ,function(){
+                    this.distributeLowerLevelPopup.$el.modal('hide');
+                }.bind(this));
+            }
+        },
+
+        onSendError: function(data, id){
+            this.ruleConfirmInfo.push(data);
+            this.collection.trigger("get.ruleConfirmInfo.error", data, id)
+            if(this.ruleConfirmInfo.length === this.defaultParam.length){
+                this.distributeLowerLevelPopup.$el.find(".ok").off("click");
+                this.distributeLowerLevelPopup.$el.find(".ok").on("click" ,function(){
+                    this.distributeLowerLevelPopup.$el.modal('hide');
+                }.bind(this));
+            }
         },
 
         onClickCancelButton: function() {
@@ -148,11 +229,18 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             this.nodeTable = $(_.template(template['tpl/specialLayerManage/specialLayerManage.editNode.table.html'])({
                 data: this.defaultParam
             }));
-            if (this.defaultParam.length !== 0){    
+            if (this.defaultParam.length !== 0){   
                 this.$el.find(".table-ctn").html(this.nodeTable[0]);
+                _.each(this.defaultParam, function(el){
+                    var args = {
+                        id: el.id,
+                        nodeId: this.oldNodeId
+                    }
+                    this.collection.getRuleInfo(args)
+                }.bind(this)) 
                 this.nodeTable.find("tbody .view").on("click", $.proxy(this.onClickItemView, this));
-                this.nodeTable.find("tbody tr[data-id]").on("click", $.proxy(this.onItemCheckedUpdated, this));
-                this.nodeTable.find("thead[data-parent] input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+                this.nodeTable.find("tbody tr[data-id]").on("click", $.proxy(this.onLayerItemCheckedUpdated, this));
+                this.nodeTable.find("thead[data-parent] input").on("click", $.proxy(this.onLayerAllCheckedUpdated, this));
             }else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty-2.html'])({
                     data: {
@@ -162,7 +250,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             
         },
 
-        onItemCheckedUpdated: function(event){
+        onLayerItemCheckedUpdated: function(event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             var id = $(eventTarget).attr("id");
@@ -170,18 +258,16 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                 return object.id === parseInt(id)
             }.bind(this));
             selectedObj.isChecked = eventTarget.checked
-            console.log(this.defaultParam)
             var checkedList = this.defaultParam.filter(function(object) {
                 return object.isChecked === true;
             })
-            console.log(checkedList.length,this.defaultParam.length)
             if (checkedList.length === this.defaultParam.length)
                 this.nodeTable.find("thead[data-parent] input").get(0).checked = true;
             if (checkedList.length !== this.defaultParam.length)
                 this.nodeTable.find("thead[data-parent] input").get(0).checked = false;
         },
 
-        onAllCheckedUpdated: function(event){
+        onLayerAllCheckedUpdated: function(event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             _.each(this.de1, function(el, index, list){
@@ -192,28 +278,64 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
 
         onClickItemView:function(event){     
             var eventTarget = event.currentTarget || event.target, id;
-            var dataObj;
-
             id = $(eventTarget).attr("id");
-            _.each(this.defaultParam, function(el){
-                if(el.id == id){
-                    dataObj = el.rule
-                }
-            }.bind(this));
+            this.defaultRuleParam = this.dataList[id] || []
             this.ruleTable = $(_.template(template['tpl/specialLayerManage/specialLayerManage.viewRule.html'])({
-                data: dataObj
+                data: this.defaultRuleParam
             }));
-            if (dataObj){    
-                var idStrPar = "tr[data-nodeid=" + id + "]" + ".toggle-show";
-                var idStrSon = "td[data-nodeid=" + id + "]" + ".tdTable";
-
+            var idStrPar = "tr[data-nodeid=" + id + "]" + ".toggle-show";
+            var idStrSon = "td[data-nodeid=" + id + "]" + ".tdTable";
+            if (this.defaultRuleParam.length !== 0){    
                 this.$el.find(idStrSon).html(this.ruleTable[0]);
+                this.ruleTable.find("tbody[data-rule] tr").on("click", $.proxy(this.onRuleItemCheckedUpdated, this));
+                this.ruleTable.find("thead[data-rule] input").on("click", $.proxy(this.onRuleAllCheckedUpdated, this));
+            }else{
+                this.$el.find(idStrSon).html(_.template(template['tpl/empty-2.html'])({
+                    data: {
+                        message: "暂无数据"
+                    }
+                }));
             }
             if(this.$el.find(idStrPar).css("display") == "none"){
                 this.$el.find(idStrPar).show()
             }else{
                 this.$el.find(idStrPar).hide()
             }
+        },
+
+        onGetRuleInfoSuccess:function(res,id){
+            var _data = res || []
+            _.each(_data, function(el){
+                el.isChecked = true
+            }.bind(this))
+            this.dataList[id] = _data;
+        },
+
+        onRuleItemCheckedUpdated: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            var id = $(eventTarget).attr("id");
+            var selectedObj = _.find(this.defaultRuleParam, function(object){
+                return object.id === parseInt(id)
+            }.bind(this));
+            selectedObj.isChecked = eventTarget.checked
+            
+            var checkedList = this.defaultRuleParam.filter(function(object) {
+                return object.isChecked === true;
+            })
+            if (checkedList.length === this.defaultRuleParam.length)
+                this.ruleTable.find("thead[data-rule] input").get(0).checked = true;
+            if (checkedList.length !== this.defaultRuleParam.length)
+                this.ruleTable.find("thead[data-rule] input").get(0).checked = false;
+        },
+
+        onRuleAllCheckedUpdated: function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            _.each(this.de1, function(el, index, list){
+                el.isChecked = eventTarget.checked
+            }.bind(this))
+            this.ruleTable.find("tbody[data-rule] tr").find("input").prop("checked", eventTarget.checked);
         },
 
         onGetError: function(error){

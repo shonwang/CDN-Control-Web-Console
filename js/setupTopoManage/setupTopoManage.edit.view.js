@@ -449,7 +449,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 }
             },
 
-            // 接口还未规定，这个接口是另一个接口
             onClickAddUpperNodeButton: function(event) {
                 if(this.defaultParam.type != 202 && this.defaultParam.type !==203){
                     alert("目前只支持直播(Live)或点播(Cache)类型");
@@ -772,7 +771,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
                 require(['addEditLayerStrategy.view', 'addEditLayerStrategy.model'],
                     function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
-                        var newLocalNodes = _.union(this.defaultParam.lowerNodes,this.defaultParam.middleNodes);
+                        var newLocalNodes = _.union(this.defaultParam.upperNodes,this.defaultParam.lowerNodes,this.defaultParam.middleNodes);
                         var newUpperNodes = _.union(this.defaultParam.upperNodes,this.defaultParam.middleNodes);
                         var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
                             
@@ -824,7 +823,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     function(AddEditLayerStrategyView, AddEditLayerStrategyModel) {
                         var myAddEditLayerStrategyModel = new AddEditLayerStrategyModel();
                         var options = myAddEditLayerStrategyModel;
-                        var newLocalNodes = _.union(this.defaultParam.lowerNodes,this.defaultParam.middleNodes);
+                        var newLocalNodes = _.union(this.defaultParam.upperNodes,this.defaultParam.lowerNodes,this.defaultParam.middleNodes);
                         var newUpperNodes = _.union(this.defaultParam.upperNodes,this.defaultParam.middleNodes);
                         var myAddEditLayerStrategyView = new AddEditLayerStrategyView({
                             collection: options,

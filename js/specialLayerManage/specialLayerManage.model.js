@@ -154,7 +154,7 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
             },    
 
             getRuleInfo: function(args, id) {
-                var url = "http://10.12.8.161:9099" + "/resource/topo/batch/getStrategysRulesByNodeId?id="+args.id+"&nodeId="+args.nodeId,
+                var url = BASE_URL + "/resource/topo/batch/getStrategysRulesByNodeId?id="+args.id+"&nodeId="+args.nodeId,
                     successCallback = function(res) {
                         if (res) {
                             this.trigger("get.ruleInfo.success", res,args.id);
@@ -170,7 +170,7 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
             },
 
             updateStrategy: function(args) {
-                var url = "http://10.12.8.161:9099" + "/resource/topo/batch/updateTopoOrStrategy",
+                var url = BASE_URL + "/resource/topo/batch/updateTopoOrStrategy",
                     successCallback = function(res) {
                         this.trigger("update.strategy.success", res, args.id);
                     }.bind(this),

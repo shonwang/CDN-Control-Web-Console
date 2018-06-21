@@ -43,7 +43,8 @@ define("hashOrigin.selectHash.view", ['require', 'exports', 'template', 'modal.v
                         _.each(this.selectedHash, function(hash) {
                             if (el.id === hash.id) {
                                 el.isChecked = true;
-                                el.hashIndex = hash.hashIndex;
+                                el.hashIndex = hash.hashIndex,
+                                el.ipCorporation = hash.ipCorporation
                             }
                         }.bind(this))
                         this.allHash.push(el);

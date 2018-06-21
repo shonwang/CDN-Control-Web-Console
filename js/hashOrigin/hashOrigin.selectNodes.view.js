@@ -265,7 +265,6 @@ define("hashOrigin.selectNodes.view", ['require', 'exports', 'template', 'modal.
                     // if (el.status !== 3 && el.status !== 2) {
                         el.name = el.chName;
                         el.nodeId = el.id;
-                        el.weight = el.maxBandwidth;
                         el.isDisplay = true;
                         el.isChecked = false;
                         this.allNodes.push(el);
@@ -286,7 +285,6 @@ define("hashOrigin.selectNodes.view", ['require', 'exports', 'template', 'modal.
                                 el.isChecked = true;
                                 el.chiefType = node.chiefType;
                                 el.ipCorporation = node.ipCorporation;
-                                el.maxBandwidth = node.weight;
                                 el.weight = node.weight;
                             }
                         }.bind(this))

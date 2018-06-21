@@ -359,7 +359,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                                 }
                             }
                             if (upper.rsNodeMsgVo)
-                                primaryNameArray.push(upper.rsNodeMsgVo.name+"<span class='text-danger'>[环]</span>" + upper.ipCorporationName)
+                                primaryNameArray.push(upper.rsNodeMsgVo.name + "<span class='text-danger'>[环]</span>" + upper.ipCorporationName)
                             else
                                 primaryNameArray.push("[后端没有返回名称]")
                         }.bind(this));
@@ -374,7 +374,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                                 }
                             }
                             if (upper.rsNodeMsgVo)
-                                backupNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                                backupNameArray.push(upper.rsNodeMsgVo.name + "<span class='text-danger'>[环]</span>" + upper.ipCorporationName)
                             else
                                 backupNameArray.push("[后端没有返回名称]")
                         }.bind(this));    

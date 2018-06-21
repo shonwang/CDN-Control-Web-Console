@@ -171,7 +171,8 @@ define("dispConfig.model", ['require','exports', 'utility'], function(require, e
                 "status": null,//调度组状态
                 "level" : null,//覆盖级别
                 "page"  : 1,
-                "count" : 99999
+                "count" : 99999,
+                "topoId": null
             };
             defaultParas.data = JSON.stringify(defaultParas.data);
 

@@ -20,8 +20,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     "local": [], //???
                     "localType": 2,
                     "upper": [],
-                    "upType": 1,
-                    "upperHash":[]
+                    "upType": 1
                 }
             } else {
                 this.defaultParam = this.curEditRule
@@ -29,7 +28,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-            console.log(this.notFilter)
             if(!this.notFilter){
                 this.$el.find("#asHashstrategyRadio6").hide();
             }
@@ -439,6 +437,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         onClickSaveBtn: function() {
+            console.log('upperType',this.defaultParam.upper);
             if(!this.province) this.province=[];
             if(!this.area) this.area=[];
             if(!this.onlyOperator) this.onlyOperator=[];
@@ -566,6 +565,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                             "local": [], 
                             "localType":2,
                             "upper": this.defaultParam.upper,
+                            "upType":this.defaultParam.upType
                         }
                         obj.local.push({
                             id:el.value,
@@ -593,6 +593,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                                 "local": [], 
                                 "localType":3,
                                 "upper": this.defaultParam.upper,
+                                "upType":this.defaultParam.upType
                             }
                             obj.local.push({
                                 provinceId: pro.value,
@@ -625,6 +626,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                                 "local": [], 
                                 "localType":4,
                                 "upper": this.defaultParam.upper,
+                                "upType":this.defaultParam.upType
                             }
                             obj.local.push({
                                 areaId: area.value,
@@ -992,12 +994,13 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                         this.defaultParam.upper = mySelectNodeView.getArgs();
                         var tempArray = []
                         _.each(this.defaultParam.upper, function(el) {
-                            el.upType = 1;
+                            //el.upType = 1;
                             var rsNodeMsgVo = {};
                             rsNodeMsgVo.id = el.id;
                             rsNodeMsgVo.name = el.chName;
                             rsNodeMsgVo.operatorId = el.operatorId;
                             tempArray.push({
+                                upType:1,
                                 chiefType: el.chiefType,
                                 ipCorporation: el.ipCorporation,
                                 rsNodeMsgVo: rsNodeMsgVo,

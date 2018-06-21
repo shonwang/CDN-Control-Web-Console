@@ -335,6 +335,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                                 el.rsNodeMsgVo = {
                                     id:el.hashId,
                                     //chiefType:el.hashIndex == 0 ? 1:0,
+                                    isMulti:el.ipCorporation ? 1 : 0,
                                     ipCorporation:el.ipCorporation,
                                     hashName:el.hashName,
                                     name:el.hashName
@@ -347,10 +348,9 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         backupArray = _.filter(rule.upper, function(obj) {
                             return obj.hashIndex != 0;
                         }.bind(this))
-
                         _.each(primaryArray, function(upper, inx, list) {
                             upper.ipCorporationName = "";
-                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.isMulti === 1) {
                                 for (var i = 0; i < this.operatorList.length; i++) {
                                     if (this.operatorList[i].id === upper.ipCorporation) {
                                         upper.ipCorporationName = "-" + this.operatorList[i].name;
@@ -359,13 +359,13 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                                 }
                             }
                             if (upper.rsNodeMsgVo)
-                                primaryNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                                primaryNameArray.push(upper.rsNodeMsgVo.name+"<span class='text-danger'>[环]</span>" + upper.ipCorporationName)
                             else
                                 primaryNameArray.push("[后端没有返回名称]")
                         }.bind(this));
                         _.each(backupArray, function(upper, inx, list) {
                             upper.ipCorporationName = "";
-                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.isMulti === 1) {
                                 for (var i = 0; i < this.operatorList.length; i++) {
                                     if (this.operatorList[i].id === upper.ipCorporation) {
                                         upper.ipCorporationName = "-" + this.operatorList[i].name;

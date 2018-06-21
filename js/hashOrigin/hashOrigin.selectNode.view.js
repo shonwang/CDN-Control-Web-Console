@@ -171,13 +171,13 @@ define("hashOrigin.selectNode.view", ['require', 'exports', 'template', 'modal.v
                     // if (el.status !== 3 && el.status !== 2) {
                         el.name = el.chName;
                         el.nodeId = el.id;
-                        el.weight = el.maxBandwidth;
+                        //el.weight = el.maxBandwidth;
                         el.isDisplay = true;
                         el.isChecked = false;
                         _.each(this.selectedNodes, function(node) {
                             if (el.id === node.nodeId) {
                                 el.isChecked = true;
-                                el.maxBandwidth = node.weight;
+                                //el.maxBandwidth = node.weight;
                                 el.weight = node.weight;
                             }
                         }.bind(this))

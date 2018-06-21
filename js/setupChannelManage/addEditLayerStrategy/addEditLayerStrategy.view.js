@@ -643,23 +643,23 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             
             // this.topoUpperNodes
         //    console.log("拓扑上层节点: ", this.topoUpperNodes);
-            this.localNodeListForSelect = [];          
+            this.localNodeListForSelect = [];        
             if (!this.notFilter) {
                 _.each(this.options.localNodes, function(node) {
                     var tempNodeLocal = _.find(this.options.localNodes, function(obj) {
                         return obj.id === node.id;
                     }.bind(this))
-                    if(this.options.appType == 202 && (tempNodeLocal.cacheLevel == 2 || tempNodeLocal.cacheLevel == 3)){
+                    if(this.options.appType == 202 && (tempNodeLocal.cacheLevel == 2 || tempNodeLocal.cacheLevel == 3 || tempNodeLocal.cacheLevel === 1)){
                         this.localNodeListForSelect.push(_.clone(tempNodeLocal));
-                    }else if(this.options.appType == 203 && (tempNodeLocal.liveLevel == 2 || tempNodeLocal.liveLevel == 3)){
+                    }else if(this.options.appType == 203 && (tempNodeLocal.liveLevel == 2 || tempNodeLocal.liveLevel == 3 || tempNodeLocal.liveLevel === 1)){
                         this.localNodeListForSelect.push(_.clone(tempNodeLocal));
                     }
                 }.bind(this))
             }else{
                 _.each(this.options.localNodes,function(node){
-                    if(this.options.appType == 202 && (node.cacheLevel == 2 || node.cacheLevel == 3)){
+                    if(this.options.appType == 202 && (node.cacheLevel == 2 || node.cacheLevel == 3 || node.cacheLevel == 1)){
                         this.localNodeListForSelect.push(_.clone(node));
-                    }else if(this.options.appType == 203 && (node.liveLevel == 2 || node.liveLevel == 3)){
+                    }else if(this.options.appType == 203 && (node.liveLevel == 2 || node.liveLevel == 3 || node.cacheLevel == 1)){
                         this.localNodeListForSelect.push(_.clone(node));
                     }
                 }.bind(this))

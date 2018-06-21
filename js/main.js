@@ -80,10 +80,6 @@
   "luaAdvanceClientLimitSpeed.view": "customerSetup/domainList/luaDownloadSetup/luaAdvanceClientLimitSpeed/luaAdvanceClientLimitSpeed.view",
   "luaAdvanceConfig.model": "customerSetup/domainList/luaDownloadSetup/luaAdvanceConfig/luaAdvanceConfig.model",
   "luaAdvanceConfig.view": "customerSetup/domainList/luaDownloadSetup/luaAdvanceConfig/luaAdvanceConfig.view",
-
-  "luaXtcpSetup.model": "customerSetup/domainList/luaDownloadSetup/luaXtcpSetup/luaXtcpSetup.model",
-  "luaXtcpSetup.view": "customerSetup/domainList/luaDownloadSetup/luaXtcpSetup/luaXtcpSetup.view",
-
   "luaAdvanceConfigCacheSetup.model": "customerSetup/domainList/luaDownloadSetup/luaAdvanceConfigCacheSetup/luaAdvanceConfigCacheSetup.model",
   "luaAdvanceConfigCacheSetup.view": "customerSetup/domainList/luaDownloadSetup/luaAdvanceConfigCacheSetup/luaAdvanceConfigCacheSetup.view",
   "luaAdvanceConfigCacheSetupCacheTime.model": "customerSetup/domainList/luaDownloadSetup/luaAdvanceConfigCacheSetup/luaAdvanceConfigCacheSetupCacheTime.model",
@@ -114,6 +110,8 @@
   "luaStatusCodeCache.view": "customerSetup/domainList/luaDownloadSetup/luaStatusCodeCache/luaStatusCodeCache.view",
   "luaTimestamp.model": "customerSetup/domainList/luaDownloadSetup/luaTimestamp/luaTimestamp.model",
   "luaTimestamp.view": "customerSetup/domainList/luaDownloadSetup/luaTimestamp/luaTimestamp.view",
+  "luaXtcpSetup.model": "customerSetup/domainList/luaDownloadSetup/luaXtcpSetup/luaXtcpSetup.model",
+  "luaXtcpSetup.view": "customerSetup/domainList/luaDownloadSetup/luaXtcpSetup/luaXtcpSetup.view",
   "backOriginDetection.model": "customerSetup/domainList/nginxDownloadSetup/backOriginDetection/backOriginDetection.model",
   "backOriginDetection.view": "customerSetup/domainList/nginxDownloadSetup/backOriginDetection/backOriginDetection.view",
   "backOriginSetup.model": "customerSetup/domainList/nginxDownloadSetup/backOriginSetup/backOriginSetup.model",

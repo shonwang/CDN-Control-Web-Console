@@ -208,6 +208,7 @@
   "nodeManage.operateDetail.view": "nodeManage/nodeManage.operateDetail.view",
   "nodeManage.prompt.view": "nodeManage/nodeManage.prompt.view",
   "nodeManage.view": "nodeManage/nodeManage.view",
+  "preheatManage.edit.view": "react/preheatManage/preheatManage.edit.view",
   "preheatManage.model": "react/preheatManage/preheatManage.model",
   "preheatManage.view": "react/preheatManage/preheatManage.view",
   "react.config.panel": "react/react.config.panel",

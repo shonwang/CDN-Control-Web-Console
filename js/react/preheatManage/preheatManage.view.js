@@ -1,5 +1,13 @@
 'use strict';
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'utility', "antd", 'react.backbone', "react-dom"], function (require, exports, template, BaseView, Utility, Antd, React, ReactDOM) {
 
     var Layout = Antd.Layout,
@@ -10,54 +18,426 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
         Form = Antd.Form,
         FormItem = Form.Item,
         Select = Antd.Select,
-        Option = Select.Option;
+        Option = Select.Option,
+        AutoComplete = Antd.AutoComplete,
+        Table = Antd.Table,
+        Alert = Antd.Alert,
+        Tag = Antd.Tag,
+        Popover = Antd.Popover,
+        Badge = Antd.Badge,
+        Icon = Antd.Icon,
+        Tooltip = Antd.Tooltip;
 
-    var SearchForm = React.createBackboneClass({
+    var PreHeatTable = function (_React$Component) {
+        _inherits(PreHeatTable, _React$Component);
 
-        componentDidMount: function componentDidMount() {},
+        function PreHeatTable(props, context) {
+            _classCallCheck(this, PreHeatTable);
+
+            var _this = _possibleConstructorReturn(this, (PreHeatTable.__proto__ || Object.getPrototypeOf(PreHeatTable)).call(this, props));
+
+            _this.onChangePage = _this.onChangePage.bind(_this);
+            _this.handleEditClick = _this.handleEditClick.bind(_this);
+            _this.state = {
+                data: [],
+                isError: false,
+                isFetching: true
+            };
+            return _this;
+        }
+
+        _createClass(PreHeatTable, [{
+            key: 'componentDidMount',
+            value: function componentDidMount() {
+                var preHeatProps = this.props.preHeatProps;
+                var collection = preHeatProps.collection,
+                    queryCondition = preHeatProps.queryCondition;
+                collection.on("get.preheat.success", $.proxy(this.onGetPreHeatListSuccess, this));
+                collection.on("get.preheat.error", $.proxy(this.onGetError, this));
+                collection.on("fetching", $.proxy(this.onFetchingPreHeatList, this));
+                collection.trigger("fetching", queryCondition);
+            }
+        }, {
+            key: 'componentWillUnmount',
+            value: function componentWillUnmount() {
+                var collection = this.props.preHeatProps.collection;
+                collection.off("get.preheat.success");
+                collection.off("get.preheat.error");
+                collection.off("fetching");
+            }
+        }, {
+            key: 'onFetchingPreHeatList',
+            value: function onFetchingPreHeatList(queryCondition) {
+                var collection = this.props.preHeatProps.collection;
+                this.setState({
+                    isFetching: true
+                });
+                collection.getPreheatList(queryCondition);
+            }
+        }, {
+            key: 'onGetPreHeatListSuccess',
+            value: function onGetPreHeatListSuccess() {
+                var data = [];
+                this.props.preHeatProps.collection.each(function (model) {
+                    var obj = Object.assign({}, model.attributes);
+                    data.push(obj);
+                });
+                this.setState({
+                    data: data,
+                    isFetching: false
+                });
+            }
+        }, {
+            key: 'onChangePage',
+            value: function onChangePage(page, pageSize) {
+                var pageObj = {
+                    "page": page,
+                    "count": pageSize
+                };
+                var preHeatProps = this.props.preHeatProps;
+                var collection = preHeatProps.collection,
+                    queryCondition = preHeatProps.queryCondition;
+                queryCondition.page = page;
+                queryCondition.count = pageSize;
+                collection.trigger("fetching", queryCondition);
+            }
+        }, {
+            key: 'handleEditClick',
+            value: function handleEditClick(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "I") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                var model = _.find(this.state.data, function (obj) {
+                    return obj.id == id;
+                }.bind(this));
+                var onClickEditCallback = this.props.preHeatProps.onClickEditCallback;
+                onClickEditCallback && onClickEditCallback(model);
+            }
+        }, {
+            key: 'onGetError',
+            value: function onGetError(error) {
+                var msgDes = "服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！";
+                if (error && error.message) msgDes = error.message;
+
+                this.setState({
+                    isError: true,
+                    isFetching: false
+                });
+
+                this.errorView = React.createElement(Alert, {
+                    message: '\u51FA\u9519\u4E86',
+                    description: msgDes,
+                    type: 'error',
+                    showIcon: true
+                });
+            }
+        }, {
+            key: 'render',
+            value: function render() {
+                var _this2 = this;
+
+                if (this.state.isError) {
+                    return this.errorView || React.createElement(Alert, {
+                        message: '\u51FA\u9519\u4E86',
+                        type: 'error',
+                        showIcon: true
+                    });
+                }
+
+                var columns = [{
+                    title: '名称',
+                    dataIndex: 'name',
+                    key: 'name',
+                    fixed: 'left',
+                    width: 300
+                }, {
+                    title: '回源带宽',
+                    dataIndex: 'opType',
+                    key: 'opType'
+                }, {
+                    title: '预热节点',
+                    dataIndex: 'nodeName',
+                    key: 'nodeName',
+                    render: function render(text, record) {
+                        var colors = ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple'];
+                        var content = void 0,
+                            temp = [];
+                        var random = void 0;
+                        for (var i = 0; i < record.name.length; i++) {
+                            random = Math.floor(Math.random() * colors.length);
+                            temp.push(React.createElement(
+                                Tag,
+                                { color: colors[random], key: i, style: { marginBottom: '5px' } },
+                                record.name[i]
+                            ));
+                        }
+                        content = React.createElement(
+                            'div',
+                            null,
+                            temp
+                        );
+                        return React.createElement(
+                            'div',
+                            null,
+                            React.createElement(
+                                'span',
+                                null,
+                                record.nodeName,
+                                '...'
+                            ),
+                            React.createElement(
+                                'span',
+                                null,
+                                React.createElement(
+                                    Popover,
+                                    { content: content, title: '\u8282\u70B9\u8BE6\u60C5', trigger: 'click', placement: 'left', overlayStyle: { width: '300px' } },
+                                    React.createElement(
+                                        Badge,
+                                        { count: record.name.length, style: { backgroundColor: '#52c41a' } },
+                                        React.createElement(
+                                            'a',
+                                            { href: 'javascript:void(0)', id: record.id },
+                                            'more'
+                                        )
+                                    )
+                                )
+                            )
+                        );
+                    }
+                }, {
+                    title: '文件数',
+                    dataIndex: 'type',
+                    key: 'type'
+                }, {
+                    title: '当前预热批次',
+                    dataIndex: 'multiNode',
+                    key: 'multiNode'
+                }, {
+                    title: '进度',
+                    dataIndex: 'nodeId',
+                    key: 'nodeId'
+                }, {
+                    title: '状态',
+                    dataIndex: 'status',
+                    key: 'status',
+                    render: function render(text, record) {
+                        var tag;
+                        if (record.status == 2) tag = React.createElement(
+                            Tag,
+                            { color: "red" },
+                            '\u6682\u505C'
+                        );else if (record.status == 1) tag = React.createElement(
+                            Tag,
+                            { color: "green" },
+                            '\u8FD0\u884C\u4E2D'
+                        );else if (record.status == 8) tag = React.createElement(
+                            Tag,
+                            { color: "blue" },
+                            '\u542F\u52A8\u4E2D'
+                        );
+                        return tag;
+                    }
+                }, {
+                    title: '成功率',
+                    dataIndex: 'typeName',
+                    key: 'typeName'
+                }, {
+                    title: '创建人',
+                    dataIndex: 'operator',
+                    key: 'operator'
+                }, {
+                    title: '创建时间',
+                    dataIndex: 'createTimeFormated',
+                    key: 'createTimeFormated'
+                }, {
+                    title: '操作',
+                    dataIndex: 'id',
+                    key: 'action',
+                    fixed: 'right',
+                    width: 100,
+                    render: function render(text, record) {
+                        var editButton = React.createElement(
+                            Tooltip,
+                            { placement: 'bottom', title: "编辑" },
+                            React.createElement(
+                                'a',
+                                { href: 'javascript:void(0)', id: record.id, onClick: function onClick(e) {
+                                        return _this2.handleEditClick(e);
+                                    } },
+                                React.createElement(Icon, { type: 'edit' })
+                            )
+                        );
+                        var playButton = React.createElement(
+                            Tooltip,
+                            { placement: 'bottom', title: "开启" },
+                            React.createElement(
+                                'a',
+                                { href: 'javascript:void(0)', id: record.id, onClick: function onClick(e) {
+                                        return _this2.handleEditClick(e);
+                                    } },
+                                React.createElement(Icon, { type: 'play-circle-o' })
+                            )
+                        );
+                        var pauseButton = React.createElement(
+                            Tooltip,
+                            { placement: 'bottom', title: "终止" },
+                            React.createElement(
+                                'a',
+                                { href: 'javascript:void(0)', id: record.id, onClick: function onClick(e) {
+                                        return _this2.handleEditClick(e);
+                                    } },
+                                React.createElement(Icon, { type: 'pause-circle-o' })
+                            )
+                        );
+                        var buttonGroup;
+                        if (record.status == 2) {
+                            buttonGroup = React.createElement(
+                                'div',
+                                null,
+                                playButton
+                            );
+                        } else if (record.status == 1) {
+                            buttonGroup = React.createElement(
+                                'div',
+                                null,
+                                editButton,
+                                React.createElement('span', { className: 'ant-divider' }),
+                                pauseButton
+                            );
+                        }
+                        return buttonGroup;
+                    }
+                }];
+                var preHeatProps = this.props.preHeatProps;
+                var pagination = {
+                    showSizeChanger: true,
+                    showQuickJumper: true,
+                    showTotal: function showTotal(total) {
+                        return 'Total ' + total + ' items';
+                    },
+                    current: preHeatProps.queryCondition.page,
+                    total: preHeatProps.collection.total,
+                    onChange: this.onChangePage,
+                    onShowSizeChange: this.onChangePage
+                };
+
+                return React.createElement(Table, { rowKey: 'id',
+                    dataSource: this.state.data,
+                    loading: this.state.isFetching,
+                    columns: columns,
+                    scroll: { x: 1500 },
+                    pagination: pagination });
+            }
+        }]);
+
+        return PreHeatTable;
+    }(React.Component);
+
+    var SearchForm = React.createClass({
+        displayName: 'SearchForm',
+
+
+        getInitialState: function getInitialState() {
+            var defaultState = {
+                dataSource: []
+            };
+            return defaultState;
+        },
+
+        handleSearch: function handleSearch(value) {
+            var preHeatProps = this.props.preHeatProps;
+            var nodeArray = [],
+                nodeList = preHeatProps.nodeList;
+            if (value && nodeList) {
+                nodeArray = _.filter(nodeList, function (el) {
+                    return el.name.indexOf(value) > -1 || el.chName.indexOf(value) > -1;
+                }.bind(this)).map(function (el) {
+                    return { text: el.chName, value: el.id };
+                });
+            }
+
+            this.setState({
+                dataSource: nodeArray
+            });
+        },
 
         handleSubmit: function handleSubmit(e) {
             e.preventDefault();
-            console.log(this.props);
+            var fieldsValue = this.props.form.getFieldsValue(),
+                preHeatProps = this.props.preHeatProps;
+            var collection = preHeatProps.collection,
+                queryCondition = preHeatProps.queryCondition;
+            queryCondition.devicename = fieldsValue.preheatNames || null;
+            queryCondition.nodename = fieldsValue.nodeNames || null;
+            queryCondition.status = fieldsValue.preheatStatus == "all" ? null : parseInt(fieldsValue.preheatStatus);
+            collection.trigger("fetching", queryCondition);
+        },
+
+        onClickAddButton: function onClickAddButton() {
+            var onClickAddCallback = this.props.preHeatProps.onClickAddCallback;
+            onClickAddCallback && onClickAddCallback();
         },
 
         render: function render() {
-            console.log(Select);
+            var getFieldDecorator = this.props.form.getFieldDecorator;
+            var dataSource = this.state.dataSource;
+
+
             var HorizontalForm = React.createElement(
                 Form,
                 { layout: 'inline', onSubmit: this.handleSubmit },
                 React.createElement(
                     FormItem,
                     { label: "名称" },
-                    React.createElement(Input, null)
-                ),
-                React.createElement(
-                    FormItem,
-                    { label: '\u72B6\u6001' },
-                    React.createElement(
-                        Select,
-                        { defaultValue: '1' },
-                        React.createElement(
-                            Option,
-                            { value: '1' },
-                            'Option 1'
-                        ),
-                        React.createElement(
-                            Option,
-                            { value: '2' },
-                            'Option 2'
-                        ),
-                        React.createElement(
-                            Option,
-                            { value: '3' },
-                            'Option 3'
-                        )
-                    )
+                    getFieldDecorator('preheatNames')(React.createElement(Input, null))
                 ),
                 React.createElement(
                     FormItem,
                     { label: "节点" },
-                    React.createElement(Input, null)
+                    getFieldDecorator('nodeNames')(React.createElement(AutoComplete, { dataSource: dataSource,
+                        style: { width: 200 },
+                        onSearch: this.handleSearch,
+                        allowClear: true }))
+                ),
+                React.createElement(
+                    FormItem,
+                    { label: '\u72B6\u6001' },
+                    getFieldDecorator('preheatStatus', {
+                        "initialValue": "all"
+                    })(React.createElement(
+                        Select,
+                        null,
+                        React.createElement(
+                            Option,
+                            { value: 'all' },
+                            '\u5168\u90E8'
+                        ),
+                        React.createElement(
+                            Option,
+                            { value: '1' },
+                            '\u5F85\u9884\u70ED'
+                        ),
+                        React.createElement(
+                            Option,
+                            { value: '2' },
+                            '\u9884\u70ED\u4E2D'
+                        ),
+                        React.createElement(
+                            Option,
+                            { value: '3' },
+                            '\u5DF2\u7EC8\u6B62'
+                        ),
+                        React.createElement(
+                            Option,
+                            { value: '4' },
+                            '\u5DF2\u5B8C\u6210'
+                        )
+                    ))
                 ),
                 React.createElement(
                     FormItem,
@@ -69,7 +449,7 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                     ),
                     React.createElement(
                         Button,
-                        { style: { marginLeft: 8 }, icon: 'plus' },
+                        { style: { marginLeft: 8 }, icon: 'plus', onClick: this.onClickAddButton },
                         '\u65B0\u5EFA'
                     )
                 )
@@ -79,10 +459,100 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
         }
     });
 
-    var PreHeatManageList = React.createBackboneClass({
+    var PreHeatManageList = React.createClass({
+        displayName: 'PreHeatManageList',
+
+        componentDidMount: function componentDidMount() {
+            require(['nodeManage.model'], function (NodeManageModel) {
+                var nodeManageModel = new NodeManageModel();
+                nodeManageModel.on("get.node.success", $.proxy(this.onGetNodeListSuccess, this));
+                nodeManageModel.on("get.node.error", $.proxy(this.onGetNodeListError, this));
+                nodeManageModel.getNodeList({ page: 1, count: 9999 });
+            }.bind(this));
+        },
+
+        getInitialState: function getInitialState() {
+            var defaultState = {
+                nodeList: [],
+                curViewsMark: "list", // list: 列表界面，add: 新建，edit: 编辑
+                breadcrumbTxt: ["预热刷新相关", "预热管理"]
+            };
+            return defaultState;
+        },
+
+        onGetNodeListSuccess: function onGetNodeListSuccess(res) {
+            this.setState({
+                nodeList: res
+            });
+        },
+
+        onGetNodeListError: function onGetNodeListError(error) {
+            var msg = error ? error.message : "获取节点信息失败!";
+            this.setState({
+                nodeList: []
+            });
+        },
+
+        onClickAddCallback: function onClickAddCallback() {
+            require(['preheatManage.edit.view'], function (PreheatManageEditView) {
+                this.curView = React.createElement(PreheatManageEditView, { preHeatProps: this.preHeatProps, isEdit: false });
+                this.setState({
+                    curViewsMark: "add",
+                    breadcrumbTxt: ["预热管理", "新建"]
+                });
+            }.bind(this));
+        },
+
+        onClickEditCallback: function onClickEditCallback(model) {
+            require(['preheatManage.edit.view'], function (PreheatManageEditView) {
+                this.curView = React.createElement(PreheatManageEditView, { preHeatProps: this.preHeatProps, model: model, isEdit: true });
+                this.setState({
+                    curViewsMark: "edit",
+                    breadcrumbTxt: ["预热管理", "编辑"]
+                });
+            }.bind(this));
+        },
+
+        onClickCancelCallback: function onClickCancelCallback() {
+            this.setState({
+                curViewsMark: "list",
+                breadcrumbTxt: ["预热刷新相关", "预热管理"]
+            });
+        },
 
         render: function render() {
             var WrappedSearchForm = Form.create()(SearchForm);
+
+            this.queryCondition = {
+                "devicename": null,
+                "nodename": null,
+                "status": null,
+                "type": null,
+                "page": 1,
+                "count": 10
+            };
+
+            this.preHeatProps = {
+                collection: this.props.collection,
+                queryCondition: this.queryCondition,
+                nodeList: this.state.nodeList,
+                onClickAddCallback: $.proxy(this.onClickAddCallback, this),
+                onClickEditCallback: $.proxy(this.onClickEditCallback, this),
+                onClickCancelCallback: $.proxy(this.onClickCancelCallback, this)
+            };
+
+            var curView = null;
+            if (this.state.curViewsMark == "list") {
+                curView = React.createElement(
+                    'div',
+                    null,
+                    React.createElement(WrappedSearchForm, { preHeatProps: this.preHeatProps }),
+                    React.createElement('hr', null),
+                    React.createElement(PreHeatTable, { preHeatProps: this.preHeatProps })
+                );
+            } else if (this.state.curViewsMark == "add" || this.state.curViewsMark == "edit") {
+                curView = this.curView;
+            }
 
             return React.createElement(
                 Layout,
@@ -96,18 +566,18 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                         React.createElement(
                             Breadcrumb.Item,
                             null,
-                            '\u9884\u70ED\u5237\u65B0\u76F8\u5173'
+                            this.state.breadcrumbTxt[0]
                         ),
                         React.createElement(
                             Breadcrumb.Item,
                             null,
-                            '\u9884\u70ED\u7BA1\u7406'
+                            this.state.breadcrumbTxt[1]
                         )
                     ),
                     React.createElement(
                         'div',
                         { style: { background: '#fff', padding: 24, minHeight: 280 } },
-                        React.createElement(WrappedSearchForm, { collection: this.props.collection })
+                        curView
                     )
                 )
             );

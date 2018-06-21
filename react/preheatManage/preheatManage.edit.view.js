@@ -130,7 +130,7 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                                         valuePropName: 'fileList',
                                         getValueFromEvent: $.proxy(this.onUploadFile, this),
                                         initialValue: this.state.fileList,
-                                        rules: [{ type: "array", required: true, message: '请选择预热文件!' }],
+                                        rules: [{ type: "array", required: true, message: '请上传预热文件!' }],
                                     })(
                                         <Upload.Dragger {...uploadProps}>
                                             <p className="ant-upload-drag-icon">
@@ -182,7 +182,7 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                         {timeBandView}
                         <FormItem {...formItemLayout} label="起止时间">
                             {getFieldDecorator('range-time-picker', {
-                                    rules: [{ type: 'array', required: true, message: 'Please select time!' }],
+                                    rules: [{ type: 'array', required: true, message: '请选择起止时间！' }],
                                 })(
                                 <RangePicker showTime format="YYYY-MM-DD HH:mm:ss" />
                             )}

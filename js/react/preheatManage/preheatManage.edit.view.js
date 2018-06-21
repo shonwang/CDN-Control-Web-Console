@@ -182,7 +182,7 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                                     valuePropName: 'fileList',
                                     getValueFromEvent: $.proxy(this.onUploadFile, this),
                                     initialValue: this.state.fileList,
-                                    rules: [{ type: "array", required: true, message: '请选择预热文件!' }]
+                                    rules: [{ type: "array", required: true, message: '请上传预热文件!' }]
                                 })(React.createElement(
                                     Upload.Dragger,
                                     uploadProps,
@@ -259,7 +259,7 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                         FormItem,
                         _extends({}, formItemLayout, { label: '\u8D77\u6B62\u65F6\u95F4' }),
                         getFieldDecorator('range-time-picker', {
-                            rules: [{ type: 'array', required: true, message: 'Please select time!' }]
+                            rules: [{ type: 'array', required: true, message: '请选择起止时间！' }]
                         })(React.createElement(RangePicker, { showTime: true, format: 'YYYY-MM-DD HH:mm:ss' }))
                     ),
                     React.createElement(

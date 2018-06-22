@@ -208,6 +208,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                     type     : 2,
                     onOKCallback:  function(){
                         var args = myDistributeLowerLevelView.getArgs();
+                        console.log(args)
                         if(!args) return;
                         this.ruleConfirmInfo = []
                         this.collection.off("send.success");
@@ -217,7 +218,12 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                         _.each(args[0], function(el){
                             this.collection.strategyUpdate(el,args[1]);
                         }.bind(this))
-                        this.options.onCancelCallback && this.options.onCancelCallback();
+                        if(args[0].length > 0){
+                            this.options.onCancelCallback && this.options.onCancelCallback();
+                        }else if(args[0].length === 0){
+                            this.distributeLowerLevelPopup.$el.modal('hide');
+                        }
+                        
 
                     }.bind(this),
                     onHiddenCallback: function(){

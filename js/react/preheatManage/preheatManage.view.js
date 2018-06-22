@@ -488,6 +488,7 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
 
         onGetNodeListError: function onGetNodeListError(error) {
             var msg = error ? error.message : "获取节点信息失败!";
+            Utility.alerts(msg);
             this.setState({
                 nodeList: []
             });
@@ -588,7 +589,7 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
         initialize: function initialize(options) {
             this.options = options;
             this.collection = options.collection;
-            this.$el = $(_.template('<div class="preheat-manage fadeInLeft animated"></div>')());
+            this.$el = $(_.template('<div class="preheat-manage"></div>')());
 
             var preHeatManageListFac = React.createFactory(PreHeatManageList);
             var preHeatManageList = preHeatManageListFac({

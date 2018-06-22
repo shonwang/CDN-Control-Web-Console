@@ -200,7 +200,7 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
                         this.trigger("update.strategy.success", res, args.id);
                     }.bind(this),
                     errorCallback = function(response) {
-                        this.trigger('update.strategy.error', response);
+                        this.trigger('update.strategy.error', response, args.id);
                     }.bind(this);
                 Utility.postAjax(url, args, successCallback, errorCallback);
             },

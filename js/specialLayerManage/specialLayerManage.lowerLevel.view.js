@@ -9,6 +9,7 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
                 this.dataParam = _.pairs(options.dataParam);
                 this.$el = $(_.template(template['tpl/specialLayerManage/specialLayerManage.distributeLowerLevel.html'])({}));
                 this.collection.on("get.layerInfo.success", $.proxy(this.onGetlayerInfoSuccess,this));
+                this.collection.on("get.layerInfo.error", $.proxy(this.onGetlayerInfoError,this));
                 this.collection.on("get.ruleConfirmInfo.success", $.proxy(this.onGetRuleConfirmInfoSuccess,this));
                 this.collection.on("get.ruleConfirmInfo.error", $.proxy(this.onGetRuleConfirmInfoError,this));
                 this.collection.on("get.unchecked", $.proxy(this.onGetUncheckedItem,this));
@@ -56,7 +57,25 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
                 this.$el.find("tr[data-id] input").on("click", $.proxy(this.onItemCheckedUpdated, this));
                 if(this.dataList.length === this.dataParam.length){
                     this.getArgs();
-                    this.collection.trigger("set.dataItem.success")
+                    this.collection.trigger("set.dataItem")
+                }
+            },
+
+            onGetlayerInfoError:function(data){
+                if(data.length === 0) return;
+                this.dataList.push(data)
+                for(var item in data[0]){
+                    var tempList = {
+                        value: item,
+                        name: data[0][item]
+                    }
+                    var itemList = "<tr data-id='"+ tempList.value +
+                                    "'><td><span class='glyphicon glyphicon-remove' id='"+tempList.value+"></span></td><td>"+tempList.name+"</td>"+"<td class='text-danger'>替换失败      <small>"+data.message+"</small></td>"+"</tr>";
+                    this.$el.find("tbody").append(itemList)
+                }
+                this.$el.find("tr[data-id] input").on("click", $.proxy(this.onItemCheckedUpdated, this));
+                if(this.dataList.length === this.dataParam.length){
+                    this.collection.trigger("set.dataItem")
                 }
             },
 

@@ -10,8 +10,8 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             this.$el.find("#dropdown-originNode").attr("disabled", true);
             this.$el.find("#dropdown-nowNode").attr("disabled", true);
 
-            this.collection.off("set.dataItem.success");
-            this.collection.on("set.dataItem.success", $.proxy(this.onSetDataItemSuccess, this));
+            this.collection.off("set.dataItem");
+            this.collection.on("set.dataItem", $.proxy(this.onSetDataItem, this));
             this.collection.off("get.strategyInfoByNode.success");
             this.collection.off("get.strategyInfoByNode.error");
             this.collection.on("get.strategyInfoByNode.success", $.proxy(this.onGetStrategySuccess, this));
@@ -36,7 +36,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             this.collection.off("update.strategy.success");
             this.collection.off("update.strategy.error");
             this.collection.on("update.strategy.success", $.proxy(this.onUpdateStrategySuccess, this));
-            this.collection.on("update.strategy.error", $.proxy(this.onGetError, this));
+            this.collection.on("update.strategy.error", $.proxy(this.onUpdateStrategyError, this));
             
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
             this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
@@ -71,7 +71,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             }.bind(this));
         },
          
-        onSetDataItemSuccess:function(){
+        onSetDataItem:function(){
             this.distributeLowerLevelPopup.$el.find(".ok").removeAttr("disabled");
         },
 
@@ -83,12 +83,10 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             var originIsMultiwireList = {};
             var nowIsMultiwireList = {};
             _.each(res.rows, function(el, index, list){
-                if(el.cacheLevel === 1 || el.cacheLevel === 2 || el.liveLevel === 1 || el.liveLevel === 2){
-                    originNameList.push({name: el.chName, value:el.id})
-                    originIsMultiwireList[el.id]= (el.operatorId == 9);
-                    nowNameList.push({name: el.chName, value:el.id})
-                    nowIsMultiwireList[el.id]= (el.operatorId == 9);
-                } 
+                originNameList.push({name: el.chName, value:el.id})
+                originIsMultiwireList[el.id]= (el.operatorId == 9);
+                nowNameList.push({name: el.chName, value:el.id})
+                nowIsMultiwireList[el.id]= (el.operatorId == 9);
             });
             // this.isMultiwireList = originIsMultiwireList;
             var originSearchSelect = new SearchSelect({
@@ -153,7 +151,11 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             if(!res) return;
             this.ruleDataList[id] = res;
             this.collection.trigger("get.layerInfo.success",res)
-            
+        },
+
+        onUpdateStrategyError: function(res, id){
+            this.ruleDataList[id] = res;
+            this.collection.trigger("get.layerInfo.error", res)
         },
 
         onClickSaveButton: function(){

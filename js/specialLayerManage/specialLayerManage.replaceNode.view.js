@@ -223,8 +223,6 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                         }else if(args[0].length === 0){
                             this.distributeLowerLevelPopup.$el.modal('hide');
                         }
-                        
-
                     }.bind(this),
                     onHiddenCallback: function(){
     

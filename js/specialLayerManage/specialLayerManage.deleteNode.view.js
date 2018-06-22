@@ -22,6 +22,12 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
             this.collection.on("get.node.error", $.proxy(this.onGetError, this));
             this.collection.getNodeList();
 
+            this.collection.off("get.operator.success");
+            this.collection.off("get.operator.error");
+            this.collection.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
+            this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
+            this.collection.getOperatorList();
+
             this.collection.off("get.ruleInfo.success");
             this.collection.off("get.ruleInfo.error");
             this.collection.on("get.ruleInfo.success", $.proxy(this.onGetRuleInfoSuccess, this));
@@ -56,8 +62,11 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
             var nameList = [];
             var isMultiwireList = {};
             _.each(res.rows, function(el, index, list){
-                nameList.push({name: el.chName, value:el.id})
-                isMultiwireList[el.id]= (el.operatorId == 9);
+                if(el.cacheLevel === 1 || el.cacheLevel === 2 || el.liveLevel === 1 || el.liveLevel === 2){
+                    nameList.push({name: el.chName, value:el.id})
+                    isMultiwireList[el.id]= (el.operatorId == 9);
+                }
+                
             });
             // this.isMultiwireList = originIsMultiwireList;
             var searchSelect = new SearchSelect({
@@ -70,13 +79,37 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                 callback: function(data) {
                     this.nodeId = data.value;
                     this.$el.find('#dropdown-node .cur-value').html(data.name);
+                    if(isMultiwireList[data.value] === true){
+                        this.$el.find(".ipCorporator").show();
+                    }else if(isMultiwireList[data.value] === false){
+                        this.$el.find(".ipCorporator").hide();
+                    }
                     if(Object.getOwnPropertyNames(this.dataList).length > 0){
                         this.dataList = {}
                     }
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                    this.collection.getStrategyInfoByNode(data)
+                    this.collection.getStrategyInfoByNode(data)      
                 }.bind(this)
             });
+        },
+
+        onGetOperatorSuccess:function(res){
+            var _data = res.rows;
+            this.operateTypeList = [{
+                name: "全部",
+                value: ""
+            }];
+            this.operateType = ""
+            _.each(_data, function(el, index) {
+                this.operateTypeList.push({
+                    name: el.name,
+                    value: el.name
+                })
+            }.bind(this))
+            Utility.initDropMenu(this.$el.find(".dropdown-ipCorporator"), this.operateTypeList, function(el) {
+                if (value !== "")
+                    this.operateType = el
+            }.bind(this));
         },
 
         onGetStrategySuccess:function(res){
@@ -122,6 +155,7 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                         oldNodeId: this.nodeId,
                         operateType: "delete"
                     }
+                    localArgs.ipCorporation = this.operateType || "";
                     var tempRule = []
                     _.each(this.dataList[el.id], function(item){
                         if(item.isChecked === true){
@@ -130,6 +164,7 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                     }.bind(this))
                     var ruleStr = tempRule.join(",");
                     localArgs.rules = ruleStr;
+                    console.log(localArgs)
                     this.collection.updateStrategy(localArgs);
                 }
             }.bind(this))

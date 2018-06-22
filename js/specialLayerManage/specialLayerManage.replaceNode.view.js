@@ -22,6 +22,12 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             this.collection.on("get.node.error", $.proxy(this.onGetError, this));
             this.collection.getNodeList();
 
+            this.collection.off("get.operator.success");
+            this.collection.off("get.operator.error");
+            this.collection.on("get.operator.success", $.proxy(this.onGetOperatorSuccess, this));
+            this.collection.on("get.operator.error", $.proxy(this.onGetError, this));
+            this.collection.getOperatorList();
+
             this.collection.off("get.ruleInfo.success");
             this.collection.off("get.ruleInfo.error");
             this.collection.on("get.ruleInfo.success", $.proxy(this.onGetRuleInfoSuccess, this));
@@ -46,6 +52,24 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             
         },
 
+        onGetOperatorSuccess:function(res){
+            var _data = res.rows;
+            this.operateTypeList = [{
+                name: "全部",
+                value: ""
+            }];
+            this.operateType = ""
+            _.each(_data, function(el, index) {
+                this.operateTypeList.push({
+                    name: el.name,
+                    value: el.name
+                })
+            }.bind(this))
+            Utility.initDropMenu(this.$el.find(".dropdown-ipCorporator"), this.operateTypeList, function(el) {
+                if (value !== "")
+                    this.operateType = el
+            }.bind(this));
+        },
          
         onSetDataItemSuccess:function(){
             this.distributeLowerLevelPopup.$el.find(".ok").removeAttr("disabled");
@@ -59,10 +83,12 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             var originIsMultiwireList = {};
             var nowIsMultiwireList = {};
             _.each(res.rows, function(el, index, list){
-                originNameList.push({name: el.chName, value:el.id})
-                originIsMultiwireList[el.id]= (el.operatorId == 9);
-                nowNameList.push({name: el.chName, value:el.id})
-                nowIsMultiwireList[el.id]= (el.operatorId == 9);
+                if(el.cacheLevel === 1 || el.cacheLevel === 2 || el.liveLevel === 1 || el.liveLevel === 2){
+                    originNameList.push({name: el.chName, value:el.id})
+                    originIsMultiwireList[el.id]= (el.operatorId == 9);
+                    nowNameList.push({name: el.chName, value:el.id})
+                    nowIsMultiwireList[el.id]= (el.operatorId == 9);
+                } 
             });
             // this.isMultiwireList = originIsMultiwireList;
             var originSearchSelect = new SearchSelect({
@@ -92,6 +118,11 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                 callback: function(data) {
                     this.newNodeId = data.value;
                     this.$el.find('#dropdown-nowNode .cur-value').html(data.name);
+                    if(nowIsMultiwireList[data.value] === true){
+                        this.$el.find(".ipCorporator").show();
+                    }else if(nowIsMultiwireList[data.value] === false){
+                        this.$el.find(".ipCorporator").hide();
+                    }
                 }.bind(this)
             });
             
@@ -143,10 +174,10 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                         rules: "",
                         oldNodeId: this.oldNodeId,
                         newNodeId: this.newNodeId,
-                        operateType: "replace"
+                        operateType: "replace",
                     }
+                    localArgs.ipCorporation = this.operateType || "";
                     var tempRule = []
-                    console.log(this.dataList)
                     _.each(this.dataList[el.id], function(item){
                         if(item.isChecked === true){
                             tempRule.push(item.id)
@@ -154,6 +185,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                     }.bind(this))
                     var ruleStr = tempRule.join(",");
                     localArgs.rules = ruleStr;
+                    console.log(localArgs)
                     this.collection.updateStrategy(localArgs);
                 }
             }.bind(this))

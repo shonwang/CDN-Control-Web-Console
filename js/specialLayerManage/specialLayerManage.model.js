@@ -36,6 +36,31 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
                 Utility.postAjax(url, args, successCallback, errorCallback);
             },
 
+            getOperatorList: function(args){
+                var url = BASE_URL + "/rs/metaData/operatorList?" + new Date().valueOf(); 
+                var defaultParas = {
+                    type: "GET",
+                    url: url,
+                    async: true,
+                    timeout: 30000
+                };
+    
+                defaultParas.beforeSend = function(xhr){
+                    //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+                }
+                defaultParas.success = function(res){
+                    this.trigger("get.operator.success", res); 
+                }.bind(this);
+    
+                defaultParas.error = function(response, msg){
+                    if (response&&response.responseText)
+                        response = JSON.parse(response.responseText)
+                    this.trigger("get.operator.error", response); 
+                }.bind(this);
+    
+                $.ajax(defaultParas);
+            },
+
             checkWithTopo:function(args){
                 var url = BASE_URL + "/resource/special/checkWithTopo?topoId="+args.topoId+"&strategyId="+args.strategyId,
                     successCallback = function(res) {

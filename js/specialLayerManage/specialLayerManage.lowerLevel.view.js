@@ -61,19 +61,15 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
                 }
             },
 
-            onGetlayerInfoError:function(data){
+            onGetlayerInfoError:function(data,id, name){
+                console.log(arguments)
                 if(data.length === 0) return;
                 this.dataList.push(data)
-                for(var item in data[0]){
-                    var tempList = {
-                        value: item,
-                        name: data[0][item]
-                    }
-                    var itemList = "<tr data-id='"+ tempList.value +
-                                    "'><td><span class='glyphicon glyphicon-remove' id='"+tempList.value+"></span></td><td>"+tempList.name+"</td>"+"<td class='text-danger'>替换失败      <small>"+data.message+"</small></td>"+"</tr>";
+                
+                    var itemList = "<tr data-id='"+ id +
+                                    "'><td><span class='glyphicon glyphicon-remove' id='"+id+"></span></td><td>"+name+"</td>"+"<td class='text-danger'>替换失败      <small>"+data.message+"</small></td>"+"</tr>";
                     this.$el.find("tbody").append(itemList)
-                }
-                this.$el.find("tr[data-id] input").on("click", $.proxy(this.onItemCheckedUpdated, this));
+                
                 if(this.dataList.length === this.dataParam.length){
                     this.collection.trigger("set.dataItem")
                 }

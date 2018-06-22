@@ -194,13 +194,13 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
                 Utility.getAjax(url, args, successCallback, errorCallback);
             },
 
-            updateStrategy: function(args) {
+            updateStrategy: function(args, name) {
                 var url = BASE_URL + "/resource/topo/batch/updateTopoOrStrategy",
                     successCallback = function(res) {
                         this.trigger("update.strategy.success", res, args.id);
                     }.bind(this),
                     errorCallback = function(response) {
-                        this.trigger('update.strategy.error', response, args.id);
+                        this.trigger('update.strategy.error', response, args.id, name);
                     }.bind(this);
                 Utility.postAjax(url, args, successCallback, errorCallback);
             },

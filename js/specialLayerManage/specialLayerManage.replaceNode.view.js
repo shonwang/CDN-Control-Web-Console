@@ -153,9 +153,9 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             this.collection.trigger("get.layerInfo.success",res)
         },
 
-        onUpdateStrategyError: function(res, id){
+        onUpdateStrategyError: function(res, id, name){
             this.ruleDataList[id] = res;
-            this.collection.trigger("get.layerInfo.error", res)
+            this.collection.trigger("get.layerInfo.error", res, id, name)
         },
 
         onClickSaveButton: function(){
@@ -170,6 +170,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             var args = [];
             _.each(this.checkedParam, function(el){
                 if(el.isChecked === true){
+                    var layerName = el.name
                     var localArgs = {
                         id: el.id,
                         type: "strategy",
@@ -188,7 +189,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                     var ruleStr = tempRule.join(",");
                     localArgs.rules = ruleStr;
                     console.log(localArgs)
-                    this.collection.updateStrategy(localArgs);
+                    this.collection.updateStrategy(localArgs, layerName);
                 }
             }.bind(this))
 

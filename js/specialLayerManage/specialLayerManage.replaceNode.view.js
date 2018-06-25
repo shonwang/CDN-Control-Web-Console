@@ -167,7 +167,12 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                 Utility.warning("请设置现节点！");
                 return false;
             }
+            if(this.checkedParam.length > 10){
+                Utility.warning("分层策略选择一次不可超过10条！");
+                return false;
+            }
             var args = [];
+            console.log("点保存时的this.checkedParam",this.checkedParam);
             _.each(this.checkedParam, function(el){
                 if(el.isChecked === true){
                     var layerName = el.name
@@ -188,7 +193,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                     }.bind(this))
                     var ruleStr = tempRule.join(",");
                     localArgs.rules = ruleStr;
-                    console.log(localArgs)
+                    console.log("保存时ajax发送的数据：",localArgs)
                     this.collection.updateStrategy(localArgs, layerName);
                 }
             }.bind(this))
@@ -208,18 +213,17 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                     type     : 2,
                     onOKCallback:  function(){
                         var args = myDistributeLowerLevelView.getArgs();
-                        console.log(args)
-                        if(!args) return;
+                        console.log("待下发参数：",args)
                         this.ruleConfirmInfo = []
                         this.collection.off("send.success");
                         this.collection.off("send.error");
                         this.collection.on("send.success", $.proxy(this.onSendSuccess, this));
                         this.collection.on("send.error", $.proxy(this.onSendError, this));
-                        _.each(args[0], function(el){
-                            this.collection.strategyUpdate(el,args[1]);
-                        }.bind(this))
                         if(args[0].length > 0){
-                            this.options.onCancelCallback && this.options.onCancelCallback();
+                            _.each(args[0], function(el){
+                                this.collection.strategyUpdate(el,args[1]);
+                                this.options.onCancelCallback && this.options.onCancelCallback();
+                            }.bind(this))
                         }else if(args[0].length === 0){
                             this.distributeLowerLevelPopup.$el.modal('hide');
                         }

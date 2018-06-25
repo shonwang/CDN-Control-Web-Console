@@ -103,7 +103,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                         this.dataList = {}
                     }
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                    this.collection.getStrategyInfoByNode(data)
+                    this.collection.getStrategyInfoByNode(data);
                 }.bind(this)
             });
             var nowSearchSelect = new SearchSelect({
@@ -143,7 +143,6 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                 }.bind(this));
             }
             this.defaultParam = strategyParam;
-            this.checkedParam = strategyParam;
             this.initLayerStrategyTable();
         },
 
@@ -167,12 +166,23 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                 Utility.warning("请设置现节点！");
                 return false;
             }
+            var tempList = []
+            _.each(this.defaultParam, function(el){
+                var idList = "input#"+el.id
+                if(this.nodeTable.find(idList).is(":checked") === true){
+                    tempList.push(el)
+                }
+            }.bind(this))
+            this.checkedParam = tempList;
             if(this.checkedParam.length > 10){
                 Utility.warning("分层策略选择一次不可超过10条！");
                 return false;
             }
-            var args = [];
-            console.log("点保存时的this.checkedParam",this.checkedParam);
+            if(this.checkedParam.length === 0){
+                Utility.warning("分层策略不可为空！");
+                return false;
+            }
+            console.log("点保存",this.checkedParam,this.defaultParam);
             _.each(this.checkedParam, function(el){
                 if(el.isChecked === true){
                     var layerName = el.name
@@ -204,7 +214,8 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             require(["specialLayerManage.lowerLevel.view"], function(DistributeLowerLevelView) {
                 var myDistributeLowerLevelView = new DistributeLowerLevelView({
                     collection: this.collection,
-                    dataParam: this.checkedParam
+                    dataParam: this.checkedParam,
+                    type:1
                 });
                 var options = {
                     title:"配置下发",
@@ -226,6 +237,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                             }.bind(this))
                         }else if(args[0].length === 0){
                             this.distributeLowerLevelPopup.$el.modal('hide');
+
                         }
                     }.bind(this),
                     onHiddenCallback: function(){
@@ -303,7 +315,6 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             var checkedList = this.defaultParam.filter(function(object) {
                 return object.isChecked === true;
             })
-            this.checkedParam = checkedList;
             if (checkedList.length === this.defaultParam.length)
                 this.nodeTable.find("thead[data-parent] input").get(0).checked = true;
             if (checkedList.length !== this.defaultParam.length)

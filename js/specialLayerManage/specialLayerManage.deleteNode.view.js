@@ -10,8 +10,8 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
             this.$el.find("#dropdown-node").attr("disabled", true);
             this.$el.find(".opt-ctn .save").html("确认");
 
-            this.collection.off("set.dataItem.success");
-            this.collection.on("set.dataItem.success", $.proxy(this.onSetDataItemSuccess, this));
+            this.collection.off("set.dataItem");
+            this.collection.on("set.dataItem", $.proxy(this.onSetDataItem, this));
             this.collection.off("get.strategyInfoByNode.success");
             this.collection.off("get.strategyInfoByNode.error");
             this.collection.on("get.strategyInfoByNode.success", $.proxy(this.onGetStrategySuccess, this));
@@ -36,7 +36,7 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
             this.collection.off("update.strategy.success");
             this.collection.off("update.strategy.error");
             this.collection.on("update.strategy.success", $.proxy(this.onUpdateStrategySuccess, this));
-            this.collection.on("update.strategy.error", $.proxy(this.onGetError, this));
+            this.collection.on("update.strategy.error", $.proxy(this.onUpdateStrategyError, this));
             
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
             this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickDeleteButton, this));
@@ -53,7 +53,7 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
         },
 
          
-        onSetDataItemSuccess:function(){
+        onSetDataItem:function(){
             this.distributeLowerLevelPopup.$el.find(".ok").removeAttr("disabled");
         },
 
@@ -129,7 +129,6 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                 }.bind(this));
             }
             this.defaultParam = strategyParam;
-            this.checkedParam = strategyParam;
             this.initLayerStrategyTable();
         },
 
@@ -140,14 +139,35 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
 
         },
 
+        onUpdateStrategyError: function(res, id, name){
+            this.ruleDataList[id] = res;
+            this.collection.trigger("get.layerInfo.error", res, id, name)
+        },
+
         onClickDeleteButton: function(){
             if(!this.nodeId){
                 Utility.warning("请设置节点！");
                 return false;
             }
-            var args = [];
+            var tempList = [];
+            _.each(this.defaultParam, function(el){
+                var idList = "input#"+el.id
+                if(this.nodeTable.find(idList).is(":checked") === true){
+                    tempList.push(el)
+                }
+            }.bind(this));
+            this.checkedParam = tempList;
+            if(this.checkedParam.length > 10){
+                Utility.warning("分层策略选择一次不可超过10条！");
+                return false;
+            }
+            if(this.checkedParam.length === 0){
+                Utility.warning("分层策略不可为空！");
+                return false;
+            }
             _.each(this.checkedParam, function(el){
                 if(el.isChecked === true){
+                    var layerName = el.name
                     var localArgs = {
                         id: el.id,
                         type: "strategy",
@@ -165,7 +185,7 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                     var ruleStr = tempRule.join(",");
                     localArgs.rules = ruleStr;
                     console.log(localArgs)
-                    this.collection.updateStrategy(localArgs);
+                    this.collection.updateStrategy(localArgs, layerName);
                 }
             }.bind(this))
 
@@ -175,7 +195,8 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
             require(["specialLayerManage.lowerLevel.view"], function(DistributeLowerLevelView) {
                 var myDistributeLowerLevelView = new DistributeLowerLevelView({
                     collection: this.collection,
-                    dataParam: this.checkedParam
+                    dataParam: this.checkedParam,
+                    type:2
                 });
                 var options = {
                     title:"配置下发",
@@ -184,18 +205,20 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                     type     : 2,
                     onOKCallback:  function(){
                         var args = myDistributeLowerLevelView.getArgs();
-                        if(!args) return;
                         this.ruleConfirmInfo = []
                         this.collection.off("send.success");
                         this.collection.off("send.error");
                         this.collection.on("send.success", $.proxy(this.onSendSuccess, this));
                         this.collection.on("send.error", $.proxy(this.onSendError, this));
-                        _.each(args[0], function(el){
-                            this.collection.strategyUpdate(el,args[1]);
-                        }.bind(this))
-                        this.options.onCancelCallback && this.options.onCancelCallback();
-                        // this.distributeLowerLevelPopup.$el.modal('hide');
+                        if(args[0].length > 0){
+                            _.each(args[0], function(el){
+                                this.collection.strategyUpdate(el,args[1]);
+                                this.options.onCancelCallback && this.options.onCancelCallback();
+                            }.bind(this))
+                        }else if(args[0].length === 0){
+                            this.distributeLowerLevelPopup.$el.modal('hide');
 
+                        }
                     }.bind(this),
                     onHiddenCallback: function(){
     
@@ -208,7 +231,7 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
             }.bind(this))
         },
 
-        onSendSuccess:function(data, id){
+        onSendSuccess:function(data, id, num){
             this.ruleConfirmInfo.push(data);
             this.collection.trigger("get.ruleConfirmInfo.success", data, id)
             if(this.ruleConfirmInfo.length === num){
@@ -272,7 +295,6 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
             var checkedList = this.defaultParam.filter(function(object) {
                 return object.isChecked === true;
             })
-            this.checkedParam = checkedList;
             if (checkedList.length === this.defaultParam.length)
                 this.nodeTable.find("thead[data-parent] input").get(0).checked = true;
             if (checkedList.length !== this.defaultParam.length)

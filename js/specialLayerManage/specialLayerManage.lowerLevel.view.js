@@ -7,6 +7,7 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
                 this.options = options;
                 this.collection = options.collection;
                 this.dataParam = _.pairs(options.dataParam);
+                this.type = options.type
                 this.$el = $(_.template(template['tpl/specialLayerManage/specialLayerManage.distributeLowerLevel.html'])({}));
                 this.collection.on("get.layerInfo.success", $.proxy(this.onGetlayerInfoSuccess,this));
                 this.collection.on("get.layerInfo.error", $.proxy(this.onGetlayerInfoError,this));
@@ -15,8 +16,13 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
                 this.collection.on("get.unchecked", $.proxy(this.onGetUncheckedItem,this));
                 this.dataList = [];
                 this.checkedItem = [];
+                if(this.type === 1){
+                    this.typeStr = "替换"
+                }else if(this.type === 2){
+                    this.typeStr = "删除"
+                }
                 _.each(this.dataParam, function(el){
-                    el[1].isChecked = true;
+                    console.log(el[1].isChecked)
                     this.checkedItem.push(el[1])
                 }.bind(this))
             },
@@ -28,22 +34,29 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
             onGetRuleConfirmInfoSuccess: function(data, id){
                 var idStr = "tr[data-id="+id+"]";
                 var idStrCheckbox = idStr+" input";
-                var itemList = "<td class='text-success'>下发成功      <small>"+data.message+"</small></td>"
+                var itemList = "<td class='text-success'>下发成功</td>";
+                var messageList = "<tr><td colspan='3'><small>"+data.message+"</small></td></tr>";
                 this.$el.find(idStrCheckbox).hide()
-                this.$el.find(idStr).append(itemList)
+                this.$el.find(idStr).append(itemList).after(messageList)
             },
 
             onGetRuleConfirmInfoError: function(data, id){
                 var idStr = "tr[data-id="+id+"]";
                 var idStrCheckbox = idStr+" input";
-                var itemList = "<td class='text-danger'>下发失败      <small>"+data.message+"</small></td>";
+                var itemList = "<td class='text-danger'>下发失败</td>";
+                var messageList = "<tr><td colspan='3'><small>"+data.message+"</small></td></tr>";
                 this.$el.find(idStrCheckbox).hide()
-                this.$el.find(idStr).append(itemList)
+                this.$el.find(idStr).append(itemList).after(messageList)
             },
     
             onGetlayerInfoSuccess: function(data){
                 if(data.length === 0) return;
                 this.dataList.push(data)
+                _.each(this.checkedItem, function(el){
+                    if(el.id === id){
+                        el.isHited = true
+                    }
+                }.bind(this))
                 for(var item in data[0]){
                     var tempList = {
                         value: item,
@@ -62,14 +75,16 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
             },
 
             onGetlayerInfoError:function(data,id, name){
+                console.log("触发失败")
+                console.log(name)
                 if(data.length === 0) return;
                 this.dataList.push(data)
                 _.each(this.checkedItem, function(el){
                     if(el.id === id){
-                        el.isChecked = false
+                        el.isHited = false
                     }
                 }.bind(this))
-                var itemList = "<tr data-id='"+id+"'><td><span class='glyphicon glyphicon-remove' id='"+id+"'></span></td><td>"+name+"</td><td class='text-danger'>替换失败</td></tr>"+"<tr><td colspan='3'><small>"+data.message+"</small></td></tr>";
+                var itemList = "<tr data-id='"+id+"'><td><span class='glyphicon glyphicon-remove' id='"+id+"'></span></td><td>"+name+"</td><td class='text-danger'>"+this.typeStr+"失败</td></tr>"+"<tr><td colspan='3'><small>"+data.message+"</small></td></tr>";
                 this.$el.find("tbody").append(itemList);
                 if(this.dataList.length === this.dataParam.length){
                     this.collection.trigger("set.dataItem")
@@ -84,8 +99,9 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
                     return object.id === parseInt(id)
                 }.bind(this));
                 selectedObj.isChecked = eventTarget.checked
+                selectedObj.isHited = eventTarget.checked
                 var checkedList = this.checkedItem.filter(function(object) {
-                    return object.isChecked === true;
+                    return object.isHited === true;
                 })
             },
     
@@ -94,7 +110,7 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
                 this.lowerLevel = [];
                 console.log(this.checkedItem)
                 _.each(this.checkedItem, function(el){
-                    if(el.isChecked === true){
+                    if(el.isHited === true){
                         num += 1;
                         var args = {
                             comment: el.type,

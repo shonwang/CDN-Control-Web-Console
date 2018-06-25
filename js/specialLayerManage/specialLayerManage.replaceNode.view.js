@@ -53,6 +53,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
         },
 
         onGetOperatorSuccess:function(res){
+            this.operatorList = res.rows;
             var _data = res.rows;
             this.operateTypeList = [{
                 name: "全部",

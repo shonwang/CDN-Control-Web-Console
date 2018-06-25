@@ -35,9 +35,9 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
                 var idStr = "tr[data-id="+id+"]";
                 var idStrCheckbox = idStr+" input";
                 var itemList = "<td class='text-success'>下发成功</td>";
-                var messageList = "<tr><td colspan='3'><small>"+data.message+"</small></td></tr>";
+                // var messageList = "<tr><td colspan='3'><small>"+data.message+"</small></td></tr>";
                 this.$el.find(idStrCheckbox).hide()
-                this.$el.find(idStr).append(itemList).after(messageList)
+                this.$el.find(idStr).append(itemList)
             },
 
             onGetRuleConfirmInfoError: function(data, id){
@@ -52,6 +52,7 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
             onGetlayerInfoSuccess: function(data){
                 if(data.length === 0) return;
                 this.dataList.push(data)
+                console.log(data,id)
                 _.each(this.checkedItem, function(el){
                     if(el.id === id){
                         el.isHited = true

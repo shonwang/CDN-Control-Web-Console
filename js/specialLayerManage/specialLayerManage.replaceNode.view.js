@@ -400,8 +400,10 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             this.ruleTable = $(_.template(template['tpl/specialLayerManage/specialLayerManage.viewRule.html'])({
                 data: this.ruleList
             }));
+            var idStrPar = "tr[data-nodeid=" + id + "]" + ".toggle-show";
+            var idStrSon = "td[data-nodeid=" + id + "]" + ".tdTable";
             if (this.ruleList.length !== 0) {
-                this.$el.find(".table-ctn").html(this.ruleTable[0]);
+                this.$el.find(idStrSon).html(this.ruleTable[0]);
                 this.ruleTable.find("tbody[data-rule] tr").on("click", $.proxy(this.onRuleItemCheckedUpdated, this));
                 this.ruleTable.find("thead[data-rule] input").on("click", $.proxy(this.onRuleAllCheckedUpdated, this));
             } else {
@@ -411,8 +413,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                     }
                 }));
             }
-            var idStrPar = "tr[data-nodeid=" + id + "]" + ".toggle-show";
-            var idStrSon = "td[data-nodeid=" + id + "]" + ".tdTable";
+           
             if(this.$el.find(idStrPar).css("display") == "none"){
                 this.$el.find(idStrPar).show()
             }else{

@@ -249,7 +249,6 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                 this.distributeLowerLevelPopup.$el.find(".cancel").html("取消");
                 
             }.bind(this))
-            this.collection.getStrategyInfoByNode(this.oldNodeId);
         },
 
         onSendSuccess:function(data, id, num){
@@ -334,24 +333,86 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
         onClickItemView:function(event){     
             var eventTarget = event.currentTarget || event.target, id;
             id = $(eventTarget).attr("id");
-            this.defaultRuleParam = this.dataList[id] || [];
-            this.checkedRuleParam = this.defaultRuleParam;
+            this.ruleList = [];
+            _.each(this.dataList[id], function(rule, index, ls) {
+                var localLayerArray = [],
+                    upperLayer = [],
+                    primaryArray = [],
+                    backupArray = [],
+                    primaryNameArray = [],
+                    backupNameArray = [];
+                _.each(rule.local, function(local, inx, list) {
+                    localLayerArray.push(local.name)
+                }.bind(this));
+
+                primaryArray = _.filter(rule.upper, function(obj) {
+                    return obj.chiefType !== 0;
+                }.bind(this))
+                backupArray = _.filter(rule.upper, function(obj) {
+                    return obj.chiefType === 0;
+                }.bind(this))
+
+                _.each(primaryArray, function(upper, inx, list) {
+                    upper.ipCorporationName = "";
+                    if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                        for (var i = 0; i < this.operatorList.length; i++) {
+                            if (this.operatorList[i].id === upper.ipCorporation) {
+                                upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                break;
+                            }
+                        }
+                    }
+                    if (upper.rsNodeMsgVo)
+                        primaryNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                    else
+                        primaryNameArray.push("[后端没有返回名称]")
+                }.bind(this));
+                _.each(backupArray, function(upper, inx, list) {
+                    upper.ipCorporationName = "";
+                    if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                        for (var i = 0; i < this.operatorList.length; i++) {
+                            if (this.operatorList[i].id === upper.ipCorporation) {
+                                upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                break;
+                            }
+                        }
+                    }
+                    if (upper.rsNodeMsgVo)
+                        backupNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                    else
+                        backupNameArray.push("[后端没有返回名称]")
+                }.bind(this));
+
+                var upperLayer = primaryNameArray.join('<br>');
+                if (rule.upper.length > 1)
+                    upperLayer = '<strong>主：</strong>' + primaryNameArray.join('<br>');
+                if (backupArray.length > 0)
+                    upperLayer += '<br><strong>备：</strong>' + backupNameArray.join('<br>');
+
+                var ruleStrObj = {
+                    id: rule.id,
+                    localLayer: localLayerArray.join('<br>'),
+                    upperLayer: upperLayer
+                }
+                this.ruleList.push(ruleStrObj)
+            }.bind(this))
+
             this.ruleTable = $(_.template(template['tpl/specialLayerManage/specialLayerManage.viewRule.html'])({
-                data: this.defaultRuleParam
+                data: this.ruleList
             }));
-            var idStrPar = "tr[data-nodeid=" + id + "]" + ".toggle-show";
-            var idStrSon = "td[data-nodeid=" + id + "]" + ".tdTable";
-            if (this.defaultRuleParam.length !== 0){    
-                this.$el.find(idStrSon).html(this.ruleTable[0]);
+            if (this.ruleList.length !== 0) {
+                this.$el.find(".table-ctn").html(this.ruleTable[0]);
                 this.ruleTable.find("tbody[data-rule] tr").on("click", $.proxy(this.onRuleItemCheckedUpdated, this));
                 this.ruleTable.find("thead[data-rule] input").on("click", $.proxy(this.onRuleAllCheckedUpdated, this));
-            }else{
-                this.$el.find(idStrSon).html(_.template(template['tpl/empty-2.html'])({
+            } else {
+                this.$el.find(".table-ctn").html(_.template(template['tpl/empty-2.html'])({
                     data: {
                         message: "暂无数据"
                     }
                 }));
             }
+            var idStrPar = "tr[data-nodeid=" + id + "]" + ".toggle-show";
+            var idStrSon = "td[data-nodeid=" + id + "]" + ".tdTable";
             if(this.$el.find(idStrPar).css("display") == "none"){
                 this.$el.find(idStrPar).show()
             }else{

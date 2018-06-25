@@ -88,7 +88,7 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                         this.dataList = {}
                     }
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                    this.collection.getStrategyInfoByNode(data)      
+                    this.collection.getStrategyInfoByNode(data.value)      
                 }.bind(this)
             });
         },

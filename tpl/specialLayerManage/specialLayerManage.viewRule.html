@@ -8,59 +8,30 @@
                     <th>上一层</th>
                 </tr>
             </thead>
-          
-            <% for(var i = 0; i < data.length; i++) { %>
-              <tbody data-rule="body">
-                <tr>
-                    <th><input type="checkbox" checked="true" id="<%=data[i].id%>"></th>
-                    <%if(data[i].localType==1){%>
-                        <%if(data[i].local.length>1){%>
-                         <td><table>
-                            <%for(var j=0;j< data[i].local.length;j++){%>
-                              <tr><td><%=data[i].local[j].name%></td></tr>
-                            <%}%>
-                         </table></td>
-                        <%}else{%>
-                          <td><%=data[i].local[0].name%></td>
-                    <%}}else if(data[i].localType==2){%>
-                         <td><%=data[i].local[0].name%></td>
-                    <%}else if(data[i].localType==3){%>
-                         <td><%=data[i].local[0].provinceName+data[i].local[0].name%></td>
-                    <%}else if(data[i].localType==4){%>
-                         <td><%=data[i].local[0].areaName+data[i].local[0].name%></td>
-                    <%}%>
-                    <%if(data[i].upper.length>1){%>        
-                    <%if(data[i].isBackup){%>
-                       <td>
-                       <span class="mainOrBackupSpan">主:</span>
-                        <table>
-                            <%for(var j=0;j< data[i].upper.length; j++){%>
-                              <%if(data[i].upper[j].chiefType!=0){%>
-                              <tr><td><%=data[i].upper[j]["rsNodeMsgVo"].name%></td></tr>
-                            <%}}%>
-                       </table>
-                       <span class="mainOrBackupSpan">备:</span>
-                       <table>
-                            <%for(var j=0;j< data[i].upper.length; j++){%>
-                              <%if(data[i].upper[j].chiefType==0){%>
-                              <tr><td><%=data[i].upper[j]["rsNodeMsgVo"].name%></td></tr>
-                              <%}}%>
-                       </table>
-                       </td>
-                       <%}else{%>
-                        <td>
-                        <table>
-                             <%for(var j=0;j< data[i].upper.length; j++){%>
-                               <tr><td><%=data[i].upper[j]["rsNodeMsgVo"].name%></td></tr>
-                             <%}%>
-                        </table>
-                       </td>           
-                    <%}}else{%>       
-                        <td><%=data[i].upper[0]["rsNodeMsgVo"].name%></td> 
-                    <%}%>                    
-                </tr>
-              </tbody>
-            <% } %>
+            <tbody>
+                <% for(var i = 0; i < data.length; i++) { %>
+                    <tr data-id="<%=data[i].id%>">
+                      <td>
+                          <% if (data[i]["localLayer"].split("<br>").length > 1) { %>
+                            <%=data[i]["localLayer"].split("<br>")[0]%>
+                            <a href="javascript:void(0)" data-container="body" data-trigger="focus"
+                            data-toggle="popover" data-placement="right" data-content='<%=data[i]["localLayer"]%>' data-html="true">...更多(<%=data[i]["localLayer"].split("<br>").length%>)</a>
+                          <% } else { %>
+                            <%=data[i]["localLayer"]%>
+                          <% } %>
+                      </td>
+                      <td>
+                          <% if (data[i]["upperLayer"].split("<br>").length > 1) { %>
+                            <%=data[i]["upperLayer"].split("<br>")[0]%>
+                            <a href="javascript:void(0)" data-container="body" data-trigger="focus"
+                            data-toggle="popover" data-placement="right" data-content='<%=data[i]["upperLayer"]%>' data-html="true">...更多(<%=data[i]["upperLayer"].split("<br>").length%>)</a>
+                          <% } else { %>
+                            <%=data[i]["upperLayer"]%>
+                          <% } %>
+                      </td>
+                    </tr>
+                <% } %>  
+            </tbody>
         </table>
     </div>
 </form>

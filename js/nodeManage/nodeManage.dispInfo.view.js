@@ -50,30 +50,39 @@ define("nodeManage.dispInfo.view", ['require', 'exports', 'template', 'modal.vie
             }.bind(this));
             Utility.initDropMenu(this.$el.find(".dropdown-topo"), topoInfoList, function(value) {
                 this.topoId = parseInt(value)
-                this.onTopoListFilter()
+                this.onKeyFilter()
             }.bind(this));
         },
 
-        onTopoListFilter:function(){
+        onKeyFilter: function(){
             if (!this.channelList || this.channelList.length === 0) return;
-            var topoId = this.topoId
-            _.each(this.channelList, function(model, index, list) {
-                if (!topoId) {
-                    model.isDisplay = true;
-                } else if (model.topoId == topoId) {
-                    model.isDisplay = true;
+            var keyWord = this.$el.find("#disp-filter").val();
+            var topoId = this.topoId;
+            _.each(this.channelList, function(model, index, list){
+                if(!topoId || model.topoId == topoId){
+                    if (keyWord === "") {
+                        model.isDisplay = true;
+                    }else if (this.curSearchType == "1") {
+                        if (model.dispDomain.indexOf(keyWord) > -1)
+                            model.isDisplay = true;
+                        else
+                            model.isDisplay = false;              
+                    } else if (this.curSearchType == "2") {
+                        if (model.dispDomain.indexOf(keyWord) > -1)
+                            model.isDisplay = true;
+                        else
+                            model.isDisplay = false;  
+                    }
                 }else if(model.topoId != topoId){
-                    model.isDisplay = false;
+                    model.isDisplay = false;  
                 }
-            }.bind(this));
+            }.bind(this))
             this.initTable();
         },
 
         onDeleteRelateTopoSuccess:function(res){
             Utility.alerts("节点解除关联成功","success",5000);
-        },
-
-       
+        },     
 
         initSearchTypeDropList: function() {
             var searchArray = [{
@@ -86,31 +95,9 @@ define("nodeManage.dispInfo.view", ['require', 'exports', 'template', 'modal.vie
                 rootNode = this.$el.find(".disp-filter-drop");
             Utility.initDropMenu(rootNode, searchArray, function(value) {
                 this.curSearchType = value;
-                this.onKeyupDispListFilter();
+                this.onKeyFilter()
             }.bind(this));
             this.curSearchType = "1";
-        },
-
-        onKeyupDispListFilter: function() {
-            if (!this.channelList || this.channelList.length === 0) return;
-            var keyWord = this.$el.find("#disp-filter").val();
-
-            _.each(this.channelList, function(model, index, list) {
-                if (keyWord === "") {
-                    model.isDisplay = true;
-                } else if (this.curSearchType == "1") {
-                    if (model.dispDomain.indexOf(keyWord) > -1)
-                        model.isDisplay = true;
-                    else
-                        model.isDisplay = false;
-                } else if (this.curSearchType == "2") {
-                    if (model.remark.indexOf(keyWord) > -1)
-                        model.isDisplay = true;
-                    else
-                        model.isDisplay = false;
-                }
-            }.bind(this));
-            this.initTable();
         },
 
         onGetError: function(error) {
@@ -165,7 +152,7 @@ define("nodeManage.dispInfo.view", ['require', 'exports', 'template', 'modal.vie
             this.initTable();
             this.$el.find("#disp-filter").val("")
             this.$el.find("#disp-filter").off("keyup");
-            this.$el.find("#disp-filter").on("keyup", $.proxy(this.onKeyupDispListFilter, this));
+            this.$el.find("#disp-filter").on("keyup", $.proxy(this.onKeyFilter, this));
         },
 
         initTable: function() {

@@ -13,6 +13,8 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.replace&deleteNode.html'])({
 
             }));
+
+            console.log("我打开了这个节点")
             
             this.collection.off('get.topo.OriginInfo.success');
             this.collection.off('get.topo.OriginInfo.error');
@@ -69,6 +71,8 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
                     "name": res.name,
                     "allNodes": res.allNodes,
                     "upperNodes": res.upperNodes,
+                    "middleNodes": res.middleNodes,
+                    "lowerNodes": res.lowerNodes,
                     "rule": res.rule,
                     "type": res.type,
                     "mark": res.mark
@@ -233,8 +237,10 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
 
         onGetAllOriginNodes: function() {
              this.nameList=[];
-
-            _.each(this.defaultParam.allNodes, function(el, key, list) {
+            var nameList = _.union(this.defaultParam.upperNodes, this.defaultParam.middleNodes);
+            console.log(nameList)
+            console.log(this.defaultParam.allNodes)
+            _.each(nameList, function(el, key, list) {
                 this.nameList.push({
                     name: el.name,
                     value: el.id
@@ -258,14 +264,16 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
                     this.collection.getRuleInfo(this.queryArgs);
                 }.bind(this)
             });
-            this.$el.find("#dropdown-originNode .cur-value").html(this.nameList[0].name);
-            this.operateRule.oldNodeId=this.nameList[0].value;            
+            if(this.nameList.length > 0){
+                this.$el.find("#dropdown-originNode .cur-value").html(this.nameList[0].name);
+                this.operateRule.oldNodeId=this.nameList[0].value;  
+            }        
         },
 
         onGetAllReplaceNodes: function() {
            this.nameList = [];
-
-            _.each(this.defaultParam.allNodes, function(el, inx, list) {
+           var nameList = _.union(this.defaultParam.upperNodes, this.defaultParam.middleNodes);
+            _.each(nameList, function(el, inx, list) {
                 this.nameList.push({
                     name: el.name,
                     value: el.id,
@@ -296,11 +304,13 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
                     }.bind(this))
                 }.bind(this)
             });
-            this.$el.find("#dropdown-replaceNode .cur-value").html(this.nameList[0].name);
-            this.operateRule.newNodeId=this.nameList[0].value;
-            if(this.nameList[0].operatorId==9){
-              this.$el.find(".dropdown-operator").removeClass("hideOperator")
-            }
+            if(this.nameList.length > 0){
+                this.$el.find("#dropdown-replaceNode .cur-value").html(this.nameList[0].name);
+                this.operateRule.newNodeId=this.nameList[0].value;
+                if(this.nameList[0].operatorId==9){
+                    this.$el.find(".dropdown-operator").removeClass("hideOperator")
+                  }
+            }         
         },
 
         onGetAllOperator: function(data) {

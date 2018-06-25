@@ -42,7 +42,6 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
             this.defaultParam = [];
             this.checkedParam = [];
-            this.defaultRuleParam = [];
             this.checkedRuleParam = [];
             this.distributeLowerLevelParam = []
             this.dataList = {};
@@ -393,7 +392,8 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                 var ruleStrObj = {
                     id: rule.id,
                     localLayer: localLayerArray.join('<br>'),
-                    upperLayer: upperLayer
+                    upperLayer: upperLayer,
+                    isChecked: true
                 }
                 this.ruleList.push(ruleStrObj)
             }.bind(this))
@@ -434,24 +434,24 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             var id = $(eventTarget).attr("id");
-            var selectedObj = _.find(this.defaultRuleParam, function(object){
+            var selectedObj = _.find(this.ruleList, function(object){
                 return object.id === parseInt(id)
             }.bind(this));
             selectedObj.isChecked = eventTarget.checked
-            var checkedList = this.defaultRuleParam.filter(function(object) {
+            var checkedList = this.ruleList.filter(function(object) {
                 return object.isChecked === true;
             })
             this.checkedRuleParam = checkedList
-            if (checkedList.length === this.defaultRuleParam.length)
+            if (checkedList.length === this.ruleList.length)
                 this.ruleTable.find("thead[data-rule] input").get(0).checked = true;
-            if (checkedList.length !== this.defaultRuleParam.length)
+            if (checkedList.length !== this.ruleList.length)
                 this.ruleTable.find("thead[data-rule] input").get(0).checked = false;
         },
 
         onRuleAllCheckedUpdated: function(event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
-            _.each(this.defaultRuleParam, function(el, index, list){
+            _.each(this.ruleList, function(el, index, list){
                 el.isChecked = eventTarget.checked
             }.bind(this))
             this.ruleTable.find("tbody[data-rule] tr").find("input").prop("checked", eventTarget.checked);

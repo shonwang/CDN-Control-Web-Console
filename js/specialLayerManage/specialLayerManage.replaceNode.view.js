@@ -432,11 +432,15 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
 
         onRuleItemCheckedUpdated: function(event){
             var eventTarget = event.srcElement || event.target;
+            console.log(eventTarget)
             if (eventTarget.tagName !== "INPUT") return;
             var id = $(eventTarget).attr("id");
+            console.log(id)
             var selectedObj = _.find(this.ruleList, function(object){
+                console.log(object)
                 return object.id === parseInt(id)
             }.bind(this));
+            console.log(selectedObj)
             selectedObj.isChecked = eventTarget.checked
             var checkedList = this.ruleList.filter(function(object) {
                 return object.isChecked === true;

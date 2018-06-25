@@ -149,7 +149,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
         onUpdateStrategySuccess: function(res, id){
             if(!res) return;
             this.ruleDataList[id] = res;
-            this.collection.trigger("get.layerInfo.success",res)
+            this.collection.trigger("get.layerInfo.success", res, id)
         },
 
         onUpdateStrategyError: function(res, id, name){

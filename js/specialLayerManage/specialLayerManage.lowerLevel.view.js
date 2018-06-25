@@ -49,10 +49,10 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
                 this.$el.find(idStr).append(itemList).after(messageList)
             },
     
-            onGetlayerInfoSuccess: function(data){
+            onGetlayerInfoSuccess: function(data, id){
                 if(data.length === 0) return;
                 this.dataList.push(data)
-                console.log(data,id)
+                console.log(data, id)
                 _.each(this.checkedItem, function(el){
                     if(el.id === id){
                         el.isHited = true

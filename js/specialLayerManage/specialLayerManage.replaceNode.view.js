@@ -413,8 +413,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                         message: "暂无数据"
                     }
                 }));
-            }
-           
+            }          
             if(this.$el.find(idStrPar).css("display") == "none"){
                 this.$el.find(idStrPar).show()
             }else{

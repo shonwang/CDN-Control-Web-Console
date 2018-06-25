@@ -11,7 +11,7 @@
             <tbody data-rule="body">
                 <% for(var i = 0; i < data.length; i++) { %>
                     <tr data-id="<%=data[i].id%>">
-                        <td><input type="checkbox" checked="true"></td>
+                        <td><input type="checkbox" checked="true" id="<%=data[i].id%>"></td>
                         <td><%=data[i]["localLayer"]%></td>
                         <td><%=data[i]["upperLayer"]%></td>
                     </tr>

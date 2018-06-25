@@ -103,7 +103,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                         this.dataList = {}
                     }
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                    this.collection.getStrategyInfoByNode(data);
+                    this.collection.getStrategyInfoByNode(data.value);
                 }.bind(this)
             });
             var nowSearchSelect = new SearchSelect({
@@ -249,6 +249,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                 this.distributeLowerLevelPopup.$el.find(".cancel").html("取消");
                 
             }.bind(this))
+            this.collection.getStrategyInfoByNode(this.oldNodeId);
         },
 
         onSendSuccess:function(data, id, num){

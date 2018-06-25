@@ -123,7 +123,7 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
             },
 
             getStrategyInfoByNode: function(args) {
-                var url = BASE_URL + "/resource/topo/batch/getStragetysInfoByNodeId?nodeId=" + args.value,
+                var url = BASE_URL + "/resource/topo/batch/getStragetysInfoByNodeId?nodeId=" + args,
                     successCallback = function(res) {
                         if (res) {
                             this.trigger("get.strategyInfoByNode.success", res);

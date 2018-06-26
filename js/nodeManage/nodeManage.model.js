@@ -104,6 +104,22 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             $.ajax(defaultParas);
         },
 
+        getTopoinfo: function(args) {
+            var url = BASE_URL + "/resource/topo/info/list",
+                successCallback = function(res) {
+                    if(res){
+                        this.trigger("get.topoInfo.success", res);
+                    } else {
+                        this.trigger("get.topoInfo.error", res);
+                    }
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger('get.topoInfo.error', response);
+                }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+
         updateNode: function(args){
             // 这部分应该是更新节点信息，比如新建节点或者是对已有节点做出更改
             var url = BASE_URL + "/rs/node/modifyNode";
@@ -182,6 +198,20 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             }.bind(this);
 
             $.ajax(defaultParas);
+        },
+
+        removeNodeInDispGroups: function(args) {
+            var url = BASE_URL + "/rs/dispConf/removeNodeInDispGroups?nodeId=" + args.id + "&dispGroupIds=" + args.dispGroup,
+                successCallback = function(res) {
+                    if (res)
+                        this.trigger("remove.nodeInDispGroup.success", res);
+                    else
+                        this.trigger("remove.nodeInDispGroup.error", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("remove.nodeInDispGroup.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
         getAreaList: function(args) {

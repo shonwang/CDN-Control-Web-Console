@@ -615,7 +615,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.$el.find('.local .add-node').show();
 
             this.topoAllNodes = [];
-            // console.log(this.options.localNodes)
             _.each(this.options.localNodes, function(node) {
                 var tempNode = _.find(this.allNodesArray, function(obj) {
                     return obj.id === node.id

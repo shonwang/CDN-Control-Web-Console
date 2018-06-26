@@ -267,7 +267,10 @@
   "sharedSetup.detail.view": "sharedSetup/sharedSetup.detail.view",
   "sharedSetup.model": "sharedSetup/sharedSetup.model",
   "sharedSetup.view": "sharedSetup/sharedSetup.view",
+  "specialLayerManage.deleteNode.view": "specialLayerManage/specialLayerManage.deleteNode.view",
+  "specialLayerManage.lowerLevel.view": "specialLayerManage/specialLayerManage.lowerLevel.view",
   "specialLayerManage.model": "specialLayerManage/specialLayerManage.model",
+  "specialLayerManage.replaceNode.view": "specialLayerManage/specialLayerManage.replaceNode.view",
   "specialLayerManage.view": "specialLayerManage/specialLayerManage.view",
   "speedMeasure.model": "speedMeasure/speedMeasure.model",
   "speedMeasure.view": "speedMeasure/speedMeasure.view",
@@ -318,6 +321,8 @@ else if(window.DEBUG === 10)
     window.BASE_URL = "http://preonline.center.cdn.ksyun.com";
 else if(window.DEBUG === 11)
     window.BASE_URL = "http://cdn.center.wq01.k8s.op.ksyun.com";
+else if(window.DEBUG === 12)
+    window.BASE_URL = "http://10.12.8.161:9099";
 requirejs.config({
     paths:REQ_PATH,
     urlArgs: new Date().valueOf()

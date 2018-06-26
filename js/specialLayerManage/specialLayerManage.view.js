@@ -571,7 +571,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                                 this.$el.find(".add-topo").show();
                             }.bind(this)
                         })
-                        console.log(myAddEditLayerStrategyView)
                         this.$el.find(".add-topo").hide();
                         myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
                     }.bind(this))
@@ -619,6 +618,8 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 // }
                 // if (AUTH_OBJ.CreateTopos)
                 this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
+                this.$el.find(".opt-ctn .replace").on("click", $.proxy(this.onClickReplaceNodeBtn, this));
+                this.$el.find(".opt-ctn .delete").on("click", $.proxy(this.onClickDeleteNodeBtn, this));
                 // else
                 //     this.$el.find(".opt-ctn .new").remove();
                 this.curPage = 1;
@@ -761,13 +762,11 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         onOKCallback: function() {
                             this.createTaskParam = mySelectStrategyView.onSure();
                             if (!this.createTaskParam) return;
-                            console.log(this.createTaskParam);
                             var args = {
                                 taskName:this.domainArray[0].platformId,
                                 ruleId:this.domainArray[0].id,
                                 strategyId:this.createTaskParam.strategyId
                             };
-                            console.log(args);
                             this.collection.off("send.success");
                             this.collection.off("send.error");
                             this.collection.on("send.success", $.proxy(this.onSendSuccess, this));
@@ -830,6 +829,42 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.$el.find(".list-panel").hide();
                 myAddEditLayerView.render(this.$el.find(".edit-panel"))
             },
+
+            onClickReplaceNodeBtn:function(){
+                this.off('enterKeyBindQuery');
+                // if (this.replaceNodePopup) $("#" + this.replaceNodePopup.modalId).remove();
+                require(["specialLayerManage.replaceNode.view"], function(ReplaceNodeView) {
+                    var myReplaceNodeView = new ReplaceNodeView({
+                        collection: this.collection,
+                        onSaveCallback: function() {}.bind(this),
+                        onCancelCallback: function() {
+                            myReplaceNodeView.$el.remove();
+                            this.$el.find(".list-panel").show();
+                        }.bind(this)
+                    });
+                    this.$el.find(".list-panel").hide();
+                    myReplaceNodeView.render(this.$el.find(".edit-panel"))
+                }.bind(this));
+                
+            },
+
+            onClickDeleteNodeBtn:function(){
+                this.off('enterKeyBindQuery');
+                // if (this.replaceNodePopup) $("#" + this.replaceNodePopup.modalId).remove();
+                require(["specialLayerManage.deleteNode.view"], function(DeleteNodeView) {
+                    var myDeleteNodeView = new DeleteNodeView({
+                        collection: this.collection,
+                        onSaveCallback: function() {}.bind(this),
+                        onCancelCallback: function() {
+                            myDeleteNodeView.$el.remove();
+                            this.$el.find(".list-panel").show();
+                        }.bind(this)
+                    });
+                    this.$el.find(".list-panel").hide();
+                    myDeleteNodeView.render(this.$el.find(".edit-panel"))
+                }.bind(this));
+            },
+
 
             onClickItemUpdate: function(event) {
                 var eventTarget = event.srcElement || event.target,

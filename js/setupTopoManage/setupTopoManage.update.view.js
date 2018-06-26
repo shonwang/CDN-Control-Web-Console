@@ -85,7 +85,6 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
             },
 
             onGetUpdateSetupSuccess: function(res) {
-                console.log(res)
                 this.topoData = res;
                 // this.topoData.configUpdateProgress.job_status=1
                 if (!this.isFirst) {
@@ -174,7 +173,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
 
                 this.topoData.configUpdateProgress.job_status = null;
                 var showStatus = setInterval(function() {
-                    console.log(this.topoData.configUpdateProgress.job_status)
+                    // console.log(this.topoData.configUpdateProgress.job_status)
                     if (this.topoData.configUpdateProgress.job_status == 1 || !this.topoData.configUpdateProgress.job_status) {
                         if (this.options.pageType == 1)
                             this.collection.getProgress({
@@ -236,7 +235,7 @@ define("setupTopoManage.update.view", ['require', 'exports', 'template', 'modal.
                                         "jobId": this.topoData.basicinfo.jobId,
                                         "deliveryStrategyId": obj.strategyId
                                     }
-                                console.log(this.createTaskParam)
+                                // console.log(this.createTaskParam)
                                 this.excuteCreatTask()
                             }
                         }.bind(this),

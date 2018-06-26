@@ -226,7 +226,11 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                 this.distributeLowerLevelPopup.$el.find(".cancel").html("取消");
                 
             }.bind(this))
+            this.collection.off("load.lower");
+            this.collection.on("load.lower",$.proxy(this.onLoadLowerItem, this));
+        },
 
+        onLoadLowerItem:function(){
             _.each(this.checkedParam, function(el){
                 if(el.isChecked === true){
                     var layerName = el.name
@@ -248,7 +252,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                     var ruleStr = tempRule.join(",");
                     localArgs.rules = ruleStr;
                     console.log("保存时ajax发送的数据：",localArgs)
-                    setTimeout(this.collection.updateStrategy(localArgs, layerName),1000);
+                    this.collection.updateStrategy(localArgs, layerName);
                 }
             }.bind(this))
         },

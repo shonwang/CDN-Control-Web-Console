@@ -4,12 +4,13 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
             events: {},
     
             initialize: function(options){
-                console.log("加载了弹出框")
+                console.log("加载了弹出框");
                 this.options = options;
                 this.collection = options.collection;
                 this.dataParam = _.pairs(options.dataParam);
                 this.type = options.type
                 this.$el = $(_.template(template['tpl/specialLayerManage/specialLayerManage.distributeLowerLevel.html'])({}));
+                this.collection.trigger("load.lower");
                 this.collection.on("get.layerInfo.success", $.proxy(this.onGetlayerInfoSuccess,this));
                 this.collection.on("get.layerInfo.error", $.proxy(this.onGetlayerInfoError,this));
                 this.collection.on("get.ruleConfirmInfo.success", $.proxy(this.onGetRuleConfirmInfoSuccess,this));

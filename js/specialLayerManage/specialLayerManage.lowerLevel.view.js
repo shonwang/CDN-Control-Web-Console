@@ -4,6 +4,7 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
             events: {},
     
             initialize: function(options){
+                console.log("加载了弹出框")
                 this.options = options;
                 this.collection = options.collection;
                 this.dataParam = _.pairs(options.dataParam);

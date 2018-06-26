@@ -248,7 +248,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                     var ruleStr = tempRule.join(",");
                     localArgs.rules = ruleStr;
                     console.log("保存时ajax发送的数据：",localArgs)
-                    this.collection.updateStrategy(localArgs, layerName);
+                    setTimeout(this.collection.updateStrategy(localArgs, layerName),1000);
                 }
             }.bind(this))
         },

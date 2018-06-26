@@ -222,7 +222,7 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                     }.bind(this))
                     var ruleStr = tempRule.join(",");
                     localArgs.rules = ruleStr;
-                    console.log("保存时ajax发送的数据：",localArgs)
+                    // console.log("保存时ajax发送的数据：",localArgs)
                     this.collection.updateStrategy(localArgs, layerName);
                 }
             }.bind(this))

@@ -105,7 +105,6 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
             getArgs:function(){
                 var num = 0;
                 this.lowerLevel = [];
-                console.log(this.checkedItem)
                 _.each(this.checkedItem, function(el){
                     if(el.isHited === true){
                         num += 1;

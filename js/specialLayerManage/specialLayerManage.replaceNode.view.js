@@ -147,15 +147,12 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
         },
 
         onUpdateStrategySuccess: function(res, id){
-            console.log("onUpdateStrateSuccess", res)
-            // if(!res) return;
+            if(!res) return;
             this.ruleDataList[id] = res;
-            console.log(this.ruleDataList)
             this.collection.trigger("get.layerInfo.success", res, id)
         },
 
         onUpdateStrategyError: function(res, id, name){
-            console.log("onUpdateStrateError", res)
             this.ruleDataList[id] = res;
             this.collection.trigger("get.layerInfo.error", res, id, name)
         },
@@ -185,7 +182,6 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                 Utility.warning("分层策略不可为空！");
                 return false;
             }
-            console.log("点保存",this.checkedParam,this.defaultParam);
             if (this.distributeLowerLevelPopup) $("#" + this.distributeLowerLevelPopup.modalId).remove();
 
             require(["specialLayerManage.lowerLevel.view"], function(DistributeLowerLevelView) {
@@ -201,7 +197,6 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                     type     : 2,
                     onOKCallback:  function(){
                         var args = myDistributeLowerLevelView.getArgs();
-                        console.log("待下发参数：",args)
                         this.ruleConfirmInfo = []
                         this.collection.off("send.success");
                         this.collection.off("send.error");
@@ -251,7 +246,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                     }.bind(this))
                     var ruleStr = tempRule.join(",");
                     localArgs.rules = ruleStr;
-                    console.log("保存时ajax发送的数据：",localArgs)
+                    // console.log("保存时ajax发送的数据：",localArgs)
                     this.collection.updateStrategy(localArgs, layerName);
                 }
             }.bind(this))
@@ -437,15 +432,11 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
 
         onRuleItemCheckedUpdated: function(event){
             var eventTarget = event.srcElement || event.target;
-            console.log(eventTarget)
             if (eventTarget.tagName !== "INPUT") return;
             var id = $(eventTarget).attr("id");
-            console.log(id)
             var selectedObj = _.find(this.ruleList, function(object){
-                console.log(object)
                 return object.id === parseInt(id)
             }.bind(this));
-            console.log(selectedObj)
             selectedObj.isChecked = eventTarget.checked
             var checkedList = this.ruleList.filter(function(object) {
                 return object.isChecked === true;

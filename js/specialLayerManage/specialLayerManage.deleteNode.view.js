@@ -8,8 +8,7 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
             this.model = options.model;
             this.$el = $(_.template(template['tpl/specialLayerManage/specialLayerManage.deleteNode.html'])({}));
             this.$el.find("#dropdown-node").attr("disabled", true);
-            this.$el.find(".opt-ctn .save").html("确认");
-
+        
             this.collection.off("set.dataItem");
             this.collection.on("set.dataItem", $.proxy(this.onSetDataItem, this));
             this.collection.off("get.strategyInfoByNode.success");
@@ -37,63 +36,21 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
             this.collection.off("update.strategy.error");
             this.collection.on("update.strategy.success", $.proxy(this.onUpdateStrategySuccess, this));
             this.collection.on("update.strategy.error", $.proxy(this.onUpdateStrategyError, this));
-            
+            this.$el.find(".opt-ctn .save").html("确认")
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-            this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickDeleteButton, this));
+            this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
             this.defaultParam = [];
             this.checkedParam = [];
-            this.defaultRuleParam = [];
             this.checkedRuleParam = [];
             this.distributeLowerLevelParam = []
             this.dataList = {};
             this.ruleDataList = {};
             this.initLayerStrategyTable();
             
-            
-        },
-
-         
-        onSetDataItem:function(){
-            this.distributeLowerLevelPopup.$el.find(".ok").removeAttr("disabled");
-        },
-
-        onGetNodeSuccess:function(res){
-            this.$el.find("#dropdown-node").attr("disabled", false);
-            var nameList = [];
-            var isMultiwireList = {};
-            _.each(res.rows, function(el, index, list){
-                if(el.cacheLevel === 1 || el.cacheLevel === 2 || el.liveLevel === 1 || el.liveLevel === 2){
-                    nameList.push({name: el.chName, value:el.id})
-                    isMultiwireList[el.id]= (el.operatorId == 9);
-                }
-                
-            });
-            // this.isMultiwireList = originIsMultiwireList;
-            var searchSelect = new SearchSelect({
-                containerID: this.$el.find('.dropdown-node').get(0),
-                panelID: this.$el.find('#dropdown-node').get(0),
-                isSingle: true,
-                openSearch: true,
-                onOk: function(){},
-                data: nameList,
-                callback: function(data) {
-                    this.nodeId = data.value;
-                    this.$el.find('#dropdown-node .cur-value').html(data.name);
-                    if(isMultiwireList[data.value] === true){
-                        this.$el.find(".ipCorporator").show();
-                    }else if(isMultiwireList[data.value] === false){
-                        this.$el.find(".ipCorporator").hide();
-                    }
-                    if(Object.getOwnPropertyNames(this.dataList).length > 0){
-                        this.dataList = {}
-                    }
-                    this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                    this.collection.getStrategyInfoByNode(data.value)      
-                }.bind(this)
-            });
         },
 
         onGetOperatorSuccess:function(res){
+            this.operatorList = res.rows;
             var _data = res.rows;
             this.operateTypeList = [{
                 name: "全部",
@@ -110,6 +67,44 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                 if (value !== "")
                     this.operateType = el
             }.bind(this));
+        },
+         
+        onSetDataItem:function(){
+            this.distributeLowerLevelPopup.$el.find(".ok").removeAttr("disabled");
+        },
+
+        onGetNodeSuccess:function(res){
+            this.$el.find("#dropdown-node").attr("disabled", false);
+            var nameList = [];
+            var isMultiwireList = {};
+            _.each(res.rows, function(el, index, list){
+                nameList.push({name: el.chName, value:el.id})
+                isMultiwireList[el.id]= (el.operatorId == 9);
+            });
+            // this.isMultiwireList = originIsMultiwireList;
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-node').get(0),
+                panelID: this.$el.find('#dropdown-node').get(0),
+                isSingle: true,
+                openSearch: true,
+                onOk: function(){},
+                data: nameList,
+                callback: function(data) {
+                    this.oldNodeId = data.value;
+                    this.$el.find('#dropdown-node .cur-value').html(data.name);
+                    if(isMultiwireList[data.value] === true){
+                        this.$el.find(".ipCorporator").show();
+                    }else if(isMultiwireList[data.value] === false){
+                        this.$el.find(".ipCorporator").hide();
+                    }
+                    if(Object.getOwnPropertyNames(this.dataList).length > 0){
+                        this.dataList = {}
+                    }
+                    this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                    this.collection.getStrategyInfoByNode(data.value);
+                }.bind(this)
+            });
+            
         },
 
         onGetStrategySuccess:function(res){
@@ -133,29 +128,31 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
         },
 
         onUpdateStrategySuccess: function(res, id){
-            if(!res) return;
+            console.log("onUpdateStrateSuccess", res)
+            // if(!res) return;
             this.ruleDataList[id] = res;
-            this.collection.trigger("get.layerInfo.success",res)
-
+            console.log(this.ruleDataList)
+            this.collection.trigger("get.layerInfo.success", res, id)
         },
 
         onUpdateStrategyError: function(res, id, name){
+            console.log("onUpdateStrateError", res)
             this.ruleDataList[id] = res;
             this.collection.trigger("get.layerInfo.error", res, id, name)
         },
 
-        onClickDeleteButton: function(){
-            if(!this.nodeId){
+        onClickSaveButton: function(){
+            if(!this.oldNodeId){
                 Utility.warning("请设置节点！");
                 return false;
             }
-            var tempList = [];
+            var tempList = []
             _.each(this.defaultParam, function(el){
                 var idList = "input#"+el.id
                 if(this.nodeTable.find(idList).is(":checked") === true){
                     tempList.push(el)
                 }
-            }.bind(this));
+            }.bind(this))
             this.checkedParam = tempList;
             if(this.checkedParam.length > 10){
                 Utility.warning("分层策略选择一次不可超过10条！");
@@ -165,31 +162,7 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                 Utility.warning("分层策略不可为空！");
                 return false;
             }
-            _.each(this.checkedParam, function(el){
-                if(el.isChecked === true){
-                    var layerName = el.name
-                    var localArgs = {
-                        id: el.id,
-                        type: "strategy",
-                        rules: "",
-                        oldNodeId: this.nodeId,
-                        operateType: "delete"
-                    }
-                    localArgs.ipCorporation = this.operateType || "";
-                    var tempRule = []
-                    _.each(this.dataList[el.id], function(item){
-                        if(item.isChecked === true){
-                            tempRule.push(item.id)
-                        }
-                    }.bind(this))
-                    var ruleStr = tempRule.join(",");
-                    localArgs.rules = ruleStr;
-                    console.log(localArgs)
-                    this.collection.updateStrategy(localArgs, layerName);
-                }
-            }.bind(this))
-
-
+            console.log("点保存",this.checkedParam,this.defaultParam);
             if (this.distributeLowerLevelPopup) $("#" + this.distributeLowerLevelPopup.modalId).remove();
 
             require(["specialLayerManage.lowerLevel.view"], function(DistributeLowerLevelView) {
@@ -205,6 +178,7 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                     type     : 2,
                     onOKCallback:  function(){
                         var args = myDistributeLowerLevelView.getArgs();
+                        console.log("待下发参数：",args)
                         this.ruleConfirmInfo = []
                         this.collection.off("send.success");
                         this.collection.off("send.error");
@@ -217,7 +191,6 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                             }.bind(this))
                         }else if(args[0].length === 0){
                             this.distributeLowerLevelPopup.$el.modal('hide');
-
                         }
                     }.bind(this),
                     onHiddenCallback: function(){
@@ -228,6 +201,35 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                 this.distributeLowerLevelPopup.$el.find(".ok").attr("disabled","disabled");
                 this.distributeLowerLevelPopup.$el.find(".cancel").html("取消");
                 
+            }.bind(this))
+            this.collection.off("load.lower");
+            this.collection.on("load.lower",$.proxy(this.onLoadLowerItem, this));
+        },
+
+        onLoadLowerItem:function(){
+            _.each(this.checkedParam, function(el){
+                if(el.isChecked === true){
+                    var layerName = el.name
+                    var localArgs = {
+                        id: el.id,
+                        type: "strategy",
+                        rules: "",
+                        oldNodeId: this.oldNodeId,
+                        newNodeId: "",
+                        operateType: "delete",
+                    }
+                    localArgs.ipCorporation = this.operateType || "";
+                    var tempRule = []
+                    _.each(this.dataList[el.id], function(item){
+                        if(item.isChecked === true){
+                            tempRule.push(item.id)
+                        }
+                    }.bind(this))
+                    var ruleStr = tempRule.join(",");
+                    localArgs.rules = ruleStr;
+                    console.log("保存时ajax发送的数据：",localArgs)
+                    this.collection.updateStrategy(localArgs, layerName);
+                }
             }.bind(this))
         },
 
@@ -268,7 +270,7 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                 _.each(this.defaultParam, function(el){
                     var args = {
                         id: el.id,
-                        nodeId: this.nodeId
+                        nodeId: this.oldNodeId
                     }
                     this.collection.getRuleInfo(args)
                 }.bind(this)) 
@@ -313,24 +315,87 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
         onClickItemView:function(event){     
             var eventTarget = event.currentTarget || event.target, id;
             id = $(eventTarget).attr("id");
-            this.defaultRuleParam = this.dataList[id] || [];
-            this.checkedRuleParam = this.defaultRuleParam;
+            this.ruleList = [];
+            _.each(this.dataList[id], function(rule, index, ls) {
+                var localLayerArray = [],
+                    upperLayer = [],
+                    primaryArray = [],
+                    backupArray = [],
+                    primaryNameArray = [],
+                    backupNameArray = [];
+                _.each(rule.local, function(local, inx, list) {
+                    localLayerArray.push(local.name)
+                }.bind(this));
+
+                primaryArray = _.filter(rule.upper, function(obj) {
+                    return obj.chiefType !== 0;
+                }.bind(this))
+                backupArray = _.filter(rule.upper, function(obj) {
+                    return obj.chiefType === 0;
+                }.bind(this))
+
+                _.each(primaryArray, function(upper, inx, list) {
+                    upper.ipCorporationName = "";
+                    if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                        for (var i = 0; i < this.operatorList.length; i++) {
+                            if (this.operatorList[i].id === upper.ipCorporation) {
+                                upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                break;
+                            }
+                        }
+                    }
+                    if (upper.rsNodeMsgVo)
+                        primaryNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                    else
+                        primaryNameArray.push("[后端没有返回名称]")
+                }.bind(this));
+                _.each(backupArray, function(upper, inx, list) {
+                    upper.ipCorporationName = "";
+                    if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                        for (var i = 0; i < this.operatorList.length; i++) {
+                            if (this.operatorList[i].id === upper.ipCorporation) {
+                                upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                break;
+                            }
+                        }
+                    }
+                    if (upper.rsNodeMsgVo)
+                        backupNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                    else
+                        backupNameArray.push("[后端没有返回名称]")
+                }.bind(this));
+
+                var upperLayer = primaryNameArray.join('<br>');
+                if (rule.upper.length > 1)
+                    upperLayer = '<strong>主：</strong>' + primaryNameArray.join('<br>');
+                if (backupArray.length > 0)
+                    upperLayer += '<br><strong>备：</strong>' + backupNameArray.join('<br>');
+
+                var ruleStrObj = {
+                    id: rule.id,
+                    localLayer: localLayerArray.join('<br>'),
+                    upperLayer: upperLayer,
+                    isChecked: true
+                }
+                this.ruleList.push(ruleStrObj)
+            }.bind(this))
+
             this.ruleTable = $(_.template(template['tpl/specialLayerManage/specialLayerManage.viewRule.html'])({
-                data: this.defaultRuleParam
+                data: this.ruleList
             }));
             var idStrPar = "tr[data-nodeid=" + id + "]" + ".toggle-show";
             var idStrSon = "td[data-nodeid=" + id + "]" + ".tdTable";
-            if (this.defaultRuleParam.length !== 0){    
+            if (this.ruleList.length !== 0) {
                 this.$el.find(idStrSon).html(this.ruleTable[0]);
                 this.ruleTable.find("tbody[data-rule] tr").on("click", $.proxy(this.onRuleItemCheckedUpdated, this));
                 this.ruleTable.find("thead[data-rule] input").on("click", $.proxy(this.onRuleAllCheckedUpdated, this));
-            }else{
+            } else {
                 this.$el.find(idStrSon).html(_.template(template['tpl/empty-2.html'])({
                     data: {
                         message: "暂无数据"
                     }
                 }));
-            }
+            }          
             if(this.$el.find(idStrPar).css("display") == "none"){
                 this.$el.find(idStrPar).show()
             }else{
@@ -348,26 +413,30 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
 
         onRuleItemCheckedUpdated: function(event){
             var eventTarget = event.srcElement || event.target;
+            console.log(eventTarget)
             if (eventTarget.tagName !== "INPUT") return;
             var id = $(eventTarget).attr("id");
-            var selectedObj = _.find(this.defaultRuleParam, function(object){
+            console.log(id)
+            var selectedObj = _.find(this.ruleList, function(object){
+                console.log(object)
                 return object.id === parseInt(id)
             }.bind(this));
-            selectedObj.isChecked = eventTarget.checked 
-            var checkedList = this.defaultRuleParam.filter(function(object) {
+            console.log(selectedObj)
+            selectedObj.isChecked = eventTarget.checked
+            var checkedList = this.ruleList.filter(function(object) {
                 return object.isChecked === true;
             })
             this.checkedRuleParam = checkedList
-            if (checkedList.length === this.defaultRuleParam.length)
+            if (checkedList.length === this.ruleList.length)
                 this.ruleTable.find("thead[data-rule] input").get(0).checked = true;
-            if (checkedList.length !== this.defaultRuleParam.length)
+            if (checkedList.length !== this.ruleList.length)
                 this.ruleTable.find("thead[data-rule] input").get(0).checked = false;
         },
 
         onRuleAllCheckedUpdated: function(event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
-            _.each(this.defaultRuleParam, function(el, index, list){
+            _.each(this.ruleList, function(el, index, list){
                 el.isChecked = eventTarget.checked
             }.bind(this))
             this.ruleTable.find("tbody[data-rule] tr").find("input").prop("checked", eventTarget.checked);

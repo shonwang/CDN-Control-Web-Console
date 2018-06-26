@@ -37,7 +37,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
             this.collection.off("update.strategy.error");
             this.collection.on("update.strategy.success", $.proxy(this.onUpdateStrategySuccess, this));
             this.collection.on("update.strategy.error", $.proxy(this.onUpdateStrategyError, this));
-            
+            this.$el.find(".opt-ctn .save").html("确认")
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
             this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
             this.defaultParam = [];

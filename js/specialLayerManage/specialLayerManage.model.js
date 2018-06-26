@@ -134,7 +134,6 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
                     errorCallback = function(response) {
                         this.trigger('get.strategyInfoByNode.error', response);
                     }.bind(this);
-                    console.log(url)
                 Utility.getAjax(url, args, successCallback, errorCallback);
             },
 
@@ -190,12 +189,10 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
                     errorCallback = function(response) {
                         this.trigger('get.ruleInfo.error', response);
                     }.bind(this);
-                    console.log(url)
                 Utility.getAjax(url, args, successCallback, errorCallback);
             },
 
             updateStrategy: function(args, name) {
-                console.log("update",args,"model里的upadteStrategy")
                 var url = BASE_URL + "/resource/topo/batch/updateTopoOrStrategy",
                     successCallback = function(res) {
                         this.trigger("update.strategy.success", res, args.id);

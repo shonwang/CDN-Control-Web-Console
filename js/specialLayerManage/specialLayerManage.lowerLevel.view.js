@@ -4,7 +4,6 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
             events: {},
     
             initialize: function(options){
-                console.log("加载了弹出框");
                 this.options = options;
                 this.collection = options.collection;
                 this.dataParam = _.pairs(options.dataParam);
@@ -24,7 +23,6 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
                     this.typeStr = "删除"
                 }
                 _.each(this.dataParam, function(el){
-                    console.log(el[1].isChecked)
                     this.checkedItem.push(el[1])
                 }.bind(this))
             },
@@ -54,7 +52,6 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
             onGetlayerInfoSuccess: function(data, id){
                 if(data.length === 0) return;
                 this.dataList.push(data)
-                console.log(data, id)
                 _.each(this.checkedItem, function(el){
                     if(el.id === id){
                         el.isHited = true
@@ -77,8 +74,6 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
             },
 
             onGetlayerInfoError:function(data,id, name){
-                console.log("触发失败")
-                console.log(name)
                 if(data.length === 0) return;
                 this.dataList.push(data)
                 _.each(this.checkedItem, function(el){

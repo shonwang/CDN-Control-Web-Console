@@ -40,7 +40,6 @@ define("nodeManage.dispInfo.view", ['require', 'exports', 'template', 'modal.vie
         onGetTopoInfoSuccess:function(res){
             var _data = res.rows
             var topoInfoList = [];
-            console.log(res)
             _.each(_data, function(el){
                 var topoList = {
                     name: el.name,

@@ -13,8 +13,6 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
             this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.replace&deleteNode.html'])({
 
             }));
-
-            console.log("我打开了这个节点")
             
             this.collection.off('get.topo.OriginInfo.success');
             this.collection.off('get.topo.OriginInfo.error');
@@ -77,8 +75,6 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
                     "type": res.type,
                     "mark": res.mark
                 }
-
-                console.log("编辑的拓扑: ", this.defaultParam)
                 this.onGetAllOriginNodes();
                 this.onGetAllReplaceNodes();
                 
@@ -112,7 +108,6 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
                 this.operateRule.id = this.defaultParam.id;
                 this.operateRule.type = "topo";
                 this.operateRule.operateType = "delete";
-                console.log(this.operateRule);
                 this.collection.deleteOrReplaceTopoInfo(this.operateRule);
                 this.$el.find(".opt-ctn #delete").attr("disabled", "disabled");
                 this.model.$el.modal("hide");
@@ -141,7 +136,6 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
             Utility.warning("替换节点与原节点不能相同");
             return;
          }
-           console.log(this.operateRule);
            this.collection.deleteOrReplaceTopoInfo(this.operateRule);
            this.$el.find(".opt-ctn #replace").attr("disabled","disabled");
         },
@@ -238,8 +232,6 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
         onGetAllOriginNodes: function() {
              this.nameList=[];
             var nameList = _.union(this.defaultParam.upperNodes, this.defaultParam.middleNodes);
-            console.log(nameList)
-            console.log(this.defaultParam.allNodes)
             _.each(nameList, function(el, key, list) {
                 this.nameList.push({
                     name: el.name,

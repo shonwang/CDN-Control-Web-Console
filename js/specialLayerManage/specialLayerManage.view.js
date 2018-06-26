@@ -571,7 +571,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                                 this.$el.find(".add-topo").show();
                             }.bind(this)
                         })
-                        console.log(myAddEditLayerStrategyView)
                         this.$el.find(".add-topo").hide();
                         myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
                     }.bind(this))
@@ -763,13 +762,11 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         onOKCallback: function() {
                             this.createTaskParam = mySelectStrategyView.onSure();
                             if (!this.createTaskParam) return;
-                            console.log(this.createTaskParam);
                             var args = {
                                 taskName:this.domainArray[0].platformId,
                                 ruleId:this.domainArray[0].id,
                                 strategyId:this.createTaskParam.strategyId
                             };
-                            console.log(args);
                             this.collection.off("send.success");
                             this.collection.off("send.error");
                             this.collection.on("send.success", $.proxy(this.onSendSuccess, this));

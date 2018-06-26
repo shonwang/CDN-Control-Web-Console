@@ -147,12 +147,15 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
         },
 
         onUpdateStrategySuccess: function(res, id){
-            if(!res) return;
+            console.log("onUpdateStrateSuccess", res)
+            // if(!res) return;
             this.ruleDataList[id] = res;
+            console.log(this.ruleDataList)
             this.collection.trigger("get.layerInfo.success", res, id)
         },
 
         onUpdateStrategyError: function(res, id, name){
+            console.log("onUpdateStrateError", res)
             this.ruleDataList[id] = res;
             this.collection.trigger("get.layerInfo.error", res, id, name)
         },
@@ -408,7 +411,7 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                 this.ruleTable.find("tbody[data-rule] tr").on("click", $.proxy(this.onRuleItemCheckedUpdated, this));
                 this.ruleTable.find("thead[data-rule] input").on("click", $.proxy(this.onRuleAllCheckedUpdated, this));
             } else {
-                this.$el.find(".table-ctn").html(_.template(template['tpl/empty-2.html'])({
+                this.$el.find(idStrSon).html(_.template(template['tpl/empty-2.html'])({
                     data: {
                         message: "暂无数据"
                     }

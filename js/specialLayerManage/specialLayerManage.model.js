@@ -195,6 +195,7 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
             },
 
             updateStrategy: function(args, name) {
+                console.log("update",args,"model里的upadteStrategy")
                 var url = BASE_URL + "/resource/topo/batch/updateTopoOrStrategy",
                     successCallback = function(res) {
                         this.trigger("update.strategy.success", res, args.id);

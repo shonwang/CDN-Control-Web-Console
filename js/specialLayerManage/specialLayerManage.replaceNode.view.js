@@ -186,32 +186,6 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                 return false;
             }
             console.log("点保存",this.checkedParam,this.defaultParam);
-            _.each(this.checkedParam, function(el){
-                if(el.isChecked === true){
-                    var layerName = el.name
-                    var localArgs = {
-                        id: el.id,
-                        type: "strategy",
-                        rules: "",
-                        oldNodeId: this.oldNodeId,
-                        newNodeId: this.newNodeId,
-                        operateType: "replace",
-                    }
-                    localArgs.ipCorporation = this.operateType || "";
-                    var tempRule = []
-                    _.each(this.dataList[el.id], function(item){
-                        if(item.isChecked === true){
-                            tempRule.push(item.id)
-                        }
-                    }.bind(this))
-                    var ruleStr = tempRule.join(",");
-                    localArgs.rules = ruleStr;
-                    console.log("保存时ajax发送的数据：",localArgs)
-                    this.collection.updateStrategy(localArgs, layerName);
-                }
-            }.bind(this))
-
-
             if (this.distributeLowerLevelPopup) $("#" + this.distributeLowerLevelPopup.modalId).remove();
 
             require(["specialLayerManage.lowerLevel.view"], function(DistributeLowerLevelView) {
@@ -251,6 +225,31 @@ define("specialLayerManage.replaceNode.view", ['require','exports', 'template', 
                 this.distributeLowerLevelPopup.$el.find(".ok").attr("disabled","disabled");
                 this.distributeLowerLevelPopup.$el.find(".cancel").html("取消");
                 
+            }.bind(this))
+
+            _.each(this.checkedParam, function(el){
+                if(el.isChecked === true){
+                    var layerName = el.name
+                    var localArgs = {
+                        id: el.id,
+                        type: "strategy",
+                        rules: "",
+                        oldNodeId: this.oldNodeId,
+                        newNodeId: this.newNodeId,
+                        operateType: "replace",
+                    }
+                    localArgs.ipCorporation = this.operateType || "";
+                    var tempRule = []
+                    _.each(this.dataList[el.id], function(item){
+                        if(item.isChecked === true){
+                            tempRule.push(item.id)
+                        }
+                    }.bind(this))
+                    var ruleStr = tempRule.join(",");
+                    localArgs.rules = ruleStr;
+                    console.log("保存时ajax发送的数据：",localArgs)
+                    this.collection.updateStrategy(localArgs, layerName);
+                }
             }.bind(this))
         },
 

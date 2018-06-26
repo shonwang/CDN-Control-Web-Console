@@ -50,7 +50,7 @@ define("specialLayerManage.lowerLevel.view", ['require','exports', 'template', '
             },
     
             onGetlayerInfoSuccess: function(data, id){
-                // if(data.length === 0) return;
+                if(data.length === 0) return;
                 this.dataList.push(data)
                 console.log(data, id)
                 _.each(this.checkedItem, function(el){

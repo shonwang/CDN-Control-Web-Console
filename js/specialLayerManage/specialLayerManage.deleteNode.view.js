@@ -44,7 +44,6 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
             this.checkedRuleParam = {};
             this.unCheckedRuleParam = {};
             this.distributeLowerLevelParam = []
-            this.dataList = {};
             this.ruleDataList = {};
             this.ruleList = {};
             this.initLayerStrategyTable();
@@ -99,8 +98,8 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                     }else if(isMultiwireList[data.value] === false){
                         this.$el.find(".ipCorporator").hide();
                     }
-                    if(Object.getOwnPropertyNames(this.dataList).length > 0){
-                        this.dataList = {}
+                    if(Object.getOwnPropertyNames(this.ruleList).length > 0){
+                        this.ruleList = {}
                     }
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                     this.collection.getStrategyInfoByNode(data.value);
@@ -217,14 +216,14 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                     }
                     localArgs.ipCorporation = this.operateType || "";
                     var tempRule = []
-                    _.each(this.dataList[el.id], function(item){
+                    _.each(this.ruleList[el.id], function(item){
                         if(item.isChecked === true){
                             tempRule.push(item.id)
                         }
                     }.bind(this))
                     var ruleStr = tempRule.join(",");
                     localArgs.rules = ruleStr;
-                    // console.log("保存时ajax发送的数据：",localArgs)
+                    console.log("保存时ajax发送的数据：",localArgs)
                     this.collection.updateStrategy(localArgs, layerName);
                 }
             }.bind(this))
@@ -312,70 +311,6 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
         onClickItemView:function(event){     
             var eventTarget = event.currentTarget || event.target, id;
             id = $(eventTarget).attr("id");
-            this.ruleList[id] = [];
-            _.each(this.dataList[id], function(rule, index, ls) {
-                var localLayerArray = [],
-                    upperLayer = [],
-                    primaryArray = [],
-                    backupArray = [],
-                    primaryNameArray = [],
-                    backupNameArray = [];
-                _.each(rule.local, function(local, inx, list) {
-                    localLayerArray.push(local.name)
-                }.bind(this));
-
-                primaryArray = _.filter(rule.upper, function(obj) {
-                    return obj.chiefType !== 0;
-                }.bind(this))
-                backupArray = _.filter(rule.upper, function(obj) {
-                    return obj.chiefType === 0;
-                }.bind(this))
-
-                _.each(primaryArray, function(upper, inx, list) {
-                    upper.ipCorporationName = "";
-                    if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
-                        for (var i = 0; i < this.operatorList.length; i++) {
-                            if (this.operatorList[i].id === upper.ipCorporation) {
-                                upper.ipCorporationName = "-" + this.operatorList[i].name;
-                                break;
-                            }
-                        }
-                    }
-                    if (upper.rsNodeMsgVo)
-                        primaryNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
-                    else
-                        primaryNameArray.push("[后端没有返回名称]")
-                }.bind(this));
-                _.each(backupArray, function(upper, inx, list) {
-                    upper.ipCorporationName = "";
-                    if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
-                        for (var i = 0; i < this.operatorList.length; i++) {
-                            if (this.operatorList[i].id === upper.ipCorporation) {
-                                upper.ipCorporationName = "-" + this.operatorList[i].name;
-                                break;
-                            }
-                        }
-                    }
-                    if (upper.rsNodeMsgVo)
-                        backupNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
-                    else
-                        backupNameArray.push("[后端没有返回名称]")
-                }.bind(this));
-
-                var upperLayer = primaryNameArray.join('<br>');
-                if (rule.upper.length > 1)
-                    upperLayer = '<strong>主：</strong>' + primaryNameArray.join('<br>');
-                if (backupArray.length > 0)
-                    upperLayer += '<br><strong>备：</strong>' + backupNameArray.join('<br>');
-
-                var ruleStrObj = {
-                    id: rule.id,
-                    localLayer: localLayerArray.join('<br>'),
-                    upperLayer: upperLayer,
-                    isChecked: true
-                }
-                this.ruleList[id].push(ruleStrObj);
-                this.ruleList[id].isChecked = true;
                 if(this.unCheckedRuleParam[id]){
                     _.each(this.ruleList[id], function(el){
                         _.each(this.unCheckedRuleParam[id], function(item){
@@ -399,7 +334,6 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                         this.ruleList[id].isChecked = false
                     }
                 }
-            }.bind(this))
             var ruleTableStr = "ruleTable["+id+"]";
             this[ruleTableStr] = $(_.template(template['tpl/specialLayerManage/specialLayerManage.viewRule.html'])({
                 data: this.ruleList[id]
@@ -426,10 +360,78 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
 
         onGetRuleInfoSuccess:function(res,id){
             var _data = res || []
-            _.each(_data, function(el){
-                el.isChecked = true
+            this.ruleList[id] = [];
+            _.each(_data, function(rule, index, ls) {
+                var localLayerArray = [],
+                    upperLayer = [],
+                    primaryArray = [],
+                    backupArray = [],
+                    primaryNameArray = [],
+                    backupNameArray = [];
+                _.each(rule.local, function(local, inx, list) {
+                    var name = local.name;
+                    if (rule.localType === 3) {
+                        name = local.provinceName + '/' + local.name;
+                    } else if (rule.localType === 4) {
+                        name = local.areaName + '/' + local.name;
+                    }
+                    localLayerArray.push(name || "[后端没有返回名称]")
+                }.bind(this));
+                // if(rule.localType===1) localLayerArray=localLayerArray.join('<br>')
+                primaryArray = _.filter(rule.upper, function(obj) {
+                    return obj.chiefType !== 0;
+                }.bind(this))
+                backupArray = _.filter(rule.upper, function(obj) {
+                    return obj.chiefType === 0;
+                }.bind(this))
+                _.each(primaryArray, function(upper, inx, list) {
+                    upper.ipCorporationName = "";
+                    if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                        for (var i = 0; i < this.operatorList.length; i++) {
+                            if (this.operatorList[i].id === upper.ipCorporation) {
+                                upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                break;
+                            }
+                        }
+                    }
+                    if (upper.rsNodeMsgVo)
+                        primaryNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                    else
+                        primaryNameArray.push("[后端没有返回名称]")
+                }.bind(this));
+
+                _.each(backupArray, function(upper, inx, list) {
+                    upper.ipCorporationName = "";
+                    if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                        for (var i = 0; i < this.operatorList.length; i++) {
+                            if (this.operatorList[i].id === upper.ipCorporation) {
+                                 upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                break;
+                            }
+                        }
+                    }
+                    if (upper.rsNodeMsgVo)
+                        backupNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                    else
+                        backupNameArray.push("[后端没有返回名称]")
+                }.bind(this));
+
+                var upperLayer = primaryNameArray.join('<br>');
+                if (rule.upper.length > 1)
+                    upperLayer = '<strong>主：</strong>' + primaryNameArray.join('<br>');
+                if (backupArray.length > 0)
+                    upperLayer += '<br><strong>备：</strong>' + backupNameArray.join('<br>');
+
+                var ruleStrObj = {
+                    id: rule.id,
+                    localLayer: localLayerArray.join('<br>'),
+                    upperLayer: upperLayer,
+                    localType: rule.localType,
+                    isChecked: true
+                }
+                this.ruleList[id].push(ruleStrObj);
+                this.ruleList[id].isChecked = true;
             }.bind(this))
-            this.dataList[id] = _data;
         },
 
         onRuleItemCheckedUpdated: function(idPar, event){

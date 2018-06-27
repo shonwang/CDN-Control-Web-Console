@@ -41,10 +41,11 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
             this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
             this.defaultParam = [];
             this.checkedParam = [];
-            this.checkedRuleParam = [];
+            this.checkedRuleParam = {};
+            this.unCheckedRuleParam = {};
             this.distributeLowerLevelParam = []
-            this.dataList = {};
             this.ruleDataList = {};
+            this.ruleList = {};
             this.initLayerStrategyTable();
             
         },
@@ -97,8 +98,8 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                     }else if(isMultiwireList[data.value] === false){
                         this.$el.find(".ipCorporator").hide();
                     }
-                    if(Object.getOwnPropertyNames(this.dataList).length > 0){
-                        this.dataList = {}
+                    if(Object.getOwnPropertyNames(this.ruleList).length > 0){
+                        this.ruleList = {}
                     }
                     this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                     this.collection.getStrategyInfoByNode(data.value);
@@ -215,14 +216,14 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                     }
                     localArgs.ipCorporation = this.operateType || "";
                     var tempRule = []
-                    _.each(this.dataList[el.id], function(item){
+                    _.each(this.ruleList[el.id], function(item){
                         if(item.isChecked === true){
                             tempRule.push(item.id)
                         }
                     }.bind(this))
                     var ruleStr = tempRule.join(",");
                     localArgs.rules = ruleStr;
-                    // console.log("保存时ajax发送的数据：",localArgs)
+                    console.log("保存时ajax发送的数据：",localArgs)
                     this.collection.updateStrategy(localArgs, layerName);
                 }
             }.bind(this))
@@ -310,8 +311,57 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
         onClickItemView:function(event){     
             var eventTarget = event.currentTarget || event.target, id;
             id = $(eventTarget).attr("id");
-            this.ruleList = [];
-            _.each(this.dataList[id], function(rule, index, ls) {
+                if(this.unCheckedRuleParam[id]){
+                    _.each(this.ruleList[id], function(el){
+                        _.each(this.unCheckedRuleParam[id], function(item){
+                            if(el.id === item.id){
+                                el.isChecked = item.isChecked
+                            }
+                        }.bind(this))
+                    }.bind(this))
+                }
+                if(this.checkedRuleParam[id]){
+                    _.each(this.ruleList[id], function(el){
+                        _.each(this.checkedRuleParam[id], function(item){
+                            if(el.id === item.id){
+                                el.isChecked = item.isChecked
+                            }
+                        }.bind(this))
+                    }.bind(this))
+                    if(this.checkedRuleParam[id].length === this.ruleList[id].length){
+                        this.ruleList[id].isChecked = true
+                    }else{
+                        this.ruleList[id].isChecked = false
+                    }
+                }
+            var ruleTableStr = "ruleTable["+id+"]";
+            this[ruleTableStr] = $(_.template(template['tpl/specialLayerManage/specialLayerManage.viewRule.html'])({
+                data: this.ruleList[id]
+            }));
+            var idStrPar = "tr[data-nodeid=" + id + "]" + ".toggle-show";
+            var idStrSon = "td[data-nodeid=" + id + "]" + ".tdTable";
+            if (this[ruleTableStr].length !== 0) {
+                this.$el.find(idStrSon).html(this[ruleTableStr][0]);
+                this[ruleTableStr].find("tbody[data-rule] tr").on("click", $.proxy(this.onRuleItemCheckedUpdated, this, id));
+                this[ruleTableStr].find("thead[data-rule] input").on("click", $.proxy(this.onRuleAllCheckedUpdated, this, id));
+            } else {
+                this.$el.find(idStrSon).html(_.template(template['tpl/empty-2.html'])({
+                    data: {
+                        message: "暂无数据"
+                    }
+                }));
+            }          
+            if(this.$el.find(idStrPar).css("display") == "none"){
+                this.$el.find(idStrPar).show()
+            }else{
+                this.$el.find(idStrPar).hide()
+            }
+        },
+
+        onGetRuleInfoSuccess:function(res,id){
+            var _data = res || []
+            this.ruleList[id] = [];
+            _.each(_data, function(rule, index, ls) {
                 var localLayerArray = [],
                     upperLayer = [],
                     primaryArray = [],
@@ -319,16 +369,21 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                     primaryNameArray = [],
                     backupNameArray = [];
                 _.each(rule.local, function(local, inx, list) {
-                    localLayerArray.push(local.name)
+                    var name = local.name;
+                    if (rule.localType === 3) {
+                        name = local.provinceName + '/' + local.name;
+                    } else if (rule.localType === 4) {
+                        name = local.areaName + '/' + local.name;
+                    }
+                    localLayerArray.push(name || "[后端没有返回名称]")
                 }.bind(this));
-
+                // if(rule.localType===1) localLayerArray=localLayerArray.join('<br>')
                 primaryArray = _.filter(rule.upper, function(obj) {
                     return obj.chiefType !== 0;
                 }.bind(this))
                 backupArray = _.filter(rule.upper, function(obj) {
                     return obj.chiefType === 0;
                 }.bind(this))
-
                 _.each(primaryArray, function(upper, inx, list) {
                     upper.ipCorporationName = "";
                     if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
@@ -344,12 +399,13 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                     else
                         primaryNameArray.push("[后端没有返回名称]")
                 }.bind(this));
+
                 _.each(backupArray, function(upper, inx, list) {
                     upper.ipCorporationName = "";
                     if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
                         for (var i = 0; i < this.operatorList.length; i++) {
                             if (this.operatorList[i].id === upper.ipCorporation) {
-                                upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                 upper.ipCorporationName = "-" + this.operatorList[i].name;
                                 break;
                             }
                         }
@@ -370,67 +426,53 @@ define("specialLayerManage.deleteNode.view", ['require','exports', 'template', '
                     id: rule.id,
                     localLayer: localLayerArray.join('<br>'),
                     upperLayer: upperLayer,
+                    localType: rule.localType,
                     isChecked: true
                 }
-                this.ruleList.push(ruleStrObj)
+                this.ruleList[id].push(ruleStrObj);
+                this.ruleList[id].isChecked = true;
             }.bind(this))
-
-            this.ruleTable = $(_.template(template['tpl/specialLayerManage/specialLayerManage.viewRule.html'])({
-                data: this.ruleList
-            }));
-            var idStrPar = "tr[data-nodeid=" + id + "]" + ".toggle-show";
-            var idStrSon = "td[data-nodeid=" + id + "]" + ".tdTable";
-            if (this.ruleList.length !== 0) {
-                this.$el.find(idStrSon).html(this.ruleTable[0]);
-                this.ruleTable.find("tbody[data-rule] tr").on("click", $.proxy(this.onRuleItemCheckedUpdated, this));
-                this.ruleTable.find("thead[data-rule] input").on("click", $.proxy(this.onRuleAllCheckedUpdated, this));
-            } else {
-                this.$el.find(idStrSon).html(_.template(template['tpl/empty-2.html'])({
-                    data: {
-                        message: "暂无数据"
-                    }
-                }));
-            }          
-            if(this.$el.find(idStrPar).css("display") == "none"){
-                this.$el.find(idStrPar).show()
-            }else{
-                this.$el.find(idStrPar).hide()
-            }
         },
 
-        onGetRuleInfoSuccess:function(res,id){
-            var _data = res || []
-            _.each(_data, function(el){
-                el.isChecked = true
-            }.bind(this))
-            this.dataList[id] = _data;
-        },
-
-        onRuleItemCheckedUpdated: function(event){
+        onRuleItemCheckedUpdated: function(idPar, event){
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             var id = $(eventTarget).attr("id");
-            var selectedObj = _.find(this.ruleList, function(object){
+            var ruleTableStr = "ruleTable["+idPar+"]";
+            var selectedObj = _.find(this.ruleList[idPar], function(object){
                 return object.id === parseInt(id)
             }.bind(this));
             selectedObj.isChecked = eventTarget.checked
-            var checkedList = this.ruleList.filter(function(object) {
+            var checkedList = this.ruleList[idPar].filter(function(object) {
                 return object.isChecked === true;
             })
-            this.checkedRuleParam = checkedList
-            if (checkedList.length === this.ruleList.length)
-                this.ruleTable.find("thead[data-rule] input").get(0).checked = true;
-            if (checkedList.length !== this.ruleList.length)
-                this.ruleTable.find("thead[data-rule] input").get(0).checked = false;
+            var unCheckedList = this.ruleList[idPar].filter(function(object) {
+                return object.isChecked === false;
+            })
+            this.checkedRuleParam[idPar] = checkedList;
+            this.unCheckedRuleParam[idPar] = unCheckedList;
+            if (checkedList.length === this.ruleList[idPar].length)
+                this[ruleTableStr].find("thead[data-rule] input").get(0).checked = true;
+            if (checkedList.length !== this.ruleList[idPar].length)
+                this[ruleTableStr].find("thead[data-rule] input").get(0).checked = false;
         },
 
-        onRuleAllCheckedUpdated: function(event){
+        onRuleAllCheckedUpdated: function(idPar, event){
             var eventTarget = event.srcElement || event.target;
+            var ruleTableStr = "ruleTable["+idPar+"]";
             if (eventTarget.tagName !== "INPUT") return;
-            _.each(this.ruleList, function(el, index, list){
+            _.each(this.ruleList[idPar], function(el, index, list){
                 el.isChecked = eventTarget.checked
             }.bind(this))
-            this.ruleTable.find("tbody[data-rule] tr").find("input").prop("checked", eventTarget.checked);
+            var checkedList = this.ruleList[idPar].filter(function(object) {
+                return object.isChecked === true;
+            })
+            var unCheckedList = this.ruleList[idPar].filter(function(object) {
+                return object.isChecked === false;
+            })
+            this.checkedRuleParam[idPar] = checkedList;
+            this.unCheckedRuleParam[idPar] = unCheckedList;
+            this[ruleTableStr].find("tbody[data-rule] tr").find("input").prop("checked", eventTarget.checked);
         },
 
         onGetError: function(error){

@@ -364,7 +364,7 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                 var defaultState = {
                     nodeList: [],
                     curViewsMark: "list",// list: 列表界面，add: 新建，edit: 编辑
-                    breadcrumbTxt: ["预热刷新相关", "预热管理"]
+                    breadcrumbTxt: ["预热刷新", "预热管理"]
                 }
                 return defaultState;
             },
@@ -406,7 +406,7 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
             onClickCancelCallback: function(){
                 this.setState({
                     curViewsMark: "list",
-                    breadcrumbTxt: ["预热刷新相关", "预热管理"]
+                    breadcrumbTxt: ["预热刷新", "预热管理"]
                 })
             },
 

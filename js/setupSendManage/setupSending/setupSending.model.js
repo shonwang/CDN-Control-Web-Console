@@ -61,6 +61,17 @@ define("setupSending.model", ['require','exports', 'utility'], function(require,
             }.bind(this);
 
             Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        rollback:function(args){
+            var url = BASE_URL + "/cd/delivery/task/rollback",
+            successCallback = function(res){
+                this.trigger("set.rollback.success"); 
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("set.rollback.error", response); 
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback); 
         }
     });
 

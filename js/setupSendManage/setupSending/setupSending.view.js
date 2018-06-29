@@ -16,6 +16,8 @@ define("setupSending.view", ['require', 'exports', 'template', 'modal.view', 'ut
             this.collection.on("channel.terminate.error", $.proxy(this.onGetError, this));
             this.collection.on("channel.next.success", $.proxy(this.onChannelNextSuccess, this));
             this.collection.on("channel.next.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.rollback.success", $.proxy(this.onChannelTerminateSuccess, this));
+            this.collection.on("set.rollback.error", $.proxy(this.onGetError, this));
 
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
             this.$el.find(".mulit-next").on("click", $.proxy(this.onClickMultiNext, this));
@@ -124,6 +126,7 @@ define("setupSending.view", ['require', 'exports', 'template', 'modal.view', 'ut
             this.table.find("tbody .detail").on("click", $.proxy(this.onClickItemEdit, this));
             this.table.find("tbody .send").on("click", $.proxy(this.onClickItemSend, this));
             this.table.find("tbody .reject").on("click", $.proxy(this.onClickItemReject, this));
+            this.table.find("tbody .rollback").on("click", $.proxy(this.onClickItemRollback, this));
 
             this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
             this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
@@ -167,6 +170,23 @@ define("setupSending.view", ['require', 'exports', 'template', 'modal.view', 'ut
                 }
 
                 this.collection.terminateTask({
+                    taskId: id
+                })
+             }.bind(this))
+        },
+
+        onClickItemRollback: function(event) {
+             Utility.confirm("你确定要打回吗？", function(){
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+
+                this.collection.rollback({
                     taskId: id
                 })
              }.bind(this))

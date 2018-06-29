@@ -70,7 +70,6 @@ define("setupSending.detail.model", ['require','exports', 'utility'], function(r
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback); 
         }
-
     });
 
     return SetupSendDetailCollection;

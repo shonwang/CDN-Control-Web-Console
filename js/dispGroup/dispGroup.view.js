@@ -384,6 +384,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
                 this.$el.find("#input-name").val(this.model.attributes.dispDomain);
                 this.$el.find("#input-ttl").val(this.model.attributes.ttl);
                 this.$el.find("#textarea-comment").val(this.model.attributes.remark);
+                this.$el.find("#input-nodeNum").val(this.model.attributes.nodeNum);
                 this.crossLevel = this.model.attributes.crossLevel;
                 if (this.model.attributes.priority == "1"){
                     this.$el.find(".setup #inlineCheckbox1").get(0).checked = true;
@@ -705,15 +706,18 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
         getArgs: function(){
             var options = {
                 "id"           : this.model ? this.model.get("id") : 0,
-                "dispDomain"   : this.$el.find("#input-name").val(),
+                "dispDomain"   : this.$el.find("#input-name").val().trim(),
                 "crossLevel"   : this.crossLevel,
-                "ttl"          : this.$el.find("#input-ttl").val(),
-                "remark"       : this.$el.find("#textarea-comment").val(),
+                "ttl"          : this.$el.find("#input-ttl").val().trim(),
+                "remark"       : this.$el.find("#textarea-comment").val().trim(),
                 "resolveIpType": this.ipType,
                 "kdnsDomainId" : this.kdnsDomainId,
-                "topoId"   : this.topoId
+                "topoId"       : this.topoId,
+                "nodeNum"      : this.$el.find("#input-nodeNum").val().trim(),
             };
-            var ttl = this.$el.find("#input-ttl").val(), re = /^\d+$/;
+            var ttl = this.$el.find("#input-ttl").val().trim(), 
+                nodeNum = this.$el.find("#input-nodeNum").val().trim(),
+                re = /^\d+$/;
             if (!re.test(ttl)){
                 Utility.warning("TTL只能填入数字！");
                 return false;
@@ -721,6 +725,10 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (parseInt(ttl) >= 3600 || parseInt(ttl) <= 60){
                 Utility.warning("60 < TTL < 3600");
                 return false; 
+            }
+            if (!re.test(nodeNum)){
+                Utility.warning("节点数只能填入数字! ");
+                return false;
             }
             var setupNodes = this.$el.find(".setup input:checked");
             if (setupNodes.length === 0){
@@ -751,6 +759,7 @@ define("dispGroup.view", ['require','exports', 'template', 'modal.view', 'utilit
 
         render: function(target) {
             this.$el.appendTo(target);
+            this.$el.find(".glyphicon-question-sign").popover();
         }
     });
 

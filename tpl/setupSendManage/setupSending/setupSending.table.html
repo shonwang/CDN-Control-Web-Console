@@ -58,10 +58,12 @@
                       <span class="glyphicon glyphicon-remove-circle"></span>
                   </a>
                   <% } %>
+                  <% if(permission.StopSending) { %>
                   <a href="javascript:void(0)" id="<%=data[i].get('id')%>" class="rollback"
                      title="回滚" data-toggle="tooltip" data-placement="bottom">
                       <span class="glyphicon glyphicon-circle-arrow-left"></span>
                   </a>
+                  <% } %>
               </td>
             </tr>
         <% } %>  

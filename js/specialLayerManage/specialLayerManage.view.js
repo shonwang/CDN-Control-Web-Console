@@ -278,11 +278,11 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         primaryNameArray = [],
                         backupNameArray = [];
                     _.each(rule.local, function(local, inx, list) {
-                         var name = local.name;
+                        var name = local.name;
                         if(rule.localType===3) {
                             name = local.provinceName + '/'+local.name;
                         }else if(rule.localType===4){
-                            name = local.areaName+'/'+local.name;
+                            name = local.areaName+'/'+local.name ;
                         }
                         localLayerArray.push(name)
                     }.bind(this));
@@ -424,7 +424,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             onClickItemEdit: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
-
+                console.log("oooooooo", this.defaultParam.rule, this.defaultParam)
                 this.curEditRule = _.find(this.defaultParam.rule, function(obj) {
                     return obj.id === parseInt(id)
                 }.bind(this))

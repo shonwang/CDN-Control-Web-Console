@@ -7,6 +7,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.options = options;
             this.collection = options.collection;
             this.rule = options.rule;
+
             this.curEditRule = options.curEditRule;
             this.isEdit = options.isEdit;
             this.notFilter = options.notFilter;
@@ -18,6 +19,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     "id": new Date().valueOf(),
                     "local": [], //???
                     "localType": 2,
+                    "localOperator": [],
                     "upper": [],
                     "upType": 1,
                     "localNodeType": 1
@@ -25,6 +27,23 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             } else {
                 this.defaultParam = this.curEditRule
                 this.defaultParam.localNodeType = 1
+                if(this.curEditRule.localType === 3){
+                    console.log(this.curEditRule)
+                    var tempName = this.curEditRule.local[0].provinceName +'/'+ this.curEditRule.local[0].name;
+                    var tempValue = this.curEditRule.local[0].provinceId.toString() +'/'+ this.curEditRule.local[0].operatorId.toString();
+                    this.defaultParam.localOperator = [{
+                        name: tempName,
+                        value: tempValue
+                    }]
+                    console.log(this.defaultParam.localOperator)
+                }else if(this.curEditRule.localType === 4){
+                    var tempName = this.curEditRule.local[0].areaName +'/'+ this.curEditRule.local[0].name;
+                    var tempValue = this.curEditRule.local[0].areaId.toString() +'/'+ this.curEditRule.local[0].operatorId.toString();
+                    this.defaultParam.localOperator = [{
+                        name: tempName,
+                        value: tempValue
+                    }]
+                }
                 this.onCancelParam= $.extend(true,{},this.curEditRule)     
             }
             this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
@@ -69,7 +88,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 mySetUpToPoModel.getAreaList();
             }.bind(this));
             if(this.defaultParam.localType !== 1){
-                console.log("vvvvv")
                 this.$el.find('.local .add-operator-btn').on('click', $.proxy(this.onClickAddOperatorButton, this))
             }
             this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
@@ -457,9 +475,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             if(this.defaultParam.localType==1 && this.defaultParam.local.length==0){
                    alert('请选择本层节点');
                    return;
-            }else if(this.defaultParam.localType !== 1 && this.defaultParam.localOperator.length==0){
-                   alert('请选择本层节点');
-                   return;
             }
             if (this.defaultParam.upper.length == 0) {
                    alert('请选择上层节点');
@@ -573,7 +588,18 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     }      
                 }.bind(this))
             }else if(this.defaultParam.localType==3){
-                if(this.province && this.proAndoperator){
+                console.log(this.province, this.proAndoperator)
+                if(this.province.length === 1 && this.proAndoperator.length == 1){
+                    this.defaultParam.local = [];
+                    this.defaultParam.local[0]={
+                        provinceId: this.province[0].value,
+                        provinceName: this.province[0].name,
+                        id: this.proAndoperator[0].value,
+                        name: this.proAndoperator[0].name,
+                        operatorId: this.proAndoperator[0].value,
+                        operatorName: this.proAndoperator[0].name
+                    }
+                }else{
                     _.each(this.defaultParam.localOperator, function(el){
                         var tempNameList = el.name.split('/');
                         var tempValueList = el.value.split('/')
@@ -596,75 +622,44 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                         this.rule.push(obj)
                     }.bind(this))
                 }
-                // _.each(this.province,function(pro,i){
-                //     _.each(this.proAndoperator,function(operator,j){
-                //         if(i==0 && j==0){
-                //             this.defaultParam.local=[];
-                //             this.defaultParam.local[0]={
-                //                 provinceId: pro.value,
-                //                 provinceName: pro.name,
-                //                 id:operator.value,
-                //                 name: operator.name,
-                //                 operatorId:operator.value,
-                //                 operatorName:operator.name
-                //              }
-                //         }else{
-                //             var obj={
-                //                 "id": parseInt(Math.random()*999999999),
-                //                 "local": [], 
-                //                 "localType":3,
-                //                 "upper": this.defaultParam.upper,
-                //                 "upType":this.defaultParam.upType
-                //             }
-                //             obj.local.push({
-                //                 provinceId: pro.value,
-                //                 provinceName: pro.name,
-                //                 id:operator.value,
-                //                 name: operator.name,
-                //                 operatorId:operator.value,
-                //                 operatorName:operator.name
-                //             })
-                //             this.rule.push(obj)
-                //         }                      
-                //     }.bind(this))
-                // }.bind(this))
                 console.log("nnnnnnnnnnnnn", this.defaultParam, this.rule)
             }else if(this.defaultParam.localType==4){
-                _.each(this.area,function(area,i){
-                    _.each(this.areaAndoperator,function(operator,j){
-                        if(i==0 && j==0){
-                            this.defaultParam.local=[];
-                            this.defaultParam.local[0]={
-                                areaId: area.value,
-                                areaName: area.name,
-                                id:operator.value,
-                                name: operator.name,
-                                operatorId:operator.value,
-                                operatorName:operator.name
-                             }
-                        }else{
-                            var obj={
-                                "id": parseInt(Math.random()*999999999),
-                                "local": [], 
-                                "localType":4,
-                                "upper": this.defaultParam.upper,
-                                "upType":this.defaultParam.upType
-                            }
-                            obj.local.push({
-                                areaId: area.value,
-                                areaName: area.name,
-                                id:operator.value,
-                                name: operator.name,
-                                operatorId:operator.value,
-                                operatorName:operator.name
-                            })
-                            this.rule.push(obj)
-                        }                      
+                if(this.area.length === 1 && this.areaAndoperator.length == 1){
+                    this.defaultParam.local = [];
+                    this.defaultParam.local[0]={
+                        areaId: this.area[0].value,
+                        areaName: this.area[0].name,
+                        id: this.areaAndoperator[0].value,
+                        name: this.areaAndoperator[0].name,
+                        operatorId: this.areaAndoperator[0].value,
+                        operatorName: this.areaAndoperator[0].name
+                    }
+                }else{
+                    _.each(this.defaultParam.localOperator, function(el){
+                        var tempNameList = el.name.split('/');
+                        var tempValueList = el.value.split('/')
+                        var obj = {
+                            "id": parseInt(Math.random()*999999999),
+                            "local": [], 
+                            "localType":3,
+                            "upper": this.defaultParam.upper,
+                            "upType":this.defaultParam.upType      
+                        }
+                        obj.local.push({
+                            provinceId: tempValueList[0],
+                            provinceName: tempNameList[0],
+                            id: tempValueList[1],
+                            name: tempNameList[1],
+                            operatorId:tempValueList[1],
+                            operatorName: tempNameList[1]
+                        })
+                        console.log(obj)
+                        this.rule.push(obj)
                     }.bind(this))
-                }.bind(this))
+                }
             }
             console.log("mmmmmmmmmmmmm", this.rule)
-            if(!this.isEdit) this.rule.push(this.defaultParam)   
+            // if(!this.isEdit) this.rule.push(this.defaultParam)   
             console.log("当前保存的规则：this.rule: ", this.rule);      
             this.options.onSaveCallback && this.options.onSaveCallback();
         },
@@ -741,8 +736,11 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             // console.log("拓扑本层节点: ", this.localNodeListForSelect);
             this.$el.find('.strategyLocal input').on('click', $.proxy(this.onCheckLocalNodeType, this))
             this.$el.find('.local .add-node').on('click', $.proxy(this.onClickAddLocalNodeButton, this))
-            this.initLocalTable();
-                     
+            if(this.defaultParam.localType === 1){
+                this.initLocalTable();
+            }else{
+                this.initLocalOperatorTable();
+            }
         },
 
         onCheckLocalNodeType:function(event){
@@ -850,6 +848,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         initLocalTable: function() {
+            console.log(this.defaultParam.local)
             this.localTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.table.html'])({
                 data: this.defaultParam.local
             }));
@@ -988,7 +987,12 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.$el.find(".largeAreaOperator-ctn").show();
                 this.$el.find(".operatorButton-ctn").show();
             }
-            this.initLocalTable();
+            if(this.defaultParam.localType === 1){
+                this.initLocalTable();
+            }else{
+                this.initLocalOperatorTable();
+            }
+            
             if(this.defaultParam.localType !== 1){
                 console.log("oooooo")
                 this.$el.find('.local .add-operator-btn').on('click', $.proxy(this.onClickAddOperatorButton, this))

@@ -1,0 +1,24 @@
+<table class="table table-striped table-hover">  
+    <thead> 
+      <tr>
+        <th>
+          <input type="checkbox" <% if (isCheckedAll) { %> checked="true" <% } %>>
+        </th>
+        <th>名称</th>
+        <th>节点</th>
+      </tr>
+    </thead>
+    <tbody>
+        <% for(var i = 0; i < data.length; i++) { %>
+            <% if (data[i]["isDisplay"]) { %>
+            <tr data-id="<%=data[i].hashId%>">
+              <th scope="row">
+                  <input type="checkbox" id="<%=data[i]['hashId']%>" <% if (data[i].isChecked) { %> checked="true"<% } %>>
+              </th>
+              <td><%=data[i]["hashName"]%></td>
+              <td><%=data[i]["nodeName"]%></td>
+            </tr>
+            <% } %>
+        <% } %>  
+    </tbody>
+</table>

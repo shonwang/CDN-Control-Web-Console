@@ -191,6 +191,7 @@
   "hashOrigin.selectHash.view": "hashOrigin/hashOrigin.selectHash.view",
   "hashOrigin.selectNode.view": "hashOrigin/hashOrigin.selectNode.view",
   "hashOrigin.selectNodes.view": "hashOrigin/hashOrigin.selectNodes.view",
+  "hashOrigin.selectNodeByHash.view": "hashOrigin/hashOrigin.selectNodeByHash.view",
   "hashOrigin.view": "hashOrigin/hashOrigin.view",
   "importAssess.model": "importAssess/importAssess.model",
   "importAssess.view": "importAssess/importAssess.view",

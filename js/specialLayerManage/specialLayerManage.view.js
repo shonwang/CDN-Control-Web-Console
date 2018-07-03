@@ -267,137 +267,497 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.initRuleTable();
             },
 
-            initRuleTable: function() {
-                //var data = [{localLayer: "1111", upperLayer: "22222"}];
-                this.ruleList = [];
-                _.each(this.defaultParam.rule, function(rule, index, ls) {
-                    var localLayerArray = [],
-                        upperLayer = [],
-                        primaryArray = [],
-                        backupArray = [],
-                        primaryNameArray = [],
-                        backupNameArray = [];
-                    _.each(rule.local, function(local, inx, list) {
-                        var name = local.name;
-                        if(rule.localType===3) {
-                            name = local.provinceName + '/'+local.name;
-                        }else if(rule.localType===4){
-                            name = local.areaName+'/'+local.name ;
+            onLocalTypeModified: function(){
+                this.ruleList = []
+                var spLocalLayerArray = []
+                _.each(this.defaultParam.rule, function(rule, index, ls){
+                    if(rule.localType === 3){
+                        console.log("uuuuuu", this.defaultParam)
+                        var upperLayer = [],
+                            primaryArray = [],
+                            backupArray = [],
+                            primaryNameArray = [],
+                            backupNameArray = [];
+                            _.each(rule.local, function(local, inx, list) {
+                                var name = local.provinceName +'/'+ local.name;
+                                spLocalLayerArray.push(name)
+                            }.bind(this));
+                            console.log("oooooo", spLocalLayerArray)
+                        var upType = rule.upType;//1是按节点,2是按hash
+                        if(upType == 1){
+                            //按节点
+                            primaryArray = _.filter(rule.upper, function(obj) {
+                                return obj.chiefType !== 0;
+                            }.bind(this))
+                            backupArray = _.filter(rule.upper, function(obj) {
+                                return obj.chiefType === 0;
+                            }.bind(this))
+                            _.each(primaryArray, function(upper, inx, list) {
+                                upper.ipCorporationName = "";
+                                if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                                    for (var i = 0; i < this.operatorList.length; i++) {
+                                        if (this.operatorList[i].id === upper.ipCorporation) {
+                                            upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (upper.rsNodeMsgVo)
+                                    primaryNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                                else
+                                    primaryNameArray.push("[后端没有返回名称]")
+                            }.bind(this));
+                            _.each(backupArray, function(upper, inx, list) {
+                                upper.ipCorporationName = "";
+                                if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                                    for (var i = 0; i < this.operatorList.length; i++) {
+                                        if (this.operatorList[i].id === upper.ipCorporation) {
+                                            upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (upper.rsNodeMsgVo)
+                                    backupNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                                else
+                                    backupNameArray.push("[后端没有返回名称]")
+                            }.bind(this));
                         }
-                        localLayerArray.push(name)
-                    }.bind(this));
-                    var upType = rule.upType;//1是按节点,2是按hash
-                    if(upType == 1){
-                        //按节点
-                        primaryArray = _.filter(rule.upper, function(obj) {
-                            return obj.chiefType !== 0;
-                        }.bind(this))
-                        backupArray = _.filter(rule.upper, function(obj) {
-                            return obj.chiefType === 0;
-                        }.bind(this))
-                        _.each(primaryArray, function(upper, inx, list) {
-                            upper.ipCorporationName = "";
-                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
-                                for (var i = 0; i < this.operatorList.length; i++) {
-                                    if (this.operatorList[i].id === upper.ipCorporation) {
-                                        upper.ipCorporationName = "-" + this.operatorList[i].name;
-                                        break;
+                        else {
+                            //按hash环
+                            _.each(rule.upper,function(el){
+                                //第一次点添加或编辑时需要编造，其它情况与节点的一致
+                                if(!el.rsNodeMsgVo){
+                                    el.rsNodeMsgVo = {
+                                        id:el.hashId,
+                                        //chiefType:el.hashIndex == 0 ? 1:0,
+                                        isMulti:el.ipCorporation ? 1 : 0,
+                                        ipCorporation:el.ipCorporation,
+                                        hashName:el.hashName,
+                                        name:el.hashName
+                                    };
+                                }
+                            });
+                            primaryArray = _.filter(rule.upper, function(obj) {
+                                return obj.hashIndex == 0;
+                            }.bind(this))
+                            backupArray = _.filter(rule.upper, function(obj) {
+                                return obj.hashIndex != 0;
+                            }.bind(this))
+                            _.each(primaryArray, function(upper, inx, list) {
+                                upper.ipCorporationName = "";
+                                if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.isMulti === 1) {
+                                    for (var i = 0; i < this.operatorList.length; i++) {
+                                        if (this.operatorList[i].id === upper.ipCorporation) {
+                                            upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                            break;
+                                        }
                                     }
                                 }
+                                if (upper.rsNodeMsgVo)
+                                    primaryNameArray.push(upper.rsNodeMsgVo.name + "<span class='text-danger'>[环]</span>" + upper.ipCorporationName)
+                                else
+                                    primaryNameArray.push("[后端没有返回名称]")
+                            }.bind(this));
+                            _.each(backupArray, function(upper, inx, list) {
+                                upper.ipCorporationName = "";
+                                if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.isMulti === 1) {
+                                    for (var i = 0; i < this.operatorList.length; i++) {
+                                        if (this.operatorList[i].id === upper.ipCorporation) {
+                                            upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (upper.rsNodeMsgVo)
+                                    backupNameArray.push(upper.rsNodeMsgVo.name + "<span class='text-danger'>[环]</span>" + upper.ipCorporationName)
+                                else
+                                    backupNameArray.push("[后端没有返回名称]")
+                            }.bind(this));    
+        
+                        }
+        
+                        var upperLayer = primaryNameArray.join('<br>');
+                        if (rule.upper.length > 1)
+                            upperLayer = '<strong>主：</strong>' + primaryNameArray.join('<br>');
+                        if (backupArray.length > 0)
+                            upperLayer += '<br><strong>备：</strong>' + backupNameArray.join('<br>');
+        
+                        if(spLocalLayerArray.length === this.defaultParam.rule.length){
+                            var ruleStrObj = {
+                                id: rule.id,
+                                localLayer: spLocalLayerArray.join('<br>'),
+                                upperLayer: upperLayer
                             }
-                            if (upper.rsNodeMsgVo)
-                                primaryNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
-                            else
-                                primaryNameArray.push("[后端没有返回名称]")
+                            console.log("bbbbbbbbb", ruleStrObj.localLayer, spLocalLayerArray)
+                            this.ruleList.push(ruleStrObj)  
+                        }
+                        
+                    }else if(rule.localType === 4){
+                        var upperLayer = [],
+                            primaryArray = [],
+                            backupArray = [],
+                            primaryNameArray = [],
+                            backupNameArray = [];
+                            _.each(rule.local, function(local, inx, list) {
+                                var name = local.areaName +'/'+ local.name;
+                                spLocalLayerArray.push(name)
+                            }.bind(this));
+                            console.log("oooooo", spLocalLayerArray)
+                        var upType = rule.upType;//1是按节点,2是按hash
+                        if(upType == 1){
+                            //按节点
+                            primaryArray = _.filter(rule.upper, function(obj) {
+                                return obj.chiefType !== 0;
+                            }.bind(this))
+                            backupArray = _.filter(rule.upper, function(obj) {
+                                return obj.chiefType === 0;
+                            }.bind(this))
+                            _.each(primaryArray, function(upper, inx, list) {
+                                upper.ipCorporationName = "";
+                                if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                                    for (var i = 0; i < this.operatorList.length; i++) {
+                                        if (this.operatorList[i].id === upper.ipCorporation) {
+                                            upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (upper.rsNodeMsgVo)
+                                    primaryNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                                else
+                                    primaryNameArray.push("[后端没有返回名称]")
+                            }.bind(this));
+                            _.each(backupArray, function(upper, inx, list) {
+                                upper.ipCorporationName = "";
+                                if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                                    for (var i = 0; i < this.operatorList.length; i++) {
+                                        if (this.operatorList[i].id === upper.ipCorporation) {
+                                            upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (upper.rsNodeMsgVo)
+                                    backupNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                                else
+                                    backupNameArray.push("[后端没有返回名称]")
+                            }.bind(this));
+                        }
+                        else {
+                            //按hash环
+                            _.each(rule.upper,function(el){
+                                //第一次点添加或编辑时需要编造，其它情况与节点的一致
+                                if(!el.rsNodeMsgVo){
+                                    el.rsNodeMsgVo = {
+                                        id:el.hashId,
+                                        //chiefType:el.hashIndex == 0 ? 1:0,
+                                        isMulti:el.ipCorporation ? 1 : 0,
+                                        ipCorporation:el.ipCorporation,
+                                        hashName:el.hashName,
+                                        name:el.hashName
+                                    };
+                                }
+                            });
+                            primaryArray = _.filter(rule.upper, function(obj) {
+                                return obj.hashIndex == 0;
+                            }.bind(this))
+                            backupArray = _.filter(rule.upper, function(obj) {
+                                return obj.hashIndex != 0;
+                            }.bind(this))
+                            _.each(primaryArray, function(upper, inx, list) {
+                                upper.ipCorporationName = "";
+                                if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.isMulti === 1) {
+                                    for (var i = 0; i < this.operatorList.length; i++) {
+                                        if (this.operatorList[i].id === upper.ipCorporation) {
+                                            upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (upper.rsNodeMsgVo)
+                                    primaryNameArray.push(upper.rsNodeMsgVo.name + "<span class='text-danger'>[环]</span>" + upper.ipCorporationName)
+                                else
+                                    primaryNameArray.push("[后端没有返回名称]")
+                            }.bind(this));
+                            _.each(backupArray, function(upper, inx, list) {
+                                upper.ipCorporationName = "";
+                                if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.isMulti === 1) {
+                                    for (var i = 0; i < this.operatorList.length; i++) {
+                                        if (this.operatorList[i].id === upper.ipCorporation) {
+                                            upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (upper.rsNodeMsgVo)
+                                    backupNameArray.push(upper.rsNodeMsgVo.name + "<span class='text-danger'>[环]</span>" + upper.ipCorporationName)
+                                else
+                                    backupNameArray.push("[后端没有返回名称]")
+                            }.bind(this));    
+        
+                        }
+        
+                        var upperLayer = primaryNameArray.join('<br>');
+                        if (rule.upper.length > 1)
+                            upperLayer = '<strong>主：</strong>' + primaryNameArray.join('<br>');
+                        if (backupArray.length > 0)
+                            upperLayer += '<br><strong>备：</strong>' + backupNameArray.join('<br>');
+        
+                        if(spLocalLayerArray.length === this.defaultParam.rule.length){
+                            var ruleStrObj = {
+                                id: rule.id,
+                                localLayer: spLocalLayerArray.join('<br>'),
+                                upperLayer: upperLayer
+                            }
+                            console.log("bbbbbbbbb", ruleStrObj.localLayer, spLocalLayerArray)
+                            this.ruleList.push(ruleStrObj)  
+                        }
+                    }else if(rule.localType === 2){
+                        var upperLayer = [],
+                            primaryArray = [],
+                            backupArray = [],
+                            primaryNameArray = [],
+                            backupNameArray = [];
+                            _.each(rule.local, function(local, inx, list) {
+                                var name = local.name;
+                                spLocalLayerArray.push(name)
+                            }.bind(this));
+                            console.log("oooooo", spLocalLayerArray)
+                        var upType = rule.upType;//1是按节点,2是按hash
+                        if(upType == 1){
+                            //按节点
+                            primaryArray = _.filter(rule.upper, function(obj) {
+                                return obj.chiefType !== 0;
+                            }.bind(this))
+                            backupArray = _.filter(rule.upper, function(obj) {
+                                return obj.chiefType === 0;
+                            }.bind(this))
+                            _.each(primaryArray, function(upper, inx, list) {
+                                upper.ipCorporationName = "";
+                                if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                                    for (var i = 0; i < this.operatorList.length; i++) {
+                                        if (this.operatorList[i].id === upper.ipCorporation) {
+                                            upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (upper.rsNodeMsgVo)
+                                    primaryNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                                else
+                                    primaryNameArray.push("[后端没有返回名称]")
+                            }.bind(this));
+                            _.each(backupArray, function(upper, inx, list) {
+                                upper.ipCorporationName = "";
+                                if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                                    for (var i = 0; i < this.operatorList.length; i++) {
+                                        if (this.operatorList[i].id === upper.ipCorporation) {
+                                            upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (upper.rsNodeMsgVo)
+                                    backupNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                                else
+                                    backupNameArray.push("[后端没有返回名称]")
+                            }.bind(this));
+                        }
+                        else {
+                            //按hash环
+                            _.each(rule.upper,function(el){
+                                //第一次点添加或编辑时需要编造，其它情况与节点的一致
+                                if(!el.rsNodeMsgVo){
+                                    el.rsNodeMsgVo = {
+                                        id:el.hashId,
+                                        //chiefType:el.hashIndex == 0 ? 1:0,
+                                        isMulti:el.ipCorporation ? 1 : 0,
+                                        ipCorporation:el.ipCorporation,
+                                        hashName:el.hashName,
+                                        name:el.hashName
+                                    };
+                                }
+                            });
+                            primaryArray = _.filter(rule.upper, function(obj) {
+                                return obj.hashIndex == 0;
+                            }.bind(this))
+                            backupArray = _.filter(rule.upper, function(obj) {
+                                return obj.hashIndex != 0;
+                            }.bind(this))
+                            _.each(primaryArray, function(upper, inx, list) {
+                                upper.ipCorporationName = "";
+                                if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.isMulti === 1) {
+                                    for (var i = 0; i < this.operatorList.length; i++) {
+                                        if (this.operatorList[i].id === upper.ipCorporation) {
+                                            upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (upper.rsNodeMsgVo)
+                                    primaryNameArray.push(upper.rsNodeMsgVo.name + "<span class='text-danger'>[环]</span>" + upper.ipCorporationName)
+                                else
+                                    primaryNameArray.push("[后端没有返回名称]")
+                            }.bind(this));
+                            _.each(backupArray, function(upper, inx, list) {
+                                upper.ipCorporationName = "";
+                                if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.isMulti === 1) {
+                                    for (var i = 0; i < this.operatorList.length; i++) {
+                                        if (this.operatorList[i].id === upper.ipCorporation) {
+                                            upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (upper.rsNodeMsgVo)
+                                    backupNameArray.push(upper.rsNodeMsgVo.name + "<span class='text-danger'>[环]</span>" + upper.ipCorporationName)
+                                else
+                                    backupNameArray.push("[后端没有返回名称]")
+                            }.bind(this));    
+        
+                        }
+        
+                        var upperLayer = primaryNameArray.join('<br>');
+                        if (rule.upper.length > 1)
+                            upperLayer = '<strong>主：</strong>' + primaryNameArray.join('<br>');
+                        if (backupArray.length > 0)
+                            upperLayer += '<br><strong>备：</strong>' + backupNameArray.join('<br>');
+        
+                        if(spLocalLayerArray.length === this.defaultParam.rule.length){
+                            var ruleStrObj = {
+                                id: rule.id,
+                                localLayer: spLocalLayerArray.join('<br>'),
+                                upperLayer: upperLayer
+                            }
+                            console.log("bbbbbbbbb", ruleStrObj.localLayer, spLocalLayerArray)
+                            this.ruleList.push(ruleStrObj)  
+                        }
+                    }else if(rule.localType === 1){
+                        var localLayerArray = [],
+                            upperLayer = [],
+                            primaryArray = [],
+                            backupArray = [],
+                            primaryNameArray = [],
+                            backupNameArray = [];
+                        _.each(rule.local, function(local, inx, list) {
+                            var name = local.name;
+                            localLayerArray.push(name)
                         }.bind(this));
-                        _.each(backupArray, function(upper, inx, list) {
-                            upper.ipCorporationName = "";
-                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
-                                for (var i = 0; i < this.operatorList.length; i++) {
-                                    if (this.operatorList[i].id === upper.ipCorporation) {
-                                        upper.ipCorporationName = "-" + this.operatorList[i].name;
-                                        break;
+                        var upType = rule.upType;//1是按节点,2是按hash
+                        if(upType == 1){
+                            //按节点
+                            primaryArray = _.filter(rule.upper, function(obj) {
+                                return obj.chiefType !== 0;
+                            }.bind(this))
+                            backupArray = _.filter(rule.upper, function(obj) {
+                                return obj.chiefType === 0;
+                            }.bind(this))
+                            _.each(primaryArray, function(upper, inx, list) {
+                                upper.ipCorporationName = "";
+                                if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                                    for (var i = 0; i < this.operatorList.length; i++) {
+                                        if (this.operatorList[i].id === upper.ipCorporation) {
+                                            upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                            break;
+                                        }
                                     }
                                 }
-                            }
-                            if (upper.rsNodeMsgVo)
-                                backupNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
-                            else
-                                backupNameArray.push("[后端没有返回名称]")
-                        }.bind(this));
-
-                    }
-                    else {
-                        //按hash环
-                        _.each(rule.upper,function(el){
-                            //第一次点添加或编辑时需要编造，其它情况与节点的一致
-                            if(!el.rsNodeMsgVo){
-                                el.rsNodeMsgVo = {
-                                    id:el.hashId,
-                                    //chiefType:el.hashIndex == 0 ? 1:0,
-                                    isMulti:el.ipCorporation ? 1 : 0,
-                                    ipCorporation:el.ipCorporation,
-                                    hashName:el.hashName,
-                                    name:el.hashName
-                                };
-                            }
-                        });
-                        primaryArray = _.filter(rule.upper, function(obj) {
-                            return obj.hashIndex == 0;
-                        }.bind(this))
-                        backupArray = _.filter(rule.upper, function(obj) {
-                            return obj.hashIndex != 0;
-                        }.bind(this))
-                        _.each(primaryArray, function(upper, inx, list) {
-                            upper.ipCorporationName = "";
-                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.isMulti === 1) {
-                                for (var i = 0; i < this.operatorList.length; i++) {
-                                    if (this.operatorList[i].id === upper.ipCorporation) {
-                                        upper.ipCorporationName = "-" + this.operatorList[i].name;
-                                        break;
+                                if (upper.rsNodeMsgVo)
+                                    primaryNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                                else
+                                    primaryNameArray.push("[后端没有返回名称]")
+                            }.bind(this));
+                            _.each(backupArray, function(upper, inx, list) {
+                                upper.ipCorporationName = "";
+                                if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.operatorId === 9) {
+                                    for (var i = 0; i < this.operatorList.length; i++) {
+                                        if (this.operatorList[i].id === upper.ipCorporation) {
+                                            upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                            break;
+                                        }
                                     }
                                 }
-                            }
-                            if (upper.rsNodeMsgVo)
-                                primaryNameArray.push(upper.rsNodeMsgVo.name + "<span class='text-danger'>[环]</span>" + upper.ipCorporationName)
-                            else
-                                primaryNameArray.push("[后端没有返回名称]")
-                        }.bind(this));
-                        _.each(backupArray, function(upper, inx, list) {
-                            upper.ipCorporationName = "";
-                            if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.isMulti === 1) {
-                                for (var i = 0; i < this.operatorList.length; i++) {
-                                    if (this.operatorList[i].id === upper.ipCorporation) {
-                                        upper.ipCorporationName = "-" + this.operatorList[i].name;
-                                        break;
+                                if (upper.rsNodeMsgVo)
+                                    backupNameArray.push(upper.rsNodeMsgVo.name + upper.ipCorporationName)
+                                else
+                                    backupNameArray.push("[后端没有返回名称]")
+                            }.bind(this));
+                        }
+                        else {
+                            //按hash环
+                            _.each(rule.upper,function(el){
+                                //第一次点添加或编辑时需要编造，其它情况与节点的一致
+                                if(!el.rsNodeMsgVo){
+                                    el.rsNodeMsgVo = {
+                                        id:el.hashId,
+                                        //chiefType:el.hashIndex == 0 ? 1:0,
+                                        isMulti:el.ipCorporation ? 1 : 0,
+                                        ipCorporation:el.ipCorporation,
+                                        hashName:el.hashName,
+                                        name:el.hashName
+                                    };
+                                }
+                            });
+                            primaryArray = _.filter(rule.upper, function(obj) {
+                                return obj.hashIndex == 0;
+                            }.bind(this))
+                            backupArray = _.filter(rule.upper, function(obj) {
+                                return obj.hashIndex != 0;
+                            }.bind(this))
+                            _.each(primaryArray, function(upper, inx, list) {
+                                upper.ipCorporationName = "";
+                                if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.isMulti === 1) {
+                                    for (var i = 0; i < this.operatorList.length; i++) {
+                                        if (this.operatorList[i].id === upper.ipCorporation) {
+                                            upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                            break;
+                                        }
                                     }
                                 }
-                            }
-                            if (upper.rsNodeMsgVo)
-                                backupNameArray.push(upper.rsNodeMsgVo.name + "<span class='text-danger'>[环]</span>" + upper.ipCorporationName)
-                            else
-                                backupNameArray.push("[后端没有返回名称]")
-                        }.bind(this));    
-
+                                if (upper.rsNodeMsgVo)
+                                    primaryNameArray.push(upper.rsNodeMsgVo.name + "<span class='text-danger'>[环]</span>" + upper.ipCorporationName)
+                                else
+                                    primaryNameArray.push("[后端没有返回名称]")
+                            }.bind(this));
+                            _.each(backupArray, function(upper, inx, list) {
+                                upper.ipCorporationName = "";
+                                if (upper.rsNodeMsgVo && upper.rsNodeMsgVo.isMulti === 1) {
+                                    for (var i = 0; i < this.operatorList.length; i++) {
+                                        if (this.operatorList[i].id === upper.ipCorporation) {
+                                            upper.ipCorporationName = "-" + this.operatorList[i].name;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (upper.rsNodeMsgVo)
+                                    backupNameArray.push(upper.rsNodeMsgVo.name + "<span class='text-danger'>[环]</span>" + upper.ipCorporationName)
+                                else
+                                    backupNameArray.push("[后端没有返回名称]")
+                            }.bind(this));    
+        
+                        }
+        
+                        var upperLayer = primaryNameArray.join('<br>');
+                        if (rule.upper.length > 1)
+                            upperLayer = '<strong>主：</strong>' + primaryNameArray.join('<br>');
+                        if (backupArray.length > 0)
+                            upperLayer += '<br><strong>备：</strong>' + backupNameArray.join('<br>');
+        
+                        var ruleStrObj = {
+                            id: rule.id,
+                            localLayer: localLayerArray.join('<br>'),
+                            upperLayer: upperLayer
+                        }
+                        this.ruleList.push(ruleStrObj)  
                     }
-
-                   // console.log(backupArray)
-
-
-
-                    var upperLayer = primaryNameArray.join('<br>');
-                    if (rule.upper.length > 1)
-                        upperLayer = '<strong>主：</strong>' + primaryNameArray.join('<br>');
-                    if (backupArray.length > 0)
-                        upperLayer += '<br><strong>备：</strong>' + backupNameArray.join('<br>');
-
-                    var ruleStrObj = {
-                        id: rule.id,
-                        localLayer: localLayerArray.join('<br>'),
-                        upperLayer: upperLayer
-                    }
-                    this.ruleList.push(ruleStrObj)
                 }.bind(this))
+            },
+
+            initRuleTable: function() {
+                console.log("mmmmmmmmmmmmm",this.defaultParam.rule)
+                this.onLocalTypeModified()
+                console.log(this.ruleList)
                 this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.rule.table.html'])({
                     data: this.ruleList
                 }));
@@ -424,11 +784,16 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             onClickItemEdit: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
-                console.log("oooooooo", this.defaultParam.rule, this.defaultParam)
-                this.curEditRule = _.find(this.defaultParam.rule, function(obj) {
-                    return obj.id === parseInt(id)
-                }.bind(this))
-
+                if(this.defaultParam.rule.localType === 1){
+                    this.curEditRule = _.find(this.defaultParam.rule, function(obj) {
+                        return obj.id === parseInt(id)
+                    }.bind(this))
+                }else{
+                    this.curEditRule = _.filter(this.defaultParam.rule, function(obj) {
+                        return obj.id === parseInt(id)
+                    }.bind(this))
+                }
+                console.log("ppppppppp", this.defaultParam.rule, this.curEditRule)
                 if (!this.curEditRule) {
                     alert("找不到此行的数据，无法编辑");
                     return;
@@ -445,6 +810,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             notFilter: true,
                             appType: this.defaultParam.type,
                             onSaveCallback: function() {
+                                // this.defaultParam.rule = myAddEditLayerStrategyView.getArgs()
                                 myAddEditLayerStrategyView.$el.remove();
                                 this.$el.find(".add-topo").show();
                                 this.initRuleTable();
@@ -480,6 +846,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             notFilter: true,
                             appType: this.defaultParam.type,
                             onSaveCallback: function() {
+                                console.log("jjjjjjjjjj", this.defaultParam.rule)
                                 myAddEditLayerStrategyView.$el.remove();
                                 this.$el.find(".add-topo").show();
                                 this.initRuleTable();
@@ -489,7 +856,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                                 this.$el.find(".add-topo").show();
                             }.bind(this)
                         })
-                        console.log(myAddEditLayerStrategyView)
                         this.$el.find(".add-topo").hide();
                         myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
                     }.bind(this))

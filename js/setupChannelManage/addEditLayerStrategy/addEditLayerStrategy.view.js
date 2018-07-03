@@ -657,6 +657,8 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                         this.rule.push(obj)
                     }.bind(this))
                 }
+            }else if(this.defaultParam.localType == 1){
+                
             }
             console.log("mmmmmmmmmmmmm", this.rule)
             // if(!this.isEdit) this.rule.push(this.defaultParam)   

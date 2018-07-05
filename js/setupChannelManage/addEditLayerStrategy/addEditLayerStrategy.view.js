@@ -493,12 +493,16 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             // 地区运营商
             if(!this.areaAndoperator) this.areaAndoperator=[];
             if(this.defaultParam.localType==1 && this.defaultParam.local.length==0){
-                   alert('请选择本层节点');
-                   return;
+                alert('请选择本层节点');
+                return;
+            }
+            if(this.defaultParam.localType !== 1 && this.defaultParam.localOperator.length == 0){
+                alert('请选择本层节点');
+                return;
             }
             if (this.defaultParam.upper.length == 0) {
-                   alert('请选择上层节点');
-                   return;
+                alert('请选择上层节点');
+                return;
             }
             if(this.defaultParam.upType == 1){
                 var chiefTypeArray = [];

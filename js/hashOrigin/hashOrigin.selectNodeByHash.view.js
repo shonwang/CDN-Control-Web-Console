@@ -63,6 +63,14 @@ define("hashOrigin.selectNodeByHash.view", ['require', 'exports', 'template', 'm
                     console.log("请求完毕！");
                     this.nodeNameByHashModified()
                     this.initTable()
+                    this.$el.find("#input-name").off("keyup");
+                    this.$el.find("#node-name").off("keyup");
+                    this.$el.find("#input-name").on("keyup", $.proxy(this.onKeyupNodeNameFilter, this));
+                    this.$el.find("#node-name").on("keyup", $.proxy(this.onKeyupNodeNameFilter, this));
+                    this.$el.find("#input-name").on("focus", $.proxy(this.onKeyupNodeNameFilter, this));
+                    this.$el.find("#node-name").on("focus", $.proxy(this.onKeyupNodeNameFilter, this));
+                    this.$el.find("#input-name").on("blur", $.proxy(this.onKeyupNodeNameFilter, this));
+                    this.$el.find("#node-name").on("blur", $.proxy(this.onKeyupNodeNameFilter, this));
                 }
             },
 
@@ -81,7 +89,17 @@ define("hashOrigin.selectNodeByHash.view", ['require', 'exports', 'template', 'm
                 if (!this.allHash || this.allHash.length === 0) return;
                 var keyHashWord = this.$el.find("#input-name").val();
                 var keyNodeWord = this.$el.find("#node-name").val();
-                // 下面要写筛选条件，因为是两个查询条件，所以可以简洁的写一写
+                _.each(this.allHash, function(model, index, list) {
+                    if(keyHashWord == "" || model.hashName.indexOf(keyHashWord) > -1){
+                        if(model.nodeName.indexOf(keyNodeWord)>-1 || keyNodeWord == ""){
+                            model.isDisplay = true
+                        }else{
+                            model.isDisplay = false
+                        }
+                    } else {
+                        model.isDisplay = false;
+                    }
+                }.bind(this));
                 this.initTable();
             },
 
@@ -166,10 +184,12 @@ define("hashOrigin.selectNodeByHash.view", ['require', 'exports', 'template', 'm
                     console.log(el.nodeList)
                     _.each(el.nodeList, function(item){
                         _.each(this.allNodesArray, function(list){
-                            console.log("nnnnnnnnnn",list)
                             if(list.chName === item){
-                                console.log("bbbbbbbb",list.chName)
-                                nodeList.push(list)
+                                console.log("过滤前的nodeList", nodeList)
+                                if(nodeList.indexOf(list)<0){
+                                    nodeList.push(list)
+                                }
+                                console.log("过滤后的nodeList", nodeList)
                             }
                         }.bind(this))
                     }.bind(this))
@@ -178,7 +198,6 @@ define("hashOrigin.selectNodeByHash.view", ['require', 'exports', 'template', 'm
                 return nodeList
             },
            
-
             render: function(target) {
                 this.$el.appendTo(target);
             }

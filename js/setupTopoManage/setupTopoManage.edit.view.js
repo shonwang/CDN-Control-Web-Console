@@ -266,9 +266,9 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         tempRule = {};
                     _.each(rule.local, function(node) {
                         if(rule.localType===3){
-                            localIdArray.push(node.provinceId);
+                            localIdArray.push([node.provinceId, node.operatorId]);
                         }else if(rule.localType===4){
-                            localIdArray.push(node.areaId);
+                            localIdArray.push([node.areaId, node.operatorId]);
                         }
                         localIdArray.push(node.id)
                     }.bind(this));

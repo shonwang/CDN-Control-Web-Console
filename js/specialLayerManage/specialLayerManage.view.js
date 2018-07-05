@@ -184,11 +184,9 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             console.log("省份运营商：", node)
                             localIdArray.push([node.provinceId, node.operatorId]);
                         }else if(rule.localType===4){
-                            sp4LocalIdArray.push([node.areaId, node.operatorId]);
-                        }else if(rule.localType === 1){
+                            localIdArray.push([node.areaId, node.operatorId]);
+                        }else if(rule.localType === 1 || rule.localType === 2){
                             localIdArray.push([node.id]);
-                        }else if(rule.localType === 2){
-
                         }
                     }.bind(this))
                     _.each(rule.upper, function(node) {

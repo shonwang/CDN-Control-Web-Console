@@ -687,6 +687,13 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                             appType: this.defaultParam.type,
                             isEdit: true,
                             onSaveCallback: function() {
+                                var tempRule = myAddEditLayerStrategyView.getArgs()
+                                this.defaultParam.rule = this.defaultParam.rule.concat(tempRule);
+                                this.defaultParam.rule = _.filter(this.defaultParam.rule, function(el){
+                                    return el.id !== this.curEditRule.id
+                                }.bind(this))
+                                console.log("保存", tempRule, this.curEditRule)
+                                console.log("编辑后的this.defaultParam.rule", this.defaultParam.rule) 
                                 myAddEditLayerStrategyView.$el.remove();
                                 this.$el.find(".add-topo").show();
                                 this.initRuleTable();
@@ -737,6 +744,8 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                             rule: this.defaultParam.rule,
                             appType: this.defaultParam.type,
                             onSaveCallback: function() {
+                                this.defaultParam.rule = myAddEditLayerStrategyView.getArgs();
+                                console.log("jjjjjjjjjj", this.defaultParam.rule)
                                 myAddEditLayerStrategyView.$el.remove();
                                 this.$el.find(".add-topo").show();
                                 this.initRuleTable();

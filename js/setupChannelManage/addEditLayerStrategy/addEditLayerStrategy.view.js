@@ -14,6 +14,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.appType = options.appType
 
             this.topologyId = options.topologyId;
+            this.tempRule = []
+            this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
+            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             if (!this.isEdit) {
                 this.defaultParam = {
                     "id": new Date().valueOf(),
@@ -25,6 +28,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     "localNodeType": 1
                 }
             } else {
+                console.log("初始化时的this.curEditRule", this.curEditRule)
                 this.defaultParam = {
                     "id": this.curEditRule[0].id,
                     "local": this.curEditRule[0].local, 
@@ -35,29 +39,37 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     "localNodeType": 1
                 }
                 if(this.curEditRule[0].localType === 3){
-                    _.each(this.curEditRule, function(el){
-                        var tempName = el.local[0].provinceName +'/'+ el.local[0].name;
-                        var tempValue = el.local[0].provinceId.toString() +'/'+ el.local[0].operatorId.toString();
+                    _.each(this.curEditRule[0].local, function(el){
+                        var tempName = el.provinceName +'/'+ el.name;
+                        var tempValue = el.provinceId+'/'+ el.operatorId;
+                        this.defaultParam.localOperator.push({
+                            name: tempName,
+                            value: tempValue
+                        })
+
+                    }.bind(this))
+                }else if(this.curEditRule[0].localType === 4){
+                    _.each(this.curEditRule[0].local, function(el){
+                        var tempName = el.areaName +'/'+ el.name;
+                        var tempValue = el.areaId +'/'+ el.operatorId;
                         this.defaultParam.localOperator.push({
                             name: tempName,
                             value: tempValue
                         })
                     }.bind(this))
-                    console.log(this.defaultParam.localOperator)
-                }else if(this.curEditRule[0].localType === 4){
-                    _.each(this.curEditRule, function(el){
-                        var tempName = el.local[0].areaName +'/'+ el.local[0].name;
-                        var tempValue = el.local[0].areaId.toString() +'/'+ el.local[0].operatorId.toString();
+                }else if(this.curEditRule[0].localType === 2){
+                    _.each(this.curEditRule[0].local, function(el){
+                        var tempName = el.name;
+                        var tempValue = el.operatorId;
                         this.defaultParam.localOperator.push({
                             name: tempName,
                             value: tempValue
                         })
                     }.bind(this))
                 }
+                console.log("编辑完时的this.defaultParam.localOperator", this.defaultParam.localOperator)
                 this.onCancelParam= $.extend(true,{},this.curEditRule)     
             }
-            this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
-            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             if(!this.notFilter){
                 this.$el.find("#asHashstrategyRadio6").hide();
             }
@@ -270,7 +282,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                                 if(el.value==e) this.proAndoperator.push(el)
                              }.bind(this))
                           }.bind(this)) 
-                          console.log(this, this.proAndoperator)
                 }.bind(this)
             });
 
@@ -324,7 +335,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                                 if(el.value==e) this.areaAndoperator.push(el)
                              }.bind(this))
                           }.bind(this))  
-                          console.log(this, this.areaAndoperator)
                 }.bind(this)
             });
 
@@ -378,8 +388,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                              _.each(data,function(e){
                                 if(el.value==e) this.onlyOperator.push(el)
                              }.bind(this))
-                      }.bind(this))  
-                      console.log(this, this.onlyOperator)      
+                      }.bind(this))     
                 }.bind(this)
             });
 
@@ -427,6 +436,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.$el.find(".largeAreaOperator-ctn").hide();
                 this.$el.find(".operator-ctn").show();
                 this.$el.find(".operator-btn").show();
+                this.$el.find('.local .operatorButton-ctn').show()
             } else if (this.defaultParam.localType === 3) {
                 this.$el.find("#strategyRadio3").get(0).checked = true;
                 this.$el.find(".nodes-ctn").hide();
@@ -434,6 +444,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.$el.find(".largeAreaOperator-ctn").hide();
                 this.$el.find(".provinceOperator-ctn").show();
                 this.$el.find(".operator-btn").show();
+                this.$el.find('.local .operatorButton-ctn').show()
             } else if (this.defaultParam.localType === 4) {
                 this.$el.find("#strategyRadio4").get(0).checked = true;
                 this.$el.find(".nodes-ctn").hide();
@@ -441,6 +452,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.$el.find(".provinceOperator-ctn").hide();
                 this.$el.find(".largeAreaOperator-ctn").show();
                 this.$el.find(".operator-btn").show();
+                this.$el.find('.local .operatorButton-ctn').show()
             }
             this.$el.find("#strategyRadio2").removeAttr("disabled", "disabled")
             this.$el.find("#strategyRadio1").removeAttr("disabled", "disabled")
@@ -469,7 +481,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             _.each(this.onCancelParam,function(value,key){
                 this.curEditRule[key]=value
             }.bind(this))
-          //  console.log(this.curEditRule)
             this.options.onCancelCallback && this.options.onCancelCallback();
         },
 
@@ -574,56 +585,41 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
 
             // 这块要好好改
             if(this.defaultParam.localType==2){
-                _.each(this.onlyOperator,function(el,i){
-                    if(i==0){
-                        this.defaultParam.local=[];
-                        this.defaultParam.local[0]={
-                            id:el.value,
-                            name:el.name
-                        }
-                    }else{
-                        var obj={
-                            "id": parseInt(Math.random()*999999999),
-                            "local": [], 
-                            "localType":2,
-                            "upper": this.defaultParam.upper,
-                            "upType":this.defaultParam.upType
-                        }
-                        obj.local.push({
-                            id:el.value,
-                            name:el.name
-                        })
-                        this.rule.push(obj)
-                    }      
+                if(this.rule.length !== 0){
+                    this.tempRule = this.rule
+                    this.rule = []
+                }
+                var tempId = parseInt(Math.random()*999999999);
+                var tempLocal = []
+                console.log(this.defaultParam.localOperator)
+                _.each(this.defaultParam.localOperator, function(el){
+                    var tempNameList = el.name;
+                    var tempValueList = el.value;
+                    tempLocal.push({
+                        id: tempValueList,
+                        name: tempNameList,
+                        operatorId:tempValueList,
+                        operatorName: tempNameList
+                    })
                 }.bind(this))
+                this.rule.push({
+                    "id": tempId,
+                    "local": tempLocal, 
+                    "localType": this.defaultParam.localType,
+                    "upper": this.defaultParam.upper,
+                    "upType":this.defaultParam.upType 
+                })
             }else if(this.defaultParam.localType==3){
-                if(this.province.length === 1 && this.proAndoperator.length === 1){
-                    this.defaultParam.local = [];
-                    this.defaultParam.local[0]={
-                        provinceId: this.province[0].value,
-                        provinceName: this.province[0].name,
-                        id: this.proAndoperator[0].value,
-                        name: this.proAndoperator[0].name,
-                        operatorId: this.proAndoperator[0].value,
-                        operatorName: this.proAndoperator[0].name
-                    }
-                }else{
-                    // if(this.rule.length !== 0){
-                    //     this.rule = []
-                    // }
+                    if(this.rule.length !== 0){
+                        this.tempRule = this.rule
+                        this.rule = []
+                    }               
                     var tempId = parseInt(Math.random()*999999999);
+                    var tempLocal = []
                     _.each(this.defaultParam.localOperator, function(el){
-                        console.log("hhhhhhh", el)
                         var tempNameList = el.name.split('/');
                         var tempValueList = el.value.split('/');
-                        var obj = {
-                            "id": tempId,
-                            "local": [], 
-                            "localType":3,
-                            "upper": this.defaultParam.upper,
-                            "upType":this.defaultParam.upType      
-                        }
-                        obj.local.push({
+                        tempLocal.push({
                             provinceId: tempValueList[0],
                             provinceName: tempNameList[0],
                             id: tempValueList[1],
@@ -631,55 +627,69 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                             operatorId:tempValueList[1],
                             operatorName: tempNameList[1]
                         })
-                        console.log(obj)
-                        this.rule.push(obj)
                     }.bind(this))
-                }
-                console.log("nnnnnnnnnnnnn", this.defaultParam, this.rule)
+                    this.rule.push({
+                        "id": tempId,
+                        "local": tempLocal, 
+                        "localType": this.defaultParam.localType,
+                        "upper": this.defaultParam.upper,
+                        "upType":this.defaultParam.upType 
+                    })
             }else if(this.defaultParam.localType==4){
-                if(this.area.length === 1 && this.areaAndoperator.length == 1){
-                    this.defaultParam.local = [];
-                    this.defaultParam.local[0]={
-                        areaId: this.area[0].value,
-                        areaName: this.area[0].name,
-                        id: this.areaAndoperator[0].value,
-                        name: this.areaAndoperator[0].name,
-                        operatorId: this.areaAndoperator[0].value,
-                        operatorName: this.areaAndoperator[0].name
-                    }
-                }else{
-                    _.each(this.defaultParam.localOperator, function(el){
-                        var tempNameList = el.name.split('/');
-                        var tempValueList = el.value.split('/')
-                        var obj = {
-                            "id": parseInt(Math.random()*999999999),
-                            "local": [], 
-                            "localType":3,
-                            "upper": this.defaultParam.upper,
-                            "upType":this.defaultParam.upType      
-                        }
-                        obj.local.push({
-                            provinceId: tempValueList[0],
-                            provinceName: tempNameList[0],
-                            id: tempValueList[1],
-                            name: tempNameList[1],
-                            operatorId:tempValueList[1],
-                            operatorName: tempNameList[1]
-                        })
-                        console.log(obj)
-                        this.rule.push(obj)
-                    }.bind(this))
-                }
+                if(this.rule.length !== 0){
+                    this.tempRule = this.rule
+                    this.rule = []
+                }               
+                var tempId = parseInt(Math.random()*999999999);
+                var tempLocal = []
+                _.each(this.defaultParam.localOperator, function(el){
+                    var tempNameList = el.name.split('/');
+                    var tempValueList = el.value.split('/');
+                    tempLocal.push({
+                        areaId: tempValueList[0],
+                        areaName: tempNameList[0],
+                        id: tempValueList[1],
+                        name: tempNameList[1],
+                        operatorId:tempValueList[1],
+                        operatorName: tempNameList[1]
+                    })
+                }.bind(this))
+                this.rule.push({
+                    "id": tempId,
+                    "local": tempLocal, 
+                    "localType": this.defaultParam.localType,
+                    "upper": this.defaultParam.upper,
+                    "upType":this.defaultParam.upType 
+                })
             }else if(this.defaultParam.localType == 1){
-                
+                if(this.rule.length !== 0){
+                    this.tempRule = this.rule
+                    this.rule = []
+                }
+                _.each(this.defaultParam.local, function(el){
+                    var tempNameList = el.chName || el.name;
+                    var tempValueList = el.id
+                    var obj = {
+                        "id": parseInt(Math.random()*999999999),
+                        "local": [], 
+                        "localType":1,
+                        "localTypeId": 1,
+                        "upper": this.defaultParam.upper,
+                        "upType":this.defaultParam.upType      
+                    }
+                    obj.local.push({
+                        id: tempValueList,
+                        name: tempNameList,
+                    })
+                    this.rule.push(obj)
+                }.bind(this))
+                console.log("ppppp", this.defaultParam.local)
+                console.log("子页面保存时的this.rule", this.rule)
+
             }
-            // if(!this.isEdit) this.rule.push(this.defaultParam)   
+            if(!this.isEdit) this.rule = this.rule.concat(this.tempRule)   
             console.log("当前保存的规则：this.rule: ", this.rule);      
             this.options.onSaveCallback && this.options.onSaveCallback();
-        },
-
-        getArgs: function(){
-            return this.rule
         },
 
         // 统一的错误处理方式
@@ -695,7 +705,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.$el.find('.local .add-node').show();
 
             this.topoAllNodes = [];
-            // console.log(this.options.localNodes)
             _.each(this.options.localNodes, function(node) {
                 var tempNode = _.find(this.allNodesArray, function(obj) {
                     return obj.id === node.id
@@ -722,7 +731,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }.bind(this))
             
             // this.topoUpperNodes
-        //    console.log("拓扑上层节点: ", this.topoUpperNodes);
             this.localNodeListForSelect = [];          
             if (!this.notFilter) {
                 _.each(this.options.localNodes, function(node) {
@@ -751,7 +759,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }.bind(this))
             
             // this.localNodesListForSelect
-            // console.log("拓扑本层节点: ", this.localNodeListForSelect);
             this.$el.find('.strategyLocal input').on('click', $.proxy(this.onCheckLocalNodeType, this))
             this.$el.find('.local .add-node').on('click', $.proxy(this.onClickAddLocalNodeButton, this))
             if(this.defaultParam.localType === 1){
@@ -766,7 +773,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             this.defaultParam.localNodeType = parseInt($(eventTarget).val());
-            console.log(this.defaultParam.localNodeType)
         },
 
         updateChecked:function(sonNode,parentNode){
@@ -784,7 +790,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         onClickAddLocalNodeButton: function(event) {
-            console.log(this.defaultParam.localNodeType)
             if(this.defaultParam.localNodeType === 1){
                 require(['setupTopoManage.selectNode.view'], function(SelectNodeView) {
                     if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
@@ -815,7 +820,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     if (this.selectNodeByHashPopup) $("#" + this.selectNodeByHashPopup.modalId).remove();
                     // this.updateChecked(this.defaultParam.local, this.localNodeListForSelect);
                     var hashModel = new HashModel();
-                    console.log(hashModel)
                     var mySelectNodeByHashView = new SelectNodeByHashView({
                         collection: hashModel,
                         selectedNodes: this.defaultParam.local,
@@ -909,7 +913,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.defaultParam.localOperator = _.filter(this.defaultParam.localOperator, function(obj) {
                 return obj.value.toString() !== id
             }.bind(this));
-            console.log("rrrrrrrrrr", this.defaultParam, this.defaultParam.localOperator)
             this.initLocalOperatorTable();
         },
 
@@ -924,7 +927,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                             name:el.name + '/' + item.name,
                             value: el.value + '/' + item.value
                         }
-                        console.log(name)
                         proAndoperatorList.push(name)
                     })
                 }.bind(this))
@@ -1014,7 +1016,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }
             
             if(this.defaultParam.localType !== 1){
-                console.log("oooooo")
                 this.$el.find('.local .add-operator-btn').on('click', $.proxy(this.onClickAddOperatorButton, this))
             }
         },
@@ -1404,6 +1405,10 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 if (obj.rsNodeMsgVo.id === parseInt(id))
                     obj.chiefType = eventTarget.checked ? 0 : 1;
             }.bind(this))
+        },
+
+        getArgs: function(){
+            return this.rule
         },
 
         render: function(target) {

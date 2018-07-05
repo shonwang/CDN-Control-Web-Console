@@ -433,7 +433,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
               
-                this.curEditRule = _.filter(this.defaultParam.rule, function(obj) {
+                this.curEditRule = _.find(this.defaultParam.rule, function(obj) {
                     return obj.id === parseInt(id)
                 }.bind(this))
                 console.log("ppppppppp", this.defaultParam.rule, this.curEditRule)
@@ -456,7 +456,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                                 var tempRule = myAddEditLayerStrategyView.getArgs()
                                 this.defaultParam.rule = this.defaultParam.rule.concat(tempRule);
                                 this.defaultParam.rule = _.filter(this.defaultParam.rule, function(el){
-                                    return el.id !== this.curEditRule[0].id
+                                    return el.id !== this.curEditRule.id
                                 }.bind(this))
                                 console.log("保存", tempRule, this.curEditRule)
                                 console.log("编辑后的this.defaultParam.rule", this.defaultParam.rule) 

@@ -30,16 +30,16 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             } else {
                 console.log("初始化时的this.curEditRule", this.curEditRule)
                 this.defaultParam = {
-                    "id": this.curEditRule[0].id,
-                    "local": this.curEditRule[0].local, 
-                    "localType": this.curEditRule[0].localType,
+                    "id": this.curEditRule.id,
+                    "local": this.curEditRule.local, 
+                    "localType": this.curEditRule.localType,
                     "localOperator": [],
-                    "upper": this.curEditRule[0].upper,
-                    "upType": this.curEditRule[0].upType,
+                    "upper": this.curEditRule.upper,
+                    "upType": this.curEditRule.upType,
                     "localNodeType": 1
                 }
-                if(this.curEditRule[0].localType === 3){
-                    _.each(this.curEditRule[0].local, function(el){
+                if(this.curEditRule.localType === 3){
+                    _.each(this.curEditRule.local, function(el){
                         var tempName = el.provinceName +'/'+ el.name;
                         var tempValue = el.provinceId+'/'+ el.operatorId;
                         this.defaultParam.localOperator.push({
@@ -48,8 +48,8 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                         })
 
                     }.bind(this))
-                }else if(this.curEditRule[0].localType === 4){
-                    _.each(this.curEditRule[0].local, function(el){
+                }else if(this.curEditRule.localType === 4){
+                    _.each(this.curEditRule.local, function(el){
                         var tempName = el.areaName +'/'+ el.name;
                         var tempValue = el.areaId +'/'+ el.operatorId;
                         this.defaultParam.localOperator.push({
@@ -57,8 +57,8 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                             value: tempValue
                         })
                     }.bind(this))
-                }else if(this.curEditRule[0].localType === 2){
-                    _.each(this.curEditRule[0].local, function(el){
+                }else if(this.curEditRule.localType === 2){
+                    _.each(this.curEditRule.local, function(el){
                         var tempName = el.name;
                         var tempValue = el.operatorId;
                         this.defaultParam.localOperator.push({

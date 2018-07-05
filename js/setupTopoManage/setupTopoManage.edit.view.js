@@ -662,9 +662,11 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
             onClickItemEdit: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
+                    console.log(this.defaultParam.rule)
                 this.curEditRule = _.find(this.defaultParam.rule, function(obj) {
                     return obj.id === parseInt(id)
                 }.bind(this))
+                console.log("点编辑时的this.curEditRule", this.curEditRule)
              //  console.log("this.curEditRule"+this.curEditRule.local[1].name);
                 if (!this.curEditRule) {
                     alert("找不到此行的数据，无法编辑");

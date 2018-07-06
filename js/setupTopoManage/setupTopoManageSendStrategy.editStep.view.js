@@ -129,7 +129,7 @@ define("setupTopoManageSendStrategy.editStep.view", ['require', 'exports', 'temp
                 this.initNodesTable();
             },
 
-            formatExcludeData: function(){
+            formatExcludeData: function() {
                 this.selectedExcludeNode = [];
                 this.remainderNodeList = [];
 
@@ -155,10 +155,10 @@ define("setupTopoManageSendStrategy.editStep.view", ['require', 'exports', 'temp
                             })
                         }
                     }.bind(this))
-                }.bind(this)) 
+                }.bind(this))
             },
 
-            initExcludeSelect: function () {
+            initExcludeSelect: function() {
                 var options = {
                     containerID: this.$el.find('.exclude .add-node-ctn').get(0),
                     panelID: this.$el.find('.exclude .select-node').get(0),

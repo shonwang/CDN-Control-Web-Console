@@ -18,7 +18,7 @@
                   <table class="table table-condensed table-striped">
                       <tbody>
                           <%for(var j=0,_list=data[i].get('list'),_len=_list.length;j<_len;j++){%>
-                            <%if(_list[j].isDisplay){%>
+                            <%if(_list[j].isDisplay && !_list[j].isIpV6){%>
                               <tr>
                                 <td style="width:400px">
                                     <span class="node-string text-primary" >
@@ -31,7 +31,7 @@
                                     node-id='<%=_list[j].nodeId%>' 
                                     region-id='<%=data[i].get("region").id%>' 
                                     max='<%=_list[j].maxIpNum%>' 
-                                    min="1" value='<%=_list[j].currNum%>'>
+                                    min="1" value='<%=_list[j].currNum%>' isIpV6='false'>
                                     <%if(_list[j].pasuseIpNum){%>
                                     <span class="label label-danger">
                                         <%=_list[j].pasuseIpNum%>
@@ -40,7 +40,7 @@
                                     <% if (permission.EditNodeList) { %>
                                     <a href="javascript:void(0)" class="edit" 
                                     id='<%=_list[j].nodeId%>' 
-                                    region-id='<%=data[i].get("region").id%>' title="编辑节点">
+                                    region-id='<%=data[i].get("region").id%>' data-isipv6="false" title="编辑节点">
                                         <span class="glyphicon glyphicon-edit"></span>
                                     </a>
                                     <% } %>
@@ -60,12 +60,72 @@
               </td>
               <td>
                   <% if (permission.AddNodeList) { %>
-                  <a href="javascript:void(0)" region-id='<%=data[i].get("region").id%>' class="add">
+                  <a href="javascript:void(0)" region-id='<%=data[i].get("region").id%>' data-isipv6="false" class="add">
                       <span class="glyphicon glyphicon-plus"></span>添加节点
                   </a>
                   <% } %>
               </td>
             </tr>
+
+            <%if(data[i].get("region").isSupportIpV6){%>
+              <tr data-id="<%=data[i].attributes.id%>">
+                <td><%=data[i].get("dispGroupDomain")%></td>
+                <td><%=data[i].get("region").name%>(ipv6)</td>
+                <td class="nodes">
+                    <table class="table table-condensed table-striped">
+                        <tbody>
+                            <%for(var j=0,_list=data[i].get('list'),_len=_list.length;j<_len;j++){%>
+                              <%if(_list[j].isDisplay && _list[j].isIpV6){%>
+                                <tr>
+                                  <td style="width:400px">
+                                      <span class="node-string text-primary" >
+                                        <%=_list[j].nodeName%>/<%=_list[j].bandwidth%>
+                                      </span>
+                                  </td>
+                                  <td>
+                                      <input style="width:50px;" type="number" class="weight" 
+                                      id='<%=_list[j].nodeId%>' 
+                                      node-id='<%=_list[j].nodeId%>' 
+                                      region-id='<%=data[i].get("region").id%>' 
+                                      max='<%=_list[j].maxIpNum%>' 
+                                      min="1" value='<%=_list[j].currNum%>' isIpV6='true'>
+                                      <%if(_list[j].pasuseIpNum){%>
+                                      <span class="label label-danger">
+                                          <%=_list[j].pasuseIpNum%>
+                                      </span>
+                                      <%}%>
+                                      <% if (permission.EditNodeList) { %>
+                                      <a href="javascript:void(0)" class="edit" 
+                                      id='<%=_list[j].nodeId%>' 
+                                      region-id='<%=data[i].get("region").id%>' data-isipv6="true" title="编辑节点">
+                                          <span class="glyphicon glyphicon-edit"></span>
+                                      </a>
+                                      <% } %>
+                                      <% if (permission.DeleteNodeList) { %>
+                                      <a href="javascript:void(0)" class="delete" 
+                                      id='<%=_list[j].nodeId%>' 
+                                      region-id='<%=data[i].get("region").id%>'  title="删除">
+                                          <span class="glyphicon glyphicon-trash"></span>
+                                      </a>
+                                      <% } %>
+                                  </td>
+                                </tr>
+                                <%}%>
+                            <%}%>
+                        </tbody>
+                    </table>
+                </td>
+                <td>
+                    <% if (permission.AddNodeList) { %>
+                    <a href="javascript:void(0)" region-id='<%=data[i].get("region").id%>' data-isipv6="true" class="add">
+                        <span class="glyphicon glyphicon-plus"></span>添加节点
+                    </a>
+                    <% } %>
+                </td>
+              </tr>            
+            <%}%>
+
+
             <%}%>
         <% } %>
     </tbody>

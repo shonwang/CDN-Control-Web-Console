@@ -20,6 +20,7 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
             TimePicker = Antd.TimePicker,
             RangePicker = DatePicker.RangePicker,
             Col = Antd.Col,
+            Alert = Antd.Alert,
             confirm = Modal.confirm;
 
         class PreheatManageEditForm extends React.Component {
@@ -32,11 +33,12 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                 this.validateTimeBand = this.validateTimeBand.bind(this);
                 this.validateNodesList = this.validateNodesList.bind(this);
                 this.handleSubmit = this.handleSubmit.bind(this);
+
                 this.state = {
                     //上传
                     fileList: [],
                     uploading: false,
-                    //预热节点
+                    //预热批次
                     isLoadingNodesList: false,
                     nodesList: [],
                     nodeModalVisible: false,
@@ -49,6 +51,10 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                     isEditTime: false,
                     curEditTime: {},
                 };
+
+                if (props.isEdit) {
+                    this.state.nodesList = props.model.batchTimeBandwidth
+                }
                 moment.locale("zh");
             }
 
@@ -122,21 +128,13 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                 if (this.state.timeBandList.length != 0) {
                     callback();
                 } else {
-                    callback('请添加分时带宽！');
+                    callback('请添加分时分时任务！');
                 }
             }
 
             renderTaskNameView(formItemLayout) {
                 const { getFieldDecorator, setFieldsValue, getFieldValue } = this.props.form;
                 var taskNameView = "", model = this.props.model;
-
-                var files = [
-                  'Racing car sprays burning fuel into crowd.',
-                  'Japanese princess to wed commoner.',
-                  'Australian walks 100km after outback crash.',
-                  'Man charged over missing wedding girl.',
-                  'Los Angeles battles huge wildfires.',
-                ];
 
                 const uploadProps = {
                     action: '//jsonplaceholder.typicode.com/posts/',
@@ -166,13 +164,19 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                     taskNameView = (
                         <div>
                             <FormItem {...formItemLayout} label="任务名称" style={{marginBottom: "0px"}}>
-                                <span className="ant-form-text">{model.name}</span>
+                                <span className="ant-form-text">{model.taskName}</span>
                             </FormItem>
                             <FormItem {...formItemLayout} label="预热域名" style={{marginBottom: "0px"}}>
-                                <span className="ant-form-text">{model.name}</span>
+                                <span className="ant-form-text">{model.preloadFilePath}</span>
                             </FormItem>
-                            <FormItem {...formItemLayout} label="预热文件">
-                                <List size="small" dataSource={files} renderItem={item => (<List.Item>{item}</List.Item>)} />
+                            <FormItem {...formItemLayout} label="预热文件" style={{marginBottom: "0px"}}>
+                                <span className="ant-form-text">{model.preloadFilePath}</span>
+                            </FormItem>
+                            <FormItem {...formItemLayout} label="预热文件数目" style={{marginBottom: "0px"}}>
+                                <span className="ant-form-text">{model.preloadUrlCount}</span>
+                            </FormItem>
+                            <FormItem {...formItemLayout} label="起止时间">
+                                <span className="ant-form-text">{model.startTime}~{model.endTime}</span>
                             </FormItem>
                         </div>
                     )
@@ -215,6 +219,16 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                                     )}
                                 </div>
                             </FormItem>
+                            <FormItem {...formItemLayout} label="起止时间">
+                                {getFieldDecorator('range-time-picker', {
+                                        rules: [{ type: 'array', required: true, message: '请选择起止时间！' }],
+                                    })(
+                                    <RangePicker showTime={{ format: 'HH:mm', minuteStep: 30 }} 
+                                                format="YYYY/MM/DD HH:mm" 
+                                                disabledDate={this.disabledDate}
+                                                disabledTime={this.disabledTime} />
+                                )}
+                            </FormItem>
                         </div>
                     )
                 }
@@ -224,7 +238,12 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
 
             handleCancel (){
                 this.setState({
-                    nodeModalVisible: false,
+                    nodeModalVisible: false
+                });
+            }
+
+            handleTimeCancel (){
+                this.setState({
                     timeModalVisible: false
                 });
             }
@@ -233,23 +252,24 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                 this.setState({
                     isEditNode:false,
                     curEditNode: {},
-                    nodeModalVisible: true
+                    nodeModalVisible: true,
+                    timeBandList: []
                 });
             }
 
             handleNodeOk (e){
                 e.preventDefault();
-                const { nodesList, isEditNode, curEditNode } = this.state;
-                const { getFieldsValue, validateFields } = this.props.form;
+                const { nodesList, isEditNode, curEditNode, timeBandList} = this.state;
+                const { getFieldsValue, validateFields, resetFields } = this.props.form;
                 let newNodes = null;
-                validateFields(["selectNodes", "inputOriginBand"], (err, vals) => {
+                resetFields("timeBand")
+                validateFields(["selectNodes", "inputOriginBand", "timeBand"], (err, vals) => {
                     if (!err && !isEditNode) {
-                        console.log(getFieldsValue())
                         newNodes = {
                             index: nodesList.length + 1,
                             id: Utility.randomStr(8),
-                            nodeName: getFieldsValue().selectNodes,
-                            opType: getFieldsValue().inputOriginBand
+                            nodeNameArray: getFieldsValue().selectNodes,
+                            timeWidth: [...timeBandList]
                         }
                         this.setState({
                             nodesList: [...nodesList, newNodes],
@@ -258,8 +278,8 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                     } else if (!err && isEditNode) {
                         _.find(nodesList, (el) => {
                             if (el.id == curEditNode.id) {
-                                el.nodeName = getFieldsValue().selectNodes,
-                                el.opType = getFieldsValue().inputOriginBand
+                                el.nodeNameArray = getFieldsValue().selectNodes,
+                                el.timeWidth = [...timeBandList]
                             }
                         })
 
@@ -278,7 +298,7 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                     nodeArray = _.filter(nodeList, function(el){
                         return el.name.indexOf(value) > -1 || el.chName.indexOf(value) > -1
                     }.bind(this)).map((el) => {
-                        return <Option key={el.id}>{el.chName}</Option>;
+                        return <Option key={el.name}>{el.name}</Option>;
                     })
                 }
 
@@ -303,7 +323,8 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                 this.setState({
                     nodeModalVisible: true,
                     isEditNode: true,
-                    curEditNode: model 
+                    curEditNode: model,
+                    timeBandList: model.timeWidth
                 });
             }
 
@@ -326,7 +347,7 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                                 return obj.id !== id
                             }.bind(this))
                         _.each(list, (el, index)=>{
-                            el.index = index + 1
+                            el.sortnum = index + 1
                         })
                         this.setState({
                             nodesList: list
@@ -338,30 +359,56 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
             renderNodesTableView(formItemLayout) {
                 const { getFieldDecorator } = this.props.form;
                 const { nodesList, nodeModalVisible, nodeDataSource, curEditNode } = this.state;
-                var preheatNodesView = "", model = this.props.model;
+                var preheatNodesView = "";
+                const { isView, isEdit } = this.props;
                 var  columns = [{
                     title: '批次',
-                    dataIndex: 'index',
-                    key: 'index',
+                    dataIndex: 'sortnum',
+                    key: 'sortnum',
                 },{
                     title: '预热节点',
-                    dataIndex: 'nodeName',
-                    key: 'nodeName',
+                    dataIndex: 'nodeNameArray',
+                    key: 'nodeNameArray',
+                    width: 300,
                     render: (text, record) => {
                         const colors = ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple'];
                         let content = [];
                         let random;
-                        for(var i = 0; i < record.nodeName.length; i++) {
+                        for(var i = 0; i < record.nodeNameArray.length; i++) {
                             random = Math.floor(Math.random() * colors.length)
-                            content.push((<Tag color={colors[random]} key={i} style={{marginBottom: '5px'}}>{record.nodeName[i].label}</Tag>))
+                            content.push((<Tag color={colors[random]} key={i} style={{marginBottom: '5px'}}>{record.nodeNameArray[i]}</Tag>))
                         }
                         return content
                     }
                 },{
-                    title: '回源带宽',
+                    title: '进度',
                     dataIndex: 'opType',
                     key: 'opType',
-                    render: (text, record) => (text + "M")
+                    render: (text, record) => (text || "-")
+                },{
+                    title: '状态',
+                    dataIndex: 'multiNode',
+                    key: 'multiNode',
+                    render: (text, record) => (text || "-")
+                },{
+                    title: '成功率',
+                    dataIndex: 'name',
+                    key: 'name',
+                    render: (text, record) => (text || "-")
+                },{
+                    title: '执行时间',
+                    dataIndex: 'timeWidth',
+                    key: 'timeWidth',
+                    render: (text, record) => {
+                        return <List size="small" dataSource={record.timeWidth} renderItem={item => (<List.Item>{item.startTime}~{item.endTime}</List.Item>)} />
+                    }
+                },{
+                    title: '回源带宽',
+                    dataIndex: 'bandwidth',
+                    key: 'bandwidth',
+                    render: (text, record) => {
+                        return <List size="small" dataSource={record.timeWidth} renderItem={item => (<List.Item>{item.bandwidth}M</List.Item>)} />
+                    }
                 },{
                     title: '操作',
                     dataIndex: 'id',
@@ -381,10 +428,10 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                                 </a>
                             </Tooltip>
                         );
-                        var buttonGroup;
-                        // if (record.status == 2) {
-                        //     buttonGroup = (<div>{playButton}</div>)
-                        // } else if (record.status == 1) {
+                        var buttonGroup = null;
+                        if (isView && isEdit) {
+                            buttonGroup = "-"
+                        } else if (!isEdit) {
                             buttonGroup = (
                                 <div>
                                     {editButton}
@@ -392,12 +439,15 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                                     {deleteButton}
                                 </div>
                             )
-                        // }
+                        } else if (isEdit){
+                            buttonGroup = editButton;
+                        }
                         return buttonGroup
                     },
                 }];
 
-                var addEditNodesView = null;
+                var addEditNodesView = null, addButton = null;
+                const timeBandView = this.renderTimeBandTableView(formItemLayout);
 
                 if (this.state.isLoadingNodesList) {
                     addEditNodesView =  <div style={{textAlign: "center"}}><Spin /></div>
@@ -406,11 +456,11 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                         <Form>
                             <FormItem {...formItemLayout} label="预热节点">
                                 {getFieldDecorator('selectNodes', {
-                                        initialValue: curEditNode.nodeName || [],
+                                        initialValue: curEditNode.nodeNameArray || [],
                                         rules: [{ type: "array", required: true, message: '请选择预热节点!' }],
                                     })(
-                                    <Select mode="multiple" allowClear={true} style={{}}
-                                            labelInValue
+                                    <Select mode="multiple" allowClear={true}
+                                            disabled={this.props.isEdit}
                                             notFoundContent={'请输入节点关键字'}
                                             filterOption={false}
                                             onSearch={$.proxy(this.handleNodeSearch, this)} >
@@ -418,7 +468,9 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                                     </Select>
                                 )}
                             </FormItem>
-                            <FormItem {...formItemLayout} label="回源带宽">
+                            {timeBandView}
+                            <FormItem {...formItemLayout} label="分时任务" style={{display:"none"}}>
+                                <Button icon="plus" size={'small'} onClick={$.proxy(this.onClickAddNodes, this)}>新建分时任务</Button>
                                 {getFieldDecorator('inputOriginBand', {
                                         initialValue: curEditNode.opType || 100,
                                         rules: [{ required: true, message: '请输入回源带宽!' }],
@@ -431,15 +483,20 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                     );
                 }
 
+                if (!this.props.isEdit) {
+                    addButton = (<Button icon="plus" size={'small'} onClick={$.proxy(this.onClickAddNodes, this)}>新建预热批次</Button>)
+                } 
+
                 preheatNodesView = (
-                    <FormItem {...formItemLayout} label="预热节点" required={true}>
-                        <Button icon="plus" size={'small'} onClick={$.proxy(this.onClickAddNodes, this)}>添加</Button>
+                    <FormItem {...formItemLayout} label="预热批次" required={true}>
+                        {addButton}
+                        <Alert style={{ marginBottom: '10px' }} message="预热任务遵循预热批次自动执行" type="info" showIcon />
                         {getFieldDecorator('nodesList', {
                             rules: [{ validator: this.validateNodesList }],
                         })(
                             <Table rowKey="id" columns={columns} pagination={false} size="small" dataSource={nodesList} />
                         )}
-                        <Modal title={'预热节点'} destroyOnClose={true}
+                        <Modal title={'预热批次'} destroyOnClose={true} width={800}
                                destroyOnClose={true}
                                visible={nodeModalVisible}
                                onOk={$.proxy(this.handleNodeOk, this)}
@@ -463,30 +520,28 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
             handleTimeOk (e){
                 e.preventDefault();
                 const { timeBandList, isEditTime, curEditTime} = this.state;
-                const { getFieldsValue, validateFields } = this.props.form;
+                const { getFieldsValue, validateFields, resetFields } = this.props.form;
                 let newTimeBand = null;
                 validateFields(["selectStartTime","selectEndTime", "inputBand"], (err, vals) => {
                     const format = 'HH:mm';
-                    var time = getFieldsValue().selectStartTime.format(format) + "-" + 
-                               getFieldsValue().selectEndTime.format(format)
                     if (!err && !isEditTime) {
                         console.log(getFieldsValue())
                         newTimeBand = {
                             id: Utility.randomStr(8),
-                            createTime: time,
-                            opType: getFieldsValue().inputBand
+                            startTime: getFieldsValue().selectStartTime.format(format),
+                            endTime: getFieldsValue().selectEndTime.format(format),
+                            bandwidth: getFieldsValue().inputBand
                         }
                         this.setState({
                             timeBandList: [...timeBandList, newTimeBand],
                             timeModalVisible: false
                         });
                     } else if (!err && isEditTime) {
-                        time = curEditTime.selectStartTime.format(format) + "-" + 
-                               curEditTime.selectEndTime.format(format);
                         _.each(timeBandList, (el)=>{
                             if (el.id == curEditTime.id) {
-                                el.createTime = time;
-                                el.opType = curEditTime.opType
+                                el.startTime = getFieldsValue().selectStartTime.format(format);
+                                el.endTime = getFieldsValue().selectEndTime.format(format);
+                                el.bandwidth = getFieldsValue().inputBand
                             }
                         })
                         this.setState({
@@ -510,15 +565,15 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                         return obj.id == id
                     }.bind(this))
                 const format = 'HH:mm',
-                      selectStartTime = model.createTime.split("-")[0],
-                      selectEndTime = model.createTime.split("-")[1];
+                      selectStartTime = model.startTime,
+                      selectEndTime = model.endTime;
                 this.setState({
                     timeModalVisible: true,
                     isEditTime: true,
                     curEditTime: {
                         selectStartTime:moment(selectStartTime, format), 
                         selectEndTime: moment(selectEndTime, format), 
-                        opType: model.opType,
+                        bandwidth: model.bandwidth,
                         id: model.id
                     }
                 });
@@ -554,13 +609,14 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                 const { timeModalVisible, curEditTime } = this.state;
                 var timeBandView = "", model = this.props.model;
                 var  columns = [{
-                    title: '时间',
-                    dataIndex: 'createTime',
-                    key: 'createTime',
+                    title: '执行时间',
+                    dataIndex: 'startTime',
+                    key: 'startTime',
+                    render: (text, record) => (text + "~" + record.endTime)
                 },{
-                    title: '带宽',
-                    dataIndex: 'opType',
-                    key: 'opType',
+                    title: '回源带宽',
+                    dataIndex: 'bandwidth',
+                    key: 'bandwidth',
                     render: (text, record) => (text + "M")
                 }, {
                     title: '操作',
@@ -582,17 +638,13 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                             </Tooltip>
                         );
                         var buttonGroup;
-                        // if (record.status == 2) {
-                        //     buttonGroup = (<div>{playButton}</div>)
-                        // } else if (record.status == 1) {
-                            buttonGroup = (
-                                <div>
-                                    {editButton}
-                                    <span className="ant-divider" />
-                                    {deleteButton}
-                                </div>
-                            )
-                        // }
+                        buttonGroup = (
+                            <div>
+                                {editButton}
+                                <span className="ant-divider" />
+                                {deleteButton}
+                            </div>
+                        )
                         return buttonGroup
                     },
                 }];
@@ -601,7 +653,7 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
 
                 const addEditTimeView = (
                     <Form>                            
-                        <FormItem {...formItemLayout} label="时间" required={true}>
+                        <FormItem {...formItemLayout} label="执行时间" required={true}>
                             <Col span={11}>
                                 <FormItem>
                                     {getFieldDecorator('selectStartTime', {
@@ -628,7 +680,7 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                                 </FormItem>
                             </Col>
                         </FormItem> 
-                        <FormItem {...formItemLayout} label="带宽">
+                        <FormItem {...formItemLayout} label="回源带宽">
                             {getFieldDecorator('inputBand', {
                                     initialValue: curEditTime.opType || 100,
                                     rules: [{ required: true, message: '请输入带宽!' }],
@@ -641,18 +693,19 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                 );
 
                 timeBandView = (
-                    <FormItem {...formItemLayout} label="分时带宽" required={true}>
-                        <Button icon="plus" size={'small'} onClick={$.proxy(this.onClickAddTime, this)}>添加</Button>
+                    <FormItem {...formItemLayout} label="分时任务" required={true}>
+                        <Button icon="plus" size={'small'} onClick={$.proxy(this.onClickAddTime, this)}>新建分时任务</Button>
+                        <Alert style={{ marginBottom: '10px' }} message="仅在添加的分时任务时间段内进行预热" type="info" showIcon />
                         {getFieldDecorator('timeBand', {
                             rules: [{ validator: this.validateTimeBand }],
                         })(
                             <Table rowKey="id" columns={columns} pagination={false} size="small" dataSource={this.state.timeBandList} />
                         )}
-                        <Modal title={'分时带宽'} destroyOnClose={true}
+                        <Modal title={'分时任务'} destroyOnClose={true}
                                destroyOnClose={true}
                                visible={timeModalVisible}
                                onOk={$.proxy(this.handleTimeOk, this)}
-                               onCancel={$.proxy(this.handleCancel, this)}>
+                               onCancel={$.proxy(this.handleTimeCancel, this)}>
                                {addEditTimeView}
                         </Modal>
                     </FormItem>
@@ -665,7 +718,7 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                 return current && current < moment().add(-1,'day')
             }
 
-            disabledTime(_, type) {
+            disabledTime(type) {
                 function range(start, end) {
                     const result = [];
                         for (let i = start; i < end; i++) {
@@ -684,31 +737,22 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
             render() {
                 const { getFieldDecorator } = this.props.form;
                 const formItemLayout = {
-                  labelCol: { span: 6 },
-                  wrapperCol: { span: 14 },
+                  labelCol: { span: 4 },
+                  wrapperCol: { span: 16 },
                 };
                 const taskNameView = this.renderTaskNameView(formItemLayout);
                 const preheatNodesView = this.renderNodesTableView(formItemLayout);
-                const timeBandView = this.renderTimeBandTableView(formItemLayout);
+                let saveButton = null;
+                if (!this.props.isView)
+                    saveButton = (<Button type="primary" htmlType="submit">保存</Button>)
 
                 return (
                     <div>
                         <Form onSubmit={this.handleSubmit}>
                             {taskNameView}
                             {preheatNodesView}
-                            {timeBandView}
-                            <FormItem {...formItemLayout} label="起止时间">
-                                {getFieldDecorator('range-time-picker', {
-                                        rules: [{ type: 'array', required: true, message: '请选择起止时间！' }],
-                                    })(
-                                    <RangePicker showTime={{ format: 'HH:mm', minuteStep: 30 }} 
-                                                format="YYYY/MM/DD HH:mm" 
-                                                disabledDate={this.disabledDate}
-                                                disabledTime={this.disabledTime} />
-                                )}
-                            </FormItem>
                             <FormItem wrapperCol={{ span: 12, offset: 6 }}>
-                                <Button type="primary" htmlType="submit">保存</Button>
+                                {saveButton}
                                 <Button onClick={this.onClickCancel} style={{marginLeft: "10px"}}>取消</Button>
                             </FormItem>
                         </Form>

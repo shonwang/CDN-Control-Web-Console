@@ -26,6 +26,7 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
         Popover = Antd.Popover,
         Badge = Antd.Badge,
         Icon = Antd.Icon,
+        Spin = Antd.Spin,
         Tooltip = Antd.Tooltip;
 
     var PreHeatTable = function (_React$Component) {
@@ -79,9 +80,17 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
             value: function onGetPreHeatListSuccess() {
                 var data = [];
                 this.props.preHeatProps.collection.each(function (model) {
-                    var obj = Object.assign({}, model.attributes);
+                    var obj = Object.assign({}, model.attributes),
+                        nodeName = [];
+                    _.each(obj.batchTimeBandwidth, function (batch) {
+                        batch.id = batch.sortnum;
+                        batch.nodeNameArray = batch.nodes.split(";");
+                        nodeName = nodeName.concat(batch.nodeNameArray);
+                    });
+                    obj.nodeName = nodeName;
                     data.push(obj);
                 });
+                console.log(data);
                 this.setState({
                     data: data,
                     isFetching: false
@@ -119,6 +128,23 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                 onClickEditCallback && onClickEditCallback(model);
             }
         }, {
+            key: 'handleViewClick',
+            value: function handleViewClick(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "I") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                var model = _.find(this.state.data, function (obj) {
+                    return obj.id == id;
+                }.bind(this));
+                var onClickViewCallback = this.props.preHeatProps.onClickViewCallback;
+                onClickViewCallback && onClickViewCallback(model);
+            }
+        }, {
             key: 'onGetError',
             value: function onGetError(error) {
                 var msgDes = "服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！";
@@ -151,14 +177,27 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
 
                 var columns = [{
                     title: '名称',
-                    dataIndex: 'name',
-                    key: 'name',
+                    dataIndex: 'taskName',
+                    key: 'taskName',
                     fixed: 'left',
-                    width: 300
+                    width: 200,
+                    render: function render(text, record) {
+                        return React.createElement(
+                            Tooltip,
+                            { placement: 'bottom', title: "查看详情" },
+                            React.createElement(
+                                'a',
+                                { href: 'javascript:void(0)', id: record.id, onClick: function onClick(e) {
+                                        return _this2.handleViewClick(e);
+                                    } },
+                                text
+                            )
+                        );
+                    }
                 }, {
                     title: '回源带宽',
-                    dataIndex: 'opType',
-                    key: 'opType'
+                    dataIndex: 'fileOffset',
+                    key: 'fileOffset'
                 }, {
                     title: '预热节点',
                     dataIndex: 'nodeName',
@@ -167,13 +206,14 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                         var colors = ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple'];
                         var content = void 0,
                             temp = [];
-                        var random = void 0;
-                        for (var i = 0; i < record.name.length; i++) {
+                        var random = void 0,
+                            nodeNameArray = record.nodeName;
+                        for (var i = 0; i < nodeNameArray.length; i++) {
                             random = Math.floor(Math.random() * colors.length);
                             temp.push(React.createElement(
                                 Tag,
                                 { color: colors[random], key: i, style: { marginBottom: '5px' } },
-                                record.name[i]
+                                nodeNameArray[i]
                             ));
                         }
                         content = React.createElement(
@@ -187,7 +227,7 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                             React.createElement(
                                 'span',
                                 null,
-                                record.nodeName,
+                                nodeNameArray[0],
                                 '...'
                             ),
                             React.createElement(
@@ -195,10 +235,10 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                                 null,
                                 React.createElement(
                                     Popover,
-                                    { content: content, title: '\u8282\u70B9\u8BE6\u60C5', trigger: 'click', placement: 'left', overlayStyle: { width: '300px' } },
+                                    { content: content, title: '\u8282\u70B9\u8BE6\u60C5', trigger: 'click', placement: 'right', overlayStyle: { width: '300px' } },
                                     React.createElement(
                                         Badge,
-                                        { count: record.name.length, style: { backgroundColor: '#52c41a' } },
+                                        { count: nodeNameArray.length, style: { backgroundColor: '#52c41a' } },
                                         React.createElement(
                                             'a',
                                             { href: 'javascript:void(0)', id: record.id },
@@ -211,49 +251,60 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                     }
                 }, {
                     title: '文件数',
-                    dataIndex: 'type',
-                    key: 'type'
+                    dataIndex: 'preloadUrlCount',
+                    key: 'preloadUrlCount'
                 }, {
                     title: '当前预热批次',
-                    dataIndex: 'multiNode',
-                    key: 'multiNode'
+                    dataIndex: 'currentBatch',
+                    key: 'currentBatch',
+                    render: function render(text, record) {
+                        return text + "/" + record.batchTimeBandwidth.length;
+                    }
                 }, {
                     title: '进度',
-                    dataIndex: 'nodeId',
-                    key: 'nodeId'
+                    dataIndex: 'taskId',
+                    key: 'taskId'
                 }, {
                     title: '状态',
                     dataIndex: 'status',
                     key: 'status',
                     render: function render(text, record) {
-                        var tag;
-                        if (record.status == 2) tag = React.createElement(
+                        var tag = null;
+                        if (record.status == 3) tag = React.createElement(
                             Tag,
                             { color: "red" },
-                            '\u6682\u505C'
-                        );else if (record.status == 1) tag = React.createElement(
+                            '\u5DF2\u6682\u505C'
+                        );else if (record.status == 2) tag = React.createElement(
                             Tag,
                             { color: "green" },
-                            '\u8FD0\u884C\u4E2D'
-                        );else if (record.status == 8) tag = React.createElement(
+                            '\u5DF2\u5B8C\u6210'
+                        );else if (record.status == 0) tag = React.createElement(
                             Tag,
                             { color: "blue" },
-                            '\u542F\u52A8\u4E2D'
+                            '\u5F85\u9884\u70ED'
+                        );else if (record.status == 1) tag = React.createElement(
+                            Tag,
+                            { color: "orange" },
+                            '\u9884\u70ED\u4E2D'
+                        );else if (record.status == 4) tag = React.createElement(
+                            Tag,
+                            { color: "purple" },
+                            '\u6682\u505C\u4E2D'
                         );
                         return tag;
                     }
                 }, {
                     title: '成功率',
-                    dataIndex: 'typeName',
-                    key: 'typeName'
+                    dataIndex: 'fileMd5',
+                    key: 'fileMd5'
                 }, {
                     title: '创建人',
-                    dataIndex: 'operator',
-                    key: 'operator'
+                    dataIndex: 'committer',
+                    key: 'committer'
                 }, {
                     title: '创建时间',
-                    dataIndex: 'createTimeFormated',
-                    key: 'createTimeFormated'
+                    dataIndex: 'commitTime',
+                    key: 'commitTime'
                 }, {
                     title: '操作',
                     dataIndex: 'id',
@@ -285,7 +336,7 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                         );
                         var pauseButton = React.createElement(
                             Tooltip,
-                            { placement: 'bottom', title: "终止" },
+                            { placement: 'bottom', title: "暂停" },
                             React.createElement(
                                 'a',
                                 { href: 'javascript:void(0)', id: record.id, onClick: function onClick(e) {
@@ -295,18 +346,18 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                             )
                         );
                         var buttonGroup;
-                        if (record.status == 2) {
-                            buttonGroup = React.createElement(
-                                'div',
-                                null,
-                                playButton
-                            );
-                        } else if (record.status == 1) {
+                        if (record.status == 3) {
                             buttonGroup = React.createElement(
                                 'div',
                                 null,
                                 editButton,
                                 React.createElement('span', { className: 'ant-divider' }),
+                                playButton
+                            );
+                        } else if (record.status == 1 || record.status == 0) {
+                            buttonGroup = React.createElement(
+                                'div',
+                                null,
                                 pauseButton
                             );
                         }
@@ -357,7 +408,11 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                 nodeArray = _.filter(nodeList, function (el) {
                     return el.name.indexOf(value) > -1 || el.chName.indexOf(value) > -1;
                 }.bind(this)).map(function (el) {
-                    return { text: el.chName, value: el.id };
+                    return React.createElement(
+                        Option,
+                        { key: el.id },
+                        el.name
+                    );
                 });
             }
 
@@ -387,7 +442,9 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
             var getFieldDecorator = this.props.form.getFieldDecorator;
             var dataSource = this.state.dataSource;
 
-
+            var preHeatProps = this.props.preHeatProps;
+            var nodeList = preHeatProps.nodeList;
+            //0:待预热 1:预热中 2:已完成 3:已暂停 4：暂停中
             var HorizontalForm = React.createElement(
                 Form,
                 { layout: 'inline', onSubmit: this.handleSubmit },
@@ -399,10 +456,16 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                 React.createElement(
                     FormItem,
                     { label: "节点" },
-                    getFieldDecorator('nodeNames')(React.createElement(AutoComplete, { dataSource: dataSource,
-                        style: { width: 200 },
-                        onSearch: this.handleSearch,
-                        allowClear: true }))
+                    getFieldDecorator('nodeNames')(React.createElement(
+                        Select,
+                        { mode: 'multiple', allowClear: true,
+                            style: { width: 300 },
+                            labelInValue: true,
+                            notFoundContent: nodeList.length == 0 ? React.createElement(Spin, { size: 'small' }) : '请输入节点关键字',
+                            filterOption: false,
+                            onSearch: $.proxy(this.handleSearch, this) },
+                        dataSource
+                    ))
                 ),
                 React.createElement(
                     FormItem,
@@ -419,22 +482,27 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                         ),
                         React.createElement(
                             Option,
-                            { value: '1' },
+                            { value: '0' },
                             '\u5F85\u9884\u70ED'
                         ),
                         React.createElement(
                             Option,
-                            { value: '2' },
+                            { value: '1' },
                             '\u9884\u70ED\u4E2D'
                         ),
                         React.createElement(
                             Option,
                             { value: '3' },
-                            '\u5DF2\u7EC8\u6B62'
+                            '\u5DF2\u6682\u505C'
                         ),
                         React.createElement(
                             Option,
                             { value: '4' },
+                            '\u6682\u505C\u4E2D'
+                        ),
+                        React.createElement(
+                            Option,
+                            { value: '2' },
                             '\u5DF2\u5B8C\u6210'
                         )
                     ))
@@ -514,6 +582,16 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
             }.bind(this));
         },
 
+        onClickViewCallback: function onClickViewCallback(model) {
+            require(['preheatManage.edit.view'], function (PreheatManageEditView) {
+                this.curView = React.createElement(PreheatManageEditView, { preHeatProps: this.preHeatProps, model: model, isEdit: true, isView: true });
+                this.setState({
+                    curViewsMark: "view",
+                    breadcrumbTxt: ["预热管理", "查看"]
+                });
+            }.bind(this));
+        },
+
         onClickCancelCallback: function onClickCancelCallback() {
             this.setState({
                 curViewsMark: "list",
@@ -539,7 +617,8 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                 nodeList: this.state.nodeList,
                 onClickAddCallback: $.proxy(this.onClickAddCallback, this),
                 onClickEditCallback: $.proxy(this.onClickEditCallback, this),
-                onClickCancelCallback: $.proxy(this.onClickCancelCallback, this)
+                onClickCancelCallback: $.proxy(this.onClickCancelCallback, this),
+                onClickViewCallback: $.proxy(this.onClickViewCallback, this)
             };
 
             var curView = null;
@@ -549,9 +628,10 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                     null,
                     React.createElement(WrappedSearchForm, { preHeatProps: this.preHeatProps }),
                     React.createElement('hr', null),
+                    React.createElement(Alert, { style: { marginBottom: '20px' }, message: '\u56DE\u6E90\u5E26\u5BBD\u3001\u9884\u70ED\u8282\u70B9\u3001\u8FDB\u5EA6\u5C55\u793A\u5F53\u524D\u6267\u884C\u6279\u6B21\u4FE1\u606F\uFF0C\u6587\u4EF6\u6570\u3001\u72B6\u6001\u3001\u6210\u529F\u7387\u4E3A\u5F53\u524D\u4EFB\u52A1\u6574\u4F53\u4FE1\u606F', type: 'info', showIcon: true }),
                     React.createElement(PreHeatTable, { preHeatProps: this.preHeatProps })
                 );
-            } else if (this.state.curViewsMark == "add" || this.state.curViewsMark == "edit") {
+            } else if (this.state.curViewsMark == "add" || this.state.curViewsMark == "edit" || this.state.curViewsMark == "view") {
                 curView = this.curView;
             }
 

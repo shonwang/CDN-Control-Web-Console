@@ -35,6 +35,7 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
         TimePicker = Antd.TimePicker,
         RangePicker = DatePicker.RangePicker,
         Col = Antd.Col,
+        Alert = Antd.Alert,
         confirm = Modal.confirm;
 
     var PreheatManageEditForm = function (_React$Component) {
@@ -52,11 +53,12 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
             _this.validateTimeBand = _this.validateTimeBand.bind(_this);
             _this.validateNodesList = _this.validateNodesList.bind(_this);
             _this.handleSubmit = _this.handleSubmit.bind(_this);
+
             _this.state = {
                 //上传
                 fileList: [],
                 uploading: false,
-                //预热节点
+                //预热批次
                 isLoadingNodesList: false,
                 nodesList: [],
                 nodeModalVisible: false,
@@ -69,6 +71,10 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                 isEditTime: false,
                 curEditTime: {}
             };
+
+            if (props.isEdit) {
+                _this.state.nodesList = props.model.batchTimeBandwidth;
+            }
             moment.locale("zh");
             return _this;
         }
@@ -154,7 +160,7 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                 if (this.state.timeBandList.length != 0) {
                     callback();
                 } else {
-                    callback('请添加分时带宽！');
+                    callback('请添加分时分时任务！');
                 }
             }
         }, {
@@ -169,8 +175,6 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
 
                 var taskNameView = "",
                     model = this.props.model;
-
-                var files = ['Racing car sprays burning fuel into crowd.', 'Japanese princess to wed commoner.', 'Australian walks 100km after outback crash.', 'Man charged over missing wedding girl.', 'Los Angeles battles huge wildfires.'];
 
                 var uploadProps = {
                     action: '//jsonplaceholder.typicode.com/posts/',
@@ -206,7 +210,7 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                             React.createElement(
                                 'span',
                                 { className: 'ant-form-text' },
-                                model.name
+                                model.taskName
                             )
                         ),
                         React.createElement(
@@ -215,19 +219,37 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                             React.createElement(
                                 'span',
                                 { className: 'ant-form-text' },
-                                model.name
+                                model.preloadFilePath
                             )
                         ),
                         React.createElement(
                             FormItem,
-                            _extends({}, formItemLayout, { label: '\u9884\u70ED\u6587\u4EF6' }),
-                            React.createElement(List, { size: 'small', dataSource: files, renderItem: function renderItem(item) {
-                                    return React.createElement(
-                                        List.Item,
-                                        null,
-                                        item
-                                    );
-                                } })
+                            _extends({}, formItemLayout, { label: '\u9884\u70ED\u6587\u4EF6', style: { marginBottom: "0px" } }),
+                            React.createElement(
+                                'span',
+                                { className: 'ant-form-text' },
+                                model.preloadFilePath
+                            )
+                        ),
+                        React.createElement(
+                            FormItem,
+                            _extends({}, formItemLayout, { label: '\u9884\u70ED\u6587\u4EF6\u6570\u76EE', style: { marginBottom: "0px" } }),
+                            React.createElement(
+                                'span',
+                                { className: 'ant-form-text' },
+                                model.preloadUrlCount
+                            )
+                        ),
+                        React.createElement(
+                            FormItem,
+                            _extends({}, formItemLayout, { label: '\u8D77\u6B62\u65F6\u95F4' }),
+                            React.createElement(
+                                'span',
+                                { className: 'ant-form-text' },
+                                model.startTime,
+                                '~',
+                                model.endTime
+                            )
                         )
                     );
                 } else {
@@ -283,6 +305,16 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                                     )
                                 ))
                             )
+                        ),
+                        React.createElement(
+                            FormItem,
+                            _extends({}, formItemLayout, { label: '\u8D77\u6B62\u65F6\u95F4' }),
+                            getFieldDecorator('range-time-picker', {
+                                rules: [{ type: 'array', required: true, message: '请选择起止时间！' }]
+                            })(React.createElement(RangePicker, { showTime: { format: 'HH:mm', minuteStep: 30 },
+                                format: 'YYYY/MM/DD HH:mm',
+                                disabledDate: this.disabledDate,
+                                disabledTime: this.disabledTime }))
                         )
                     );
                 }
@@ -293,7 +325,13 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
             key: 'handleCancel',
             value: function handleCancel() {
                 this.setState({
-                    nodeModalVisible: false,
+                    nodeModalVisible: false
+                });
+            }
+        }, {
+            key: 'handleTimeCancel',
+            value: function handleTimeCancel() {
+                this.setState({
                     timeModalVisible: false
                 });
             }
@@ -303,7 +341,8 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                 this.setState({
                     isEditNode: false,
                     curEditNode: {},
-                    nodeModalVisible: true
+                    nodeModalVisible: true,
+                    timeBandList: []
                 });
             }
         }, {
@@ -315,20 +354,22 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                 var _state = this.state,
                     nodesList = _state.nodesList,
                     isEditNode = _state.isEditNode,
-                    curEditNode = _state.curEditNode;
+                    curEditNode = _state.curEditNode,
+                    timeBandList = _state.timeBandList;
                 var _props$form2 = this.props.form,
                     getFieldsValue = _props$form2.getFieldsValue,
-                    validateFields = _props$form2.validateFields;
+                    validateFields = _props$form2.validateFields,
+                    resetFields = _props$form2.resetFields;
 
                 var newNodes = null;
-                validateFields(["selectNodes", "inputOriginBand"], function (err, vals) {
+                resetFields("timeBand");
+                validateFields(["selectNodes", "inputOriginBand", "timeBand"], function (err, vals) {
                     if (!err && !isEditNode) {
-                        console.log(getFieldsValue());
                         newNodes = {
                             index: nodesList.length + 1,
                             id: Utility.randomStr(8),
-                            nodeName: getFieldsValue().selectNodes,
-                            opType: getFieldsValue().inputOriginBand
+                            nodeNameArray: getFieldsValue().selectNodes,
+                            timeWidth: [].concat(_toConsumableArray(timeBandList))
                         };
                         _this3.setState({
                             nodesList: [].concat(_toConsumableArray(nodesList), [newNodes]),
@@ -337,7 +378,7 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                     } else if (!err && isEditNode) {
                         _.find(nodesList, function (el) {
                             if (el.id == curEditNode.id) {
-                                el.nodeName = getFieldsValue().selectNodes, el.opType = getFieldsValue().inputOriginBand;
+                                el.nodeNameArray = getFieldsValue().selectNodes, el.timeWidth = [].concat(_toConsumableArray(timeBandList));
                             }
                         });
 
@@ -360,8 +401,8 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                     }.bind(this)).map(function (el) {
                         return React.createElement(
                             Option,
-                            { key: el.id },
-                            el.chName
+                            { key: el.name },
+                            el.name
                         );
                     });
                 }
@@ -388,7 +429,8 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                 this.setState({
                     nodeModalVisible: true,
                     isEditNode: true,
-                    curEditNode: model
+                    curEditNode: model,
+                    timeBandList: model.timeWidth
                 });
             }
         }, {
@@ -412,7 +454,7 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                             return obj.id !== id;
                         }.bind(this));
                         _.each(list, function (el, index) {
-                            el.index = index + 1;
+                            el.sortnum = index + 1;
                         });
                         this.setState({
                             nodesList: list
@@ -433,36 +475,83 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                     nodeDataSource = _state2.nodeDataSource,
                     curEditNode = _state2.curEditNode;
 
-                var preheatNodesView = "",
-                    model = this.props.model;
+                var preheatNodesView = "";
+                var _props = this.props,
+                    isView = _props.isView,
+                    isEdit = _props.isEdit;
+
                 var columns = [{
                     title: '批次',
-                    dataIndex: 'index',
-                    key: 'index'
+                    dataIndex: 'sortnum',
+                    key: 'sortnum'
                 }, {
                     title: '预热节点',
-                    dataIndex: 'nodeName',
-                    key: 'nodeName',
+                    dataIndex: 'nodeNameArray',
+                    key: 'nodeNameArray',
+                    width: 300,
                     render: function render(text, record) {
                         var colors = ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple'];
                         var content = [];
                         var random = void 0;
-                        for (var i = 0; i < record.nodeName.length; i++) {
+                        for (var i = 0; i < record.nodeNameArray.length; i++) {
                             random = Math.floor(Math.random() * colors.length);
                             content.push(React.createElement(
                                 Tag,
                                 { color: colors[random], key: i, style: { marginBottom: '5px' } },
-                                record.nodeName[i].label
+                                record.nodeNameArray[i]
                             ));
                         }
                         return content;
                     }
                 }, {
-                    title: '回源带宽',
+                    title: '进度',
                     dataIndex: 'opType',
                     key: 'opType',
                     render: function render(text, record) {
-                        return text + "M";
+                        return text || "-";
+                    }
+                }, {
+                    title: '状态',
+                    dataIndex: 'multiNode',
+                    key: 'multiNode',
+                    render: function render(text, record) {
+                        return text || "-";
+                    }
+                }, {
+                    title: '成功率',
+                    dataIndex: 'name',
+                    key: 'name',
+                    render: function render(text, record) {
+                        return text || "-";
+                    }
+                }, {
+                    title: '执行时间',
+                    dataIndex: 'timeWidth',
+                    key: 'timeWidth',
+                    render: function render(text, record) {
+                        return React.createElement(List, { size: 'small', dataSource: record.timeWidth, renderItem: function renderItem(item) {
+                                return React.createElement(
+                                    List.Item,
+                                    null,
+                                    item.startTime,
+                                    '~',
+                                    item.endTime
+                                );
+                            } });
+                    }
+                }, {
+                    title: '回源带宽',
+                    dataIndex: 'bandwidth',
+                    key: 'bandwidth',
+                    render: function render(text, record) {
+                        return React.createElement(List, { size: 'small', dataSource: record.timeWidth, renderItem: function renderItem(item) {
+                                return React.createElement(
+                                    List.Item,
+                                    null,
+                                    item.bandwidth,
+                                    'M'
+                                );
+                            } });
                     }
                 }, {
                     title: '操作',
@@ -487,23 +576,27 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                                 React.createElement(Icon, { type: 'delete' })
                             )
                         );
-                        var buttonGroup;
-                        // if (record.status == 2) {
-                        //     buttonGroup = (<div>{playButton}</div>)
-                        // } else if (record.status == 1) {
-                        buttonGroup = React.createElement(
-                            'div',
-                            null,
-                            editButton,
-                            React.createElement('span', { className: 'ant-divider' }),
-                            deleteButton
-                        );
-                        // }
+                        var buttonGroup = null;
+                        if (isView && isEdit) {
+                            buttonGroup = "-";
+                        } else if (!isEdit) {
+                            buttonGroup = React.createElement(
+                                'div',
+                                null,
+                                editButton,
+                                React.createElement('span', { className: 'ant-divider' }),
+                                deleteButton
+                            );
+                        } else if (isEdit) {
+                            buttonGroup = editButton;
+                        }
                         return buttonGroup;
                     }
                 }];
 
-                var addEditNodesView = null;
+                var addEditNodesView = null,
+                    addButton = null;
+                var timeBandView = this.renderTimeBandTableView(formItemLayout);
 
                 if (this.state.isLoadingNodesList) {
                     addEditNodesView = React.createElement(
@@ -519,21 +612,27 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                             FormItem,
                             _extends({}, formItemLayout, { label: '\u9884\u70ED\u8282\u70B9' }),
                             getFieldDecorator('selectNodes', {
-                                initialValue: curEditNode.nodeName || [],
+                                initialValue: curEditNode.nodeNameArray || [],
                                 rules: [{ type: "array", required: true, message: '请选择预热节点!' }]
                             })(React.createElement(
                                 Select,
-                                { mode: 'multiple', allowClear: true, style: {},
-                                    labelInValue: true,
+                                { mode: 'multiple', allowClear: true,
+                                    disabled: this.props.isEdit,
                                     notFoundContent: '请输入节点关键字',
                                     filterOption: false,
                                     onSearch: $.proxy(this.handleNodeSearch, this) },
                                 nodeDataSource
                             ))
                         ),
+                        timeBandView,
                         React.createElement(
                             FormItem,
-                            _extends({}, formItemLayout, { label: '\u56DE\u6E90\u5E26\u5BBD' }),
+                            _extends({}, formItemLayout, { label: '\u5206\u65F6\u4EFB\u52A1', style: { display: "none" } }),
+                            React.createElement(
+                                Button,
+                                { icon: 'plus', size: 'small', onClick: $.proxy(this.onClickAddNodes, this) },
+                                '\u65B0\u5EFA\u5206\u65F6\u4EFB\u52A1'
+                            ),
                             getFieldDecorator('inputOriginBand', {
                                 initialValue: curEditNode.opType || 100,
                                 rules: [{ required: true, message: '请输入回源带宽!' }]
@@ -547,20 +646,25 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                     );
                 }
 
-                preheatNodesView = React.createElement(
-                    FormItem,
-                    _extends({}, formItemLayout, { label: '\u9884\u70ED\u8282\u70B9', required: true }),
-                    React.createElement(
+                if (!this.props.isEdit) {
+                    addButton = React.createElement(
                         Button,
                         { icon: 'plus', size: 'small', onClick: $.proxy(this.onClickAddNodes, this) },
-                        '\u6DFB\u52A0'
-                    ),
+                        '\u65B0\u5EFA\u9884\u70ED\u6279\u6B21'
+                    );
+                }
+
+                preheatNodesView = React.createElement(
+                    FormItem,
+                    _extends({}, formItemLayout, { label: '\u9884\u70ED\u6279\u6B21', required: true }),
+                    addButton,
+                    React.createElement(Alert, { style: { marginBottom: '10px' }, message: '\u9884\u70ED\u4EFB\u52A1\u9075\u5FAA\u9884\u70ED\u6279\u6B21\u81EA\u52A8\u6267\u884C', type: 'info', showIcon: true }),
                     getFieldDecorator('nodesList', {
                         rules: [{ validator: this.validateNodesList }]
                     })(React.createElement(Table, { rowKey: 'id', columns: columns, pagination: false, size: 'small', dataSource: nodesList })),
                     React.createElement(
                         Modal,
-                        (_React$createElement = { title: '预热节点', destroyOnClose: true
+                        (_React$createElement = { title: '预热批次', destroyOnClose: true, width: 800
                         }, _defineProperty(_React$createElement, 'destroyOnClose', true), _defineProperty(_React$createElement, 'visible', nodeModalVisible), _defineProperty(_React$createElement, 'onOk', $.proxy(this.handleNodeOk, this)), _defineProperty(_React$createElement, 'onCancel', $.proxy(this.handleCancel, this)), _React$createElement),
                         addEditNodesView
                     )
@@ -589,29 +693,30 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                     curEditTime = _state3.curEditTime;
                 var _props$form3 = this.props.form,
                     getFieldsValue = _props$form3.getFieldsValue,
-                    validateFields = _props$form3.validateFields;
+                    validateFields = _props$form3.validateFields,
+                    resetFields = _props$form3.resetFields;
 
                 var newTimeBand = null;
                 validateFields(["selectStartTime", "selectEndTime", "inputBand"], function (err, vals) {
                     var format = 'HH:mm';
-                    var time = getFieldsValue().selectStartTime.format(format) + "-" + getFieldsValue().selectEndTime.format(format);
                     if (!err && !isEditTime) {
                         console.log(getFieldsValue());
                         newTimeBand = {
                             id: Utility.randomStr(8),
-                            createTime: time,
-                            opType: getFieldsValue().inputBand
+                            startTime: getFieldsValue().selectStartTime.format(format),
+                            endTime: getFieldsValue().selectEndTime.format(format),
+                            bandwidth: getFieldsValue().inputBand
                         };
                         _this5.setState({
                             timeBandList: [].concat(_toConsumableArray(timeBandList), [newTimeBand]),
                             timeModalVisible: false
                         });
                     } else if (!err && isEditTime) {
-                        time = curEditTime.selectStartTime.format(format) + "-" + curEditTime.selectEndTime.format(format);
                         _.each(timeBandList, function (el) {
                             if (el.id == curEditTime.id) {
-                                el.createTime = time;
-                                el.opType = curEditTime.opType;
+                                el.startTime = getFieldsValue().selectStartTime.format(format);
+                                el.endTime = getFieldsValue().selectEndTime.format(format);
+                                el.bandwidth = getFieldsValue().inputBand;
                             }
                         });
                         _this5.setState({
@@ -636,15 +741,15 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                     return obj.id == id;
                 }.bind(this));
                 var format = 'HH:mm',
-                    selectStartTime = model.createTime.split("-")[0],
-                    selectEndTime = model.createTime.split("-")[1];
+                    selectStartTime = model.startTime,
+                    selectEndTime = model.endTime;
                 this.setState({
                     timeModalVisible: true,
                     isEditTime: true,
                     curEditTime: {
                         selectStartTime: moment(selectStartTime, format),
                         selectEndTime: moment(selectEndTime, format),
-                        opType: model.opType,
+                        bandwidth: model.bandwidth,
                         id: model.id
                     }
                 });
@@ -689,13 +794,16 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                 var timeBandView = "",
                     model = this.props.model;
                 var columns = [{
-                    title: '时间',
-                    dataIndex: 'createTime',
-                    key: 'createTime'
+                    title: '执行时间',
+                    dataIndex: 'startTime',
+                    key: 'startTime',
+                    render: function render(text, record) {
+                        return text + "~" + record.endTime;
+                    }
                 }, {
-                    title: '带宽',
-                    dataIndex: 'opType',
-                    key: 'opType',
+                    title: '回源带宽',
+                    dataIndex: 'bandwidth',
+                    key: 'bandwidth',
                     render: function render(text, record) {
                         return text + "M";
                     }
@@ -723,9 +831,6 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                             )
                         );
                         var buttonGroup;
-                        // if (record.status == 2) {
-                        //     buttonGroup = (<div>{playButton}</div>)
-                        // } else if (record.status == 1) {
                         buttonGroup = React.createElement(
                             'div',
                             null,
@@ -733,7 +838,6 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                             React.createElement('span', { className: 'ant-divider' }),
                             deleteButton
                         );
-                        // }
                         return buttonGroup;
                     }
                 }];
@@ -745,7 +849,7 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                     null,
                     React.createElement(
                         FormItem,
-                        _extends({}, formItemLayout, { label: '\u65F6\u95F4', required: true }),
+                        _extends({}, formItemLayout, { label: '\u6267\u884C\u65F6\u95F4', required: true }),
                         React.createElement(
                             Col,
                             { span: 11 },
@@ -782,7 +886,7 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                     ),
                     React.createElement(
                         FormItem,
-                        _extends({}, formItemLayout, { label: '\u5E26\u5BBD' }),
+                        _extends({}, formItemLayout, { label: '\u56DE\u6E90\u5E26\u5BBD' }),
                         getFieldDecorator('inputBand', {
                             initialValue: curEditTime.opType || 100,
                             rules: [{ required: true, message: '请输入带宽!' }]
@@ -797,19 +901,20 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
 
                 timeBandView = React.createElement(
                     FormItem,
-                    _extends({}, formItemLayout, { label: '\u5206\u65F6\u5E26\u5BBD', required: true }),
+                    _extends({}, formItemLayout, { label: '\u5206\u65F6\u4EFB\u52A1', required: true }),
                     React.createElement(
                         Button,
                         { icon: 'plus', size: 'small', onClick: $.proxy(this.onClickAddTime, this) },
-                        '\u6DFB\u52A0'
+                        '\u65B0\u5EFA\u5206\u65F6\u4EFB\u52A1'
                     ),
+                    React.createElement(Alert, { style: { marginBottom: '10px' }, message: '\u4EC5\u5728\u6DFB\u52A0\u7684\u5206\u65F6\u4EFB\u52A1\u65F6\u95F4\u6BB5\u5185\u8FDB\u884C\u9884\u70ED', type: 'info', showIcon: true }),
                     getFieldDecorator('timeBand', {
                         rules: [{ validator: this.validateTimeBand }]
                     })(React.createElement(Table, { rowKey: 'id', columns: columns, pagination: false, size: 'small', dataSource: this.state.timeBandList })),
                     React.createElement(
                         Modal,
-                        (_React$createElement2 = { title: '分时带宽', destroyOnClose: true
-                        }, _defineProperty(_React$createElement2, 'destroyOnClose', true), _defineProperty(_React$createElement2, 'visible', timeModalVisible), _defineProperty(_React$createElement2, 'onOk', $.proxy(this.handleTimeOk, this)), _defineProperty(_React$createElement2, 'onCancel', $.proxy(this.handleCancel, this)), _React$createElement2),
+                        (_React$createElement2 = { title: '分时任务', destroyOnClose: true
+                        }, _defineProperty(_React$createElement2, 'destroyOnClose', true), _defineProperty(_React$createElement2, 'visible', timeModalVisible), _defineProperty(_React$createElement2, 'onOk', $.proxy(this.handleTimeOk, this)), _defineProperty(_React$createElement2, 'onCancel', $.proxy(this.handleTimeCancel, this)), _React$createElement2),
                         addEditTimeView
                     )
                 );
@@ -823,7 +928,7 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
             }
         }, {
             key: 'disabledTime',
-            value: function disabledTime(_, type) {
+            value: function disabledTime(type) {
                 function range(start, end) {
                     var result = [];
                     for (var i = start; i < end; i++) {
@@ -846,12 +951,17 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                 var getFieldDecorator = this.props.form.getFieldDecorator;
 
                 var formItemLayout = {
-                    labelCol: { span: 6 },
-                    wrapperCol: { span: 14 }
+                    labelCol: { span: 4 },
+                    wrapperCol: { span: 16 }
                 };
                 var taskNameView = this.renderTaskNameView(formItemLayout);
                 var preheatNodesView = this.renderNodesTableView(formItemLayout);
-                var timeBandView = this.renderTimeBandTableView(formItemLayout);
+                var saveButton = null;
+                if (!this.props.isView) saveButton = React.createElement(
+                    Button,
+                    { type: 'primary', htmlType: 'submit' },
+                    '\u4FDD\u5B58'
+                );
 
                 return React.createElement(
                     'div',
@@ -861,25 +971,10 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                         { onSubmit: this.handleSubmit },
                         taskNameView,
                         preheatNodesView,
-                        timeBandView,
-                        React.createElement(
-                            FormItem,
-                            _extends({}, formItemLayout, { label: '\u8D77\u6B62\u65F6\u95F4' }),
-                            getFieldDecorator('range-time-picker', {
-                                rules: [{ type: 'array', required: true, message: '请选择起止时间！' }]
-                            })(React.createElement(RangePicker, { showTime: { format: 'HH:mm', minuteStep: 30 },
-                                format: 'YYYY/MM/DD HH:mm',
-                                disabledDate: this.disabledDate,
-                                disabledTime: this.disabledTime }))
-                        ),
                         React.createElement(
                             FormItem,
                             { wrapperCol: { span: 12, offset: 6 } },
-                            React.createElement(
-                                Button,
-                                { type: 'primary', htmlType: 'submit' },
-                                '\u4FDD\u5B58'
-                            ),
+                            saveButton,
                             React.createElement(
                                 Button,
                                 { onClick: this.onClickCancel, style: { marginLeft: "10px" } },

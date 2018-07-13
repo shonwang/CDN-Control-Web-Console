@@ -17,6 +17,7 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
             Popover = Antd.Popover,
             Badge = Antd.Badge,
             Icon = Antd.Icon,
+            Spin = Antd.Spin,
             Tooltip = Antd.Tooltip;
 
         class PreHeatTable extends React.Component {
@@ -59,9 +60,17 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
             onGetPreHeatListSuccess() {
                 var data = [];
                 this.props.preHeatProps.collection.each((model) => {
-                    var obj = Object.assign({}, model.attributes);
+                    var obj = Object.assign({}, model.attributes),
+                        nodeName = [];
+                    _.each(obj.batchTimeBandwidth, (batch)=>{
+                        batch.id = batch.sortnum;
+                        batch.nodeNameArray = batch.nodes.split(";");
+                        nodeName = nodeName.concat(batch.nodeNameArray);
+                    })
+                    obj.nodeName = nodeName;
                     data.push(obj)
                 })
+                console.log(data)
                 this.setState({
                     data: data,
                     isFetching: false
@@ -97,6 +106,22 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                 onClickEditCallback&&onClickEditCallback(model)
             }
 
+            handleViewClick(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "I") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                var model = _.find(this.state.data, function(obj){
+                        return obj.id == id
+                    }.bind(this))
+                var onClickViewCallback = this.props.preHeatProps.onClickViewCallback;
+                onClickViewCallback&&onClickViewCallback(model)
+            }
+
             onGetError(error) {
                 var msgDes = "服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！"
                 if (error && error.message)
@@ -130,14 +155,23 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
 
                 const columns = [{
                     title: '名称',
-                    dataIndex: 'name',
-                    key: 'name',
+                    dataIndex: 'taskName',
+                    key: 'taskName',
                     fixed: 'left',
-                    width: 300
+                    width: 200,
+                    render: (text, record) => {
+                        return  (
+                                <Tooltip placement="bottom" title={"查看详情"}>
+                                    <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleViewClick(e)}>
+                                        {text}
+                                    </a>
+                                </Tooltip>
+                            )
+                    }
                 },{
                     title: '回源带宽',
-                    dataIndex: 'opType',
-                    key: 'opType',
+                    dataIndex: 'fileOffset',
+                    key: 'fileOffset',
                 },{
                     title: '预热节点',
                     dataIndex: 'nodeName',
@@ -145,18 +179,18 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                     render: (text, record) => {
                         const colors = ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple'];
                         let content, temp = [];
-                        let random;
-                        for(var i = 0; i < record.name.length; i++) {
+                        let random, nodeNameArray = record.nodeName;
+                        for(var i = 0; i < nodeNameArray.length; i++) {
                             random = Math.floor(Math.random() * colors.length)
-                            temp.push((<Tag color={colors[random]} key={i} style={{marginBottom: '5px'}}>{record.name[i]}</Tag>))
+                            temp.push((<Tag color={colors[random]} key={i} style={{marginBottom: '5px'}}>{nodeNameArray[i]}</Tag>))
                         }
                         content = <div>{temp}</div>
                         return (
                             <div>
-                                <span>{record.nodeName}...</span>
+                                <span>{nodeNameArray[0]}...</span>
                                 <span>
-                                    <Popover content={content} title="节点详情" trigger="click" placement="left" overlayStyle={{width: '300px'}}>
-                                        <Badge count={record.name.length} style={{ backgroundColor: '#52c41a' }}>
+                                    <Popover content={content} title="节点详情" trigger="click" placement="right" overlayStyle={{width: '300px'}}>
+                                        <Badge count={nodeNameArray.length} style={{ backgroundColor: '#52c41a' }}>
                                             <a href="javascript:void(0)" id={record.id}>more</a>
                                         </Badge>
                                     </Popover>
@@ -165,42 +199,47 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                     }
                 },{
                     title: '文件数',
-                    dataIndex: 'type',
-                    key: 'type',
+                    dataIndex: 'preloadUrlCount',
+                    key: 'preloadUrlCount',
                 },{
                     title: '当前预热批次',
-                    dataIndex: 'multiNode',
-                    key: 'multiNode',
+                    dataIndex: 'currentBatch',
+                    key: 'currentBatch',
+                    render: (text, record) => (text + "/" + record.batchTimeBandwidth.length)
                 },{
                     title: '进度',
-                    dataIndex: 'nodeId',
-                    key: 'nodeId',
+                    dataIndex: 'taskId',
+                    key: 'taskId',
                 },{
                     title: '状态',
                     dataIndex: 'status',
                     key: 'status',
                     render: (text, record) => {
-                        var tag;
-                        if (record.status == 2)
-                            tag = (<Tag color={"red"}>暂停</Tag>)
+                        var tag = null;
+                        if (record.status == 3)
+                            tag = (<Tag color={"red"}>已暂停</Tag>)
+                        else if (record.status == 2)
+                            tag = <Tag color={"green"}>已完成</Tag>
+                        else if (record.status == 0)
+                            tag = <Tag color={"blue"}>待预热</Tag>
                         else if (record.status == 1)
-                            tag = <Tag color={"green"}>运行中</Tag>
-                        else if (record.status == 8)
-                            tag = <Tag color={"blue"}>启动中</Tag>
+                            tag = <Tag color={"orange"}>预热中</Tag>
+                        else if (record.status == 4)
+                            tag = <Tag color={"purple"}>暂停中</Tag>
                         return tag
                     }
                 },{
                     title: '成功率',
-                    dataIndex: 'typeName',
-                    key: 'typeName',
+                    dataIndex: 'fileMd5',
+                    key: 'fileMd5',
                 },{
                     title: '创建人',
-                    dataIndex: 'operator',
-                    key: 'operator',
+                    dataIndex: 'committer',
+                    key: 'committer',
                 },{
                     title: '创建时间',
-                    dataIndex: 'createTimeFormated',
-                    key: 'createTimeFormated',
+                    dataIndex: 'commitTime',
+                    key: 'commitTime',
                 },{
                     title: '操作',
                     dataIndex: 'id',
@@ -223,23 +262,23 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                             </Tooltip>
                         );
                         var pauseButton = (
-                            <Tooltip placement="bottom" title={"终止"}>
+                            <Tooltip placement="bottom" title={"暂停"}>
                                 <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleEditClick(e)}>
                                     <Icon type="pause-circle-o" />
                                 </a>
                             </Tooltip>
                         )
                         var buttonGroup;
-                        if (record.status == 2) {
-                            buttonGroup = (<div>{playButton}</div>)
-                        } else if (record.status == 1) {
+                        if (record.status == 3) {
                             buttonGroup = (
                                 <div>
                                     {editButton}
                                     <span className="ant-divider" />
-                                    {pauseButton}
+                                    {playButton}
                                 </div>
                             )
+                        } else if (record.status == 1 || record.status == 0) {
+                            buttonGroup = (<div>{pauseButton}</div>)
                         }
                         return buttonGroup
                     },
@@ -282,7 +321,7 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                     nodeArray = _.filter(nodeList, function(el){
                         return el.name.indexOf(value) > -1 || el.chName.indexOf(value) > -1
                     }.bind(this)).map((el) => {
-                        return {text: el.chName, value: el.id}
+                        return <Option key={el.id}>{el.name}</Option>;
                     })
                 }
 
@@ -311,7 +350,9 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
             render: function(){
                 const { getFieldDecorator } = this.props.form;
                 const { dataSource } = this.state;
-
+                const preHeatProps = this.props.preHeatProps;
+                const nodeList = preHeatProps.nodeList;
+                //0:待预热 1:预热中 2:已完成 3:已暂停 4：暂停中
                 var HorizontalForm = (
                     <Form layout="inline" onSubmit={this.handleSubmit}>
                         <FormItem label={"名称"}>
@@ -321,10 +362,14 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                         </FormItem>
                         <FormItem label={"节点"}>
                             {getFieldDecorator('nodeNames')(
-                                <AutoComplete dataSource={dataSource} 
-                                              style={{ width: 200 }} 
-                                              onSearch={this.handleSearch} 
-                                              allowClear={true} />
+                                <Select mode="multiple" allowClear={true} 
+                                        style={{ width: 300 }} 
+                                        labelInValue
+                                        notFoundContent={nodeList.length == 0 ? <Spin size="small" /> : '请输入节点关键字'}
+                                        filterOption={false}
+                                        onSearch={$.proxy(this.handleSearch, this)} >
+                                    {dataSource}         
+                                </Select>
                             )}
                         </FormItem>
                         <FormItem label="状态">
@@ -333,10 +378,11 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                             })(
                                 <Select>
                                     <Option value="all">全部</Option>
-                                    <Option value="1">待预热</Option>
-                                    <Option value="2">预热中</Option>
-                                    <Option value="3">已终止</Option>
-                                    <Option value="4">已完成</Option>
+                                    <Option value="0">待预热</Option>
+                                    <Option value="1">预热中</Option>
+                                    <Option value="3">已暂停</Option>
+                                    <Option value="4">暂停中</Option>
+                                    <Option value="2">已完成</Option>
                                 </Select>)}
                         </FormItem>
                         <FormItem>
@@ -403,6 +449,16 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                 }.bind(this));
             },
 
+            onClickViewCallback: function(model){
+                require(['preheatManage.edit.view'],function(PreheatManageEditView){
+                    this.curView = (<PreheatManageEditView preHeatProps={this.preHeatProps} model={model} isEdit={true} isView={true} />);
+                    this.setState({
+                        curViewsMark: "view",
+                        breadcrumbTxt: ["预热管理", "查看"]
+                    })
+                }.bind(this));
+            },
+
             onClickCancelCallback: function(){
                 this.setState({
                     curViewsMark: "list",
@@ -429,6 +485,7 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                     onClickAddCallback: $.proxy(this.onClickAddCallback, this),
                     onClickEditCallback: $.proxy(this.onClickEditCallback, this),
                     onClickCancelCallback: $.proxy(this.onClickCancelCallback, this),
+                    onClickViewCallback: $.proxy(this.onClickViewCallback, this)
                 }
 
                 var curView = null;
@@ -437,11 +494,13 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                         <div>
                             <WrappedSearchForm preHeatProps={this.preHeatProps} />
                             <hr/>
+                            <Alert style={{ marginBottom: '20px' }} message="回源带宽、预热节点、进度展示当前执行批次信息，文件数、状态、成功率为当前任务整体信息" type="info" showIcon />
                             <PreHeatTable preHeatProps={this.preHeatProps} />
                         </div>
                     )
                 } else if (this.state.curViewsMark == "add" ||
-                           this.state.curViewsMark == "edit" ) {
+                           this.state.curViewsMark == "edit" ||
+                           this.state.curViewsMark == "view" ) {
                     curView = this.curView;
                 }
 

@@ -311,7 +311,8 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
 
         onGetAllReplaceNodes: function() {
            this.nameList = [];
-           var nameList = _.union(this.defaultParam.upperNodes, this.defaultParam.middleNodes);
+           //var nameList = _.union(this.defaultParam.upperNodes, this.defaultParam.middleNodes);
+           var nameList = this.defaultParam.allNodes;
             _.each(nameList, function(el, inx, list) {
                 this.nameList.push({
                     name: el.name,

@@ -505,22 +505,22 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                     }
                 }, {
                     title: '进度',
-                    dataIndex: 'opType',
-                    key: 'opType',
+                    dataIndex: 'progress ',
+                    key: 'progress ',
                     render: function render(text, record) {
                         return text || "-";
                     }
                 }, {
                     title: '状态',
-                    dataIndex: 'multiNode',
-                    key: 'multiNode',
+                    dataIndex: 'status',
+                    key: 'status',
                     render: function render(text, record) {
                         return text || "-";
                     }
                 }, {
                     title: '成功率',
-                    dataIndex: 'name',
-                    key: 'name',
+                    dataIndex: 'successRate',
+                    key: 'successRate',
                     render: function render(text, record) {
                         return text || "-";
                     }

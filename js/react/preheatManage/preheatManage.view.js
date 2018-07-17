@@ -196,8 +196,8 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                     }
                 }, {
                     title: '回源带宽',
-                    dataIndex: 'fileOffset',
-                    key: 'fileOffset'
+                    dataIndex: 'currentBandwidth',
+                    key: 'currentBandwidth'
                 }, {
                     title: '预热节点',
                     dataIndex: 'nodeName',
@@ -207,7 +207,7 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                         var content = void 0,
                             temp = [];
                         var random = void 0,
-                            nodeNameArray = record.nodeName;
+                            nodeNameArray = record.currentNodes.split(";");
                         for (var i = 0; i < nodeNameArray.length; i++) {
                             random = Math.floor(Math.random() * colors.length);
                             temp.push(React.createElement(
@@ -262,8 +262,8 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                     }
                 }, {
                     title: '进度',
-                    dataIndex: 'taskId',
-                    key: 'taskId'
+                    dataIndex: 'progress',
+                    key: 'progress'
                 }, {
                     title: '状态',
                     dataIndex: 'status',
@@ -295,8 +295,8 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                     }
                 }, {
                     title: '成功率',
-                    dataIndex: 'fileMd5',
-                    key: 'fileMd5'
+                    dataIndex: 'successRate',
+                    key: 'successRate'
                 }, {
                     title: '创建人',
                     dataIndex: 'committer',

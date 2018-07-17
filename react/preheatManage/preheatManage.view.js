@@ -170,8 +170,8 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                     }
                 },{
                     title: '回源带宽',
-                    dataIndex: 'fileOffset',
-                    key: 'fileOffset',
+                    dataIndex: 'currentBandwidth',
+                    key: 'currentBandwidth',
                 },{
                     title: '预热节点',
                     dataIndex: 'nodeName',
@@ -179,7 +179,7 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                     render: (text, record) => {
                         const colors = ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple'];
                         let content, temp = [];
-                        let random, nodeNameArray = record.nodeName;
+                        let random, nodeNameArray = record.currentNodes.split(";");
                         for(var i = 0; i < nodeNameArray.length; i++) {
                             random = Math.floor(Math.random() * colors.length)
                             temp.push((<Tag color={colors[random]} key={i} style={{marginBottom: '5px'}}>{nodeNameArray[i]}</Tag>))
@@ -208,8 +208,8 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                     render: (text, record) => (text + "/" + record.batchTimeBandwidth.length)
                 },{
                     title: '进度',
-                    dataIndex: 'taskId',
-                    key: 'taskId',
+                    dataIndex: 'progress',
+                    key: 'progress',
                 },{
                     title: '状态',
                     dataIndex: 'status',
@@ -230,8 +230,8 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                     }
                 },{
                     title: '成功率',
-                    dataIndex: 'fileMd5',
-                    key: 'fileMd5',
+                    dataIndex: 'successRate',
+                    key: 'successRate',
                 },{
                     title: '创建人',
                     dataIndex: 'committer',

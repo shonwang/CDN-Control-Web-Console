@@ -382,18 +382,18 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                     }
                 },{
                     title: '进度',
-                    dataIndex: 'opType',
-                    key: 'opType',
+                    dataIndex: 'progress ',
+                    key: 'progress ',
                     render: (text, record) => (text || "-")
                 },{
                     title: '状态',
-                    dataIndex: 'multiNode',
-                    key: 'multiNode',
+                    dataIndex: 'status',
+                    key: 'status',
                     render: (text, record) => (text || "-")
                 },{
                     title: '成功率',
-                    dataIndex: 'name',
-                    key: 'name',
+                    dataIndex: 'successRate',
+                    key: 'successRate',
                     render: (text, record) => (text || "-")
                 },{
                     title: '执行时间',

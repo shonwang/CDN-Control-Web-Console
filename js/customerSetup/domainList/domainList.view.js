@@ -201,6 +201,8 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                 if (whereAreYouFrom === 2) {
                     this.alertChangeType(model.get("id"));
                     return;
+                } else if (whereAreYouFrom === 3){
+                    alert("此为定制化配置，中控配置不准确，请联系运维！")
                 }
 
                 this.redirectToManage();

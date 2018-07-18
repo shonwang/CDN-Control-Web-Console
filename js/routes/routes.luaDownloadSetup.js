@@ -361,31 +361,6 @@ define("routes.luaDownloadSetup", ['require', 'exports'],
                 }.bind(this));
             },
 
-            luaXtcpSetup: function(query, query2) {
-                require(['luaXtcpSetup.view', 'luaXtcpSetup.model'], function(LuaXtcpSetupView, LuaXtcpSetupModel) {
-                    this.navbarView.select('customerSetup');
-                    this.curPage = 'customerSetup-domainList-luaXtcpSetup';
-                    this.setupLuaDomainManageNavbar(query, query2);
-                    var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
-
-                    if (!this.luaXtcpSetupModel)
-                        this.luaXtcpSetupModel = new LuaXtcpSetupModel();
-                    if (!this.luaXtcpSetupView) {
-                        var options = {
-                            collection: this.luaXtcpSetupModel,
-                            query: query,
-                            query2: query2
-                        };
-                        this.luaXtcpSetupView = new LuaXtcpSetupView(options);
-                        this.luaXtcpSetupView.render(renderTarget);
-                    } else {
-                        this.luaXtcpSetupView.update(query, query2, renderTarget);
-                    }
-                    this.domainManageNavbar.select(this.curPage);
-                    this.curView = this.luaXtcpSetupView;
-                }.bind(this));
-            },
-
             luaDomainSetup: function(query, query2) {
                 require(['domainSetup.view', 'domainSetup.model'], function(DomainSetupView, DomainSetupModel) {
                     this.navbarView.select('customerSetup');

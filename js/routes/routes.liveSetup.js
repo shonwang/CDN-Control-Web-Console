@@ -212,6 +212,31 @@ define("routes.liveSetup", ['require', 'exports'],
                 }.bind(this));
             },
 
+            liveXtcpSetup: function(query, query2) {
+                require(['liveXtcpSetup.view', 'liveXtcpSetup.model'], function(LiveXtcpSetupView, LiveXtcpSetupModel) {
+                    this.navbarView.select('customerSetup');
+                    this.curPage = 'customerSetup-domainList-liveXtcpSetup';
+                    this.setupLuaDomainManageNavbar(query, query2);
+                    var renderTarget = this.domainManageNavbar.$el.find('.sub-content')
+
+                    if (!this.liveXtcpSetupModel)
+                        this.liveXtcpSetupModel = new LiveXtcpSetupModel();
+                    if (!this.liveXtcpSetupView) {
+                        var options = {
+                            collection: this.liveXtcpSetupModel,
+                            query: query,
+                            query2: query2
+                        };
+                        this.liveXtcpSetupView = new LiveXtcpSetupView(options);
+                        this.liveXtcpSetupView.render(renderTarget);
+                    } else {
+                        this.liveXtcpSetupView.update(query, query2, renderTarget);
+                    }
+                    this.domainManageNavbar.select(this.curPage);
+                    this.curView = this.liveXtcpSetupView;
+                }.bind(this));
+            },
+
             liveBackOriginSetup: function(query, query2) {
                 require(['liveBackOriginSetup.view', 'liveBackOriginSetup.model'], function(LiveBackOriginSetupView, LiveHttpsSetupModel) {
                     this.navbarView.select('customerSetup');

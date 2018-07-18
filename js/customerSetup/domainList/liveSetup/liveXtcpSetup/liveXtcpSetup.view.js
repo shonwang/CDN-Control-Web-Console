@@ -1,6 +1,6 @@
-define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
-    var LuaXtcpSetupView = Backbone.View.extend({
+    var LiveXtcpSetupView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
@@ -28,12 +28,17 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.optHeader.appendTo(this.$el.find(".opt-ctn"));
             this.$el.find(".publish").hide();
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveButton, this));
-            this.collection.on("get.xtcp.success", $.proxy(this.initSetup, this));
+            this.$el.find(".main-ctn").html(_.template(template['tpl/loading.html'])({}));
+            this.collection.off("get.xtcp.success");
+            this.collection.off("get.xtcp.error");
+            this.collection.off("set.xtcp.success");
+            this.collection.off("set.xtcp.success");
+            this.collection.on("get.xtcp.success", $.proxy(this.onGetXtcpSuccess, this));
             this.collection.on("get.xtcp.error", $.proxy(this.onGetError, this));
             this.collection.on("set.xtcp.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.xtcp.error", $.proxy(this.onGetError, this));
             // this.colleciton.getXtcpSetupInfo({originId: this.domainInfo.id});
-           
+            
             this.defaultParam = {
                 userInfo:{
                     "originId": this.domainInfo.id,
@@ -50,19 +55,34 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     "effectRadioVip": 100   //高级配置生效比例
                 } 
             };
+           
 
+            //初始化配置是暂时的过渡，等后端接口开通应该省去初始化的配置    
             this.initSetup()
-            
-
             this.$el.find(".advanceSetup-toggle .togglebutton input").on("click", $.proxy(this.onClickIsAdvanceSetupBtn,this));
         },
 
-        initSetup:function(data){
+        onGetXtcpSuccess: function(data){
+            // 对传过来的数据做一些处理
             var _data = data;
-            // data返回的应该是json格式
+            if(_data){
+                this.isEdit === true
+            }
+            this.defaultParam = _data
+            this.liveXtcpTemp = $(_.template(template['tpl/customerSetup/domainList/xtcpSetup/xtcpSetup.html'])({
+                data:this.defaultParam
+                // data: this.defaultParam
+            }));
+            this.$el.find(".main-ctn").html(this.liveXtcpTemp.get(0))
+            this.$el.find("input[name=options-effectWeek]").on("click", $.proxy(this.onClickCheckedWeek, this));
+            this.initEffectTimeDropMenu();
+        },
+
+        initSetup:function(){
 
             if(true){
-                this.args = {
+                this.isEdit = true
+                this.defaultParam = {
                     userInfo:{
                         "originId": this.domainInfo.id,
                         "userId": this.clientInfo.uid
@@ -73,21 +93,22 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     },
                     vipSetup:{
                         "effectWeek": ["Sun","Mon","Wes","Fri","Sat"],
-                        "effectTime": [0,8],
+                        "effectTime": [8,18],
                         "workModeVip": 3,     //高级配置工作模式
                         "effectRadioVip": 90   //高级配置生效比例
                     } 
                 };    
             }else{
-                this.args = this.defaultParam
+                
             }
-            this.luaXtcpSetupEl = $(_.template(template['tpl/customerSetup/domainList/xtcpSetup/xtcpSetup.html'])({
-                data:this.args
+
+            this.liveXtcpTemp = $(_.template(template['tpl/customerSetup/domainList/xtcpSetup/xtcpSetup.html'])({
+                data:this.defaultParam
             }));
-            this.$el.find(".main-ctn").html(this.luaXtcpSetupEl.get(0))
+            
+            this.$el.find(".main-ctn").html(this.liveXtcpTemp.get(0))
             this.$el.find("input[name=options-effectWeek]").on("click", $.proxy(this.onClickCheckedWeek, this));
             this.initEffectTimeDropMenu();
-
         },
 
         onClickCheckedWeek:function(event){
@@ -117,7 +138,7 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 }
             }.bind(this))
             console.log(tempWeek)
-            this.args.vipSetup.effectWeek = tempWeek
+            this.defaultParam.vipSetup.effectWeek = tempWeek
             // 输出tempweek,将值传递给this.defaultParam.vipSetup.effectWeek
         },
 
@@ -130,7 +151,6 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find(".advanceSetup").hide();
             }
         },
-
 
         initEffectTimeDropMenu:function(){
             var timeBeginArray = [{
@@ -215,44 +235,68 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             });
             Utility.initDropMenu(this.$el.find(".dropdown-effecttime-begin"), timeBeginArray, function(value) {
                 this.effectTimeBegin = parseInt(value);
-                this.args.vipSetup.effectTime[0] = this.effectTimeBegin;
+                this.defaultParam.vipSetup.effectTime[0] = this.effectTimeBegin;
             }.bind(this));
             Utility.initDropMenu(this.$el.find(".dropdown-effecttime-end"), timeEndArray, function(value) {
                 this.effectTimeEnd = parseInt(value);
-                this.args.vipSetup.effectTime[1] = this.effectTimeEnd;
+                this.defaultParam.vipSetup.effectTime[1] = this.effectTimeEnd;
             }.bind(this));
+            if(this.isEdit){
+                console.log("此时处于编辑状态", this.defaultParam.vipSetup.effectTime[0], this.defaultParam.vipSetup.effectTime[1])
+                var defaultBeginValue = _.find(timeBeginArray, function(obj){
+                    return obj.value === this.defaultParam.vipSetup.effectTime[0]
+                }.bind(this))
+                var defaultEndValue = _.find(timeEndArray, function(obj){
+                    return obj.value === this.defaultParam.vipSetup.effectTime[1]
+                }.bind(this))
+                console.log(defaultBeginValue, defaultEndValue)
+                if(defaultBeginValue && defaultEndValue){
+                    this.$el.find(".dropdown-effecttime-begin .cur-value").html(defaultBeginValue.name);
+                    this.$el.find(".dropdown-effecttime-end .cur-value").html(defaultEndValue.name)
+                    this.effectTimeBegin = defaultBeginValue.value;
+                    this.effectTimeEnd = defaultEndValue.value;
+                }else{
+                    this.$el.find(".dropdown-effecttime-begin .cur-value").html(timeBeginArray[0].name);
+                    this.$el.find(".dropdown-effecttime-end .cur-value").html(timeEndArray[0].name);
+                    this.effectTimeBegin = timeBeginArray[0].value;
+                    this.effectTimeEnd = timeEndArray[0].value;
+                }
+            }else{
+                this.$el.find(".dropdown-effecttime-begin .cur-value").html(timeBeginArray[0].name);
+                this.$el.find(".dropdown-effecttime-end .cur-value").html(timeEndArray[0].name);
+                this.effectTimeBegin = timeBeginArray[0].value;
+                this.effectTimeEnd = timeEndArray[0].value;
+            }
             //将生效时间传递给this.defaultParam.vipSetup.effectTime
-
-            // if(this.isEdit){
-            //     var defaultValue = _.find(liveLevelArray, function(object) {
-            //         return object.value === this.model.attributes.liveLevel
-            //     }.bind(this));
-            //     if (defaultValue) {
-            //         this.$el.find(".dropdown-liveLevel .cur-value").html(defaultValue.name)
-            //         this.liveLevel = defaultValue.value;
-            //     } else {
-            //         this.$el.find(".dropdown-liveLevel .cur-value").html(liveLevelArray[0].name);
-            
-            //         this.liveLevel = liveLevelArray[0].value;
-            //     }
-            // }else{
-            //     this.$el.find(".dropdown-liveLevel .cur-value").html(liveLevelArray[0].name);
-            //     this.liveLevel = liveLevelArray[0].value;
-            // }
         },
 
         onClickSaveButton:function(){
-            var postParam;
-            if(postParam.vipSetup.effectTime[0] >= postParam.vipSetup.effectTime[1]){
-                console.log("请选择合理的生效时间")
+            // 数据前端校验环节
+            if(this.defaultParam.defSetup.effectRadioDef <= 0){
+                alert("请选择合理的生效比例");
+                return false;
             }
-            // this.collection.postXtcpSetupInfo(postParam);
-            Utility.onContentSave();
-            // this.initSetup();
+            if(this.defaultParam.vipSetup.effectWeek.length <= 0){
+                alert("请选择合理的生效周别");
+                return false;
+            }
+            if(this.defaultParam.vipSetup.effectTime[0] >= this.defaultParam.vipSetup.effectTime[1]){
+                alert("请选择合理的生效时间");
+                return false;
+            }
+            if(this.defaultParam.vipSetup.effectRadioVip <= 0){
+                alert("请选择合理的生效比例");
+                return false;
+            }
+            // 此处将数据整理成后端需要的形式
+            // this.collection.postXtcpSetupInfo(this.defaultParam);
+            console.log("待发送的参数", this.defaultParam)
+
+            
         },
 
         onSaveSuccess: function(){
-            Utility.warning("保存成功！")
+            alert("保存成功！")
         },
 
         onGetError: function(error){
@@ -266,21 +310,11 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.hide();
         },
 
-        update: function(query, query2, target){
-            this.options.query = query;
-            this.options.query2 = query2;
-            this.collection.off();
-            this.collection.reset();
-            this.$el.remove();
-            this.initialize(this.options);
-            this.render(target);
-        },
-
         render: function(target){
             this.target = target;
             this.$el.appendTo(target);
         }
     });
 
-    return LuaXtcpSetupView;
+    return LiveXtcpSetupView;
 });

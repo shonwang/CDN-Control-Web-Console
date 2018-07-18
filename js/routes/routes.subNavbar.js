@@ -83,12 +83,6 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                         hash: 'index.html#/domainList/' + query + '/luaCnameSetup/' + query2,
                         active: false,
                         children: []
-                    },{
-                        id: 'customerSetup-domainList-luaXtcpSetup',
-                        name: 'xtcp配置',
-                        hash: 'index.html#/domainList/' + query + '/luaXtcpSetup/' + query2,
-                        active: false,
-                        children: []
                     }]
                 }, {
                     id: '',
@@ -275,7 +269,13 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                             hash: 'index.html#/domainList/' + query + '/liveCnameSetup/' + query2,
                             active: false,
                             children: []
-                        },
+                        },{
+                            id: 'customerSetup-domainList-liveXtcpSetup',
+                            name: 'xtcp配置',
+                            hash: 'index.html#/domainList/' + query + '/liveXtcpSetup/' + query2,
+                            active: false,
+                            children: []
+                        }
                         // {
                         //     id: 'customerSetup-domainList-liveHttpsSetup',
                         //     name: 'https配置',

@@ -602,8 +602,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     tempLocal.push({
                         id: tempValueList,
                         name: tempNameList,
-                        operatorId:tempValueList,
-                        operatorName: tempNameList
                     })
                 }.bind(this))
                 this.rule.push({
@@ -628,10 +626,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                             provinceName: tempNameList[0],
                             id: tempValueList[1],
                             name: tempNameList[1],
-                            operatorId:tempValueList[1],
-                            operatorName: tempNameList[1]
                         })
                     }.bind(this))
+                    console.log("localType为3，添加规则子页面tempLocal", tempLocal)
                     this.rule.push({
                         "id": tempId,
                         "local": tempLocal, 
@@ -654,10 +651,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                         areaName: tempNameList[0],
                         id: tempValueList[1],
                         name: tempNameList[1],
-                        operatorId:tempValueList[1],
-                        operatorName: tempNameList[1]
                     })
                 }.bind(this))
+                console.log("localType为4，添加规则子页面tempLocal", tempLocal)
                 this.rule.push({
                     "id": tempId,
                     "local": tempLocal, 

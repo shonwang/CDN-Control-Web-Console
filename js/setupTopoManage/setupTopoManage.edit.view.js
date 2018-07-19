@@ -255,7 +255,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     return;
                 }
 
-                console.log("点击保存按钮时的拓扑", this.defaultParam)
+                console.log("点击保存按钮时的拓扑", this.defaultParam, this.defaultParam.rule)
 
                 var postRules = [],
                     postTopo = {};
@@ -266,12 +266,13 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         tempRule = {};
                     _.each(rule.local, function(node) {
                         if(rule.localType===3){
-                            localIdArray.push([node.provinceId, node.operatorId]);
+                            localIdArray.push([node.provinceId, node.id]);
                         }else if(rule.localType===4){
-                            localIdArray.push([node.areaId, node.operatorId]);
+                            localIdArray.push([node.areaId, node.id]);
                         }
                         localIdArray.push(node.id)
                     }.bind(this));
+                    console.log("点保存时的localIdArray", localIdArray)
                     _.each(rule.upper, function(node) {
                         upperObjArray.push({
                             nodeId: node.rsNodeMsgVo.id,
@@ -758,6 +759,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         this.$el.find(".add-topo").hide();
                         myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
                     }.bind(this))
+                console.log("退出添加规则子页面时的this.defaultParam.rule", this.defaultParam.rule)
             },
 
             onGetError: function(error) {

@@ -182,9 +182,9 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         console.log("为啥不走这里", rule.localType)
                         if(rule.localType == 3){
                             console.log("省份运营商：", node)
-                            localIdArray.push([node.provinceId, node.operatorId]);
+                            localIdArray.push([node.provinceId, node.id]);
                         }else if(rule.localType===4){
-                            localIdArray.push([node.areaId, node.operatorId]);
+                            localIdArray.push([node.areaId, node.id]);
                         }else if(rule.localType === 1 || rule.localType === 2){
                             localIdArray.push([node.id]);
                         }
@@ -212,7 +212,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     tempRule.local = localIdArray;
                     tempRule.upper = upperObjArray;
                     tempRule.upType = rule.upType;
-                     postRules.push(tempRule);
+                    postRules.push(tempRule);
                 }.bind(this))
 
                 postTopo.id = this.defaultParam.id;

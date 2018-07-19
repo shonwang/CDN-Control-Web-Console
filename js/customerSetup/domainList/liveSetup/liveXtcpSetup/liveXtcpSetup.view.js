@@ -54,8 +54,7 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
                     "workModeVip": 1,     //高级配置工作模式
                     "effectRadioVip": 100   //高级配置生效比例
                 } 
-            };
-           
+            }    
 
             //初始化配置是暂时的过渡，等后端接口开通应该省去初始化的配置    
             this.initSetup()
@@ -64,14 +63,13 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
 
         onGetXtcpSuccess: function(data){
             // 对传过来的数据做一些处理
-            var _data = data;
+            var _data = data
             if(_data){
                 this.isEdit === true
             }
             this.defaultParam = _data
             this.liveXtcpTemp = $(_.template(template['tpl/customerSetup/domainList/xtcpSetup/xtcpSetup.html'])({
                 data:this.defaultParam
-                // data: this.defaultParam
             }));
             this.$el.find(".main-ctn").html(this.liveXtcpTemp.get(0))
             this.$el.find("input[name=options-effectWeek]").on("click", $.proxy(this.onClickCheckedWeek, this));

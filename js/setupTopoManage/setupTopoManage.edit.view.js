@@ -266,11 +266,17 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         tempRule = {};
                     _.each(rule.local, function(node) {
                         if(rule.localType===3){
-                            localIdArray.push([node.provinceId, node.id]);
+                            var tempProvinceId = parseInt(node.provinceId);
+                            var tempId = parseInt(node.id)
+                            localIdArray.push([tempProvinceId, tempId]);
                         }else if(rule.localType===4){
-                            localIdArray.push([node.areaId, node.id]);
+                            var tempAreaId = parseInt(node.areaId);
+                            var tempId = parseInt(node.id)
+                            localIdArray.push([tempAreaId, tempId]);
+                        }else if(rule.localType===1 || rule.localType===2){
+                            var tempId = parseInt(node.id)
+                            localIdArray.push(tempId)
                         }
-                        localIdArray.push(node.id)
                     }.bind(this));
                     console.log("点保存时的localIdArray", localIdArray)
                     _.each(rule.upper, function(node) {
@@ -304,7 +310,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 }.bind(this));
                 postTopo.rule = postRules
                 postTopo.mark = this.$el.find("#comment").val();
-                // console.log(postTopo)
+                console.log("finally", postTopo)
                 if (this.isEdit)
                 // Ajax拓扑关系编辑
                     this.collection.topoModify(postTopo);

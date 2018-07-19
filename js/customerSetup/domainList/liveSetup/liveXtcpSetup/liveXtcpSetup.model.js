@@ -10,7 +10,7 @@ define("liveXtcpSetup.model", ['require','exports', 'utility'], function(require
         initialize: function(){},
 
         getXtcpSetupInfo: function(args){
-            var url = BASE_URL + "/channelManager/domain/getXTCP?originId=20329"
+            var url = BASE_URL + "/channelManager/domain/getXTCP?originId=" + args.originId
             successCallback = function(res){
                 this.trigger("get.xtcp.success", res)
             }.bind(this),

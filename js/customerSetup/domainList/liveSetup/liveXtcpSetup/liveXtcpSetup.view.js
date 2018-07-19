@@ -37,8 +37,9 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
             this.collection.on("get.xtcp.error", $.proxy(this.onGetError, this));
             this.collection.on("set.xtcp.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.xtcp.error", $.proxy(this.onGetError, this));
-            console.log(this.collection)
-            this.collection.getXtcpSetupInfo();
+            this.collection.getXtcpSetupInfo({
+                originId: this.domainInfo.id
+            });
             
             this.defaultParam = {
                 userInfo:{
@@ -50,7 +51,7 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
                     "effectRadioDef": 100,  //默认配置生效比例
                 },
                 vipSetup:{
-                    "effectWeek": ["Sun","Mon","Tue","Wes","Thu","Fri","Sat"],
+                    "effectWeek": [0,1,2,3,4,5,6],
                     "effectTime": [0,24],
                     "workModeVip": 1,     //高级配置工作模式
                     "effectRadioVip": 100   //高级配置生效比例
@@ -58,54 +59,31 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
             }    
 
             //初始化配置是暂时的过渡，等后端接口开通应该省去初始化的配置    
-            this.initSetup()
             this.$el.find(".advanceSetup-toggle .togglebutton input").on("click", $.proxy(this.onClickIsAdvanceSetupBtn,this));
         },
 
         onGetXtcpSuccess: function(data){
             // 对传过来的数据做一些处理
-            console.log("cccccc", data)
-            var _data = data
-            // if(_data){
-            //     this.isEdit === true
-            // }
-            // this.defaultParam = _data
-            // this.liveXtcpTemp = $(_.template(template['tpl/customerSetup/domainList/xtcpSetup/xtcpSetup.html'])({
-            //     data:this.defaultParam
-            // }));
-            // this.$el.find(".main-ctn").html(this.liveXtcpTemp.get(0))
-            // this.$el.find("input[name=options-effectWeek]").on("click", $.proxy(this.onClickCheckedWeek, this));
-            // this.initEffectTimeDropMenu();
-        },
-
-        initSetup:function(){
-
-            if(true){
+            console.log("cccccc", data);
+            var def = data.defConf;
+            var adv = data.advConfList;
+            if(def && adv){
                 this.isEdit = true
-                this.defaultParam = {
-                    userInfo:{
-                        "originId": this.domainInfo.id,
-                        "userId": this.clientInfo.uid
-                    },
-                    defSetup:{
-                        "workModeDef": 2,      //默认配置工作模式
-                        "effectRadioDef": 50,  //默认配置生效比例
-                    },
-                    vipSetup:{
-                        "effectWeek": ["Sun","Mon","Wes","Fri","Sat"],
-                        "effectTime": [8,18],
-                        "workModeVip": 3,     //高级配置工作模式
-                        "effectRadioVip": 90   //高级配置生效比例
-                    } 
-                };    
-            }else{
-                
+                this.defaultParam.defSetup = {
+                    "workModeDef": def.model,      //默认配置工作模式
+                    "effectRadioDef": def.ratio,
+                };
+                this.defaultParam.vipSetup = {
+                    "effectWeek": adv[0].workDay.split(""),
+                    "effectTime": [0,24],
+                    "workModeVip": adv[0].model,     //高级配置工作模式
+                    "effectRadioVip": adv[0].ratio   //高级配置生效比例
+                }
             }
 
             this.liveXtcpTemp = $(_.template(template['tpl/customerSetup/domainList/xtcpSetup/xtcpSetup.html'])({
                 data:this.defaultParam
             }));
-            
             this.$el.find(".main-ctn").html(this.liveXtcpTemp.get(0))
             this.$el.find("input[name=options-effectWeek]").on("click", $.proxy(this.onClickCheckedWeek, this));
             this.initEffectTimeDropMenu();
@@ -147,8 +125,10 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){
                 this.$el.find(".advanceSetup").show();
+                this.advFlag = 1
             } else {
                 this.$el.find(".advanceSetup").hide();
+                this.advFlag = 0
             }
         },
 
@@ -289,9 +269,33 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
                 return false;
             }
             // 此处将数据整理成后端需要的形式
-            // this.collection.postXtcpSetupInfo(this.defaultParam);
-            console.log("待发送的参数", this.defaultParam)
-
+            var postParam = {
+                "originId": this.domainInfo.id,
+                "originXtcpDto": {
+                    "defConf": {
+                        "id": null,
+                        "originId": null,
+                        "model": this.defaultParam.defSetup.workModeDef,
+                        "ratio": this.defaultParam.defSetup.effectRadioDef,
+                        "advFlag": this.advFlag,
+                        // "workDay": this.defaultParam.vipSetup.effectWeek.join(""),
+                        "startTime": 1531983952133,
+                        "endTime": 1531983952133
+                    },
+                    "advConfList": [{
+                        "id": null,
+                        "originId": null,
+                        "model": this.defaultParam.vipSetup.workModeVip,
+                        "ratio": this.defaultParam.vipSetup.effectRadioVip,
+                        "advFlag": null,
+                        "workDay": this.defaultParam.vipSetup.effectWeek.join(""),
+                        "startTime": 1531983952133,
+                        "endTime": 1531983952133
+                    }]
+                }
+            }
+            console.log("待发送的参数", postParam)
+            // this.collection.postXtcpSetupInfo();
             
         },
 

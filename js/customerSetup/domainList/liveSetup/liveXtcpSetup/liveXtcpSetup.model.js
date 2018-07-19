@@ -10,7 +10,7 @@ define("liveXtcpSetup.model", ['require','exports', 'utility'], function(require
         initialize: function(){},
 
         getXtcpSetupInfo: function(args){
-            var url = BASE_URL + "/channelManager/cache/setCachePolicyBatch",
+            var url = BASE_URL + "/channelManager/domain/getXTCP?originId=20329"
             successCallback = function(res){
                 this.trigger("get.xtcp.success", res)
             }.bind(this),
@@ -21,7 +21,7 @@ define("liveXtcpSetup.model", ['require','exports', 'utility'], function(require
         },
 
         postXtcpSetupInfo: function(args){
-            var url = BASE_URL + "/channelManager/cache/setCachePolicyBatch",
+            var url = BASE_URL + "/channelManager/domain/setXTCP",
             successCallback = function(res){
                 this.trigger("set.xtcp.success", res)
             }.bind(this),

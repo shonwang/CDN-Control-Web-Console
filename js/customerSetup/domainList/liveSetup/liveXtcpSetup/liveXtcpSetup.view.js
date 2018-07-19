@@ -37,7 +37,7 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
             this.collection.on("get.xtcp.error", $.proxy(this.onGetError, this));
             this.collection.on("set.xtcp.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.xtcp.error", $.proxy(this.onGetError, this));
-            // this.colleciton.getXtcpSetupInfo({originId: this.domainInfo.id});
+            this.colleciton.getXtcpSetupInfo();
             
             this.defaultParam = {
                 userInfo:{
@@ -63,17 +63,18 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
 
         onGetXtcpSuccess: function(data){
             // 对传过来的数据做一些处理
+            console.log("cccccc", data)
             var _data = data
-            if(_data){
-                this.isEdit === true
-            }
-            this.defaultParam = _data
-            this.liveXtcpTemp = $(_.template(template['tpl/customerSetup/domainList/xtcpSetup/xtcpSetup.html'])({
-                data:this.defaultParam
-            }));
-            this.$el.find(".main-ctn").html(this.liveXtcpTemp.get(0))
-            this.$el.find("input[name=options-effectWeek]").on("click", $.proxy(this.onClickCheckedWeek, this));
-            this.initEffectTimeDropMenu();
+            // if(_data){
+            //     this.isEdit === true
+            // }
+            // this.defaultParam = _data
+            // this.liveXtcpTemp = $(_.template(template['tpl/customerSetup/domainList/xtcpSetup/xtcpSetup.html'])({
+            //     data:this.defaultParam
+            // }));
+            // this.$el.find(".main-ctn").html(this.liveXtcpTemp.get(0))
+            // this.$el.find("input[name=options-effectWeek]").on("click", $.proxy(this.onClickCheckedWeek, this));
+            // this.initEffectTimeDropMenu();
         },
 
         initSetup:function(){

@@ -37,7 +37,8 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
             this.collection.on("get.xtcp.error", $.proxy(this.onGetError, this));
             this.collection.on("set.xtcp.success", $.proxy(this.onSaveSuccess, this));
             this.collection.on("set.xtcp.error", $.proxy(this.onGetError, this));
-            this.colleciton.getXtcpSetupInfo();
+            console.log(this.collection)
+            this.collection.getXtcpSetupInfo();
             
             this.defaultParam = {
                 userInfo:{
@@ -307,6 +308,16 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
 
         hide: function(){
             this.$el.hide();
+        },
+
+        update: function(query, query2, target){
+            this.options.query = query;
+            this.options.query2 = query2;
+            this.collection.off();
+            this.collection.reset();
+            this.$el.remove();
+            this.initialize(this.options);
+            this.render(target);
         },
 
         render: function(target){

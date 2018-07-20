@@ -672,27 +672,26 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     this.tempRule = this.rule
                     this.rule = []
                 }
+                var tempId = parseInt(Math.random()*999999999);
+                var tempLocal = []
                 _.each(this.defaultParam.local, function(el){
                     var tempNameList = el.chName || el.name;
                     var tempValueList = el.id
-                    var obj = {
-                        "id": parseInt(Math.random()*999999999),
-                        "local": [], 
-                        "localType":1,
-                        "localTypeId": 1,
-                        "upper": this.defaultParam.upper,
-                        "upType":this.defaultParam.upType      
-                    }
-                    obj.local.push({
+                    tempLocal.push({
                         id: tempValueList,
                         name: tempNameList,
                     })
-                    this.rule.push(obj)
                 }.bind(this))
-                console.log("ppppp", this.defaultParam.local)
-                console.log("子页面保存时的this.rule", this.rule)
-
+                this.rule.push({
+                    "id": tempId,
+                    "local": tempLocal, 
+                    "localType": this.defaultParam.localType,
+                    "upper": this.defaultParam.upper,
+                    "upType":this.defaultParam.upType 
+                })
             }
+            console.log("ppppp", this.defaultParam.local)
+            console.log("子页面保存时的this.rule", this.rule)
             if(!this.isEdit) this.rule = this.rule.concat(this.tempRule)   
             console.log("当前保存的规则：this.rule: ", this.rule);      
             this.options.onSaveCallback && this.options.onSaveCallback();

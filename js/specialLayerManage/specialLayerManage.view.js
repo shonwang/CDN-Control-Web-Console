@@ -182,16 +182,11 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         console.log("为啥不走这里", rule.localType)
                         if(rule.localType == 3){
                             console.log("省份运营商：", node)
-                            var tempProvinceId = parseInt(node.provinceId);
-                            var tempId = parseInt(node.id)
-                            localIdArray.push([tempProvinceId, tempId]);
+                            localIdArray.push([node.provinceId, node.id]);
                         }else if(rule.localType===4){
-                            var tempAreaId = parseInt(node.areaId);
-                            var tempId = parseInt(node.id)
-                            localIdArray.push([tempAreaId, tempId]);
+                            localIdArray.push([node.areaId, node.id]);
                         }else if(rule.localType === 1 || rule.localType === 2){
-                            var tempId = parseInt(node.id)
-                            localIdArray.push(tempId)
+                            localIdArray.push([node.id])
                         }
                     }.bind(this))
                     _.each(rule.upper, function(node) {

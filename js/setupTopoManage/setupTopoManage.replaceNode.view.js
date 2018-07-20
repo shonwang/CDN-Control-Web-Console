@@ -6,6 +6,7 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
         events: {},
 
         initialize: function(options) {
+            console.log("nnnnnnnnnnnnnn")
             this.options = options;
             this.collection = options.collection;
             this.model = options.model;

@@ -266,16 +266,11 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         tempRule = {};
                     _.each(rule.local, function(node) {
                         if(rule.localType===3){
-                            var tempProvinceId = parseInt(node.provinceId);
-                            var tempId = parseInt(node.id)
-                            localIdArray.push([tempProvinceId, tempId]);
+                            localIdArray.push([node.provinceId, node.id]);
                         }else if(rule.localType===4){
-                            var tempAreaId = parseInt(node.areaId);
-                            var tempId = parseInt(node.id)
-                            localIdArray.push([tempAreaId, tempId]);
+                            localIdArray.push([node.areaId, node.id]);
                         }else if(rule.localType===1 || rule.localType===2){
-                            var tempId = parseInt(node.id)
-                            localIdArray.push(tempId)
+                            localIdArray.push([node.id])
                         }
                     }.bind(this));
                     console.log("点保存时的localIdArray", localIdArray)

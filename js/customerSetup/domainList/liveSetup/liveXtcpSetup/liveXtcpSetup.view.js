@@ -59,7 +59,8 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
             }    
 
             //初始化配置是暂时的过渡，等后端接口开通应该省去初始化的配置    
-            this.$el.find(".advanceSetup-toggle .togglebutton input").on("click", $.proxy(this.onClickIsAdvanceSetupBtn,this));
+            console.log(this.$el.find(".advanceSetup-toggle .togglebutton input"))
+            
         },
 
         onGetXtcpSuccess: function(data){
@@ -80,11 +81,13 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
                     "effectRadioVip": adv[0].ratio   //高级配置生效比例
                 }
             }
+            console.log(this.defaultParam)
 
             this.liveXtcpTemp = $(_.template(template['tpl/customerSetup/domainList/xtcpSetup/xtcpSetup.html'])({
                 data:this.defaultParam
             }));
             this.$el.find(".main-ctn").html(this.liveXtcpTemp.get(0))
+            this.$el.find(".advanceSetup-toggle .togglebutton input").on("click", $.proxy(this.onClickIsAdvanceSetupBtn,this));
             this.$el.find("input[name=options-effectWeek]").on("click", $.proxy(this.onClickCheckedWeek, this));
             this.initEffectTimeDropMenu();
         },
@@ -124,6 +127,7 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             if (eventTarget.checked){
+                console.log("bbbbbbb")
                 this.$el.find(".advanceSetup").show();
                 this.advFlag = 1
             } else {
@@ -133,82 +137,52 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         initEffectTimeDropMenu:function(){
-            var timeBeginArray = [{
-                    name:"00:00",
-                    value:0
-                },{
-                    name:"01:00",
-                    value:1
-                },{
-                    name:"02:00",
-                    value:2
-                },{
-                    name:"03:00",
-                    value:3
-                },{
-                    name:"04:00",
-                    value:4
-                },{
-                    name:"05:00",
-                    value:5
-                },{
-                    name:"06:00",
-                    value:6
-                },{
-                    name:"07:00",
-                    value:7
-                },{
-                    name:"08:00",
-                    value:8
-                },{
-                    name:"09:00",
-                    value:9
-                },{
-                    name:"10:00",
-                    value:10
-                },{
-                    name:"11:00",
-                    value:11
-                },{
-                    name:"12:00",
-                    value:12
-                },{
-                    name:"13:00",
-                    value:13
-                },{
-                    name:"14:00",
-                    value:14
-                },{
-                    name:"15:00",
-                    value:15
-                },{
-                    name:"16:00",
-                    value:16
-                },{
-                    name:"17:00",
-                    value:17
-                },{
-                    name:"18:00",
-                    value:18
-                },{
-                    name:"19:00",
-                    value:19
-                },{
-                    name:"20:00",
-                    value:20
-                },{
-                    name:"21:00",
-                    value:21
-                },{
-                    name:"22:00",
-                    value:22
-                },{
-                    name:"23:00",
-                    value:23
-                },{
-                    name:"23:59",
-                    value:24
-                }];
+            console.log("生效时间编辑状态")
+            var time = '2018/10/17 ';
+            var timeBeginArray = []
+            for(var i = 0; i < 24; i++){
+                if(i < 10){
+                    var tempTime1 = "0" + i + ":00"
+                    var tempValue1 = new Date(time + tempTime1).valueOf();
+                    var tempTime2 = "0" + i + ":30"
+                    var tempValue2 = new Date(time + tempTime2).valueOf();
+                    timeBeginArray.push({
+                        name: tempTime1,
+                        value: tempValue1
+                    },{
+                        name: tempTime2,
+                        value: tempValue2
+                    })
+                }else if(i >= 10 && i < 23){
+                    var tempTime1 = i + ":00"
+                    var tempValue1 = new Date(time + tempTime1).valueOf();
+                    var tempTime2 = i + ":30"
+                    var tempValue2 = new Date(time + tempTime2).valueOf();
+                    timeBeginArray.push({
+                        name: tempTime1,
+                        value: tempValue1
+                    },{
+                        name: tempTime2,
+                        value: tempValue2
+                    })
+                }else if(i === 23){
+                    var tempTime1 = i + ":59"
+                    var tempValue1 = new Date(time + tempTime1).valueOf();
+                    var tempTime2 = i + ":30"
+                    var tempValue2 = new Date(time + tempTime2).valueOf();
+                    timeBeginArray.push({
+                        name: "23:00",
+                        value: new Date(time + "23:00").valueOf()
+                    },{
+                        name: tempTime2,
+                        value: tempValue2
+                    },{
+                        name: tempTime1,
+                        value: tempValue1
+                    })
+                }
+            }
+            console.log(timeBeginArray)
             var timeEndArray = [];
             _.each(timeBeginArray, function(item){
                 timeEndArray.push(_.clone(item))
@@ -289,8 +263,8 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
                         "ratio": this.defaultParam.vipSetup.effectRadioVip,
                         "advFlag": null,
                         "workDay": this.defaultParam.vipSetup.effectWeek.join(""),
-                        "startTime": 1531983952133,
-                        "endTime": 1531983952133
+                        "startTime": this.defaultParam.vipSetup.effectTime[0],
+                        "endTime": this.defaultParam.vipSetup.effectTime[1]
                     }]
                 }
             }

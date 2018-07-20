@@ -52,7 +52,7 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
                 },
                 vipSetup:{
                     "effectWeek": [0,1,2,3,4,5,6],
-                    "effectTime": [0,24],
+                    "effectTime": [1539705600000,1539705600000],
                     "workModeVip": 1,     //高级配置工作模式
                     "effectRadioVip": 100   //高级配置生效比例
                 } 
@@ -68,18 +68,24 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
             console.log("cccccc", data);
             var def = data.defConf;
             var adv = data.advConfList;
-            if(def && adv){
+            if(def){
                 this.isEdit = true
+                this.defId = def.id || null;
+                this.vipId = adv[0].id || null;
+                console.log(this.vipId)
+                this.advFlag = def.advFlag || 0;
                 this.defaultParam.defSetup = {
                     "workModeDef": def.model,      //默认配置工作模式
                     "effectRadioDef": def.ratio,
                 };
-                this.defaultParam.vipSetup = {
-                    "effectWeek": adv[0].workDay.split(""),
-                    "effectTime": [0,24],
-                    "workModeVip": adv[0].model,     //高级配置工作模式
-                    "effectRadioVip": adv[0].ratio   //高级配置生效比例
-                }
+                if(this.advFlag === 1){
+                    this.defaultParam.vipSetup = {
+                        "effectWeek": adv[0].workDay.split(""),
+                        "effectTime": [adv[0].startTime, adv[0].endTime],
+                        "workModeVip": adv[0].model,     //高级配置工作模式
+                        "effectRadioVip": adv[0].ratio   //高级配置生效比例
+                    }
+                }     
             }
             console.log(this.defaultParam)
 
@@ -87,6 +93,16 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
                 data:this.defaultParam
             }));
             this.$el.find(".main-ctn").html(this.liveXtcpTemp.get(0))
+            if(this.advFlag === 1){
+                this.$el.find(".togglebutton input").attr("checked", true);
+                this.$el.find(".advanceSetup").show();
+            }
+            if(this.defaultParam.vipSetup.effectWeek.length === 7){
+                console.log(this.defaultParam.vipSetup.effectWeek)
+                this.$el.find("input#effectweek-all").prop("checked", true);
+            }else{
+                this.$el.find("input#effectweek-all").prop("checked", false);
+            }
             this.$el.find(".advanceSetup-toggle .togglebutton input").on("click", $.proxy(this.onClickIsAdvanceSetupBtn,this));
             this.$el.find("input[name=options-effectWeek]").on("click", $.proxy(this.onClickCheckedWeek, this));
             this.initEffectTimeDropMenu();
@@ -138,7 +154,7 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
 
         initEffectTimeDropMenu:function(){
             console.log("生效时间编辑状态")
-            var time = '2018/10/17 ';
+            var time = '2018/07/20 ';
             var timeBeginArray = []
             for(var i = 0; i < 24; i++){
                 if(i < 10){
@@ -226,6 +242,10 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
 
         onClickSaveButton:function(){
             // 数据前端校验环节
+            this.defaultParam.defSetup.workModeDef = this.$el.find("input[name='options-workmode']:checked").val();
+            this.defaultParam.defSetup.effectRadioDef = this.$el.find("#effect-ratio").val();
+            this.defaultParam.vipSetup.workModeVip = this.$el.find("input[name='options-workmode-vip']:checked").val()
+            this.defaultParam.vipSetup.effectRadioVip = this.$el.find("#effect-ratio-vip").val();
             if(this.defaultParam.defSetup.effectRadioDef <= 0){
                 alert("请选择合理的生效比例");
                 return false;
@@ -234,42 +254,48 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
                 alert("请选择合理的生效周别");
                 return false;
             }
-            if(this.defaultParam.vipSetup.effectTime[0] >= this.defaultParam.vipSetup.effectTime[1]){
-                alert("请选择合理的生效时间");
-                return false;
-            }
-            if(this.defaultParam.vipSetup.effectRadioVip <= 0){
-                alert("请选择合理的生效比例");
-                return false;
-            }
-            // 此处将数据整理成后端需要的形式
+            console.log(this.vipId)
             var postParam = {
                 "originId": this.domainInfo.id,
                 "originXtcpDto": {
                     "defConf": {
-                        "id": null,
+                        "id": this.defId,
                         "originId": null,
                         "model": this.defaultParam.defSetup.workModeDef,
                         "ratio": this.defaultParam.defSetup.effectRadioDef,
-                        "advFlag": this.advFlag,
-                        // "workDay": this.defaultParam.vipSetup.effectWeek.join(""),
-                        "startTime": 1531983952133,
-                        "endTime": 1531983952133
+                        "advFlag": 0,
                     },
                     "advConfList": [{
-                        "id": null,
-                        "originId": null,
-                        "model": this.defaultParam.vipSetup.workModeVip,
-                        "ratio": this.defaultParam.vipSetup.effectRadioVip,
-                        "advFlag": null,
-                        "workDay": this.defaultParam.vipSetup.effectWeek.join(""),
-                        "startTime": this.defaultParam.vipSetup.effectTime[0],
-                        "endTime": this.defaultParam.vipSetup.effectTime[1]
+                        "id": this.vipId
                     }]
                 }
+            };
+
+            if(this.advFlag){
+                if(this.defaultParam.vipSetup.effectTime[0] >= this.defaultParam.vipSetup.effectTime[1]){
+                    alert("请选择合理的生效时间");
+                    return false;
+                }
+                if(this.defaultParam.vipSetup.effectRadioVip <= 0){
+                    alert("请选择合理的生效比例");
+                    return false;
+                }
+                postParam.originXtcpDto.defConf.advFlag = this.advFlag;
+                postParam.originXtcpDto.advConfList = [{
+                    "id": this.vipId,
+                    "originId": null,
+                    "model": this.defaultParam.vipSetup.workModeVip,
+                    "ratio": this.defaultParam.vipSetup.effectRadioVip,
+                    "advFlag": null,
+                    "workDay": this.defaultParam.vipSetup.effectWeek.join(""),
+                    "startTime": this.defaultParam.vipSetup.effectTime[0],
+                    "endTime": this.defaultParam.vipSetup.effectTime[1]
+                }]
             }
+            console.log("dddddd", this.defaultParam)
+            // 此处将数据整理成后端需要的形式
             console.log("待发送的参数", postParam)
-            // this.collection.postXtcpSetupInfo();
+            this.collection.postXtcpSetupInfo(postParam);
             
         },
 
@@ -279,9 +305,9 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
 
         onGetError: function(error){
             if (error&&error.message)
-                Utility.warning(error.message)
+                alert(error.message)
             else
-                Utility.warning("网络阻塞，请刷新重试！")
+                alert("网络阻塞，请刷新重试！")
         },
 
         hide: function(){

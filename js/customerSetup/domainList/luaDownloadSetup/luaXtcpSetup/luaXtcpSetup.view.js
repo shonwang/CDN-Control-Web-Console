@@ -26,8 +26,8 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 notShowBtn: true
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"));
-            this.$el.find(".publish").hide();
             this.$el.find(".save").on("click", $.proxy(this.onClickSaveButton, this));
+            this.$el.find(".publish").on("click", $.proxy(this.launchSendPopup, this));
             this.$el.find(".main-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.collection.off("get.xtcp.success");
             this.collection.off("get.xtcp.error");
@@ -68,23 +68,21 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             console.log("cccccc", data);
             var def = data.defConf;
             var adv = data.advConfList;
-            this.defId = def.id || null;
+            this.defId = def.id;
+            this.advFlag = def.advFlag;
             if(adv != null){
                 this.isEdit = true 
                 this.vipId = adv[0].id || null;
-                console.log(this.vipId)
-                this.advFlag = def.advFlag || 0;
+                console.log(this.vipId)   
                 this.defaultParam.defSetup = {
                     "workModeDef": def.model,      //默认配置工作模式
                     "effectRadioDef": def.ratio,
                 };
-                if(this.advFlag === 1){
-                    this.defaultParam.vipSetup = {
-                        "effectWeek": adv[0].workDay.split(""),
-                        "effectTime": [adv[0].startTime, adv[0].endTime],
-                        "workModeVip": adv[0].model,     //高级配置工作模式
-                        "effectRadioVip": adv[0].ratio   //高级配置生效比例
-                    }
+                this.defaultParam.vipSetup = {
+                    "effectWeek": adv[0].workDay.split(""),
+                    "effectTime": [adv[0].startTime, adv[0].endTime],
+                    "workModeVip": adv[0].model,     //高级配置工作模式
+                    "effectRadioVip": adv[0].ratio   //高级配置生效比例
                 }     
             }
             console.log(this.defaultParam)
@@ -92,6 +90,8 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.luaXtcpTemp = $(_.template(template['tpl/customerSetup/domainList/xtcpSetup/xtcpSetup.html'])({
                 data:this.defaultParam
             }));
+
+            console.log(this.advFlag)
             this.$el.find(".main-ctn").html(this.luaXtcpTemp.get(0))
             if(this.advFlag === 1){
                 this.$el.find(".togglebutton input").attr("checked", true);
@@ -204,12 +204,10 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 timeEndArray.push(_.clone(item))
             });
             Utility.initDropMenu(this.$el.find(".dropdown-effecttime-begin"), timeBeginArray, function(value) {
-                this.effectTimeBegin = parseInt(value);
-                this.defaultParam.vipSetup.effectTime[0] = this.effectTimeBegin;
+                this.effectTimeBegin = parseInt(value);    
             }.bind(this));
             Utility.initDropMenu(this.$el.find(".dropdown-effecttime-end"), timeEndArray, function(value) {
-                this.effectTimeEnd = parseInt(value);
-                this.defaultParam.vipSetup.effectTime[1] = this.effectTimeEnd;
+                this.effectTimeEnd = parseInt(value);   
             }.bind(this));
             if(this.isEdit){
                 console.log("此时处于编辑状态", this.defaultParam.vipSetup.effectTime[0], this.defaultParam.vipSetup.effectTime[1])
@@ -236,8 +234,36 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find(".dropdown-effecttime-end .cur-value").html(timeEndArray[0].name);
                 this.effectTimeBegin = timeBeginArray[0].value;
                 this.effectTimeEnd = timeEndArray[0].value;
+                console.log("ttttt", this.effectTimeBegin)
             }
-            //将生效时间传递给this.defaultParam.vipSetup.effectTime
+                
+        },
+
+        launchSendPopup: function(){
+            require(["saveThenSend.view", "saveThenSend.model"], function(SaveThenSendView, SaveThenSendModel){
+                var mySaveThenSendView = new SaveThenSendView({
+                    collection: new SaveThenSendModel(),
+                    domainInfo: this.domainInfo,
+                    onSendSuccess: function() {
+                        this.sendPopup.$el.modal("hide");
+                        window.location.hash = '#/domainList/' + this.options.query;
+                    }.bind(this)
+                });
+                var options = {
+                    title: "发布",
+                    body : mySaveThenSendView,
+                    backdrop : 'static',
+                    type     : 2,
+                    width: 1000,
+                    onOKCallback:  function(){
+                        mySaveThenSendView.sendConfig();
+                    }.bind(this),
+                    onHiddenCallback: function(){
+                        if (this.sendPopup) $("#" + this.sendPopup.modalId).remove();
+                    }.bind(this)
+                }
+                this.sendPopup = new Modal(options);
+            }.bind(this))
         },
 
         onClickSaveButton:function(){
@@ -246,12 +272,8 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.defaultParam.defSetup.effectRadioDef = this.$el.find("#effect-ratio").val();
             this.defaultParam.vipSetup.workModeVip = this.$el.find("input[name='options-workmode-vip']:checked").val()
             this.defaultParam.vipSetup.effectRadioVip = this.$el.find("#effect-ratio-vip").val();
-            if(this.defaultParam.defSetup.effectRadioDef <= 0){
+            if(this.defaultParam.defSetup.effectRadioDef <= 0 || this.defaultParam.defSetup.effectRadioDef > 100){
                 alert("请选择合理的生效比例");
-                return false;
-            }
-            if(this.defaultParam.vipSetup.effectWeek.length <= 0){
-                alert("请选择合理的生效周别");
                 return false;
             }
             console.log(this.vipId)
@@ -272,14 +294,21 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             };
 
             if(this.advFlag){
+                console.log("oooo", this.effectTimeBegin, this.effectTimeEnd)
+                this.defaultParam.vipSetup.effectTime = [this.effectTimeBegin, this.effectTimeEnd]
                 if(this.defaultParam.vipSetup.effectTime[0] >= this.defaultParam.vipSetup.effectTime[1]){
                     alert("请选择合理的生效时间");
                     return false;
                 }
-                if(this.defaultParam.vipSetup.effectRadioVip <= 0){
+                if(this.defaultParam.vipSetup.effectRadioVip <= 0 || this.defaultParam.vipSetup.effectRadioDef > 100){
                     alert("请选择合理的生效比例");
                     return false;
                 }
+                if(this.defaultParam.vipSetup.effectWeek.length <= 0){
+                    alert("请选择合理的生效周别");
+                    return false;
+                }
+                console.log(this.defaultParam.vipSetup.effectTime)
                 postParam.originXtcpDto.defConf.advFlag = this.advFlag;
                 postParam.originXtcpDto.advConfList = [{
                     "id": this.vipId,
@@ -292,7 +321,6 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
                     "endTime": this.defaultParam.vipSetup.effectTime[1]
                 }]
             }
-            console.log("dddddd", this.defaultParam)
             // 此处将数据整理成后端需要的形式
             console.log("待发送的参数", postParam)
             this.collection.postXtcpSetupInfo(postParam);

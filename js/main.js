@@ -76,8 +76,7 @@
   "liveUpConnection.view": "customerSetup/domainList/liveSetup/liveUpConnection/liveUpConnection.view",
   "liveUpFlowNameChange.model": "customerSetup/domainList/liveSetup/liveUpFlowNameChange/liveUpFlowNameChange.model",
   "liveUpFlowNameChange.view": "customerSetup/domainList/liveSetup/liveUpFlowNameChange/liveUpFlowNameChange.view",
-  "liveXtcpSetup.model": "customerSetup/domainList/liveSetup/liveXtcpSetup/liveXtcpSetup.model",
-  "liveXtcpSetup.view": "customerSetup/domainList/liveSetup/liveXtcpSetup/liveXtcpSetup.view",
+
   "luaAdvanceClientLimitSpeed.model": "customerSetup/domainList/luaDownloadSetup/luaAdvanceClientLimitSpeed/luaAdvanceClientLimitSpeed.model",
   "luaAdvanceClientLimitSpeed.view": "customerSetup/domainList/luaDownloadSetup/luaAdvanceClientLimitSpeed/luaAdvanceClientLimitSpeed.view",
   "luaAdvanceConfig.model": "customerSetup/domainList/luaDownloadSetup/luaAdvanceConfig/luaAdvanceConfig.model",
@@ -112,6 +111,8 @@
   "luaStatusCodeCache.view": "customerSetup/domainList/luaDownloadSetup/luaStatusCodeCache/luaStatusCodeCache.view",
   "luaTimestamp.model": "customerSetup/domainList/luaDownloadSetup/luaTimestamp/luaTimestamp.model",
   "luaTimestamp.view": "customerSetup/domainList/luaDownloadSetup/luaTimestamp/luaTimestamp.view",
+  "luaXtcpSetup.model": "customerSetup/domainList/luaDownLoadSetup/luaXtcpSetup/luaXtcpSetup.model",
+  "luaXtcpSetup.view": "customerSetup/domainList/luaDownLoadSetup/luaXtcpSetup/luaXtcpSetup.view",
   "backOriginDetection.model": "customerSetup/domainList/nginxDownloadSetup/backOriginDetection/backOriginDetection.model",
   "backOriginDetection.view": "customerSetup/domainList/nginxDownloadSetup/backOriginDetection/backOriginDetection.view",
   "backOriginSetup.model": "customerSetup/domainList/nginxDownloadSetup/backOriginSetup/backOriginSetup.model",

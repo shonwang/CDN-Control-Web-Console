@@ -1,6 +1,6 @@
-define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
-    var LiveXtcpSetupView = Backbone.View.extend({
+    var LuaXtcpSetupView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
@@ -51,7 +51,7 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
                     "effectRadioDef": 100,  //默认配置生效比例
                 },
                 vipSetup:{
-                    "effectWeek": [0,1,2,3,4,5,6],
+                    "effectWeek": [],
                     "effectTime": [1539705600000,1539705600000],
                     "workModeVip": 1,     //高级配置工作模式
                     "effectRadioVip": 100   //高级配置生效比例
@@ -68,9 +68,9 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
             console.log("cccccc", data);
             var def = data.defConf;
             var adv = data.advConfList;
-            if(def){
-                this.isEdit = true
-                this.defId = def.id || null;
+            this.defId = def.id || null;
+            if(adv != null){
+                this.isEdit = true 
                 this.vipId = adv[0].id || null;
                 console.log(this.vipId)
                 this.advFlag = def.advFlag || 0;
@@ -89,10 +89,10 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
             }
             console.log(this.defaultParam)
 
-            this.liveXtcpTemp = $(_.template(template['tpl/customerSetup/domainList/xtcpSetup/xtcpSetup.html'])({
+            this.luaXtcpTemp = $(_.template(template['tpl/customerSetup/domainList/xtcpSetup/xtcpSetup.html'])({
                 data:this.defaultParam
             }));
-            this.$el.find(".main-ctn").html(this.liveXtcpTemp.get(0))
+            this.$el.find(".main-ctn").html(this.luaXtcpTemp.get(0))
             if(this.advFlag === 1){
                 this.$el.find(".togglebutton input").attr("checked", true);
                 this.$el.find(".advanceSetup").show();
@@ -300,7 +300,10 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         onSaveSuccess: function(){
-            alert("保存成功！")
+            alert("保存成功！");
+            this.collection.getXtcpSetupInfo({
+                originId: this.domainInfo.id
+            });
         },
 
         onGetError: function(error){
@@ -330,5 +333,5 @@ define("liveXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'ut
         }
     });
 
-    return LiveXtcpSetupView;
+    return LuaXtcpSetupView;
 });

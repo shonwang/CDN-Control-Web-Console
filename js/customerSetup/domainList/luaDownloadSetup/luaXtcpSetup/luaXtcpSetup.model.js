@@ -1,9 +1,9 @@
-define("liveXtcpSetup.model", ['require','exports', 'utility'], function(require, exports, Utility) {
+define("luaXtcpSetup.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){}
     });
 
-    var LiveXtcpSetupCollection = Backbone.Collection.extend({
+    var LuaXtcpSetupCollection = Backbone.Collection.extend({
         
         model: Model,
 
@@ -33,5 +33,5 @@ define("liveXtcpSetup.model", ['require','exports', 'utility'], function(require
         
     });
 
-    return LiveXtcpSetupCollection;
+    return LuaXtcpSetupCollection;
 });

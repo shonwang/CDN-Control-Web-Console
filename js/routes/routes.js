@@ -87,12 +87,12 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "domainList/:query/luaTimestamp/:query2": "luaTimestamp",
                 "domainList/:query/luaAdvanceConfig/:query2/luaConfigListEdit/:query3": "luaConfigListEdit",
                 "domainList/:query/luaStatusCodeCache/:query2": "luaStatusCodeCache",
+                "domainList/:query/luaXtcpSetup/:query2": "luaXtcpSetup",
                  
 
                 //直播域名配置
                 "domainList/:query/liveConnection/:query2": "liveConnection",
                 "domainList/:query/liveUpConnection/:query2": "liveUpConnection",
-                "domainList/:query/liveXtcpSetup/:query2": "liveXtcpSetup",
                 "domainList/:query/liveBasicInformation/:query2": "liveBasicInformation",
                 "domainList/:query/liveDomainSetup/:query2": "liveDomainSetup",
                 "domainList/:query/liveCnameSetup/:query2": "liveCnameSetup",

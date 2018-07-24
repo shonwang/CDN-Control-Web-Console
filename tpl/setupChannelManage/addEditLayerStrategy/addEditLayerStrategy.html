@@ -108,9 +108,11 @@
                                     <label class="radio-inline">
                                         <input type="radio" name="strategyUpperRadio" id="strategyRadio5" value="1" checked="true">按节点
                                     </label>
+                                    <%if(AUTH_OBJ.HashManage){%>
                                     <label class="radio-inline" id="asHashstrategyRadio6">
                                         <input type="radio" name="strategyUpperRadio" id="strategyRadio6" value="2">按hash环
                                     </label>
+                                    <%}%>
                                 </div>
                             </div>
                             <div class="strategyUpper-node-ctn" style="display: none;">

@@ -2,6 +2,7 @@ define("routes.dispSetup", ['require', 'exports'],
     function(require, exports) {
         var RouterDispSetup = {
             hashOrigin:function(){
+                if (!AUTH_OBJ.HashManage) return;
                 require(['hashOrigin.view', 'hashOrigin.model'], function(HashOriginView, HashOriginModel) {
                     this.curPage = 'hashOrigin';
                     this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));

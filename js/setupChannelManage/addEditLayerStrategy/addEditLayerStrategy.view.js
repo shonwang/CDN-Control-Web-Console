@@ -26,7 +26,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.defaultParam = this.curEditRule
                 this.onCancelParam= $.extend(true,{},this.curEditRule)     
             }
-            this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
+            this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])({AUTH_OBJ:AUTH_OBJ}));
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             if(!this.notFilter){
                 this.$el.find("#asHashstrategyRadio6").hide();

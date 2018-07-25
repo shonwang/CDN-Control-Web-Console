@@ -62,7 +62,7 @@ define("preheatManage.model", ['require','exports', 'utility'], function(require
                 }]                
             }
 
-            var url = BASE_URL + "/rs/device/pagelist",
+            var url = BASE_URL + "/refresh/task/query", //"/rs/device/pagelist",
                 successCallback = function(res) {
                     this.reset();
                     if (res) {

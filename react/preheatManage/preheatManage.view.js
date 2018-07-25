@@ -78,15 +78,11 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
             }
 
             onChangePage(page, pageSize){
-                var pageObj = {
-                    "page": page,
-                    "count": pageSize
-                };
                 var preHeatProps = this.props.preHeatProps;
                 var collection = preHeatProps.collection,
                     queryCondition = preHeatProps.queryCondition;
-                queryCondition.page = page;
-                queryCondition.count = pageSize;
+                queryCondition.pageNo = page;
+                queryCondition.pageSize = pageSize;
                 collection.trigger("fetching", queryCondition);
             }
 
@@ -335,9 +331,18 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                 var fieldsValue = this.props.form.getFieldsValue(),
                     preHeatProps = this.props.preHeatProps;
                 var collection = preHeatProps.collection,
-                    queryCondition = preHeatProps.queryCondition;
-                queryCondition.devicename = fieldsValue.preheatNames || null;
-                queryCondition.nodename = fieldsValue.nodeNames || null;
+                    queryCondition = preHeatProps.queryCondition,
+                    nodes = [];
+                if (fieldsValue.nodeNames && fieldsValue.nodeNames.length > 0) {
+                    _.each(fieldsValue.nodeNames, (el)=>{
+                        nodes.push(el.label)
+                    })
+                    nodes = nodes.join(";")
+                } else {
+                    nodes = null;
+                }    
+                queryCondition.taskName = fieldsValue.preheatNames || null;
+                queryCondition.nodes = nodes;
                 queryCondition.status = fieldsValue.preheatStatus == "all" ? null : parseInt(fieldsValue.preheatStatus);
                 collection.trigger("fetching", queryCondition)
             },
@@ -470,12 +475,11 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                 var WrappedSearchForm = Form.create()(SearchForm);
 
                 this.queryCondition = {
-                    "devicename": null,
-                    "nodename"  : null,
-                    "status"    : null,
-                    "type"      : null,
-                    "page"      : 1,
-                    "count"     : 10
+                    "taskName": null,
+                    "status": null,
+                    "nodes": null,
+                    "pageNo": 1,
+                    "pageSize": 10
                 }
 
                 this.preHeatProps = {

@@ -64,8 +64,9 @@ define("preheatManage.model", ['require', 'exports', 'utility'], function (requi
                 }]
             };
 
-            var url = BASE_URL + "/rs/device/pagelist",
-                successCallback = function (res) {
+            var url = BASE_URL + "/refresh/task/query",
+                //"/rs/device/pagelist",
+            successCallback = function (res) {
                 this.reset();
                 if (res) {
                     _.each(tempData.preloadTaskList, function (element, index, list) {

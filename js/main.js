@@ -329,7 +329,7 @@ requirejs.config({
 });
 requirejs(['routes', 'utility'], function(routes, Utility) {
     Utility.dateFormat();
-    Backbone.history.start();
+    if (!Backbone.History.started) Backbone.history.start();
 });
 requirejs.onError = function () {
     console.log(arguments)

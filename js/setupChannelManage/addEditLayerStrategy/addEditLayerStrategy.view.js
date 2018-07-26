@@ -8,7 +8,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.collection = options.collection;
 
             this.rule = options.rule;
-            this.curEditRule = options.curEditRule
+            this.curEditRule = options.curEditRule;
             this.isEdit = options.isEdit;
             this.notFilter = options.notFilter;
             this.appType = options.appType
@@ -20,13 +20,24 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     "local": [], //???
                     "localType": 2,
                     "upper": [],
+                    "upType": 1
                 }
             } else {
                 this.defaultParam = this.curEditRule
                 this.onCancelParam= $.extend(true,{},this.curEditRule)     
             }
-            this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])());
+            this.$el = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.html'])({AUTH_OBJ:AUTH_OBJ}));
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+            if(!this.notFilter){
+                this.$el.find("#asHashstrategyRadio6").hide();
+            }
+            this.$el.find("input[name=strategyUpperRadio]").on("click",$.proxy(this.onUpperStyleChange,this));
+            if(this.defaultParam.upType == 2){
+                this.$el.find("#strategyRadio6").prop("checked",true)
+            }
+            else{
+                this.$el.find("#strategyRadio5").prop("checked",true)
+            }
 
             require(['nodeManage.model'], function(NodeManageModel) {
                 var myNodeManageModel = new NodeManageModel();
@@ -67,6 +78,23 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.$el.find("#strategyRadio2").attr("disabled", "disabled");
             this.$el.find("#strategyRadio3").attr("disabled", "disabled");
             this.$el.find("#strategyRadio4").attr("disabled", "disabled");
+        },
+
+        onUpperStyleChange:function(event){
+            //清空upper数据
+            var eventTarget = event.srcElement || event.target;
+            var value = $(eventTarget).val();
+            this.defaultParam.upper = [];
+            if(value == 1){
+                this.defaultParam.upType = 1;
+                this.initUpperTable();
+                
+            }
+            else if(value == 2){
+                this.defaultParam.upType = 2;
+                this.initUpperHashTable();
+            }
+
         },
 
         // 省份运营商
@@ -392,9 +420,11 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.options.upperNodes = this.allNodesArray;
                 this.onGetLocalNodeFromArgs();
                 this.onGetUpperNodeFromArgs();
+                this.initUpperHash();
             } else {
                 this.onGetLocalNodeFromArgs();
                 this.onGetUpperNodeFromArgs();
+                this.initUpperHash();
             }
         },
 
@@ -407,6 +437,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         onClickSaveBtn: function() {
+            console.log('upperType',this.defaultParam.upper);
             if(!this.province) this.province=[];
             if(!this.area) this.area=[];
             if(!this.onlyOperator) this.onlyOperator=[];
@@ -436,13 +467,24 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                    Utility.warning('请选择上层节点');
                    return;
             }
-            var chiefTypeArray = [];
-            chiefTypeArray = _.filter(this.defaultParam.upper, function(obj) {
-                return obj.chiefType === 0
-            }.bind(this))
-            if (chiefTypeArray.length === this.defaultParam.upper.length) {
-                Utility.warning("不能都设置为备用")
-                return;
+            if(this.defaultParam.upType == 1){
+                var chiefTypeArray = [];
+                chiefTypeArray = _.filter(this.defaultParam.upper, function(obj) {
+                    return obj.chiefType === 0
+                }.bind(this))
+                if (chiefTypeArray.length === this.defaultParam.upper.length) {
+                    alert("不能都设置为备用")
+                    return;
+                }
+            }
+            if(this.defaultParam.upType == 2){
+                var hashMain = _.filter(this.defaultParam.upper, function(obj) {
+                    return obj.hashIndex === 0
+                }.bind(this))
+                if(hashMain.length < 1){
+                    alert("请设置主环");
+                    return false;
+                }
             }
             var nodesError =[];
             // 检测错误情况，给nodesError赋值
@@ -523,6 +565,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                             "local": [], 
                             "localType":2,
                             "upper": this.defaultParam.upper,
+                            "upType":this.defaultParam.upType
                         }
                         obj.local.push({
                             id:el.value,
@@ -550,6 +593,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                                 "local": [], 
                                 "localType":3,
                                 "upper": this.defaultParam.upper,
+                                "upType":this.defaultParam.upType
                             }
                             obj.local.push({
                                 provinceId: pro.value,
@@ -582,6 +626,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                                 "local": [], 
                                 "localType":4,
                                 "upper": this.defaultParam.upper,
+                                "upType":this.defaultParam.upType
                             }
                             obj.local.push({
                                 areaId: area.value,
@@ -724,6 +769,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.options.upperNodes = res.upperNodes;
             this.onGetLocalNodeFromArgs();
             this.onGetUpperNodeFromArgs();
+            this.initUpperHash();
         },
 
         initLocalTable: function() {
@@ -816,7 +862,115 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 el.id = el.rsNodeMsgVo.id;
             }.bind(this))
             this.$el.find('.upper .add-node').on('click', $.proxy(this.onClickAddUpperNodeButton, this))
+            if(this.defaultParam.upType == 2){
+                return false;
+            }
             this.initUpperTable();
+        },
+
+        initUpperHash:function(){
+            this.$el.find('.upper .add-hash').on('click', $.proxy(this.onClickAddUpperHashButton, this))
+            this.initUpperHashTable();
+        },
+
+        initUpperHashTable:function(){
+            var obj= this.defaultParam.upper;
+            if(this.defaultParam.upType != 2){
+                return false;
+            }
+            this.$el.find(".strategyUpper-node-ctn").hide();
+            this.$el.find(".strategyUpper-hash-ctn").show();
+
+            var hashList = [];
+            _.each(this.defaultParam.upper,function(el){
+                hashList.push({
+                    hashId:el.rsNodeMsgVo.id,
+                    name:el.rsNodeMsgVo.name,
+                    isMulti:el.rsNodeMsgVo.isMulti,
+                    //chiefType:el.chiefType,
+                    ipCorporation:el.ipCorporation,
+                    hashIndex:el.hashIndex,
+                    id:el.rsNodeMsgVo.id
+                });
+            }.bind(this));
+
+            var duoxianArray = _.filter(hashList, function(obj) {
+                return obj.isMulti === 1
+            }.bind(this))
+            var feiDuoxianArray = _.filter(hashList, function(obj) {
+                return obj.isMulti !== 1
+            }.bind(this))
+
+            hashList = duoxianArray.concat(feiDuoxianArray)
+
+
+            this.upperHashTable = $(_.template(template['tpl/setupChannelManage/addEditLayerStrategy/addEditLayerStrategy.upperHash.table.html'])({
+                    data:hashList
+            }));
+
+            if(hashList.length !==0){
+                this.$el.find(".upper .table-ctn-hash").html(this.upperHashTable[0]);
+                this.upperHashTable.find("tbody .hash-radio-main").on("click", $.proxy(this.onClickItemUpperHashKey, this));
+                this.upperHashTable.find("tbody .delete").on("click", $.proxy(this.onClickItemUpperHashDelete, this));
+            }
+            else{
+                this.$el.find(".upper .table-ctn-hash").html(_.template(template['tpl/empty-2.html'])({
+                    data: {
+                        message: "你还没有添加hash环"
+                    }
+                }));
+            }
+         
+
+            require(['deviceManage.model'], function(deviceManageModel) {
+                var mydeviceManageModel = new deviceManageModel();
+                mydeviceManageModel.on("operator.type.success", $.proxy(this.initOperatorUpperHashList, this));
+                mydeviceManageModel.on("operator.type.error", $.proxy(this.onGetError, this));
+                mydeviceManageModel.operatorTypeList();
+            }.bind(this));
+        },
+
+        initOperatorUpperHashList: function(data) {
+            var operatorArray = [];
+            _.each(data, function(el, key, list) {
+                operatorArray.push({
+                    name: el.name,
+                    value: el.id
+                })
+            }.bind(this))
+            rootNodes = this.upperHashTable.find(".hashOperator .dropdown");
+
+            for (var i = 0; i < rootNodes.length; i++) {
+                this.initTableDropMenu($(rootNodes[i]), operatorArray, function(value, nodeId) {
+                    _.each(this.defaultParam.upper, function(el, key, list) {
+                        if (el.rsNodeMsgVo.id == parseInt(nodeId)) {
+                            el.ipCorporation = parseInt(value);
+                        }
+                    }.bind(this));
+                }.bind(this));
+
+                _.each(this.defaultParam.upper, function(node) {
+                    var curNodeId = parseInt(rootNodes[i].id);
+                    if (node.rsNodeMsgVo.id === curNodeId) {
+                        var defaultValue = _.find(operatorArray, function(obj) {
+                            return obj.value === node.ipCorporation
+                        }.bind(this))
+
+                        if (defaultValue) {
+                            $(rootNodes[i]).find("#dropdown-hash-operator .cur-value").html(defaultValue.name)
+                        } else {
+                            $(rootNodes[i]).find("#dropdown-hash-operator .cur-value").html(operatorArray[0].name);
+                            node.ipCorporation = operatorArray[0].value;
+                        }
+                    }
+                }.bind(this))
+            }
+        },
+
+        onClickItemUpperHashKey:function(events){
+            var eventTarget = event.srcElement || event.target;
+            var id = $(eventTarget).attr("data-id");
+            this.resetHashIndex(id);
         },
 
         onClickAddUpperNodeButton: function(event) {
@@ -839,11 +993,13 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                         this.defaultParam.upper = mySelectNodeView.getArgs();
                         var tempArray = []
                         _.each(this.defaultParam.upper, function(el) {
+                            //el.upType = 1;
                             var rsNodeMsgVo = {};
                             rsNodeMsgVo.id = el.id;
                             rsNodeMsgVo.name = el.chName;
                             rsNodeMsgVo.operatorId = el.operatorId;
                             tempArray.push({
+                                upType:1,
                                 chiefType: el.chiefType,
                                 ipCorporation: el.ipCorporation,
                                 rsNodeMsgVo: rsNodeMsgVo,
@@ -860,7 +1016,88 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }.bind(this))
         },
 
+        resetHashIndex:function(id){
+            var upperHash = this.defaultParam.upper;
+            for(var i=0;i<upperHash.length;i++){
+                if(upperHash[i].id == id){
+                    upperHash[i].hashIndex = 0;
+                }
+                else{
+                    upperHash[i].hashIndex = null;
+                }
+            }
+            this.defaultParam.upper = this.upperHashFormat(upperHash);
+        },
+
+        upperHashFormat:function(list){
+            var firstList = [];
+            var arr=[];
+            for(var i=0,_len=list.length;i<_len;i++){
+                if(list[i].hashIndex == 0){
+                    firstList.push(list[i]);
+                }
+                else{
+                    arr.push(list[i]);
+                }
+            }
+            var newArr = firstList.concat(arr);
+            for(var i=0,_len=newArr.length;i<_len;i++){
+                newArr[i].hashIndex = i;
+            }
+            return newArr;
+        },
+
+        onClickAddUpperHashButton:function(){
+            require(['hashOrigin.selectHash.view','hashOrigin.model'], function(SelectHashView,HashModel) {
+                var hashModel = new HashModel();
+                if (this.selectHashPopup) $("#" + this.selectHashPopup.modalId).remove();
+                //this.updateChecked(this.defaultParam.upper, this.topoUpperNodes);
+                var mySelectHashView = new SelectHashView({
+                    collection: hashModel,
+                    selectedHash:this.defaultParam.upper,
+                    appType: this.appType
+                });
+                var options = {
+                    title: "选择hash环",
+                    body: mySelectHashView,
+                    backdrop: 'static',
+                    type: 2,
+                    width: 800,
+                    onOKCallback: function() {
+                        var result = mySelectHashView.getArgs();
+                        var upperHashFormat = this.upperHashFormat(result);
+                        this.defaultParam.upper = upperHashFormat;
+                        var tempArray = []
+                        _.each(this.defaultParam.upper, function(el) {
+                            el.upType = 2;
+                            var rsNodeMsgVo = {};
+                            rsNodeMsgVo.id = el.id;
+                            rsNodeMsgVo.name = el.name;
+                            rsNodeMsgVo.operatorId = el.operatorId;
+                            rsNodeMsgVo.isMulti = el.isMulti;
+                            tempArray.push({
+                                name:el.name,
+                                hashIndex: el.hashIndex,
+                                ipCorporation: el.ipCorporation,
+                                isMulti : el.isMulti,
+                                rsNodeMsgVo: rsNodeMsgVo,
+                                id: el.id
+                                //chiefType:el.hashIndex == 0 ? 1:0
+                            })
+                        }.bind(this))
+                        this.defaultParam.upper = tempArray;
+                        this.selectHashPopup.$el.modal("hide");
+                        this.initUpperHashTable();
+                    }.bind(this),
+                    onHiddenCallback: function() {}.bind(this)
+                }
+                this.selectHashPopup = new Modal(options);
+            }.bind(this))            
+        },
+
         initUpperTable: function() {
+            this.$el.find(".strategyUpper-hash-ctn").hide();
+            this.$el.find(".strategyUpper-node-ctn").show();
             var nodeList = [];
             _.each(this.defaultParam.upper, function(el) {
                 nodeList.push({
@@ -981,6 +1218,23 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }
 
             this.initUpperTable();
+        },
+
+
+        onClickItemUpperHashDelete: function(event) {
+            var eventTarget = event.srcElement || event.target,
+                id;
+            if (eventTarget.tagName == "SPAN") {
+                eventTarget = $(eventTarget).parent();
+                id = eventTarget.attr("data-id");
+            } else {
+                id = $(eventTarget).attr("data-id");
+            }
+
+            this.defaultParam.upper = _.filter(this.defaultParam.upper, function(obj) {
+                return obj.rsNodeMsgVo.id !== parseInt(id)
+            }.bind(this));
+            this.initUpperHashTable();
         },
 
         onClickCheckboxButton: function(event) {

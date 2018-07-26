@@ -46,6 +46,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "statisticsDataSourceSwitch": "statisticsDataSourceSwitch",
 
                 // 调度配置
+                "hashOrigin": "hashOrigin",
                 "dispGroup": "dispGroup",
                 "importAssess": "importAssess",
                 "dispConfig": "dispConfigNew",

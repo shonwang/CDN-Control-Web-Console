@@ -104,21 +104,41 @@
                         <div class="form-horizontal">
                             <div class="form-group">
                                 <label for="strategy-type" class="col-sm-2 control-label">策略方式</label>
-                                <div class="col-sm-8 strategy-type">
+                                <div class="col-sm-8">
                                     <label class="radio-inline">
-                                        <input type="radio" name="strategyUpperRadio" id="strategyRadio1" value="1" checked="true">按节点
+                                        <input type="radio" name="strategyUpperRadio" id="strategyRadio5" value="1" checked="true">按节点
                                     </label>
+                                    <%if(AUTH_OBJ.HashManage){%>
+                                    <label class="radio-inline" id="asHashstrategyRadio6">
+                                        <input type="radio" name="strategyUpperRadio" id="strategyRadio6" value="2">按hash环
+                                    </label>
+                                    <%}%>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="node" class="col-sm-2 control-label">节点</label>
-                                <div class="col-sm-8 add-node-ctn">
-                                    <a href="javascript:void(0)" class="btn btn-success add-node">添加节点</a>
+                            <div class="strategyUpper-node-ctn" style="display: none;">
+                                <div class="form-group">
+                                    <label for="node" class="col-sm-2 control-label">节点</label>
+                                    <div class="col-sm-8 add-node-ctn">
+                                        <a href="javascript:void(0)" class="btn btn-success add-node">添加节点</a>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="table-ctn"></div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <div class="table-ctn"></div>
+
+                            <div class="strategyUpper-hash-ctn" style="display: none;">
+                                <div class="form-group">
+                                    <label for="node" class="col-sm-2 control-label">hash环</label>
+                                    <div class="col-sm-8 add-node-ctn">
+                                        <a href="javascript:void(0)" class="btn btn-success add-hash">添加hash环</a>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="table-ctn-hash">...</div>
+                                </div>
                             </div>
+
                         </div>
                     </div>
                 </div>

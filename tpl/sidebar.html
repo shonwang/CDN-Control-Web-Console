@@ -31,6 +31,9 @@
 			 <% if (permission.LayeredStrategyManage) { %>
             <li id="specialLayerManage"><a href="javascript:void(0)" path="index.html#/specialLayerManage"><i class="glyphicon glyphicon-text-size"></i>分层策略管理</a></li>
 			<% } %>
+            <% if (permission.HashManage) { %>
+            <li id="hashOrigin"><a href="javascript:void(0)" path="index.html#/hashOrigin"><i class="glyphicon glyphicon-repeat"></i>hash环管理</a></li>
+            <% } %>
         </ul>
     </li>
     <% } %>

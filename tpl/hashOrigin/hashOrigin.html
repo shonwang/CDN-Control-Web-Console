@@ -1,0 +1,78 @@
+<div class="device-manage fadeInLeft animated">
+    <div class="hash-origin-list-pannel">
+        <h4>资源管理<small>/hash环管理</small></h4>
+        <div class="error-ctn"></div>
+        <div class="well opt-ctn">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="input-domain">名称</label>
+                    <input type="text" class="form-control" id="input-name">
+                </div>
+                <div class="form-group">
+                    <label for="input-node">节点名称</label>
+                    <input type="text" class="form-control" id="input-node-name">
+                </div>
+                <div class="form-group">
+                    <label for="dropdown-type">类型</label>
+                </div>
+                <div class="form-group dropdown-type">
+                    <div class="dropdown dropdown-node-type">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-node-type" data-toggle="dropdown">
+                            <span class="cur-value">全部</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu"></ul>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="dropdown-reason">是否允许自动调度</label>
+                </div>
+                <div class="form-group dropdown-reason">
+                    <div class="dropdown dropdown-auto-flag">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-auto-flag" data-toggle="dropdown">
+                            <span class="cur-value">全部</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu"></ul>
+                    </div>
+                </div>
+            </form>
+            <hr>
+            <form class="form-inline">
+                <a href="javascript:void(0)" class="btn btn-primary query"><span class="glyphicon glyphicon-search"></span>查询</a>
+                <a href="javascript:void(0)" class="btn btn-primary create"><span class="glyphicon glyphicon-plus"></span>新建</a>
+            </form>
+        </div>
+        <div class="well">
+            <div class="table-ctn table-responsive"></div>
+            <div class="page-ctn row">
+                <div class="col-md-8" style="text-align:center">
+                    <div class="pagination"></div>
+                </div>
+                <div class="col-md-4" style="text-align:center">
+                    <form class="form-inline page-info">
+                        <div class="form-group">
+                            <div class="form-control-static">每页显示</div>
+                        </div>
+                        <div class="form-group page-num">
+                            <div class="drop-ctn dropup">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">
+                                    <span class="cur-value">10 条</span>
+                                    <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-control-static total-items">共<span class="text-primary">0</span>条记录</div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="hash-origin-add-edit-pannel">
+    </div>
+</div>

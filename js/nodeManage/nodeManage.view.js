@@ -462,7 +462,6 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     id = $(eventTarget).attr("id");
                 }
                 var model = this.collection.get(id);
-
                 this.hideList();
                 if (this.editNodeView) {
                     this.editNodeView.destroy();

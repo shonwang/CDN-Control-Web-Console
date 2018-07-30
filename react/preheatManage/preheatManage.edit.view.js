@@ -607,7 +607,7 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                             <FormItem {...formItemLayout} label="分时任务" style={{display:"none"}}>
                                 <Button icon="plus" size={'small'} onClick={$.proxy(this.onClickAddNodes, this)}>新建分时任务</Button>
                                 {getFieldDecorator('inputOriginBand', {
-                                        initialValue: curEditNode.opType || 100,
+                                        initialValue: curEditNode.bandwidth || 100,
                                         rules: [{ required: true, message: '请输入回源带宽!' }],
                                     })(
                                     <InputNumber/>
@@ -817,7 +817,7 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                         </FormItem> 
                         <FormItem {...formItemLayout} label="回源带宽">
                             {getFieldDecorator('inputBand', {
-                                    initialValue: curEditTime.opType || 100,
+                                    initialValue: curEditTime.bandwidth || 100,
                                     rules: [{ required: true, message: '请输入带宽!' }],
                                 })(
                                 <InputNumber/>

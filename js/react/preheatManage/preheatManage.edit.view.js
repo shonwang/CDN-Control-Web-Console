@@ -781,7 +781,7 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                                 '\u65B0\u5EFA\u5206\u65F6\u4EFB\u52A1'
                             ),
                             getFieldDecorator('inputOriginBand', {
-                                initialValue: curEditNode.opType || 100,
+                                initialValue: curEditNode.bandwidth || 100,
                                 rules: [{ required: true, message: '请输入回源带宽!' }]
                             })(React.createElement(InputNumber, null)),
                             React.createElement(
@@ -1035,7 +1035,7 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                         FormItem,
                         _extends({}, formItemLayout, { label: '\u56DE\u6E90\u5E26\u5BBD' }),
                         getFieldDecorator('inputBand', {
-                            initialValue: curEditTime.opType || 100,
+                            initialValue: curEditTime.bandwidth || 100,
                             rules: [{ required: true, message: '请输入带宽!' }]
                         })(React.createElement(InputNumber, null)),
                         React.createElement(

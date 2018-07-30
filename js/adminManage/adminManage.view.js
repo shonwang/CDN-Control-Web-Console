@@ -8,6 +8,7 @@ define("adminManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.collection = options.collection;
             
             this.$el = $(_.template(template['tpl/adminManage/adminManage.html'])());
+            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.collection.off("get.userTopo.success");
             this.collection.off("get.userTopo.error");
             this.collection.on("get.userTopo.success",$.proxy(this.getUserTopoSuccess,this));

@@ -127,13 +127,13 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                     tempStart = this.transformat(tempStartHour) + ':' + this.transformat(tempStartMin),
                     tempEnd = this.transformat(tempEndHour) + ':' + this.transformat(tempEndMin),
                     workTime;
-                workDayStr = workDayStr.replace(/0/g, "周日、");
-                workDayStr = workDayStr.replace(/1/g, "周一、");
-                workDayStr = workDayStr.replace(/2/g, "周二、");
-                workDayStr = workDayStr.replace(/3/g, "周三、");
-                workDayStr = workDayStr.replace(/4/g, "周四、");
-                workDayStr = workDayStr.replace(/5/g, "周五、");
-                workDayStr = workDayStr.replace(/6/g, "周六、");
+                workDayStr = workDayStr.replace(/1/g, "周日、");
+                workDayStr = workDayStr.replace(/2/g, "周一、");
+                workDayStr = workDayStr.replace(/3/g, "周二、");
+                workDayStr = workDayStr.replace(/4/g, "周三、");
+                workDayStr = workDayStr.replace(/5/g, "周四、");
+                workDayStr = workDayStr.replace(/6/g, "周五、");
+                workDayStr = workDayStr.replace(/7/g, "周六、");
                 workDayStr = workDayStr.replace(/、$/gi, "");
                 workTime = workDayStr + '<br>' + tempStart + '~' + tempEnd;
                 this.config.xtcpConfig.workTime = workTime;

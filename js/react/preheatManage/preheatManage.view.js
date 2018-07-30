@@ -108,7 +108,6 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                     var obj = Object.assign({}, model.attributes),
                         nodeName = [];
                     _.each(obj.batchTimeBandwidth, function (batch) {
-                        batch.id = batch.sortnum;
                         batch.nodeNameArray = batch.nodes.split(";");
                         nodeName = nodeName.concat(batch.nodeNameArray);
                     });

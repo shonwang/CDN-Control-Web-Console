@@ -8,7 +8,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 this.options = options;
                 this.collection = options.collection;
                 this.$el = $(_.template(template['tpl/nodeManage/nodeManage.html'])());
-
+        
                 this.initNodeDropMenu();
                 // this.initNodeTypeDropMenu();
 

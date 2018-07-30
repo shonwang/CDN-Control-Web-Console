@@ -93,9 +93,13 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
 
             console.log(this.advFlag)
             this.$el.find(".main-ctn").html(this.luaXtcpTemp.get(0))
+            this.$el.find("#effect-ratio").on('keyup', $.proxy(this.onNumberOnly, this))
+            this.$el.find("#effect-ratio").on('afterpaste', $.proxy(this.onNumberOnly, this))
             if(this.advFlag === 1){
                 this.$el.find(".togglebutton input").attr("checked", true);
                 this.$el.find(".advanceSetup").show();
+                this.$el.find("#effect-ratio-vip").on('keyup', $.proxy(this.onNumberOnly, this))
+                this.$el.find("#effect-ratio-vip").on('afterpaste', $.proxy(this.onNumberOnly, this))
             }
             if(this.defaultParam.vipSetup.effectWeek.length === 7){
                 console.log(this.defaultParam.vipSetup.effectWeek)
@@ -106,6 +110,11 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.find(".advanceSetup-toggle .togglebutton input").on("click", $.proxy(this.onClickIsAdvanceSetupBtn,this));
             this.$el.find("input[name=options-effectWeek]").on("click", $.proxy(this.onClickCheckedWeek, this));
             this.initEffectTimeDropMenu();
+        },
+
+        onNumberOnly: function(event){
+            var eventTarget = event.srcElement || event.target;
+            eventTarget.value = eventTarget.value.replace(/\D/g,'')
         },
 
         onClickCheckedWeek:function(event){
@@ -270,9 +279,8 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             // 数据前端校验环节
             this.defaultParam.defSetup.workModeDef = this.$el.find("input[name='options-workmode']:checked").val();
             this.defaultParam.defSetup.effectRadioDef = this.$el.find("#effect-ratio").val();
-            this.defaultParam.vipSetup.workModeVip = this.$el.find("input[name='options-workmode-vip']:checked").val()
-            this.defaultParam.vipSetup.effectRadioVip = this.$el.find("#effect-ratio-vip").val();
-            if(this.defaultParam.defSetup.effectRadioDef <= 0 || this.defaultParam.defSetup.effectRadioDef > 100){
+            var numberTestDef = parseInt(this.defaultParam.defSetup.effectRadioDef)
+            if(numberTestDef <= 0 || numberTestDef > 100 || Number.isNaN(numberTestDef)){
                 alert("请选择合理的生效比例");
                 return false;
             }
@@ -294,13 +302,16 @@ define("luaXtcpSetup.view", ['require','exports', 'template', 'modal.view', 'uti
             };
 
             if(this.advFlag){
+                this.defaultParam.vipSetup.workModeVip = this.$el.find("input[name='options-workmode-vip']:checked").val()
+                this.defaultParam.vipSetup.effectRadioVip = this.$el.find("#effect-ratio-vip").val();
                 console.log("oooo", this.effectTimeBegin, this.effectTimeEnd)
+                var numberTestVip = parseInt(this.defaultParam.vipSetup.effectRadioVip)
                 this.defaultParam.vipSetup.effectTime = [this.effectTimeBegin, this.effectTimeEnd]
                 if(this.defaultParam.vipSetup.effectTime[0] >= this.defaultParam.vipSetup.effectTime[1]){
                     alert("请选择合理的生效时间");
                     return false;
                 }
-                if(this.defaultParam.vipSetup.effectRadioVip <= 0 || this.defaultParam.vipSetup.effectRadioDef > 100){
+                if(numberTestVip <= 0 || numberTestVip > 100 || Number.isNaN(numberTestVip)){
                     alert("请选择合理的生效比例");
                     return false;
                 }

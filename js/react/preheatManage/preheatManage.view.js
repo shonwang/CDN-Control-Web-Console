@@ -39,6 +39,8 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
 
             _this.onChangePage = _this.onChangePage.bind(_this);
             _this.handleEditClick = _this.handleEditClick.bind(_this);
+            _this.handlePauseClick = _this.handlePauseClick.bind(_this);
+            _this.handleRestartClick = _this.handleRestartClick.bind(_this);
             _this.state = {
                 data: [],
                 isError: false,
@@ -57,6 +59,10 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                 collection.on("get.preheat.error", $.proxy(this.onGetError, this));
                 collection.on("fetching", $.proxy(this.onFetchingPreHeatList, this));
                 collection.trigger("fetching", queryCondition);
+                collection.on("refresh.pause.success", $.proxy(this.onGetOperateSuccess, this, "暂停"));
+                collection.on("refresh.pause.error", $.proxy(this.onOperateError, this));
+                collection.on("refresh.restart.success", $.proxy(this.onGetOperateSuccess, this, "开启"));
+                collection.on("refresh.restart.error", $.proxy(this.onOperateError, this));
             }
         }, {
             key: 'componentWillUnmount',
@@ -65,6 +71,25 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                 collection.off("get.preheat.success");
                 collection.off("get.preheat.error");
                 collection.off("fetching");
+                collection.off("refresh.pause.success");
+                collection.off("refresh.pause.error");
+                collection.off("refresh.restart.success");
+                collection.off("refresh.restart.error");
+            }
+        }, {
+            key: 'onGetOperateSuccess',
+            value: function onGetOperateSuccess(msg) {
+                Utility.alerts(msg + "成功!", "success", 2000);
+                var preHeatProps = this.props.preHeatProps;
+                var collection = preHeatProps.collection,
+                    queryCondition = preHeatProps.queryCondition;
+
+                collection.trigger("fetching", queryCondition);
+            }
+        }, {
+            key: 'onOperateError',
+            value: function onOperateError(error) {
+                if (error && error.message) Utility.alerts(error.message);else Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
             }
         }, {
             key: 'onFetchingPreHeatList',
@@ -105,6 +130,36 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                 queryCondition.pageNo = page;
                 queryCondition.pageSize = pageSize;
                 collection.trigger("fetching", queryCondition);
+            }
+        }, {
+            key: 'handlePauseClick',
+            value: function handlePauseClick(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "I") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                var preHeatProps = this.props.preHeatProps;
+                var collection = preHeatProps.collection;
+                collection.taskPause({ taskId: id });
+            }
+        }, {
+            key: 'handleRestartClick',
+            value: function handleRestartClick(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "I") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                var preHeatProps = this.props.preHeatProps;
+                var collection = preHeatProps.collection;
+                collection.taskRestart({ taskId: id });
             }
         }, {
             key: 'handleEditClick',
@@ -299,8 +354,8 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                     key: 'committer'
                 }, {
                     title: '创建时间',
-                    dataIndex: 'commitTime',
-                    key: 'commitTime'
+                    dataIndex: 'commitTimeFormated',
+                    key: 'commitTimeFormated'
                 }, {
                     title: '操作',
                     dataIndex: 'id',
@@ -325,7 +380,7 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                             React.createElement(
                                 'a',
                                 { href: 'javascript:void(0)', id: record.id, onClick: function onClick(e) {
-                                        return _this2.handleEditClick(e);
+                                        return _this2.handleRestartClick(e);
                                     } },
                                 React.createElement(Icon, { type: 'play-circle-o' })
                             )
@@ -336,7 +391,7 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                             React.createElement(
                                 'a',
                                 { href: 'javascript:void(0)', id: record.id, onClick: function onClick(e) {
-                                        return _this2.handleEditClick(e);
+                                        return _this2.handlePauseClick(e);
                                     } },
                                 React.createElement(Icon, { type: 'pause-circle-o' })
                             )
@@ -367,7 +422,7 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                     showTotal: function showTotal(total) {
                         return 'Total ' + total + ' items';
                     },
-                    current: preHeatProps.queryCondition.page,
+                    current: preHeatProps.queryCondition.pageNo,
                     total: preHeatProps.collection.total,
                     onChange: this.onChangePage,
                     onShowSizeChange: this.onChangePage
@@ -435,7 +490,6 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
             queryCondition.taskName = fieldsValue.preheatNames || null;
             queryCondition.nodes = nodes;
             queryCondition.status = fieldsValue.preheatStatus == "all" ? null : parseInt(fieldsValue.preheatStatus);
-            console.log(queryCondition);
             collection.trigger("fetching", queryCondition);
         },
 

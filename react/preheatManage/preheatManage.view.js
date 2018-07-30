@@ -25,6 +25,8 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                 super(props);
                 this.onChangePage = this.onChangePage.bind(this);
                 this.handleEditClick = this.handleEditClick.bind(this);
+                this.handlePauseClick = this.handlePauseClick.bind(this);
+                this.handleRestartClick = this.handleRestartClick.bind(this);
                 this.state = {
                     data: [],
                     isError: false,
@@ -40,13 +42,35 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                 collection.on("get.preheat.error", $.proxy(this.onGetError, this));
                 collection.on("fetching", $.proxy(this.onFetchingPreHeatList, this));   
                 collection.trigger("fetching", queryCondition);
+                collection.on("refresh.pause.success", $.proxy(this.onGetOperateSuccess, this, "暂停"));
+                collection.on("refresh.pause.error", $.proxy(this.onOperateError, this));
+                collection.on("refresh.restart.success", $.proxy(this.onGetOperateSuccess, this, "开启"));
+                collection.on("refresh.restart.error", $.proxy(this.onOperateError, this));
             }
 
             componentWillUnmount() {
                 var collection = this.props.preHeatProps.collection;
                 collection.off("get.preheat.success");
                 collection.off("get.preheat.error");
-                collection.off("fetching");    
+                collection.off("fetching");
+                collection.off("refresh.pause.success");
+                collection.off("refresh.pause.error");
+                collection.off("refresh.restart.success");
+                collection.off("refresh.restart.error");    
+            }
+
+            onGetOperateSuccess(msg){
+                Utility.alerts(msg + "成功!", "success", 2000);
+                const preHeatProps = this.props.preHeatProps;
+                const { collection, queryCondition } = preHeatProps;
+                collection.trigger("fetching", queryCondition);
+            }
+
+            onOperateError(error){
+                if (error && error.message)
+                    Utility.alerts(error.message);
+                else
+                    Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
             }
 
             onFetchingPreHeatList(queryCondition){
@@ -84,6 +108,34 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                 queryCondition.pageNo = page;
                 queryCondition.pageSize = pageSize;
                 collection.trigger("fetching", queryCondition);
+            }
+
+            handlePauseClick(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "I") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                var preHeatProps = this.props.preHeatProps;
+                var collection = preHeatProps.collection;
+                collection.taskPause({taskId: id});
+            }
+
+            handleRestartClick(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "I") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                var preHeatProps = this.props.preHeatProps;
+                var collection = preHeatProps.collection;
+                collection.taskRestart({taskId: id});
             }
 
             handleEditClick(event) {
@@ -234,8 +286,8 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                     key: 'committer',
                 },{
                     title: '创建时间',
-                    dataIndex: 'commitTime',
-                    key: 'commitTime',
+                    dataIndex: 'commitTimeFormated',
+                    key: 'commitTimeFormated',
                 },{
                     title: '操作',
                     dataIndex: 'id',
@@ -252,14 +304,14 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                         );
                         var playButton = (
                             <Tooltip placement="bottom" title={"开启"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleEditClick(e)}>
+                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleRestartClick(e)}>
                                     <Icon type="play-circle-o" />
                                 </a>
                             </Tooltip>
                         );
                         var pauseButton = (
                             <Tooltip placement="bottom" title={"暂停"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleEditClick(e)}>
+                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handlePauseClick(e)}>
                                     <Icon type="pause-circle-o" />
                                 </a>
                             </Tooltip>
@@ -286,7 +338,7 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                         showTotal: function showTotal(total) {
                         return 'Total '+ total + ' items';
                     },
-                    current: preHeatProps.queryCondition.page,
+                    current: preHeatProps.queryCondition.pageNo,
                     total: preHeatProps.collection.total,
                     onChange: this.onChangePage,
                     onShowSizeChange: this.onChangePage

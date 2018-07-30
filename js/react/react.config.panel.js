@@ -178,7 +178,7 @@ define("react.config.panel", ['require', 'exports', 'utility', 'react.backbone',
                     if (error && error.message)
                         Utility.alerts(error.message);
                     else
-                        Utility.alerts("网络阻塞，请刷新重试！");
+                        Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
                 },
 
                 onGetDiff: function(data){

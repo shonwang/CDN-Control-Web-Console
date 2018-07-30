@@ -37,7 +37,9 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                 this.state = {
                     //上传
                     fileList: [],
-                    uploading: false,
+                    disabledUpload: false,
+                    preloadUrlCount: 0,
+                    preloadFilePath: "",
                     //预热批次
                     isLoadingNodesList: false,
                     nodesList: [],
@@ -55,6 +57,8 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                 if (props.isEdit) {
                     this.state.nodesList = props.model.batchTimeBandwidth
                 }
+
+                this.isUploadDone = false;
                 moment.locale("zh");
             }
 
@@ -72,15 +76,35 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                         });
                     }.bind(this));
                 }
+                const collection = this.props.preHeatProps.collection;
+                collection.on("refresh.commit.success", $.proxy(this.onSubmitSuccess, this));
+                collection.on("refresh.commit.error", $.proxy(this.onGetError, this));     
             }
 
-            componentWillUnmount() {}
+            componentWillUnmount() {
+                const collection = this.props.preHeatProps.collection;
+                collection.off("refresh.commit.success");
+                collection.off("refresh.commit.error");   
+           
+            }
 
             onGetNodeListSuccess(res) {
                 this.props.preHeatProps.nodeList = res
                 this.setState({
                     isLoadingNodesList: false
                 });
+            }
+
+            onGetError (error){
+                if (error && error.message)
+                    Utility.alerts(error.message);
+                else
+                    Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
+            }
+
+            onSubmitSuccess (){
+                Utility.alerts("保存成功！", "success", 2000);
+                this.onClickCancel();
             }
 
             onGetNodeListError(error) {
@@ -90,22 +114,95 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
 
             handleSubmit(e) {
                 e.preventDefault();
-                this.props.form.validateFields((err, vals) => {
-                    if (!err) {}
-                })
+                const { resetFields, validateFields } = this.props.form;
+                resetFields("nodesList")
+                var checkArray = ["taskName", "taskDomain", "rangeTimePicker", "nodesList", "fileList"];
+                if (this.props.isEdit) {
+                    checkArray = ["nodesList"];
+                }
+                validateFields(checkArray, function(err, vals) {
+                    var postParam, postNodesList = [], model = this.props.model;
+                    const collection = this.props.preHeatProps.collection;
+                    if (!err) {
+                        _.each(this.state.nodesList, (node) => {
+                            var postNode = {
+                                id: node.id,
+                                sortnum: node.sortnum,
+                                nodes: node.nodeNameArray.join(";"),
+                            }, timeWidthList = [];
+
+                            if (!this.props.isEdit) delete postNode.id;
+
+                            _.each(node.timeWidth, (time) => {
+                                var timeObj = {
+                                    bandwidth: time.bandwidth,
+                                    batchEndTime: moment(time.batchEndTime, 'HH:mm').valueOf(),
+                                    id: time.id,
+                                    batchStartTime: moment(time.batchStartTime, 'HH:mm').valueOf()
+                                }
+                                if (!this.props.isEdit) delete timeObj.id;
+
+                                timeWidthList.push(timeObj)
+                            })
+                            postNode.timeWidth = timeWidthList;
+                            postNodesList.push(postNode)
+                        })
+
+                        if (!this.props.isEdit) {
+                            postParam = {
+                                taskName: vals.taskName,
+                                preloadChannel: vals.taskDomain,
+                                preloadFilePath: this.state.preloadFilePath,
+                                preloadUrlCount: this.state.preloadUrlCount,
+                                startTime: vals.rangeTimePicker[0].valueOf(),
+                                endTime: vals.rangeTimePicker[1].valueOf(),
+                                batchTimeBandwidth: postNodesList,
+                                committer: $(".user-name").html()
+                            }
+                            console.log(postParam)
+                            collection.commitTask(postParam);
+                        } else {
+
+                            postParam = {
+                                taskId: model.id,
+                                batchTimeBandwidth: postNodesList
+                            }
+                            console.log(postParam)
+                            collection.taskModify(postParam);
+                        }
+                    }
+                }.bind(this))
             }
 
             onClickCancel() {
-                var onClickCancelCallback = this.props.preHeatProps.onClickCancelCallback;
+                const onClickCancelCallback = this.props.preHeatProps.onClickCancelCallback;
                 onClickCancelCallback&&onClickCancelCallback();
             }
 
             onUploadFile (e) {
                 console.log('Upload event:', e);
-                if (Array.isArray(e)) {
-                    return e;
+                if (e.fileList.length > 1) {
+                    return []
                 }
-                return e && e.fileList;
+                if (e) {
+                    if (e.file.status == "error") {
+                        this.onGetError(e.file.response)
+                    } else if (e.file.status == "done"){
+                        Utility.alerts("上传成功！", "success", 2000);
+                        var res = e.file.response
+                        this.setState({
+                            preloadUrlCount: res.preloadUrlCount,
+                            preloadFilePath: res.preloadFilePath
+                        })
+                    }
+                    if (!this.state.disabledUpload) {
+                        this.setState({
+                            disabledUpload: true
+                        });
+                    }
+
+                }
+                return e.fileList;
             }
 
             validateDomain (rule, value, callback) {
@@ -137,27 +234,26 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                 var taskNameView = "", model = this.props.model;
 
                 const uploadProps = {
-                    action: '//jsonplaceholder.typicode.com/posts/',
+                    action: BASE_URL + "/refresh/task/upload",
                     onRemove: (file) => {
                         var fileList = getFieldValue("fileList");
-                            const index = fileList.indexOf(file);
-                            const newFileList = fileList.slice();
-                            newFileList.splice(index, 1);
+                        const index = fileList.indexOf(file);
+                        const newFileList = fileList.slice();
+                        newFileList.splice(index, 1);
                         setFieldsValue({
                             fileList: newFileList
                         });
-                        console.log(this.props.form.getFieldsValue())
-                    },
-                    beforeUpload: (file) => {
-                        console.log(this.props.form.getFieldsValue())
-                        var fileList = getFieldValue("fileList"),
-                            newFileList = [...fileList, file];
-                        setFieldsValue({
-                            fileList: newFileList
+                        this.setState({
+                            disabledUpload: false
                         });
-                        return false;
                     },
-                    multiple: true
+                    beforeUpload: (file, fileList) => {
+                        if (fileList.length > 1) {
+                            return false
+                        }
+                    },
+                    multiple: false,
+                    disabled: this.state.disabledUpload
                 };
 
                 if (this.props.isEdit) {
@@ -167,7 +263,7 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                                 <span className="ant-form-text">{model.taskName}</span>
                             </FormItem>
                             <FormItem {...formItemLayout} label="预热域名" style={{marginBottom: "0px"}}>
-                                <span className="ant-form-text">{model.preloadFilePath}</span>
+                                <span className="ant-form-text">{model.channel}</span>
                             </FormItem>
                             <FormItem {...formItemLayout} label="预热文件" style={{marginBottom: "0px"}}>
                                 <span className="ant-form-text">{model.preloadFilePath}</span>
@@ -176,7 +272,7 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                                 <span className="ant-form-text">{model.preloadUrlCount}</span>
                             </FormItem>
                             <FormItem {...formItemLayout} label="起止时间">
-                                <span className="ant-form-text">{model.startTime}~{model.endTime}</span>
+                                <span className="ant-form-text">{model.startTimeFormated}~{model.endTimeFormated}</span>
                             </FormItem>
                         </div>
                     )
@@ -207,20 +303,23 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                                         valuePropName: 'fileList',
                                         getValueFromEvent: $.proxy(this.onUploadFile, this),
                                         initialValue: this.state.fileList,
-                                        rules: [{ type: "array", required: true, message: '请上传预热文件!' }],
+                                        rules: [{ type: "array", required: true, message: '请上传预热文件，只能上传一个!' }],
                                     })(
                                         <Upload.Dragger {...uploadProps}>
                                             <p className="ant-upload-drag-icon">
                                                 <Icon type="inbox" />
                                             </p>
-                                            <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                                            <p className="ant-upload-hint">Support for a single or bulk upload.</p>
+                                            <p className="ant-upload-text">支持点击或拖拽到框里上传</p>
+                                            <p className="ant-upload-hint">只能上传一个文件</p>
                                         </Upload.Dragger>
                                     )}
                                 </div>
                             </FormItem>
+                            <FormItem {...formItemLayout} label="预热文件数目" style={{marginBottom: "0px"}}>
+                                <span className="ant-form-text">{this.state.preloadUrlCount}</span>
+                            </FormItem>
                             <FormItem {...formItemLayout} label="起止时间">
-                                {getFieldDecorator('range-time-picker', {
+                                {getFieldDecorator('rangeTimePicker', {
                                         rules: [{ type: 'array', required: true, message: '请选择起止时间！' }],
                                     })(
                                     <RangePicker showTime={{ format: 'HH:mm', minuteStep: 30 }} 
@@ -266,7 +365,7 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                 validateFields(["selectNodes", "inputOriginBand", "timeBand"], (err, vals) => {
                     if (!err && !isEditNode) {
                         newNodes = {
-                            index: nodesList.length + 1,
+                            sortnum: nodesList.length + 1,
                             id: Utility.randomStr(8),
                             nodeNameArray: getFieldsValue().selectNodes,
                             timeWidth: [...timeBandList]
@@ -382,25 +481,61 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                     }
                 },{
                     title: '进度',
-                    dataIndex: 'progress ',
-                    key: 'progress ',
-                    render: (text, record) => (text || "-")
+                    dataIndex: 'successed ',
+                    key: 'successed ',
+                    render: (text, record) => {
+                        if (record.successed != undefined && 
+                            record.failed != undefined) {
+                            var total = record.successed + record.failed;
+                            return total;
+                        } else {
+                            return "-"
+                        }
+                    }
                 },{
                     title: '状态',
                     dataIndex: 'status',
                     key: 'status',
-                    render: (text, record) => (text || "-")
+                    render: (text, record) => {
+                        var tag = null;
+                        if (record.status == 3)
+                            tag = (<Tag color={"red"}>已暂停</Tag>)
+                        else if (record.status == 2)
+                            tag = <Tag color={"green"}>已完成</Tag>
+                        else if (record.status == 0)
+                            tag = <Tag color={"blue"}>待预热</Tag>
+                        else if (record.status == 1)
+                            tag = <Tag color={"orange"}>预热中</Tag>
+                        else if (record.status == 4)
+                            tag = <Tag color={"purple"}>暂停中</Tag>
+                        return tag
+                    }
                 },{
                     title: '成功率',
-                    dataIndex: 'successRate',
-                    key: 'successRate',
-                    render: (text, record) => (text || "-")
+                    dataIndex: 'failed',
+                    key: 'failed',
+                    render: (text, record) => {
+                        if (record.successed != undefined && 
+                            record.failed != undefined) {
+                            var total = record.successed + record.failed;
+                            if (total != 0){
+                                return record.successed / total * 100 + "%"
+                            } else {
+                                return "0" 
+                            }
+                        } else {
+                            return "-"
+                        }
+                    }
                 },{
                     title: '执行时间',
                     dataIndex: 'timeWidth',
                     key: 'timeWidth',
                     render: (text, record) => {
-                        return <List size="small" dataSource={record.timeWidth} renderItem={item => (<List.Item>{item.startTime}~{item.endTime}</List.Item>)} />
+                        return <List size="small" dataSource={record.timeWidth} 
+                                renderItem={(item) => {
+                                    return <List.Item>{item.batchStartTime}~{item.batchEndTime}</List.Item>
+                                }} />
                     }
                 },{
                     title: '回源带宽',
@@ -528,8 +663,8 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                         console.log(getFieldsValue())
                         newTimeBand = {
                             id: Utility.randomStr(8),
-                            startTime: getFieldsValue().selectStartTime.format(format),
-                            endTime: getFieldsValue().selectEndTime.format(format),
+                            batchStartTime: getFieldsValue().selectStartTime.format(format),
+                            batchEndTime: getFieldsValue().selectEndTime.format(format),
                             bandwidth: getFieldsValue().inputBand
                         }
                         this.setState({
@@ -539,8 +674,8 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                     } else if (!err && isEditTime) {
                         _.each(timeBandList, (el)=>{
                             if (el.id == curEditTime.id) {
-                                el.startTime = getFieldsValue().selectStartTime.format(format);
-                                el.endTime = getFieldsValue().selectEndTime.format(format);
+                                el.batchStartTime = getFieldsValue().selectStartTime.format(format);
+                                el.batchEndTime = getFieldsValue().selectEndTime.format(format);
                                 el.bandwidth = getFieldsValue().inputBand
                             }
                         })
@@ -565,8 +700,8 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                         return obj.id == id
                     }.bind(this))
                 const format = 'HH:mm',
-                      selectStartTime = model.startTime,
-                      selectEndTime = model.endTime;
+                      selectStartTime = model.batchStartTime,
+                      selectEndTime = model.batchEndTime;
                 this.setState({
                     timeModalVisible: true,
                     isEditTime: true,
@@ -610,9 +745,9 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                 var timeBandView = "", model = this.props.model;
                 var  columns = [{
                     title: '执行时间',
-                    dataIndex: 'startTime',
-                    key: 'startTime',
-                    render: (text, record) => (text + "~" + record.endTime)
+                    dataIndex: 'batchStartTime',
+                    key: 'batchStartTime',
+                    render: (text, record) => (text + "~" + record.batchEndTime)
                 },{
                     title: '回源带宽',
                     dataIndex: 'bandwidth',

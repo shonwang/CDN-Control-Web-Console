@@ -5,6 +5,22 @@ define("preheatManage.model", ['require', 'exports', 'utility'], function (requi
         initialize: function initialize() {
             var taskId = this.get("taskId");
             if (taskId) this.set("id", taskId);
+
+            var commitTime = parseInt(this.get("commitTime")),
+                startTime = parseInt(this.get("startTime")),
+                endTime = parseInt(this.get("endTime")),
+                batchTimeBandwidth = this.get("batchTimeBandwidth");
+            if (commitTime) this.set("commitTimeFormated", new Date(commitTime).format("yyyy/MM/dd hh:mm"));
+            if (startTime) this.set("startTimeFormated", new Date(startTime).format("yyyy/MM/dd hh:mm"));
+            if (endTime) this.set("endTimeFormated", new Date(endTime).format("yyyy/MM/dd hh:mm"));
+            _.each(batchTimeBandwidth, function (el) {
+                _.each(el.timeWidth, function (time) {
+                    var batchEndTime = parseInt(time.batchEndTime),
+                        batchStartTime = parseInt(time.batchStartTime);
+                    time.batchEndTime = new Date(batchEndTime).format("hh:mm");
+                    time.batchStartTime = new Date(batchStartTime).format("hh:mm");
+                });
+            });
         }
     });
 
@@ -15,64 +31,14 @@ define("preheatManage.model", ['require', 'exports', 'utility'], function (requi
         initialize: function initialize() {},
 
         getPreheatList: function getPreheatList(args) {
-
-            var tempData = {
-                "preloadTaskList": [{
-                    "taskId": 377,
-                    "taskName": "爱奇艺TOP100预热",
-                    "preloadFilePath": "http://121.14.55.64/asp/hls/main/0303000a/3/default/e719f5f8827c6/main.m3u8",
-                    "preloadUrlCount": 1000,
-                    "currentBandwidth": 100,
-                    "startTime": "2018-06-13 17:03:00",
-                    "endTime": "2018-06-14 17:03:00",
-                    "successRate": "99%",
-                    "status": 3,
-                    "committer": "yewrh",
-                    "currentNodes": "szcm14;yyct05;yyct04",
-                    "commitTime": "2018-06-14 17:03:00",
-                    "currentBatch": 1,
-                    "progress": 2771,
-                    "batchTimeBandwidth": [{
-                        "sortnum": 1,
-                        "nodes": "szcm14;yyct05;yyct04",
-                        "timeWidth": [{
-                            "id": 1,
-                            "startTime": "02:00",
-                            "endTime": "04:00",
-                            "bandwidth": "100"
-                        }, {
-                            "id": 2,
-                            "startTime": "12:00",
-                            "endTime": "14:00",
-                            "bandwidth": "100"
-                        }]
-                    }, {
-                        "sortnum": 2,
-                        "nodes": "szcm14;yyct05;yyct04",
-                        "timeWidth": [{
-                            "id": 1,
-                            "startTime": "02:00",
-                            "endTime": "04:00",
-                            "bandwidth": "100"
-                        }, {
-                            "id": 2,
-                            "startTime": "12:00",
-                            "endTime": "14:00",
-                            "bandwidth": "100"
-                        }]
-                    }]
-                }]
-            };
-
             var url = BASE_URL + "/refresh/task/query",
-                //"/rs/device/pagelist",
-            successCallback = function (res) {
+                successCallback = function (res) {
                 this.reset();
                 if (res) {
-                    _.each(tempData.preloadTaskList, function (element, index, list) {
+                    _.each(res.rows, function (element, index, list) {
                         this.push(new Model(element));
                     }.bind(this));
-                    this.total = 1; //res.total;
+                    this.total = res.total;
                     this.trigger("get.preheat.success", res.rows);
                 } else {
                     this.trigger("get.preheat.error");
@@ -82,6 +48,50 @@ define("preheatManage.model", ['require', 'exports', 'utility'], function (requi
                 this.trigger('get.preheat.error', response);
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+        commitTask: function commitTask(args) {
+            var url = BASE_URL + "/refresh/task/commit",
+                successCallback = function (res) {
+                this.trigger("refresh.commit.success", res);
+            }.bind(this),
+                errorCallback = function (response) {
+                this.trigger('refresh.commit.error', response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+        taskModify: function taskModify(args) {
+            var url = BASE_URL + "/refresh/task/modify",
+                successCallback = function (res) {
+                this.trigger("refresh.commit.success", res);
+            }.bind(this),
+                errorCallback = function (response) {
+                this.trigger('refresh.commit.error', response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+        taskPause: function taskPause(args) {
+            var url = BASE_URL + "/refresh/task/pause",
+                successCallback = function (res) {
+                this.trigger("refresh.pause.success", res);
+            }.bind(this),
+                errorCallback = function (response) {
+                this.trigger('refresh.pause.error', response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        taskRestart: function taskRestart(args) {
+            var url = BASE_URL + "/refresh/task/restart",
+                successCallback = function (res) {
+                this.trigger("refresh.restart.success", res);
+            }.bind(this),
+                errorCallback = function (response) {
+                this.trigger('refresh.restart.error', response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         }
     });
 

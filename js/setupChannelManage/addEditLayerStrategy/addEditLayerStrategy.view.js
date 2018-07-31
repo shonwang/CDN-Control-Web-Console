@@ -60,7 +60,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 }else if(this.curEditRule.localType === 2){
                     _.each(this.curEditRule.local, function(el){
                         var tempName = el.name;
-                        var tempValue = el.operatorId;
+                        var tempValue = el.id;
                         this.defaultParam.localOperator.push({
                             name: tempName,
                             value: tempValue
@@ -861,6 +861,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         initLocalOperatorTable: function() {
+            console.log(this.defaultParam.localOperator)
             this.localOperatorTable = $(_.template(template['tpl/businessManage/businessManage.add&edit.operatorTable.html'])({
                 data: this.defaultParam.localOperator
             }));
@@ -916,6 +917,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 id = $(eventTarget).attr("id");
             }
             this.defaultParam.localOperator = _.filter(this.defaultParam.localOperator, function(obj) {
+                console.log(obj.value)
                 return obj.value.toString() !== id
             }.bind(this));
             this.initLocalOperatorTable();

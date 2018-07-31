@@ -99,7 +99,10 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.baseInfoTable.appendTo(this.$el.find(".bill-ctn"));
 
             this.initCname();
-            this.initXtcpSetup()
+            if(this.config.xtcpConfig){
+                this.initXtcpSetup()
+            }
+            this.initSubSetup();
         },
 
         initCname: function() {
@@ -143,6 +146,10 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                 data: this.config.xtcpConfig
             }));
             this.xtcpTable.appendTo(this.$el.find(".bill-ctn"));
+            
+        },
+
+        initSubSetup:function(){
             console.log("kkkkk")
             var type = this.config.originDomain.type,
                 applicationType = this.config.originDomain.applicationType;

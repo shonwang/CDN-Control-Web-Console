@@ -196,7 +196,7 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
         },
 
         initRuleTable: function(res) {
-            this.ruleList=res;              
+            this.ruleList=res;          
             this.table = $(_.template(template['tpl/setupTopoManage/setupTopoManage.replace.table.html'])({
                 data: this.ruleList
             }));  

@@ -16,11 +16,11 @@
     <% for(var i = 0; i < data.length; i++) { %>
       <tbody>
         <tr>
-            <%if(data[i].itemRuleIsChecked){%>
-             <th><input type="checkbox" checked="true" id="<%=i%>"></th>
-            <%}else{%>
-               <th><input type="checkbox" id="<%=i%>"></th>
-            <%}%>
+          <%if(data[i].itemRuleIsChecked){%>
+            <th><input type="checkbox" checked="true" id="<%=i%>"></th>
+           <%}else{%>
+              <th><input type="checkbox" id="<%=i%>"></th>
+           <%}%>
             <%if(data[i].localType==1){%>
                 <%if(data[i].local.length>1){%>
                  <td><table>
@@ -31,12 +31,33 @@
                 <%}else{%>
                   <td><%=data[i].local[0].name%></td>
             <%}}else if(data[i].localType==2){%>
+                <%if(data[i].local.length>1){%>
+                  <td><table>
+                    <%for(var j=0;j< data[i].local.length;j++){%>
+                      <tr><td><%=data[i].local[j].name%></td></tr>
+                    <%}%>
+                 </table></td>
+                <%}else{%>
                  <td><%=data[i].local[0].name%></td>
-            <%}else if(data[i].localType==3){%>
+            <%}}else if(data[i].localType==3){%>
+              <%if(data[i].local.length>1){%>
+                <td><table>
+                  <%for(var j=0;j< data[i].local.length;j++){%>
+                    <tr><td><%=data[i].local[j].provinceName+data[i].local[j].name%></td></tr>
+                  <%}%>
+               </table></td>
+              <%}else{%>
                  <td><%=data[i].local[0].provinceName+data[i].local[0].name%></td>
-            <%}else if(data[i].localType==4){%>
+            <%}}else if(data[i].localType==4){%>
+              <%if(data[i].local.length>1){%>
+                <td><table>
+                  <%for(var j=0;j< data[i].local.length;j++){%>
+                    <tr><td><%=data[i].local[j].areaName+data[i].local[j].namee%></td></tr>
+                  <%}%>
+               </table></td>
+              <%}else{%>
                  <td><%=data[i].local[0].areaName+data[i].local[0].name%></td>
-            <%}%>
+            <%}}%>
             <%if(data[i].upper.length>1){%>        
             <%if(data[i].isBackup){%>
                <td>

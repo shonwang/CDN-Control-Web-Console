@@ -83,6 +83,10 @@ define("adminManage.add&edit.view", ['require','exports', 'template', 'modal.vie
         },
 
         initTopoMenu: function(){
+            var objArray = [{
+                name: "请选择",
+                value: null
+            }]
             if(this.isEdit){
                 this.$el.find(".dropdown-topo .cur-value").html(this.defaultParam.topoName)
             }
@@ -99,16 +103,16 @@ define("adminManage.add&edit.view", ['require','exports', 'template', 'modal.vie
                 Utility.initDropMenu(this.$el.find(".dropdown-topo"), topoArrayList, function(value) {
                     this.defaultParam.topoId = parseInt(value);
                     _.each(topoArrayList, function(el){
-                        console.log(el)
                         if(el.value == this.defaultParam.topoId){
                             this.defaultParam.topoName = el.name
                         }
                     }.bind(this))
-                    console.log("pppp", this.defaultParam.topoName)
+                    this.$el.find("#dropdown-dispatch .cur-value").html(objArray[0].name)
+                    this.defaultParam.dispgroupId = objArray[0].value
+                    this.defaultParam.dispgroupName = objArray[0].name
+                    console.log("yyyyy", this.defaultParam.dispgroupId)
                     this.initDispGroupMenu()
-                }.bind(this)); 
-                
-                
+                }.bind(this));     
             }
              
         },
@@ -141,6 +145,9 @@ define("adminManage.add&edit.view", ['require','exports', 'template', 'modal.vie
                                 this.defaultParam.dispgroupName = el.name
                             }
                         }.bind(this))
+                    }else{
+                        this.defaultParam.dispgroupId = null;
+                        this.defaultParam.dispgroupName = null
                     }
                 }.bind(this));  
             }

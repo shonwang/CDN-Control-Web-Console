@@ -37,7 +37,6 @@ define("adminManage.add&edit.view", ['require','exports', 'template', 'modal.vie
             this.collection.getDispGroupList()
 
             if(this.isEdit){
-                console.log("ooooooo")
                 this.defaultParam = {
                     "userId": this.model.userId,
                     "type": this.model.applicationType,
@@ -63,23 +62,16 @@ define("adminManage.add&edit.view", ['require','exports', 'template', 'modal.vie
         initTypeMenu: function(){
             if(this.isEdit){
                 _.each(this.typeList, function(el){
-                    console.log(el)
                     if(el.value == this.defaultParam.type){
                         this.defaultParam.typeName = el.name
                     }
-                    if(this.defaultParam.type == 20){
-                        this.defaultParam.typeName = "test"
-                    }
                 }.bind(this))
-                console.log(this.defaultParam.typeName)
                 this.$el.find(".dropdown-type .cur-value").html(this.defaultParam.typeName)
             }
             Utility.initDropMenu(this.$el.find(".dropdown-type"), this.typeList, function(value) {
                 this.defaultParam.type = parseInt(value);
                 this.initTopoMenu()
             }.bind(this));  
-            console.log(this.defaultParam.type)
-
         },
 
         initTopoMenu: function(){
@@ -110,7 +102,6 @@ define("adminManage.add&edit.view", ['require','exports', 'template', 'modal.vie
                     this.$el.find("#dropdown-dispatch .cur-value").html(objArray[0].name)
                     this.defaultParam.dispgroupId = objArray[0].value
                     this.defaultParam.dispgroupName = objArray[0].name
-                    console.log("yyyyy", this.defaultParam.dispgroupId)
                     this.initDispGroupMenu()
                 }.bind(this));     
             }
@@ -197,7 +188,6 @@ define("adminManage.add&edit.view", ['require','exports', 'template', 'modal.vie
 
         getArgs: function(){
             this.defaultParam.userId = parseInt(this.$el.find("#input-id").val());
-            console.log("jjjj",this.defaultParam)
             if(!this.defaultParam.userId){
                 Utility.warning("请设置正确的客户ID");
                 return false
@@ -207,7 +197,6 @@ define("adminManage.add&edit.view", ['require','exports', 'template', 'modal.vie
                 return false
             }
             if(!this.defaultParam.topoId){
-                console.log(this.defaultParam.topoId)
                 Utility.warning("拓扑不能为空");
                 return false
             }
@@ -230,7 +219,6 @@ define("adminManage.add&edit.view", ['require','exports', 'template', 'modal.vie
             if (error&&error.message)
                 Utility.alerts(error.message)
             else{
-                console.log("uuuuuuu")
                 Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
             }
             

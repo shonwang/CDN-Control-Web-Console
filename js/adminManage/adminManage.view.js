@@ -101,7 +101,6 @@ define("adminManage.view", ['require','exports', 'template', 'modal.view', 'util
                     width : 550,
                     onOKCallback:  function(){
                         var options = addAdminView.getArgs();
-                        console.log(options)
                         if (!options) return;
                         this.collection.addUserTopoInfo(options)
                         this.adminAddOrEditPopup.$el.modal("hide");
@@ -136,8 +135,6 @@ define("adminManage.view", ['require','exports', 'template', 'modal.view', 'util
             this.$el.find(".total-items span").html(this.totalCount)
             if (this.adminInfoList.totalCount <= this.queryArgs.pageSize) return;
             var total = Math.ceil(this.totalCount / this.queryArgs.pageSize);
-
-            console.log("yyyy", total, this.totalCount, this.queryArgs.pageSize)
             this.$el.find(".pagination").jqPaginator({
                 totalPages: total,
                 visiblePages: 10,

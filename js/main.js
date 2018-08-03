@@ -320,7 +320,7 @@ else if(window.DEBUG === 9)
 else if(window.DEBUG === 10)
     window.BASE_URL = "http://preonline.center.cdn.ksyun.com";
 else if(window.DEBUG === 11)
-    window.BASE_URL = "http://cdn.center.wq01.k8s.op.ksyun.com";
+    window.BASE_URL = "http://qatest.center.cdn.ksyun.com";
 else if(window.DEBUG === 12)
     window.BASE_URL = "http://10.12.8.161:9099";
 requirejs.config({

@@ -1,0 +1,40 @@
+<table class="table table-striped table-hover cdn-node-manage-table-striped">  
+    <thead> 
+      <tr>
+        <th>限速URI</th>
+        <th>速率每秒</th>
+        <th>nginx数量</th>
+        <th>app数量</th>   
+        <th>状态</th> 
+        <th>创建时间</th> 
+        <th>更新时间</th> 
+        <th>报警组名</th> 
+      </tr>
+    </thead>
+    <% for(var i = 0; i < data.length; i++) { %>
+        <tbody>		
+            <tr data-id="<%=data[i].id%>" style="background-color:<%if(i%2==0){%>#fff;<%}else{%>#f9f9f9;<%}%>">
+              <td>
+                  <a href="javascript:void(0)" id="<%=data[i].id%>" class="admin-name">
+                    <%=data[i].uri%>
+                  </a>
+              </td>
+              <td><%=data[i].rate%></td>
+              <td><%=data[i].nginxCount%></td>
+              <td><%=data[i].appCount%></td>
+              <td><%=data[i].status%></td>
+              <td><%=data[i].createTime%></td>
+              <td><%=data[i].updateTime%></td>
+              <td><%=data[i].notifyGroup%></td>
+              <td>
+                  <a href="javascript:void(0)" data-id="<%=data[i].id%>" class="edit" title="编辑">
+                      <span class="glyphicon glyphicon-edit"></span>
+                  </a>   
+                  <!-- <a href="javascript:void(0)" data-id="<%=data[i].id%>" class="delete" title="删除">
+                      <span class="glyphicon glyphicon-trash"></span>
+                  </a> -->
+             </td> 
+            </tr>
+        </tbody>
+    <% } %>  
+</table>

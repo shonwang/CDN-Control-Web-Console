@@ -49,6 +49,16 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             if (this.isMultiwire) {
                 this.setOperatorDorpDownList();
             }
+            this.$el.find("#input-maxbandwidth").on("blur",$.proxy(this.onMaxBandwidthBlur,this));
+        },
+
+        onMaxBandwidthBlur:function(){
+            var _value = this.$el.find("#input-maxbandwidth").val();
+            if(this.isEdit){
+                if(_value != this.args.maxBandwidth){
+                    this.$el.find(".up-bandwidth-change-tips").show();
+                }
+            }
         },
 
         setOperatorDorpDownList: function() {
@@ -91,6 +101,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
 
         
         setDropDownList: function() {
+            var defaultValue;
+         
             var nameList = [{
                     name: "95峰值",
                     value: 1
@@ -105,14 +117,20 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     value: 4
                 }
             ];
+
+            if(this.isEdit){
+                defaultValue = _.find(nameList, function(object) {
+                    return object.value === this.args.chargingType
+                }.bind(this));  
+            }             
             Utility.initDropMenu(this.$el.find(".dropdown-charging"), nameList, function(value) {
+                if(this.isEdit && defaultValue.value != value){
+                    this.$el.find(".charge-change-tips").show();
+                }
                 this.args.chargingType = parseInt(value);
             }.bind(this));
 
             if (this.isEdit) {
-                var defaultValue = _.find(nameList, function(object) {
-                    return object.value === this.args.chargingType
-                }.bind(this));
                 this.$el.find(".dropdown-charging .cur-value").html(defaultValue.name)
             } else {
                 this.$el.find(".dropdown-charging .cur-value").html(nameList[0].name)

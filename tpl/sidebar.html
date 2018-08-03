@@ -31,6 +31,9 @@
 			 <% if (permission.LayeredStrategyManage) { %>
             <li id="specialLayerManage"><a href="javascript:void(0)" path="index.html#/specialLayerManage"><i class="glyphicon glyphicon-text-size"></i>分层策略管理</a></li>
 			<% } %>
+            <% if (permission.HashManage) { %>
+            <li id="hashOrigin"><a href="javascript:void(0)" path="index.html#/hashOrigin"><i class="glyphicon glyphicon-repeat"></i>hash环管理</a></li>
+            <% } %>
         </ul>
     </li>
     <% } %>
@@ -144,6 +147,13 @@
                 </a>
             </li>
             <%}%>
+            
+            <li id="adminManage">
+                <a href="javascript:void(0)" path="index.html#/adminManage">
+                    <i class="glyphicon glyphicon-import"></i>客户配置
+                </a>
+            </li>
+            
             <li id="statisticsDataSourceSwitch">
                 <a href="javascript:void(0)" path="index.html#/statisticsDataSourceSwitch">
                     <i class="glyphicon glyphicon-random"></i>统计数据源切换

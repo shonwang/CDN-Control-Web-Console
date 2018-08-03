@@ -8,7 +8,10 @@ define("addEditLayerStrategy.model", ['require','exports', 'utility', 'setupTopo
         
         model: Model,
 
-        initialize: function(){}
+        initialize: function(){},
+
+        
+
     });
 
     return AddEditLayerStrategyCollection;

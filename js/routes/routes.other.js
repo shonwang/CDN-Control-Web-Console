@@ -79,6 +79,25 @@ define("routes.other", ['require', 'exports', 'subNavbar.view'],
                 }.bind(this));
             },
 
+            adminManage: function(){
+                require(['adminManage.view', 'adminManage.model'], function(AdminManageView, AdminManageModel) {
+                    this.curPage = 'adminManage';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    if (!this.adminManageModel)
+                        this.adminManageModel = new AdminManageModel();
+                    if (!this.adminManageView) {
+                        var options = {
+                            collection: this.adminManageModel
+                        };
+                        this.adminManageView = new AdminManageView(options);
+                        this.adminManageView.render($('.ksc-content'));
+                    } else {
+                        this.adminManageView.update();
+                    }
+                    this.curView = this.adminManageView;
+                }.bind(this));
+            },
+
             customMaintenance: function() {
                 require(['customMaintenance.view', 'customMaintenance.model'], function(CustomMaintenanceView, CustomMaintenanceModel) {
                     this.curPage = 'customMaintenance';

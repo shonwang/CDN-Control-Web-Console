@@ -350,7 +350,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     return;
                 }
 
-                console.log("点击保存按钮时的拓扑", this.defaultParam)
+                console.log("点击保存按钮时的拓扑", this.defaultParam, this.defaultParam.rule)
 
                 var postRules = [],
                     postTopo = {};
@@ -360,13 +360,15 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         upperObjArray = [],
                         tempRule = {};
                     _.each(rule.local, function(node) {
-                        if (rule.localType === 3) {
-                            localIdArray.push(node.provinceId);
-                        } else if (rule.localType === 4) {
-                            localIdArray.push(node.areaId);
+                        if(rule.localType===3){
+                            localIdArray.push([node.provinceId, node.id]);
+                        }else if(rule.localType===4){
+                            localIdArray.push([node.areaId, node.id]);
+                        }else if(rule.localType===1 || rule.localType===2){
+                            localIdArray.push([node.id])
                         }
-                        localIdArray.push(node.id)
                     }.bind(this));
+                    console.log("点保存时的localIdArray", localIdArray)
                     _.each(rule.upper, function(node) {
                         upperObjArray.push({
                             nodeId: node.rsNodeMsgVo.id,
@@ -402,6 +404,8 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     postTopo.ispub = 1;
                 else
                     postTopo.ispub = 0;
+                console.log("finally", postTopo)
+
                 if (this.isEdit)
                 // Ajax拓扑关系编辑
                     this.collection.topoModify(postTopo);
@@ -760,10 +764,12 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
             onClickItemEdit: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
+                    console.log(this.defaultParam.rule)
                 this.curEditRule = _.find(this.defaultParam.rule, function(obj) {
                     return obj.id === parseInt(id)
                 }.bind(this))
-                //  console.log("this.curEditRule"+this.curEditRule.local[1].name);
+                console.log("点编辑时的this.curEditRule", this.curEditRule)
+             //  console.log("this.curEditRule"+this.curEditRule.local[1].name);
                 if (!this.curEditRule) {
                     Utility.warning("找不到此行的数据，无法编辑");
                     return;
@@ -783,6 +789,13 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                             appType: this.defaultParam.type,
                             isEdit: true,
                             onSaveCallback: function() {
+                                var tempRule = myAddEditLayerStrategyView.getArgs()
+                                this.defaultParam.rule = this.defaultParam.rule.concat(tempRule);
+                                this.defaultParam.rule = _.filter(this.defaultParam.rule, function(el){
+                                    return el.id !== this.curEditRule.id
+                                }.bind(this))
+                                console.log("保存", tempRule, this.curEditRule)
+                                console.log("编辑后的this.defaultParam.rule", this.defaultParam.rule) 
                                 myAddEditLayerStrategyView.$el.remove();
                                 this.$el.find(".add-topo").show();
                                 this.initRuleTable();
@@ -833,6 +846,8 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                             rule: this.defaultParam.rule,
                             appType: this.defaultParam.type,
                             onSaveCallback: function() {
+                                this.defaultParam.rule = myAddEditLayerStrategyView.getArgs();
+                                console.log("jjjjjjjjjj", this.defaultParam.rule)
                                 myAddEditLayerStrategyView.$el.remove();
                                 this.$el.find(".add-topo").show();
                                 this.initRuleTable();
@@ -845,6 +860,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                         this.$el.find(".add-topo").hide();
                         myAddEditLayerStrategyView.render(this.$el.find(".add-role-ctn"));
                     }.bind(this))
+                console.log("退出添加规则子页面时的this.defaultParam.rule", this.defaultParam.rule)
             },
 
             onGetError: function(error) {

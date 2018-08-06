@@ -36,7 +36,8 @@ define("apiLimitRate.view", ['require','exports', 'template', 'modal.view', 'uti
                 "start": 1,
                 "total": 10,
             }
-            this.collection.getApiLimitRateInfo(this.queryArgs)
+            var queryString = "?start="+this.queryArgs.start+"&total="+this.queryArgs.total
+            this.collection.getApiLimitRateInfo(queryString)
         },
 
         addApiLimitRateSuccess: function(){
@@ -54,10 +55,30 @@ define("apiLimitRate.view", ['require','exports', 'template', 'modal.view', 'uti
         //     this.onClickQueryButton();
         // },
 
+        timestampToTime: function(timestamp){
+            var date = new Date(timestamp);
+            Y = date.getFullYear() + '-';
+            M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+            D = date.getDate() + ' ';
+            h = date.getHours() + ':';
+            m = date.getMinutes() + ':';
+            s = date.getSeconds();
+            return Y+M+D+h+m+s;
+        },
+
         getApiLimitRateSuccess: function(data){
-            var _data = data;
-            this.listInfoList = _data;
-            this.totalCount = data.total;
+            console.log(data)
+            var _data = data.data;
+            this.apiInfoList = _data;
+            _.each(this.apiInfoList, function(el){
+                el.createTime = this.timestampToTime(el.createTime);
+                if(el.updateTime == null){
+                    el.updateTime = el.createTime
+                }else{
+                    el.updateTime = this.timestampToTime(el.updateTime)
+                }
+            }.bind(this))
+            this.totalCount = data.count;
             this.initTable();
             var pageNum = [{
                 name: "10条",
@@ -85,8 +106,10 @@ define("apiLimitRate.view", ['require','exports', 'template', 'modal.view', 'uti
             this.queryArgs.start = 1;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".pagination").html("");
-            this.queryArgs.uri = parseInt(this.$el.find("#input-uri").val().trim()) || null;
-            this.collection.getApiLimitRateInfo(this.queryArgs);
+            this.queryArgs.uri = this.$el.find("#input-uri").val().trim() || '';
+            console.log("gggg", this.queryArgs)
+            var queryString = "?uri="+this.queryArgs.uri+"&start="+this.queryArgs.start+"&total="+this.queryArgs.total
+            this.collection.getApiLimitRateInfo(queryString, true);
         },
 
         onClickCreateButton: function(){
@@ -95,7 +118,6 @@ define("apiLimitRate.view", ['require','exports', 'template', 'modal.view', 'uti
             require(["apiLimitRate.add&edit.view"], function(ApiAddOrEditView) {
                 var addApiLimitRateView = new ApiAddOrEditView({
                     collection: this.collection,
-        
                 });
                 var options = {
                     title:"添加api限速信息",
@@ -125,9 +147,9 @@ define("apiLimitRate.view", ['require','exports', 'template', 'modal.view', 'uti
             }));
             if (this.apiInfoList.length !== 0) {
                 this.$el.find(".table-ctn").html(this.apiInfoTable);
-                this.listTable.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
+                this.apiInfoTable.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
                 // this.listTable.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
-                this.listTable.find("[data-toggle='popover']").popover();
+                this.apiInfoTable.find("[data-toggle='popover']").popover();
 
             } else {
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
@@ -138,20 +160,25 @@ define("apiLimitRate.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.find(".total-items span").html(this.totalCount)
             if (this.apiInfoList.totalCount <= this.queryArgs.total) return;
             var total = Math.ceil(this.totalCount / this.queryArgs.total);
-            this.$el.find(".pagination").jqPaginator({
-                totalPages: total,
-                visiblePages: 10,
-                currentPage: 1,
-                onPageChange: function(num, type) {
-                    if (type !== "init") {
-                        this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                        var args = _.extend(this.queryArgs);
-                        args.start = num;
-                        args.total = this.queryArgs.total;
-                        this.collection.getUserTopoInfo(args);
-                    }
-                }.bind(this)
-            });
+            console.log("yyyyy", total)
+            if(total > 0){
+                this.$el.find(".pagination").jqPaginator({
+                    totalPages: total,
+                    visiblePages: 10,
+                    currentPage: 1,
+                    onPageChange: function(num, type) {
+                        if (type !== "init") {
+                            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
+                            var args = {};
+                            args.uri = this.queryArgs.uri || ''
+                            args.start = num;
+                            args.total = this.queryArgs.total;
+                            var argString = "?uri="+args.uri+"&start="+args.start+"&total="+args.total
+                            this.collection.getApiLimitRateInfo(argString);
+                        }
+                    }.bind(this)
+                });
+            }
             this.isInitPaginator = true;
         },
 
@@ -183,6 +210,7 @@ define("apiLimitRate.view", ['require','exports', 'template', 'modal.view', 'uti
                         var options = editApiLimitRateView.getArgs();
                         if (!options) return;
                         options.id = parseInt(model.id);
+                        console.log("bbbbb", options)
                         this.collection.updateApiLimitRateInfo(options)
                         this.apiAddOrEditPopup.$el.modal("hide");
                     }.bind(this),

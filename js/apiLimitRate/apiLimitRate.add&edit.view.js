@@ -8,17 +8,16 @@ define("apiLimitRate.add&edit.view", ['require','exports', 'template', 'modal.vi
             this.collection = options.collection;
             this.isEdit = options.isEdit;
             this.model = options.model
-          
+            console.log("iiiii", this.model, this.isEdit)
             if(this.isEdit){
                 this.defaultParam = {
                     "uri"        : this.model.uri,
-                    "rate"       : this.model.applicationType,
-                    "nginxCount" : this.model.topoId,
-                    "appCount"   : this.model.topoName,
-                    "status"     : this.model.dispgroupName,
-                    "notifyGroup": this.model.dispgroupId,
+                    "rate"       : this.model.rate,
+                    "nginxCount" : this.model.nginxCount,
+                    "appCount"   : this.model.appCount,
+                    "status"     : this.model.status,
+                    "notifyGroup": this.model.notifyGroup,
                 }
-                this.initEditSetup();
             }else{
                 this.defaultParam = {
                     "uri"        : null,
@@ -26,21 +25,31 @@ define("apiLimitRate.add&edit.view", ['require','exports', 'template', 'modal.vi
                     "nginxCount" : null,
                     "appCount"   : null,
                     "status"     : null,
-                    "notifyGroup": null
+                    "notifyGroup": null,
                 }
             }
             this.$el = $(_.template(template['tpl/apiLimitRate/apiLimitRate.add&edit.html'])({
                 data: this.defaultParam
             }));
-            
+            this.initSetup()
+            console.log("gggg", this.defaultParam)
+            this.$el.find("#input-rate").on('keyup', $.proxy(this.onNumberOnly, this))
+            this.$el.find("#input-nginxCount").on('keyup', $.proxy(this.onNumberOnly, this))
+            this.$el.find("#input-appCount").on('keyup', $.proxy(this.onNumberOnly, this))
+            this.$el.find("#input-rate").on('afterpaste', $.proxy(this.onNumberOnly, this))
+            this.$el.find("#input-nginxCount").on('afterpaste', $.proxy(this.onNumberOnly, this))
+            this.$el.find("#input-appCount").on('afterpaste', $.proxy(this.onNumberOnly, this))
         },
 
-        initEditSetup: function(){
+        onNumberOnly: function(event){
+            event.target.value = event.target.value.replace(/\D/g,'')
+        },
+
+        initSetup: function(){
             this.$el.find("#input-uri").val(this.defaultParam.uri)
             this.$el.find("#input-rate").val(this.defaultParam.rate)
             this.$el.find("#input-nginxCount").val(this.defaultParam.nginxCount)
             this.$el.find("#input-appCount").val(this.defaultParam.appCount)
-            this.$el.find("#input-status").val()
             this.$el.find("#input-notifyGroup").val(this.defaultParam.notifyGroup)
         },
 
@@ -49,32 +58,42 @@ define("apiLimitRate.add&edit.view", ['require','exports', 'template', 'modal.vi
             this.defaultParam.rate = parseInt(this.$el.find("#input-rate").val())
             this.defaultParam.nginxCount = parseInt(this.$el.find("#input-nginxCount").val())
             this.defaultParam.appCount = parseInt(this.$el.find("#input-appCount").val())
-            this.defaultParam.status = this.$el.find("#input-status:checked").val()
+            this.defaultParam.status = this.$el.find("input[name='input-status']:checked").val()
             this.defaultParam.notifyGroup = this.$el.find("#input-notifyGroup").val()
+            console.log("未校验前", this.defaultParam)
             if(!this.defaultParam.uri){
                 Utility.warning("请设置正确的限速URI");
                 return false
             }
-            if(!this.defaultParam.rate && this.defaultParam.rate >= 0){
+            if(!this.defaultParam.rate || this.defaultParam.rate <= 0){
                 Utility.warning("请设置正确的速率");
                 return false
             }
-            if(!this.defaultParam.nginxCount && this.defaultParam.nginxCount >= 0){
-                Utility.warning("拓扑不能为空");
+            if(!this.defaultParam.nginxCount || this.defaultParam.nginxCount <= 0){
+                Utility.warning("请设置正确的nginx数量");
                 return false
             }
-            if(!this.defaultParam.appCount && this.defaultParam.appCount >= 0){
-                Utility.warning("调度组不能为空");
+            if(!this.defaultParam.appCount || this.defaultParam.appCount <= 0){
+                Utility.warning("请设置正确的app数量");
+                return false
+            }
+            if(!this.defaultParam.status){
+                Utility.warning("请设置正确的状态");
+                return false
+            }
+            if(!this.defaultParam.notifyGroup){
+                Utility.warning("请设置正确的报警组名");
                 return false
             }
             var postParam = {
-                "userId": this.defaultParam.userId,
-                "applicationType": this.defaultParam.type,
-                "topoId": this.defaultParam.topoId,
-                "topoName": this.defaultParam.topoName,
-                "dispgroupId": this.defaultParam.dispgroupId,
-                "dispgroupName": this.defaultParam.dispgroupName
+                "uri"        : this.defaultParam.uri,
+                "rate"       : this.defaultParam.rate,
+                "nginxCount" : this.defaultParam.nginxCount,
+                "appCount"   : this.defaultParam.appCount,
+                "status"     : this.defaultParam.status,
+                "notifyGroup": this.defaultParam.notifyGroup,
             }
+            console.log("最终提交", postParam)
             return postParam
         },
 

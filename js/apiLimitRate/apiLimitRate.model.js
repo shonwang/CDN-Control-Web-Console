@@ -10,8 +10,8 @@ define("apiLimitRate.model", ['require','exports', 'utility'], function(require,
         initialize: function(){},
 
         // 查
-        getApiLimitRateInfo: function() {
-            var url = BASE_URL + "/rs/rate/limit/list";
+        getApiLimitRateInfo: function(args) {
+            var url = BASE_URL + "/rs/rate/limit/listByPage"+args;
             var defaultParas = {
                 type: "GET",
                 url: url,
@@ -84,7 +84,11 @@ define("apiLimitRate.model", ['require','exports', 'utility'], function(require,
                 contentType: "application/json",
                 processData: false
             };
+            defaultParas.data = JSON.stringify(args);
 
+            defaultParas.beforeSend = function(xhr){
+                //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
+            }
             defaultParas.success = function(res){
                 this.trigger("update.apiLimitRate.success",res);
             }.bind(this);

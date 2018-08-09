@@ -918,11 +918,9 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                     okType: 'danger',
                     cancelText: '算了，不删了',
                     onOk: function () {
-                        console.log("...");
                         var list = _.filter(this.state.timeBandList, function (obj) {
                             return obj.id != id;
                         }.bind(this));
-                        console.log(list);
                         this.setState({
                             timeBandList: list
                         });

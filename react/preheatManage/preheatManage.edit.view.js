@@ -730,7 +730,7 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                     cancelText: '算了，不删了',
                     onOk: function(){
                         var list = _.filter(this.state.timeBandList, function(obj){
-                                return obj.id !== id
+                                return obj.id != id
                             }.bind(this))
                         this.setState({
                             timeBandList: list

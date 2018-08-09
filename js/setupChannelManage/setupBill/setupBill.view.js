@@ -45,7 +45,6 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         initBaseInfo: function() {
-            console.log(this.config)
             this.baseInfo = {};
             //加速类型 1下载 2 直播
             if (this.config.originDomain.subType === 1) this.baseInfo.businessTypeStr = '下载加速';
@@ -113,7 +112,6 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         initXtcpSetup: function(){
-            console.log("yyyyyy", this.config.xtcpConfig, this.config.xtcpConfig.defConf.model)
             if (this.config.xtcpConfig.defConf.advFlag === 0){
                 this.config.xtcpConfig.advFlag = '<span class="label label-danger">关闭</span>';
             }
@@ -150,7 +148,6 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         initSubSetup:function(){
-            console.log("kkkkk")
             var type = this.config.originDomain.type,
                 applicationType = this.config.originDomain.applicationType;
 

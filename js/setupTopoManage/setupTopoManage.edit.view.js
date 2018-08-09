@@ -63,53 +63,6 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 }
             },
 
-            addTopoSuccess: function(res) {
-                this.isSaving = false; 
-                var message = "", detail = "";
-                if (this.btnFlag == 2) {
-                    if (res.message.length > 200) {
-                        message = res.message.substring(0, 99) + '...<a href="javascript:void(0)" class="message">详情</a><br>';
-                        message = message + '<div class="message-list" style="display:none">' + res.message + '</div>';
-                    } else {
-                        message = res.message + "<br>";
-                    }
-                    if (res.affectNode&&res.affectNode.length > 0) {
-                        message = message + '影响的节点:<a href="javascript:void(0)" class="detail">详情</a><br>';
-                        _.each(res.affectNode, function(el){
-                            detail = detail + el.name + ", ";
-                        }.bind(this))
-                        message = message + '<div class="detail-list" style="display:none">' + detail + '</div>'
-                    }
-                    if (this.commonPopup) $("#" + this.commonPopup.modalId).remove();
-                    var options = {
-                        title: "提示",
-                        body: message,
-                        backdrop: 'static',
-                        type: 1
-                    }
-                    this.commonPopup = new Modal(options);
-                    this.commonPopup.$el.find(".detail").on("click", function(event){
-                        if (this.commonPopup.$el.find(".detail-list").css("display") == "none") {
-                            this.commonPopup.$el.find(".detail-list").show(200)
-                        } else {
-                            this.commonPopup.$el.find(".detail-list").hide(200)
-                        }
-                    }.bind(this))
-                    this.commonPopup.$el.find(".message").on("click", function(event){
-                        if (this.commonPopup.$el.find(".message-list").css("display") == "none") {
-                            this.commonPopup.$el.find(".message-list").show(200)
-                        } else {
-                            this.commonPopup.$el.find(".message-list").hide(200)
-                        }
-                    }.bind(this))
-                    //this.options.onSaveAndSendCallback && this.options.onSaveAndSendCallback(res);
-                } else {
-                    Utility.alerts("暂存成功！", "success", 5000);
-                    this.options.onSaveCallback && this.options.onSaveCallback();
-                }
-
-            },
-
             onGetAllNode:function(){
                 require(['nodeManage.model'], function(NodeManageModel) {
                     var myNodeManageModel = new NodeManageModel();

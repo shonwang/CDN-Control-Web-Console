@@ -287,7 +287,7 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                             hash: 'index.html#/domainList/' + query + '/liveCnameSetup/' + query2,
                             active: false,
                             children: []
-                        },
+                        }
                         // {
                         //     id: 'customerSetup-domainList-liveHttpsSetup',
                         //     name: 'https配置',

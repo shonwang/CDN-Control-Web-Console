@@ -158,7 +158,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
 
             onOriginInfo: function(res) {
-                Utility.alerts(new Date().format("yyyy/MM/dd hh:mm:ss") + "编辑前收到后端" + res.rule.length + "条规则")
+                Utility.alerts(new Date().format("yyyy/MM/dd hh:mm:ss") + "编辑前收到后端" + res.rule.length + "条规则", "", 5000)
                 this.defaultParam = {
                     "id": res.id,
                     "name": res.name,
@@ -362,7 +362,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
                 if (this.isEdit) {
                     this.collection.topoModify(postTopo);
-                    Utility.alerts(new Date().format("yyyy/MM/dd hh:mm:ss") + "编辑后发给后端" + postTopo.rule.length + "条规则")
+                    Utility.alerts(new Date().format("yyyy/MM/dd hh:mm:ss") + "编辑后发给后端" + postTopo.rule.length + "条规则", "", 5000)
                 } else {
                     this.collection.topoAdd(postTopo);
                 }

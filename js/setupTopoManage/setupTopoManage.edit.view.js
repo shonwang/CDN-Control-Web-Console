@@ -158,6 +158,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
 
             onOriginInfo: function(res) {
+                Utility.alerts(new Date().format("yyyy/MM/dd hh:mm:ss") + "编辑前收到后端" + res.rule.length + "条规则")
                 this.defaultParam = {
                     "id": res.id,
                     "name": res.name,
@@ -359,12 +360,12 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     postTopo.ispub = 0;
                 console.log("finally", postTopo)
 
-                if (this.isEdit)
-                // Ajax拓扑关系编辑
+                if (this.isEdit) {
                     this.collection.topoModify(postTopo);
-                else
-                // Ajax拓扑关系新建
+                    Utility.alerts(new Date().format("yyyy/MM/dd hh:mm:ss") + "编辑后发给后端" + postTopo.rule.length + "条规则")
+                } else {
                     this.collection.topoAdd(postTopo);
+                }
 
                 this.isSaving = true;
 
@@ -767,11 +768,14 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
             onClickItemDelete: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
-                this.defaultParam.rule = _.filter(this.defaultParam.rule, function(el) {
-                    return parseInt(id) != el.id
-                }.bind(this))
 
-                this.initRuleTable();
+                Utility.confirm("你确定要删除规则吗？", function(){
+                    this.defaultParam.rule = _.filter(this.defaultParam.rule, function(el) {
+                        return parseInt(id) != el.id
+                    }.bind(this))
+
+                    this.initRuleTable();
+                }.bind(this))    
             },
 
             // 添加规则按钮

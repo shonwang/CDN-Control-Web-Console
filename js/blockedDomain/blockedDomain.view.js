@@ -126,11 +126,11 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
                     value: "All"
                 },
                 {
-                    name: "大文件下载加速",
+                    name: "大文件下载",
                     value: "4"
                 }, 
                 {
-                    name: "音视频点播加速",
+                    name: "音视频点播",
                     value: "1"
                 }                
                 // {

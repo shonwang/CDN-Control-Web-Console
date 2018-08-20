@@ -45,7 +45,6 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         initBaseInfo: function() {
-            console.log(this.config)
             this.baseInfo = {};
             //加速类型 1下载 2 直播
             if (this.config.originDomain.subType === 1) this.baseInfo.businessTypeStr = '下载加速';
@@ -90,7 +89,7 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
 
             if (this.config.domainConf.confCustomType === 1) this.baseInfo.confCustomTypeStr = '标准化开放式配置（默认）';
             if (this.config.domainConf.confCustomType  === 2) this.baseInfo.confCustomTypeStr = '标准化内部配置';
-            if (this.config.domainConf.confCustomType === 3) this.baseInfo.confCustomTypeStr = '定制化配置(中控配置不准确，如需修改，请先联系运维)';
+            if (this.config.domainConf.confCustomType === 3) this.baseInfo.confCustomTypeStr = '定制化配置<span class="text-danger">(中控配置不准确，如需修改，请先联系运维)</span>';
 
             this.baseInfoTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.base.html'])({
                 data: this.baseInfo
@@ -99,6 +98,10 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             this.baseInfoTable.appendTo(this.$el.find(".bill-ctn"));
 
             this.initCname();
+            if(this.config.xtcpConfig){
+                this.initXtcpSetup()
+            }
+            this.initSubSetup();
         },
 
         initCname: function() {
@@ -106,7 +109,45 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                 data: this.config.originDomain.cnameData
             }));
             this.cnameTable.appendTo(this.$el.find(".bill-ctn"));
+        },
 
+        initXtcpSetup: function(){
+            if (this.config.xtcpConfig.defConf.advFlag === 0){
+                this.config.xtcpConfig.advFlag = '<span class="label label-danger">关闭</span>';
+            }
+            if (this.config.xtcpConfig.defConf.advFlag === 1){
+                this.config.xtcpConfig.advFlag = '<span class="label label-success">开启</span>';
+                var tempObj = this.config.xtcpConfig.advConfList[0],
+                    workDayStr = tempObj.workDay,
+                    workStartTime = new Date(tempObj.startTime),
+                    workEndTime = new Date(tempObj.endTime),
+                    tempStartHour = workStartTime.getHours(),
+                    tempStartMin = workStartTime.getMinutes(),
+                    tempEndHour = workEndTime.getHours(),
+                    tempEndMin = workEndTime.getMinutes(),
+                    tempStart = this.transformat(tempStartHour) + ':' + this.transformat(tempStartMin),
+                    tempEnd = this.transformat(tempEndHour) + ':' + this.transformat(tempEndMin),
+                    workTime;
+                workDayStr = workDayStr.replace(/1/g, "周日、");
+                workDayStr = workDayStr.replace(/2/g, "周一、");
+                workDayStr = workDayStr.replace(/3/g, "周二、");
+                workDayStr = workDayStr.replace(/4/g, "周三、");
+                workDayStr = workDayStr.replace(/5/g, "周四、");
+                workDayStr = workDayStr.replace(/6/g, "周五、");
+                workDayStr = workDayStr.replace(/7/g, "周六、");
+                workDayStr = workDayStr.replace(/、$/gi, "");
+                workTime = workDayStr + '<br>' + tempStart + '~' + tempEnd;
+                this.config.xtcpConfig.workTime = workTime;
+
+            } 
+            this.xtcpTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.xtcp.html'])({
+                data: this.config.xtcpConfig
+            }));
+            this.xtcpTable.appendTo(this.$el.find(".bill-ctn"));
+            
+        },
+
+        initSubSetup:function(){
             var type = this.config.originDomain.type,
                 applicationType = this.config.originDomain.applicationType;
 
@@ -119,6 +160,10 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             } else {
                 Utility.warning("您的平台不是下载也不是直播，applicationType为" + applicationType);
             }
+        },
+
+        transformat: function(time){
+            return time < 10 ? '0' + time : time
         },
 
         initOriginSetup: function() {

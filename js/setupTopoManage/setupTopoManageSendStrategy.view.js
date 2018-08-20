@@ -54,7 +54,7 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
         },
 
         filterNode: function(){
-            console.log("过滤前节点：", this.allNodes)
+            // console.log("过滤前节点：", this.allNodes)
             this.allNodesforFilter = [];
             _.each(this.allNodes, function (el, index, list) {
                 this.allNodesforFilter.push(el);
@@ -69,7 +69,7 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
                     }.bind(this))
                 }
             }.bind(this))
-            console.log("过滤后节点：", this.allNodesforFilter)
+            // console.log("过滤后节点：", this.allNodesforFilter)
         },
 
         onGetNodeSuccess: function (res) {

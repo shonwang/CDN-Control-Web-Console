@@ -1,0 +1,127 @@
+﻿<div class="xtcp-setup-panel fadeInLeft animated">
+  
+            <div class="col-md-12">        
+                <div class="form-group" style="margin:0 10px 0 10px;">
+                    <label><h4>默认配置</h4></label>
+                </div>  
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="workmode" class="col-sm-3 control-label">工作模式</label>
+                        <div class="col-sm-6">
+                            <label class="radio-inline">
+                                <input type="radio" name="options-workmode" value="0" <%if(data.defSetup.workModeDef === 0){%>checked<%}%>>0
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="options-workmode" value="1" <%if(data.defSetup.workModeDef === 1){%>checked<%}%>>1
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="options-workmode" value="2" <%if(data.defSetup.workModeDef === 2){%>checked<%}%>>2
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="options-workmode" value="3" <%if(data.defSetup.workModeDef === 3){%>checked<%}%>>3
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="options-workmode" value="4" <%if(data.defSetup.workModeDef === 4){%>checked<%}%>>4
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="effect-ratio" class="col-sm-3 control-label">生效比例</label>
+                        <div class="col-sm-2">
+                            <input type="text" id="effect-ratio" value="<%=data.defSetup.effectRadioDef%>" class="form-control">
+                        </div>
+                    </div>
+                </form>
+          </div>
+          <div class="col-md-10"><hr></div>
+          <div class="col-md-12">
+            <div class="form-group" style="margin:0 10px 0 10px;">
+                <label><h4>高级配置</h4></label>
+                <div class="advanceSetup-toggle" style="display: inline-block">
+                    <div class="togglebutton" style="padding-top:0px;margin-right:0;padding-left:7px;">
+                        <label><input type="checkbox"><span class="toggle"></span></label>
+                    </div>
+                </div>
+            </div>  
+          </div>
+          <div class="col-md-12 advanceSetup" style="display:none">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="effect-week" class="col-sm-3 control-label">生效周别</label>
+                    <div class="col-sm-8">
+                        <label class="checkbox-inline" style="margin-right:5px;">
+                            <input type="checkbox" name="options-effectWeek" id="effectweek-all" value="all">全选
+                        </label>
+                        <label class="checkbox-inline" style="margin-right:5px;">
+                            <input type="checkbox" name="options-effectWeek" id="effectweek-Sun" value="1" <%if(data.vipSetup.effectWeek.indexOf("1") > -1){%>checked<%}%>>日
+                        </label>
+                        <label class="checkbox-inline" style="margin-right:5px;">
+                            <input type="checkbox" name="options-effectWeek" id="effectweek-Mon" value="2" <%if(data.vipSetup.effectWeek.indexOf("2") > -1){%>checked<%}%>>一
+                        </label>
+                        <label class="checkbox-inline" style="margin-right:5px;">
+                            <input type="checkbox" name="options-effectWeek" id="effectweek-Tue" value="3" <%if(data.vipSetup.effectWeek.indexOf("3") > -1){%>checked<%}%>>二
+                        </label>
+                        <label class="checkbox-inline" style="margin-right:5px;">
+                            <input type="checkbox" name="options-effectWeek" id="effectweek-Wes" value="4" <%if(data.vipSetup.effectWeek.indexOf("4") > -1){%>checked<%}%>>三
+                        </label>
+                        <label class="checkbox-inline" style="margin-right:5px;">
+                            <input type="checkbox" name="options-effectWeek" id="effectweek-Thu" value="5" <%if(data.vipSetup.effectWeek.indexOf("5") > -1){%>checked<%}%>>四
+                        </label>
+                        <label class="checkbox-inline" style="margin-right:5px;">
+                            <input type="checkbox" name="options-effectWeek" id="effectweek-Fri" value="6" <%if(data.vipSetup.effectWeek.indexOf("6") > -1){%>checked<%}%>>五
+                        </label>
+                        <label class="checkbox-inline" style="margin-right:5px;">
+                            <input type="checkbox" name="options-effectWeek" id="effectweek-Sat" value="7" <%if(data.vipSetup.effectWeek.indexOf("7") > -1){%>checked<%}%>>六
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="dropdown-effecttime" class="col-sm-3 control-label">生效时间</label>
+                    <div class="dropdown col-sm-2 dropdown-effecttime-begin" style="padding-right:0px;margin-right:0px;">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-effecttime-begin" data-toggle="dropdown">
+                            <span class="cur-value">加载</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" style="height:150px;overflow-y:auto;"></ul>   
+                        <span style="padding-left:8px;">～</span>    
+                    </div>
+                    <div class="dropdown col-sm-2 dropdown-effecttime-end" style="padding:0px">  
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-effecttime-end" data-toggle="dropdown">
+                            <span class="cur-value">加载</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" style="height:150px;overflow-y:auto;"></ul>
+                    </div>  
+                </div>
+                <div class="form-group">
+                    <label for="workmode" class="col-sm-3 control-label">工作模式</label>
+                    <div class="col-sm-6">
+                        <label class="radio-inline">
+                            <input type="radio" name="options-workmode-vip" value="0" <%if(data.vipSetup.workModeVip === 0){%>checked<%}%>>0
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="options-workmode-vip" value="1" <%if(data.vipSetup.workModeVip === 1){%>checked<%}%>>1
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="options-workmode-vip" value="2" <%if(data.vipSetup.workModeVip === 2){%>checked<%}%>>2
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="options-workmode-vip" value="3" <%if(data.vipSetup.workModeVip === 3){%>checked<%}%>>3
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="options-workmode-vip" value="4" <%if(data.vipSetup.workModeVip === 4){%>checked<%}%>>4
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="effect-ratio-vip" class="col-sm-3 control-label">生效比例</label>
+                    <div class="col-sm-2">
+                        <input type="text" id="effect-ratio-vip" value="<%=data.vipSetup.effectRadioVip%>" class="form-control">
+                    </div>
+                </div>
+                <br>   
+            </form>
+          </div>
+     
+  
+</div>

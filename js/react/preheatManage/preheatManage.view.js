@@ -346,7 +346,10 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                 }, {
                     title: '成功率',
                     dataIndex: 'successRate',
-                    key: 'successRate'
+                    key: 'successRate',
+                    render: function render(text, record) {
+                        return text * 100 + "%";
+                    }
                 }, {
                     title: '创建人',
                     dataIndex: 'committer',

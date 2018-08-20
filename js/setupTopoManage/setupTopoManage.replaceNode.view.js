@@ -6,6 +6,7 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
         events: {},
 
         initialize: function(options) {
+            console.log("nnnnnnnnnnnnnn")
             this.options = options;
             this.collection = options.collection;
             this.model = options.model;
@@ -45,7 +46,10 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
             this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this)); 
             this.$el.find(".opt-ctn #delete").on("click", $.proxy(this.onClickDeleteButton, this));
-            this.$el.find(".opt-ctn #replace").on("click", $.proxy(this.onClickReplaceButton, this));        
+            this.$el.find(".opt-ctn #replace").on("click", $.proxy(this.onClickReplaceButton, this));   
+
+            this.$el.find(".listShowNodeType input[name=all]").on("click",$.proxy(this.onClickAll,this));     
+            this.$el.find(".listShowNodeType input[name!=all]").on("click",$.proxy(this.onClickCheckBox,this));     
 
             this.queryArgs={
                 topoId:'',
@@ -63,28 +67,66 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
             this.ruleIdArr=[]; //用来存储选择的规则id        
         },
 
-         onOriginInfo: function(res) {
-                this.defaultParam = {
-                    "id": res.id,
-                    "name": res.name,
-                    "allNodes": res.allNodes,
-                    "upperNodes": res.upperNodes,
-                    "rule": res.rule,
-                    "type": res.type,
-                    "mark": res.mark
-                }
+        onClickAll:function(event){
+              var eventTarget = event.srcElement || event.target;
+              if (eventTarget.tagName !== "INPUT") return;
+              var inputChecked = $(eventTarget).prop("checked");
+              var inputName = $(eventTarget).attr("name");
+              this.$el.find(".listShowNodeType input[name!=all]").prop("checked",inputChecked);
+              this.onGetAllOriginNodes(true);
+        },
 
-                console.log("编辑的拓扑: ", this.defaultParam)
-                this.onGetAllOriginNodes();
-                this.onGetAllReplaceNodes();
-                
-                this.queryArgs={
-                    topoId:this.defaultParam.id,
-                    nodeId:this.defaultParam.allNodes[0].id
-                }
-             //   console.log("默认"+this.queryArgs.topoId+"  "+this.queryArgs.nodeId);
-                this.collection.getRuleInfo(this.queryArgs); 
-            },
+        onClickCheckBox:function(event){
+            var eventTarget = event.srcElement || event.target;
+            if (eventTarget.tagName !== "INPUT") return;
+            var inputChecked = $(eventTarget).prop("checked");
+            var len = this.getCheck();
+            if(len){
+              this.$el.find(".listShowNodeType input[name=all]").prop("checked",true);
+            }
+            else{
+              this.$el.find(".listShowNodeType input[name=all]").prop("checked",false);
+            }
+            this.onGetAllOriginNodes(true);
+        },
+
+        getCheck:function(){
+          var len = this.$el.find(".listShowNodeType input[name!=all]:checked").length == 3;
+          return len;
+        },
+
+        getCheckedList:function(){
+          var checkedList = this.$el.find(".listShowNodeType input[name!=all]:checked");
+          var obj = {};
+          for(var i=0;i<checkedList.length;i++){
+              obj[$(checkedList[i]).val()]=true;
+          }
+          return obj;
+        },
+
+        onOriginInfo: function(res) {
+            this.defaultParam = {
+                "id": res.id,
+                "name": res.name,
+                "allNodes": res.allNodes,
+                "upperNodes": res.upperNodes,
+                "middleNodes": res.middleNodes,
+                "lowerNodes": res.lowerNodes,
+                "rule": res.rule,
+                "type": res.type,
+                "mark": res.mark
+            }
+            this.onGetAllOriginNodes();
+            this.onGetAllReplaceNodes();
+            
+            this.queryArgs={
+                topoId:this.defaultParam.id,
+                nodeId:this.defaultParam.upperNodes[0].id
+            }
+         //   console.log("默认"+this.queryArgs.topoId+"  "+this.queryArgs.nodeId);
+            this.collection.getRuleInfo(this.queryArgs); 
+        },
+        
 
         onClickDeleteButton: function(){
             if(this.ruleList.length==0){
@@ -108,7 +150,6 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
                 this.operateRule.id = this.defaultParam.id;
                 this.operateRule.type = "topo";
                 this.operateRule.operateType = "delete";
-                console.log(this.operateRule);
                 this.collection.deleteOrReplaceTopoInfo(this.operateRule);
                 this.$el.find(".opt-ctn #delete").attr("disabled", "disabled");
                 this.model.$el.modal("hide");
@@ -137,7 +178,6 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
             Utility.warning("替换节点与原节点不能相同");
             return;
          }
-           console.log(this.operateRule);
            this.collection.deleteOrReplaceTopoInfo(this.operateRule);
            this.$el.find(".opt-ctn #replace").attr("disabled","disabled");
         },
@@ -156,7 +196,7 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
         },
 
         initRuleTable: function(res) {
-            this.ruleList=res;              
+            this.ruleList=res;          
             this.table = $(_.template(template['tpl/setupTopoManage/setupTopoManage.replace.table.html'])({
                 data: this.ruleList
             }));  
@@ -231,10 +271,11 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
             this.table.find("thead tr").find("input").prop("checked", this.ruleList.allRuleIsChecked); 
         },
 
-        onGetAllOriginNodes: function() {
+        onGetAllOriginNodes: function(isChangeSelect) {
              this.nameList=[];
-
-            _.each(this.defaultParam.allNodes, function(el, key, list) {
+             var checkedList = this.getCheckedList();
+            var nameList = _.union(checkedList.up && this.defaultParam.upperNodes || [], checkedList.middle && this.defaultParam.middleNodes || [],checkedList.low && this.defaultParam.lowerNodes || []);
+            _.each(nameList, function(el, key, list) {
                 this.nameList.push({
                     name: el.name,
                     value: el.id
@@ -258,14 +299,22 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
                     this.collection.getRuleInfo(this.queryArgs);
                 }.bind(this)
             });
-            this.$el.find("#dropdown-originNode .cur-value").html(this.nameList[0].name);
-            this.operateRule.oldNodeId=this.nameList[0].value;            
+            if(this.nameList.length > 0){
+                this.$el.find("#dropdown-originNode .cur-value").html(this.nameList[0].name);
+                this.operateRule.oldNodeId=this.nameList[0].value;  
+            }      
+
+            if(isChangeSelect)  {
+                this.queryArgs.nodeId=this.nameList[0].value;
+                this.collection.getRuleInfo(this.queryArgs);
+            }
         },
 
         onGetAllReplaceNodes: function() {
            this.nameList = [];
-
-            _.each(this.defaultParam.allNodes, function(el, inx, list) {
+           //var nameList = _.union(this.defaultParam.upperNodes, this.defaultParam.middleNodes);
+           var nameList = this.defaultParam.allNodes;
+            _.each(nameList, function(el, inx, list) {
                 this.nameList.push({
                     name: el.name,
                     value: el.id,
@@ -296,11 +345,13 @@ define("setupTopoManage.replaceNode.view", ['require', 'exports', 'template', 'm
                     }.bind(this))
                 }.bind(this)
             });
-            this.$el.find("#dropdown-replaceNode .cur-value").html(this.nameList[0].name);
-            this.operateRule.newNodeId=this.nameList[0].value;
-            if(this.nameList[0].operatorId==9){
-              this.$el.find(".dropdown-operator").removeClass("hideOperator")
-            }
+            if(this.nameList.length > 0){
+                this.$el.find("#dropdown-replaceNode .cur-value").html(this.nameList[0].name);
+                this.operateRule.newNodeId=this.nameList[0].value;
+                if(this.nameList[0].operatorId==9){
+                    this.$el.find(".dropdown-operator").removeClass("hideOperator")
+                  }
+            }         
         },
 
         onGetAllOperator: function(data) {

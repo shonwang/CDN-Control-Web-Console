@@ -39,6 +39,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
         initialize: function(){},
 
         getNodeList: function(args){
+            // 这部分应该返回的是所有节点
             var url = BASE_URL + "/rs/node/list";
             var defaultParas = {
                 type: "POST",
@@ -89,7 +90,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             defaultParas.data = JSON.stringify(args);
             defaultParas.beforeSend = function(xhr){
                 //xhr.setRequestHeader("Accept","application/json, text/plain, */*");
-            }
+            };
             defaultParas.success = function(){
                 this.trigger("add.node.success"); 
             }.bind(this);
@@ -103,8 +104,25 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             $.ajax(defaultParas);
         },
 
+        getTopoinfo: function(args) {
+            var url = BASE_URL + "/resource/topo/info/list",
+                successCallback = function(res) {
+                    if(res){
+                        this.trigger("get.topoInfo.success", res);
+                    } else {
+                        this.trigger("get.topoInfo.error", res);
+                    }
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger('get.topoInfo.error', response);
+                }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+
         updateNode: function(args){
-            var url = BASE_URL + "/rs/node/modifyNode"
+            // 这部分应该是更新节点信息，比如新建节点或者是对已有节点做出更改
+            var url = BASE_URL + "/rs/node/modifyNode";
             var defaultParas = {
                 type: "POST",
                 url: url,
@@ -180,6 +198,20 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             }.bind(this);
 
             $.ajax(defaultParas);
+        },
+
+        removeNodeInDispGroups: function(args) {
+            var url = BASE_URL + "/rs/dispConf/removeNodeInDispGroups?nodeId=" + args.id + "&dispGroupIds=" + args.dispGroup,
+                successCallback = function(res) {
+                    if (res)
+                        this.trigger("remove.nodeInDispGroup.success", res);
+                    else
+                        this.trigger("remove.nodeInDispGroup.error", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("remove.nodeInDispGroup.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
         getAreaList: function(args) {
@@ -313,6 +345,8 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+
+
 
         getAllContinent: function(args){
             var url = BASE_URL + "/rs/metaData/continent/list",
@@ -476,7 +510,19 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
                     this.trigger("start.nodeInitSetup.error", response);
                 }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        updateRemark:function(args){
+            var url = BASE_URL + "/rs/node/update/remark?nodeId="+args.id+"&opRemark="+args.opRemark+"&opType="+args.opType,
+                successCallback = function(res) {
+                    this.trigger("update.remark.success", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("update.remark.error", response);
+                }.bind(this);
+            Utility.getAjax(url, {}, successCallback, errorCallback);
         }
+
     });
 
     return NodeManageCollection;

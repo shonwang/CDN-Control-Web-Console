@@ -49,6 +49,16 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             if (this.isMultiwire) {
                 this.setOperatorDorpDownList();
             }
+            this.$el.find("#input-maxbandwidth").on("blur",$.proxy(this.onMaxBandwidthBlur,this));
+        },
+
+        onMaxBandwidthBlur:function(){
+            var _value = this.$el.find("#input-maxbandwidth").val();
+            if(this.isEdit){
+                if(_value != this.args.maxBandwidth){
+                    this.$el.find(".up-bandwidth-change-tips").show();
+                }
+            }
         },
 
         setOperatorDorpDownList: function() {
@@ -89,7 +99,10 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             this.operatorList = arr;
         },
 
+        
         setDropDownList: function() {
+            var defaultValue;
+         
             var nameList = [{
                     name: "95峰值",
                     value: 1
@@ -103,16 +116,21 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     name: "第三峰",
                     value: 4
                 }
-                // {name: "免费", value: 0}
             ];
+
+            if(this.isEdit){
+                defaultValue = _.find(nameList, function(object) {
+                    return object.value === this.args.chargingType
+                }.bind(this));  
+            }             
             Utility.initDropMenu(this.$el.find(".dropdown-charging"), nameList, function(value) {
+                if(this.isEdit && defaultValue.value != value){
+                    this.$el.find(".charge-change-tips").show();
+                }
                 this.args.chargingType = parseInt(value);
             }.bind(this));
 
             if (this.isEdit) {
-                var defaultValue = _.find(nameList, function(object) {
-                    return object.value === this.args.chargingType
-                }.bind(this));
                 this.$el.find(".dropdown-charging .cur-value").html(defaultValue.name)
             } else {
                 this.$el.find(".dropdown-charging .cur-value").html(nameList[0].name)
@@ -152,6 +170,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 outzabnameRe = /^[0-9A-Za-z\-\[\]\_]+$/,
                 letterRe = /[A-Za-z]+/,
                 reLocation = /^\d+(\.\d+)?----\d+(\.\d+)?$/;
+
+
 
 
             if (!re.test(maxBandwidth) || !re.test(minBandwidth)) {
@@ -426,6 +446,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
         }
     });
 
+
     var AddOrEditNodeView = Backbone.View.extend({
         events: {
             //"click .search-btn":"onClickSearch"
@@ -458,7 +479,10 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "operatorId": this.model.get("operatorId"),
                     "operatorName": this.model.get("operatorName"),
                     "startChargingTime": this.model.get("startChargingTime"),
-                    "rsNodeCorpDtos": this.model.get("rsNodeCorpDtos")
+                    "rsNodeCorpDtos": this.model.get("rsNodeCorpDtos"),   
+
+                    "cacheLevel": this.model.get("cacheLevel"),
+                    "liveLevel":this.model.get("liveLevel")
                 }
             } else {
                 this.args = {
@@ -478,13 +502,17 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "operatorId": "",
                     "operatorName": "",
                     "startChargingTime": new Date().valueOf(),
-                    "rsNodeCorpDtos": []
+                    "rsNodeCorpDtos": [],
+
+                    "cacheLevel": 0,
+                    "liveLevel": 0
                 }
             }
 
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.add&edit.html'])({
                 data: this.args
             }));
+
 
             this.collection.off("get.city.success");
             this.collection.off("get.city.error");
@@ -530,6 +558,76 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             this.initDropList(options.list);
             this.initChargeDatePicker();
         },
+
+        initLiveLevelDropMenu: function() {
+            var liveLevelArray = [{
+                name: "非直播属性",
+                value: 0
+            }, {
+                name: "上层",
+                value: 1
+            }, {
+                name: "中层",
+                value: 2
+            },{
+                name: "下层",
+                value: 3
+            }]
+            Utility.initDropMenu(this.$el.find(".dropdown-liveLevel"), liveLevelArray, function(value) {
+                this.liveLevel = parseInt(value);
+            }.bind(this));
+            if(this.isEdit){
+                // this.$el.find("#dropdown-liveLevel").attr("disabled","disabled");
+                var defaultValue = _.find(liveLevelArray, function(object) {
+                    return object.value === this.model.attributes.liveLevel
+                }.bind(this));
+                if (defaultValue) {
+                    this.$el.find(".dropdown-liveLevel .cur-value").html(defaultValue.name)
+                    this.liveLevel = defaultValue.value;
+                } else {
+                    this.$el.find(".dropdown-liveLevel .cur-value").html(liveLevelArray[0].name);
+                    this.liveLevel = liveLevelArray[0].value;
+                }
+            }else{
+                this.$el.find(".dropdown-liveLevel .cur-value").html(liveLevelArray[0].name);
+                this.liveLevel = liveLevelArray[0].value;
+            }
+        },
+
+        initCacheLevelDropMenu: function() {
+            var cacheLevelArray = [{
+                name: "非点播属性",
+                value: 0
+            }, {
+                name: "上层",
+                value: 1
+            }, {
+                name: "中层",
+                value: 2
+            },{
+                name: "下层",
+                value: 3
+            }]
+            Utility.initDropMenu(this.$el.find(".dropdown-cacheLevel"), cacheLevelArray, function(value) {
+                this.cacheLevel = parseInt(value);
+            }.bind(this));
+            if(this.isEdit){
+                var defaultValue = _.find(cacheLevelArray, function(object) {
+                    return object.value === this.model.attributes.cacheLevel
+                }.bind(this));
+                if (defaultValue) {
+                    this.$el.find(".dropdown-cacheLevel .cur-value").html(defaultValue.name)
+                    this.cacheLevel = defaultValue.value;
+                } else {
+                    this.$el.find(".dropdown-cacheLevel .cur-value").html(cacheLevelArray[0].name);
+                    this.cacheLevel = cacheLevelArray[0].value;
+                }
+            }else{
+                this.$el.find(".dropdown-cacheLevel .cur-value").html(cacheLevelArray[0].name);
+                this.cacheLevel = cacheLevelArray[0].value;
+            }
+        },
+
 
         onSaveClick: function() {
             var args = this.getArgs();
@@ -585,7 +683,9 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 "chName": this.$el.find("#input-name").val().replace(/\s+/g, ""),
                 "operatorId": this.operatorId,
                 "operatorName": this.operatorName,
-               
+                "liveLevel": this.liveLevel,
+                "cacheLevel": this.cacheLevel,
+
                 "remark": this.$el.find("#textarea-comment").val(),
                 "startChargingTime": this.args.startChargingTime,
                 //"chargingType": this.args.chargingType,
@@ -604,8 +704,13 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 "lon": this.$el.find('#input-longitude-latitude').val().split("----")[0],
                 "lat": this.$el.find('#input-longitude-latitude').val().split("----")[1]
             }
+            if(args.cacheLevel === 0 && args.liveLevel === 0){
+                alert("节点的直播或点播层级属性设置错误");
+                return;
+            }
             return args;
         },
+
 
         onGetOperatorSuccess: function(res) {
             var nameList = [];
@@ -673,6 +778,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
         },
 
         initDropList: function(list) {
+            this.initLiveLevelDropMenu();
+            this.initCacheLevelDropMenu();
             this.collection.getAllContinent();
             this.collection.getAllProvince();
             //this.collection.getAllCity();

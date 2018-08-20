@@ -47,7 +47,7 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                         id: Utility.randomStr(8),
                         moduleName: "",
                         moduleKey: "",
-                        type: 2,
+                        type: 3,
                         valueType: 1,
                         defaultDisplay: false,
                         moduleDescription: "",
@@ -267,7 +267,10 @@ define("setupModuleManage.addModule.view", ['require', 'exports', 'template', 'm
                 }
 
                 Utility.initDropMenu(defaultDisplayNode, this.defaultDisplay, function(value) {
-                    this.currentModule.defaultDisplay = Boolean(value);
+                    if (value == "true")
+                        this.currentModule.defaultDisplay = true;
+                    else if(value == "false")
+                        this.currentModule.defaultDisplay = false;
                 }.bind(this));
 
                 if (!this.isEdit || !this.currentModule.defaultDisplay)

@@ -16,8 +16,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 //获取应用类型
                 this.collection.off("get.devicetype.success");
                 this.collection.off("get.devicetype.error");
-                this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu
-                    , this));
+                this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
                 this.collection.on("get.devicetype.error", $.proxy(this.onGetError, this));
 
                 if (AUTH_OBJ.QueryTopos) {
@@ -28,9 +27,11 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 } else {
                     this.$el.find(".opt-ctn .query").remove();
                 }
-                if (AUTH_OBJ.CreateTopos)
+                // 新建拓扑关系
+                if (AUTH_OBJ.CreateTopos){
+                    this.$el.find(".opt-ctn .new").attr("disabled","disabled");
                     this.$el.find(".opt-ctn .new").on("click", $.proxy(this.onClickAddRuleTopoBtn, this));
-                else
+                }else
                     this.$el.find(".opt-ctn .new").remove();
 
                 this.queryArgs = {
@@ -59,6 +60,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
             },
 
             onGetTopoSuccess: function() {
+                this.$el.find(".opt-ctn .new").removeAttr("disabled");
                 this.initTable();
                 if (!this.isInitPaginator) this.initPaginator();
             },
@@ -67,6 +69,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 this.isInitPaginator = false;
                 this.queryArgs.page = 1;
                 this.queryArgs.name = this.$el.find("#input-topo-name").val().trim();
+                
                 if (this.queryArgs.name == "") this.queryArgs.name = null;
                 this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
                 this.$el.find(".pagination").html("");
@@ -100,6 +103,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 this.table.find("[data-toggle='tooltip']").tooltip();
             },
 
+            // 新建拓扑关系回调函数
             onClickAddRuleTopoBtn: function() {
                 this.off('enterKeyBindQuery');
                 require(['setupTopoManage.edit.view'], function(EditTopoView) {
@@ -197,6 +201,7 @@ define("setupTopoManage.view", ['require', 'exports', 'template', 'modal.view', 
                 }.bind(this));
             },
 
+            // 编辑拓扑关系回调函数
             onClickItemEdit: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id;

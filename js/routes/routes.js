@@ -43,9 +43,11 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "speedMeasure" : "speedMeasure",
                 "commonCache"  : "commonCache",
                 "userMove"     : "userMove",
+                "adminManage": "adminManage",
                 "statisticsDataSourceSwitch": "statisticsDataSourceSwitch",
 
                 // 调度配置
+                "hashOrigin": "hashOrigin",
                 "dispGroup": "dispGroup",
                 "importAssess": "importAssess",
                 "dispConfig": "dispConfigNew",
@@ -91,6 +93,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "domainList/:query/luaAdvanceConfig/:query2/luaConfigListEdit/:query3": "luaConfigListEdit",
                 "domainList/:query/luaStatusCodeCache/:query2": "luaStatusCodeCache",
                 "domainList/:query/luaForceRedirect/:query2": "luaForceRedirect",
+                "domainList/:query/luaXtcpSetup/:query2": "luaXtcpSetup",
                  
 
                 //直播域名配置

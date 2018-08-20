@@ -78,6 +78,7 @@
   "liveUpConnection.view": "customerSetup/domainList/liveSetup/liveUpConnection/liveUpConnection.view",
   "liveUpFlowNameChange.model": "customerSetup/domainList/liveSetup/liveUpFlowNameChange/liveUpFlowNameChange.model",
   "liveUpFlowNameChange.view": "customerSetup/domainList/liveSetup/liveUpFlowNameChange/liveUpFlowNameChange.view",
+
   "luaAdvanceClientLimitSpeed.model": "customerSetup/domainList/luaDownloadSetup/luaAdvanceClientLimitSpeed/luaAdvanceClientLimitSpeed.model",
   "luaAdvanceClientLimitSpeed.view": "customerSetup/domainList/luaDownloadSetup/luaAdvanceClientLimitSpeed/luaAdvanceClientLimitSpeed.view",
   "luaAdvanceConfig.model": "customerSetup/domainList/luaDownloadSetup/luaAdvanceConfig/luaAdvanceConfig.model",
@@ -112,6 +113,8 @@
   "luaStatusCodeCache.view": "customerSetup/domainList/luaDownloadSetup/luaStatusCodeCache/luaStatusCodeCache.view",
   "luaTimestamp.model": "customerSetup/domainList/luaDownloadSetup/luaTimestamp/luaTimestamp.model",
   "luaTimestamp.view": "customerSetup/domainList/luaDownloadSetup/luaTimestamp/luaTimestamp.view",
+  "luaXtcpSetup.model": "customerSetup/domainList/luaDownLoadSetup/luaXtcpSetup/luaXtcpSetup.model",
+  "luaXtcpSetup.view": "customerSetup/domainList/luaDownLoadSetup/luaXtcpSetup/luaXtcpSetup.view",
   "backOriginDetection.model": "customerSetup/domainList/nginxDownloadSetup/backOriginDetection/backOriginDetection.model",
   "backOriginDetection.view": "customerSetup/domainList/nginxDownloadSetup/backOriginDetection/backOriginDetection.view",
   "backOriginSetup.model": "customerSetup/domainList/nginxDownloadSetup/backOriginSetup/backOriginSetup.model",
@@ -186,6 +189,13 @@
   "domainStatistics.view": "domainStatistics/domainStatistics.view",
   "grayscaleSetup.model": "grayscaleSetup/grayscaleSetup.model",
   "grayscaleSetup.view": "grayscaleSetup/grayscaleSetup.view",
+  "hashOrigin.edit.view": "hashOrigin/hashOrigin.edit.view",
+  "hashOrigin.model": "hashOrigin/hashOrigin.model",
+  "hashOrigin.selectHash.view": "hashOrigin/hashOrigin.selectHash.view",
+  "hashOrigin.selectNode.view": "hashOrigin/hashOrigin.selectNode.view",
+  "hashOrigin.selectNodes.view": "hashOrigin/hashOrigin.selectNodes.view",
+  "hashOrigin.selectNodeByHash.view": "hashOrigin/hashOrigin.selectNodeByHash.view",
+  "hashOrigin.view": "hashOrigin/hashOrigin.view",
   "importAssess.model": "importAssess/importAssess.model",
   "importAssess.view": "importAssess/importAssess.view",
   "importDomainManage.edit.view": "importDomainManage/importDomainManage.edit.view",
@@ -273,10 +283,16 @@
   "sharedSetup.detail.view": "sharedSetup/sharedSetup.detail.view",
   "sharedSetup.model": "sharedSetup/sharedSetup.model",
   "sharedSetup.view": "sharedSetup/sharedSetup.view",
+  "specialLayerManage.deleteNode.view": "specialLayerManage/specialLayerManage.deleteNode.view",
+  "specialLayerManage.lowerLevel.view": "specialLayerManage/specialLayerManage.lowerLevel.view",
   "specialLayerManage.model": "specialLayerManage/specialLayerManage.model",
+  "specialLayerManage.replaceNode.view": "specialLayerManage/specialLayerManage.replaceNode.view",
   "specialLayerManage.view": "specialLayerManage/specialLayerManage.view",
   "speedMeasure.model": "speedMeasure/speedMeasure.model",
   "speedMeasure.view": "speedMeasure/speedMeasure.view",
+  "adminManage.model": "adminManage/adminManage.model",
+  "adminManage.view": "adminManage/adminManage.view",
+  "adminManage.add&edit.view": "adminManage/adminManage.add&edit.view",
   "statisticsDataSourceSwitch.model": "statisticsDataSourceSwitch/statisticsDataSourceSwitch.model",
   "statisticsDataSourceSwitch.view": "statisticsDataSourceSwitch/statisticsDataSourceSwitch.view",
   "statisticsManage.model": "statisticsManage/statisticsManage.model",
@@ -326,14 +342,16 @@ else if(window.DEBUG === 9)
 else if(window.DEBUG === 10)
     window.BASE_URL = "http://preonline.center.cdn.ksyun.com";
 else if(window.DEBUG === 11)
-    window.BASE_URL = "http://cdn.center.wq01.k8s.op.ksyun.com";
+    window.BASE_URL = "http://qatest.center.cdn.ksyun.com";
+else if(window.DEBUG === 12)
+    window.BASE_URL = "http://10.12.8.161:9099";
 requirejs.config({
     paths:REQ_PATH,
     urlArgs: new Date().valueOf()
 });
 requirejs(['routes', 'utility'], function(routes, Utility) {
     Utility.dateFormat();
-    Backbone.history.start();
+    if (!Backbone.History.started) Backbone.history.start();
 });
 requirejs.onError = function () {
     console.log(arguments)

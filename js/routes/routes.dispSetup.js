@@ -1,6 +1,26 @@
 define("routes.dispSetup", ['require', 'exports'], 
     function(require, exports) {
         var RouterDispSetup = {
+            hashOrigin:function(){
+                if (!AUTH_OBJ.HashManage) return;
+                require(['hashOrigin.view', 'hashOrigin.model'], function(HashOriginView, HashOriginModel) {
+                    this.curPage = 'hashOrigin';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    if (!this.hashOriginModel)
+                        this.hashOriginModel = new HashOriginModel();
+                    if (!this.hashOriginView) {
+                        var options = {
+                            collection: this.hashOriginModel
+                        };
+                        this.hashOriginView = new HashOriginView(options);
+                        this.hashOriginView.render($('.ksc-content'));
+                    } else {
+                        this.hashOriginView.update($('.ksc-content'));
+                    }
+                    this.curView = this.hashOriginView;
+                }.bind(this));                
+            },
+
             clientStatistics: function() {
                 if (!AUTH_OBJ.KACustomersBandwidthStatistics) return;
                 require(['clientStatistics.view', 'clientStatistics.model'], function(ClientStatisticsView, ClientStatisticsModel) {

@@ -104,8 +104,10 @@ define("nodeManage.operateDetail.view", ['require', 'exports', 'template', 'moda
                         el.statusName = statusName = "<span class='label label-danger'>宕机</span>";
                     if (el.resultState == "6" || el.resultState == "12" || el.resultState == "14" || el.resultState == "22" || el.resultState == "30") 
                         el.statusName = statusName = "暂停且宕机";
-                    if (el.resultState == "2" || el.resultState == "8" || el.resultState == "10" || el.resultState == "16" || el.resultState == "18" || el.resultState == "24" || el.resultState == "26") 
+                    if (el.resultState == "2" || el.resultState == "10" || el.resultState == "16" || el.resultState == "18" || el.resultState == "24" || el.resultState == "26") 
                         el.statusName = statusName = "<span class='label label-warning'>暂停</span>";
+                    if (el.resultState == "8") 
+                        el.statusName = statusName = "<span class='label label-info'>启动中</span>";
                 }
                 if (el.changeTime) 
                     el.changeTimeFormated = new Date(el.changeTime).format("yyyy/MM/dd hh:mm");

@@ -33,8 +33,19 @@
 					          <td><%=data.configItemList[i].itemName%></td>
 					          <td><%=data.configItemList[i].configKey%></td>
 					          <%if(data.configItemList[i].valueType==1||data.configItemList[i].valueType==2||data.configItemList[i].valueType==10){%>					            
-					                <td><input type="text" class="form-control keyInput"
-					              	 id="<%=data.moduleId%>-<%=data.id%>-<%=data.configItemList[i].id%>" style="width:200px;" value="<%=data.configItemList[i].value%>">
+					                <td>
+					                	<%if(data.configItemList[i].valueType==10){%>
+					                	<input type="text" class="form-control keyInput floatLeft" id="<%=data.moduleId%>-<%=data.id%>-<%=data.configItemList[i].id%>" style="width:200px;" value="<%=data.configItemList[i].value && data.configItemList[i].value.split('$')[0] || '' %>">
+						              	<div class="dropdown floatLeft margin-left10" id="time-<%=data.moduleId%>-<%=data.id%>-<%=data.configItemList[i].id%>">
+						                   <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-valueType-time" data-toggle="dropdown">
+						                        <span class="cur-value"></span>
+						                        <span class="caret"></span>
+						                    </button>
+						                   <ul class="dropdown-menu"></ul>
+						                </div>
+						                <%}else{%>
+						                <input type="text" class="form-control keyInput floatLeft" id="<%=data.moduleId%>-<%=data.id%>-<%=data.configItemList[i].id%>" style="width:200px;" value="<%=data.configItemList[i].value%>">
+						                <%}%>
 					              	</td>          
 					          <%}else if(data.configItemList[i].valueType==9){%>
 					              <td><textarea id="<%=data.moduleId%>-<%=data.id%>-<%=data.configItemList[i].id%>" class="form-control keyInput" style="width:200px;"><%=data.configItemList[i].value%></textarea></td>

@@ -1,4 +1,4 @@
-define("preheatManage.view", ['require','exports', 'template', 'base.view', 'utility', "antd", 'react.backbone', "react-dom"], 
+define("logTemplateManage.view", ['require','exports', 'template', 'base.view', 'utility', "antd", 'react.backbone', "react-dom"], 
     function(require, exports, template, BaseView, Utility, Antd, React, ReactDOM) {
 
         var Layout = Antd.Layout,
@@ -576,11 +576,11 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
             }
         });
 
-        var PreheatManageView = BaseView.extend({
+        var LogTemplateManageView = BaseView.extend({
             initialize: function(options) {
                 this.options = options;
                 this.collection = options.collection;
-                this.$el = $(_.template('<div class="preheat-manage"></div>')());
+                this.$el = $(_.template('<div class="log-manage"></div>')());
 
                 var preHeatManageListFac = React.createFactory(PreHeatManageList);
                 var preHeatManageList = preHeatManageListFac({
@@ -589,6 +589,6 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                 ReactDOM.render(preHeatManageList, this.$el.get(0));
             }
         })
-        return PreheatManageView;
+        return LogTemplateManageView;
     }
 );

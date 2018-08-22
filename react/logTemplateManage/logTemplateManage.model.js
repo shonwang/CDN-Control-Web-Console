@@ -1,4 +1,4 @@
-define("preheatManage.model", ['require','exports', 'utility'], function(require, exports, Utility) {
+define("logTemplateManage.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
             var taskId = this.get("taskId");
@@ -22,7 +22,7 @@ define("preheatManage.model", ['require','exports', 'utility'], function(require
         }
     });
 
-    var PreheatManageCollection = Backbone.Collection.extend({
+    var LogTemplateManageCollection = Backbone.Collection.extend({
         
         model: Model,
 
@@ -93,5 +93,5 @@ define("preheatManage.model", ['require','exports', 'utility'], function(require
         },
     });
 
-    return PreheatManageCollection;
+    return LogTemplateManageCollection;
 });

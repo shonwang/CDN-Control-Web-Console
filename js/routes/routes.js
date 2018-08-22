@@ -43,7 +43,8 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "speedMeasure" : "speedMeasure",
                 "commonCache"  : "commonCache",
                 "userMove"     : "userMove",
-                "adminManage": "adminManage",
+                "adminManage"  : "adminManage",
+                "apiLimitRate" : "apiLimitRate",
                 "statisticsDataSourceSwitch": "statisticsDataSourceSwitch",
 
                 // 调度配置

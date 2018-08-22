@@ -98,6 +98,25 @@ define("routes.other", ['require', 'exports', 'subNavbar.view'],
                 }.bind(this));
             },
 
+            apiLimitRate: function(){
+                require(['apiLimitRate.view', 'apiLimitRate.model'], function(ApiLimitRateView, ApiLimitRateModel) {
+                    this.curPage = 'apiLimitRate';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    if (!this.apiLimitRateModel)
+                        this.apiLimitRateModel = new ApiLimitRateModel();
+                    if (!this.apiLimitRateView) {
+                        var options = {
+                            collection: this.apiLimitRateModel
+                        };
+                        this.apiLimitRateView = new ApiLimitRateView(options);
+                        this.apiLimitRateView.render($('.ksc-content'));
+                    } else {
+                        this.apiLimitRateView.update();
+                    }
+                    this.curView = this.apiLimitRateView;
+                }.bind(this));
+            },
+
             customMaintenance: function() {
                 require(['customMaintenance.view', 'customMaintenance.model'], function(CustomMaintenanceView, CustomMaintenanceModel) {
                     this.curPage = 'customMaintenance';

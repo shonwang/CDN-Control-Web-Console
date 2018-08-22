@@ -62,7 +62,7 @@ define("setupBillLiveDynamic.view", ['require', 'exports', 'template', 'modal.vi
                     if(list.valueType == 10){
                         //新增加动态配置的时间可以选择年月日时分秒
                         if(list.valueName){
-                            var valueName = list.valueName && list.valueName.split("$")
+                            var valueName = list.valueName && (''+list.valueName).split("$")
                             var _value = valueName[0];
                             var _unit = valueName[1] || "s";
                             var _unitName = this.getUnitName(_unit);

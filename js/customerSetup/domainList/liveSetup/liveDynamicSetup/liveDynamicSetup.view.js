@@ -238,7 +238,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                 "ms":"毫秒"
             };
             var currentKey = this.getCurrentKey(id);
-            var currentValue = currentKey.value && currentKey.value.split("$") || null;
+            var currentValue = currentKey.value && (''+currentKey.value).split("$") || null;
             Utility.initDropMenu(rootNode,timeArray,function(val){
                 currentKey.defaultValueUnit = val;
             });
@@ -445,7 +445,7 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                             //     //errorMessage = errorMessage + key.itemName + "不能为空字符串！<br>"
                             // } 
                             else if(key.valueType == 10){
-                                value[0].configValueMap[key.id] = key.value.split("$")[0] + "$" + key.defaultValueUnit;
+                                value[0].configValueMap[key.id] = (''+key.value).split("$")[0] + "$" + key.defaultValueUnit;
                             }
                             else {
                                 value[0].configValueMap[key.id] = key.value

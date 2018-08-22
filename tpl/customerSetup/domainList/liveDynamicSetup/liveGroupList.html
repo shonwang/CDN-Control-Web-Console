@@ -35,7 +35,7 @@
 					          <%if(data.configItemList[i].valueType==1||data.configItemList[i].valueType==2||data.configItemList[i].valueType==10){%>					            
 					                <td>
 					                	<%if(data.configItemList[i].valueType==10){%>
-					                	<input type="text" class="form-control keyInput floatLeft" id="<%=data.moduleId%>-<%=data.id%>-<%=data.configItemList[i].id%>" style="width:200px;" value="<%= (data.configItemList[i].value && data.configItemList[i].value.split('$')[0]) || '' %>">
+					                	<input type="text" class="form-control keyInput floatLeft" id="<%=data.moduleId%>-<%=data.id%>-<%=data.configItemList[i].id%>" style="width:200px;" value="<%= (data.configItemList[i].value && (''+data.configItemList[i].value).split('$')[0]) || '' %>">
 						              	<div class="dropdown floatLeft margin-left10" id="time-<%=data.moduleId%>-<%=data.id%>-<%=data.configItemList[i].id%>">
 						                   <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-valueType-time" data-toggle="dropdown">
 						                        <span class="cur-value"></span>

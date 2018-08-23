@@ -372,11 +372,13 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
                 var uiRuleNum = this.$el.find(".rule tbody tr").length,
                     dateTime = new Date().format("yyyy/MM/dd hh:mm:ss"),
-                    messageDebug = dateTime + "<br>点击保存时界面上有<strong class='text-danger'>" + uiRuleNum + "</strong>条规则<br>" + 
-                                    "点击保存时发给后端<strong class='text-danger'>" + postTopo.rule.length + "</strong>条规则"
+                    messageDebug = "你确定要暂存或发布吗？<br><p class='h4'>" + dateTime + 
+                                    "<br>点击保存时界面上有<strong class='text-danger'>" + uiRuleNum + "</strong>条规则<br>" + 
+                                    "点击保存时发给后端<strong class='text-danger'>" + postTopo.rule.length + "</strong>条规则</p>"
                 if (this.isEdit) {
-                    this.collection.topoModify(postTopo);
-                    alert(messageDebug, "success")
+                    Utility.confirm(messageDebug, function(){
+                        this.collection.topoModify(postTopo);
+                    }.bind(this))
                 } else {
                     this.collection.topoAdd(postTopo);
                 }

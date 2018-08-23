@@ -622,11 +622,24 @@ define("utility", ['require','exports'], function(require, exports) {
                 value: "3"
             }
         ],
+
         liveAndDownloadListBack:{
             1:"音视频点播",
             2:"流媒体直播",
             3:"直播推流加速",
             4:"大文件下载"
+        },
+
+        getTimeStampUnit:function(unit){
+            var _unit = unit || "s";
+            var obj = {
+                "y":"年",
+                "h":"时",
+                "m":"分",
+                "s":"秒",
+                "ms":"毫秒"
+            };
+            return obj[_unit];
         }
 
     };

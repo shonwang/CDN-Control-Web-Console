@@ -96,12 +96,7 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             }));
             this.$el.find(".bill-ctn").html("")
             this.baseInfoTable.appendTo(this.$el.find(".bill-ctn"));
-
             this.initCname();
-            if(this.config.xtcpConfig){
-                this.initXtcpSetup()
-            }
-            this.initSubSetup();
         },
 
         initCname: function() {
@@ -109,6 +104,8 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                 data: this.config.originDomain.cnameData
             }));
             this.cnameTable.appendTo(this.$el.find(".bill-ctn"));
+            this.initOriginSetup();
+
         },
 
         initXtcpSetup: function(){
@@ -145,21 +142,6 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             }));
             this.xtcpTable.appendTo(this.$el.find(".bill-ctn"));
             
-        },
-
-        initSubSetup:function(){
-            var type = this.config.originDomain.type,
-                applicationType = this.config.originDomain.applicationType;
-
-            if (applicationType == 202) {
-                //下载
-                this.initOriginSetup();
-            } else if (applicationType == 203) {
-                //直播
-                this.initLiveOriginSetup();
-            } else {
-                Utility.warning("您的平台不是下载也不是直播，applicationType为" + applicationType);
-            }
         },
 
         transformat: function(time){
@@ -275,7 +257,9 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                 data: this.originSetupInfo
             }));
             this.originSetupTable.appendTo(this.$el.find(".bill-ctn"));
-
+            if(this.config.xtcpConfig){
+                this.initXtcpSetup()
+            }
             this.initOriginHostSetup();
         },
 
@@ -387,7 +371,6 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
                 data: this.followingInfo
             }));
             this.followingTable.appendTo(this.$el.find(".bill-ctn"));
-
             if (this.versionType === 2)
                 this.initLuaCacheRule();
             else
@@ -1059,6 +1042,7 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
         },
 
         initAdvancedConfig: function(){
+            console.log(this.config);
             if (!this.config.configLocationList || this.config.configLocationList.length === 0) {
                 return;
             } else {

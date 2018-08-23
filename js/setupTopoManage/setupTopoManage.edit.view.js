@@ -215,6 +215,16 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.$el.find(".view-more").on("click", $.proxy(this.onClickViewMoreButton, this));
                 this.$el.find(".view-less").on("click", $.proxy(this.onClickViewLessButton, this));
 
+                this.$el.find(".upper .table-ctn").hide(200);
+                this.$el.find('.upper .view-less').hide();
+                this.$el.find(".upper .view-more").show();
+                this.$el.find(".middle .table-ctn").hide(200);
+                this.$el.find('.middle .view-less').hide();
+                this.$el.find(".middle .view-more").show();
+                this.$el.find(".lower .table-ctn").hide(200);
+                this.$el.find('.lower .view-less').hide();
+                this.$el.find(".lower .view-more").show();
+
                 this.collection.off("get.devicetype.success");
                 this.collection.off("get.devicetype.error");
                 this.collection.on("get.devicetype.success", $.proxy(this.initDeviceDropMenu, this));
@@ -360,9 +370,13 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     postTopo.ispub = 0;
                 console.log("finally", postTopo)
 
+                var uiRuleNum = this.$el.find(".rule tbody tr").length,
+                    dateTime = new Date().format("yyyy/MM/dd hh:mm:ss"),
+                    messageDebug = dateTime + "<br>点击保存时界面上有<strong class='text-danger'>" + uiRuleNum + "</strong>条规则<br>" + 
+                                    "点击保存时发给后端<strong class='text-danger'>" + postTopo.rule.length + "</strong>条规则"
                 if (this.isEdit) {
                     this.collection.topoModify(postTopo);
-                    Utility.alerts(new Date().format("yyyy/MM/dd hh:mm:ss") + "编辑后发给后端" + postTopo.rule.length + "条规则", "", 5000)
+                    alert(messageDebug, "success")
                 } else {
                     this.collection.topoAdd(postTopo);
                 }

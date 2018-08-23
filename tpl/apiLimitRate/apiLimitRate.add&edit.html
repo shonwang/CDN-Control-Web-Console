@@ -1,0 +1,41 @@
+<div>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label for="input-uri" class="col-sm-4 control-label">限速URI</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="input-uri">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="input-rate" class="col-sm-4 control-label">速率每秒</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="input-rate">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="input-nginxCount" class="col-sm-4 control-label">nginx数量</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="input-nginxCount">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="input-appCount" class="col-sm-4 control-label">app数量</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="input-appCount">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="input-status" class="col-sm-4 control-label">状态</label>
+            <div class="col-sm-3">
+                <input type="radio" name="input-status" value="1" <%if(data.status == 1){%>checked="true"<%}%>>开启
+                <input type="radio" name="input-status" value="2" <%if(data.status == 2){%>checked="true"<%}%>>关闭
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="input-notifyGroup" class="col-sm-4 control-label">报警组名</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="input-notifyGroup">
+            </div>
+        </div>
+    </form>
+</div>

@@ -12,7 +12,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 this.isEdit = options.isEdit;
                 // 是否是查看状态
                 this.isView = options.isView;
-                this.isSaving = false;
+                //this.isSaving = false;
                 this.$el = $(_.template(template['tpl/setupTopoManage/setupTopoManage.edit.html'])({
                     data: {}
                 }));
@@ -111,7 +111,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
             },
 
             modifyTopoSuccess: function(res) {
-                this.isSaving = false;
+                //this.isSaving = false;
                 var message = "", detail = "";
                 if (this.btnFlag == 2) {
                     if (res.message.length > 200) {
@@ -293,7 +293,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
             },
 
             onClickSaveButton: function() {
-                if (this.isSaving === true) return;
+                //if (this.isSaving === true) return;
 
                 this.defaultParam.name = $.trim(this.$el.find("#input-name").val());
                 if (this.defaultParam.name == '') {
@@ -383,9 +383,9 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     this.collection.topoAdd(postTopo);
                 }
 
-                this.isSaving = true;
+                //this.isSaving = true;
 
-                this.$el.find("opt-ctn .save").attr("disabled", "disabled");
+                //this.$el.find("opt-ctn .save").attr("disabled", "disabled");
             },
 
             onClickCancelButton: function() {
@@ -844,12 +844,12 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
             },
 
             onSaveError: function(error) {
-                this.isSaving = false;
+                //this.isSaving = false;
                 if (error && error.message)
                     Utility.alerts(error.message)
                 else
                     Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
-                this.$el.find(".opt-ctn .save").removeAttr("disabled");
+                //this.$el.find(".opt-ctn .save").removeAttr("disabled");
             },
 
             render: function(target) {

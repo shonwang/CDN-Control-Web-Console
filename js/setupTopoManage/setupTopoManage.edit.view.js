@@ -158,7 +158,8 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
 
             onOriginInfo: function(res) {
-                Utility.alerts(new Date().format("yyyy/MM/dd hh:mm:ss") + "编辑前收到后端" + res.rule.length + "条规则", "", 5000)
+                this.originRuleNum = res.rule.length;
+                Utility.alerts(new Date().format("yyyy/MM/dd hh:mm:ss") + "编辑前收到后端" + this.originRuleNum + "条规则", "", 5000)
                 this.defaultParam = {
                     "id": res.id,
                     "name": res.name,
@@ -373,6 +374,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 var uiRuleNum = this.$el.find(".rule tbody tr").length,
                     dateTime = new Date().format("yyyy/MM/dd hh:mm:ss"),
                     messageDebug = "你确定要暂存或发布吗？<br><p class='h4'>" + dateTime + 
+                                    "<br>进入界面从后端获取<strong class='text-danger'>" + this.originRuleNum + "</strong>条规则" + 
                                     "<br>点击保存时界面上有<strong class='text-danger'>" + uiRuleNum + "</strong>条规则<br>" + 
                                     "点击保存时发给后端<strong class='text-danger'>" + postTopo.rule.length + "</strong>条规则</p>"
                 if (this.isEdit) {

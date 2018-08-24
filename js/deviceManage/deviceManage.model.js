@@ -21,7 +21,8 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
                  this.set("statusName", '<span class="label label-success">运行中</span>');
             }
             if (status == 8){
-                this.set("statusName", "<span class='label label-info'>启动中</span>");
+                var _tips = this.get('openProgressBar') || '后端无返回';
+                this.set("statusName", "<span class='label label-info'>启动中<i class='glyphicon glyphicon-question-sign margin-left10' data-container='body' data-toggle='popover' data-trigger='hover' data-placement='top' data-content='"+_tips+"'></i></span>");
             }
 
 

@@ -24,11 +24,9 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     "localType": 2,
                     "localOperator": [],
                     "upper": [],
-                    "upType": 1,
-                    "localNodeType": 1
+                    "upType": 1
                 }
             } else {
-                console.log("初始化时的this.curEditRule", this.curEditRule)
                 this.defaultParam = {
                     "id": this.curEditRule.id,
                     "local": this.curEditRule.local, 
@@ -36,7 +34,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     "localOperator": [],
                     "upper": this.curEditRule.upper,
                     "upType": this.curEditRule.upType,
-                    "localNodeType": 1
                 }
                 if(this.curEditRule.localType === 3){
                     _.each(this.curEditRule.local, function(el){
@@ -66,8 +63,11 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                             value: tempValue
                         })
                     }.bind(this))
+                }else if(this.curEditRule.localType === 5){
+                    _.each(this.curEditRule.local, function(el){
+                        el.hashId = el.id;
+                    }.bind(this))
                 }
-                console.log("编辑完时的this.defaultParam.localOperator", this.defaultParam.localOperator)
                 this.onCancelParam= $.extend(true,{},this.curEditRule)     
             }
             if(!this.notFilter){
@@ -123,6 +123,8 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.$el.find("#strategyRadio2").attr("disabled", "disabled");
             this.$el.find("#strategyRadio3").attr("disabled", "disabled");
             this.$el.find("#strategyRadio4").attr("disabled", "disabled");
+            this.$el.find("#strategyRadioAsHash").attr("disabled", "disabled");
+
         },
 
         onUpperStyleChange:function(event){
@@ -422,42 +424,34 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }.bind(this))
 
             // localType是策略方式
+            this.hideAllCtn();
             if (this.defaultParam.localType === 1) {
                 this.$el.find("#strategyRadio1").get(0).checked = true;
-                this.$el.find(".operator-ctn").hide();
-                this.$el.find(".provinceOperator-ctn").hide();
-                this.$el.find(".largeAreaOperator-ctn").hide();
                 this.$el.find(".nodes-ctn").show();
-                this.$el.find(".operator-btn").hide();
             } else if (this.defaultParam.localType === 2) {
                 this.$el.find("#strategyRadio2").get(0).checked = true;
-                this.$el.find(".nodes-ctn").hide();
-                this.$el.find(".provinceOperator-ctn").hide();
-                this.$el.find(".largeAreaOperator-ctn").hide();
                 this.$el.find(".operator-ctn").show();
                 this.$el.find(".operator-btn").show();
                 this.$el.find('.local .operatorButton-ctn').show()
             } else if (this.defaultParam.localType === 3) {
                 this.$el.find("#strategyRadio3").get(0).checked = true;
-                this.$el.find(".nodes-ctn").hide();
-                this.$el.find(".operator-ctn").hide();
-                this.$el.find(".largeAreaOperator-ctn").hide();
                 this.$el.find(".provinceOperator-ctn").show();
                 this.$el.find(".operator-btn").show();
-                this.$el.find('.local .operatorButton-ctn').show()
+                this.$el.find('.operatorButton-ctn').show()
             } else if (this.defaultParam.localType === 4) {
                 this.$el.find("#strategyRadio4").get(0).checked = true;
-                this.$el.find(".nodes-ctn").hide();
-                this.$el.find(".operator-ctn").hide();
-                this.$el.find(".provinceOperator-ctn").hide();
                 this.$el.find(".largeAreaOperator-ctn").show();
                 this.$el.find(".operator-btn").show();
-                this.$el.find('.local .operatorButton-ctn').show()
+                this.$el.find('.operatorButton-ctn').show()
+            }else if(this.defaultParam.localType === 5){
+                this.$el.find("#strategyRadioAsHash").get(0).checked = true;
+                this.$el.find(".nodes-ctn-hashOrigin").show();
             }
             this.$el.find("#strategyRadio2").removeAttr("disabled", "disabled")
             this.$el.find("#strategyRadio1").removeAttr("disabled", "disabled")
             this.$el.find("#strategyRadio3").removeAttr("disabled", "disabled")
             this.$el.find("#strategyRadio4").removeAttr("disabled", "disabled")
+            this.$el.find("#strategyRadioAsHash").removeAttr("disabled", "disabled")
 
             if (!this.options.localNodes && !this.options.upperNodes && !this.notFilter) {
                 this.collection.on("get.topo.OriginInfo.success", $.proxy(this.onGetLocalNodeByTopo, this));
@@ -475,6 +469,60 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.onGetUpperNodeFromArgs();
                 this.initUpperHash();
             }
+
+            // if (this.defaultParam.localType === 1) {
+            //     this.$el.find("#strategyRadio1").get(0).checked = true;
+            //     this.$el.find(".operator-ctn").hide();
+            //     this.$el.find(".provinceOperator-ctn").hide();
+            //     this.$el.find(".largeAreaOperator-ctn").hide();
+            //     this.$el.find(".nodes-ctn").show();
+            //     this.$el.find(".operator-btn").hide();
+            // } else if (this.defaultParam.localType === 2) {
+            //     this.$el.find("#strategyRadio2").get(0).checked = true;
+            //     this.$el.find(".nodes-ctn").hide();
+            //     this.$el.find(".provinceOperator-ctn").hide();
+            //     this.$el.find(".largeAreaOperator-ctn").hide();
+            //     this.$el.find(".operator-ctn").show();
+            //     this.$el.find(".operator-btn").show();
+            //     this.$el.find('.local .operatorButton-ctn').show()
+            // } else if (this.defaultParam.localType === 3) {
+            //     this.$el.find("#strategyRadio3").get(0).checked = true;
+            //     this.$el.find(".nodes-ctn").hide();
+            //     this.$el.find(".operator-ctn").hide();
+            //     this.$el.find(".largeAreaOperator-ctn").hide();
+            //     this.$el.find(".provinceOperator-ctn").show();
+            //     this.$el.find(".operator-btn").show();
+            //     this.$el.find('.local .operatorButton-ctn').show()
+            // } else if (this.defaultParam.localType === 4) {
+            //     this.$el.find("#strategyRadio4").get(0).checked = true;
+            //     this.$el.find(".nodes-ctn").hide();
+            //     this.$el.find(".operator-ctn").hide();
+            //     this.$el.find(".provinceOperator-ctn").hide();
+            //     this.$el.find(".largeAreaOperator-ctn").show();
+            //     this.$el.find(".operator-btn").show();
+            //     this.$el.find('.local .operatorButton-ctn').show()
+            // }
+            // this.$el.find("#strategyRadio2").removeAttr("disabled", "disabled")
+            // this.$el.find("#strategyRadio1").removeAttr("disabled", "disabled")
+            // this.$el.find("#strategyRadio3").removeAttr("disabled", "disabled")
+            // this.$el.find("#strategyRadio4").removeAttr("disabled", "disabled")
+
+            // if (!this.options.localNodes && !this.options.upperNodes && !this.notFilter) {
+            //     this.collection.on("get.topo.OriginInfo.success", $.proxy(this.onGetLocalNodeByTopo, this));
+            //     this.collection.on("get.topo.OriginInfo.error", $.proxy(this.onGetError, this));
+            //     this.collection.getTopoOrigininfo(this.topologyId);
+            //     console.log("拓扑ID: ", this.topologyId);
+            // } else if (!this.options.localNodes && !this.options.upperNodes && this.notFilter) {
+            //     this.options.localNodes = this.allNodesArray;
+            //     this.options.upperNodes = this.allNodesArray;
+            //     this.onGetLocalNodeFromArgs();
+            //     this.onGetUpperNodeFromArgs();
+            //     this.initUpperHash();
+            // } else {
+            //     this.onGetLocalNodeFromArgs();
+            //     this.onGetUpperNodeFromArgs();
+            //     this.initUpperHash();
+            // }
         },
 
         onClickCancelBtn: function() {
@@ -492,11 +540,11 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             if(!this.proAndoperator) this.proAndoperator=[];
             // 地区运营商
             if(!this.areaAndoperator) this.areaAndoperator=[];
-            if(this.defaultParam.localType==1 && this.defaultParam.local.length==0){
+            if((this.defaultParam.localType==1 || this.defaultParam.localType== 5) && this.defaultParam.local.length==0){
                 alert('请选择本层节点');
                 return;
             }
-            if(this.defaultParam.localType !== 1 && this.defaultParam.localOperator.length == 0){
+            if(this.defaultParam.localType !== 1 && this.defaultParam.localType !==5 && this.defaultParam.localOperator.length == 0){
                 alert('请选择本层节点');
                 return;
             }
@@ -596,7 +644,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 }
                 var tempId = parseInt(Math.random()*999999999);
                 var tempLocal = []
-                console.log(this.defaultParam.localOperator)
                 _.each(this.defaultParam.localOperator, function(el){
                     var tempNameList = el.name;
                     var tempValueList = el.value;
@@ -633,7 +680,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                             operatorName: tempNameList[1]
                         })
                     }.bind(this))
-                    console.log("localType为3，添加规则子页面tempLocal", tempLocal)
                     this.rule.push({
                         "id": tempId,
                         "local": tempLocal, 
@@ -660,7 +706,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                         operatorName: tempNameList[1]
                     })
                 }.bind(this))
-                console.log("localType为4，添加规则子页面tempLocal", tempLocal)
                 this.rule.push({
                     "id": tempId,
                     "local": tempLocal, 
@@ -691,10 +736,31 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     "upType":this.defaultParam.upType 
                 })
             }
-            console.log("ppppp", this.defaultParam.local)
-            console.log("子页面保存时的this.rule", this.rule)
-            if(!this.isEdit) this.rule = this.rule.concat(this.tempRule)   
-            console.log("当前保存的规则：this.rule: ", this.rule);      
+            else if(this.defaultParam.localType == 5){
+                if(this.rule.length !== 0){
+                    this.tempRule = this.rule
+                    this.rule = []
+                } 
+                var tempId = parseInt(Math.random()*999999999);
+                var tempLocal = [];
+                _.each(this.defaultParam.local, function(el){
+                    var tempNameList = el.hashName;
+                    var tempValueList = el.id
+                    tempLocal.push({
+                        id: tempValueList,
+                        name: tempNameList,
+                    })
+                }.bind(this))
+                this.rule.push({
+                    "id": tempId,
+                    "local": tempLocal, 
+                    "localType": this.defaultParam.localType,
+                    "upper": this.defaultParam.upper,
+                    "upType":this.defaultParam.upType 
+                })                
+
+            }
+            if(!this.isEdit) this.rule = this.rule.concat(this.tempRule)      
             this.options.onSaveCallback && this.options.onSaveCallback();
         },
 
@@ -765,21 +831,21 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             }.bind(this))
             
             // this.localNodesListForSelect
-            this.$el.find('.strategyLocal input').on('click', $.proxy(this.onCheckLocalNodeType, this))
+            //this.$el.find('.strategyLocal input').on('click', $.proxy(this.onCheckLocalNodeType, this))
             this.$el.find('.local .add-node').on('click', $.proxy(this.onClickAddLocalNodeButton, this))
-            if(this.defaultParam.localType === 1){
+            this.$el.find('.local .add-hashOrigin-node').on('click', $.proxy(this.onClickAddLocalHashNodeButton, this))
+            if(this.defaultParam.localType === 1 || this.defaultParam.localType === 5){
                 this.initLocalTable();
             }else{
-                console.log("nnnnnnnn",this.defaultParam.localOperator)
                 this.initLocalOperatorTable();
             }
         },
 
-        onCheckLocalNodeType:function(event){
-            var eventTarget = event.srcElement || event.target;
-            if (eventTarget.tagName !== "INPUT") return;
-            this.defaultParam.localNodeType = parseInt($(eventTarget).val());
-        },
+        // onCheckLocalNodeType:function(event){
+        //     var eventTarget = event.srcElement || event.target;
+        //     if (eventTarget.tagName !== "INPUT") return;
+        //     this.defaultParam.localNodeType = parseInt($(eventTarget).val());
+        // },
 
         updateChecked:function(sonNode,parentNode){
             var tempIpArray = [];
@@ -796,61 +862,57 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         onClickAddLocalNodeButton: function(event) {
-            if(this.defaultParam.localNodeType === 1){
-                require(['setupTopoManage.selectNode.view'], function(SelectNodeView) {
-                    if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
-                    this.updateChecked(this.defaultParam.local, this.localNodeListForSelect);
-                    var mySelectNodeView = new SelectNodeView({
-                        collection: this.collection,
-                        selectedNodes: this.defaultParam.local,
-                        nodesList: this.localNodeListForSelect,
-                        appType: this.appType
-                    });
-                    var options = {
-                        title: "选择节点",
-                        body: mySelectNodeView,
-                        backdrop: 'static',
-                        type: 2,
-                        width: 800,
-                        onOKCallback: function() {
-                            this.defaultParam.local = mySelectNodeView.getArgs();
-                            this.selectNodePopup.$el.modal("hide");
-                            this.initLocalTable();
-                        }.bind(this),
-                        onHiddenCallback: function() {}.bind(this)
-                    }
-                    this.selectNodePopup = new Modal(options);
-                }.bind(this))
-            }else if(this.defaultParam.localNodeType === 2){
-                require(['hashOrigin.selectNodeByHash.view', 'hashOrigin.model'], function(SelectNodeByHashView, HashModel) {
-                    if (this.selectNodeByHashPopup) $("#" + this.selectNodeByHashPopup.modalId).remove();
-                    // this.updateChecked(this.defaultParam.local, this.localNodeListForSelect);
-                    var hashModel = new HashModel();
-                    var mySelectNodeByHashView = new SelectNodeByHashView({
-                        collection: hashModel,
-                        selectedNodes: this.defaultParam.local,
-                        // nodesList: this.localNodeListForSelect,
-                        allNodesArray: this.allNodesArray,
-                        appType: this.appType
-                    });
-                    var options = {
-                        title: "选择节点",
-                        body: mySelectNodeByHashView,
-                        backdrop: 'static',
-                        type: 2,
-                        width: 800,
-                        onOKCallback: function() {
-                            this.defaultParam.local = mySelectNodeByHashView.getArgs();
-                            console.log(this.defaultParam.local)
-                            this.selectNodeByHashPopup.$el.modal("hide");
-                            this.initLocalTable();
-                        }.bind(this),
-                        onHiddenCallback: function() {}.bind(this)
-                    }
-                    this.selectNodeByHashPopup = new Modal(options);
-                }.bind(this))
-            }   
+            require(['setupTopoManage.selectNode.view'], function(SelectNodeView) {
+                if (this.selectNodePopup) $("#" + this.selectNodePopup.modalId).remove();
+                this.updateChecked(this.defaultParam.local, this.localNodeListForSelect);
+                var mySelectNodeView = new SelectNodeView({
+                    collection: this.collection,
+                    selectedNodes: this.defaultParam.local,
+                    nodesList: this.localNodeListForSelect,
+                    appType: this.appType
+                });
+                var options = {
+                    title: "选择节点",
+                    body: mySelectNodeView,
+                    backdrop: 'static',
+                    type: 2,
+                    width: 800,
+                    onOKCallback: function() {
+                        this.defaultParam.local = mySelectNodeView.getArgs();
+                        this.selectNodePopup.$el.modal("hide");
+                        this.initLocalTable();
+                    }.bind(this),
+                    onHiddenCallback: function() {}.bind(this)
+                }
+                this.selectNodePopup = new Modal(options);
+            }.bind(this))
+        },
 
+        onClickAddLocalHashNodeButton:function(){
+            require(['hashOrigin.selectNodeByHash.view', 'hashOrigin.model'], function(SelectNodeByHashView, HashModel) {
+                if (this.selectNodeByHashPopup) $("#" + this.selectNodeByHashPopup.modalId).remove();
+
+                var hashModel = new HashModel();
+                var mySelectNodeByHashView = new SelectNodeByHashView({
+                    collection: hashModel,
+                    selectedhashList: this.defaultParam.local,
+                    appType: this.appType
+                });
+                var options = {
+                    title: "选择hash环",
+                    body: mySelectNodeByHashView,
+                    backdrop: 'static',
+                    type: 2,
+                    width: 800,
+                    onOKCallback: function() {
+                        this.defaultParam.local = mySelectNodeByHashView.getArgs();
+                        this.selectNodeByHashPopup.$el.modal("hide");
+                        this.initLocalTable();
+                    }.bind(this),
+                    onHiddenCallback: function() {}.bind(this)
+                }
+                this.selectNodeByHashPopup = new Modal(options);
+            }.bind(this))            
         },
 
         onGetLocalNodeByTopo: function(res) {
@@ -920,7 +982,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 id = $(eventTarget).attr("id");
             }
             this.defaultParam.localOperator = _.filter(this.defaultParam.localOperator, function(obj) {
-                console.log(obj.value)
                 return obj.value.toString() !== id
             }.bind(this));
             this.initLocalOperatorTable();
@@ -950,7 +1011,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                             name: el.name + '/' + item.name,
                             value: el.value + '/' + item.value
                         }
-                        console.log(name)
                         areaAndOperatorList.push(name)
                     })
                 }.bind(this))
@@ -966,34 +1026,36 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.defaultParam.localType = parseInt($(eventTarget).val());
 
             this.hideAllCtn();
-
+            this.defaultParam.local = [];
+            this.defaultParam.localOperator = [];
             if (this.defaultParam.localType === 1) {
-                this.defaultParam.local=this.curNodes || [];
+                //this.defaultParam.local=this.curNodes || [];
                 this.$el.find(".nodes-ctn").show();
             } 
             else if (this.defaultParam.localType === 2) {
                 if(this.prelocalType === 1 ){
-                    this.curNodes=this.defaultParam.local;
+                    //this.curNodes=this.defaultParam.local;
                 }
                 this.$el.find(".operator-ctn").show();
                 this.$el.find(".operatorButton-ctn").show();
             }
             else if (this.defaultParam.localType === 3) {
                 if(this.prelocalType === 1 ){
-                    this.curNodes=this.defaultParam.local;
+                    //this.curNodes=this.defaultParam.local;
                 }
                 this.$el.find(".provinceOperator-ctn").show();
                 this.$el.find(".operatorButton-ctn").show();
             }
             else if (this.defaultParam.localType === 4) {
                 if(this.prelocalType === 1 ){
-                    this.curNodes=this.defaultParam.local;
+                    //this.curNodes=this.defaultParam.local;
                 }
                 this.$el.find(".largeAreaOperator-ctn").show();
                 this.$el.find(".operatorButton-ctn").show();
             }
             else if(this.defaultParam.localType === 5){
-                this.$el.find(".nodes-ctn").show();
+                //this.defaultParam.local=this.curNodes || [];
+                this.$el.find(".nodes-ctn-hashOrigin").show();
             }
 
             if(this.defaultParam.localType === 1){
@@ -1079,6 +1141,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.$el.find(".nodes-ctn").hide();   
             this.$el.find(".provinceOperator-ctn").hide();
             this.$el.find(".largeAreaOperator-ctn").hide();
+            this.$el.find(".nodes-ctn-hashOrigin").hide();
         },
 
         onGetUpperNodeFromArgs: function() {
@@ -1324,7 +1387,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             this.$el.find(".strategyUpper-hash-ctn").hide();
             this.$el.find(".strategyUpper-node-ctn").show();
             var nodeList = [];
-            console.log(this.defaultParam.upper)
             _.each(this.defaultParam.upper, function(el) {
                 nodeList.push({
                     nodeId: el.rsNodeMsgVo.id,

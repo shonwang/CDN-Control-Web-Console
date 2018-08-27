@@ -318,18 +318,15 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     postTopo = {};
                     console.log("父页面点保存时的this.defaultParam.rule", this.defaultParam.rule)
                 _.each(this.defaultParam.rule, function(rule) {
-                    console.log(rule)
                     var localIdArray = [],
                         upperObjArray = [],
                         tempRule = {};
                     _.each(rule.local, function(node) {
-                        console.log("为啥不走这里", rule.localType)
                         if(rule.localType == 3){
-                            console.log("省份运营商：", node)
                             localIdArray.push([node.provinceId, node.id]);
                         }else if(rule.localType===4){
                             localIdArray.push([node.areaId, node.id]);
-                        }else if(rule.localType === 1 || rule.localType === 2){
+                        }else if(rule.localType === 1 || rule.localType === 2 || rule.localType === 5){
                             localIdArray.push([node.id])
                         }
                     }.bind(this))
@@ -350,7 +347,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             })
                         }
                     }.bind(this))
-                    console.log("最后整理出来的localIdArray", localIdArray)
                     tempRule.id = rule.id;
                     tempRule.localType = rule.localType;
                     tempRule.local = localIdArray;
@@ -363,7 +359,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 postTopo.name = this.defaultParam.name;
                 postTopo.type = this.defaultParam.type;
                 postTopo.rule = postRules;
-                console.log("最终的rule", postTopo.rule)
                 postTopo.remark = this.$el.find("#secondary").val();
                 if (this.isEdit && !this.isCopy)
                     this.collection.modifyStrategy(postTopo);
@@ -416,10 +411,8 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             },
 
             onLocalTypeModified: function(){
-                this.ruleList = []
-                console.log("要渲染时的this.defaultParam.rule", this.defaultParam.rule)
+                this.ruleList = [];
                 _.each(this.defaultParam.rule, function(rule, index, ls){
-                        console.log("要渲染父页面时的this.defaultParam", this.defaultParam)
                         var localLayerArray = [],
                             upperLayer = [],
                             primaryArray = [],
@@ -427,12 +420,16 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             primaryNameArray = [],
                             backupNameArray = [];
                             _.each(rule.local, function(local, inx, list) {
+                                var name = "";
                                 if(rule.localType === 3){
-                                    var name = local.provinceName +'/'+ local.name;   
+                                    name = local.provinceName +'/'+ local.name;   
                                 }else if(rule.localType === 4){
-                                    var name = local.areaName +'/'+ local.name;
+                                    name = local.areaName +'/'+ local.name;
                                 }else if(rule.localType === 1 || rule.localType === 2){
-                                    var name = local.name
+                                    name = local.name
+                                }
+                                else if(rule.localType === 5){
+                                    name = local.name + "<span class='text-danger'>[环]</span>";
                                 }
                                 localLayerArray.push(name)
                             }.bind(this));
@@ -540,16 +537,13 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             localLayer: localLayerArray.join('<br>'),
                             upperLayer: upperLayer
                         }
-                        console.log("bbbbbbbbb", ruleStrObj.localLayer)
                         this.ruleList.push(ruleStrObj)  
                    
                 }.bind(this))
             },
 
             initRuleTable: function() {
-                console.log("mmmmmmmmmmmmm",this.defaultParam.rule)
-                this.onLocalTypeModified()
-                console.log(this.ruleList)
+                this.onLocalTypeModified();
                 this.roleTable = $(_.template(template['tpl/setupChannelManage/setupChannelManage.rule.table.html'])({
                     data: this.ruleList
                 }));
@@ -581,8 +575,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
               
                 this.curEditRule = _.find(this.defaultParam.rule, function(obj) {
                     return obj.id === parseInt(id)
-                }.bind(this))
-                console.log("ppppppppp", this.defaultParam.rule, this.curEditRule)
+                }.bind(this));
                 if (!this.curEditRule) {
                     Utility.warning("找不到此行的数据，无法编辑");
                     return;
@@ -604,8 +597,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                                 this.defaultParam.rule = _.filter(this.defaultParam.rule, function(el){
                                     return el.id !== this.curEditRule.id
                                 }.bind(this))
-                                console.log("保存", tempRule, this.curEditRule)
-                                console.log("编辑后的this.defaultParam.rule", this.defaultParam.rule) 
                                 myAddEditLayerStrategyView.$el.remove();
                                 this.$el.find(".add-topo").show();
                                 this.initRuleTable();
@@ -644,7 +635,6 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             appType: this.defaultParam.type,
                             onSaveCallback: function() {
                                 this.defaultParam.rule = myAddEditLayerStrategyView.getArgs();
-                                console.log("jjjjjjjjjj", this.defaultParam.rule)
                                 myAddEditLayerStrategyView.$el.remove();
                                 this.$el.find(".add-topo").show();
                                 this.initRuleTable();

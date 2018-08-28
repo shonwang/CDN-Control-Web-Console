@@ -470,60 +470,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.onGetUpperNodeFromArgs();
                 this.initUpperHash();
             }
-
-            // if (this.defaultParam.localType === 1) {
-            //     this.$el.find("#strategyRadio1").get(0).checked = true;
-            //     this.$el.find(".operator-ctn").hide();
-            //     this.$el.find(".provinceOperator-ctn").hide();
-            //     this.$el.find(".largeAreaOperator-ctn").hide();
-            //     this.$el.find(".nodes-ctn").show();
-            //     this.$el.find(".operator-btn").hide();
-            // } else if (this.defaultParam.localType === 2) {
-            //     this.$el.find("#strategyRadio2").get(0).checked = true;
-            //     this.$el.find(".nodes-ctn").hide();
-            //     this.$el.find(".provinceOperator-ctn").hide();
-            //     this.$el.find(".largeAreaOperator-ctn").hide();
-            //     this.$el.find(".operator-ctn").show();
-            //     this.$el.find(".operator-btn").show();
-            //     this.$el.find('.local .operatorButton-ctn').show()
-            // } else if (this.defaultParam.localType === 3) {
-            //     this.$el.find("#strategyRadio3").get(0).checked = true;
-            //     this.$el.find(".nodes-ctn").hide();
-            //     this.$el.find(".operator-ctn").hide();
-            //     this.$el.find(".largeAreaOperator-ctn").hide();
-            //     this.$el.find(".provinceOperator-ctn").show();
-            //     this.$el.find(".operator-btn").show();
-            //     this.$el.find('.local .operatorButton-ctn').show()
-            // } else if (this.defaultParam.localType === 4) {
-            //     this.$el.find("#strategyRadio4").get(0).checked = true;
-            //     this.$el.find(".nodes-ctn").hide();
-            //     this.$el.find(".operator-ctn").hide();
-            //     this.$el.find(".provinceOperator-ctn").hide();
-            //     this.$el.find(".largeAreaOperator-ctn").show();
-            //     this.$el.find(".operator-btn").show();
-            //     this.$el.find('.local .operatorButton-ctn').show()
-            // }
-            // this.$el.find("#strategyRadio2").removeAttr("disabled", "disabled")
-            // this.$el.find("#strategyRadio1").removeAttr("disabled", "disabled")
-            // this.$el.find("#strategyRadio3").removeAttr("disabled", "disabled")
-            // this.$el.find("#strategyRadio4").removeAttr("disabled", "disabled")
-
-            // if (!this.options.localNodes && !this.options.upperNodes && !this.notFilter) {
-            //     this.collection.on("get.topo.OriginInfo.success", $.proxy(this.onGetLocalNodeByTopo, this));
-            //     this.collection.on("get.topo.OriginInfo.error", $.proxy(this.onGetError, this));
-            //     this.collection.getTopoOrigininfo(this.topologyId);
-            //     console.log("拓扑ID: ", this.topologyId);
-            // } else if (!this.options.localNodes && !this.options.upperNodes && this.notFilter) {
-            //     this.options.localNodes = this.allNodesArray;
-            //     this.options.upperNodes = this.allNodesArray;
-            //     this.onGetLocalNodeFromArgs();
-            //     this.onGetUpperNodeFromArgs();
-            //     this.initUpperHash();
-            // } else {
-            //     this.onGetLocalNodeFromArgs();
-            //     this.onGetUpperNodeFromArgs();
-            //     this.initUpperHash();
-            // }
         },
 
         onClickCancelBtn: function() {
@@ -1068,72 +1014,6 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
             if(this.defaultParam.localType !== 1){
                 this.$el.find('.local .add-operator-btn').on('click', $.proxy(this.onClickAddOperatorButton, this))
             }
-
-
-            // if (this.defaultParam.localType === 1 && this.prelocalType === 2) {
-            //     this.defaultParam.local=this.curNodes || [];
-            //     this.$el.find(".operator-ctn").hide();
-            //     this.$el.find(".operatorButton-ctn").hide();
-            //     this.$el.find(".nodes-ctn").show();
-            // } else if (this.defaultParam.localType === 1 && this.prelocalType === 3) {
-            //     this.defaultParam.local=this.curNodes || [];
-            //     this.$el.find(".provinceOperator-ctn").hide();
-            //     this.$el.find(".operatorButton-ctn").hide();
-            //     this.$el.find(".nodes-ctn").show();
-            // } else if (this.defaultParam.localType === 1 && this.prelocalType === 4) {
-            //     this.defaultParam.local=this.curNodes || [];
-            //     this.$el.find(".largeAreaOperator-ctn").hide();
-            //     this.$el.find(".operatorButton-ctn").hide();
-            //     this.$el.find(".nodes-ctn").show();
-            // } else if (this.defaultParam.localType === 2 && this.prelocalType === 1) {
-            //     this.curNodes=this.defaultParam.local;
-            //     this.$el.find(".nodes-ctn").hide();
-            //     this.$el.find(".operator-ctn").show();
-            //     this.$el.find(".operatorButton-ctn").show();
-            // } else if (this.defaultParam.localType === 2 && this.prelocalType === 3) {
-            //     this.$el.find(".provinceOperator-ctn").hide();
-            //     this.$el.find(".operator-ctn").show();
-            //     this.$el.find(".operatorButton-ctn").show();
-            // } else if (this.defaultParam.localType === 2 && this.prelocalType === 4) {
-            //     this.$el.find(".largeAreaOperator-ctn").hide();
-            //     this.$el.find(".operator-ctn").show();
-            //     this.$el.find(".operatorButton-ctn").show();
-            // } else if (this.defaultParam.localType === 3 && this.prelocalType === 1) {
-            //     this.curNodes=this.defaultParam.local;
-            //     this.$el.find(".nodes-ctn").hide();
-            //     this.$el.find(".provinceOperator-ctn").show();
-            //     this.$el.find(".operatorButton-ctn").show();
-            // } else if (this.defaultParam.localType === 3 && this.prelocalType === 2) {
-            //     this.$el.find(".operator-ctn").hide();
-            //     this.$el.find(".provinceOperator-ctn").show();
-            //     this.$el.find(".operatorButton-ctn").show();
-            // } else if (this.defaultParam.localType === 3 && this.prelocalType === 4) {
-            //     this.$el.find(".largeAreaOperator-ctn").hide();
-            //     this.$el.find(".provinceOperator-ctn").show();
-            //     this.$el.find(".operatorButton-ctn").show();
-            // } else if (this.defaultParam.localType === 4 && this.prelocalType === 1) {
-            //     this.curNodes=this.defaultParam.local;
-            //     this.$el.find(".nodes-ctn").hide();
-            //     this.$el.find(".largeAreaOperator-ctn").show();
-            //     this.$el.find(".operatorButton-ctn").show();
-            // } else if (this.defaultParam.localType === 4 && this.prelocalType === 2) {
-            //     this.$el.find(".operator-ctn").hide();
-            //     this.$el.find(".largeAreaOperator-ctn").show();
-            //     this.$el.find(".operatorButton-ctn").show();
-            // } else if (this.defaultParam.localType === 4 && this.prelocalType === 3) {
-            //     this.$el.find(".provinceOperator-ctn").hide();
-            //     this.$el.find(".largeAreaOperator-ctn").show();
-            //     this.$el.find(".operatorButton-ctn").show();
-            // }
-            // if(this.defaultParam.localType === 1){
-            //     this.initLocalTable();
-            // }else{
-            //     this.initLocalOperatorTable();
-            // }
-            
-            // if(this.defaultParam.localType !== 1){
-            //     this.$el.find('.local .add-operator-btn').on('click', $.proxy(this.onClickAddOperatorButton, this))
-            // }
         },
 
         hideAllCtn:function(){

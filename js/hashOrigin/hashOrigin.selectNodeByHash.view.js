@@ -99,7 +99,7 @@ define("hashOrigin.selectNodeByHash.view", ['require', 'exports', 'template', 'm
                 var keyNodeWord = this.$el.find("#node-name").val();
                 _.each(this.allHash, function(model, index, list) {
                     if(keyHashWord == "" || model.hashName.indexOf(keyHashWord) > -1){
-                        if(model.nodeName.indexOf(keyNodeWord)>-1 || keyNodeWord == ""){
+                        if(model.nodeNames.indexOf(keyNodeWord)>-1 || keyNodeWord == ""){
                             model.isDisplay = true
                         }else{
                             model.isDisplay = false

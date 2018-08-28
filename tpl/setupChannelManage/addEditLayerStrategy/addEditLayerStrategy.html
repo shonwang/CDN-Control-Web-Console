@@ -13,9 +13,11 @@
                                     <label class="radio-inline">
                                         <input type="radio" name="strategyRadio" id="strategyRadio1" value="1">按节点
                                     </label>
-                                    <label class="radio-inline">
+                                    <%if(AUTH_OBJ.HashManage){%>
+                                    <label class="radio-inline" id="strategyRadioAsHash-ctn">
                                         <input type="radio" name="strategyRadio" id="strategyRadioAsHash" value="5">按hash环
                                     </label>
+                                    <%}%>
                                     <label class="radio-inline">
                                         <input type="radio" name="strategyRadio" id="strategyRadio3" value="3">按省份运营商
                                     </label>

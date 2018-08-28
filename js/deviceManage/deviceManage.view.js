@@ -252,7 +252,9 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                 this.$el.find(".open").on("click", $.proxy(this.onClickDeviceOpen, this));
                 this.$el.find(".pause").on("click", $.proxy(this.onClickDevicePause, this));
 
-                this.table.find("[data-toggle='popover']").popover();
+                this.table.find("[data-toggle='popover']").popover({
+                    html:true
+                });
             } else {
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
             }

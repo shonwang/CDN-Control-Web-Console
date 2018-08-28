@@ -338,52 +338,52 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                     }]
                 }, {
                     id: 'customerSetup-domainList-liveOptimize',
-                    name: '直播业务优化',
+                    name: '直播业务优化<strong class="text-danger">[暂未开放]</strong>',
                     hash: 'javascript:void(0)',
                     children: [{
                         id: 'customerSetup-domainList-liveBusOptimize',
-                        name: '业务优化配置',
-                        hash: 'index.html#/domainList/' + query + '/liveBusOptimize/' + query2,
+                        name: '业务优化配置<strong class="text-danger">[暂未开放]</strong>',
+                        //hash: 'index.html#/domainList/' + query + '/liveBusOptimize/' + query2,
                         active: false,
                         children: []
                     }, {
                         id: 'customerSetup-domainList-liveH265Setup',
-                        name: 'H265配置',
-                        hash: 'index.html#/domainList/' + query + '/liveH265Setup/' + query2,
+                        name: 'H265配置<strong class="text-danger">[暂未开放]</strong>',
+                        //hash: 'index.html#/domainList/' + query + '/liveH265Setup/' + query2,
                         active: false,
                         children: []
                     }, {
                         id: 'customerSetup-domainList-liveAudioOnly',
-                        name: '纯音频拉流',
-                        hash: 'index.html#/domainList/' + query + '/liveAudioOnly/' + query2,
+                        name: '纯音频拉流<strong class="text-danger">[暂未开放]</strong>',
+                        //hash: 'index.html#/domainList/' + query + '/liveAudioOnly/' + query2,
                         active: false,
                         children: []
                     }, {
                         id: 'customerSetup-domainList-liveEdge302',
-                        name: '边缘302',
-                        hash: 'index.html#/domainList/' + query + '/liveEdge302/' + query2,
+                        name: '边缘302<strong class="text-danger">[暂未开放]</strong>',
+                        //hash: 'index.html#/domainList/' + query + '/liveEdge302/' + query2,
                         active: false,
                         children: []
                     }]
                 }, {
                     id: 'customerSetup-domainList-liveHttpFlvOptimize',
-                    name: 'PK优化配置',
-                    hash: 'index.html#/domainList/' + query + '/liveHttpFlvOptimize/' + query2,
+                    name: 'PK优化配置<strong class="text-danger">[暂未开放]</strong>',
+                    //hash: 'index.html#/domainList/' + query + '/liveHttpFlvOptimize/' + query2,
                     children: []
                 }, {
                     id: 'customerSetup-domainList-liveSLASetup',
-                    name: '日志配置',
+                    name: '日志配置<strong class="text-danger">[暂未开放]</strong>',
                     hash: 'javascript:void(0)',
                     children: [{
                         id: 'customerSetup-domainList-liveSLAStatistics',
-                        name: 'SLA统计配置',
-                        hash: 'index.html#/domainList/' + query + '/liveSLAStatistics/' + query2,
+                        name: 'SLA统计配置<strong class="text-danger">[暂未开放]</strong>',
+                        //hash: 'index.html#/domainList/' + query + '/liveSLAStatistics/' + query2,
                         active: false,
                         children: []
                     }, {
                         id: 'customerSetup-domainList-liveFrequencyLog',
-                        name: '变频日志配置',
-                        hash: 'index.html#/domainList/' + query + '/liveFrequencyLog/' + query2,
+                        name: '变频日志配置<strong class="text-danger">[暂未开放]</strong>',
+                        //hash: 'index.html#/domainList/' + query + '/liveFrequencyLog/' + query2,
                         active: false,
                         children: []
                     }]

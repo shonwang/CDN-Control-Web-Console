@@ -691,7 +691,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 var tempId = parseInt(Math.random()*999999999);
                 var tempLocal = [];
                 _.each(this.defaultParam.local, function(el){
-                    var tempNameList = el.hashName;
+                    var tempNameList = el.hashName || el.name;
                     var tempValueList = el.id
                     tempLocal.push({
                         id: tempValueList,

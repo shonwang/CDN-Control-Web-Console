@@ -93,11 +93,12 @@ define("dispConfig.view", ['require','exports', 'template', 'modal.view', 'utili
                 this.$el.find("#textarea-comment").focus();
                 return;
             }
-            var result = confirm("你确定要下发DNSPod吗？");
-            if (!result) return
-            var postParam = this.getSendData();
-            postParam.comment = comment
-            this.options.okCallback&&this.options.okCallback(postParam);
+
+            Utility.confirm("你确定要下发KDNS吗？", function(){
+                var postParam = this.getSendData();
+                postParam.comment = comment
+                this.options.okCallback&&this.options.okCallback(postParam);
+            }.bind(this))
         },
 
         onGetError: function(error){

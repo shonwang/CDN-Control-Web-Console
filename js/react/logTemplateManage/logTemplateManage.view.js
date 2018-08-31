@@ -730,7 +730,7 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
         initialize: function initialize(options) {
             this.options = options;
             this.collection = options.collection;
-            this.$el = $(_.template('<div class="preheat-manage"></div>')());
+            this.$el = $(_.template('<div class="log-manage"></div>')());
 
             var preHeatManageListFac = React.createFactory(PreHeatManageList);
             var preHeatManageList = preHeatManageListFac({

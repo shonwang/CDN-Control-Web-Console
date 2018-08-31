@@ -58,12 +58,35 @@ define("setupBillLiveDynamic.view", ['require', 'exports', 'template', 'modal.vi
                         if (obj)
                             list.valueName = obj.name
                     }
+
+                    if(list.valueType == 10){
+                        //新增加动态配置的时间可以选择年月日时分秒
+                        if(list.valueName){
+                            var valueName = list.valueName && (''+list.valueName).split("$")
+                            var _value = valueName[0];
+                            var _unit = valueName[1] || "s";
+                            var _unitName = this.getUnitName(_unit);
+                            list.valueName = _value + " " + _unitName;
+                        }
+                    }
+
                 }.bind(this))
 
                 var tpl = _.template(template['tpl/setupChannelManage/setupBill/setupBill.liveGroupList.html'])({
                     data: groupData
                 });
                 return tpl
+            },
+
+            getUnitName:function(unit){
+                var obj = {
+                    "y":"年",
+                    "h":"时",
+                    "m":"分",
+                    "s":"秒",
+                    "ms":"毫秒"
+                }
+                return obj[unit];
             },
 
             initModuleArrayTypeTable: function(headerArray, moduleData, moduleId) {

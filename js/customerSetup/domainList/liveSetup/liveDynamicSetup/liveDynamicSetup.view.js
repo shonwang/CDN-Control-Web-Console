@@ -211,10 +211,40 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                                 }
                                 this.initArrayTable(rootNode, key.value, module.id + "-" + group.id + "-" + key.id);
                             }
+                            else if(key.valueType == 10){
+                                var str = ".dropdown#time-" + module.id + "-" + group.id + "-" + key.id
+                                var rootNode = this.$el.find(str);  
+                                this.initTimeStapTable(rootNode, key.value, module.id + "-" + group.id + "-" + key.id);                              
+                            }
                         }.bind(this))
                     }.bind(this))
                 }
             }.bind(this))
+        },
+
+        initTimeStapTable:function(rootNode, data, id){
+            var timeArray = [
+                {name:"年",value:"y"},
+                {name:"时",value:"h"},
+                {name:"分",value:"m"},
+                {name:"秒",value:"s"},
+                {name:"毫秒",value:"ms"}
+            ];
+            var nameList={
+                "y":"年",
+                "h":"时",
+                "m":"分",
+                "s":"秒",
+                "ms":"毫秒"
+            };
+            var currentKey = this.getCurrentKey(id);
+            var currentValue = currentKey.value && (''+currentKey.value).split("$") || null;
+            Utility.initDropMenu(rootNode,timeArray,function(val){
+                currentKey.defaultValueUnit = val;
+            });
+            var _name = currentValue && currentValue[1] && nameList[currentValue[1]] || "秒";
+            rootNode.find(".cur-value").html(_name);
+            currentKey.defaultValueUnit = currentValue && currentValue[1] || "s";            
         },
 
         initArrayTable: function(rootNode, data, id) {
@@ -410,9 +440,14 @@ define("liveDynamicSetup.view", ['require', 'exports', 'template', 'modal.view',
                                 value[0].configValueMap[key.id] = null;
                             } else if ((key.valueType == 1 && key.value === "") || (key.valueType == 10 && key.value === "")) {
                                 value[0].configValueMap[key.id] = null;
-                            } else if ((key.value === "" && key.valueType == 1) || (key.value === "" && key.valueType == 10)) {
-                                //errorMessage = errorMessage + key.itemName + "不能为空字符串！<br>"
-                            } else {
+                            } 
+                            // else if ((key.value === "" && key.valueType == 1) || (key.value === "" && key.valueType == 10)) {
+                            //     //errorMessage = errorMessage + key.itemName + "不能为空字符串！<br>"
+                            // } 
+                            else if(key.valueType == 10){
+                                value[0].configValueMap[key.id] = (''+key.value).split("$")[0] + "$" + key.defaultValueUnit;
+                            }
+                            else {
                                 value[0].configValueMap[key.id] = key.value
                             }
                         } else if (key.valueType == 4) {

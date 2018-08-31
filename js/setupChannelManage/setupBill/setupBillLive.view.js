@@ -10,11 +10,23 @@ define("setupBillLive.view", ['require', 'exports', 'template', 'modal.view', 'u
                 }));
                 this.cnameTable.appendTo(this.$el.find(".bill-ctn"));
 
+                var type = this.config.originDomain.type,
+                    applicationType = this.config.originDomain.applicationType;
                 var subType = this.config.originDomain.subType;
-                if (subType !== 3)
+
+                if (applicationType == 202) {
+                    //下载
                     this.initOriginSetup();
-                else
-                    this.initLiveUpBackOriginSetup();
+                } else if (applicationType == 203) {
+                    //直播
+                    if (subType !== 3){
+                        this.initLiveOriginSetup();
+                    } else {
+                        this.initLiveUpBackOriginSetup();
+                    }
+                } else {
+                    Utility.warning("您的平台不是下载也不是直播，applicationType为" + applicationType);
+                }
             },
 
             initLiveOriginSetup: function() {
@@ -330,24 +342,24 @@ define("setupBillLive.view", ['require', 'exports', 'template', 'modal.view', 'u
                 //                 "frequencyInterval":600,
                 //             }
                 //         }];
-
+                console.log(this.appLives);
                 _.each(this.appLives, function(el, index, ls) {
                     var optimizeConf = el.optimizeConf;
                     if (!optimizeConf) return;
                     if (optimizeConf.gopType === 1) {
                         optimizeConf.gopTypeStr = "按时长";
-                        optimizeConf.gopNumStr = "gop缓存时长：" + optimizeConf.gopNum + "秒";
+                        optimizeConf.gopNumStr = "gop缓存时长：" + optimizeConf.gopNum + (optimizeConf.gopNumUnit && Utility.getTimeStampUnit(optimizeConf.gopNumUnit) || "秒");
                     } else {
                         optimizeConf.gopTypeStr = "按个数";
                         optimizeConf.gopNumStr = "gop缓存个数：" + optimizeConf.gopNum + "个";
                     }
-                    optimizeConf.gopMaxDurationStr = optimizeConf.gopMaxDuration + "秒";
+                    optimizeConf.gopMaxDurationStr = optimizeConf.gopMaxDuration + (optimizeConf.gopMaxDurationUnit && Utility.getTimeStampUnit(optimizeConf.gopMaxDurationUnit) || "秒");
                     if (optimizeConf.gopMinSendFlag === 0)
                         optimizeConf.gopMinSendStr = '<span class="label label-danger">关闭</span>';
                     else
-                        optimizeConf.gopMinSendStr = '<span class="label label-success">开启</span>' + optimizeConf.gopMinSend + "秒";
-                    optimizeConf.noFlowTimeoutStr = optimizeConf.noFlowTimeout + "秒";
-                    optimizeConf.delayCloseStr = optimizeConf.delayClose + "秒后关闭客户端连接";
+                        optimizeConf.gopMinSendStr = '<span class="label label-success">开启</span>' + optimizeConf.gopMinSend + (optimizeConf.gopMinSendUnit && Utility.getTimeStampUnit(optimizeConf.gopMinSendUnit) || "秒");
+                    optimizeConf.noFlowTimeoutStr = optimizeConf.noFlowTimeout + (optimizeConf.noFlowTimeoutUnit && Utility.getTimeStampUnit(optimizeConf.noFlowTimeoutUnit) || "秒");
+                    optimizeConf.delayCloseStr = optimizeConf.delayClose + (optimizeConf.delayCloseUnit && Utility.getTimeStampUnit(optimizeConf.delayCloseUnit) || "秒") + "后关闭客户端连接";
                     var metaTypeNameArray = ["", "append", "on", "copy", "off"]
                     optimizeConf.metaTypeStr = metaTypeNameArray[optimizeConf.metaType];
 
@@ -373,12 +385,12 @@ define("setupBillLive.view", ['require', 'exports', 'template', 'modal.view', 'u
                     if (pkConf.keepAliveFlag === 0)
                         pkConf.keepAliveFlagStr = '<span class="label label-danger">关闭</span>';
                     else
-                        pkConf.keepAliveFlagStr = '<span class="label label-success">开启</span> 时长: ' + (pkConf.keepAliveTime === 0 ? '0秒' : Utility.timeFormat2(pkConf.keepAliveTime));
+                        pkConf.keepAliveFlagStr = '<span class="label label-success">开启</span> 时长: ' + (pkConf.keepAliveTime === 0 ? '0秒' : pkConf.keepAliveTime + (pkConf.keepAliveTimeUnit && Utility.getTimeStampUnit(pkConf.keepAliveTimeUnit) || "秒") );
 
                     if (pkConf.avHeaderFlag === 0)
                         pkConf.avHeaderFlagStr = '<span class="label label-danger">关闭</span>';
                     else
-                        pkConf.avHeaderFlagStr = '<span class="label label-success">开启</span> 等待音视频合并头持续的时间: ' + Utility.timeFormat2(pkConf.avHeaderWaitTime);
+                        pkConf.avHeaderFlagStr = '<span class="label label-success">开启</span> 等待音视频合并头持续的时间: ' + pkConf.avHeaderWaitTime + (pkConf.avHeaderWaitTimeUnit && Utility.getTimeStampUnit(pkConf.avHeaderWaitTimeUnit) || "秒");
 
                     pkConf.hdlAvhZeroTimestampStr = this.strArray[pkConf.hdlAvhZeroTimestamp];
                     pkConf.hdlTimestampZeroStartStr = this.strArray[pkConf.hdlTimestampZeroStart];
@@ -408,15 +420,15 @@ define("setupBillLive.view", ['require', 'exports', 'template', 'modal.view', 'u
                         logConf.slaAccessFlagStr = '<span class="label label-danger">关闭</span>';
                     } else {
                         logConf.slaAccessFlagStr = '<span class="label label-success">开启</span><br><hr>' +
-                            '计算access日志中的卡顿时，客户端的假设首次缓冲大小: ' + logConf.slaFirstCache + "秒<br>" +
-                            '计算access日志中的卡顿时，客户端的假设再次缓冲大小: ' + logConf.slaSecondCache + "秒<br>";
+                            '计算access日志中的卡顿时，客户端的假设首次缓冲大小: ' + logConf.slaFirstCache + (logConf.slaFirstCacheUnit && Utility.getTimeStampUnit(logConf.slaFirstCacheUnit) || "秒")+"<br>" +
+                            '计算access日志中的卡顿时，客户端的假设再次缓冲大小: ' + logConf.slaSecondCache + (logConf.slaSecondCacheUnit && Utility.getTimeStampUnit(logConf.slaSecondCacheUnit) || "秒")+"<br>";
                     }
 
                     if (logConf.frequencyFlag === 0) {
                         logConf.frequencyFlagStr = '<span class="label label-danger">关闭</span>';
                     } else {
                         logConf.frequencyFlagStr = '<span class="label label-success">开启</span>间隔: ' +
-                            Utility.timeFormat2(logConf.frequencyInterval);
+                            logConf.frequencyInterval + (logConf.frequencyIntervalUnit && Utility.getTimeStampUnit(logConf.frequencyIntervalUnit) || "秒");
                     }
 
                     this.livePKOptimizeTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.livelogConf.html'])({

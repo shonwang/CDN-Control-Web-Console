@@ -6,7 +6,7 @@ define("hashOrigin.selectNodeByHash.view", ['require', 'exports', 'template', 'm
 
             initialize: function(options) {
                 this.collection = options.collection;
-                this.selectedNodes = options.selectedNodes;
+                this.selectedhashList = options.selectedhashList;
                 this.appType = options.appType;
                 this.allNodesArray = options.allNodesArray
 
@@ -41,7 +41,6 @@ define("hashOrigin.selectNodeByHash.view", ['require', 'exports', 'template', 'm
             },
 
             onGetHashInfoSuccess:function(res){
-                console.log(res)
                 var _data = res.hashNodeList;
                 if(_data.length === 0) return;
                 var tempList = {
@@ -54,15 +53,14 @@ define("hashOrigin.selectNodeByHash.view", ['require', 'exports', 'template', 'm
                 _.each(_data, function(el){
                    tempList.nodeInfo.push({
                        nodeId: el.nodeId,
-                       nodeName: el.nodeName
+                       nodeNames: el.nodeName
                    })
                 }.bind(this))
                 this.allHash.push(tempList)
-                console.log(this.allHash)
                 if(this.allHash.length === this.hashLenth){
-                    console.log("请求完毕！");
-                    this.nodeNameByHashModified()
-                    this.initTable()
+                    console.log(this.allHash)
+                    this.nodeNameByHashModified();
+                    this.initTable();
                     this.$el.find("#input-name").off("keyup");
                     this.$el.find("#node-name").off("keyup");
                     this.$el.find("#input-name").on("keyup", $.proxy(this.onKeyupNodeNameFilter, this));
@@ -75,23 +73,33 @@ define("hashOrigin.selectNodeByHash.view", ['require', 'exports', 'template', 'm
             },
 
             nodeNameByHashModified: function(){
+                var selectedhashList = this.selectedhashList;
+                console.log(selectedhashList);
+                var obj = {};
+                for(var i=0;i<selectedhashList.length;i++){
+                    obj[selectedhashList[i]["hashId"]] = true;
+                }
                 _.each(this.allHash, function(item){
+                    if(obj[item.hashId]){
+                        item.isChecked = true;
+                    }
+                    item.id = item.hashId;
                     var tempNodeNameList = []
                     _.each(item.nodeInfo, function(el){
-                        tempNodeNameList.push(el.nodeName)
+                        tempNodeNameList.push(el.nodeNames)
                     }.bind(this))
-                    item.nodeName = tempNodeNameList.join('<br>')
+                    item.nodeNames = tempNodeNameList.join('<br>')
                 }.bind(this))
+                this.checkedOptions();
             },
 
-     
             onKeyupNodeNameFilter: function() {
                 if (!this.allHash || this.allHash.length === 0) return;
                 var keyHashWord = this.$el.find("#input-name").val();
                 var keyNodeWord = this.$el.find("#node-name").val();
                 _.each(this.allHash, function(model, index, list) {
                     if(keyHashWord == "" || model.hashName.indexOf(keyHashWord) > -1){
-                        if(model.nodeName.indexOf(keyNodeWord)>-1 || keyNodeWord == ""){
+                        if(model.nodeNames.indexOf(keyNodeWord)>-1 || keyNodeWord == ""){
                             model.isDisplay = true
                         }else{
                             model.isDisplay = false
@@ -177,25 +185,25 @@ define("hashOrigin.selectNodeByHash.view", ['require', 'exports', 'template', 'm
                     return object.isChecked === true;
                 })
                 console.log(checkedList)
-                // checkedList.nodeName = checkedList.nodeName.split("<br>")
-                var nodeList = [];
-                _.each(checkedList, function(el){
-                    el.nodeList = el.nodeName.split("<br>");
-                    console.log(el.nodeList)
-                    _.each(el.nodeList, function(item){
-                        _.each(this.allNodesArray, function(list){
-                            if(list.chName === item){
-                                console.log("过滤前的nodeList", nodeList)
-                                if(nodeList.indexOf(list)<0){
-                                    nodeList.push(list)
-                                }
-                                console.log("过滤后的nodeList", nodeList)
-                            }
-                        }.bind(this))
-                    }.bind(this))
-                }.bind(this))
-                console.log(nodeList)
-                return nodeList
+                // // checkedList.nodeName = checkedList.nodeName.split("<br>")
+                // var nodeList = [];
+                // _.each(checkedList, function(el){
+                //     el.nodeList = el.nodeName.split("<br>");
+                //     console.log(el.nodeList)
+                //     _.each(el.nodeList, function(item){
+                //         _.each(this.allNodesArray, function(list){
+                //             if(list.chName === item){
+                //                 console.log("过滤前的nodeList", nodeList)
+                //                 if(nodeList.indexOf(list)<0){
+                //                     nodeList.push(list)
+                //                 }
+                //                 console.log("过滤后的nodeList", nodeList)
+                //             }
+                //         }.bind(this))
+                //     }.bind(this))
+                // }.bind(this))
+                // console.log(nodeList)
+                return checkedList
             },
            
             render: function(target) {

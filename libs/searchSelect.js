@@ -457,7 +457,8 @@
                             delete me.checkList[value];
                         }
                         var checkedList = me.getCheckedValue();
-                        me.callback && me.callback(checkedList);
+                        var _list = me.getCheckedObj();
+                        me.callback && me.callback(checkedList,_list);
                     }
             }
         },
@@ -542,7 +543,8 @@
                 }
             }
             var checkedList = this.getCheckedValue();
-            this.callback && this.callback(checkedList);
+            var _list = this.getCheckedObj();
+            this.callback && this.callback(checkedList,_list);
             if(isOnOkClick){
                 var list = this.getCheckedObj();
                 this.onOk && this.onOk(list);
@@ -573,7 +575,8 @@
 
             }
             var checkedList = this.getCheckedValue();
-            this.callback && this.callback(checkedList);
+            var _list = this.getCheckedObj();
+            this.callback && this.callback(checkedList,_list);
         },
 
         getCheckedValue: function() {

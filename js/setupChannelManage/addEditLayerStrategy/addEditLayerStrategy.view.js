@@ -38,7 +38,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 if(this.curEditRule.localType === 3){
                     _.each(this.curEditRule.local, function(el){
                         var tempName = el.provinceName +'/'+ el.name;
-                        var tempValue = el.provinceId+'/'+ el.operatorId;
+                        var tempValue = el.provinceId+'/'+ el.id;
                         this.defaultParam.localOperator.push({
                             name: tempName,
                             value: tempValue
@@ -48,7 +48,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 }else if(this.curEditRule.localType === 4){
                     _.each(this.curEditRule.local, function(el){
                         var tempName = el.areaName +'/'+ el.name;
-                        var tempValue = el.areaId +'/'+ el.operatorId;
+                        var tempValue = el.areaId +'/'+ el.id;
                         this.defaultParam.localOperator.push({
                             name: tempName,
                             value: tempValue
@@ -307,6 +307,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
         },
 
         initOperatorOfArea:function(res){
+            //大区运营商下拉
             var nameList = [];
             if(this.isEdit && this.defaultParam.localType==4){ 
                 var operatorId=this.defaultParam.local[0].id

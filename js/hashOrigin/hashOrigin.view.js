@@ -47,6 +47,7 @@ define("hashOrigin.view", ['require','exports', 'template', 'modal.view', 'utili
         initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
+            this.isInitPaginator = false;
             this.$el = $(_.template(template['tpl/hashOrigin/hashOrigin.html'])());
             this.$el.find(".opt-ctn .create").on("click", $.proxy(this.onClickCreate, this));
    

@@ -640,6 +640,17 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+        
+        updateRemark:function(args){
+            var url = BASE_URL + "/rs/device/update/remark?deviceId="+args.id+"&opRemark="+args.opRemark+"&opType="+args.opType,
+                successCallback = function(res) {
+                    this.trigger("update.remark.success", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("update.remark.error", response);
+                }.bind(this);
+            Utility.getAjax(url, {}, successCallback, errorCallback);
+        }        
 
     });
 

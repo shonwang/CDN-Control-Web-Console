@@ -11,6 +11,9 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
 
             this.noticeInfoStr = '<div class="alert alert-info"><strong>数据加载中，请耐心等待 </strong></div>';
 
+            this.collection.on("update.remark.success", $.proxy(this.onUpdateRemarkSuccess, this));
+            this.collection.on("update.remark.error", $.proxy(this.onGetError, this));
+
             this.collection.on("get.device.success", $.proxy(this.onDeviceListSuccess, this));
             this.collection.on("get.device.error", $.proxy(this.onGetError, this));
 
@@ -114,7 +117,10 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.onClickQueryButton();
             this.collection.getDeviceTypeList();
         },
-
+        onUpdateRemarkSuccess:function(){
+            Utility.alerts("更新成功", "success", 5000);
+            this.onClickQueryButton();
+        },
         enterKeyBindQuery:function(){
             $(document).on('keydown', function(e){
                 if(e.keyCode == 13){
@@ -283,7 +289,16 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     title: "操作说明",
                     body: detailTipsView,
                     backdrop: 'static',
-                    type: 1,
+                    type: 2,
+                    onOKCallback:function(){
+                        var result = detailTipsView.getArgs();
+                        if(!result){
+                            return false;
+                        }
+                        result.id = id;
+                        this.collection.updateRemark(result);
+                        this.nodeTipsPopup.$el.modal("hide");
+                    }.bind(this),
                     onHiddenCallback: function() {}.bind(this)
                 }
                 this.nodeTipsPopup = new Modal(options);

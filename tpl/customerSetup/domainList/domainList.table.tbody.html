@@ -1,10 +1,12 @@
 <% for(var i=0; i < data.length; i++){ %>
 	<tr class="<%if(i%2==1){%>active<%}%>">
+
 		<% if (data[i].get("certificateId") != null) { %>
 		<td><span class="glyphicon glyphicon-lock text-success" title="https"></span></td>
 		<% } else { %>
 		<td></td>
 		<% } %>
+		<td><input type="checkbox" name=""></td>
 		<td><%=data[i].get("domainId")%></td>
 		<td><%=data[i].get("domain")%></td>
 		<td><%=data[i].get("cnameDomainStr")%></td>

@@ -29,6 +29,8 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
 
                 this.$el.find("#cdn-search-btn").bind('click', $.proxy(this.onClickSearchBtn, this));
                 this.$el.find(".add-domain").bind('click', $.proxy(this.onClickAddDomain, this));
+                this.$el.find(".btn-modify-project").bind('click',$.proxy(this.onClickModifyProject,this));
+
                 if (!AUTH_OBJ.CreateCustomerDomain) {
                     this.$el.find('.add-domain').remove();
                 }
@@ -49,6 +51,52 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                 this.setDropDownMenu();
             },
 
+            getSelectedList:function(){
+                var obj = [
+                    {
+                        name:"http://www.baidu.com",
+                        project:"AAAA"
+                    },
+                    {
+                        name:"http://www.baidutest.com",
+                        project:"BBBB"
+                    },
+                    {
+                        name:"http://www.baidutest.com",
+                        project:"BBBB"
+                    },
+                    {
+                        name:"http://www.baidutest.com",
+                        project:"BBBB"
+                    },
+                    {
+                        name:"http://www.baidutest.com",
+                        project:"BBBB"
+                    },
+                    {
+                        name:"http://www.baidutest.com",
+                        project:"BBBB"
+                    },
+                    {
+                        name:"http://www.baidutest.com",
+                        project:"BBBB"
+                    },
+                    {
+                        name:"http://www.baidutest.com",
+                        project:"BBBB"
+                    },
+                    {
+                        name:"http://www.baidutest.com",
+                        project:"BBBB"
+                    },
+                    {
+                        name:"http://www.baidutest.com",
+                        project:"BBBB"
+                    }
+                ];
+                return obj;
+            },
+
             onClickAddDomain: function(event) {
                 require(['domainList.addDomain.view'], function(DomainListAddDomainView) {
 
@@ -63,6 +111,34 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                     this.addDomainView = new DomainListAddDomainView.AddDomainView(options);
                     this.addDomainView.render(this.$el.find(".new-domain"));
                 }.bind(this));
+            },
+
+            onClickModifyProject:function(){
+                var selectedList = this.getSelectedList();
+                require(['domainList.project.view'], function(DomainListProjectView) {
+                    this.$el.find(".main-list").hide();
+                    var options = {
+                        selectedList:selectedList,
+                        obj:this,
+                        collection: this.collection,
+                        userInfo: this.userInfo,
+                        okCallback: $.proxy(this.onModifiedProject, this),
+                        cancelCallback: $.proxy(this.onCancelModifiedProject, this)
+                    };
+                    this.projectView = new DomainListProjectView(options);
+                    this.projectView.render(this.$el.find(".new-domain"));
+                }.bind(this));                
+            },
+
+            onCancelModifiedProject:function(){
+                this.projectView.$el.remove()
+                this.projectView = null;
+                this.$el.find(".main-list").show();
+            },
+
+            onModifiedProject:function(){
+                this.onCancelModifiedProject();
+                this.onClickSearchBtn();
             },
 
             onCancelAddDomain: function() {

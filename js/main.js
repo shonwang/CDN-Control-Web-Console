@@ -37,6 +37,7 @@
   "customerSetup.view": "customerSetup/customerSetup.view",
   "domainList.addDomain.view": "customerSetup/domainList/domainList.addDomain.view",
   "domainList.model": "customerSetup/domainList/domainList.model",
+  "domainList.project.view": "customerSetup/domainList/domainList.project.view",
   "domainList.view": "customerSetup/domainList/domainList.view",
   "domainListHistory.model": "customerSetup/domainList/domainListHistory/domainListHistory.model",
   "domainListHistory.view": "customerSetup/domainList/domainListHistory/domainListHistory.view",

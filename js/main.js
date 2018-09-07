@@ -277,6 +277,8 @@
   "setupTopoManage.selectNode.view": "setupTopoManage/setupTopoManage.selectNode.view",
   "setupTopoManage.update.view": "setupTopoManage/setupTopoManage.update.view",
   "setupTopoManage.view": "setupTopoManage/setupTopoManage.view",
+  "setupTopoManageSendStrategy.edit.view": "setupTopoManage/setupTopoManageSendStrategy.edit.view",
+  "setupTopoManageSendStrategy.editStep.view": "setupTopoManage/setupTopoManageSendStrategy.editStep.view",
   "setupTopoManageSendStrategy.model": "setupTopoManage/setupTopoManageSendStrategy.model",
   "setupTopoManageSendStrategy.view": "setupTopoManage/setupTopoManageSendStrategy.view",
   "sharedSetup.detail.view": "sharedSetup/sharedSetup.detail.view",

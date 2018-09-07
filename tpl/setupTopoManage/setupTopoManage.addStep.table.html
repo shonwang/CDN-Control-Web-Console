@@ -10,7 +10,11 @@
         <% for(var i = 0; i < data.length; i++) { %>
             <tr data-id="<%=data[i].step%>">
               <td>第<%=data[i].step%>步</td>
-              <td><%=data[i].nodeName%></td>
+              <% if(data[i].range != 1) { %>
+                  <td><%=data[i].nodeName%></td>
+              <% } else { %>
+                  <td>剩余所有节点</td>
+              <% } %>  
               <td>
                   <a href="javascript:void(0)" id="<%=data[i].step%>" class="edit" title="编辑">
                       <span class="glyphicon glyphicon-edit"></span>

@@ -1,24 +1,10 @@
 define("logTemplateManage.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-            var taskId = this.get("taskId");
-            if (taskId) this.set("id", taskId);
-
-            var commitTime = parseInt(this.get("commitTime")),
-                startTime = parseInt(this.get("startTime")),
-                endTime = parseInt(this.get("endTime")),
-                batchTimeBandwidth = this.get("batchTimeBandwidth");
-            if (commitTime) this.set("commitTimeFormated", new Date(commitTime).format("yyyy/MM/dd hh:mm"));
-            if (startTime) this.set("startTimeFormated", new Date(startTime).format("yyyy/MM/dd hh:mm"));
-            if (endTime) this.set("endTimeFormated",new Date(endTime).format("yyyy/MM/dd hh:mm"));
-            _.each(batchTimeBandwidth, function(el){
-                _.each(el.timeWidth, function(time){
-                    var batchEndTime = parseInt(time.batchEndTime),
-                        batchStartTime = parseInt(time.batchStartTime);
-                    time.batchEndTime = new Date(batchEndTime).format("hh:mm");
-                    time.batchStartTime = new Date(batchStartTime).format("hh:mm");
-                })
-            })
+            var updateTime = parseInt(this.get("updateTime")),
+                createTime = parseInt(this.get("createTime"));
+            if (updateTime) this.set("updateTimeFormated", new Date(updateTime).format("yyyy/MM/dd hh:mm"));
+            if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
         }
     });
 
@@ -28,24 +14,35 @@ define("logTemplateManage.model", ['require','exports', 'utility'], function(req
 
         initialize: function(){},
 
-        getPreheatList: function(args) {
-            var url = BASE_URL + "/refresh/task/query",
+        getTemplateList: function(args) {
+            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/template/page",
                 successCallback = function(res) {
                     this.reset();
                     if (res) {
-                        _.each(res.rows, function(element, index, list) {
+                        _.each(res.list, function(element, index, list) {
                             this.push(new Model(element));
                         }.bind(this))
-                        this.total = res.total;
-                        this.trigger("get.preheat.success", res.rows);
+                        this.total = res.totalCount;
+                        this.trigger("get.templateList.success", res.list);
                     } else {
-                        this.trigger("get.preheat.error");
+                        this.trigger("get.templateList.error");
                     }
                 }.bind(this),
                 errorCallback = function(response) {
-                    this.trigger('get.preheat.error', response);
+                    this.trigger('get.templateList.error', response);
                 }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+        isTemplateUsed: function(args) {
+            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/template/used",
+                successCallback = function(res) {
+                    this.trigger("template.used.success", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger('template.used.error', response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
         commitTask: function(args) {
@@ -70,24 +67,13 @@ define("logTemplateManage.model", ['require','exports', 'utility'], function(req
             Utility.postAjax(url, args, successCallback, errorCallback);
         }, 
 
-        taskPause: function(args) {
-            var url = BASE_URL + "/refresh/task/pause",
+        getTemplateDetail: function(args) {
+            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/template/detail",
                 successCallback = function(res) {
-                    this.trigger("refresh.pause.success", res);
+                    this.trigger("template.detail.success", res);
                 }.bind(this),
                 errorCallback = function(response) {
-                    this.trigger('refresh.pause.error', response);
-                }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
-        },
-
-        taskRestart: function(args) {
-            var url = BASE_URL + "/refresh/task/restart",
-                successCallback = function(res) {
-                    this.trigger("refresh.restart.success", res);
-                }.bind(this),
-                errorCallback = function(response) {
-                    this.trigger('refresh.restart.error', response);
+                    this.trigger('template.detail.error', response);
                 }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },

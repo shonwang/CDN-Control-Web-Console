@@ -384,27 +384,42 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                 validateFields(["originFieldTag", "exportFieldTag", "exportFieldName", "exportFieldType", "valueType", "param"], (err, vals) => {
                     console.log(vals)
                     console.log(getFieldsValue())
-                    // if (!err && !isEditField) {
-                    //     newField = {
-                    //         order: nodesList.length + 1,
-                    //         id: Utility.randomStr(8),
-                    //     }
-                    //     this.setState({
-                    //         templateFieldList: [...templateFieldList, newField],
-                    //         fieldModalVisible: false
-                    //     });
-                    // } else if (!err && isEditField) {
-                    //     _.find(templateFieldList, (el) => {
-                    //         if (el.id == curEditNode.id) {
+                    if (!err && !isEditField) {
+                        newField = {
+                            order: templateFieldList.length + 1,
+                            id: Utility.randomStr(8),
+                            originFieldTag: vals.originFieldTag,
+                            originFieldName: curEditField.originFieldName,
+                            exportFieldTag: vals.exportFieldTag,
+                            exportFieldName: vals.exportFieldName,
+                            exportFieldType: vals.exportFieldType,
+                            valueType: vals.valueType,
+                            param: vals.param,
+                            example: curEditField.example
+                        }
+                        this.setState({
+                            templateFieldList: [...templateFieldList, newField],
+                            fieldModalVisible: false
+                        });
+                    } else if (!err && isEditField) {
+                        _.find(templateFieldList, (el) => {
+                            if (el.id == curEditNode.id) {
+                                el.originFieldTag = vals.originFieldTag,
+                                el.originFieldName = curEditField.originFieldName,
+                                el.exportFieldTag = vals.exportFieldTag,
+                                el.exportFieldName = vals.exportFieldName,
+                                el.exportFieldType = vals.exportFieldType,
+                                el.valueType = vals.valueType,
+                                el.param = vals.param,
+                                el.example = curEditField.example
+                            }
+                        })
 
-                    //         }
-                    //     })
-
-                    //     this.setState({
-                    //         templateFieldList: [...templateFieldList],
-                    //         fieldModalVisible: false
-                    //     });
-                    // }
+                        this.setState({
+                            templateFieldList: [...templateFieldList],
+                            fieldModalVisible: false
+                        });
+                    }
                 })
             }
 

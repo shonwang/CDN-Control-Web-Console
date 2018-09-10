@@ -6,9 +6,10 @@
 		<% } else { %>
 		<td></td>
 		<% } %>
-		<td><input type="checkbox" name=""></td>
+		<td><input type="checkbox" class="selectDomain"  id="<%=data[i].get('domainId')%>" /></td>
 		<td><%=data[i].get("domainId")%></td>
 		<td><%=data[i].get("domain")%></td>
+		<td><%=data[i].get("projectName") || '---' %></td>
 		<td><%=data[i].get("cnameDomainStr")%></td>
 		<td><%=data[i].get("typeName")%></td>
 		<td class="ks-td-status-closed"><%=data[i].get("statusName")%></td>

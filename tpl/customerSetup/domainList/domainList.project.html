@@ -21,8 +21,8 @@
 			<tbody>
 				<%for(var i=0;i<data.length;i++){%>
 				<tr class="<%if(i%2!=0){%>active<%}%>">
-					<td><%=data[i].name%></td>
-					<td><%=data[i].project%></td>
+					<td><%= data[i].get('domain') %></td>
+					<td><%= data[i].get('projectName') || '---' %></td>
 				</tr>
 				<%}%>
 			</tbody>
@@ -49,8 +49,8 @@
 	</table>
 	<div class="cdn-row margin-top10" style="overflow: hidden;">
 		<div class="label-content-show margin-left10">
-			<button class="ks-btn ks-btn-primary" id="add-domain-btnSubmit">添加</button>
-			<button class="ks-btn ks-btn-default margin-left10" id="add-domain-btnCancle">取消</button>
+			<button class="ks-btn ks-btn-primary" id="add-project-btnSubmit">添加</button>
+			<button class="ks-btn ks-btn-default margin-left10" id="add-project-btnCancle">取消</button>
 		</div>
 	</div>	
 </div>

@@ -15,13 +15,14 @@ define("hashOrigin.view", ['require','exports', 'template', 'modal.view', 'utili
         },
 
         onCheckSuccess:function(res){
+            this.dataList = res;
             if(res.length>0){
                this.table = $(_.template(template['tpl/hashOrigin/hashOrigin.check.html'])({data:res}));
             }
             else{
                 this.table = $(_.template(template['tpl/empty.html'])({}));
             }
-            this.table = $(_.template(template['tpl/hashOrigin/hashOrigin.check.html'])({data:res}));
+            //this.table = $(_.template(template['tpl/hashOrigin/hashOrigin.check.html'])({data:res}));
             this.$el.html(this.table);
         },
 
@@ -36,8 +37,20 @@ define("hashOrigin.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el.html(_.template(template['tpl/loading.html'])({}));
         },
 
-        render:function(target){
+        getArgs:function(){
+            var arr=[];
+            _.each(this.dataList,function(list){
+                arr.push({
+                    "id":list.id,
+                    "type":list.type
+                });
+            });
+            return arr;
+        },
+
+        render:function(target,el){
             this.$el.appendTo(target);
+            el.find(".ok").html("下发")
         }
     });
 
@@ -61,9 +74,16 @@ define("hashOrigin.view", ['require','exports', 'template', 'modal.view', 'utili
             }
             this.collection.on("get.hashOrigin.success",$.proxy(this.onGetHashOriginSuccess,this));
             this.collection.on("get.hashOrigin.error",$.proxy(this.onGetError,this));
+            this.collection.on("sendBatchStratefy.success",$.proxy(this.onSendBatchStratefySuccess,this));
+            this.collection.on("sendBatchStratefy.error",$.proxy(this.onGetError,this));
+
             this.$el.find('.query').on("click",$.proxy(this.resetPageAndQuery,this));
             this.initDropMenu();
             this.onClickQueryButton();
+        },
+
+        onSendBatchStratefySuccess:function(){
+            Utility.alerts("下发成功","success",5000)
         },
 
         initDropMenu: function(res){
@@ -291,8 +311,16 @@ define("hashOrigin.view", ['require','exports', 'template', 'modal.view', 'utili
                 title: "hash关联特殊分层策略列表",
                 body: myCheckView,
                 backdrop: 'static',
-                type: 1,
-                onHiddenCallback: function() {}.bind(this)
+                type: 2,
+                onHiddenCallback: function() {}.bind(this),
+                onOKCallback:function(){
+                    var result = myCheckView.getArgs();
+                    if(!result){
+                        return false;
+                    }
+                    this.collection.sendBatchStratefyTask(result);
+                    this.checkHashPopup.$el.modal('hide');
+                }.bind(this)
             }
             this.checkHashPopup = new Modal(options);
 

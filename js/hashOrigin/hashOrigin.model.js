@@ -143,6 +143,20 @@ define("hashOrigin.model", ['require','exports', 'utility'], function(require, e
                 this.trigger("check.hashOrigin.error", response);
             }.bind(this);
             Utility.getAjax(url, {}, successCallback, errorCallback);  
+        },
+
+        sendBatchStratefyTask:function(args){
+            var url = BASE_URL + "/resource/special/sendBatchStratefyTask",
+            successCallback = function(res) {
+                if (res)
+                    this.trigger("sendBatchStratefy.success", res);
+                else
+                    this.trigger("sendBatchStratefy.error", res);
+            }.bind(this),
+            errorCallback = function(response) {
+                this.trigger("sendBatchStratefy.error", response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);              
         }
 
         // operatorTypeList: function(){

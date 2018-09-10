@@ -526,25 +526,27 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         onClickItemDelete: function(event){
-            var eventTarget = event.srcElement || event.target, id, regionId;
+            var eventTarget = event.srcElement || event.target, id, regionId, isIpV6;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();
                 id       = eventTarget.attr("id");
                 regionId = eventTarget.attr("region-id");
+                isIpV6 = eventTarget.attr("data-isipv6") == "true" ? 1 : 0;
             } else {
                 id       = $(eventTarget).attr("id");
                 regionId = $(eventTarget).attr("region-id");
+                isIpV6 = eventTarget.attr("data-isipv6") == "true" ? 1 : 0;
             }
+            
             var model = this.collection.get(regionId),
                 list = model.get("list");
             var selectedNode = _.filter(list ,function(obj) {
-                return obj["nodeId"] === parseInt(id);
+                return obj["nodeId"] === parseInt(id) && obj["isIpV6"] === isIpV6;
             })
-
             var result = confirm("你确定要删除节点 " + selectedNode[0].nodeName + " 吗？")
             if (!result) return;
             for (var i = 0; i < list.length; i++){
-                if (list[i]["nodeId"] === parseInt(id)){
+                if (list[i]["nodeId"] === parseInt(id) && list[i]["isIpV6"] ===isIpV6){
                     list.splice(i, 1);
                     break;
                 }

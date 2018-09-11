@@ -42,7 +42,8 @@ define("hashOrigin.view", ['require','exports', 'template', 'modal.view', 'utili
             _.each(this.dataList,function(list){
                 arr.push({
                     "id":list.id,
-                    "type":list.type
+                    "type":list.type,
+                    "name":list.name
                 });
             });
             return arr;

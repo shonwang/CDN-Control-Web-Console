@@ -19,6 +19,9 @@
                               <tr class="<%if(_list[j].type==1){%>success<%}else{%>danger<%}%>">
                                 <td style="width:400px">
                                     <span class="node-string text-primary" >
+                                      <%if(_list[j].isIpV6 == 1){%>
+                                        <strong>[ipv6]</strong>
+                                      <%}%>
                                       <%=_list[j].nodeName%>/<%=_list[j].bandwidth%>
                                     </span>
                                     

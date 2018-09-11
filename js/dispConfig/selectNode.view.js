@@ -9,6 +9,7 @@ define("selectNode.view", ['require','exports', 'template', 'modal.view', 'utili
             this.regionId   = options.regionId;
             this.groupId = options.groupId || null;//添加时传的groupId,编辑时，带的是当前的id
             this.isEdit     = options.isEdit;
+            this.isIpV6     = options.isIpV6;
             this.$el = $(_.template(template['tpl/dispConfig/dispConfig.selectNode.html'])({}));
             this.$el.find(".node-list").html(_.template(template['tpl/loading.html'])({}));
             this.nodeList = [];
@@ -30,7 +31,8 @@ define("selectNode.view", ['require','exports', 'template', 'modal.view', 'utili
 
             this.args = {
                 regionId: this.regionId,
-                groupId : this.isEdit ? this.model.dispGroupId : this.groupId
+                groupId : this.isEdit ? this.model.dispGroupId : this.groupId,
+                ipVersion: this.isIpV6 ? 2 : 1
             }
 
             this.collection.getRegionNodeList(this.args);
@@ -229,6 +231,7 @@ define("selectNode.view", ['require','exports', 'template', 'modal.view', 'utili
                 obj["regionLineId"] = this.model.regionLineId;
                 obj["regionName"] = this.model.regionName;
                 obj["isDisplay"] = true;
+                obj["isIpV6"] = this.isIpV6;
                 //obj["type"] = this.model.type;//此值不需要
                 selectedList.push(obj);
             }

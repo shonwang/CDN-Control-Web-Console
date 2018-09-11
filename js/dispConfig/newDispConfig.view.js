@@ -59,7 +59,8 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                         "ttl":listEl.ttl || 0,
                         "ipNum":listEl.currNum,
                         "nodeName":listEl.nodeName,
-                        "type":listEl.type
+                        "type":listEl.type,
+                        "isIpV6":listEl.isIpV6
                     };
                     origin.push(obj);                  
                     if(obj.type == 1){
@@ -359,10 +360,11 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
             value    = $(eventTarget).val();
             id       = $(eventTarget).attr("node-Id");
             regionId = $(eventTarget).attr("region-id");
+            isIpV6   = $(eventTarget).attr("isIpV6") == "true" ? 1 : 0;
             var model = this.collection.get(regionId),
                 list = model.get("list");
             var selectedNode = _.filter(list ,function(obj) {
-                return obj["nodeId"] === parseInt(id);
+                return obj["nodeId"] === parseInt(id) && obj["isIpV6"] == isIpV6;
             })
             selectedNode[0].currNum = parseInt(value);
         },
@@ -392,14 +394,22 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
             return obj;
         },
 
+        checkIpV6:function(list,nodeId,isIpV6){
+            for(var i=0;i<list.length;i++){
+                if(list[i].nodeId == nodeId && list[i].isIpV6 == isIpV6 ){
+                    return true;
+                }
+            }
+            return false;
+        },
+
         onClickItemAdd: function(event){
             var eventTarget = event.srcElement || event.target, id;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();
-                regionId = eventTarget.attr("region-id");
-            } else {
-                regionId = $(eventTarget).attr("region-id");
-            }
+            } 
+            var regionId = $(eventTarget).attr("region-id");
+            var isIpV6 = $(eventTarget).attr("data-isipv6") == "true" ? 1 : 0;
             var model = this.collection.get(regionId);
             var list = model.get("list");
             var fixedProperty = this.getFixedProperty(model);
@@ -411,7 +421,8 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                     model     : fixedProperty,
                     groupId   : this.queryArgs.groupId,
                     regionId  : regionId,
-                    isEdit    : false
+                    isEdit    : false,
+                    isIpV6    : isIpV6
                 });
 
                 var options = {
@@ -424,9 +435,14 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                         var options = selectNodeView.getArgs();
                         if (!options) return;
                         options = options.selectedList;
+                        console.log(options);
                         for (var k = 0; k < options.length; k++){
+                            
                             if (oldList[options[k]["nodeId"]]){
-                                continue;
+                                var hasCurrentIpV6 = this.checkIpV6(list,options[k]["nodeId"],isIpV6);
+                                if(hasCurrentIpV6){
+                                    continue;
+                                }
                             }
                             list.push(options[k]);
                         }
@@ -446,13 +462,14 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         onClickItemEdit: function(event){
-            var eventTarget = event.srcElement || event.target, id, regionId;
+            var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();
             }
 
             var id = eventTarget.attr("id");
             var regionId = eventTarget.attr("region-id");
+            var isIpV6 = $(eventTarget).attr("data-isipv6") == "true" ? 1 : 0;
            
             var model = this.collection.get(regionId),
                 list = model.get("list");
@@ -466,7 +483,8 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                     collection: this.collection, 
                     model     : selectedNode[0],
                     regionId  : regionId,
-                    isEdit    : true
+                    isEdit    : true,
+                    isIpV6    : isIpV6
                 });
 
                 var options = {
@@ -481,7 +499,7 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                         var result = confirm("你确定要修改节点吗？")
                         if (!result) return;
                         for (var i = 0; i < list.length; i++){
-                            if (list[i].nodeId === parseInt(options[0]["nodeId"])){
+                            if (list[i].nodeId === parseInt(options[0]["nodeId"]) && list[i].isIpV6 == isIpV6){
                                 this.selectNodePopup.$el.modal("hide");
                                 Utility.warning("列表里已包含您选的节点");
                                 return;
@@ -489,8 +507,9 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                         }
 
                         for (var k = 0; k < list.length; k++){
-                            if (list[k].id === parseInt(id)){
-                                _.extend(list[k],options[0]);
+                            if (list[k].nodeId === parseInt(id)){
+                                //_.extend(list[k],options[0]);
+                                list[k] = options[0];
                                 break;
                             }
                         }
@@ -509,25 +528,27 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
         },
 
         onClickItemDelete: function(event){
-            var eventTarget = event.srcElement || event.target, id, regionId;
+            var eventTarget = event.srcElement || event.target, id, regionId, isIpV6;
             if (eventTarget.tagName == "SPAN"){
                 eventTarget = $(eventTarget).parent();
                 id       = eventTarget.attr("id");
                 regionId = eventTarget.attr("region-id");
+                isIpV6 = eventTarget.attr("data-isipv6") == "true" ? 1 : 0;
             } else {
                 id       = $(eventTarget).attr("id");
                 regionId = $(eventTarget).attr("region-id");
+                isIpV6 = eventTarget.attr("data-isipv6") == "true" ? 1 : 0;
             }
+            
             var model = this.collection.get(regionId),
                 list = model.get("list");
             var selectedNode = _.filter(list ,function(obj) {
-                return obj["nodeId"] === parseInt(id);
+                return obj["nodeId"] === parseInt(id) && obj["isIpV6"] === isIpV6;
             })
-
             var result = confirm("你确定要删除节点 " + selectedNode[0].nodeName + " 吗？")
             if (!result) return;
             for (var i = 0; i < list.length; i++){
-                if (list[i]["nodeId"] === parseInt(id)){
+                if (list[i]["nodeId"] === parseInt(id) && list[i]["isIpV6"] ===isIpV6){
                     list.splice(i, 1);
                     break;
                 }

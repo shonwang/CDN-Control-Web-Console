@@ -822,7 +822,16 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 this.collection.off("submit.domain.success");
                 this.collection.off("submit.domain.error");
                 this.collection.on("submit.domain.success", $.proxy(this.onSubmitSuccess, this))
-                this.collection.on("submit.domain.error", $.proxy(this.onGetError, this))
+                this.collection.on("submit.domain.error", $.proxy(this.onGetError, this));
+
+                this.collection.off("get.project.success");
+                this.collection.off("get.project.error");
+                this.collection.on("get.project.success", $.proxy(this.onGetAllProjectSuccess, this))
+                this.collection.on("get.project.error", $.proxy(this.onGetError, this));
+                var projectArgs = {
+                    userId:userInfo.uid
+                };
+                this.collection.getAllProject(projectArgs);
             },
 
             onGetRegionSuccess: function(data) {
@@ -840,6 +849,27 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 // };
                 // this.setRegionData(regions.data)
                 this.setRegionData(data)
+            },
+
+            onGetAllProjectSuccess:function(res){
+                var _data = JSON.parse(res);
+                var projectList = _data.ListProjectResult.ProjectList;
+                var projectArr=[];
+                _.each(projectList,function(list){
+                    var obj = {
+                        name:list.ProjectName,
+                        value:list.ProjectId
+                    };
+                    projectArr.push(obj);
+                });
+                var ctn = this.$el.find("#dropdown-menu-project-type");
+                this.initDropMenu(ctn,projectArr,function(obj){
+                    this.args.projectId = obj.value;
+                }.bind(this));
+                this.args.projectId = 0;
+                ctn.find(".cur-caret").html("默认项目");
+
+
             },
 
             onSubmitSuccess: function() {
@@ -884,6 +914,7 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                 var args = this.args;
                 result.Regions = args.Regions;
                 result.CdnType = args.CdnType;
+                result.projectId = parseInt(args.projectId);
                 var protocols = {
                         "HTTP": 0,
                         "HTTPS": 4,
@@ -909,7 +940,8 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     "originAddress": _.uniq(result.Origin.split(',')).join(','),
                     "originPort": result.OriginPort,
                     "applicationType":result.applicationType,
-                    "testUrl":result.testUrl || null
+                    "testUrl":result.testUrl || null,
+                    "projectId":result.projectId || 0
                 }
                 this.collection.submitDomain(postParam);
                 this.$el.find("#add-domain-btnSubmit").attr("disabled", "disabled");

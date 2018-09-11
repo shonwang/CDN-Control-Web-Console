@@ -61,7 +61,7 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
             },
 
             modifyProjectSuccess:function(){
-                Utility.alert("修改成功","success");
+                Utility.alerts("修改成功","success",5000);
                 this.onClickSearchBtn();
             },
 
